@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>AI choices and settings legibility audit, 2026-11</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">AI choices and settings legibility audit, 2026-11</h1>
+</header>
+<h1 id="ai-choices-and-settings-legibility-audit-2026-11-partial">AI
+choices and settings legibility audit, 2026-11 (partial)</h1>
+<p>Status: <strong>paused, partial.</strong> This covers part 1 of
+plan.md's "Make AI choices and data flow legible" item: an inventory of
+AI entry points across the app family. Nothing is fixed yet. Part 2
+(settings whose effect is not obvious) has not started.</p>
+<p>The findings come from a read-only sweep of <code>main</code> at
+c3591ac2f on 2026-11-20. <strong>None has been checked by hand or
+covered by a test yet.</strong> Each one needs to be reproduced before
+anyone fixes it. File and line numbers are from that commit.</p>
+<h2 id="how-ai-requests-are-routed">How AI requests are routed</h2>
+<p>The family has two ways of deciding where an AI request goes.</p>
+<ul>
+<li><p><strong>Hosted AI.</strong> Used by QUILL, QUILL Lite and every
+app's own AI menu (Weather, Converter, Player, Inkwell, Transcribe,
+Cast, Studio and WordPress). Every request goes through
+<code>ConnectionRouteMixin.request_connection</code> in
+<code>quill/ui/hosted_ai_connection_route.py</code>. That function reads
+the one stored choice, <code>ai_connection</code>, and does three
+things:</p>
+<ul>
+<li>it refuses with a sentence when the chosen AI is not ready or cannot
+do the request (<code>connection_choice.py</code>, GATE-CAPS);</li>
+<li>it asks "Send to a Different AI?", with No as the default, before a
+different company is used (<code>hosted_ai_route_guard.py</code>);</li>
+<li>under Auto, it names the recipient before sending ("Auto chose X.
+Your request will go to Y."), and any retry is a Yes/No question.</li>
+</ul>
+<p>Which AI Am I Using and Choose Your AI describe this route
+accurately.</p></li>
+<li><p><strong>Advanced AI, QUILL only.</strong> Used by spell check,
+grammar, translate, Document Q&amp;A, thesaurus, metadata, rewrite,
+summarize, Describe Image and similar commands, plus agents, Ask Quill
+and Improve Reading Order. The route comes from
+<code>assistant_connection.json</code> and the legacy key, through
+<code>_ai_require_connection</code> (<code>main_frame.py</code> near
+10536), <code>ProviderChatBackend()</code> or
+<code>make_default_backend()</code>. This route <strong>never reads
+<code>ai_connection</code></strong>, and Which AI Am I Using does not
+describe it.</p></li>
+</ul>
+<p>Most of the gaps below come from the second route, or from features
+that pick a provider on their own.</p>
+<h2 id="what-the-person-can-tell-before-using-ai">What the person can
+tell before using AI</h2>
+<p>The columns are what the person can tell before sending: (a) which
+provider and model, (b) local or cloud, (c) what context is sent, (d)
+the limits, (e) consent, (f) what happens on fallback. "Hosted" means
+the shared route described above.</p>
+<table>
+<thead>
+<tr>
+<th>Entry point</th>
+<th>(a) provider and model</th>
+<th>(b) local or cloud</th>
+<th>(c) context sent</th>
+<th>(d) limits</th>
+<th>(e) consent</th>
+<th>(f) fallback</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Free AI Assistant, Ask About This Document, Chat, Prompt Library,
+Tidy Dictated Text (both editors)</td>
+<td>Yes, through Ctrl+8, Choose Your AI and the status cell</td>
+<td>Yes</td>
+<td>The pad shows the size</td>
+<td>Checks the free limit</td>
+<td>Privacy Agreement, for the free AI only</td>
+<td>Hosted</td>
+</tr>
+<tr>
+<td>Ask About an Image (both editors)</td>
+<td><strong>Wrong</strong>: the text always says OpenAI and ChatGPT</td>
+<td>Yes</td>
+<td>The picture</td>
+<td>Capability gate</td>
+<td><strong>None</strong></td>
+<td>Hosted</td>
+</tr>
+<tr>
+<td>Do a Document Task, Propose Alt Text</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>Shown</td>
+<td>Capability gate</td>
+<td>Picture consent</td>
+<td>Hosted</td>
+</tr>
+<tr>
+<td>Ask Quill, Ask Quill by Voice</td>
+<td>"Active provider, Model"</td>
+<td>Yes</td>
+<td>Shown</td>
+<td>Shown</td>
+<td>Share consent enforced</td>
+<td>Asks "Use a Different AI Provider?"</td>
+</tr>
+<tr>
+<td>Spell, grammar, translate, Q&amp;A, thesaurus, metadata, rewrite,
+summarize, expand, table of contents (QUILL)</td>
+<td><strong>No</strong></td>
+<td><strong>No</strong></td>
+<td>Partly; Summarize Selection also sends the whole document</td>
+<td>No</td>
+<td><strong>No share-consent check</strong></td>
+<td>None; the command fails</td>
+</tr>
+<tr>
+<td>Check Grammar with AI</td>
+<td>Model only</td>
+<td>No</td>
+<td>Selection</td>
+<td>No</td>
+<td>No</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Improve Reading Order</td>
+<td>Names provider and host</td>
+<td>Yes</td>
+<td>Size shown</td>
+<td>Page limit</td>
+<td>Yes/No</td>
+<td><strong>Sends through a cached assistant that may be another
+provider</strong> (Gap 1)</td>
+</tr>
+<tr>
+<td>Agents and Action Ring</td>
+<td>No</td>
+<td>No</td>
+<td>Preview shows counts and redaction</td>
+<td>No</td>
+<td>Continue or Cancel</td>
+<td><strong>Engine fallback is a status line only</strong> (Gap 6)</td>
+</tr>
+<tr>
+<td>AI Library, Transcript Actions</td>
+<td>No</td>
+<td>No</td>
+<td>Not stated</td>
+<td>No</td>
+<td>No</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Describe Image, AI alt text (QUILL)</td>
+<td>No</td>
+<td>No</td>
+<td>The picture</td>
+<td>No</td>
+<td><strong>No picture consent</strong></td>
+<td>None</td>
+</tr>
+<tr>
+<td>Transcribe Audio File (QUILL)</td>
+<td>Not named once a key exists; always OpenAI</td>
+<td>No</td>
+<td>The file</td>
+<td>25 MB, shown</td>
+<td>No</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Read Aloud, Export as Audio (cloud voices)</td>
+<td>Provider and voice shown</td>
+<td>Implied</td>
+<td>Word count shown</td>
+<td>Estimated cost shown</td>
+<td>No</td>
+<td>A missing setting defaults to OpenAI, announced</td>
+</tr>
+<tr>
+<td>Picture Maker (WordPress, Studio)</td>
+<td>Names company, model and endpoint</td>
+<td>Yes</td>
+<td>Shown</td>
+<td>"Service charges may apply"</td>
+<td>Yes/No</td>
+<td><strong>Bypasses the chosen connection</strong> (Gap 9)</td>
+</tr>
+<tr>
+<td>WordPress: Suggest Alternative Text, Describe Image</td>
+<td>"your chosen AI"</td>
+<td>No</td>
+<td>Announced</td>
+<td>Capability gate</td>
+<td>First-picture consent</td>
+<td>Hosted</td>
+</tr>
+<tr>
+<td>WordPress: In Short, Ask the Site, Ask About This Site</td>
+<td>Named</td>
+<td>Yes</td>
+<td>Yes/No dialog; scope choice</td>
+<td>12,000-character cap, not stated</td>
+<td>Yes/No</td>
+<td>Hosted</td>
+</tr>
+<tr>
+<td>WordPress: Visual Review, Suggest from Page Content</td>
+<td>"your chosen AI"</td>
+<td>No</td>
+<td>Listed</td>
+<td>—</td>
+<td>Yes/No</td>
+<td>Hosted</td>
+</tr>
+<tr>
+<td>GitHub: Summarize Discussion, Explain Selected Change</td>
+<td><strong>No</strong></td>
+<td><strong>No</strong></td>
+<td>Not stated</td>
+<td>24,000-character cap, not stated</td>
+<td>Only the set-up offer</td>
+<td>Legacy route (Gap 10)</td>
+</tr>
+<tr>
+<td>GitHub: Assign to Copilot, Request Copilot Review</td>
+<td>GitHub's own Copilot; QUILL sends no content</td>
+<td>Cloud</td>
+<td>—</td>
+<td>—</td>
+<td>Assign asks first; Review does not</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Weather: Should I Go Out?</td>
+<td>Ctrl+F8</td>
+<td>Yes</td>
+<td>Forecast facts</td>
+<td>—</td>
+<td>Free AI only</td>
+<td>Hosted</td>
+</tr>
+<tr>
+<td>Converter: Will This Play</td>
+<td>Ctrl+F8</td>
+<td>Yes</td>
+<td>Probe text, never audio</td>
+<td>—</td>
+<td>Free AI only</td>
+<td>Hosted</td>
+</tr>
+<tr>
+<td>Player: Recap, Chapter Summary</td>
+<td>Ctrl+F8</td>
+<td>Yes</td>
+<td>A local 5-minute transcript</td>
+<td>BARD content refused</td>
+<td>Free AI only</td>
+<td>Hosted, cached</td>
+</tr>
+<tr>
+<td>Inkwell: Suggest Abbreviations</td>
+<td>Ctrl+F8</td>
+<td>Yes</td>
+<td>The document, said as "Reading file"</td>
+<td>12,000 characters, not stated</td>
+<td>Free AI only</td>
+<td>Hosted</td>
+</tr>
+<tr>
+<td>Inkwell: Dictate Anywhere (cloud)</td>
+<td>The tray says "Speech goes to OpenAI"</td>
+<td>Yes</td>
+<td>Speech</td>
+<td>—</td>
+<td>Recognizer consent</td>
+<td>Local engine fallback, announced</td>
+</tr>
+<tr>
+<td>Transcribe: Ask, Speakers, Sections, Summary</td>
+<td>Ctrl+F8</td>
+<td>Yes</td>
+<td>The transcript</td>
+<td>—</td>
+<td>Free AI only</td>
+<td>Hosted</td>
+</tr>
+<tr>
+<td>Transcribe: Transcribe a Recording (OpenAI model)</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>The recording</td>
+<td>—</td>
+<td>"Send this recording to OpenAI?"</td>
+<td>Local fallback, announced</td>
+</tr>
+<tr>
+<td>Review Dictation (Transcribe and the editors)</td>
+<td><strong>Wrong under Auto</strong> (Gap 11)</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>Consent names the wrong company</td>
+<td>Hosted</td>
+</tr>
+<tr>
+<td>Cast: AI verbs</td>
+<td>Ctrl+F8</td>
+<td>Yes</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>Hosted; chapter cues stay local</td>
+</tr>
+<tr>
+<td>Studio: Describe Folder, screenshots</td>
+<td>Names provider, model and host</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>—</td>
+<td>Yes/No</td>
+<td>Hosted</td>
+</tr>
+<tr>
+<td>Studio: Generate Captions (Offline)</td>
+<td><strong>Can be cloud</strong> (Gap 12)</td>
+<td><strong>Says offline</strong></td>
+<td>The whole audio file</td>
+<td>—</td>
+<td><strong>None</strong></td>
+<td>Silent</td>
+</tr>
+<tr>
+<td>Studio: chapter titles, Translated export</td>
+<td>"your configured AI", "AI provider (cloud)"</td>
+<td>Can be wrong</td>
+<td>—</td>
+<td>—</td>
+<td>Generic</td>
+<td>Legacy route</td>
+</tr>
+</tbody>
+</table>
+<h2 id="suspected-silent-switches-and-gaps-not-yet-verified">Suspected
+silent switches and gaps, not yet verified</h2>
+<p>The first ten are the ones where the person's data could go somewhere
+they did not choose.</p>
+<ol type="1">
+<li><strong>Cached assistant keeps the old provider.</strong>
+<code>_get_assistant</code> builds the assistant once
+(<code>main_frame.py</code> near 10026), and nothing resets it when the
+provider changes. After a switch from a cloud AI to Ollama, the old
+cloud provider keeps receiving requests until restart from:
+<ul>
+<li>Improve Reading Order, whose confirmation names the <em>new</em>
+provider;</li>
+<li>watch-folder AI actions;</li>
+<li>Train Writing Style;</li>
+<li>chapter inference.</li>
+</ul></li>
+<li><strong><code>make_default_backend</code> ignores "Off".</strong> At
+<code>assistant.py:184</code> there is no else branch, so the default
+provider is then used with no note. The watch folder only checks
+<code>load_ai_enabled</code>, so file text could reach a cloud provider
+after the person chose Off.</li>
+<li><strong>Signing out of an Ollama own key moves requests to
+OpenAI.</strong> This is a local-to-cloud switch.
+<code>hosted_ai_own_key_route.py:76-83</code> sets
+<code>ai_own_key_provider = OPENAI</code>, and
+<code>ai_connection</code> stays <code>own_key</code>. If an OpenAI key
+or <code>OPENAI_API_KEY</code> exists, <code>route_chosen()</code>
+records that as the person's choice, so the route guard never asks.
+Meanwhile the announcement says "No AI is in use".</li>
+<li><strong>Ask About an Image names the wrong company and asks no
+consent.</strong> <code>hosted_ai_image.py:57-61</code> always says
+OpenAI and ChatGPT, whatever the connection is.
+<code>cmd_ai_image</code> never calls
+<code>ask_picture_consent</code>.</li>
+<li><strong>Share consent is enforced only in Ask Quill.</strong>
+<code>_ai_require_connection</code>, <code>ProviderChatBackend</code>
+users and Describe Image skip <code>provider_consent_granted</code>. A
+key saved through Use My Own AI Key never gets that consent, yet the
+advanced commands send to it.</li>
+<li><strong>Agent engine fallback is status-only.</strong> In
+<code>agent_responder_selection.py:36-46</code>, "X is not set up; using
+Native." Native is the assistant provider, which may be a different
+company. There is no Yes/No.</li>
+<li><strong>Advanced features do not follow Choose Your AI.</strong>
+This is the second route described above. It is a design question as
+well as a defect; see the decisions section below.</li>
+<li><strong>Signing out of an own key leaves the legacy key
+mirror.</strong> <code>clear_provider_api_key</code> removes only the
+per-provider key. Advanced commands keep sending to that provider after
+"Signed out".</li>
+<li><strong>Picture Maker bypasses the chosen connection.</strong>
+<code>picture_maker.py:130-143</code> falls through to the advanced
+provider. The consent box does name the company, but the description
+step goes to <code>settings.host</code> while the box shows
+<code>DEFAULT_HOSTS</code>.</li>
+<li><strong>GitHub Summarize Discussion and Explain Selected
+Change</strong> use <code>_ai_require_connection</code>, which is the
+legacy route: the provider is not named and there is no per-request
+consent.
+<ul>
+<li>Explain Selected Change also wraps its prompt inside the "Summarize
+this GitHub discussion" prompt
+(<code>github_pr_diff_dialog.py:286</code> into
+<code>thread_summary.py:73</code>).</li>
+<li>Its help text promises consent that does not happen.</li>
+</ul></li>
+</ol>
+<p>Further gaps:</p>
+<ol start="11" type="1">
+<li><strong>Review Dictation under Auto names the wrong
+recipient</strong> in its consent question
+(<code>windows_dictation_review.py:98-112</code>). Under Auto it falls
+through to "OpenAI, with your own key".</li>
+<li><strong>Studio Generate Captions (Offline) can upload
+audio.</strong> <code>studio.py:1667-1685</code>
+<code>_speech_provider</code> returns a cloud Quillin transcriber when
+one is chosen in Speech Hub. There is no <code>requires_network</code>
+check and no consent. QUILL has the same pattern at
+<code>main_frame_speech.py:42-54</code>.</li>
+<li><strong>A legacy key can be sent to the wrong company.</strong>
+<code>provider_backend.py:48</code> uses
+<code>load_provider_api_key(provider) or load_assistant_api_key()</code>,
+and the legacy store can hold another provider's key.</li>
+<li><strong>A new app's first choice is made silently.</strong>
+<code>migrate_choice</code> stores an own-key route, and the direct
+route then skips the privacy agreement. This is arguably by design.</li>
+<li><strong>Low severity.</strong>
+<ul>
+<li><code>make_default_backend</code> runs on a worker thread while
+mutating module state that is documented as UI-thread only.</li>
+<li><code>resolve_dictation_provider</code> calls
+<code>_speech_provider(registry=...)</code>, which takes no arguments.
+That is a probable TypeError, but not a privacy issue.</li>
+<li>The WordPress Ask the Site help says QUILL asks before an ability's
+result is sent back, and it does not.</li>
+<li>Several WordPress commands say "your chosen AI" where
+<code>ai_name()</code> is available.</li>
+</ul></li>
+</ol>
+<p>Already guarded, no change needed:</p>
+<ul>
+<li><code>fallback.plan_fallback</code> and
+<code>plan_substitution</code> only build offers.</li>
+<li>The Ask Quill substitution hold
+(<code>backend_substitution</code>).</li>
+<li>The hosted route guard and Auto's announcement and retry
+question.</li>
+<li>Strict cloud-voice and diarization dispatch.</li>
+<li>Player recap, Cast chapter cues and Studio chapter-title
+transcription stay local.</li>
+<li>Voice-reply fallbacks are announced.</li>
+<li>Windows dictation asks before sending to OpenAI.</li>
+</ul>
+<h2 id="decisions-for-jeff">Decisions for Jeff</h2>
+<ul>
+<li><strong>Should the advanced route follow Choose Your AI?</strong> If
+it should, gaps 1, 2, 5, 7, 8, 9 and 10 mostly fall away. If it stays
+separate on purpose, Which AI Am I Using should describe both routes,
+and each advanced command should name its provider before sending.</li>
+<li><strong>Gap 14.</strong> Should a new app's first AI request ask,
+rather than inherit the family's own key silently?</li>
+</ul>
+<h2 id="fixed">Fixed</h2>
+<p>Nothing yet. The audit was paused before any fix.</p>
+<h2 id="part-2-settings-legibility">Part 2: settings legibility</h2>
+<p>Not started.</p>
+</body>
+</html>
