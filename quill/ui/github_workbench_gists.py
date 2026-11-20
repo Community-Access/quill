@@ -49,7 +49,7 @@ class GitHubWorkbenchGistsMixin:
 
         name, text = self._gist_start()
         editor = GitHubGistEditorDialog(
-            self.frame.frame, GistDraft.new(name, text), creating=True, announce_cb=self._announce
+            self.frame.frame, GistDraft.new(name, text), creating=True, announce_cb=self._say
         )
         if not editor.show():
             return
@@ -82,7 +82,7 @@ class GitHubWorkbenchGistsMixin:
         if self.frame is None:
             return
         editor = GitHubGistEditorDialog(
-            self.frame.frame, GistDraft.from_gist(gist), creating=False, announce_cb=self._announce
+            self.frame.frame, GistDraft.from_gist(gist), creating=False, announce_cb=self._say
         )
         if not editor.show():
             return
