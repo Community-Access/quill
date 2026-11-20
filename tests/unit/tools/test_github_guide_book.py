@@ -17,7 +17,8 @@ def test_the_committed_books_match_the_guides() -> None:
 
 def test_every_chapter_is_in_its_book_in_order_and_links_stay_inside() -> None:
     for folder, prefix in book.GUIDES:
-        text = (folder / f"{prefix}-book.md").read_text(encoding="utf-8")
+        # Beside the chapter folder, which holds only the chapters it links.
+        text = (folder.parent / f"{prefix}-book.md").read_text(encoding="utf-8")
         chapters = sorted(folder.glob(f"{prefix}-[0-9][0-9]-*.md"))
         headings = re.findall(r"^# (Chapter \d+:.*)$", text, re.M)
         assert len(headings) == len(chapters) >= 13
@@ -25,4 +26,5 @@ def test_every_chapter_is_in_its_book_in_order_and_links_stay_inside() -> None:
         assert numbers == sorted(numbers)
         assert not re.search(rf"\]\({prefix}[^)]*\.(?:html|md)", text), "a link leaves the book"
         assert "- Previous: " not in text
-        assert (folder / f"{prefix}-book.epub").exists()
+        assert (folder.parent / f"{prefix}-book.epub").exists()
+        assert not (folder / f"{prefix}-book.md").exists()

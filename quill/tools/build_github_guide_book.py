@@ -3,10 +3,10 @@
 The guide is written as a contents page and thirteen chapter pages, which
 is right for F1 (Ctrl+F1 opens the chapter for where you are) and awkward
 to carry: a reading app or a braille display wants one book. This joins the
-same Markdown, in order, into ``<prefix>-book.md`` beside each guide (``github-guide-book.md``,
-``lite-github-guide-book.md``)
-(QUILL's and QUILL Lite's), so the book is the guide and cannot say
-anything else:
+same Markdown, in order, into ``<prefix>-book.md`` beside each guide's chapter
+folder (``github-guide-book.md`` for QUILL, ``lite-github-guide-book.md`` for QUILL
+Lite), not in it, since that folder holds only the chapters its contents page
+links. So the book is the guide and cannot say anything else:
 
 - the contents page's opening and Keys at a glance come first, then each
   chapter, its own level 1 heading starting a new section of the EPUB;
@@ -97,7 +97,7 @@ def book(folder: Path, prefix: str) -> str:
 
 
 def outputs() -> dict[Path, str]:
-    return {folder / f"{prefix}-book.md": book(folder, prefix) for folder, prefix in GUIDES}
+    return {folder.parent / f"{prefix}-book.md": book(folder, prefix) for folder, prefix in GUIDES}
 
 
 def main(argv: list[str] | None = None) -> int:
