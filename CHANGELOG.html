@@ -266,6 +266,35 @@ Plain-Language Batch, through the same checks as the menu. What Can I
 Say Here (Ctrl+Alt+Shift+F1) lists them.</li>
 </ul>
 <h3
+id="github-workbench-write-workflows-dependabot-and-codeowners-2026-11-19">GitHub
+Workbench: write workflows, Dependabot and CODEOWNERS (2026-11-19)</h3>
+<ul>
+<li><strong>Edit Workflow…</strong> and <strong>New Workflow…</strong>
+<ul>
+<li><strong>The editor.</strong> It lays a workflow out as plain
+controls: its triggers and their inputs, permissions, jobs, and each
+job’s steps. The order jobs run in is said in words (“Build runs after
+Test and Lint”).</li>
+<li><strong>Checks before saving.</strong> A “What GitHub would say” box
+lists anything GitHub would refuse, and Save waits until the list is
+empty.</li>
+<li><strong>Saving.</strong> Changes are saved to the default branch, or
+as a pull request when the branch is protected. Comments at the top of
+the file are kept; comments inside it are not, and the window says
+so.</li>
+</ul></li>
+<li><strong>dependabot.yml</strong> opens as a sheet, and
+<strong>Dependabot Commands…</strong> on a Dependabot pull request posts
+the command you choose.</li>
+<li><strong>CODEOWNERS</strong> is now a table with Add, Edit, Remove
+and Move. GitHub’s errors for the file are shown with it. <strong>Who
+Owns This?</strong> on a file or folder says which rule wins.</li>
+<li><strong>Compare Configuration With Another Repository…</strong>
+compares workflows, templates, community files, Dependabot and
+CODEOWNERS with another repository, and proposes the files you choose as
+one pull request.</li>
+</ul>
+<h3
 id="github-workbench-tags-branches-secrets-webhooks-and-more-across-repositories-2026-11-20">GitHub
 Workbench: tags, branches, secrets, webhooks and more across
 repositories (2026-11-20)</h3>
