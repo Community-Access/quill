@@ -128,7 +128,7 @@ def test_a_404_from_an_older_enterprise_server_says_the_server_may_not_have_it()
         _send("ghes-token", "/repos/o/r/rules/branches/main", _Opener(error=_not_found("x")))
     said = str(caught.value.args[0])
     assert said.startswith("This server's GitHub does not have rules")
-    assert "version 3.4.0" in said and "ghe.example.com" in said
+    assert "GitHub Enterprise Server at ghe.example.com, version 3.4.0," in said
 
 
 def test_a_404_from_github_com_keeps_its_own_meaning() -> None:
