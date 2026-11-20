@@ -1260,6 +1260,10 @@ def generate_assistant_response(
         return None, "The AI provider is set to Off."
     if _safe_mode_active():
         return None, _safe_mode_blocked_message("AI generation")
+    from quill.core.ai import chosen_route
+
+    if provider == chosen_route.ROUTE_PROVIDER:  # the AI chosen in Choose Your AI
+        return chosen_route.send(prompt, system_prompt)
     # Mirror verify's pre-flight guards so a keyless chat call fails with an
     # actionable message instead of a confusing provider 401 (L-5, #123).
     if assistant_secret_unlock_failed() and api_key == "":
@@ -1526,6 +1530,10 @@ def generate_assistant_response_stream(
         return None, "The AI provider is set to Off."
     if _safe_mode_active():
         return None, _safe_mode_blocked_message("AI streaming")
+    from quill.core.ai import chosen_route
+
+    if provider == chosen_route.ROUTE_PROVIDER:  # answered whole, then delivered
+        return chosen_route.send_streamed(prompt, on_delta)
     # Same pre-flight guards as the blocking path so a keyless stream fails
     # with an actionable message instead of a confusing provider 401 (L-5, #123).
     if assistant_secret_unlock_failed() and api_key == "":

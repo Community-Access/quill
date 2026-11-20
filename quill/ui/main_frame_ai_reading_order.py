@@ -103,19 +103,28 @@ class ReadingOrderMixin:
     def _confirm_reading_order_send(self, conn: object, pages: int, chars: int) -> bool:
         """Ask before sending; name the provider/host and the approximate size."""
         wx = self._wx
+        from quill.core.ai.chosen_route import ROUTE_PROVIDER
         from quill.core.ai.providers import provider_display_name
 
         provider = str(getattr(conn, "provider", "") or "")
-        name = provider_display_name(provider) if provider else "your configured AI provider"
+        name = provider_display_name(provider) if provider else "your chosen AI"
+        if provider == ROUTE_PROVIDER:  # the company the AI chosen in Choose Your AI uses
+            service = self._ai_service()
+            chosen = service.connection
+            name = (
+                "the AI that Auto picks. QUILL will name it before anything is sent"
+                if chosen == "auto"
+                else service.route_names(chosen)[1]
+            )
         host = str(getattr(conn, "host", "") or "").strip()
         remote = host and "localhost" not in host and "127.0.0.1" not in host
         where = f" ({host})" if remote else ""
         size = f"about {pages} page" + ("" if pages == 1 else "s")
         message = (
-            f"QUILL will send this document — {size} — to {name}{where} to repair its "
-            f"reading order (reorder columns and out-of-sequence text). The result opens "
-            f"as a new, unsaved document; your current document is not changed, and the "
-            f"text is used only for this request.\n\nSend the document now?"
+            f"QUILL will send this document, {size}, to {name}{where} to put its text "
+            "back in the right order, such as fixing columns and text that is out of "
+            "place. The result opens as a new, unsaved document. Your current document "
+            "is not changed.\n\nSend the document now?"
         )
         proceed = self._show_message_box(
             message,

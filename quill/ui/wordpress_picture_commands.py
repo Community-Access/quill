@@ -51,7 +51,9 @@ class WordPressPictureCommands(WordPressReviewCommands):
         ai = pai.editor_of(self.host)
         if not pai.switched_on(ai, self.host.announce):
             return
-        connection = pm.picture_connection(own_key_provider=pai.own_key_provider(ai))
+        connection = pm.picture_connection(
+            own_key_provider=pai.own_key_provider(ai), follows_choice=True
+        )
         if isinstance(connection, str):
             self.host.announce(connection)
             return

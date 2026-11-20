@@ -56,6 +56,27 @@ def compose_thread_text(title: str, author: str, body: str, comments: list[dict[
     return text
 
 
+def ask_whole_prompt(
+    connection: AssistantConnectionSettings,
+    api_key: str,
+    prompt: str,
+    *,
+    timeout_seconds: float = 60.0,
+) -> str:
+    """Send a prompt that is already complete (Explain Selected Change) as it is."""
+    from quill.core.assistant_ai import generate_assistant_response
+
+    response, error = generate_assistant_response(
+        connection, api_key, prompt, max_tokens=512, timeout_seconds=timeout_seconds
+    )
+    if error:
+        raise ThreadSummaryError(error)
+    answer = (response or "").strip()
+    if not answer:
+        raise ThreadSummaryError("The AI returned an empty answer; try again.")
+    return answer
+
+
 def summarize_thread(
     connection: AssistantConnectionSettings,
     api_key: str,

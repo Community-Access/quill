@@ -232,6 +232,14 @@ class GitHubItemsMixin:
 
             return summarize_thread(connection, api_key, thread_text)
 
+        def whole_prompt(prompt: str) -> str:
+            from quill.core.github.thread_summary import ask_whole_prompt
+
+            return ask_whole_prompt(connection, api_key, prompt)
+
+        # Explain Selected Change sends its own prompt as it is, never inside
+        # the discussion-summary prompt (2026-11 audit, gap 10).
+        summarize.whole_prompt = whole_prompt  # type: ignore[attr-defined]
         return summarize
 
     def _github_items_initial_repo(self) -> str:

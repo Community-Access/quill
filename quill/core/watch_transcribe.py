@@ -254,9 +254,9 @@ class CloudTranscribeAction(_BaseAction):
     def validate(self, options: Mapping[str, object]) -> list[str]:  # noqa: ARG002
         problems: list[str] = []
         try:
-            from quill.core.assistant_ai import load_assistant_api_key
+            from quill.core.assistant_ai import load_keyed_provider_api_key
 
-            if not load_assistant_api_key():
+            if not load_keyed_provider_api_key("openai"):
                 problems.append(
                     "No OpenAI API key is configured. "
                     "Add one in AI Hub before using cloud transcription."
@@ -274,7 +274,7 @@ class CloudTranscribeAction(_BaseAction):
             TranscriptionFormatError,
             transcribe_file,
         )
-        from quill.core.assistant_ai import load_assistant_api_key
+        from quill.core.assistant_ai import load_keyed_provider_api_key
 
         path = item.source_path
         if path.suffix.lower() not in SUPPORTED_AUDIO_EXTENSIONS:
@@ -289,7 +289,7 @@ class CloudTranscribeAction(_BaseAction):
                 f"{path.name} is {size_mb:.1f} MB, which exceeds the 25 MB cloud limit. Skipped."
             )
 
-        api_key = load_assistant_api_key() or ""
+        api_key = load_keyed_provider_api_key("openai") or ""
         if not api_key:
             return WatchActionOutcome.failed(
                 "No OpenAI API key configured. Add one in AI Hub to use cloud transcription."

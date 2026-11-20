@@ -2,6 +2,34 @@
 
 ## 1.0.0
 
+### AI: one choice for every AI command (2026-11-20)
+
+- **Every AI command now uses the AI you choose in Choose Your AI**
+  (`Ctrl+4`). Before, spell check, grammar, translate, Document Q&A, the
+  thesaurus, rewrite and summarize, Ask Quill, the agents, Describe Image and
+  AI alt text, Improve Reading Order, Train Writing Style, chapter inference,
+  the watch folder, Picture Maker, and GitHub's Summarize Discussion and
+  Explain Selected Change used a second, older choice from the AI Hub. Which
+  AI Am I Using (`Ctrl+8`) now describes all of them.
+- They follow the same rules as the rest of the AI menu. If the AI you chose
+  is not ready, QUILL says why and sends nothing. Before a request goes to a
+  different company, QUILL asks, and No is the default. Under Auto, QUILL
+  names its pick before sending. QUILL's free AI asks for its Privacy
+  Agreement, and the first picture on each connection asks first.
+- **Your older choice moves once.** The first time you start this version,
+  the AI Hub's provider and key move to My own key in Choose Your AI, if My
+  own key was not set up yet. QUILL says so once.
+- **A new app asks before its first AI request.** It no longer starts using
+  your own key or ChatGPT plan without a word. It names the AI and asks, and
+  after that it follows your choice.
+- **Explain Selected Change** sends its own question, instead of wrapping it
+  inside the discussion-summary question. Its help no longer promises a
+  consent step that did not exist.
+- **Picture Maker** uses only your own OpenAI or Google Gemini key from
+  Choose Your AI, never the older AI Hub provider.
+- **Cloud transcription in the watch folder** sends audio to OpenAI only with
+  your OpenAI key, never another company's key.
+
 ### AI: nothing goes to an AI you did not choose (2026-11-20)
 
 - **AI set to Off is honoured.** Ask Quill's chat setup can no longer send

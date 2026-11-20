@@ -85,15 +85,12 @@ class ImageAltMixin:
             from quill.core.ai.model_manager import load_ai_enabled
             from quill.core.assistant_ai import (
                 _safe_mode_active,
-                load_assistant_connection_settings,
             )
 
             if _safe_mode_active():
                 return False
-            if not load_ai_enabled():
-                return False
-            conn = load_assistant_connection_settings()
-            return conn.provider.strip().lower() != "off"
+            # Whether the AI chosen in Choose Your AI is ready is asked at use.
+            return bool(load_ai_enabled())
         except Exception:
             return False
 
@@ -108,8 +105,6 @@ class ImageAltMixin:
             from quill.core.ai.vision import DEFAULT_IMAGE_DESCRIPTION_PROMPT
             from quill.core.assistant_ai import (
                 _safe_mode_active,
-                load_assistant_api_key,
-                load_assistant_connection_settings,
             )
         except Exception as exc:  # pragma: no cover - import guard
             return None, f"AI image description is unavailable: {exc}"
@@ -118,12 +113,10 @@ class ImageAltMixin:
             return None, "AI is disabled in Safe Mode."
         if not load_ai_enabled():
             return None, "AI features are turned off."
-        conn = load_assistant_connection_settings()
-        if conn.provider.strip().lower() == "off":
-            return None, "No AI provider is connected. Set one up in Preferences."
-        api_key = load_assistant_api_key()
-        if not api_key and conn.provider.strip().lower() not in {"ollama", "ollama_cloud"}:
-            return None, "The AI API key could not be unlocked on this account."
+        route = self._ai_require_connection("pictures")  # the AI in Choose Your AI
+        if route is None:
+            return None, "Nothing was sent."
+        conn, api_key = route
 
         path = Path(image_path)
         if not path.is_file():

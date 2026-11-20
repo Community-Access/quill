@@ -43,6 +43,9 @@ AI_ENTRIES: dict[str, str] = {
     # assistant-connection.json: a schema_version envelope and one address per
     # provider, never a key. Lost, each provider reads its default address.
     "core/ai/own_key_providers.py::_write": "versioned",
+    # <app data>/assistant-connection-followed.json: the one-time move of the
+    # older AI choice into Choose Your AI has happened (2026-11-20).
+    "ui/chosen_route_sender.py::migrate_older_choice": "versioned",
     # <app data>/<app>-ai.json: Quill Weather's, Quill Converter's, Quill Media
     # Player's, Quill Inkwell's and QuillBeacon's own Choose Your AI choice and
     # picture consent (codex.md Phase 3), as Studio's studio-ai.json: names and

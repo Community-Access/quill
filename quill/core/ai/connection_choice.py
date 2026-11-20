@@ -141,6 +141,7 @@ def migrate_choice(
     chatgpt_signed_in: Callable[[], bool],
     own_key_ready: Callable[[], bool],
     save: Callable[[], None] | None = None,
+    ask_first: tuple[str, ...] = (),
 ) -> str:
     """The stored choice, set once from :func:`legacy_route` when it is empty.
 
@@ -149,6 +150,10 @@ def migrate_choice(
     saves it (each editor's save goes through ``write_json_atomic``). A
     settings object without the field at all -- an older stand-in -- gets the
     old precedence live and nothing is stored.
+
+    A pick in *ask_first* is returned but **not** stored: a new app would
+    otherwise start using the family's own key or ChatGPT plan without a word.
+    The app's first request asks instead (Jeff's decision, 2026-11-20).
     """
     if settings is None or not hasattr(settings, "ai_connection"):
         return legacy_route(chatgpt_signed_in=chatgpt_signed_in(), own_key_ready=own_key_ready())
@@ -156,6 +161,8 @@ def migrate_choice(
     if stored:
         return stored
     chosen = legacy_route(chatgpt_signed_in=chatgpt_signed_in(), own_key_ready=own_key_ready())
+    if chosen in ask_first:
+        return chosen
     settings.ai_connection = chosen
     if save is not None:
         try:
