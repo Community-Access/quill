@@ -2,6 +2,32 @@
 
 ## 1.0.0
 
+### Crash and support reports: what is sent is what was checked (2026-11-20)
+
+- **A crash email's subject is redacted like its body.** A password or key
+  in an error message was removed from the report you reviewed and still sent
+  in the subject line. Every field of the message is now scrubbed: the
+  subject, the version, the platform, the screen reader, the support facts,
+  and the copy that goes to the clipboard.
+- **A long subject no longer breaks the email.** Only the body used to be
+  shortened, so a long subject made a link your mail program refused. The
+  subject is shortened too, counted after encoding so accented letters and
+  emoji fit, and the complete message is still on your clipboard.
+- **Save Diagnostics always writes a readable bundle.** A long task name
+  could leave `metadata.json` unreadable. Each value is now redacted and
+  shortened on its own, and the file is checked before it is saved.
+- **Work that must finish is never told to stop part way.** Background
+  writes marked as unsafe to cancel, such as saving Inkwell's settings or a
+  Word file in QUILL Lite, were signalled to stop while the cancel request
+  reported that nothing had been cancelled. Now a write that has started runs
+  to the end and the request says it was not cancelled; one that has not
+  started is still cancelled.
+- **The shared progress throttle cannot hang and keeps the last update.** It
+  could lock up when there was no window to report to, and could drop the
+  final update. No shipping window was seen to freeze from this.
+- **F1 on Check What QUILL Says** explains the command and how to fill in
+  its report, instead of saying no help is available.
+
 ### GitHub Workbench: roles from GitHub's own answers, two accounts side by side, and gh sign-in (2026-11-20)
 
 - **My Access Here**, **Why Can't They?**, **Access Review** and **Bulk
