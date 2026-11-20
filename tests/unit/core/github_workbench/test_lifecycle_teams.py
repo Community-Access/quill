@@ -31,7 +31,7 @@ from quill.core.github.quick_table_org import ORG_QUICK
 from quill.core.github.rest_transport import GitHubRestError, RestResponse
 from quill.core.github.sheet_catalog import SHEETS, context_for, target_for
 from quill.core.github.sheet_engine import load, locked_fields, plan, save
-from quill.core.github.sheets_orgs import TEAM, team_privacy
+from quill.core.github.sheets_teams import TEAM, team_privacy
 from quill.core.github.write_gate import command_refusal, gated_tier
 from quill.core.workbench.properties import FieldChange
 from tests.github_api_fake import FakeGitHubApi
@@ -193,7 +193,7 @@ def test_the_team_sheet_reads_every_page(api: _TeamApi) -> None:
     assert values["you_maintain"] == "You are a maintainer of this team."
     assert values["maintainers"] == ("jeff, maintainer",)
     assert values["members"] == ("kelly, member",)
-    assert values["team_repos"] == ("acme/guide, write",)
+    assert values["team_repos"] == ("acme/guide, repository, write, team",)
     assert values["children"] == ("Translators",)
     assert values["idp_groups"] == ("Okta docs",)  # was never filled: read under "groups"
     assert values["projects"] == ("Guide",)

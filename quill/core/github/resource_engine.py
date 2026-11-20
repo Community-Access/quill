@@ -104,6 +104,12 @@ class ResourceSpec:
     delete_body: str = ""  # delete sends {delete_body: [id]} to the list itself
     extra: tuple[str, ...] = field(default=())  # further "METHOD path" rows it covers
     repositories: str = ""  # "/repositories": which repositories may use an item
+    title_field: str = ""  # the field a row's sheet is titled by (a ruleset's name)
+    # A list that takes more than one read (the access matrices): (api, target, warnings).
+    reader: Callable[[GitHubApi, str, list[str]], list[ExploreRow]] | None = None
+    # Refuses a delete that would lock you out: (api, target, id) to a sentence, or "".
+    guard: Callable[[GitHubApi, str, str], str] | None = None
+    typed_delete: bool = False  # Delete asks for the row's name typed (tier 3)
     query: tuple[tuple[str, str], ...] = ()  # sent with every list read ("hide_secret")
 
     def base(self, target: str) -> str:
@@ -175,6 +181,11 @@ def _refused(exc: GitHubRestError, doing: str) -> ResourceError:
 def fetch(
     api: GitHubApi, spec: ResourceSpec, target: str, warnings: list[str] | None = None
 ) -> list[ExploreRow]:
+    if spec.reader is not None:
+        try:
+            return spec.reader(api, target, warnings if warnings is not None else [])
+        except GitHubRestError as exc:
+            raise _refused(exc, f"read the {spec.label}") from exc
     try:
         data = api.rest(
             "GET", spec.path(target), query={"per_page": "100", **dict(spec.query)}
@@ -191,8 +202,17 @@ def fetch(
             continue
         label = spec.sentence(raw)
         item_id = str(raw.get(spec.id_field) or "")
+        title = str(raw.get(spec.title_field) or "") if spec.title_field else ""
         rows.append(
-            ExploreRow(label, f"{label}\n{page}", page, target, "resource", f"{spec.key}:{item_id}")
+            ExploreRow(
+                label,
+                f"{label}\n{page}",
+                page,
+                target,
+                "resource",
+                f"{spec.key}:{item_id}",
+                title=title,
+            )
         )
     if not rows and warnings is not None:
         warnings.append(
@@ -301,6 +321,15 @@ def edit(
 
 
 def delete(api: GitHubApi, spec: ResourceSpec, target: str, item_id: str) -> str:
+    if spec.guard is not None:
+        try:
+            problem = spec.guard(api, target, item_id)
+        except GitHubRestError as exc:
+            raise _refused(
+                exc, f"check who else could manage it before removing {item_id}"
+            ) from exc
+        if problem:
+            raise ResourceError(problem)
     try:
         if spec.delete_body:
             api.rest("DELETE", spec.path(target), body={spec.delete_body: [item_id]})

@@ -109,9 +109,10 @@ def test_the_organization_sheet_reads_its_pages_and_your_role(api: FakeGitHubApi
     assert (values["login"], values["name"], values["repositories"]) == ("acme", "Acme", 5)
     assert values["your_org_role"] == "owner"  # GitHub's "admin" is said as owner
     assert values["public_member"] is False  # 404 on public_members/jeff: not shown
-    assert values["members"] == ("jeff", "kelly")
+    # Each member with their role and two-factor state (the Access rows' sentences).
+    assert [row.split(",")[0] for row in values["members"]] == ["jeff", "kelly"]
     assert values["teams"] == ("Docs, visible", "Security, secret")  # never "closed"
-    assert values["outside"] == ("sam",)
+    assert values["outside"] == ("sam, person, outside collaborator, repositories only",)
     assert values["invitations"] == ("new@example.com, direct_member",)
     assert values["hooks"] == ("https://ci.example.com/hook",)
     assert values["secrets"] == ("DEPLOY",)
@@ -194,11 +195,18 @@ def test_read_only_locks_every_organization_field() -> None:
 # -- an organization's lists -------------------------------------------------------------
 
 
+def _two_owners(fake: FakeGitHubApi) -> None:
+    """jeff (signed in) and kelly, both owners: removing kelly leaves an owner."""
+    fake.answer("GET", "/user", {"login": "jeff"})
+    fake.answer("GET", "/orgs/acme/members", [{"login": "jeff"}, {"login": "kelly"}])
+
+
 def test_members_list_invite_and_remove() -> None:
     spec, fake = _spec("org_members"), FakeGitHubApi()
-    fake.answer("GET", "/orgs/acme/members", [{"login": "kelly"}])
+    _two_owners(fake)
     rows = engine.fetch(fake, spec, "acme")
-    assert [(r.label, r.key) for r in rows] == [("kelly.", "org_members:kelly")]
+    assert [r.key for r in rows] == ["org_members:jeff", "org_members:kelly"]
+    assert rows[1].label.startswith("kelly, owner")
     fake.answer("PUT", "/orgs/acme/memberships/sam", {"state": "pending", "role": "member"})
     said = engine.create(fake, spec, "acme", {"username": "sam", "role": "member"})
     assert fake.writes()[-1] == ("PUT", "/orgs/acme/memberships/sam", {"role": "member"})
@@ -260,13 +268,14 @@ def test_outside_collaborators_are_removed_from_the_list_and_made_by_a_quick_com
 )
 def test_an_organization_list_refused_by_github_is_said_plainly(status: int, words: str) -> None:
     fake = FakeGitHubApi()
+    _two_owners(fake)
     fake.answer("DELETE", "/orgs/acme/members/kelly", GitHubRestError("No", status=status))
     with pytest.raises(engine.ResourceError, match=words):
         engine.delete(fake, _spec("org_members"), "acme", "kelly")
 
 
 def test_a_list_github_will_not_show_is_said_not_shown_as_empty() -> None:
-    with pytest.raises(engine.ResourceError, match="list the members"):
+    with pytest.raises(engine.ResourceError, match="read the Members"):
         engine.fetch(FakeGitHubApi(), _spec("org_members"), "nobody")
 
 

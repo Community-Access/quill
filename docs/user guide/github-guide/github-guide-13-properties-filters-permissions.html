@@ -540,6 +540,33 @@ work too). Each change is read back to you first, and recorded in Change
 History. The Workbench refuses to remove your own admin access or the
 last owner, and says who else could do it. Organization and team sheets
 work the same way for members and maintainers.</p>
+<p>On an organization’s sheet, each member reads with their role and
+whether two-factor sign-in is on: “kim, person, member, direct,
+two-factor off”. GitHub shows two-factor only to owners; anyone else
+hears “two-factor not shown to you”. Change… on a member offers member,
+owner, or outside collaborator; making someone an outside collaborator
+takes them out of the organization and its teams and leaves only the
+repositories they were given directly, so QUILL asks you to type their
+name first. On the Outside Collaborators page, Add makes a member an
+outside collaborator, Change… invites one to be a member, and Remove
+takes away every repository they have here, again after their name is
+typed. You cannot make yourself an outside collaborator, remove yourself
+while you are the last owner, or remove the last owner.</p>
+<p>A team’s sheet lists its maintainers and members, and its
+Repositories page lists every repository the team reaches with its role
+there. Add gives the team a repository, Change… changes its role, and
+Remove takes it away. The last maintainer cannot remove themselves. When
+you take admin away from a team you are on, QUILL asks GitHub first
+whether that team is how you administer the repository, and if it is,
+says so and changes nothing. The General page’s <strong>Parent
+team</strong> moves the team under another (empty makes it a top-level
+team), and <strong>New Team…</strong> on an organization asks for the
+parent and whether mentions notify the team.</p>
+<p>The organization’s <strong>Members</strong> list in the tree reads
+the same way (“kim, member, two-factor off.”), and Delete there asks for
+the name typed and keeps the last owner. <strong>Members Without
+Two-Factor</strong> on the organization’s row lists only those, for
+owners.</p>
 <p>On the pending invitations, Remove cancels the invitation (they can
 be invited again), and Change… changes the role a repository invitation
 offers before it is answered. GitHub cannot change an organization
@@ -558,12 +585,68 @@ an organization with their role, copied as CSV too;</li>
 <li><strong>Bulk Access Changes…</strong>, one team or person on many
 repositories at once, previewed, with a result per change.</li>
 </ul>
+<h3 id="who-has-what-and-why">Who has what, and why</h3>
+<p>Under an organization in the tree, three lists answer “who can do
+what here” a row at a time, so you never have to read a grid:</p>
+<ul>
+<li><strong>Access Review: People</strong> has a row for every person
+and repository pair, with the role they really have and where it comes
+from: “jeff on quill: Admin, from team Maintainers; also Write directly;
+also Read from the organization’s base permission.” The highest comes
+first; every other way they have access follows “also”. An outside
+collaborator’s direct access says so, and an owner’s reads “from being
+an owner of the organization”.</li>
+<li><strong>Access Review: Teams</strong> has a row for every team and
+repository pair: “Docs on site: Reviewer, for 3 members, a child team of
+Maintainers.”</li>
+<li><strong>Custom Property Values</strong> has a row a repository with
+every custom property, unset ones said as “not set”: “site: tier is not
+set; areas is docs and ui.”</li>
+</ul>
+<p>Type a name, a role or a team in the filter box, or use Show Only, to
+narrow any of them, and <strong>Export List…</strong>
+(<code>Ctrl+Shift+X</code>), on the Workbench’s File menu, saves what is
+shown. When GitHub will not show part of the answer, for example a
+repository’s direct collaborators to someone who is not its admin, the
+status bar says which, rather than leaving people out silently.
+<strong>Set Repositories’ Custom Property…</strong> on the
+organization’s row gives one property a value in several repositories at
+once, and <strong>Issue Types</strong> under the organization lists its
+issue types.</p>
 <h3 id="rules-in-plain-words">Rules in plain words</h3>
 <p>A ruleset’s sheet, and a branch’s protection, list every rule as a
 check box with its settings, and a Summary page reads the whole thing as
 sentences: “On the default branch: changes need a pull request with 2
 approvals including a code owner; checks build and test must pass; force
 pushes are blocked.” Read that page first.</p>
+<p>A repository’s <strong>Settings &gt; Rulesets</strong> list, and an
+organization’s <strong>Rulesets</strong>, show each ruleset as a
+sentence; Alt+Enter opens its sheet, and Delete removes it after you
+type its name.</p>
+<ul>
+<li>The <strong>Rules</strong> page also has <strong>Every rule and its
+settings</strong>, a line a rule with every setting GitHub sent: file
+paths, file sizes, patterns, workflows, code scanning tools, and any
+rule type QUILL has no check box for yet.</li>
+<li>The <strong>Bypass</strong> page has a check list of the roles that
+may bypass the rules (organization admins, admins, maintainers, writers,
+deploy keys), and lists everyone who may, teams and apps included. Teams
+and apps you have not changed are kept as they are.</li>
+<li>An organization ruleset’s <strong>Repositories</strong> page says
+which repositories it covers, by name or by a custom property, and lets
+you choose them by name, and stop those repositories being renamed out
+of it.</li>
+<li>A branch’s classic protection sheet has every setting GitHub offers:
+approvals, stale approvals, code owners, the most recent push, status
+checks and up to date, signed commits, administrators, linear history,
+force pushes, deletion, conversations, blocking new branches, locking
+the branch, and fork syncing. Its <strong>Who</strong> page says who may
+push, dismiss reviews and skip the pull request; saving keeps those
+lists exactly as they were.</li>
+<li><strong>Rule Insights</strong> under a repository’s settings, and
+under an organization, lists the pushes its rules passed, blocked or let
+through.</li>
+</ul>
 <h3 id="an-organizations-roles">An organization’s roles</h3>
 <p>GitHub gives every organization roles that reach all its repositories
 at once: All-repository read, triage, write, maintain and admin, the
