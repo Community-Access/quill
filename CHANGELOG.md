@@ -9,8 +9,8 @@
   requirement's status. Rows built since 2026-11-19 are gone, and rows waiting
   on an open pull request name it.
 - **Part 0** lists the defects the code review in plan.md found, worst harm
-  first: settings that do not stick, Windows Radio recording, WordPress local
-  writing, diagnostics and the Practice Site payload,
+  first: settings that do not stick, Windows Radio recording, diagnostics
+  and the Practice Site payload,
   then the wider review.
 - **A Backlog**, not this release (Jeff): every macOS feature, including a
   runnable Mac Radio app and the launcher and Mac Radio defects; verifying
@@ -26,6 +26,32 @@
   used by the project index. code.md says the Claude tool fix and the Claude
   engine were built on 2026-11-04. The QUILL PRD and the agent instructions
   say Python 3.14 and wxPython 4.3.2.
+
+### WordPress: local writing keeps its file, its pictures and its unsaved text (2026-11-20)
+
+- **Renaming a draft no longer loses it.** Changing a draft's title in
+  Properties used to make Open Local Draft open an empty, new file; the
+  writing was still in the old one. A draft now keeps the file it started
+  with through renaming, sending, closing and reopening, and restarting, in
+  QUILL and QUILL Lite. A draft already renamed opens its writing again.
+- **Uploaded pictures stay uploaded.** After Save Draft or Publish uploaded a
+  picture from this computer, the open document still held the picture's
+  local address, and the next Ctrl+S put it back. The site's address now goes
+  into the open document and its file, without touching anything typed while
+  the send was on its way or moving the caret.
+- **Previous Versions keeps what Restore replaces.** Restore now keeps the
+  text in the editor, saved or not, rather than the last saved copy. If you
+  switched documents while the history loaded, Restore says so and changes
+  nothing.
+- **Open by Web Address picks the right site.** A different port is a
+  different site, so `127.0.0.1:8080` no longer opens a site connected at
+  `127.0.0.1:9400`, and a site at `/blog` no longer claims `/blogger`.
+- **A renamed Practice Site starts.** The Practice Site no longer has to be
+  called Practice Site to count as ready: after a rename it used to wait five
+  minutes, stop and suggest a reset. Your posts are kept.
+- **Discussion counts links as WordPress does.** The Discussion explanation
+  counted one ordinary link twice, so it said a one-link comment would be
+  held under the two-link rule.
 
 ### Hosted AI service: accounting you can trust, and one sign-in per code (2026-11-20)
 
