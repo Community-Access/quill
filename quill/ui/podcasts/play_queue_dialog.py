@@ -18,6 +18,7 @@ from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
+from quill.ui.podcasts import queue_catch_up
 
 
 class PlayQueueDialog:
@@ -236,18 +237,7 @@ class PlayQueueDialog:
         reader dutifully reads the one row that is selected.
         """
         current_row = self._first_selected_row()
-        mode = queue_ops.GROUP_MODES[max(0, self._group_choice.GetSelection())]
-        labels: list[str] = []
-        self._rows: list[tuple[int | None, str]] = []
-        for group_label, indices in queue_ops.group_queue_by(self._library, mode):
-            if group_label:
-                count = len(indices)
-                labels.append(f"{group_label}, group, {count} episode{'' if count == 1 else 's'}")
-                self._rows.append((None, group_label))
-            for index in indices:
-                labels.append(("    " if group_label else "") + self._slot_label(index))
-                self._rows.append((index, group_label))
-        self._list.Set(labels)
+        labels = self._fill_rows()
         if not labels:
             return
         if select_many:
@@ -271,6 +261,23 @@ class PlayQueueDialog:
         # dutifully read row 1 as though that were where the listener had asked
         # to be. Silent, and it loses their place in the run.
         self._select_only(len(labels) - 1)
+
+    def _fill_rows(self) -> list[str]:
+        """Draw the queue as it is now, and remember which queue that was (FUX-06)."""
+        mode = queue_ops.GROUP_MODES[max(0, self._group_choice.GetSelection())]
+        labels: list[str] = []
+        self._rows: list[tuple[int | None, str]] = []
+        for group_label, indices in queue_ops.group_queue_by(self._library, mode):
+            if group_label:
+                count = len(indices)
+                labels.append(f"{group_label}, group, {count} episode{'' if count == 1 else 's'}")
+                self._rows.append((None, group_label))
+            for index in indices:
+                labels.append(("    " if group_label else "") + self._slot_label(index))
+                self._rows.append((index, group_label))
+        self._list.Set(labels)
+        self._shown_keys = queue_catch_up.queue_keys(self._library)
+        return labels
 
     def _select_rows(self, rows: list[int]) -> None:
         """Select every row in *rows*, landing the caret on the first.
@@ -319,6 +326,7 @@ class PlayQueueDialog:
         header because it happened to be selected is how somebody removes an
         episode they never chose.
         """
+        queue_catch_up.catch_up(self)  # a verb never acts on a stale row (FUX-06)
         row = self._first_selected_row()
         rows = getattr(self, "_rows", [])
         if not (0 <= row < len(rows)):
@@ -332,6 +340,7 @@ class PlayQueueDialog:
         A heading stands for its whole group in Move to Top, Move to Bottom and
         Mark for Move (earshot.md E10), never for the row beneath it.
         """
+        queue_catch_up.catch_up(self)
         rows = getattr(self, "_rows", [])
         selections = list(self._list.GetSelections())
         if len(selections) != 1 or not (0 <= selections[0] < len(rows)):
@@ -355,6 +364,7 @@ class PlayQueueDialog:
         somebody made by dragging past a group title must not act on an
         episode they never chose.
         """
+        queue_catch_up.catch_up(self)
         rows = getattr(self, "_rows", [])
         found: list[int] = []
         for row in self._list.GetSelections():
@@ -552,5 +562,10 @@ class PlayQueueDialog:
         self.dialog.CentreOnParent()
         apply_modal_ids(self.dialog, escape_id=wx.ID_CANCEL)
         self._list.SetFocus()
-        show_modal_dialog(self.dialog, "Play Queue", announce=self._announce)
-        self.dialog.Destroy()
+        # The queue changes behind a modal window too (FUX-06).
+        watch = queue_catch_up.start_watch(self)
+        try:
+            show_modal_dialog(self.dialog, "Play Queue", announce=self._announce)
+        finally:
+            watch.Stop()
+            self.dialog.Destroy()

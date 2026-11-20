@@ -11,7 +11,6 @@ from typing import Any
 
 import pytest
 
-from quill.core.wordpress.workbench_plain_age import find_age
 from quill.core.wordpress.workbench_plain_batch import (
     PhraseError,
     answer,
@@ -20,6 +19,7 @@ from quill.core.wordpress.workbench_plain_batch import (
     run_site,
     undo_trash,
 )
+from quill.core.workbench.plain_age import find_age
 
 TODAY = date(2026, 11, 14)
 SITES = ["Radio", "Shop"]
