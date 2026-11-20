@@ -82,7 +82,7 @@ _FILE = MenuSpec(
             "open_address",
             "&Open GitHub Address...",
             "Ctrl+L",
-            "Type or paste owner/name, #42, owner/name#42 or any GitHub link to go there.",
+            "Open a repository by owner/name or link; a compare link opens the comparison.",
         ),
         _row(
             "go_to_number",

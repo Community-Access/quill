@@ -39,7 +39,7 @@ PREF_HELP: dict[str, tuple[str, str, str]] = {
         "General",
         "&List shows:",
         "Quick lists show a few columns, fast to arrow through; Full lists show every "
-        "column GitHub Items knows for that view.",
+        "column the Workbench has for that list.",
     ),
     "default_sort": (
         "General",
