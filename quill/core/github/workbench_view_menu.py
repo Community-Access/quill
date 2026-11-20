@@ -233,7 +233,7 @@ ROLES_SUB = MenuSub(
         ),
         MenuRow(
             f"{_P}apply_access_template",
-            "A&pply Access Template...",
+            "Appl&y Access Template...",
             help="Give one person everything a template holds: previewed, then a result "
             "per change.",
         ),
