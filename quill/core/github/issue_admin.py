@@ -6,7 +6,9 @@
   (:mod:`quill.core.github.across_issue_fields`), so the five states stay
   distinct. Setting one sends only that field
   (``POST .../issue-field-values``), so another person's value for a different
-  field is never overwritten; clearing one deletes only its value.
+  field is never overwritten; clearing one deletes only its value. The
+  Properties sheet's Issue Fields page sends the very same request
+  (:func:`field_request`), so the two cannot drift apart.
 * **Delete Issue...** deletes an issue for good through GraphQL's
   ``deleteIssue``, which only a repository's admins may do.
 
@@ -37,6 +39,7 @@ __all__ = [
     "IssueFields",
     "clear_field_value",
     "delete_issue",
+    "field_request",
     "read_issue_fields",
     "set_field_value",
 ]
@@ -120,6 +123,22 @@ def _typed(field: FieldValue, answer: str, choices: tuple[str, ...]) -> object:
     return text
 
 
+def field_request(
+    repo: str, number: int, field: FieldValue, answer: str, choices: tuple[str, ...] = ()
+) -> tuple[str, str, dict[str, object] | None]:
+    """The one request that sets *field* on an issue to *answer*, or clears it when empty.
+
+    Setting POSTs only this field, so nobody's value for another field is
+    touched; clearing DELETEs only this field's value. Issue Fields... and the
+    sheet's Issue Fields page both send this.
+    """
+    base = f"{_issue(repo, number)}/issue-field-values"
+    if not answer.strip():
+        return "DELETE", f"{base}/{int(field.field_id)}", None
+    value = _typed(field, answer, choices)
+    return "POST", base, {"issue_field_values": [{"field_id": int(field.field_id), "value": value}]}
+
+
 def set_field_value(
     api: GitHubApi,
     repo: str,
@@ -130,17 +149,18 @@ def set_field_value(
 ) -> str:
     """Set one field on one issue, leaving every other field as it is."""
     value = _typed(field, answer, choices)
-    body = {"issue_field_values": [{"field_id": int(field.field_id), "value": value}]}
+    method, path, body = field_request(repo, number, field, answer, choices)
     try:
-        api.rest("POST", f"{_issue(repo, number)}/issue-field-values", body=body)
+        api.rest(method, path, body=body)
     except GitHubRestError as exc:
         raise _why(exc, f"set {field.name}") from exc
     return f"{field.name} is now {value} on #{number}."
 
 
 def clear_field_value(api: GitHubApi, repo: str, number: int, field: FieldValue) -> str:
+    method, path, _body = field_request(repo, number, field, "")
     try:
-        api.rest("DELETE", f"{_issue(repo, number)}/issue-field-values/{int(field.field_id)}")
+        api.rest(method, path)
     except GitHubRestError as exc:
         raise _why(exc, f"clear {field.name}") from exc
     return f"{field.name} is cleared on #{number}."

@@ -32,7 +32,7 @@ wx-free and strict-typed.
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field, replace
 from datetime import date
 from typing import Any
 from urllib.parse import quote
@@ -75,6 +75,8 @@ class FieldDefinition:
     field_id: str
     name: str
     data_type: str
+    options: tuple[str, ...] = ()
+    """A single or multiple select's choices, by name, in the owner's order."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -87,6 +89,8 @@ class FieldValue:
     state: str
     values: tuple[str, ...] = ()
     reason: str = ""
+    options: tuple[str, ...] = field(default=(), compare=False)
+    """The choices a select offers (from the definitions), for a picker; not part of equality."""
 
     def typed(self) -> TypedValue:
         """The value as its type: a date, a number, a choice's name, choices, or text.
@@ -212,13 +216,21 @@ def _name(entry: Mapping[str, Any]) -> str:
     return _name(nested) if isinstance(nested, Mapping) else ""
 
 
+def _options(entry: Mapping[str, Any]) -> tuple[str, ...]:
+    raw = entry.get("options")
+    names = (o.get("name") for o in raw if isinstance(o, Mapping)) if isinstance(raw, list) else ()
+    return tuple(str(name) for name in names if name)
+
+
 def parse_definitions(data: object) -> list[FieldDefinition]:
     """The organization's field definitions from ``GET /orgs/{org}/issue-fields``."""
     rows = data.get("issue_fields") if isinstance(data, Mapping) else data
     found: list[FieldDefinition] = []
     for entry in rows if isinstance(rows, list) else []:
         if isinstance(entry, Mapping) and _field_id(entry):
-            found.append(FieldDefinition(_field_id(entry), _name(entry), _data_type(entry)))
+            found.append(
+                FieldDefinition(_field_id(entry), _name(entry), _data_type(entry), _options(entry))
+            )
     return found
 
 
@@ -260,7 +272,8 @@ def combine(
         seen.add(definition.field_id)
         name, data_type, got = values.get(definition.field_id, ("", "", None))
         kind = definition.data_type or data_type
-        out.append(_value(definition.field_id, definition.name or name, kind, got))
+        found = _value(definition.field_id, definition.name or name, kind, got)
+        out.append(replace(found, options=definition.options))
     for field_id, (name, data_type, got) in values.items():
         if field_id not in seen:
             out.append(_value(field_id, name, data_type, got))

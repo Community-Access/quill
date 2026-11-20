@@ -104,6 +104,37 @@ and Pin or Unpin Issue, send the same requests as the You page. Read Only and
 Safe Mode lock the You page like every other page, with the reason under each
 field.
 
+The rest of the relationships, and every one as a row on the context menu
+too, each saying its outcome in one sentence:
+
+- **A repository's You page** also has **Star lists** (your lists, the ones
+  holding it checked, as Star Lists... sets them), **Forked by you** (check
+  it to fork the repository to your account; a fork is a repository of its
+  own, so clearing the box is refused and says where to delete it), and the
+  read-only **Sponsoring the owner**. The rows **Fork...** and **Sponsor the
+  Owner...** are on the repository's context menu: Sponsor the Owner opens the
+  owner's Sponsor tiers, and nothing is charged until you choose a tier with
+  Sponsor at This Tier... and type their name.
+- **In Favorites** and **Pinned in the Workbench** close a repository's You
+  page, and In Favorites an issue's and a pull request's. These live on this
+  computer, not on GitHub, so they change at once, as the Favorites and Pin
+  rows do.
+- **Subscribe or Unsubscribe...** on an issue, a pull request, a discussion
+  or a commit: all activity, or only when you take part or are mentioned.
+- **Block or Unblock...** on a person.
+- **Block from Organization...** on an organization (it asks whose account)
+  and on a member in its Members list; its Blocked Users list unblocks.
+  **Leave Organization...** asks first. **Your Invitation** says whether the
+  organization has invited you: Accept Membership joins, and since GitHub's
+  API cannot decline an organization's invitation, it gives the page where
+  GitHub does. A repository's invitations have Accept and Decline rows.
+- **React to a Comment...** on an issue or a pull request (its conversation
+  and its line comments) and on a discussion (comments and replies): choose a
+  comment, then a reaction; one you gave already is taken back. On a commit,
+  **React to a Commit Comment...** reacts to its comments, and **Commit
+  Comments...** reads and adds them. GitHub's API reacts to a commit's
+  comments, never to a commit itself.
+
 ### Saving safely
 
 - **If somebody else changed it meanwhile,** the sheet says so before

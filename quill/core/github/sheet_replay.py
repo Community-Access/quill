@@ -47,7 +47,7 @@ _NO_UNDO = "GitHub has no way to put it back as it was"
 
 
 def _why(sheet: SheetDef, change: FieldChange, *, recorded: bool) -> str:
-    write = sheet.writes.get(change.key)
+    write = sheet.write_for(change.key)
     if write is None:
         return "it cannot be changed from this sheet"
     if not write.undo:
@@ -96,7 +96,7 @@ def replay(
     fresh = load(api, sheet, ident)
     choices = load_options(api, sheet, ident)
     expected = {change.key: change.before for change in changes}
-    whole = [c for c in changes if not (c.key in sheet.writes and is_set(sheet.writes[c.key]))]
+    whole = [c for c in changes if not ((w := sheet.write_for(c.key)) and is_set(w))]
     found = tuple(
         FieldChange(c.key, c.label, fresh.values.get(c.key), c.after)
         for c in whole

@@ -6,10 +6,9 @@ selected row only. The window shows about eight and puts the rest under
 More (:meth:`ActionTable.menu_for`); the Item menu is the same rows, so
 nothing is reachable only by right-clicking.
 
-GitHub's own rules, tested beside this table: Codespaces only on a
-repository, a branch or a pull request; the API rate limit on no row at all
-(it lives in the Account menu and the status bar); and no default that
-deletes, because Enter must never destroy anything.
+GitHub's own rules, tested beside this table: Codespaces only on a repository,
+a branch or a pull request; the API rate limit on no row at all (it lives in the
+Account menu and the status bar); and no default that deletes: Enter never destroys.
 """
 
 from __future__ import annotations
@@ -399,6 +398,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
             "Choose which of your star lists it is on.",
         ),
         _FAVORITE,
+        _a("sponsor_owner", "Sponsor the Owner...", help="Open the owner's Sponsor tiers."),
         _OPEN_WEB,
         _CODESPACES,
         _a(
