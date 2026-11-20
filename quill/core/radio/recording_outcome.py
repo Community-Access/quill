@@ -141,30 +141,101 @@ def discard_empty_capture(path: Path) -> None:
         logger.debug("could not remove empty capture %s", format_args_for_log([str(path)]))
 
 
+def _free_names(dst: Path) -> list[Path]:
+    """*dst*, then ``"name (2).ext"`` .. ``"name (999).ext"`` beside it.
+
+    The same numbering ``recording_commands.uniquify`` uses, so a recovered file
+    and a fresh recording that collide end up named the same way.
+    """
+    return [dst, *(dst.parent / f"{dst.stem} ({n}){dst.suffix}" for n in range(2, 1000))]
+
+
+def _move_no_clobber(src: Path, target: Path) -> None:
+    """Move *src* to *target*, failing with ``FileExistsError`` if *target* exists.
+
+    Never replaces anything. A hard link claims the name atomically on the same
+    volume (``os.link`` refuses an existing name); a cross-volume move, or a
+    file system without hard links, copies into a file opened with exclusive
+    create (``"xb"``), so a file that appears between the check and the copy is
+    still never overwritten. A copy that fails part-way removes only the file it
+    created itself and re-raises, leaving *src* untouched.
+    """
+    try:
+        os.link(src, target)
+    except FileExistsError:
+        raise
+    except OSError:
+        created = False
+        try:
+            with src.open("rb") as reader, target.open("xb") as writer:
+                created = True
+                shutil.copyfileobj(reader, writer)
+            shutil.copystat(src, target)
+            if target.stat().st_size != src.stat().st_size:
+                raise OSError(f"copy of {src.name} is incomplete") from None
+        except FileExistsError:
+            raise
+        except OSError:
+            if created:
+                target.unlink(missing_ok=True)
+            raise
+    try:
+        src.unlink()
+    except OSError as exc:
+        # Both names now hold the recording; keeping a duplicate is the safe
+        # failure (the reverse would lose it).
+        logger.warning(
+            "Moved recording to %s but could not remove the temp copy (%s).",
+            format_args_for_log([str(target)]),
+            exc,
+        )
+
+
 def finalize_move(src: Path, dst: Path) -> Path:
     """Move a finished recording from the temp dir *src* to its home *dst* (#5).
 
-    Returns where the file actually ended up. ``os.replace`` handles the same
-    volume in one atomic step; a cross-volume move raises ``OSError``, so it
-    falls back to copy-then-delete. If even that fails the file is left in the
-    temp dir (still playable) and *src* is returned, so a finished recording is
-    never lost to a move error.
+    Returns where the file actually ended up. **Never overwrites**: if *dst*
+    already holds a file -- an earlier recording with the same name, or one
+    that appeared while this move was running -- the recording lands beside it
+    as ``"name (2).ext"`` and both are kept byte for byte. Startup crash recovery
+    (``recording_resume.reconcile_temp_strays``) relies on this; it used to
+    replace a kept recording with a same-name orphan (plan.md, Windows Radio
+    recording review).
+
+    A same-volume move is a hard link plus an unlink; a cross-volume move copies
+    with exclusive create, then deletes the source. If the move fails the file
+    is left in the temp dir (still playable) and *src* is returned, so a
+    finished recording is never lost to a move error, and a partial copy is
+    never left at the destination.
     """
     if not src.exists():
         return dst
     try:
         dst.parent.mkdir(parents=True, exist_ok=True)
-        os.replace(src, dst)
-        return dst
-    except OSError:
+    except OSError as exc:
+        logger.warning(
+            "Could not create %s (%s); left the recording in the temp folder.",
+            format_args_for_log([str(dst.parent)]),
+            exc,
+        )
+        return src
+    for target in _free_names(dst):
+        if target.exists() or target == src:
+            continue
         try:
-            shutil.copy2(src, dst)
-            src.unlink(missing_ok=True)
-            return dst
+            _move_no_clobber(src, target)
+            return target
+        except FileExistsError:
+            continue  # somebody took the name since we looked; try the next one
         except OSError as exc:
             logger.warning(
                 "Could not move recording to %s (%s); left it in the temp folder.",
-                format_args_for_log([str(dst)]),
+                format_args_for_log([str(target)]),
                 exc,
             )
             return src
+    logger.warning(
+        "No free name for %s; left the recording in the temp folder.",
+        format_args_for_log([str(dst)]),
+    )
+    return src

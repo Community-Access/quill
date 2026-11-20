@@ -73,6 +73,9 @@ class LiteWordPressHost:
         control.ShowPosition(offset)
         control.SetFocus()
 
+    def set_caret(self, offset: int) -> None:
+        self._w.control.SetInsertionPoint(offset)
+
     def open_path(self, path: Path) -> None:
         self._w.app.open_path(path)
 

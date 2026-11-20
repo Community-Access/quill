@@ -212,7 +212,7 @@ def config():
     that makes it (``app/config_schema.py``, ``app/costing.py``)."""
     from app.config_schema import grouped_keys
     from app.costing import load_cost_model, pricing_caveat
-    from app.limits import resolve_limit
+    from app.limits import WEB_SEARCH_CALL_COST_USD, resolve_limit
 
     rows = {row.key: row for row in db.session.query(GatewayConfig).all()}
     described_keys = set()
@@ -244,6 +244,7 @@ def config():
         cost=load_cost_model(current_app),
         budget_cap=resolve_limit(current_app, "global_monthly_budget_usd"),
         pricing_caveat=pricing_caveat(),
+        search_fee=WEB_SEARCH_CALL_COST_USD,
     )
 
 
@@ -336,7 +337,7 @@ def user_detail(user_id: str):
         .limit(13)
         .all()
     )
-    from app.limits import _month_key, is_new_account, remaining_quota
+    from app.limits import _month_key, is_new_account, remaining_quota, resolve_limit
 
     return render_template(
         "dashboard/user_detail.html",
@@ -346,6 +347,7 @@ def user_detail(user_id: str):
         quota=remaining_quota(current_app, user),
         is_new=is_new_account(current_app, user),
         month_key=_month_key(),
+        reduced_cap=int(resolve_limit(current_app, "reduced_monthly_request_cap")),
     )
 
 

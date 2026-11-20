@@ -21,8 +21,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from quill.core.radio.recording import RECORD_FORMATS
-from quill.core.radio.recording_commands import RAW_CAPTURE_EXTENSIONS
+from quill.core.radio.recording_commands import RECORDING_FILE_SUFFIXES
 
 #: Every extension a recording can have -- the re-encode formats plus every
 #: container a raw capture is named by (``.aac``, ``.mka``, ...; there is no
@@ -30,10 +29,7 @@ from quill.core.radio.recording_commands import RAW_CAPTURE_EXTENSIONS
 #: writes, so unrelated files a user keeps in the same folder never show up as
 #: "recordings". Until 2026-10-19 the raw containers were missing, so a raw
 #: capture saved perfectly and never appeared in the Recordings window.
-_RECORDING_SUFFIXES = frozenset(
-    {f".{fmt}" for fmt in RECORD_FORMATS if fmt != "copy"}
-    | {f".{ext}" for ext in RAW_CAPTURE_EXTENSIONS}
-)
+_RECORDING_SUFFIXES = RECORDING_FILE_SUFFIXES
 #: Detail for a finished file still sitting in the temp folder: the move to
 #: the recordings folder failed (``recording_outcome.finalize_move`` leaves it
 #: there rather than lose it), so it is listed where the listener looks.
@@ -76,6 +72,9 @@ class ActiveRecording:
     #: announces an intention nobody expressed.
     scheduled_minutes: int = 0
     duration_requested: bool = False
+    #: The recording's stable absolute end (``JobSnapshot.ends_at``), so a
+    #: reconnected capture still counts down to the end of the show.
+    ends_at: datetime | None = None
 
 
 @dataclass(slots=True)
@@ -103,6 +102,7 @@ class RecordingEntry:
     #: zero/False on every row that is not a live capture.
     scheduled_minutes: int = 0
     duration_requested: bool = False
+    ends_at: datetime | None = None
 
     @property
     def size_display(self) -> str:
@@ -261,6 +261,7 @@ def list_recordings(
                 job_id=item.job_id,
                 scheduled_minutes=int(getattr(item, "scheduled_minutes", 0) or 0),
                 duration_requested=bool(getattr(item, "duration_requested", False)),
+                ends_at=getattr(item, "ends_at", None),
             )
         )
 

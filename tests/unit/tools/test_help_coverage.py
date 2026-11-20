@@ -96,3 +96,23 @@ def test_scaffold_adds_stub(tmp_path, monkeypatch) -> None:
     new = next(e for e in written if e["id"] == "z.new")
     assert new["title"] == "New"
     assert new["body"].startswith("TODO")
+
+
+def test_check_what_quill_says_has_an_authored_f1_topic() -> None:
+    """F1 on Check What QUILL Says explains it, not "No help available".
+
+    The strict gate found ``app.say_check`` shipped without a topic (plan.md,
+    "Close the remaining F1 help gap"), so F1 fell back to the generic text.
+    A scaffolded stub would satisfy the gate and still help nobody, so this
+    also asks that the topic say what the command does and what to do next.
+    """
+    from quill.core.help.renderer import HelpRenderer
+
+    assert "app.say_check" in COMMAND_FEATURE_MAP
+    topic = HelpRenderer(load_topics()).get_or_missing("app.say_check")
+    assert topic.id == "app.say_check"
+    assert topic.title != "No help available"
+    body = topic.body
+    assert not body.startswith("TODO")
+    for needed in ("twice", "new document", "Same", "Extra", "Missing"):
+        assert needed in body, f"the topic does not explain {needed!r}"

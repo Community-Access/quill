@@ -161,6 +161,10 @@ class FakeHost:
         self.caret = offset
         self.selection = (offset, offset)
 
+    def set_caret(self, offset: int) -> None:
+        self.caret = offset
+        self.selection = (offset, offset)
+
     def open_path(self, path: Path) -> None:
         self.opened.append(path)
         self.path = path

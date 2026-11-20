@@ -41,6 +41,9 @@ _FAIL_SAFE_DEFAULTS: dict[str, float] = {
     "hourly_request_cap": 8,
     "device_hourly_request_cap": 8,
     "review_daily_request_cap": 5,
+    # The admin's "Reduced quota" status: the monthly allowance that applies
+    # instead of the normal one. A quarter of the shipped hundred.
+    "reduced_monthly_request_cap": 25,
     "max_input_tokens": 1500,
     "max_output_tokens": 500,
     # The general-question feature's own answer ceiling. Its fail-safe is the
@@ -289,6 +292,15 @@ def _effective_user_cap(app, user: User) -> int:
     normal = int(resolve_limit(app, "monthly_request_cap"))
     if user.monthly_request_cap is not None:
         return user.monthly_request_cap
+    if user.status == "reduced":
+        # The console's "Reduced quota". It used to be a label and nothing else:
+        # nothing read it, so a reduced person kept the full allowance. Never
+        # more than the normal cap (or a new account's ramp), for the same
+        # reason as the ramp below.
+        reduced = min(int(resolve_limit(app, "reduced_monthly_request_cap")), normal)
+        if is_new_account(app, user):
+            return min(reduced, int(resolve_limit(app, "new_account_request_cap")))
+        return reduced
     if is_new_account(app, user):
         # Never *more* than an established account would get. The two values are
         # independent dials, so an operator who lowers the monthly cap below the
@@ -332,16 +344,29 @@ def _increment_and_check(
     scope: str,
     message: str,
     reset_at: datetime | None = None,
+    rebuild_from=None,
 ) -> None:
     """Atomically increment a Redis counter and raise :class:`QuotaExceeded`
     if it now exceeds *cap*. A single ``INCR`` + conditional ``EXPIRE`` is
     used rather than a read-then-write pair, so concurrent requests from
     the same user/device can never race past the cap (the classic
-    check-then-act bug a naive rate limiter gets wrong)."""
+    check-then-act bug a naive rate limiter gets wrong).
+
+    *rebuild_from*, when given, is called the first time the counter is found
+    missing (``INCR`` returned 1) and returns how many requests the durable
+    record already holds for this window; the counter is raised by that much.
+    That is how a counter Redis lost -- a restart, an eviction -- comes back at
+    the right number instead of handing somebody a fresh month. It costs one
+    database read per counter per window, not one per request.
+    """
     client = _redis(app)
     current = client.incr(redis_key)
     if current == 1:
         client.expire(redis_key, ttl_seconds)
+        if rebuild_from is not None:
+            already = int(rebuild_from() or 0)
+            if already > 0:
+                current = client.incrby(redis_key, already)
     if current > cap:
         raise QuotaExceeded(scope, message, reset_at)
 
@@ -478,6 +503,15 @@ def check_request_allowed(app, user: User, device: Device, feature: str) -> None
     # 5. Monthly (per-user and per-feature) -- the primary defense (PRD §8.1).
     monthly_cap = _effective_user_cap(app, user)
     month_key = _month_key(now)
+
+    def _recorded_this_month() -> int:
+        # The durable count (record_usage, reconcile-usage), which an admin's
+        # reset zeroes along with the counter -- so a reset is never undone by
+        # the rebuild. It includes refunded empty answers, which errs towards
+        # the person having used slightly more, never less.
+        row = db.session.get(MonthlyUsageSummary, {"user_id": user.id, "year_month": month_key})
+        return int(row.request_count) if row is not None else 0
+
     _increment_and_check(
         app,
         f"ratelimit:{user.id}:month:{month_key}",
@@ -487,6 +521,7 @@ def check_request_allowed(app, user: User, device: Device, feature: str) -> None
         "You've used your free QUILL AI allowance for this month. It resets "
         "on the 1st, or you can add your own API key to continue right away.",
         reset_at,
+        rebuild_from=_recorded_this_month,
     )
     feature_cap = _effective_feature_cap(app, user.id, feature)
     _increment_and_check(
@@ -501,7 +536,12 @@ def check_request_allowed(app, user: User, device: Device, feature: str) -> None
     )
 
     # 6. Cost ceiling -- only worth a Postgres read once we're close to it,
-    #    per PRD §8's "cheap early-exit skip below that" note.
+    #    per PRD §8's "cheap early-exit skip below that" note. An estimate,
+    #    not an exact cap: it compares what is already recorded, and a
+    #    request's own cost is only known after the provider answers, so
+    #    requests admitted just under the ceiling (and any in flight at the
+    #    same moment) can carry the month past it. README.md ("Money limits
+    #    are estimates") states the bound.
     summary = db.session.get(MonthlyUsageSummary, {"user_id": user.id, "year_month": month_key})
     cost_cap = (
         float(user.monthly_cost_cap_usd)
@@ -520,16 +560,67 @@ def check_request_allowed(app, user: User, device: Device, feature: str) -> None
     # 7. Global budget cap -- the backstop, not the everyday control
     #    (PRD §13's "governing principle"). Checked last since it's the
     #    least likely to actually trip in normal operation.
+    #    Like the per-person ceiling above, this is checked against what has
+    #    already been recorded, before this request's cost is known: requests
+    #    already in flight when the cap is reached still finish and are
+    #    counted. The tolerated overshoot is stated in README.md ("Money
+    #    limits are estimates") and on the Limits page.
     global_cap = resolve_limit(app, "global_monthly_budget_usd")
-    global_spend_key = f"gwspend:{month_key}"
-    cached_spend = _redis(app).get(global_spend_key)
-    if cached_spend is not None and float(cached_spend) >= global_cap:
+    if global_spend(app, month_key) >= global_cap:
         raise FeatureUnavailable(
             "global",
             "Hosted AI is paused for everyone right now while we review "
             "unusual activity — check quillforall.org/status, or use "
             "your own API key in the meantime.",
         )
+
+
+# --- The month's global spend: cached in Redis, rebuilt from Postgres ---------
+
+_SPEND_TTL_SECONDS = 40 * 24 * 3600
+
+
+def _month_start(month_key: str) -> datetime:
+    year, month = (int(part) for part in month_key.split("-"))
+    return datetime(year, month, 1, tzinfo=UTC)
+
+
+def recorded_spend(month_key: str) -> float:
+    """Everything spent in *month_key*, from the durable event log: the full
+    cost of every request, search fees included. The number the budget cap
+    protects, and the one Redis's ``gwspend`` key caches."""
+    from sqlalchemy import func
+
+    from app.models import UsageEvent
+
+    total = (
+        db.session
+        .query(func.sum(UsageEvent.estimated_cost_usd))
+        .filter(UsageEvent.created_at >= _month_start(month_key))
+        .scalar()
+    )
+    return float(total or 0)
+
+
+def global_spend(app, month_key: str | None = None) -> float:
+    """This month's global spend, rebuilding the cache from Postgres if Redis
+    has lost it.
+
+    The spend used to live only in Redis, and a missing key read as "nothing
+    spent": a Redis restart without persistence, or an eviction under memory
+    pressure, quietly reopened the budget cap until the month turned over. The
+    cache is still what every request reads; a miss now costs one ``SUM`` over
+    this month's events and puts the figure back (``SET NX``, so a concurrent
+    increment is never overwritten).
+    """
+    month_key = month_key or _month_key()
+    client = _redis(app)
+    key = f"gwspend:{month_key}"
+    cached = client.get(key)
+    if cached is not None:
+        return float(cached)
+    client.set(key, recorded_spend(month_key), ex=_SPEND_TTL_SECONDS, nx=True)
+    return float(client.get(key) or 0.0)
 
 
 # --- Undoing a charge for something that never happened -----------------------
@@ -668,7 +759,11 @@ def check_device_budget(app, client_ip: str) -> None:
         )
 
 
-def note_device_registered(app, client_ip: str) -> None:
+def _device_network_key(device_id: str) -> str:
+    return f"reg:devicenet:{device_id}"
+
+
+def note_device_registered(app, client_ip: str, device_id: str | None = None) -> None:
     """Count one more active device against this address.
 
     Kept in Redis with a long expiry rather than derived from the database on
@@ -676,6 +771,11 @@ def note_device_registered(app, client_ip: str) -> None:
     device row, and adding it would put a piece of network metadata into a
     schema whose whole claim is that it holds no more about a person than it
     must.
+
+    With *device_id*, the address is also remembered against the device -- in
+    Redis, beside the count it belongs to, for as long as the count lasts -- so
+    :func:`release_device_slot` can give the place back to the network that
+    holds it.
     """
     ip = (client_ip or "").strip()
     if not ip:
@@ -684,19 +784,34 @@ def note_device_registered(app, client_ip: str) -> None:
     key = f"reg:devices:{ip}"
     client.incr(key)
     client.expire(key, 400 * 24 * 3600)
+    if device_id:
+        client.set(_device_network_key(device_id), ip, ex=400 * 24 * 3600)
 
 
-def release_device_slot(app, client_ip: str) -> None:
+def release_device_slot(app, client_ip: str, device_id: str | None = None) -> None:
     """Give a slot back when a device is signed out.
 
     Without this the cap is a lifetime total rather than a standing one, and
     somebody who dutifully signs out an old laptop before connecting a new one
     would be refused for doing exactly the right thing.
+
+    The slot goes back to the network the device was **counted against**,
+    found from *device_id*. This used to release against the address of the
+    sign-out request itself, so a laptop connected at home and signed out at a
+    library left the home slot taken for 400 days and gave the library one it
+    never had. *client_ip* is only the fallback for a device registered before
+    its network was remembered.
     """
-    ip = (client_ip or "").strip()
+    client = _redis(app)
+    ip = ""
+    if device_id:
+        try:
+            ip = client.getdel(_device_network_key(device_id)) or ""
+        except Exception:  # noqa: BLE001 - a lost slot must not fail a sign-out
+            app.logger.warning("Could not read a device's network", exc_info=True)
+    ip = (ip or client_ip or "").strip()
     if not ip:
         return
-    client = _redis(app)
     key = f"reg:devices:{ip}"
     try:
         if client.decr(key) < 0:
@@ -1017,14 +1132,20 @@ def record_usage(
     enforced ceiling.
 
     *user_cost_usd*, when given, is what counts against the person's own
-    monthly cost ceiling instead of *estimated_cost_usd*; the usage event and
-    the global budget always get the full cost. Only a web search passes it
-    (its per-search charge is bounded by the search cap, not the ceiling).
+    monthly cost ceiling instead of *estimated_cost_usd*; the global budget
+    always gets the full cost. Only a web search passes it (its per-search
+    charge is bounded by the search cap, not the ceiling). **Both figures are
+    written to the usage event** (``estimated_cost_usd`` and
+    ``user_cost_usd``), because the nightly ``reconcile-usage`` job rebuilds
+    the person's total from the event log: with only the full cost on record it
+    moved every search fee onto the person, turning a $0.001 search into $0.031
+    overnight.
     """
     from app.models import UsageEvent
 
     now = datetime.now(UTC)
     month_key = _month_key(now)
+    person_cost = estimated_cost_usd if user_cost_usd is None else user_cost_usd
 
     event = UsageEvent(
         user_id=user.id,
@@ -1035,6 +1156,7 @@ def record_usage(
         tokens_out=tokens_out,
         reasoning_tokens=reasoning_tokens,
         estimated_cost_usd=estimated_cost_usd,
+        user_cost_usd=person_cost,
         status=status,
         abuse_flag=abuse_flag,
     )
@@ -1047,19 +1169,22 @@ def record_usage(
         )
         db.session.add(summary)
     summary.request_count += 1
-    summary.total_cost_usd = float(summary.total_cost_usd) + (
-        estimated_cost_usd if user_cost_usd is None else user_cost_usd
-    )
+    summary.total_cost_usd = float(summary.total_cost_usd) + person_cost
 
     db.session.commit()
 
-    # Update the cached global-spend counter used by the budget-cap check
-    # in check_request_allowed; a short TTL keeps it self-healing even if
-    # this increment is ever missed for some reason.
+    # Update the cached global-spend counter used by the budget-cap check in
+    # check_request_allowed. If Redis has lost it, rebuild it from the event
+    # log -- which already holds this event -- rather than starting again from
+    # this one request's cost; only if somebody else rebuilt it first is this
+    # request added on top.
     spend_key = f"gwspend:{month_key}"
     client = _redis(app)
-    client.incrbyfloat(spend_key, estimated_cost_usd)
-    client.expire(spend_key, 40 * 24 * 3600)
+    if client.exists(spend_key) or not client.set(
+        spend_key, recorded_spend(month_key), ex=_SPEND_TTL_SECONDS, nx=True
+    ):
+        client.incrbyfloat(spend_key, estimated_cost_usd)
+        client.expire(spend_key, _SPEND_TTL_SECONDS)
 
     device.last_seen_at = now
     db.session.commit()
@@ -1090,7 +1215,7 @@ def _maybe_alert_on_budget_threshold(app, month_key: str) -> None:
     from app.alerts import send_alert
 
     client = _redis(app)
-    spend = float(client.get(f"gwspend:{month_key}") or 0.0)
+    spend = global_spend(app, month_key)
     cap = resolve_limit(app, "global_monthly_budget_usd")
     if cap <= 0:
         return

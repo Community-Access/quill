@@ -21,6 +21,7 @@ and the latest hundred comments).
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable, Mapping, Sequence
 from typing import Any
 
@@ -121,6 +122,9 @@ def permalink_lines(post: Mapping[str, Any], site_url: str) -> list[str]:
     return lines
 
 
+_LINK = re.compile(r"""(href\t*?=\t*?['"]?)?(https?:)?//""", re.IGNORECASE)
+
+
 def _links(comment: Mapping[str, Any]) -> int:
     content = comment.get("content")
     text = ""
@@ -128,7 +132,10 @@ def _links(comment: Mapping[str, Any]) -> int:
         text = str(content.get("raw") or content.get("rendered") or "")
     else:
         text = str(content or "")
-    return text.count("<a ") + text.count("http")
+    # WordPress's own count (check_comment): each ``//``, with any ``href=``
+    # and ``http:`` before it. Counting ``<a `` and ``http`` separately made
+    # one ordinary link two (plan.md 2026-11-20, item 6).
+    return len(_LINK.findall(text))
 
 
 def discussion_lines(comments: Sequence[Mapping[str, Any]], max_links: int = 2) -> list[str]:
