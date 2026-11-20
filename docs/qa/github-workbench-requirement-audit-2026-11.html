@@ -372,21 +372,29 @@ find-the-answer sessions) not done.</td>
 <td>Must</td>
 <td>Across Repositories has a place for every kind in the 22.11 table, a
 row per name with its variants and…</td>
-<td>Labels, Milestones, Topics, Rules and Branch Protection by name, and
-the Fleet; every other kind is a decided cell with a reason in
-<code>across_scope_matrix.py</code> (<code>test_no_cell_is_blank</code>,
-<code>test_the_decided_cells</code>), not yet a place.</td>
+<td>Labels, Milestones, Topics, Tags, Branches, Rules and Branch
+Protection, Environments, Secrets, Variables, Webhooks, Deploy Keys and
+Autolinks by name, grouped category first, and the Fleet
+(<code>test_tags_by_name_say_which_commit_each_is_on</code>,
+<code>test_the_by_name_places_are_grouped_category_first</code>);
+workflows, templates, Dependabot and CODEOWNERS, people, settings and
+packages remain decided “not yet” cells in
+<code>across_scope_matrix.py</code>.</td>
 </tr>
 <tr>
 <td>GH-R-151</td>
 <td>Must</td>
 <td>Every operation a kind allows in one repository is offered across a
 scope, with the preview and a result…</td>
-<td>Preview and a result per repository for labels, milestones, topics,
-rulesets
-(<code>test_labels_by_name_make_the_same_with_a_preview_and_a_result_each</code>,
-<code>test_a_change_previews_permission_and_conflict_then_reports_each_repository</code>);
-environments, secrets, variables, webhooks, keys, autolinks remain.</td>
+<td>Preview and a result per repository for every by-name kind
+(<code>test_environments_are_made_the_same_but_custom_branches_and_foreign_teams_are_not</code>,
+<code>test_a_secret_is_typed_once_sealed_per_repository_and_never_kept</code>,
+<code>test_a_branch_rename_previews_default_protection_and_retargeted_pull_requests</code>);
+a write counts only when its single-repository form exists
+(<code>test_a_write_across_repositories_is_done_only_when_the_single_repository_one_is</code>);
+held back: ruleset Add to Missing, environment Add to Missing, milestone
+rename and delete, merged-branch delete, release notes together, alert
+dismissal.</td>
 </tr>
 <tr>
 <td>GH-R-157</td>
@@ -437,9 +445,11 @@ protection editing it needs arrived in #1961.</td>
 <td>GH-R-153</td>
 <td>Should</td>
 <td>Promote to Organization wherever GitHub has a shared form</td>
-<td>Rulesets only
-(<code>test_promote_creates_the_organization_ruleset_before_deleting_copies</code>);
-labels cannot be promoted (no GitHub API)</td>
+<td>Rulesets, secrets, variables and webhooks
+(<code>test_a_secret_promoted_to_the_organization_deletes_copies_only_after</code>,
+<code>test_variables_made_the_same_added_and_promoted</code>); labels,
+environments, deploy keys and autolinks have no organization form in
+GitHub, and the matrix says so.</td>
 </tr>
 <tr>
 <td>GH-R-154</td>
@@ -1670,10 +1680,14 @@ it.</td>
 <td>Partly</td>
 <td>Across Repositories has a place for every kind in the 22.11 table, a
 row per name with its variants and…</td>
-<td>Labels, Milestones, Topics, Rules and Branch Protection by name, and
-the Fleet; every other kind is a decided cell with a reason in
-<code>across_scope_matrix.py</code> (<code>test_no_cell_is_blank</code>,
-<code>test_the_decided_cells</code>), not yet a place.</td>
+<td>Labels, Milestones, Topics, Tags, Branches, Rules and Branch
+Protection, Environments, Secrets, Variables, Webhooks, Deploy Keys and
+Autolinks by name, grouped category first, and the Fleet
+(<code>test_tags_by_name_say_which_commit_each_is_on</code>,
+<code>test_the_by_name_places_are_grouped_category_first</code>);
+workflows, templates, Dependabot and CODEOWNERS, people, settings and
+packages remain decided “not yet” cells in
+<code>across_scope_matrix.py</code>.</td>
 </tr>
 <tr>
 <td>GH-R-151</td>
@@ -1681,11 +1695,15 @@ the Fleet; every other kind is a decided cell with a reason in
 <td>Partly</td>
 <td>Every operation a kind allows in one repository is offered across a
 scope, with the preview and a result…</td>
-<td>Preview and a result per repository for labels, milestones, topics,
-rulesets
-(<code>test_labels_by_name_make_the_same_with_a_preview_and_a_result_each</code>,
-<code>test_a_change_previews_permission_and_conflict_then_reports_each_repository</code>);
-environments, secrets, variables, webhooks, keys, autolinks remain.</td>
+<td>Preview and a result per repository for every by-name kind
+(<code>test_environments_are_made_the_same_but_custom_branches_and_foreign_teams_are_not</code>,
+<code>test_a_secret_is_typed_once_sealed_per_repository_and_never_kept</code>,
+<code>test_a_branch_rename_previews_default_protection_and_retargeted_pull_requests</code>);
+a write counts only when its single-repository form exists
+(<code>test_a_write_across_repositories_is_done_only_when_the_single_repository_one_is</code>);
+held back: ruleset Add to Missing, environment Add to Missing, milestone
+rename and delete, merged-branch delete, release notes together, alert
+dismissal.</td>
 </tr>
 <tr>
 <td>GH-R-152</td>
@@ -1702,9 +1720,11 @@ batch</td>
 <td>Should</td>
 <td>Partly</td>
 <td>Promote to Organization wherever GitHub has a shared form</td>
-<td>Rulesets only
-(<code>test_promote_creates_the_organization_ruleset_before_deleting_copies</code>);
-labels cannot be promoted (no GitHub API)</td>
+<td>Rulesets, secrets, variables and webhooks
+(<code>test_a_secret_promoted_to_the_organization_deletes_copies_only_after</code>,
+<code>test_variables_made_the_same_added_and_promoted</code>); labels,
+environments, deploy keys and autolinks have no organization form in
+GitHub, and the matrix says so.</td>
 </tr>
 <tr>
 <td>GH-R-154</td>
