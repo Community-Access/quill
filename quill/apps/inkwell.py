@@ -112,6 +112,9 @@ class QuillInkwellFrame(
             wx.CallAfter(self._start_expansion)
         self._start_ipc_poll()
         self._refresh_status()
+        from quill.core.settings_recovery import announce_later
+
+        announce_later("Quill Inkwell", self._announce, wx.CallAfter)  # a damaged file, kept
         # Repair "start with Windows" written as the bare runtime exe (launch_heal).
         if not safe_mode:
             from quill.platform.windows import inkwell_startup, launch_heal

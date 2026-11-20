@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Agentic coding in QUILL: what we have, and what it would
 take</title>
@@ -12,7 +12,10 @@ take</title>
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -37,11 +40,16 @@ take</title>
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +62,8 @@ take</title>
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +92,11 @@ take</title>
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +120,7 @@ take</title>
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +137,11 @@ take</title>
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +180,6 @@ take</title>
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -566,7 +573,12 @@ removes them all. In practice recent Claude Code starts in
 <code>default</code> mode and denies unapproved calls when there is no
 callback, so the risk is refusals and wasted tokens rather than writes.
 Worth a small fix whatever else happens. Source: <a
-href="https://code.claude.com/docs/en/agent-sdk/permissions.md">https://code.claude.com/docs/en/agent-sdk/permissions.md</a></li>
+href="https://code.claude.com/docs/en/agent-sdk/permissions.md">https://code.claude.com/docs/en/agent-sdk/permissions.md</a>
+<strong>Fixed 2026-11-04:</strong> the pack now passes
+<code>TEXT_ONLY_OPTIONS</code> (<code>disallowed_tools=["*"]</code>,
+<code>allowed_tools=[]</code>, <code>permission_mode="default"</code>),
+tested by <code>tests/unit/core/ai/test_claude_pack_text_only.py</code>.
+See the progress log entry for that date.</li>
 <li><strong>Review AI Changes is tuned for prose.</strong> Its
 word-level detail (“changed ‘quick’ to ‘rapid’” with the sentence around
 it) is exactly right for writing. Code needs line numbers, indentation
@@ -738,8 +750,8 @@ trained on their own <code>apply_patch</code> and shell tools, so give
 our edit tool a patch-shaped input (section 4.2) to play to that
 training. Revisit Codex’s own <code>workspace-write</code> sandbox only
 if G3-style measurements show our tools are clearly worse for it.</p>
-<h3 id="33-claude-agent-sdk-own-key-only-later">3.3 Claude (Agent SDK):
-own key only, later</h3>
+<h3 id="33-claude-agent-sdk-own-key-only-built-2026-11-04">3.3 Claude
+(Agent SDK): own key only (built 2026-11-04)</h3>
 <ul>
 <li><strong>Confirmed:</strong> the Agent SDK embeds Claude Code’s loop,
 tools, permissions, sessions and hooks in Python or TypeScript. Source:
@@ -766,6 +778,15 @@ page.</li>
 Run it with <code>disallowed_tools=["*"]</code> plus QUILL’s tools as an
 in-process MCP server, <code>permission_mode="default"</code>, and our
 approver in <code>can_use_tool</code>.</p>
+<p><strong>As built (2026-11-04):</strong>
+<code>quill/ai_packs/claude_tool_session.py</code>. One change from the
+recommendation: a <code>"*"</code> deny would also deny QUILL’s own MCP
+tools, because deny rules win, so every Claude Code built-in is denied
+<strong>by name</strong> instead and only QUILL’s tools are in
+<code>allowed_tools</code>. The text-only pack
+(<code>quill/ai_packs/claude.py</code>) does use
+<code>disallowed_tools=["*"]</code>, since it has no tools of ours. See
+the progress log for 2026-11-04.</p>
 <h3 id="34-openai-agents-sdk">3.4 OpenAI Agents SDK</h3>
 <p>Already a pack (<code>quill/ai_packs/openai_agents.py</code>,
 key-billed, text-only). It is a framework for building our own loop
@@ -834,7 +855,7 @@ do not build on it yet; re-read it when Phase 5 starts.</p>
 <td>own API key</td>
 <td>ours, as in-process MCP</td>
 <td>GA</td>
-<td>later</td>
+<td>built 2026-11-04, own key</td>
 </tr>
 <tr>
 <td>Ollama, native loop</td>
@@ -1574,7 +1595,8 @@ weeks, for the way this repository is usually worked.</p>
 <h3 id="phase-0-groundwork-small">Phase 0: groundwork (small)</h3>
 <ul>
 <li>Fix the Claude pack’s <code>allowed_tools=[]</code> to
-<code>disallowed_tools=["*"]</code> (1.5), with a fake-SDK test.</li>
+<code>disallowed_tools=["*"]</code> (1.5), with a fake-SDK test. (Done
+2026-11-04.)</li>
 <li>Close the open screen-reader checks for Do a Document Task with
 NVDA, JAWS and Narrator. Everything after this builds on that window, so
 its acceptance matters first.</li>

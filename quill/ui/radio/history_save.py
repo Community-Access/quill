@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.radio.history import RadioHistory
-from quill.core.radio.history_store import snapshot_history
+from quill.core.radio.history_store import ticketed_snapshot
 from quill.core.radio.history_writer import RadioHistorySnapshotWriter
 from quill.stability.wx_dispatch import call_ui_safely
 
@@ -39,7 +39,7 @@ class RadioHistorySaveCoordinator:
         return not self._alive
 
     def save(self, data_dir: Path, history: RadioHistory) -> int:
-        snapshot = snapshot_history(history)
+        snapshot = ticketed_snapshot(data_dir, history)  # numbered as it is taken
         return self._writer.submit(data_dir, snapshot, on_failure=self._report_failure)
 
     def _report_failure(self, _generation: int, _error: Exception) -> None:

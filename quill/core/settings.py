@@ -30,7 +30,6 @@ from quill.core.settings_normalizers import (
 from quill.core.speech.sherpa_migration import migrate_choice
 from quill.core.speech.sherpa_migration import migration_notice as sherpa_notice
 from quill.core.speech.vosk_retirement import migrate_vosk_choices
-from quill.core.storage import write_json_atomic
 from quill.core.structure_announce import HEADING_POSITIONS as _HEADING_POSITIONS
 from quill.core.versioned_store import load_with_migration
 from quill.core.windows_dictation.settings_fields import DictationSettings
@@ -2074,8 +2073,13 @@ def load_settings() -> Settings:
 def save_settings(settings: Settings) -> None:
     # SET-5: persist the nested, versioned *delta* document (overrides only),
     # so future default changes flow through to the user automatically.
+    # In order (quill.core.ordered_save), serialised as it is written: a worker
+    # thread's save can no longer land an older document after the UI's newer one.
+    from quill.core import storage
+    from quill.core.ordered_save import ordered_write
     from quill.core.persistence_outcome import guarded_write
     from quill.core.settings_migration import to_versioned
 
-    path, document = settings_path(), to_versioned(settings)
-    guarded_write("QUILL settings", path, lambda: write_json_atomic(path, document))
+    path = settings_path()
+    write = lambda: storage.write_json_atomic(path, to_versioned(settings))  # noqa: E731
+    ordered_write(path, lambda: guarded_write("QUILL settings", path, write))

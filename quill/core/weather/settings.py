@@ -144,8 +144,14 @@ def _store_path(data_dir: Path) -> Path:
 
 
 def load_settings(data_dir: Path) -> WeatherSettings:
-    """Read settings (absent or broken reads as defaults), always normalized."""
+    """Read settings (absent or broken reads as defaults), always normalized.
+
+    A number that is not finite (``1e309``, ``NaN``) keeps its default rather
+    than raising while the app is being built (plan.md, settings review); the
+    file is kept beside itself and Quill Weather says so once it is up.
+    """
     import json
+    import math
 
     try:
         raw = json.loads(_store_path(data_dir).read_text(encoding="utf-8"))
@@ -169,8 +175,15 @@ def load_settings(data_dir: Path) -> WeatherSettings:
         "hourly_hours",
         "alert_sound_repeat",
     ):
-        if isinstance(raw.get(f), (int, float)):
-            setattr(s, f, int(raw[f]))
+        value = raw.get(f)
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            continue
+        if not math.isfinite(value):
+            from quill.core.settings_recovery import keep_damaged
+
+            keep_damaged(_store_path(data_dir), app="Quill Weather")
+            continue
+        setattr(s, f, int(value))
     for f in (
         "show_detailed_forecast",
         "show_feels_like",

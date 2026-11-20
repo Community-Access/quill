@@ -9,7 +9,8 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from quill.core.expansion.settings import InkwellSettings, save_settings
+from quill.core.expansion.settings import InkwellSettings, save_settings, settings_path
+from quill.core.ordered_save import take_ticket
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +29,11 @@ class InkwellPreferenceSaver:
         self._announce = announce
         self._lock = threading.Lock()
         self._generation = 0
-        self._pending: tuple[int, InkwellSettings] | None = None
-        self._latest: tuple[int, InkwellSettings] | None = None
+        #: (generation, snapshot, write-order ticket). The ticket is taken with
+        #: the snapshot, so a toggle that saves inline in between wins
+        #: (quill.core.ordered_save); the generation is this saver's own count.
+        self._pending: tuple[int, InkwellSettings, int] | None = None
+        self._latest: tuple[int, InkwellSettings, int] | None = None
         self._running = False
         self._task: Any = None
         self._failed_generation: int | None = None
@@ -38,10 +42,11 @@ class InkwellPreferenceSaver:
 
     def queue(self, settings: InkwellSettings) -> None:
         snapshot = copy.deepcopy(settings)
+        ticket = take_ticket(settings_path(self._data_dir))
         with self._lock:
             self._generation += 1
             generation = self._generation
-            item = (generation, snapshot)
+            item = (generation, snapshot, ticket)
             self._pending = item
             self._latest = item
             if self._running:
@@ -73,9 +78,9 @@ class InkwellPreferenceSaver:
                 if pending is None:
                     self._running = False
                     return latest_generation
-            generation, settings = pending
+            generation, settings, ticket = pending
             try:
-                save_settings(self._data_dir, settings)
+                save_settings(self._data_dir, settings, ticket=ticket)
             except OSError:
                 with self._lock:
                     if generation != self._generation:
@@ -135,9 +140,9 @@ class InkwellPreferenceSaver:
         if not needs_write or latest is None:
             return
 
-        generation, settings = latest
+        generation, settings, ticket = latest
         try:
-            save_settings(self._data_dir, settings)
+            save_settings(self._data_dir, settings, ticket=ticket)
         except OSError:
             with self._lock:
                 self._dirty = True

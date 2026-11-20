@@ -2,6 +2,60 @@
 
 ## 1.0.0
 
+### Settings that stick, in every app (2026-11-20)
+
+- **The newest choice is the one saved, everywhere.** QUILL Lite's fix is now
+  shared by the other apps. In Quill Inkwell, QUILL Cast, Quill Radio and
+  QUILL, an older settings save that was still running could finish after a
+  newer one and put your old choice back after a restart. Each settings file
+  is now written in the order the changes were made.
+- **Retry in Activity no longer brings back an old choice.** If a save
+  failed, a later save worked, and you then pressed Retry on the old failure,
+  the older settings were written again. Retry now leaves the newer save
+  alone.
+- **Quill Converter tells you when it cannot save your choices.** A locked or
+  read-only settings file used to be ignored, and your choices were gone at
+  the next start. Now Activity reports it with Retry and Open Folder, and
+  Converter never says it saved them.
+- **Damaged settings no longer stop Quill Inkwell or Quill Weather starting.**
+  A settings file with a value the app cannot use (an unreadable version
+  number, or a number too large to use) is copied beside itself. The app
+  starts with defaults for the values it could not read, and says once where
+  the copy is.
+- **Back Up and Restore Settings in QUILL Lite.** The startup folder stays on
+  this computer, like recent files. Restoring keeps this computer's recent
+  files, session, window size and startup folder. A backup made by QUILL or
+  another app in the family is refused, with a plain explanation, and
+  nothing is changed.
+- **Quill Radio shares your choices like QUILL Cast.** With sharing on,
+  changing *Announce dialog transitions* in Radio's Preferences now reaches
+  your other Quill apps. Radio also picks up a newer shared choice when it
+  starts, and says so.
+
+### Plans: one list of open work, and the planning documents put right (2026-11-20)
+
+- **complete.md** says who owns what: it is the list of open work,
+  `status.md` is the live count, and the requirement audit holds each GitHub
+  requirement's status. Rows built since 2026-11-19 are gone, and rows waiting
+  on an open pull request name it.
+- **Part 0** lists the defects the code review in plan.md found, worst harm
+  first: settings that do not stick and the Practice Site payload,
+  then the wider review.
+- **A Backlog**, not this release (Jeff): every macOS feature, including a
+  runnable Mac Radio app and the launcher and Mac Radio defects; verifying
+  attestation signatures inside QUILL; and a date range for Shop Analytics'
+  Customers report, which is also in the WordPress Workbench PRD's Backlog.
+- **The GitHub requirement audit** counts 86 met, 8 partly met and 6 not
+  met, matching its own rows. View As Role, Compare Roles and Why Can't They?
+  (GH-R-069) are met since #1965.
+- **Planning documents** now say what they are. The July roadmap is marked
+  historical and points to where the Audio Studio checklist moved. The old
+  Studio screenshot audit is marked superseded. The Beacon and Media Player
+  PRDs say what is built. intellisense.md says ripgrep is bundled but not yet
+  used by the project index. code.md says the Claude tool fix and the Claude
+  engine were built on 2026-11-04. The QUILL PRD and the agent instructions
+  say Python 3.14 and wxPython 4.3.2.
+
 ### Crash and support reports: what is sent is what was checked (2026-11-20)
 
 - **A crash email's subject is redacted like its body.** A password or key
