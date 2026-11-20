@@ -34,6 +34,26 @@
   on every repository, unset ones as "not set". All three filter and export
   like any other list.
 
+### Plans: the WordPress backlog (2026-11-19)
+
+The WordPress decisions still open have moved from the open-work list to a
+Backlog section in the WordPress Workbench PRD. They are which areas get
+first-class integrations, a WordPress-layer key for page commands, and a tree
+node for menu items. Rank Math staying read only is confirmed.
+### GitHub Workbench: sort and group any list, keep your place, and say it in words (2026-11-19)
+
+- **Sort By and Group By on every list.** View > Sort By > By Column... and
+  Group By > By Column... now work on every Workbench list, not only issues.
+  Numbers sort as numbers, and each list remembers your choice.
+- **Your place is kept.** Back, Forward or a reload returns you to the row you
+  left, not the top of the list. The WordPress Workbench gets this too.
+- **Checklist rows say their state** ("Issues, on", "docs, on 3 of 5"). Space
+  changes them once, Enter saves, and focus stays where it was.
+- **Plain-Language Batch...** (Ctrl+Shift+S) lets you type what you want, such
+  as "close every issue labelled duplicate older than 90 days". It finds the
+  items without AI, shows them for you to check, and then runs the usual batch
+  with its preview and Retry Failed.
+
 ### Quill Cast: lists stay still while new episodes arrive (2026-11-19)
 
 A feed refresh, a finished download or a change to the queue no longer moves

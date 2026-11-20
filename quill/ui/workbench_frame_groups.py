@@ -6,6 +6,11 @@ Group By puts "Issues > by Milestone > 2027.1 (12)" in the tree: the provider
 hands :meth:`WorkbenchGroupsMixin.show_groups` its groups, each becomes a
 child of the list's node, and selecting one shows its rows without loading
 anything. Moving to another node takes the groups away.
+
+It also keeps your place on the way back (GitHub PRD 3.3, provider-neutral):
+the row you were on in each list is remembered by its identity as you leave,
+so Back, Forward or coming to the list again lands on that same item, and a
+reload while you are in a group puts you back in that group, on that row.
 """
 
 from __future__ import annotations
@@ -15,6 +20,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core.counted import plural
+from quill.core.workbench.list_place import landing_index, row_identity
 
 __all__ = ["GroupRef", "WorkbenchGroupsMixin"]
 
@@ -84,25 +90,74 @@ class WorkbenchGroupsMixin:
         except Exception:  # noqa: BLE001 - a stale item after a rebuild; the next build counts
             return
 
+    # -- keeping the place on return ---------------------------------------------
+
+    def _place_store(self) -> dict[Any, str]:
+        if not hasattr(self, "_places"):
+            self._places: dict[Any, str] = {}
+        return self._places
+
+    def keep_row_place(self) -> None:
+        """Keep the selected row's identity for the list being left, for coming back."""
+        if self.current is None:
+            return
+        row = self.selected_row()  # type: ignore[attr-defined]
+        found = row_identity(row) if row is not None else ""
+        places = self._place_store()
+        if found:
+            places[self.current] = found
+        else:
+            places.pop(self.current, None)
+
+    def landing_for(self, rows: Sequence[object]) -> int:
+        """The row a fill lands on: the place kept in this list, or the one kept on leaving."""
+        if not self.rows and rows:
+            wanted = self._place_store().get(self.current, "")
+            for index, row in enumerate(rows):
+                if wanted and row_identity(row) == wanted:
+                    return index
+        return landing_index(self.rows, self.list.GetFocusedItem(), rows)
+
+    # -- groups as tree nodes -------------------------------------------------------
+
     def show_groups(self, groups: Sequence[tuple[str, list[object]]]) -> None:
-        """Put the list's groups in the tree under the current node; [] removes them."""
-        for _ref, (item, _rows) in list(self._groups.items()):
-            if item.IsOk():
-                self.tree.Delete(item)
-        self._groups.clear()
+        """Put the list's groups in the tree under the current node; [] removes them.
+
+        Groups are rebuilt after every fill; if you were in one, you are put back
+        in the group of the same name, on the same row.
+        """
+        chosen = self.tree.GetSelection() if self._groups else None
+        was = self.tree.GetItemData(chosen) if chosen is not None and chosen.IsOk() else None
+        keep = _base(was.name) if isinstance(was, GroupRef) else ""
+        row = self.selected_row() if keep else None  # type: ignore[attr-defined]
+        before, self._rebuilding = getattr(self, "_rebuilding", False), True
+        try:  # deleting the selected group must not open the list's node again
+            for _ref, (item, _rows) in list(self._groups.items()):
+                if item.IsOk():
+                    self.tree.Delete(item)
+            self._groups.clear()
+        finally:
+            self._rebuilding = before
         if self.current is None:
             return
         parent = self._items.get(self.current)
         if parent is None:
             return
+        back_to = None
         for name, rows in groups:
             ref = GroupRef(self.current, name)
             item = self.tree.AppendItem(parent, name)
             self.tree.SetItemData(item, ref)
             self._groups[ref] = (item, list(rows))
+            if keep and _base(name) == keep:
+                back_to = item
+        if back_to is not None:
+            self._group_place = row_identity(row) if row is not None else ""
+            self.tree.SelectItem(back_to)
 
     def _show_group(self, ref: GroupRef) -> None:
         _item, rows = self._groups.get(ref, (None, []))
+        wanted, self._group_place = getattr(self, "_group_place", ""), ""
         self.rows = list(rows)
         columns = self._columns or ("name",)
         self.list.DeleteAllItems()
@@ -113,7 +168,8 @@ class WorkbenchGroupsMixin:
                 self.list.SetItem(index, column, text)
         self._shown_cells = []  # the next fill of the node's own list is a real one
         if self.rows:
-            self.focus_row(0)
+            ids = [row_identity(row) for row in self.rows]
+            self.focus_row(ids.index(wanted) if wanted and wanted in ids else 0)
         self.status.refresh()
 
     def focus_row(self, index: int) -> None:
@@ -162,3 +218,9 @@ class WorkbenchGroupsMixin:
         cut = getattr(self.provider, "cut_for", None)
         more = str(cut(self.current) or "") if callable(cut) and self.current is not None else ""
         return f"{said} {more}".strip()
+
+
+def _base(name: str) -> str:
+    """A group's name without its count: "bug (3)" is "bug"."""
+    head, _sep, tail = name.rpartition(" (")
+    return head if head and tail.endswith(")") else name
