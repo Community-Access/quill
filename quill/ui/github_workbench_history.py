@@ -47,12 +47,13 @@ class GitHubWorkbenchHistoryMixin:
     def record_change(
         self, target: Target, done: Sequence[FieldChange], said: str, confirmed: bool
     ) -> None:
+        """One Change History row, naming the object where the save left it (renamed or not)."""
         back, cannot = inverse(target.sheet, done)
         try:
             self.change_log().record(
                 account=self.account_name(),
                 kind=target.kind,
-                ident=dict(target.ident),
+                ident=target.sheet.ident_after(target.ident, done),
                 target=target.sheet.title(target.ident) or target.kind,
                 summary=said,
                 changes=done,
@@ -64,8 +65,13 @@ class GitHubWorkbenchHistoryMixin:
             pass  # a history that cannot be written must not undo the save itself
 
     def undo_entry(self, index: int) -> None:
-        """Reverse one Change History row, where GitHub allows it."""
-        from quill.core.github.sheet_engine import save
+        """Reverse one Change History row, where GitHub allows it (16.5).
+
+        The object is read fresh and the pickers' choices loaded first
+        (:func:`quill.core.github.sheet_replay.undo`), so a milestone goes back
+        as its number and a ruleset is rebuilt from what it is now.
+        """
+        from quill.core.github.sheet_replay import undo, undo_refusal
 
         log = self.change_log()
         if not 0 <= index < len(log.entries):
@@ -73,18 +79,14 @@ class GitHubWorkbenchHistoryMixin:
             return
         entry = log.entries[index]
         sheet = SHEETS.get(entry.kind)
-        if sheet is None or not entry.can_undo or entry.undone:
-            self._say(f"{entry.summary} cannot be undone.")
+        if entry.undone:
+            self._say(f"{entry.summary} is already undone.")
             return
-        back, cannot = inverse(sheet, entry.as_changes())
-        if cannot:
-            self._say(f"{', '.join(cannot)} cannot be undone.")
+        why = undo_refusal(sheet, entry.as_changes()) if sheet is not None else ""
+        if sheet is None or not entry.can_undo or why:
+            self._say(why or f"{entry.summary} cannot be undone.")
             return
         api = self.github_api()
-        loaded = {change.key: change.before for change in back}
-
-        def work() -> SaveOutcome:
-            return save(api, sheet, entry.ident, back, loaded=loaded)  # type: ignore[arg-type]
 
         def done(outcome: SaveOutcome) -> None:
             if outcome.conflicts:
@@ -96,7 +98,9 @@ class GitHubWorkbenchHistoryMixin:
             if self.frame is not None:
                 self.frame.reload()
 
-        self._background("undo the change", work, done)
+        self._background(
+            "undo the change", lambda: undo(api, sheet, entry.ident, entry.as_changes()), done
+        )
 
     def _text_box_undo(self, verb: str) -> bool:
         frame = self.frame
@@ -124,25 +128,35 @@ class GitHubWorkbenchHistoryMixin:
         self.undo_entry(index)
 
     def _do_redo_change(self, _ref: Any, _row: object) -> None:
-        from quill.core.github.sheet_engine import save
+        """Ctrl+Y: make the change Undo last reversed again, and it can be undone again."""
+        from quill.core.github.sheet_replay import redo
 
         if self._text_box_undo("Redo"):
             return
         stack = self._undone_stack()
-        if not stack:
+        log = self.change_log()
+        if not stack or not 0 <= stack[-1] < len(log.entries):
             self._say("Nothing to redo.")
             return
         index = stack.pop()
-        entry = self.change_log().entries[index]
+        entry = log.entries[index]
         sheet = SHEETS.get(entry.kind)
         if sheet is None:
             self._say("Nothing to redo.")
             return
-        changes = entry.as_changes()
-        loaded = {change.key: change.before for change in changes}
         api = self.github_api()
+
+        def done(outcome: SaveOutcome) -> None:
+            if outcome.conflicts:
+                stack.append(index)
+                self._say(sentence(entry.target, outcome) + " Redo needs the older value back.")
+                return
+            if outcome.done:
+                log.mark_undone(index, False)
+            self._say("Redone. " + sentence(entry.target, outcome))
+            if self.frame is not None:
+                self.frame.reload()
+
         self._background(
-            "redo the change",
-            lambda: save(api, sheet, entry.ident, changes, loaded=loaded),  # type: ignore[arg-type]
-            lambda outcome: self._say("Redone. " + sentence(entry.target, outcome)),
+            "redo the change", lambda: redo(api, sheet, entry.ident, entry.as_changes()), done
         )

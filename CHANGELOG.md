@@ -23,6 +23,28 @@
 - The Features page shows the Sponsor button's links. GitHub's API cannot turn
   the button on or off, and its help says so.
 
+### GitHub Workbench: every field proved, and Undo that puts things back (2026-11-20)
+
+Every editable field on every Properties sheet now has a test that checks
+what is sent, that the save is read back, that it lands in Change History and
+that Undo works or says why not. That found these, now fixed:
+- **Undo and Redo put things back properly.** Undo read nothing fresh first,
+  so a milestone went back as no milestone, a ruleset, branch protection or
+  environment was rebuilt from nothing, and a project field could not be
+  undone at all. Undo now reads the object again, stops if someone has
+  changed it since, and then saves. A renamed label or repository can be
+  undone, and a redone change can be undone again.
+- **Number fields save.** A number was sent as text, so every number field
+  said it did not change.
+- **Your change no longer undoes someone else's.** Saving a ruleset or
+  protection put back fields another person had changed since you opened
+  the sheet, including ones you chose to keep as theirs.
+- **Retry Failed works** on a field that took the first time.
+- **A required field left empty is refused** before anything is sent, such
+  as a title, a name, a tag or a retention period.
+- **A change that cannot be undone says so** in its preview, before it
+  happens, such as a secret or taking an item out of a project.
+
 ### GitHub Workbench: every alert counted, safe alert exports and Least Privilege Advice (2026-11-20)
 
 - **Security Overview reads every page.** It used to count only the first 100
