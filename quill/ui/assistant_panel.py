@@ -406,7 +406,7 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin, AssistantConversationTools
     def _on_setup_save(self, _event: object) -> None:
         from quill.core.ai.provider_backend import SimpleChatBackend
         from quill.core.ai_chat import PROVIDERS
-        from quill.core.settings import load_settings, save_settings
+        from quill.core.live_settings import change_and_save
 
         pid = self._provider_id_for_selection()
         model = self._setup_model.GetValue().strip()
@@ -422,10 +422,13 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin, AssistantConversationTools
             return
 
         try:
-            s = load_settings()
-            s.ai_chat_default_provider = pid
-            s.ai_chat_default_model = model
-            save_settings(s)
+            # The window's own copy, so its next save cannot put the old one back.
+            change_and_save(
+                lambda s: (
+                    setattr(s, "ai_chat_default_provider", pid),
+                    setattr(s, "ai_chat_default_model", model),
+                )
+            )
             self._per_provider_models[pid] = model
             self._setup_current_provider = pid
             if needs_key and key:

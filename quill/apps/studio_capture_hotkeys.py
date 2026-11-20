@@ -46,6 +46,7 @@ class StudioCaptureHotkeysMixin(GlobalHotkeysMixin):
         }
 
     def open_capture_hotkeys(self):
+        from quill.core.reported_save import saved
         from quill.core.settings import load_settings, save_settings
         from quill.ui.global_hotkeys_dialog import GlobalHotkeysDialog
 
@@ -66,12 +67,17 @@ class StudioCaptureHotkeysMixin(GlobalHotkeysMixin):
             fresh.global_hotkeys.pop(command_id, None)
             if updated.get(command_id):
                 fresh.global_hotkeys[command_id] = updated[command_id]
-        save_settings(fresh)
+        # In use for this session either way; a failed save is said in
+        # Activity, with Retry, so "saved" is said only when it was.
+        kept = saved(lambda: save_settings(fresh))
         self.settings = fresh
         self._reload_global_hotkeys()
         registered = set(getattr(self, "_global_hotkey_map", {}).values())
         missing = set(self._global_hotkey_bindings()) - registered
-        if self._safe_mode:
+        if not kept:
+            if missing and not self._safe_mode:
+                self._announce("Some capture hotkeys could not register. Another app may own them.")
+        elif self._safe_mode:
             self._announce("Capture hotkeys saved; global hotkeys are disabled in Safe Mode.")
         elif missing:
             self._announce(

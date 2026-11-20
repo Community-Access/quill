@@ -86,10 +86,13 @@ def save_rules(data_dir, rules: list[Rule]) -> None:
     error = validate(rules)
     if error:
         raise ValueError(error)
-    path = os.path.join(str(data_dir), SETTINGS_FILE)
-    os.makedirs(str(data_dir), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as fh:
-        json.dump({"rules": [r.to_dict() for r in rules]}, fh, indent=2, ensure_ascii=False)
+    from pathlib import Path
+
+    from quill.core import storage
+
+    # Atomically: a write that dies part-way through leaves the previous rules.
+    path = Path(str(data_dir)) / SETTINGS_FILE
+    storage.write_json_atomic(path, {"rules": [r.to_dict() for r in rules]})
 
 
 def match_collection(url: str, rules: list[Rule]) -> str | None:

@@ -11,6 +11,13 @@ adds the work marked "build 2" below, together with everything recorded since
 (the Command Palette and Product Requirements doors, What's New, QUILL
 Transcribe on the QuillVille menu, and the user guide corrections).
 
+### Weather Center's Settings keep your tray choices (2026-11-20)
+
+- Saving Weather Center's Settings no longer puts back a Close to Tray or
+  Start in Tray choice you changed from the tray while Weather Center was
+  open. Settings now saves onto the file as it is, so the newest choice
+  wins.
+
 ### A damaged settings file no longer stops Weather starting (2026-11-20)
 
 A settings file with a number Quill Weather cannot use, such as a refresh

@@ -252,7 +252,6 @@ class TranscribeKeysMixin:
         )
 
     def _choose_key(self, *, save: Any, field: str, **picker: Any) -> None:
-        from quill.core.transcribe.settings import save_settings
         from quill.ui.show_hide_key_picker import run_system_key_command
 
         if self._safe_mode:
@@ -261,10 +260,9 @@ class TranscribeKeysMixin:
 
         def keep(chord: str) -> None:
             save(chord)
-            save_settings(self._data_dir, self._settings)
-            refresh = getattr(self, "_refresh_view", None)
-            if callable(refresh):
-                refresh()
+            # The key is registered either way; a failed save is said in
+            # Activity, with Retry, and no longer escapes the picker.
+            self._save()  # type: ignore[attr-defined]
 
         run_system_key_command(
             self, wx, app_id="transcribe", save=keep, own=self._own_keys(field), **picker

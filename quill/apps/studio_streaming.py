@@ -182,9 +182,10 @@ class StudioStreamingMixin:
     # -- live ------------------------------------------------------------------------
 
     def _start_stream(self, settings, password, sound, ffmpeg) -> None:
+        from quill.core import storage
         from quill.core.demo_recording import unique_path
         from quill.core.paths import app_data_dir
-        from quill.core.storage import write_json_atomic
+        from quill.core.reported_save import save_reported
         from quill.core.streaming import credential_name, settings_to_dict
         from quill.platform.windows.credential_manager import save_generic_credential
         from quill.platform.windows.live_stream import LiveStream
@@ -193,10 +194,13 @@ class StudioStreamingMixin:
             save_generic_credential(credential_name(settings), password, user_name=settings.user)
         except Exception as error:  # noqa: BLE001 - going live still works this once
             self._announce(f"The password could not be remembered: {error}")
-        try:
-            write_json_atomic(app_data_dir() / _FILE, settings_to_dict(settings))
-        except OSError:
-            pass
+        # Going live still works this once; a failed save is said in Activity.
+        path, document = app_data_dir() / _FILE, settings_to_dict(settings)
+        save_reported(
+            "QUILL Studio's streaming settings",
+            path,
+            lambda: storage.write_json_atomic(path, document),
+        )
         chosen = [sound[s.source_id] for s in settings.enabled() if s.source_id in sound]
         from dataclasses import replace as _replace
 

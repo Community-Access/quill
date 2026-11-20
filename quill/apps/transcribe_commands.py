@@ -28,16 +28,17 @@ class TranscribeCommandsMixin:
 
     # -- saving ------------------------------------------------------------------ #
 
-    def _save(self) -> None:
+    def _save(self) -> bool:
+        """Save; ``False`` when it failed. A failure is said once, in Activity,
+        with Retry (the shared persistence feedback), so it is not said here too."""
+        from quill.core.reported_save import saved
         from quill.core.transcribe.settings import save_settings
 
-        try:
-            save_settings(self._data_dir, self._settings)
-        except OSError as error:
-            self._announce(f"Your settings could not be saved: {error.strerror or error}")  # type: ignore[attr-defined]
+        kept = saved(lambda: save_settings(self._data_dir, self._settings))
         refresh = getattr(self, "_refresh_view", None)
         if callable(refresh):
             refresh()
+        return kept
 
     def _set_dictation_field(self, name: str, value: Any) -> None:
         from quill.core.windows_dictation.settings_fields import settle_share
@@ -205,13 +206,14 @@ class TranscribeCommandsMixin:
         if answer != wx.ID_OK:
             return
         self._settings.dictation = stored_from(settings)
-        self._save()
+        kept = self._save()
         self._share_dictation()
         from quill.core.transcribe.models import model_name
 
-        if settings.windows_dictation_engine != before:
-            self._announce(f"Saved. Model: {model_name(settings.windows_dictation_engine)}.")  # type: ignore[attr-defined]
-        else:
+        model = model_name(settings.windows_dictation_engine)
+        if settings.windows_dictation_engine != before:  # never "Saved." when it was not
+            self._announce(f"Saved. Model: {model}." if kept else f"Model: {model}.")  # type: ignore[attr-defined]
+        elif kept:
             self._set_status("Dictation settings saved.")  # type: ignore[attr-defined]
         self._wake_settings_changed(wake_before)  # type: ignore[attr-defined]
 

@@ -100,7 +100,8 @@ def open_preferences(app: Any) -> None:
         prefs["use_asio"],
     ) = checkbox_values
     prefs["close_action"] = _CLOSE_ACTION_VALUES[choice_indices[0]]
-    _save_app_prefs(prefs)
+    if not _save_app_prefs(prefs):
+        return  # Activity has said so, with Retry; never "saved"
     # Saving preferences is important, but announcing it on close is noisy: the
     # dialog itself already commits the change, and leaving it should return the
     # user to what they were doing without extra speech.

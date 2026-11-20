@@ -362,7 +362,11 @@ class WeatherSettingsDialog:
     def _save(self) -> None:
         from quill.core.weather import settings as settings_mod
 
-        s = self._settings
+        # Onto the file as it is now, not the copy this dialog was opened with:
+        # Weather Center holds its copy for as long as it is open, and a tray
+        # choice made meanwhile (Close to Tray, Start in Tray) must not be put
+        # back by this save -- the latest choice wins (family settings audit).
+        s = settings_mod.load_settings(self._data_dir)
         s.temperature_unit = TEMPERATURE_UNITS[self._temp.GetSelection()]
         s.wind_unit = WIND_UNITS[self._wind.GetSelection()]
         s.forecast_period_count = spin_value(self._periods)

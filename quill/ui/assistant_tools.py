@@ -1436,15 +1436,14 @@ class AssistantConnectionDialog:
             self.last_verification_message = message
             self.connection_status.SetLabel(message)
 
-            # Save vision prompt library settings
-            from quill.core.settings import load_settings, save_settings
+            # Save vision prompt library settings, onto the window's own copy
+            from quill.core.live_settings import change_and_save
 
-            app_settings = load_settings()
-            app_settings.vision_prompt_picker_enabled = bool(self.vision_picker_enabled.GetValue())
-            style_sel = self.vision_default_style.GetSelection()
-            if 0 <= style_sel < len(self._vision_style_ids):
-                app_settings.vision_default_prompt_style = self._vision_style_ids[style_sel]
-            save_settings(app_settings)
+            sel, ids = self.vision_default_style.GetSelection(), self._vision_style_ids
+            picked = {"vision_prompt_picker_enabled": bool(self.vision_picker_enabled.GetValue())}
+            if 0 <= sel < len(ids):
+                picked["vision_default_prompt_style"] = ids[sel]
+            change_and_save(lambda s: [setattr(s, k, v) for k, v in picked.items()])
 
             return True
         finally:
