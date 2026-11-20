@@ -434,6 +434,9 @@ def open_preferences(app: Any) -> None:
     if result is None:
         return
     checkbox_values, choice_indices, text_values = result
+    from quill.ui import family_sharing
+
+    shared_before = family_sharing.shared_values(history)
     (
         history.resume_on_launch,
         launch_at_startup,
@@ -502,9 +505,9 @@ def open_preferences(app: Any) -> None:
     from quill.core.radio.radio_logging import set_radio_debug
 
     set_radio_debug(history.debug_mode)
-    from quill.ui.family_sharing import after_preferences
-
-    after_preferences(app, "radio", history, {"share_family_prefs": history.share_family_prefs})
+    family_sharing.after_preferences(
+        app, "radio", history, family_sharing.preference_changes(history, shared_before)
+    )
     chosen_view = main_view.from_index(choice_indices[0])
     if chosen_view != history.main_view:
         history.main_view = chosen_view

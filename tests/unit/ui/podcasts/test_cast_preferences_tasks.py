@@ -64,7 +64,7 @@ def test_blocked_history_write_does_not_block_the_ui_or_receive_live_history(hos
     ui_thread = threading.get_ident()
     writes = []
 
-    def blocked(_path, history):
+    def blocked(_path, history, **_kwargs):
         assert threading.get_ident() != ui_thread
         assert history is not host._podcast_history
         entered.set()
@@ -103,7 +103,7 @@ def test_blocked_history_write_does_not_block_the_ui_or_receive_live_history(hos
 
 
 def test_success_is_not_announced_when_persistence_fails(host, monkeypatch):
-    def fail(_path, _history):
+    def fail(_path, _history, **_kwargs):
         raise OSError("synthetic disk failure")
 
     monkeypatch.setattr(podcast_history, "save_history", fail)

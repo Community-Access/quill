@@ -72,6 +72,11 @@ def schedule(app: Any, wx: Any, *, safe_mode: bool = False) -> Any:
 
         wx.CallAfter(open_start_lineup, app)
     wx.CallAfter(maybe_run_first_run, app)
+    # Shared family choices newer than Radio's own, adopted and said, as Cast
+    # does at its launch (qc.md X-05; plan.md, shared desktop settings review).
+    from quill.ui.family_sharing import at_launch
+
+    wx.CallAfter(at_launch, app, "radio", app._radio_history)
     # The previous session's closing failure, said once, with its Retry (F-06).
     from quill.apps.radio_shutdown import radio_launch_notice
 

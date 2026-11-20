@@ -6,6 +6,16 @@ Quill Inkwell 1.0.0 is its first public release, and it has not been published
 yet. The testing build is **1.0.0 (build 2)**. First, the work since the first
 build, grouped by subject; then the first build itself.
 
+### Settings that stick, and a damaged settings file (2026-11-20)
+
+A preference you changed from the Options menu could be saved after a newer
+change that Inkwell saved straight away, and the older choice came back after
+a restart. Exit could also rewrite a save that had failed over a newer one
+that worked. Settings are now written in the order you made the changes. A
+settings file with a value Inkwell cannot use, such as an unreadable version
+number, no longer stops Inkwell starting. It is copied beside itself, and
+Inkwell says once where the copy is.
+
 ### Sound scheme (2026-11-02)
 
 - **A second sound scheme: VS Code Signals** (2026-11-02). Quill Inkwell plays

@@ -124,11 +124,25 @@ def load(data_dir: Path | None = None) -> ConverterSettings:
     return ConverterSettings.from_json(read_json(settings_path(data_dir), {}))
 
 
-def save(settings: ConverterSettings, data_dir: Path | None = None) -> None:
-    """Remember *settings* (atomic; a failure to save is never fatal)."""
-    from quill.core.storage import write_json_atomic
+def save(settings: ConverterSettings, data_dir: Path | None = None) -> bool:
+    """Remember *settings*. ``False`` when the disk said no; never raises.
 
+    The failure is reported through :mod:`quill.core.persistence_outcome`, so
+    the window's Activity says it once with Retry and Open Folder. It used to be
+    swallowed, and a choice that worked all session was gone after a restart
+    with nothing said (plan.md, settings review). The document is built when
+    the write runs, from the object passed in, so Retry writes the choices as
+    they are by then rather than the ones that failed.
+    """
+    from quill.core import storage
+    from quill.core.persistence_outcome import guarded_write
+
+    path = settings_path(data_dir)
+    document = lambda: {"schema": SCHEMA, **settings.to_json()}  # noqa: E731 - built per write
     try:
-        write_json_atomic(settings_path(data_dir), {"schema": SCHEMA, **settings.to_json()})
+        guarded_write(
+            "Quill Converter settings", path, lambda: storage.write_json_atomic(path, document())
+        )
     except OSError:
-        pass
+        return False
+    return True

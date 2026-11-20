@@ -270,6 +270,10 @@ def _store_path(data_dir: Path) -> Path:
     return data_dir / _FILE_NAME
 
 
+#: Public for the record queue, which numbers its snapshots by file.
+store_path = _store_path
+
+
 def load_history(data_dir: Path) -> PodcastHistory:
     """Read history (an absent or broken file reads as empty)."""
     try:
@@ -351,60 +355,72 @@ def load_history(data_dir: Path) -> PodcastHistory:
     return history
 
 
-def save_history(data_dir: Path, history: PodcastHistory) -> None:
-    """Persist history atomically."""
+def save_history(data_dir: Path, history: PodcastHistory, *, ticket: int | None = None) -> None:
+    """Persist history atomically, in snapshot order (:mod:`quill.core.ordered_save`).
+
+    A queued snapshot passes the *ticket* it took when it was copied; an inline
+    save of the live record takes one now. An older snapshot than one already
+    written is dropped, so the record queue can no longer put a choice back
+    that Resume on Launch or Close changed inline in the meantime.
+    """
+    from quill.core.ordered_save import ordered_write
     from quill.core.persistence_outcome import guarded_write
-    from quill.core.storage import write_json_atomic
 
     path = _store_path(data_dir)
-    guarded_write(
-        "QUILL Cast's settings",
+    ordered_write(
         path,
-        lambda: write_json_atomic(
-            path,
-            {
-                "resume_on_launch": history.resume_on_launch,
-                "check_updates_on_startup": history.check_updates_on_startup,
-                "last_update_check": history.last_update_check,
-                "announce_dialog_transitions": history.announce_dialog_transitions,
-                "alt_f4_to_tray": history.alt_f4_to_tray,
-                "winamp_playback_keys": history.winamp_playback_keys,
-                "close_action": history.close_action,
-                "media_notice_signature": history.media_notice_signature,
-                "recent_searches": search_history.to_json(history.recent_searches),
-                "podcast_check_enabled": history.podcast_check_enabled,
-                "podcast_check_interval_minutes": history.podcast_check_interval_minutes,
-                "podcast_check_audible_tick": history.podcast_check_audible_tick,
-                "podcast_check_interrupt_speech": history.podcast_check_interrupt_speech,
-                "menu_mode": history.menu_mode,
-                "show_status_bar": history.show_status_bar,
-                "hide_caught_up": history.hide_caught_up,
-                "switch_to_now_playing": history.switch_to_now_playing,
-                "start_lineup_id": history.start_lineup_id,
-                "notes_copy_format": history.notes_copy_format,
-                "ai_help_enabled": history.ai_help_enabled,
-                "ai_privacy_accepted_version": history.ai_privacy_accepted_version,
-                "ai_own_key_model": history.ai_own_key_model,
-                "ai_own_key_provider": history.ai_own_key_provider,
-                "ai_connection": history.ai_connection,
-                "ai_copilot_model": history.ai_copilot_model,
-                "ai_codex_model": history.ai_codex_model,
-                "ai_picture_consent": list(history.ai_picture_consent),
-                "episode_filter": history.episode_filter,
-                "action_feedback": history.action_feedback,
-                **{switch: getattr(history, switch, True) for switch in _SWITCHES},
-                "inbox_personal_audio": history.inbox_personal_audio,
-                "share_family_prefs": history.share_family_prefs,
-                "wf_default_original": history.wf_default_original,
-                "wf_default_tell": history.wf_default_tell,
-                "wf_default_min_seconds": history.wf_default_min_seconds,
-                "last_seen_at": history.last_seen_at,
-                # transcript_detail was read by load_history and missing from this
-                # list, so it has never persisted: a listener chose how much
-                # scaffolding an exported transcript keeps and the next launch forgot.
-                "transcript_detail": history.transcript_detail,
-                "onboarding": history.onboarding.to_dict(),
-                "episodes": [e.to_dict() for e in history.episodes],
-            },
-        ),
+        lambda: guarded_write("QUILL Cast's settings", path, lambda: _write(path, history)),
+        ticket=ticket,
+    )
+
+
+def _write(path: Path, history: PodcastHistory) -> None:
+    from quill.core import storage
+
+    storage.write_json_atomic(
+        path,
+        {
+            "resume_on_launch": history.resume_on_launch,
+            "check_updates_on_startup": history.check_updates_on_startup,
+            "last_update_check": history.last_update_check,
+            "announce_dialog_transitions": history.announce_dialog_transitions,
+            "alt_f4_to_tray": history.alt_f4_to_tray,
+            "winamp_playback_keys": history.winamp_playback_keys,
+            "close_action": history.close_action,
+            "media_notice_signature": history.media_notice_signature,
+            "recent_searches": search_history.to_json(history.recent_searches),
+            "podcast_check_enabled": history.podcast_check_enabled,
+            "podcast_check_interval_minutes": history.podcast_check_interval_minutes,
+            "podcast_check_audible_tick": history.podcast_check_audible_tick,
+            "podcast_check_interrupt_speech": history.podcast_check_interrupt_speech,
+            "menu_mode": history.menu_mode,
+            "show_status_bar": history.show_status_bar,
+            "hide_caught_up": history.hide_caught_up,
+            "switch_to_now_playing": history.switch_to_now_playing,
+            "start_lineup_id": history.start_lineup_id,
+            "notes_copy_format": history.notes_copy_format,
+            "ai_help_enabled": history.ai_help_enabled,
+            "ai_privacy_accepted_version": history.ai_privacy_accepted_version,
+            "ai_own_key_model": history.ai_own_key_model,
+            "ai_own_key_provider": history.ai_own_key_provider,
+            "ai_connection": history.ai_connection,
+            "ai_copilot_model": history.ai_copilot_model,
+            "ai_codex_model": history.ai_codex_model,
+            "ai_picture_consent": list(history.ai_picture_consent),
+            "episode_filter": history.episode_filter,
+            "action_feedback": history.action_feedback,
+            **{switch: getattr(history, switch, True) for switch in _SWITCHES},
+            "inbox_personal_audio": history.inbox_personal_audio,
+            "share_family_prefs": history.share_family_prefs,
+            "wf_default_original": history.wf_default_original,
+            "wf_default_tell": history.wf_default_tell,
+            "wf_default_min_seconds": history.wf_default_min_seconds,
+            "last_seen_at": history.last_seen_at,
+            # transcript_detail was read by load_history and missing from this
+            # list, so it has never persisted: a listener chose how much
+            # scaffolding an exported transcript keeps and the next launch forgot.
+            "transcript_detail": history.transcript_detail,
+            "onboarding": history.onboarding.to_dict(),
+            "episodes": [e.to_dict() for e in history.episodes],
+        },
     )
