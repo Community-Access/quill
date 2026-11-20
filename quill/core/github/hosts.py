@@ -28,6 +28,8 @@ import hashlib
 import re
 import threading
 
+from quill.core.error_codes import CodedError
+
 __all__ = [
     "API_VERSION",
     "DOTCOM",
@@ -60,8 +62,10 @@ _HOST_RE = re.compile(
 _DOTCOM_NAMES = frozenset({"github.com", "www.github.com", "api.github.com"})
 
 
-class GitHubHostError(ValueError):
+class GitHubHostError(CodedError):
     """A host name that cannot be a GitHub server."""
+
+    code = "QUILL-GITHUB-HOST-INVALID"
 
 
 def normalize_host(text: str) -> str:

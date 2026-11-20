@@ -373,10 +373,10 @@ class GitHubAccountsFlow:
         login: str | None = None
         error = ""
         try:
-            from quill.core.github.hosts import bind_token
+            from quill.core.github.hosts import GitHubHostError, bind_token
 
             bind_token(token, server)
-        except ValueError as exc:
+        except GitHubHostError as exc:
             self.host.call_after(self.add_token_done, token, None, str(exc), added_by, server)
             return
         try:
