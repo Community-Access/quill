@@ -1,4 +1,4 @@
-"""By name, across repositories: labels, milestones, topics and rules (PRD 22.11).
+"""By name, across repositories: labels, milestones, topics, rules and more (PRD 22.11).
 
 GitHub keeps a label or a milestone inside one repository, but people think
 of them by name across many. :func:`survey` reads one kind from every
@@ -12,7 +12,10 @@ repository -- is :mod:`quill.core.github.across_changes`.
 
 Labels and milestones change through :mod:`quill.core.github.across_changes`;
 topics, rulesets and branch protection through
-:mod:`quill.core.github.across_admin_changes`. Every request goes through the Workbench's one
+:mod:`quill.core.github.across_admin_changes`; tags, branches, environments,
+secrets, variables, webhooks, deploy keys and autolinks are read by
+:mod:`quill.core.github.across_more_kinds` and changed by
+:mod:`quill.core.github.across_more_changes`. Every request goes through the Workbench's one
 :class:`~quill.core.github.workbench_api.GitHubApi`; tests pass a fake.
 
 wx-free and strict-typed.
@@ -48,8 +51,17 @@ KINDS: dict[str, tuple[str, tuple[str, ...]]] = {
     "milestones": ("milestone", ("due_on", "description", "state")),
     "topics": ("topic", ()),
     "rules": ("rule set", ("enforcement", "target", "rules")),
+    # Read by quill.core.github.across_more_kinds, changed by across_more_changes.
+    "tags": ("tag", ("commit",)),
+    "branches": ("branch", ("default", "protected")),
+    "environments": ("environment", ("wait_timer", "reviewers", "self_review", "branches")),
+    "secrets": ("secret", ()),
+    "variables": ("variable", ("value",)),
+    "webhooks": ("webhook", ("events", "active", "content_type")),
+    "deploy_keys": ("deploy key", ("key", "access")),
+    "autolinks": ("autolink", ("url_template", "alphanumeric")),
 }
-WRITABLE_KINDS = frozenset({"labels", "milestones", "topics", "rules"})
+WRITABLE_KINDS = frozenset(KINDS)
 _WORKERS = 6
 
 
@@ -106,6 +118,11 @@ class ByNameRow:
             opened = sum(int(dict(c.extra).get("open", "0")) for c in self.copies)
             closed = sum(int(dict(c.extra).get("closed", "0")) for c in self.copies)
             parts.append(f"{closed} of {opened + closed} items closed")
+        if self.kind == "branches":
+            parts = parts[:1]
+            default = sum(1 for c in self.copies if c.prop("default") == "yes")
+            guarded = sum(1 for c in self.copies if c.prop("protected") == "yes")
+            parts.append(f"default in {default}, protected in {guarded}")
         if self.missing:
             parts.append(f"missing from {len(self.missing)}")
         if self.unread:
@@ -121,6 +138,10 @@ class ByNameRow:
                 lines.append(f"Variant {number}, {describe_props(props)}: {', '.join(repos)}")
         else:
             lines.append(f"Has the {noun}: {', '.join(c.repository for c in self.copies)}")
+        extras = [f"{c.repository}: {_extra_words(c.extra)}" for c in self.copies]
+        extras = [line for line in extras if not line.endswith(": ")]
+        if extras and self.kind != "milestones":
+            lines += ["", "Also:", *extras]
         lines.append("")
         lines.append(
             "Missing From: " + (", ".join(self.missing) if self.missing else "none of them")
@@ -142,7 +163,29 @@ _PROP_WORDS = {
     "approvals": "approval counts",
     "checks": "required check lists",
     "admins": "admin settings",
+    "commit": "different commits",
+    "wait_timer": "wait timers",
+    "reviewers": "reviewer lists",
+    "self_review": "self-review settings",
+    "branches": "branch policies",
+    "value": "values",
+    "events": "event lists",
+    "active": "on and off states",
+    "content_type": "content types",
+    "key": "different keys",
+    "access": "access levels",
+    "url_template": "addresses",
+    "alphanumeric": "reference kinds",
 }
+
+#: Copy.extra entries that are for the program, not for reading.
+_HIDDEN_EXTRA = frozenset({"reviewer_ids", "custom", "sha", "public_key"})
+
+
+def _extra_words(extra: Sequence[tuple[str, str]]) -> str:
+    words = {"open_prs": "open pull requests into it", "updated": "changed"}
+    shown = [f"{words.get(k, k)} {v}" for k, v in extra if k not in _HIDDEN_EXTRA]
+    return ", ".join(shown)
 
 
 def describe_props(props: Sequence[tuple[str, str]]) -> str:
@@ -325,8 +368,12 @@ def survey(
                 copies = _milestone_copies(api, repo)
             elif kind == "topics":
                 copies = _topic_copies(api, repo)
-            else:
+            elif kind == "rules":
                 copies = _rule_copies(api, repo, default_branch)
+            else:
+                from quill.core.github.across_more_kinds import read_copies
+
+                copies = read_copies(api, kind, repo, default_branch)
         except Exception as exc:  # noqa: BLE001 - one repository never sinks the rest
             return repo, [], None, why_failed(exc)
         return repo, copies, can, ""

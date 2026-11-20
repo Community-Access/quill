@@ -233,6 +233,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}across_delete_name": ("repo:write", _D),
     f"{_P}across_move_open": ("repo:write", _V),
     f"{_P}across_promote_org": ("org:owner+repo:admin", _D),
+    f"{_P}across_release_train": ("repo:write", _V),
+    f"{_P}across_set_secret": ("repo:admin", _A),
+    f"{_P}across_hooks_on_off": ("repo:admin", _V),
 }
 
 
