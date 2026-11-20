@@ -349,13 +349,16 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
         view: Any,
         close: bool,
     ) -> None:
-        from quill.core.github.you_local import apply_local
+        from quill.core.github.you_local import LOCAL_YOU, apply_local
 
-        url, title = target.sheet.url(target.ident), target.title()
+        said: list[str] = []
         asked = {c.key: c.after for c in changes}
-        said, changes = apply_local(
-            self._local_store(), target.kind, target.ident, url, title, changes
-        )
+        local = LOCAL_YOU.get(getattr(target, "kind", ""), ())
+        if any(c.key in local for c in changes):  # only then is this device's store touched
+            url, title = target.sheet.url(target.ident), target.title()
+            said, changes = apply_local(
+                self._local_store(), target.kind, target.ident, url, title, changes
+            )
         if said:  # this device's Favorites and pins: no GitHub write, so no gate
             done = {k: v for k, v in asked.items() if k not in {c.key for c in changes}}
             words = " ".join(said)
