@@ -277,7 +277,7 @@ wanted. From those it suggests:
   or Full);
 - for a classic token, the scopes that are enough, the ones it has that were
   never used, and a broad scope where a narrower one would do, with a link to
-  GitHub's new-token page with just those ticked;
+  GitHub's new-token page with just those checked;
 - for a fine-grained token, the permissions by GitHub's own names, read-only
   or read and write, and what no fine-grained token can reach.
 
