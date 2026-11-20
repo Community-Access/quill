@@ -2,6 +2,113 @@
 
 ## 1.0.0
 
+### GitHub Workbench: repository settings, Create Repository, Transfer, Pages and Packages (2026-11-20)
+
+- **Create Repository...**, in the editor and the Workbench, asks for every
+  option GitHub takes: owner, name, description, website, private or public,
+  and either a template (with all its branches or only the default) or a
+  README, a .gitignore template and a licence. When GitHub would refuse the
+  combination, the dialog stays open and its Problem box says why.
+- **Transfer Repository...** also asks for a new name and, for an
+  organization, which teams get access. The typed confirmation says where the
+  repository will land.
+- The **Merging** page sets the default title and message of squash and merge
+  commits as one choice each, in the words of GitHub's settings page, so
+  changing only the message is no longer refused.
+- The **Pages** page shows the site's status and latest build, and sets how it
+  is built, the branch and folder, the custom domain and Enforce HTTPS.
+- **Repository > Packages** lists the packages published from the
+  repository. **Delete Package Version...** asks you to type the package's
+  name.
+- The Features page shows the Sponsor button's links. GitHub's API cannot turn
+  the button on or off, and its help says so.
+
+### GitHub Workbench: tags, branches, secrets, webhooks and more across repositories (2026-11-20)
+
+- Across Repositories has eight more places by name, grouped by category:
+  Tags and Branches under Code, Environments, Secrets and Variables under
+  Actions, and Webhooks, Deploy Keys and Autolinks under Settings. Each row
+  is a name, with its variants and the repositories that lack it. A
+  repository that will not let you read it is named apart, never counted as
+  missing.
+- **Release Train...** makes a tag, with a draft or published release if you
+  want one, on each chosen repository. It skips a repository that already
+  has the tag and never moves a tag. **Rename Everywhere** renames a branch
+  and its preview says where the default branch, protection and open pull
+  requests change.
+- **Set Secret Everywhere...** asks for the value once. The value is never
+  shown in the plan, the preview or Change History.
+- Environments, variables and webhooks can be made the same, added where
+  missing and deleted everywhere. Webhooks can be turned on or off
+  everywhere.
+- **Promote to Organization** for secrets, variables and webhooks makes the
+  organization's copy first and only then deletes each repository's own.
+  Environments, deploy keys and autolinks have no organization form on
+  GitHub, and QUILL says so.
+
+### GitHub Workbench: rulesets, branch protection, members, teams and access reviews (2026-11-19)
+
+- A repository's **Rulesets** list, under its settings, and an organization's
+  **Rulesets** list each ruleset in a sentence. Alt+Enter opens its sheet. The
+  Rules page now lists every rule with every setting GitHub sent, including
+  rule types QUILL has no check box for yet. The Bypass page has a check list
+  of the roles that may bypass the rules, and keeps teams and apps as they
+  were. An organization ruleset has a Repositories page that says which
+  repositories it covers and lets you choose them by name. Delete asks you to
+  type the ruleset's name. **Rule Insights** is now under an organization too.
+- Saving a branch's classic protection no longer wipes who may push, who may
+  dismiss reviews and who may skip the pull request. The sheet now has every
+  setting GitHub offers, signed commits included, and a Who page.
+- An organization's members now read with their role and whether two-factor
+  sign-in is on (GitHub shows that to owners). **Members Without
+  Two-Factor** lists only those. Making a member an outside collaborator, and
+  removing an outside collaborator or a member, ask you to type their name.
+- A team's parent can be changed on its sheet, **New Team...** asks for the
+  parent and whether mentions notify the team, and a team's Repositories page
+  can add, change and remove repositories.
+- QUILL refuses, before sending anything, a change that would leave you or
+  the organization with nobody to manage it: removing the last owner or your
+  own ownership, making yourself an outside collaborator, the last maintainer
+  leaving a team, or taking admin away from the team that is your way into a
+  repository.
+- **Access Review: People** and **Access Review: Teams**, under an
+  organization, list every person or team and repository with the role they
+  have and where it comes from: "jeff on quill: Admin, from team Maintainers;
+  also Write directly." **Custom Property Values** now shows every property
+  on every repository, unset ones as "not set". All three filter and export
+  like any other list.
+
+### Plans: the WordPress backlog (2026-11-19)
+
+The WordPress decisions still open have moved from the open-work list to a
+Backlog section in the WordPress Workbench PRD. They are which areas get
+first-class integrations, a WordPress-layer key for page commands, and a tree
+node for menu items. Rank Math staying read only is confirmed.
+### GitHub Workbench: sort and group any list, keep your place, and say it in words (2026-11-19)
+
+- **Sort By and Group By on every list.** View > Sort By > By Column... and
+  Group By > By Column... now work on every Workbench list, not only issues.
+  Numbers sort as numbers, and each list remembers your choice.
+- **Your place is kept.** Back, Forward or a reload returns you to the row you
+  left, not the top of the list. The WordPress Workbench gets this too.
+- **Checklist rows say their state** ("Issues, on", "docs, on 3 of 5"). Space
+  changes them once, Enter saves, and focus stays where it was.
+- **Plain-Language Batch...** (Ctrl+Shift+S) lets you type what you want, such
+  as "close every issue labelled duplicate older than 90 days". It finds the
+  items without AI, shows them for you to check, and then runs the usual batch
+  with its preview and Retry Failed.
+
+### Quill Cast: lists stay still while new episodes arrive (2026-11-19)
+
+A feed refresh, a finished download or a change to the queue no longer moves
+your place. In Inbox, New Episodes, Downloads, Continue Listening, the Play
+Queue and the other episode lists, the episode you were on stays selected and
+focused, on the same line of the screen, and nothing takes the keyboard focus.
+New episodes are said once, as "3 new episodes in The Daily.", and a refresh
+with nothing new says nothing. QUILL's Play Queue window, which used to act on
+the wrong episode once the one in front had played, now keeps up with the queue
+and keeps its caret on the same episode. This is the first part of the family
+UX pilot.
 ### GitHub Workbench: secrets stay secret, Dependency Review and Security Overview (2026-11-19)
 
 - **A secret is never shown.** A secret's new value in Properties was a plain

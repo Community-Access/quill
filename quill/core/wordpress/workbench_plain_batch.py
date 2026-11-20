@@ -15,7 +15,7 @@ same batch and nothing is guessed:
   count from each site, and nothing changed.
 
 Any of them may say how old (``older than a year``, ``newer than two weeks``,
-``before March 2024``, ``after 2023``: :mod:`quill.core.wordpress.workbench_plain_age`),
+``before March 2024``, ``after 2023``: :mod:`quill.core.workbench.plain_age`),
 by the item's date. Where it runs is ``on <site>``, ``on <site> and <site>``, ``on every site``
 or ``on all sites``; without one, the current site. A site name, author,
 category or tag that matches nothing exactly is a sentence, never a guess.
@@ -50,8 +50,8 @@ from quill.core.wordpress.workbench_edit import (
     run_batch,
     trash,
 )
-from quill.core.wordpress.workbench_plain_age import Age, AgeError, find_age
 from quill.core.wordpress.workbench_rows import WbRow, item_row
+from quill.core.workbench.plain_age import Age, AgeError, find_age
 
 __all__ = [
     "EXAMPLES",

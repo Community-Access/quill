@@ -271,17 +271,8 @@ _FIXED: tuple[NodeSpec, ...] = (
         )
         for key, label in ACROSS_CATEGORIES
     ),
-    # By name across the set, and the Fleet (PRD 22.11, 22.12).
-    *(
-        _n(key, label, "across", needs=_SIGN_IN, loader=f"across:{key[7:]}", row_type=kind)
-        for key, label, kind in (
-            ("across_by_labels", "Labels by Name", "by_name"),
-            ("across_by_milestones", "Milestones by Name", "by_name"),
-            ("across_by_topics", "Topics by Name", "by_name"),
-            ("across_by_rules", "Rules and Branch Protection", "by_name"),
-            ("across_fleet", "Fleet", "fleet"),
-        )
-    ),
+    # By name across the set, in four groups, and the Fleet (PRD 22.11, 22.12, GX16):
+    # quill.core.github.workbench_tree_more.ACROSS_BY_NAME.
     # Help is a place, not only a key (Part D11): the same branch in both
     # Workbenches, every node a list you can type through and filter.
     _n("help", "Help and Learning"),

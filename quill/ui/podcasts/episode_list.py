@@ -47,6 +47,10 @@ NOTICE_COLUMNS: tuple[tuple[str, str, int], ...] = (
 _MAX_ROWS = 1000
 
 
+def _layout(columns: Any) -> list[tuple[str, str, int]]:
+    return [(c.id, c.label, int(getattr(c, "width", 0) or 0)) for c in columns]
+
+
 class CastEpisodeListMixin:
     """The one list in the content pane, and the names the Manager code expects."""
 
@@ -265,9 +269,16 @@ class CastEpisodeListMixin:
                 kind, NOTICE_COLUMNS
             )
             columns = [ColumnDef(cid, label, "", width=width) for cid, label, width in spec]
+        # Rebuilding the columns empties the list, which scrolls it to the top
+        # and drops the reader's row: only when the layout really changed
+        # (FUX-06), never on a refill of the same place.
+        unchanged = kind == getattr(self, "_list_kind", None) and _layout(columns) == _layout(
+            getattr(self, "_list_columns", [])
+        )
         self._list_columns = columns
         self._list_kind = kind
-        build_columns(self._episodes, columns)
+        if not unchanged:
+            build_columns(self._episodes, columns)
 
     def _build_episode_columns(self) -> None:
         self._apply_list_columns("episodes")
@@ -284,8 +295,11 @@ class CastEpisodeListMixin:
 
         if self._list_kind != "episodes":
             self._apply_list_columns("episodes")
-        self._episodes.DeleteAllItems()
+        # No DeleteAllItems: the rows are virtual, so a new count is all a
+        # refill needs, and emptying the list first threw away the reader's
+        # row and the scroll position with it (FUX-06).
         if prepared_episodes is None and show is not None and len(show.episodes) > 20_000:
+            self._episodes.DeleteAllItems()
             self._request_cast_view_preparation(self._current_place)  # type: ignore[attr-defined]
             return
         episodes = (
@@ -370,8 +384,7 @@ class CastEpisodeListMixin:
             )
         shown = pairs[:_MAX_ROWS]
         lead = list(lead_rows or [])
-        self._episodes.DeleteAllItems()
-        yield
+        yield  # the list keeps its rows until the new count lands (FUX-06)
         self._current_show = None
         self._current_episodes = [
             PodcastEpisode(guid="", title=label, audio_url="") for _k, _v, label in lead
@@ -451,6 +464,12 @@ class CastEpisodeListMixin:
         """The cursor back on *key*'s row, or -- when that row has gone (Delete,
         Mark as Played, a refresh) -- on the row that moved into its place, by
         the shared rule (qc.md F-10, ``activity.restore_index``)."""
+        from quill.ui.list_stay_still import NO_ANCHOR, restore_report
+
+        # The row and the view the reader had before a refill (FUX-06), taken
+        # by _refresh_place. Used once: a later fill is not that refill.
+        anchor = getattr(self, "_list_anchor", None) or NO_ANCHOR
+        self._list_anchor = NO_ANCHOR
         if key is None:
             return False
         from quill.core.activity import restore_index
@@ -466,7 +485,12 @@ class CastEpisodeListMixin:
             return False
         if index < 0:
             return False
-        self._select_list_row(index)
+        if anchor.index < 0:
+            self._select_list_row(index)
+            return True
+        # The same episode, wherever the refill put it, on the same line of the
+        # screen; selected and focused without taking keyboard focus anywhere.
+        restore_report(self._wx, self._episodes, anchor, index)
         return True
 
     def _selected_rows(self) -> list[tuple[int, PodcastShow, PodcastEpisode]]:

@@ -5967,8 +5967,9 @@ adds one, Enter edits, Delete removes. Watches never mark notifications
 read.</p>
 <p><strong>Across Repositories.</strong> Across Repositories: the
 Repository Set in use, and under it its named sets, one kind of thing
-from every repository in the set, each name across the set, and the
-Fleet. Ctrl+N here edits the set’s repositories.</p>
+from every repository in the set, each name across the set grouped as
+Planning, Code, Actions and Settings, and the Fleet. Ctrl+N here edits
+the set’s repositories.</p>
 <p><strong>Repository Sets.</strong> Repository Sets: your named lists
 of repositories, each chosen from a checklist, made by a filter such as
 org:name topic:x, or every repository you can reach. Enter uses one;
@@ -5991,29 +5992,6 @@ set.</p>
 the set that has them on.</p>
 <p><strong>Security Alerts.</strong> Security alerts from every
 repository in the set you may read them in.</p>
-<p><strong>Labels by Name.</strong> Labels by Name: each label name
-across the set, where its colour and description differ and where it is
-missing. Make the copies the same, add it where missing, rename, merge
-or delete it everywhere, each with a preview and a result per
-repository.</p>
-<p><strong>Milestones by Name.</strong> Milestones by Name: each
-milestone title across the set, its due dates, descriptions and
-progress. Make them the same, close them everywhere, move their open
-work to another milestone or add the missing ones, each with a preview
-and a result per repository.</p>
-<p><strong>Topics by Name.</strong> Topics by Name: each topic across
-the set and the repositories that lack it. Add it to the missing or
-remove it everywhere, with a preview and a result per repository; each
-repository’s other topics are kept.</p>
-<p><strong>Rules and Branch Protection.</strong> Rules and Branch
-Protection: each ruleset by name, and each default branch’s protection,
-compared across the set. Make them the same as the winner, add a ruleset
-where it is missing, or promote one to an organization ruleset; each
-needs admin access and shows a preview first.</p>
-<p><strong>Fleet.</strong> Fleet: one line per repository in the set:
-the exact revision of its default branch, checks, open pull requests,
-latest release and alerts, and when it was read. A repository that could
-not be read keeps its line, with the reason.</p>
 <p><strong>Help and Learning.</strong> Help and Learning: the guide, the
 GitHub words, the keys, what changed, and tasks in plain words that take
 you to the place.</p>
@@ -6036,6 +6014,73 @@ trying each. They wait here and are never pushed at you.</p>
 <p><strong>Ask a Person.</strong> Ask a Person: write to <a
 href="mailto:support@community-access.org">support@community-access.org</a>.
 Nothing is sent until you send it from your own email.</p>
+<p><strong>Planning by Name.</strong> Planning by Name: labels,
+milestones and topics, each by name across the set.</p>
+<p><strong>Labels by Name.</strong> Labels by Name: each label name
+across the set, where its colour and description differ and where it is
+missing. Make the copies the same, add it where missing, rename, merge
+or delete it everywhere, each with a preview and a result per
+repository.</p>
+<p><strong>Milestones by Name.</strong> Milestones by Name: each
+milestone title across the set, its due dates, descriptions and
+progress. Make them the same, close them everywhere, move their open
+work to another milestone or add the missing ones, each with a preview
+and a result per repository.</p>
+<p><strong>Topics by Name.</strong> Topics by Name: each topic across
+the set and the repositories that lack it. Add it to the missing or
+remove it everywhere, with a preview and a result per repository; each
+repository’s other topics are kept.</p>
+<p><strong>Code by Name.</strong> Code by Name: tags, branches, and
+rules and branch protection, each by name across the set.</p>
+<p><strong>Tags by Name.</strong> Tags by Name: each tag across the set
+and the commit it is on in each repository. Release Train makes it, or
+it and a release, where it is missing, and never moves an existing tag;
+Delete Everywhere keeps a tag a release is built on.</p>
+<p><strong>Branches by Name.</strong> Branches by Name: each branch
+across the set, where it is the default and where it is protected.
+Rename Everywhere uses GitHub’s rename; its preview says where the
+default changes, where protection moves and how many open pull requests
+are retargeted.</p>
+<p><strong>Rules and Branch Protection.</strong> Rules and Branch
+Protection: each ruleset by name, and each default branch’s protection,
+compared across the set. Make them the same as the winner, add a ruleset
+where it is missing, or promote one to an organization ruleset; each
+needs admin access and shows a preview first.</p>
+<p><strong>Actions by Name.</strong> Actions by Name: environments,
+secrets and variables, each by name across the set. Reading them needs
+admin access in each repository.</p>
+<p><strong>Environments by Name.</strong> Environments by Name: wait
+timer, reviewers, self-review and which branches may deploy, compared
+across the set. Make them the same as the winner, or delete one
+everywhere. GitHub has no organization environments.</p>
+<p><strong>Secrets by Name.</strong> Secrets by Name: each Actions
+secret across the set, by name only, because GitHub never shows a
+secret’s value. Set Secret Everywhere takes one new value, typed once
+and sealed for each repository; Promote to Organization makes one
+organization secret for those repositories.</p>
+<p><strong>Variables by Name.</strong> Variables by Name: each Actions
+variable and its values across the set. Make them the same, add the
+missing, delete everywhere, or promote to one organization variable for
+those repositories.</p>
+<p><strong>Settings by Name.</strong> Settings by Name: webhooks, deploy
+keys and autolinks, each by name across the set. Reading them needs
+admin access in each repository.</p>
+<p><strong>Webhooks by Name.</strong> Webhooks by Name: each webhook by
+its address, with its events, on or off and content type. Make them the
+same, add the missing, turn them on or off, delete, or promote to one
+organization webhook, which GitHub sends for every repository in the
+organization. A webhook’s secret is never readable.</p>
+<p><strong>Deploy Keys by Name.</strong> Deploy Keys by Name: each
+deploy key by title, with its fingerprint and access. Delete Everywhere
+removes it; GitHub accepts a deploy key in one repository only, so one
+cannot be added to more.</p>
+<p><strong>Autolinks by Name.</strong> Autolinks by Name: each autolink
+by its prefix, with its address. Add the missing or delete everywhere;
+GitHub cannot change an autolink in place.</p>
+<p><strong>Fleet.</strong> Fleet: one line per repository in the set:
+the exact revision of its default branch, checks, open pull requests,
+latest release and alerts, and when it was read. A repository that could
+not be read keeps its line, with the reason.</p>
 <p><strong>People and Organizations.</strong> Search People and
 Organizations: accounts whose name or login matches the filter box, such
 as jeff or type:org location:Tucson. Enter opens one.</p>
@@ -6250,6 +6295,10 @@ pushes the rulesets here passed, blocked or let through.</p>
 Here: your notifications from this repository only.</p>
 <p><strong>repository: Custom Property Values.</strong> Custom Property
 Values: the organization’s custom properties, as set here.</p>
+<p><strong>repository: Rulesets.</strong> Rulesets: every ruleset on
+this repository, its own and the organization’s. Alt+Enter opens one’s
+sheet: its target, every rule and setting, who may bypass it, and a
+Summary in plain words. Delete removes one after its name is typed.</p>
 <p><strong>person: person.</strong> A person: their repositories,
 activity, followers and who they follow.</p>
 <p><strong>person: Profile.</strong> Profile: who this person is, their
@@ -6321,13 +6370,18 @@ own machines that run jobs.</p>
 <p><strong>organization: Larger Runners.</strong> Larger Runners:
 GitHub’s bigger machines the organization pays for.</p>
 <p><strong>organization: Members.</strong> Members: the organization’s
-people. Ctrl+N invites someone; Delete removes them.</p>
+people, each an owner or a member, with two-factor sign-in on or off
+where you may see it. Ctrl+N invites someone; Delete removes them, after
+their name is typed, and never removes the last owner or your own
+ownership.</p>
 <p><strong>organization: Invitations.</strong> Invitations: people asked
 to join the organization who have not answered.</p>
 <p><strong>organization: Blocked People.</strong> Blocked People: who
 cannot take part in the organization’s repositories.</p>
 <p><strong>organization: Outside Collaborators.</strong> Outside
-Collaborators: people with access to repositories but not members.</p>
+Collaborators: people with access to repositories but not members.
+Delete takes away every repository they have here, after their name is
+typed.</p>
 <p><strong>organization: Security Managers.</strong> Security Managers:
 teams that see and manage every security alert.</p>
 <p><strong>organization: Custom Properties.</strong> Custom Properties:
@@ -6369,8 +6423,25 @@ Advisories: the repository advisories across this organization.</p>
 <p><strong>organization: Recent Events.</strong> Recent Events: the
 organization’s public activity, newest first.</p>
 <p><strong>organization: Custom Property Values.</strong> Custom
-Property Values: every repository’s custom properties in one list.
-Change a repository’s on its Properties.</p>
+Property Values: every repository and every custom property, a row a
+repository, with unset properties said as not set. Change a repository’s
+on its Properties, or several at once with Set Repositories’ Custom
+Property… on the organization.</p>
+<p><strong>organization: Rulesets.</strong> Rulesets: the organization’s
+rulesets, which apply across its repositories. Alt+Enter opens one’s
+sheet, with the repositories it covers by name or property; Delete
+removes it from every repository after its name is typed.</p>
+<p><strong>organization: Rule Insights.</strong> Rule Insights: recent
+pushes the organization’s rulesets passed, blocked or let through, in
+every repository.</p>
+<p><strong>organization: Access Review: People.</strong> Access Review:
+People: every person and repository pair, a row each, with the effective
+role and where it comes from: being an owner, the base permission, a
+team or direct access, and the others after ‘also’. Filter it by a name,
+a role or a team; File, Export List saves it.</p>
+<p><strong>organization: Access Review: Teams.</strong> Access Review:
+Teams: every team and repository pair, a row each, with the team’s role
+there and how many people it reaches. File, Export List saves it.</p>
 <p><strong>pinned_search: Saved search.</strong> A saved search pinned
 as a node: its list is the search’s results, read afresh each time.
 Unpin Node, on its row in Saved Searches, takes the node away.</p>
@@ -6442,6 +6513,9 @@ way.</p>
 this way.</p>
 <p><strong>View &gt; Most Comments.</strong> Order the list this
 way.</p>
+<p><strong>View &gt; By Column….</strong> Order this list by one of its
+columns, first to last or last to first; remembered for this list. For
+lists other than Issues, which GitHub orders.</p>
 <p><strong>View &gt; Assigned to Me.</strong> Show only items assigned
 to me. Checked when it is on; it combines with the others and with what
 you type in the filter box.</p>
@@ -6510,6 +6584,9 @@ one node per state.</p>
 tree, one node per repository.</p>
 <p><strong>View &gt; Review State.</strong> Put the list’s groups in the
 tree, one node per review state.</p>
+<p><strong>View &gt; By Column….</strong> Group this list by one of its
+columns, the groups as tree nodes; remembered for this list. For lists
+other than Issues, which group by the rows above.</p>
 <p><strong>View &gt; Columns….</strong> Choose which columns this list
 shows, and their order.</p>
 <p><strong>View &gt; Back.</strong> The view you were on before.
@@ -6654,6 +6731,10 @@ opens, how notifications check, lists and privacy.</p>
 <p><strong>Tools &gt; Dry Run.</strong> Turn Dry Run on or off. While it
 is on, every write asks and previews as usual, then stops before sending
 and says what it would have sent.</p>
+<p><strong>Tools &gt; Plain-Language Batch….</strong> Say a change to
+many issues or pull requests in words, such as close every issue
+labelled duplicate older than 90 days; check the exact items it found,
+then send them. No AI: the same words always mean the same thing.</p>
 <p><strong>Tools &gt; GitHub API Console….</strong> Send any GitHub REST
 request or GraphQL query: completion from GitHub’s API description, what
 it does and needs said first, the answer as a tree.</p>
@@ -7062,6 +7143,8 @@ property one value in several repositories.</p>
 <p><strong>New Team.</strong> Make a team in this organization.</p>
 <p><strong>Accept Membership.</strong> Join this organization, when it
 has invited you.</p>
+<p><strong>Members Without Two-Factor.</strong> Members who have not
+turned on two-factor sign-in. GitHub shows this to owners.</p>
 <p><strong>My Activity Here.</strong> What you have done lately in this
 organization’s repositories.</p>
 <p><strong>Require Sign-off on Web Commits.</strong> Whether commits
@@ -7155,19 +7238,27 @@ preview shows each repository, then each result.</p>
 choose that lack it, after the preview.</p>
 <p><strong>Find Uses.</strong> Search every issue and pull request with
 it, across the set.</p>
-<p><strong>Rename Everywhere.</strong> Rename the label in every
-repository; a clash is shown, not merged.</p>
+<p><strong>Rename Everywhere.</strong> Rename the label or branch in
+every repository; a clash is shown, not merged, and a branch’s preview
+says what follows from GitHub’s rename.</p>
 <p><strong>Merge Into.</strong> Move every item to another label, then
 delete this one, after the preview.</p>
 <p><strong>Close Everywhere.</strong> Close every open copy of the
 milestone, after the preview.</p>
 <p><strong>Move Open Work To.</strong> Move each repository’s open items
 to another milestone of its own, after the preview.</p>
-<p><strong>Promote to Organization.</strong> One organization ruleset
-for the set’s repositories in that organization, then their own copies
-deleted, after the preview.</p>
-<p><strong>Delete Everywhere.</strong> Delete the label, or remove the
-topic, in every repository, after the preview.</p>
+<p><strong>Promote to Organization.</strong> One organization ruleset,
+secret, variable or webhook for the set’s repositories in that
+organization, then their own copies deleted, after the preview.</p>
+<p><strong>Release Train.</strong> Make this tag, or the tag and a
+release, in the repositories you choose; one that has the tag is skipped
+and its tag never moved.</p>
+<p><strong>Set Secret Everywhere.</strong> Type one new value once; it
+is sealed for each repository you choose and set there.</p>
+<p><strong>Turn On or Off Everywhere.</strong> Turn the webhook on or
+off in every repository that has it, after the preview.</p>
+<p><strong>Delete Everywhere.</strong> Delete it, or remove the topic,
+in every repository that has it, after the preview.</p>
 <p><strong>Open Repository.</strong> Select the repository’s node in the
 tree.</p>
 <p><strong>Download.</strong> Download the file in your browser.</p>
@@ -8462,8 +8553,8 @@ next page.</li>
 what the last save did.</li>
 <li><code>cancel</code>: Close the sheet without saving. Escape does the
 same.</li>
-<li><code>ok</code>: Save what you changed and close the sheet.
-Ctrl+Enter too.</li>
+<li><code>ok</code>: Save what you changed and close the sheet. Enter
+and Ctrl+Enter too.</li>
 <li><code>apply</code>: Save what you changed and keep the sheet open.
 Ctrl+S too.</li>
 </ul>

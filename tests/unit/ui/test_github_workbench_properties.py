@@ -387,7 +387,7 @@ def test_projects_on_the_sheet_add_and_remove_with_the_graphql_mutations(
 
     def edit(sheet: PropertiesSheet) -> None:
         assert sheet.editable(sheet.sheet.field("projects"))
-        assert sheet.controls["projects"].labels() == ["Roadmap", "Triage"]
+        assert sheet.controls["projects"].labels() == ["Roadmap, on", "Triage, off"]
         _check(sheet, "projects", "Triage")
         _check(sheet, "projects", "Roadmap", on=False)
         sheet.apply(close=True)
@@ -434,3 +434,115 @@ def test_new_project_creates_one_on_github_and_puts_the_issue_in_it(bench, monke
     added = [v for q, v in api.graphql_calls if "addProjectV2ItemById" in q]
     assert added == [{"project": "PVT_new", "content": "I_1"}]
     assert "Created Q1." in bench.said
+
+
+# -- the checklists: state in the row, Space once, Enter saves, focus back (GH-R-157) ------
+
+
+class _Key:
+    """A key as EVT_CHAR_HOOK hands it to the sheet."""
+
+    def __init__(self, code: int, *, ctrl: bool = False) -> None:
+        self.code, self.ctrl, self.skipped = code, ctrl, False
+
+    def GetKeyCode(self) -> int:  # noqa: N802 - the wx name
+        return self.code
+
+    def ControlDown(self) -> bool:  # noqa: N802
+        return self.ctrl
+
+    def ShiftDown(self) -> bool:  # noqa: N802
+        return False
+
+    def HasAnyModifiers(self) -> bool:  # noqa: N802
+        return self.ctrl
+
+    def Skip(self) -> None:  # noqa: N802
+        self.skipped = True
+
+
+def test_repository_features_say_their_state_once_in_the_row(bench, monkeypatch) -> None:
+    def look(sheet: PropertiesSheet) -> None:
+        issues = sheet.controls["has_issues"]
+        assert isinstance(issues, wx.CheckBox)
+        assert issues.GetLabel() in ("Issues, on", "Issues, off")
+        page = issues.GetParent()
+        texts = [c.GetLabel() for c in page.GetChildren() if isinstance(c, wx.StaticText)]
+        assert "Issues:" not in texts  # no second "row" beside the box saying its name again
+        before = issues.GetValue()
+        issues.SetValue(not before)  # Space, natively, once
+        event = wx.CommandEvent(wx.wxEVT_CHECKBOX, issues.GetId())
+        event.SetEventObject(issues)
+        issues.GetEventHandler().ProcessEvent(event)
+        assert issues.GetValue() is (not before)  # the handler did not flip it back
+        assert issues.GetLabel() == f"Issues, {'on' if not before else 'off'}"
+
+    seen = _script(monkeypatch, look)
+    bench.select(NodeRef("repository", "repository", REPO))
+    bench.provider.open_properties(bench.current, [])
+    assert seen and "has_issues" in seen[0].controls
+
+
+def test_enter_on_a_checklist_row_saves_and_ok_is_the_default(bench, monkeypatch) -> None:
+    applied: list[bool] = []
+
+    def press(sheet: PropertiesSheet) -> None:
+        assert sheet.dialog.GetDefaultItem().GetId() == wx.ID_OK
+        box = sheet.controls["labels"].boxes["bug"]
+        monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: box))
+        monkeypatch.setattr(sheet, "apply", lambda *, close: applied.append(close))
+        key = _Key(wx.WXK_RETURN)
+        sheet._on_key(key)
+        assert applied == [True] and not key.skipped
+        space = _Key(wx.WXK_SPACE)
+        sheet._on_key(space)
+        assert space.skipped and applied == [True]  # Space is the box's own: passed on once
+
+    _script(monkeypatch, press)
+    _pick(bench, 1)
+    bench.run("github.workbench.properties")
+    assert applied == [True]
+
+
+def test_after_a_save_focus_returns_to_the_same_row(bench, monkeypatch) -> None:
+    focused: list[str] = []
+
+    def edit(sheet: PropertiesSheet) -> None:
+        box = sheet.controls["labels"].boxes["bug"]
+        monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: box))
+        _check(sheet, "labels", "bug")
+        monkeypatch.setattr(box, "SetFocus", lambda: focused.append("bug"))
+        monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: box))
+        sheet.apply(close=False)
+        assert sheet.controls["labels"].labels()[0] == "bug, on"
+        # The save's own sentence is in the status box and said once, not twice.
+        assert sum(text.startswith("Issue #1:") for text in bench.said) == 1
+
+    _script(monkeypatch, edit)
+    _pick(bench, 1)
+    bench.run("github.workbench.properties")
+    # Focus was already on the row, so nothing moved it: the reader does not re-read it.
+    assert focused == []
+
+
+def test_focus_comes_back_when_the_save_took_it_away(bench, monkeypatch) -> None:
+    focused: list[str] = []
+
+    def edit(sheet: PropertiesSheet) -> None:
+        box = sheet.controls["labels"].boxes["bug"]
+        monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: box))
+        _check(sheet, "labels", "bug")
+        monkeypatch.setattr(box, "SetFocus", lambda: focused.append("bug"))
+        original = sheet.saved
+
+        def saved(values, said, *, close):
+            monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: None))
+            original(values, said, close=close)
+
+        monkeypatch.setattr(sheet, "saved", saved)
+        sheet.apply(close=False)
+
+    _script(monkeypatch, edit)
+    _pick(bench, 1)
+    bench.run("github.workbench.properties")
+    assert focused == ["bug"]
