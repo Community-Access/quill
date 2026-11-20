@@ -5689,7 +5689,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="github-workbench">GitHub Workbench</h2>
-<p>Control coverage: 400 audited sites (400 helped).</p>
+<p>Control coverage: 402 audited sites (402 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>Add Entry.</strong> A new Dependabot entry: ecosystem,
@@ -6766,6 +6766,13 @@ access, such as Contributor: write on these repositories and member of a
 team. Kept on this computer for this account.</p>
 <p><strong>Account &gt; Apply Access Template….</strong> Give one person
 everything a template holds: previewed, then a result per change.</p>
+<p><strong>Account &gt; Compare Accounts….</strong> Two of your
+signed-in accounts on this repository, side by side: each one’s role and
+sign-in, as GitHub answered that account.</p>
+<p><strong>Account &gt; Act As Another Account….</strong> One action
+sent as another signed-in account, such as approving your own pull
+request: the account is named before and after, and held to its own
+level.</p>
 <p><strong>Account &gt; Workbench Level for This Account….</strong> Read
 Only, Organize or Full: what the Workbench may change with this account,
 whatever GitHub would allow.</p>
@@ -7631,6 +7638,9 @@ does the same.</li>
 <ul>
 <li><code>self._token_ctrl</code>: A personal access token you made on
 GitHub. QUILL asks GitHub whose it is before it keeps it.</li>
+<li><code>self._host_ctrl</code>: github.com, or your GitHub Enterprise
+Server’s name, such as github.example.com. The token is only ever sent
+to this server.</li>
 <li><code>self._connect_btn</code>: Sign in with the token you typed or
 the browser sign-in.</li>
 <li><code>anon_btn</code>: Go on without signing in. Public repositories
@@ -7652,6 +7662,10 @@ computer. Its token is removed.</li>
 <li><code>add_btn</code>: Paste a personal access token you made on
 GitHub, for example a fine-grained token limited to a few
 repositories.</li>
+<li><code>gh_btn</code>: If you already signed in to the GitHub CLI
+(gh), QUILL asks it for that sign-in, checks whose it is, asks you, and
+keeps its own copy. Works for github.com and a GitHub Enterprise
+Server.</li>
 <li><code>close_btn</code>: Close Manage GitHub Accounts.</li>
 <li><code>self._choice</code>: The GitHub accounts QUILL knows. Choose
 one to use or remove.</li>

@@ -1,8 +1,13 @@
 """Account-scoped GitHub credentials and metadata.
 
 Tokens stay in QUILL's OS-backed Secrets Manager. This file stores only the
-GitHub.com login, host, and the id of the active account. QUILL Lite gets its
-own registry because ``app_data_dir`` is product-scoped.
+login, host, and the id of the active account. QUILL Lite gets its own registry
+because ``app_data_dir`` is product-scoped.
+
+The host is ``github.com`` or, since 2026-11-19, a GitHub Enterprise Server
+(``github.example.com``; :mod:`quill.core.github.hosts`). Loading an account's
+token binds it to that host for this process, so every request with it goes
+there and nowhere else. The same login on two hosts is two accounts.
 
 Since 2026-11-08 it also remembers two non-secret things about each account:
 **how it was added** (``added_by``: Sign In with GitHub, a pasted token, or
@@ -32,11 +37,13 @@ _SCHEMA_VERSION = 1
 _LOGIN_RE = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?$")
 _ACCOUNT_ID_RE = re.compile(r"^[0-9a-f]{32}$")
 
-#: How an account was added. ``unknown`` is every account saved before 2026-11-08.
+#: How an account was added. ``unknown`` is every account saved before 2026-11-08;
+#: ``gh_cli`` reused the GitHub CLI's own sign-in (``gh auth token``, 2026-11-19).
 ADDED_BY_SIGN_IN = "sign_in"
 ADDED_BY_TOKEN = "token"
+ADDED_BY_GH_CLI = "gh_cli"
 ADDED_BY_UNKNOWN = "unknown"
-_ADDED_BY = frozenset({ADDED_BY_SIGN_IN, ADDED_BY_TOKEN, ADDED_BY_UNKNOWN})
+_ADDED_BY = frozenset({ADDED_BY_SIGN_IN, ADDED_BY_TOKEN, ADDED_BY_GH_CLI, ADDED_BY_UNKNOWN})
 
 
 class GitHubAccountError(CodedError, ValueError):
@@ -47,7 +54,7 @@ class GitHubAccountError(CodedError, ValueError):
 
 @dataclass(frozen=True, slots=True)
 class GitHubAccount:
-    """Non-secret metadata for one GitHub.com account."""
+    """Non-secret metadata for one account on GitHub.com or a GitHub Enterprise Server."""
 
     id: str
     login: str
@@ -59,18 +66,31 @@ class GitHubAccount:
     def display_name(self) -> str:
         return f"{self.login} ({self.host})"
 
+    @property
+    def level_key(self) -> str:
+        """The key the Workbench level is kept under: the login on GitHub.com, else login@host.
+
+        GitHub.com accounts keep the plain login they always had, so no saved
+        level changes meaning; an Enterprise account cannot share a level with
+        the GitHub.com account of the same name.
+        """
+        return self.login if self.host == "github.com" else f"{self.login}@{self.host}"
+
 
 @dataclass(frozen=True, slots=True)
 class GitHubAccountState:
     """What QUILL has already told somebody about one account, and when.
 
     ``expires_at`` is GitHub's own ``GitHub-Authentication-Token-Expiration``
-    value, as sent; ``expiry_warned_on`` is an ISO date (``2026-11-08``).
+    value, as sent; ``expiry_warned_on`` is an ISO date (``2026-11-08``);
+    ``server_version`` is an Enterprise Server's ``installed_version`` from
+    ``GET /meta`` (empty for GitHub.com).
     """
 
     nudge_shown: bool = False
     expires_at: str = ""
     expiry_warned_on: str = ""
+    server_version: str = ""
 
 
 def accounts_path() -> Path:
@@ -90,12 +110,12 @@ def _account_secret(account_id: str) -> SecretRef:
 
 
 def _validated_host(host: str) -> str:
-    value = host.strip().casefold().rstrip(".")
-    if value != "github.com":
-        raise GitHubAccountError(
-            "GitHub Enterprise hosts are not supported yet. Connect a GitHub.com account."
-        )
-    return value
+    from quill.core.github.hosts import GitHubHostError, normalize_host
+
+    try:
+        return normalize_host(host)
+    except GitHubHostError as exc:
+        raise GitHubAccountError(str(exc)) from exc
 
 
 def _read_registry() -> dict[str, object]:
@@ -205,6 +225,7 @@ def account_state(account_id: str) -> GitHubAccountState:
         nudge_shown=raw.get("nudge_shown") is True,
         expires_at=str(raw.get("expires_at", "") or ""),
         expiry_warned_on=str(raw.get("expiry_warned_on", "") or ""),
+        server_version=str(raw.get("server_version", "") or ""),
     )
 
 
@@ -214,6 +235,7 @@ def update_account_state(
     nudge_shown: bool | None = None,
     expires_at: str | None = None,
     expiry_warned_on: str | None = None,
+    server_version: str | None = None,
 ) -> bool:
     """Change part of an account's state. False when there is no such account."""
     accounts = list_github_accounts()
@@ -227,6 +249,8 @@ def update_account_state(
         changes["expires_at"] = expires_at
     if expiry_warned_on is not None:
         changes["expiry_warned_on"] = expiry_warned_on
+    if server_version is not None:
+        changes["server_version"] = server_version
     updated = replace(current, **changes)  # type: ignore[arg-type]
     if updated == current:
         return True
@@ -235,6 +259,7 @@ def update_account_state(
         "nudge_shown": updated.nudge_shown,
         "expires_at": updated.expires_at,
         "expiry_warned_on": updated.expiry_warned_on,
+        "server_version": updated.server_version,
     }
     _persist(accounts, active_github_account_id(), states)
     return True
@@ -286,6 +311,7 @@ def save_github_account(
             "nudge_shown": states[account.id].get("nudge_shown") is True,
             "expires_at": "",
             "expiry_warned_on": "",
+            "server_version": str(states[account.id].get("server_version", "") or ""),
         }
     try:
         _persist(accounts, account.id, states)
@@ -299,7 +325,26 @@ def save_github_account(
 
 
 def load_github_account_token(account_id: str) -> str | None:
-    return default_secrets_manager().get(_account_secret(account_id))
+    """The account's token, bound to the account's host for this process.
+
+    Binding here, where every account token is loaded, is what keeps an
+    Enterprise token on its own server (:func:`quill.core.github.hosts.api_url`).
+    """
+    token = default_secrets_manager().get(_account_secret(account_id))
+    account = next((item for item in list_github_accounts() if item.id == account_id), None)
+    if token and account is not None:
+        from quill.core.github.hosts import bind_token, remember_server_version
+
+        bind_token(token, account.host)
+        version = account_state(account_id).server_version
+        if version:
+            remember_server_version(account.host, version)
+    return token
+
+
+def github_account(account_id: str) -> GitHubAccount | None:
+    """The saved account with *account_id*, or None."""
+    return next((item for item in list_github_accounts() if item.id == account_id), None)
 
 
 def set_active_github_account(account_id: str) -> bool:
@@ -325,6 +370,7 @@ def remove_github_account(account_id: str) -> bool:
 
 
 __all__ = [
+    "ADDED_BY_GH_CLI",
     "ADDED_BY_SIGN_IN",
     "ADDED_BY_TOKEN",
     "ADDED_BY_UNKNOWN",
@@ -335,6 +381,7 @@ __all__ = [
     "accounts_path",
     "active_github_account",
     "active_github_account_id",
+    "github_account",
     "has_account_registry",
     "list_github_accounts",
     "load_github_account_token",

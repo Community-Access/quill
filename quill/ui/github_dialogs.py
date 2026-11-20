@@ -86,6 +86,8 @@ class SignInResult:
     """Token or empty string for anonymous."""
 
     token: str  # "" means anonymous
+    #: ``github.com`` or a GitHub Enterprise Server host, as typed.
+    host: str = "github.com"
 
 
 class GitHubSignInDialog:
@@ -127,13 +129,24 @@ class GitHubSignInDialog:
         )
         grid.Add(token_label, 0, wx.ALIGN_CENTER_VERTICAL)
         grid.Add(self._token_ctrl, 1, wx.EXPAND)
+        host_label = wx.StaticText(panel, label="GitHub server")
+        self._host_ctrl = wx.TextCtrl(panel, value="github.com")
+        self._host_ctrl.SetName("GitHub server")
+        self._host_ctrl.SetHelpText(
+            "github.com, or your GitHub Enterprise Server's name, such as "
+            "github.example.com. The token is only ever sent to this server."
+        )
+        grid.Add(host_label, 0, wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(self._host_ctrl, 1, wx.EXPAND)
         sizer.Add(grid, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=12)
 
         help_text = wx.StaticText(
             panel,
             label=(
                 "Create a token at github.com > Settings > Developer settings >\n"
-                "Personal access tokens. Select 'repo' scope for private repos."
+                "Personal access tokens. Select 'repo' scope for private repos.\n"
+                "For a GitHub Enterprise Server, make the token on that server and type "
+                "its name under GitHub server; Sign In with GitHub is for github.com only."
             ),
         )
         help_text.Wrap(440)
@@ -175,7 +188,8 @@ class GitHubSignInDialog:
             token = self._token_ctrl.GetValue().strip()
             if not token:
                 return SignInResult(token="")
-            return SignInResult(token=token)
+            host = self._host_ctrl.GetValue().strip() or "github.com"
+            return SignInResult(token=token, host=host)
         finally:
             self.dialog.Destroy()
 
@@ -186,7 +200,7 @@ class GitHubSignInDialog:
 
 
 class GitHubManageAccountsDialog:
-    """Switch, add, or remove locally stored GitHub.com accounts."""
+    """Switch, add, or remove saved accounts on GitHub.com or a GitHub Enterprise Server."""
 
     def __init__(
         self,
@@ -298,7 +312,16 @@ class GitHubManageAccountsDialog:
             "Paste a personal access token you made on GitHub, for example a "
             "fine-grained token limited to a few repositories."
         )
-        btn_sizer.Add(add_btn)
+        btn_sizer.Add(add_btn, flag=wx.RIGHT, border=8)
+        self._gh_id = wx.NewIdRef()
+        gh_btn = wx.Button(panel, int(self._gh_id), label="Use GitHub &CLI Sign-In...")
+        gh_btn.SetName("Use the GitHub CLI's sign-in")
+        gh_btn.SetHelpText(
+            "If you already signed in to the GitHub CLI (gh), QUILL asks it for that sign-in, "
+            "checks whose it is, asks you, and keeps its own copy. Works for github.com and "
+            "a GitHub Enterprise Server."
+        )
+        btn_sizer.Add(gh_btn)
         sizer.Add(btn_sizer, flag=wx.LEFT | wx.RIGHT, border=12)
 
         sizer.AddSpacer(8)
@@ -326,6 +349,7 @@ class GitHubManageAccountsDialog:
             self._choice.Bind(wx.EVT_CHOICE, self._on_account_selected)
         add_btn.Bind(wx.EVT_BUTTON, self._on_add)
         sign_in_btn.Bind(wx.EVT_BUTTON, self._on_sign_in)
+        gh_btn.Bind(wx.EVT_BUTTON, lambda _e: self.dialog.EndModal(self._gh_id))
         self._sign_in_btn = sign_in_btn
 
     def _selected_account_id(self) -> str | None:
@@ -353,7 +377,8 @@ class GitHubManageAccountsDialog:
         self.dialog.EndModal(self._sign_in_id)
 
     def show(self) -> str:
-        """``sign_in``, ``switch:<id>``, ``remove:<id>``, ``remove:legacy``, ``add`` or ``done``."""
+        """``sign_in``, ``switch:<id>``, ``remove:<id>``, ``remove:legacy``, ``add``, ``gh_cli``
+        or ``done``."""
         wx = self._wx
         apply_modal_ids(self.dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)
         try:
@@ -370,6 +395,8 @@ class GitHubManageAccountsDialog:
                 return "sign_in"
             if result == wx.ID_ADD:
                 return "add"
+            if result == self._gh_id:
+                return "gh_cli"
             return "done"
         finally:
             self.dialog.Destroy()

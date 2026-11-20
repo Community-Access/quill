@@ -148,6 +148,20 @@ class UsageEvent(db.Model):
     the one component of a bill that can grow without anybody noticing -- which
     is why it is a column of its own rather than folded into the total."""
     estimated_cost_usd: Mapped[float] = mapped_column(Numeric(10, 6), nullable=False)
+    """What the request really cost: tokens plus any per-search charge. The
+    figure the **global** budget is measured in."""
+    user_cost_usd: Mapped[float | None] = mapped_column(Numeric(10, 6), nullable=True)
+    """The part of it that counts against **this person's** monthly cost
+    ceiling. Equal to ``estimated_cost_usd`` except for a web search, whose
+    per-search charge is bounded by the search cap instead
+    (``app/limits.py::WEB_SEARCH_CALL_COST_USD``).
+
+    Two columns because they are two different numbers, and the nightly
+    ``reconcile-usage`` job rebuilds the person's total from this table: with
+    only the full cost on record it moved every search fee onto the person, and
+    a $0.001 search became $0.031 overnight. ``NULL`` only on a row written
+    before migration 010, which back-fills it; reconciliation reads a ``NULL``
+    as the full cost."""
     status: Mapped[str] = mapped_column(String(16), nullable=False)
     """allowed | throttled | blocked."""
     abuse_flag: Mapped[str | None] = mapped_column(String(32), nullable=True)

@@ -74,6 +74,9 @@ class FakeHost:
     def go_to_offset(self, offset: int) -> None:
         self.caret = offset
 
+    def set_caret(self, offset: int) -> None:
+        self.caret = offset
+
     def open_path(self, path: Path) -> None:
         self.opened.append(path)
         self.path = path

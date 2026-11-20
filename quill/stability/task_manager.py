@@ -225,18 +225,36 @@ class TaskManager:
         return _done
 
     def cancel(self, operation_id: str) -> bool:
+        """Ask a task to stop. True when it will not run to completion normally.
+
+        * A task that has **not started** is cancelled outright, whatever its
+          ``safe_to_cancel``: it never runs, so nothing is half done. True.
+        * A **running** task with ``safe_to_cancel=True`` has its cancellation
+          token set; a cooperative worker stops at its next check. True.
+        * A **running** task with ``safe_to_cancel=False`` -- a document or
+          settings write that must finish or not start -- is **not signalled**
+          and runs to completion. False, and that is the truth: nothing was
+          cancelled.
+        * An unknown or already finished task: False.
+
+        Until 2026-11 the token was set *before* this was decided, so an
+        "unsafe" task was told to stop -- and a worker that checked its token
+        raised ``CancelledError`` mid-write -- while the call returned False
+        as if it had been left alone (plan.md, "Shared diagnostics and
+        background-runtime review").
+        """
         with self._lock:
             task = self._tasks.get(operation_id)
-        if task is None:
+        if task is None or task.future.done():
+            return False
+        if task.future.cancel():
+            # Never started; set the token too, for anything holding it.
+            task.cancellation_token.cancel()
+            return True
+        if not task.safe_to_cancel:
             return False
         task.cancellation_token.cancel()
-        # A not-yet-started future cancels outright. A *running* future cannot
-        # be cancelled (``future.cancel()`` returns False), but the cooperative
-        # cancellation token has still been signalled, so report success for a
-        # cooperatively-cancellable task rather than a misleading False.
-        if task.future.cancel():
-            return True
-        return task.safe_to_cancel
+        return True
 
     def snapshot(self) -> list[QuillTask]:
         with self._lock:

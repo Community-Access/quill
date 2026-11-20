@@ -41,13 +41,24 @@ class FakeGitHubApi:
         self.calls.append((method, path, dict(body) if body is not None else None))
         if method != "GET" and self.on_write is not None:
             self.on_write(method, path, body)
-        data = self.answers.get((method, path))
+        data = None
+        if query:
+            # An answer recorded for one query ("/x?affiliation=direct") wins over the path's.
+            for key, value in sorted(query.items()):
+                found = self.answers.get((method, f"{path}?{key}={value}"))
+                if found is not None:
+                    data = found
+                    break
+        if data is None:
+            data = self.answers.get((method, path))
         if data is None and method != "GET":
             return RestResponse(200, {}, {})
         if data is None:
             raise GitHubRestError("Not Found", status=404)
         if isinstance(data, BaseException):
             raise data
+        if isinstance(data, RestResponse):
+            return data  # an answer with its own headers (X-OAuth-Scopes)
         value = data() if callable(data) else data
         return RestResponse(200, {}, value)
 

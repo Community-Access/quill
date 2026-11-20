@@ -19,7 +19,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from quill.core.support_message import SupportMessage
-from quill.stability.redaction import redact_text_for_bundle
+from quill.stability.redaction import redact_outbound_line, redact_text_for_bundle
 
 #: Spelled once so a scripted edit cannot turn it into a real line break.
 NEWLINE = chr(10)
@@ -39,16 +39,30 @@ def build_crash_support_message(
     *body* should already be redacted (``crash_submit.build_crash_report_payload``
     and ``redact_user_description`` do that); it is scrubbed once more here
     because this is the last step before the text leaves QUILL's hands.
+
+    So is **every other field**: the subject, the version, the platform, the
+    screen reader and each support fact become the email's subject line or
+    its "About this report" block, and the clipboard copy is built from the
+    same message. Until 2026-11 only the body was scrubbed here, and a
+    credential in an exception's text reached the subject (plan.md, "Shared
+    diagnostics and background-runtime review").
     """
-    product = f"QUILL {app_version}".strip()
+    product = redact_outbound_line(f"QUILL {app_version}".strip()) or "QUILL"
+    summary = redact_outbound_line(summary)
+    facts: dict[str, str] = {}
+    for key, value in (extra or {}).items():
+        clean_key = redact_outbound_line(str(key))
+        clean_value = redact_outbound_line(str(value or ""))
+        if clean_key and clean_value:
+            facts[clean_key] = clean_value
     return SupportMessage(
         product=product,
         summary=f"Crash report: {summary}" if summary else "Crash report",
         message=redact_text_for_bundle(body),
         category="Something is broken",
-        platform=platform_name,
-        screen_reader=screen_reader_name,
-        extra={key: value for key, value in (extra or {}).items() if value},
+        platform=redact_outbound_line(platform_name),
+        screen_reader=redact_outbound_line(screen_reader_name),
+        extra=facts,
     )
 
 

@@ -24,7 +24,6 @@ from quill.core.wordpress.workbench_practice import (
     _SETUP_MARKER,
     LOOPBACK_HOST,
     PORT,
-    PRACTICE_NAME,
     PracticeTools,
     site_url,
     start_command,
@@ -85,6 +84,12 @@ def wait_for_site(
     probe may wait up to 15 seconds, and a first start (WordPress installing
     itself into SQLite, then the blueprint) gets five minutes in all; it took
     nearly three in the 2026-11-13 live run.
+
+    Ready means this folder's site, set up: the REST index at this port's own
+    address with ``wp/v2``, and the first-run marker the blueprint leaves in
+    this folder. Never the site's title -- the learner may rename it in
+    Settings > General, and the blueprint runs only once, so a title check
+    refused every later start of a renamed site (plan.md 2026-11-20, item 1).
     """
     deadline = time.monotonic() + max(0.0, timeout)
     handoff = folder / _HANDOFF_DIR
@@ -108,7 +113,6 @@ def wait_for_site(
             if (
                 isinstance(namespaces, list)
                 and "wp/v2" in namespaces
-                and str(index.get("name", "")) == PRACTICE_NAME
                 and str(index.get("url", "")).rstrip("/") == site_url(port)
                 and initialized
             ):

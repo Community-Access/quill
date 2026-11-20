@@ -11,6 +11,7 @@ from typing import Any
 
 from quill.core.error_codes import CodedError
 from quill.core.github.auth_diagnostics import github_exception_hint
+from quill.core.github.hosts import pygithub_host
 from quill.core.github.models import (
     RemoteAccount,
     RemoteFile,
@@ -71,7 +72,7 @@ class GitHubRemoteProvider(RemoteProvider):
         gh = _get_gh_module()
         if token:
             auth = gh.Auth.Token(token)
-            self._gh: Any = gh.Github(auth=auth)
+            self._gh: Any = gh.Github(auth=auth, **pygithub_host(token))
         else:
             self._gh = gh.Github()
         self._token = token

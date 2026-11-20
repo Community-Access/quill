@@ -364,14 +364,15 @@ invitation's role, so for one of those, Remove it and invite them again.
 
 **Account > Roles and Access** also has:
 
-- **My Access Here...**, your role on this repository and where it comes from;
+- **My Access Here...**, your role on this repository and where each part
+  comes from;
 - **View As Role...** and **Compare Roles...**, what a role may do, read-only;
 - **Why Can't They?...**, what stops a person doing something, and who can
   change it;
-- **Access Review...**, every person and repository pair in an organization
-  with their role, copied as CSV too;
+- **Access Review...**, every person, team and repository in an organization
+  with their role and where it comes from, copied as CSV too;
 - **Bulk Access Changes...**, one team or person on many repositories at
-  once, previewed, with a result per change;
+  once, previewed person by person, with a result per change;
 - **Access Templates...**, named sets of access, such as Contributor: write
   on these repositories and member of a team. Choose New Template..., give it
   a name, and write one line for each place: `write on owner/name` (read,
@@ -383,7 +384,58 @@ invitation's role, so for one of those, Remove it and invite them again.
   person by login in one batch: organization first, then teams, then
   repositories. The preview says every change in words and asks once; each
   change then has its own result and its own line in Change History. It
-  needs Full for this account in the Workbench, as any access change does.
+  needs Full for this account in the Workbench, as any access change does;
+- **Compare Accounts...**, two of your signed-in accounts on this repository,
+  side by side;
+- **Act As Another Account...**, one action done as another of your
+  signed-in accounts.
+
+Every one of these answers from what GitHub itself says, and each line names
+the reply it came from, such as "(GitHub: /repos/acme/web permissions)". My
+Access Here reads the repository's permissions, GitHub's own
+`viewerPermission`, your role name (a custom role is named too), your place in
+the organization and its base permission, the teams that give you access, the
+rules on the default branch, and this sign-in's scopes. Why Can't They? reads
+the person's real role from GitHub rather than asking you for it, then the
+rules GitHub says apply to the branch, and names the one that stops them.
+
+Two things GitHub does not say, and the Workbench says so rather than
+guessing. GitHub's API does not list what a role may do, so View As Role and
+Compare Roles show GitHub's documented defaults for its built-in roles, say
+that is what they are, and then list who on this repository GitHub says has
+each role; a custom role is named, but what it adds is on the organization's
+Repository roles page. And GitHub does not list a fine-grained token's
+permissions: My Access Here says so, and when GitHub refuses something, the
+Workbench says the permission GitHub named in its refusal. When GitHub will
+not tell your account something at all (only people with write access may
+read others' roles, for example), the answer says it cannot be known.
+
+Bulk Access Changes reads each repository's current role first, and the
+preview says it per person: "kelly on acme/web: write now, maintain after."
+A repository where they already have that role is listed as "nothing is sent",
+and nothing is.
+
+#### Compare Accounts and Act As
+
+With more than one account in Manage GitHub Accounts, **Compare Accounts...**
+asks GitHub, with each account's own sign-in, about the open repository: its
+role, `viewerPermission`, its role name and its sign-in's scopes, then what
+one may do that the other may not. Before showing anything under an
+account's name, it asks GitHub whose the saved token is; if GitHub names
+somebody else, nothing is shown for that account, and you are told to sign in
+again.
+
+**Act As Another Account...** does one thing as another of your accounts and
+then forgets it: approve the selected pull request (approving your own needs
+a second account), comment on the selected issue or pull request, close or
+reopen it, or star the repository. You choose the account, then the action.
+The question names the account and its server ("As kelly-test on github.com,
+not as you: approve pull request #7"), and so does the result ("Approved pull
+request #7 in acme/web as kelly-test."). Act As is held to that account's own
+Workbench level, not yours, and Safe Mode stops it like any write. It checks
+whose the token is first, and sends nothing if it is not that account's. Your
+own account, its lists and its remembered reads are never touched: everything
+QUILL remembers is kept per account.
 
 ### Who has what, and why
 

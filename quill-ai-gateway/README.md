@@ -145,7 +145,9 @@ second password — see `app/dashboard_auth.py`'s docstring). From there:
   default.
 - **Limits** — every `gateway_config` row, editable, live (no restart).
 - **Users** — view usage, set a user's status (active/reduced/review/
-  blocked — reversible), or permanently remove a user.
+  blocked — reversible), or permanently remove a user. *Reduced quota* applies
+  `reduced_monthly_request_cap` (25) a month instead of the normal allowance;
+  *Under review* a smaller daily limit; *Paused* stops everything.
 
   **Lifting a new account's starter allowance.** A new account gets
   `new_account_request_cap` requests a month (15) for its first
@@ -188,7 +190,7 @@ pytest
 ```
 
 The suite uses an in-memory SQLite database and `fakeredis` — no external
-services required (see `tests/conftest.py`). **326 tests** cover the quota
+services required (see `tests/conftest.py`). **About 380 tests** cover the quota
 engine, the large-document safeguards, the device-code auth flow, the model
 registry, the admin API, the admin dashboard, and four things worth naming
 because each one was a live bug:
@@ -210,6 +212,64 @@ because each one was a live bug:
   row refuses), goes through its own call and allowlist, stops at ten a month,
   refunds a failed search, and charges its fee to the budget but not the
   person's cost ceiling.
+
+One more, `test_migrations.py`, applies every file in `migrations/` to a
+clean PostgreSQL database, and needs a real server for that part: set
+`GATEWAY_TEST_POSTGRES_URL` to one it may create a scratch database on
+(`docker run -e POSTGRES_PASSWORD=pg -p 5432:5432 postgres:16-alpine`, then
+`postgresql://postgres:pg@localhost:5432/postgres`). Without it that test is
+skipped; the `gateway-ci` workflow always sets it.
+
+`test_accounting_and_onboarding.py` pins the fixes from the 2026-11-20 review:
+reconciliation keeps a search fee off the person's total, a device code is
+confirmed exactly once, the spend and monthly counters survive Redis losing
+them, a device's slot goes back to the network that holds it, a malformed
+provider reply is refunded, and *Reduced quota* reduces.
+
+## What Redis holds, and what survives losing it
+
+Redis is not a cache in front of nothing. Decided on 2026-11-20, when the
+production compose file still ran it with no persistence and `allkeys-lru`:
+
+| State | Keys | If Redis loses it |
+|---|---|---|
+| Monthly request counters | `ratelimit:<user>:month:*` | **Rebuilt** from `monthly_usage_summary` the first time it is missed |
+| The month's global spend | `gwspend:<month>` | **Rebuilt** from `usage_events` on a miss, and refreshed by `reconcile-usage` nightly |
+| Per-feature, per-network and Jev monthly counters, device slots | `ratelimit:<user>:<feature>:month:*`, `ratelimit:net:*`, `jev:*`, `reg:devices:*`, `reg:devicenet:*` | Lost: reset to zero. Bounded by the rebuilt monthly counter and the budget cap |
+| Hourly and daily counters, registration throttles, budget-alert marks | `ratelimit:*:hour:*`, `ratelimit:*:day:*`, `reg:ip:*`, `gwalerted:*` | Lost; they cover an hour or a day |
+| Sign-ins in progress, config cache | `devgrant:*`, `devusercode:*`, `devpoll:*`, `gwcfg:*`, `public:stats:*` | Lost; somebody re-types a code, the next read goes to PostgreSQL |
+
+So production Redis (`docker-compose.prod.yml`) keeps an **append-only file on
+a named volume** (`--appendonly yes --appendfsync everysec`, `redis-data:/data`)
+and **never evicts** (`--maxmemory-policy noeviction`): a restart keeps every
+counter, and full memory refuses writes -- failing requests closed -- instead of
+quietly dropping a counter. Every key carries an expiry, so the set stays far
+below the 128 MB ceiling. The rebuilds are the second line, for a volume that is
+lost or a Redis that is replaced.
+
+## Money limits are estimates, not exact caps
+
+The request caps are exact: each is one atomic Redis increment, taken before the
+request is sent. The two **dollar** limits -- `monthly_cost_cap_usd` per person
+and `global_monthly_budget_usd` for everyone -- are not, and are not described
+as hard caps anywhere in the console. Each is checked before a request, against
+the cost **already recorded**, because a request's own cost is only known once
+the provider has answered. So:
+
+- The request that crosses a limit still finishes and is counted.
+- Every request already in flight at that moment does too. One person can have
+  at most their hourly limit in flight (8 by default); the whole service, as
+  many as are running at once.
+
+The tolerated overshoot is therefore **one request's maximum cost for each
+request in flight when a limit is reached**, plus the web-search charge ($0.03)
+for each search in flight, on the global budget only. At the shipped settings a
+request costs at most $0.0008 (3,000 tokens in, 1,000 out, at $0.10 and $0.50
+per million), so the per-person ceiling can be passed by about $0.0064 and the
+budget by a few cents at ordinary concurrency. The Limits page shows the live
+per-request figure next to this explanation. A reservation step (holding each
+request's maximum cost before it is sent) would make them exact; at these
+amounts it was judged not worth the extra moving part.
 
 ## Web search (off until you turn it on)
 
@@ -331,7 +391,10 @@ Add to cron (adjust paths/venv activation for your setup):
 # Nightly: reconcile monthly_usage_summary against the durable event log,
 # in case a crash ever left the running aggregate slightly behind
 # (app/limits.py::record_usage's docstring explains why this is a safety
-# net, not a routine necessity).
+# net, not a routine necessity). A person's total is rebuilt from each
+# event's user_cost_usd, never the full cost, so a web-search fee stays on
+# the global budget; resets an admin made this month are respected; and the
+# cached global spend in Redis is restored if it was lost.
 30 3 * * * cd /path/to/quill-ai-gateway && .venv/bin/flask --app run.py reconcile-usage
 ```
 

@@ -131,7 +131,7 @@ def test_sign_in_with_github_is_checked_and_saved_like_a_pasted_token(host, monk
     saved: list[tuple[str, str, str]] = []
     monkeypatch.setattr(
         f"{_FLOW}.save_github_account",
-        lambda login, token, added_by="": (
+        lambda login, token, added_by="", host="github.com": (
             saved.append((login, token, added_by)) or SimpleNamespace(login=login)
         ),
     )
@@ -198,3 +198,76 @@ def test_quill_waits_for_github_on_its_task_manager() -> None:
 
     assert host.app_name == "QUILL"
     assert host.submit == manager.submit
+
+
+def _gh_flow(host, monkeypatch, *, answer: object, identity: str = "octocat"):
+    import wx
+
+    saved: list[tuple] = []
+    monkeypatch.setattr(
+        f"{_FLOW}.save_github_account",
+        lambda login, token, added_by="", host="github.com": (
+            saved.append((login, token, added_by, host))
+            or SimpleNamespace(id="a" * 32, login=login, host=host)
+        ),
+    )
+    monkeypatch.setattr(f"{_FLOW}.delete_legacy_github_token", lambda: False)
+    monkeypatch.setattr(f"{_FLOW}.remember_server", lambda *_a: None)
+    monkeypatch.setattr(
+        "quill.core.github.gh_sign_in.read_gh_token", lambda server: "gho_" + "c" * 36
+    )
+
+    class _Provider:
+        last_auth_error = ""
+
+        def __init__(self, *, token=None) -> None:
+            pass
+
+        def get_identity(self):
+            return SimpleNamespace(login=identity)
+
+        def close(self) -> None:
+            pass
+
+    monkeypatch.setattr(f"{_FLOW}.GitHubRemoteProvider", _Provider)
+    asked: list[str] = []
+    host.host.message_box = lambda message, _c, _s: asked.append(message) or answer
+    flow = GitHubAccountsFlow(host.host)
+    monkeypatch.setattr(flow, "ask_gh_host", lambda: "ghe.example.com")
+    return flow, saved, asked, wx
+
+
+def test_the_gh_sign_in_is_saved_only_after_the_person_says_yes(host, monkeypatch) -> None:
+    import wx
+
+    from quill.core.github import hosts
+
+    hosts.forget_bindings()
+    flow, saved, asked, _wx = _gh_flow(host, monkeypatch, answer=wx.YES)
+    flow.reuse_gh_sign_in()
+    assert "signed in to ghe.example.com as octocat" in asked[0]
+    assert saved == [("octocat", "gho_" + "c" * 36, "gh_cli", "ghe.example.com")]
+    assert hosts.host_for_token("gho_" + "c" * 36) == "ghe.example.com"  # checked there
+    assert host.said == ["Added and switched to GitHub account octocat on ghe.example.com"]
+    hosts.forget_bindings()
+
+
+def test_no_to_the_gh_sign_in_saves_nothing(host, monkeypatch) -> None:
+    import wx
+
+    flow, saved, _asked, _wx = _gh_flow(host, monkeypatch, answer=wx.NO)
+    flow.reuse_gh_sign_in()
+    assert saved == [] and host.said == ["Nothing was added."]
+
+
+def test_gh_not_signed_in_is_said_and_nothing_is_saved(host, monkeypatch) -> None:
+    from quill.core.github.gh_sign_in import GhSignInError
+
+    flow, saved, asked, _wx = _gh_flow(host, monkeypatch, answer=None)
+
+    def refuse(server):
+        raise GhSignInError(f"The GitHub CLI is not signed in to {server}.")
+
+    monkeypatch.setattr("quill.core.github.gh_sign_in.read_gh_token", refuse)
+    flow.reuse_gh_sign_in()
+    assert saved == [] and asked == ["The GitHub CLI is not signed in to ghe.example.com."]

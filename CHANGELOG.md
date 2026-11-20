@@ -20,6 +20,111 @@
   Members of This Level on a site of 260 people; and reading a menu as a
   document.
 
+### Crash and support reports: what is sent is what was checked (2026-11-20)
+
+- **A crash email's subject is redacted like its body.** A password or key
+  in an error message was removed from the report you reviewed and still sent
+  in the subject line. Every field of the message is now scrubbed: the
+  subject, the version, the platform, the screen reader, the support facts,
+  and the copy that goes to the clipboard.
+- **A long subject no longer breaks the email.** Only the body used to be
+  shortened, so a long subject made a link your mail program refused. The
+  subject is shortened too, counted after encoding so accented letters and
+  emoji fit, and the complete message is still on your clipboard.
+- **Save Diagnostics always writes a readable bundle.** A long task name
+  could leave `metadata.json` unreadable. Each value is now redacted and
+  shortened on its own, and the file is checked before it is saved.
+- **Work that must finish is never told to stop part way.** Background
+  writes marked as unsafe to cancel, such as saving Inkwell's settings or a
+  Word file in QUILL Lite, were signalled to stop while the cancel request
+  reported that nothing had been cancelled. Now a write that has started runs
+  to the end and the request says it was not cancelled; one that has not
+  started is still cancelled.
+- **The shared progress throttle cannot hang and keeps the last update.** It
+  could lock up when there was no window to report to, and could drop the
+  final update. No shipping window was seen to freeze from this.
+- **F1 on Check What QUILL Says** explains the command and how to fill in
+  its report, instead of saying no help is available.
+
+### WordPress: local writing keeps its file, its pictures and its unsaved text (2026-11-20)
+
+- **Renaming a draft no longer loses it.** Changing a draft's title in
+  Properties used to make Open Local Draft open an empty, new file; the
+  writing was still in the old one. A draft now keeps the file it started
+  with through renaming, sending, closing and reopening, and restarting, in
+  QUILL and QUILL Lite. A draft already renamed opens its writing again.
+- **Uploaded pictures stay uploaded.** After Save Draft or Publish uploaded a
+  picture from this computer, the open document still held the picture's
+  local address, and the next Ctrl+S put it back. The site's address now goes
+  into the open document and its file, without touching anything typed while
+  the send was on its way or moving the caret.
+- **Previous Versions keeps what Restore replaces.** Restore now keeps the
+  text in the editor, saved or not, rather than the last saved copy. If you
+  switched documents while the history loaded, Restore says so and changes
+  nothing.
+- **Open by Web Address picks the right site.** A different port is a
+  different site, so `127.0.0.1:8080` no longer opens a site connected at
+  `127.0.0.1:9400`, and a site at `/blog` no longer claims `/blogger`.
+- **A renamed Practice Site starts.** The Practice Site no longer has to be
+  called Practice Site to count as ready: after a rename it used to wait five
+  minutes, stop and suggest a reset. Your posts are kept.
+- **Discussion counts links as WordPress does.** The Discussion explanation
+  counted one ordinary link twice, so it said a one-link comment would be
+  held under the two-link rule.
+
+### Hosted AI service: accounting you can trust, and one sign-in per code (2026-11-20)
+
+These are fixes to the free AI service itself (`quill-ai-gateway/`), found
+by a review of it. Nothing changes in QUILL or QUILL Lite.
+
+- **A web search no longer costs you its search fee overnight.** The search
+  fee belongs to the service's own budget, not your monthly limit, but the
+  nightly tidy-up moved it onto you: a search that cost $0.001 counted as
+  $0.031 by morning. Each request now records both figures.
+- **Confirming a code twice makes one connection.** Pressing Confirm twice,
+  or in two tabs, used to make two accounts and use two of your network's
+  places, and only one of them ever reached QUILL.
+- **Limits survive a restart.** The service now keeps its usage counts and
+  spending on disk, and rebuilds them from its records if they are lost.
+  Before, a restart could give everybody a fresh month.
+- **Signing a computer out frees its place on the right network,** the one
+  it was connected from, not the one you are on when you sign out.
+- **A garbled answer from the AI provider is an error, and costs nothing,**
+  like any other failed request.
+- **"Reduced quota" now reduces your allowance** (25 requests a month unless
+  an administrator sets another number). Before, it changed nothing.
+- **For administrators:** the console says the money limits are estimates.
+  Requests already being answered when a limit is reached still finish, so a
+  month can end slightly above a limit, and the console shows by how much.
+  The Switches page counts its features instead of saying five. The
+  migration runbook lists all ten database migrations in order, a new
+  migration (010) adds the per-person cost figure, and a new CI workflow
+  tests every migration on a clean PostgreSQL database.
+
+### GitHub Workbench: roles from GitHub's own answers, two accounts side by side, and gh sign-in (2026-11-20)
+
+- **My Access Here**, **Why Can't They?**, **Access Review** and **Bulk
+  Access Changes** now read what GitHub says, not a fixed table: your real
+  role (custom roles by name), the teams that give it, your organization's
+  base permission, the rules on the default branch and what your token
+  allows. Each line says where it came from. When GitHub will not say, QUILL
+  says it does not know rather than guessing. **Why Can't They?** reads the
+  person's real role and names the rule that blocks them.
+- **View As Role** and **Compare Roles** say they show GitHub's documented
+  defaults, then list who on this repository has each role.
+- When GitHub refuses a request, the message names the permission or scope it
+  asked for.
+- **Compare Accounts...** and **Act As Another Account...** under Roles and
+  Access. QUILL checks whose token it is before it shows or sends anything,
+  each account keeps its own remembered reads, and Act As is held to the
+  other account's Workbench level.
+- **Use GitHub CLI Sign-In...** in Manage GitHub Accounts adds the account
+  gh is already signed in to.
+- An account can be on a GitHub Enterprise Server: Add Token asks for the
+  server, and everything for that account goes to that server only. When the
+  server's GitHub is too old for something, QUILL says so and names its
+  version.
+
 ### GitHub Workbench: access templates, more tutorials, team review requests, and the Command Key in the Workbench (2026-11-20)
 
 - **Access templates.** Account > Roles and Access > Access Templates... keeps

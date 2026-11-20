@@ -332,9 +332,10 @@ def unavailable_reason(key: str, server_version: str | None, directory: Path = S
 def server_version_for_host(host: str) -> str | None:
     """The GitHub Enterprise Server version for an account's *host*; ``None`` for GitHub.com.
 
-    Accounts are GitHub.com only today (``accounts.py`` refuses other hosts), so
-    this is always ``None`` and nothing greys by version. When Enterprise
-    Server accounts arrive, the version their ``/meta`` reports goes here.
+    It is the ``installed_version`` the server's ``GET /meta`` reported when its
+    account was added (kept with the account, :mod:`quill.core.github.hosts`);
+    ``None`` while it is not known, and then nothing greys by version.
     """
-    del host
-    return None
+    from quill.core.github.hosts import server_version
+
+    return server_version(host)
