@@ -403,13 +403,30 @@ class ShowSettingsWindow:
             first = changed[0].say(
                 next(b.read() for b in self._controls if b.definition is changed[0])
             )
-            self._announce(
+            said = (
                 f"Saved {len(changed)} setting{'' if len(changed) == 1 else 's'} for "
                 f"{show.title}. {first}"
             )
         else:
-            self._announce(f"Saved settings for {show.title}. Nothing was changed.")
+            said = f"Saved settings for {show.title}. Nothing was changed."
+        # Said after the save, not before it (FUX-04): the save is what pushes
+        # a new speed to the episode playing, and when it could not -- a scan,
+        # or a file with its own speed -- the sentence says what is heard.
         self._close_ok()
+        if any(definition.id == "speed" for definition in changed):
+            said = f"{said} {self._speed_held(show)}".strip()
+        self._announce(said)
+
+    def _speed_held(self, show: PodcastShow) -> str:
+        """The clause for a saved speed the episode playing did not take, or ""."""
+        if self._host is None:
+            return ""
+        from quill.core.action_feedback import speed_still_playing
+        from quill.ui.podcasts.speed import speed_not_in_force
+
+        saved = float(self._library.effective_settings(show).speed)
+        held = speed_not_in_force(self._host, saved, show)
+        return speed_still_playing(held) if held is not None else ""
 
     def _close_ok(self) -> None:
         """Saved: tell the caller, show the new state, and stay open."""

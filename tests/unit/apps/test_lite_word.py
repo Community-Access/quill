@@ -210,7 +210,7 @@ def test_open_edit_save_and_reopen_in_word(lite_window, no_boxes, tmp_path: Path
     assert ("Heading 1", "Quarterly report") in styles
     assert ("Heading 5", "North") in styles and ("Heading 6", "Detail") in styles
     assert styles[-1] == ("Normal", "Added in QUILL Lite.")
-    assert win.announcements[-1] == "Saved report.docx"
+    assert win.announcements[-1] == f"Saved report.docx in {path.parent.name}."
     assert no_boxes == [], "Save on an opened Word document writes it, no Save As"
     assert list(tmp_path.glob("report.backup-*")) == [], "a clean file is not backed up"
 
@@ -359,7 +359,7 @@ def test_save_pressed_again_during_a_long_word_save_says_still_saving(
     assert win.save_quietly() == "Still saving long.docx"
     assert len(tasks.submitted) == 1, "no second save started"
     tasks.finish()
-    assert win.announcements[-1] == "Saved long.docx"
+    assert win.announcements[-1] == f"Saved long.docx in {tmp_path.name}."
     assert win.modified is False
     assert ("Heading 1", "Quarterly report") in _styles(path)
     win.cmd_save()
@@ -378,6 +378,10 @@ def test_typing_during_a_background_save_keeps_the_window_unsaved(
     win.control.ChangeValue(win.control.GetValue() + "more")
     tasks.finish()
     assert win.modified is True, "what was typed during the save is not in the file"
+    # And the sentence says so rather than "Saved" alone (FUX-04).
+    assert win.announcements[-1] == (
+        f"Saved typed.docx in {tmp_path.name}. What you typed while it saved is not in it yet."
+    )
 
 
 def test_a_failed_background_save_is_reported_and_frees_save(lite_window, tmp_path: Path) -> None:

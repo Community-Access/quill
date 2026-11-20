@@ -409,9 +409,19 @@ class CastPreferencesMixin:
             definition = settings_catalog.definition(setting_id)
             if definition is not None and set_value(library, definition, value, level=LEVEL_GLOBAL):
                 written += 1
+        speed_said = ""
         if written:
-            self._podcast_save_success_message = "Podcast defaults saved."
+            # No success message of its own: the one sentence below says the
+            # change is in use, and a write that fails says so (FUX-04, once).
             self._save_podcast_library()  # type: ignore[attr-defined]
+            if "speed" in default_changes:
+                from quill.ui.podcasts.speed import speed_not_in_force
+
+                held = speed_not_in_force(self, float(library.settings.speed))
+                if held is not None:
+                    from quill.core.action_feedback import speed_still_playing
+
+                    speed_said = speed_still_playing(held)
         menu_bar = self.frame.GetMenuBar()  # type: ignore[attr-defined]
         if menu_bar is not None and hasattr(self, "_resume_menu_item_id"):
             menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)  # type: ignore[attr-defined]
@@ -422,13 +432,12 @@ class CastPreferencesMixin:
             said = str(monitor.describe())
         count = len(app_changes) + written + startup_change_count
         if count:
+            from quill.core.action_feedback import changes_result
+
             pending = bool(app_changes or written)
-            self._announce(
-                f"Preferences {'applied' if pending else 'saved'}: "
-                f"{count} change{'' if count == 1 else 's'}. "
-                f"{startup_said} {said} "
-                f"{'Saving in the background.' if pending else ''}".strip()
-            )  # type: ignore[attr-defined]
+            self._announce(  # type: ignore[attr-defined]
+                changes_result(count, pending=pending, extra=(speed_said, startup_said, said))
+            )
             if app_changes:
                 from quill.ui.podcasts.preferences_tasks import save_preferences
 

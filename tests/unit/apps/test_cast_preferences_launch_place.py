@@ -91,8 +91,10 @@ def test_choosing_a_place_saves_it_on_the_library(host) -> None:
     assert host._podcast_library.settings.default_launch_view == "inbox"
     assert host.saved == ["inbox"]
     assert host.refreshed == []
-    assert host.spoken[-1].startswith("Preferences applied")
-    assert host._podcast_save_success_message == "Podcast defaults saved."
+    # One sentence for one OK (FUX-04): in use now, not "saved" before the
+    # write lands, and no second "Podcast defaults saved." after it.
+    assert host.spoken[-1] == "Preferences changed: 1 change, in use now."
+    assert getattr(host, "_podcast_save_success_message", None) != "Podcast defaults saved."
 
 
 def test_leaving_it_alone_does_not_rewrite_the_library(host) -> None:

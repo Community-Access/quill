@@ -41,14 +41,25 @@ command that could not do what was asked says so in words in every mode, because
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+from datetime import datetime, timedelta
 from enum import StrEnum
+from pathlib import PurePath
 
 __all__ = [
     "ACTION_FEEDBACK_LABELS",
     "ActionFeedback",
+    "changes_result",
     "coerce",
+    "place_of",
+    "recovered_result",
     "resolve",
     "resolve_failure",
+    "saved_result",
+    "speed_result",
+    "speed_still_playing",
+    "when_said",
+    "written_result",
 ]
 
 
@@ -135,3 +146,159 @@ def resolve_failure(mode: object, *, has_sound: bool, repeated: bool) -> tuple[b
     if repeated:
         return (play, speak)
     return (play, True)
+
+
+# -- the actual result, once (FUX-04) ------------------------------------------- #
+#
+# Everything above decides *whether* a moment is a tone or words. What follows
+# decides what the words are when a save, a change, a download, an import, an
+# export or a recovery finishes -- the family UX pilot's FUX-04
+# (``docs/design/2026-11-19-family-ux-pilots.md``, Cast PRD 23.33, the QUILL
+# Lite PRD's "Family UX pilot"). Three rules, all from things that went wrong:
+#
+# * **Say what is now true, not what was attempted.** Chris's 2026-11-19 report
+#   was a Settings for This Podcast that said "saved" while the old speed went
+#   on playing. A sentence built here is built *after* the work, from the state
+#   it left, and names the part that did not happen when part did not.
+# * **Once.** One action, one sentence. Cast's Preferences said "applied", then
+#   "Podcast defaults saved.", then "Application preferences saved." for one OK.
+# * **Where, in words that can be checked.** "Saved notes.txt" does not say which
+#   notes.txt; the folder does. A recovered draft says when it is from, which is
+#   how somebody tells this morning's work from last week's.
+#
+# None of it repeats what the screen reader already says (GATE-13): a recovered
+# window's title is read when it opens, so the sentence is about the recovery,
+# and the folder is the one fact a title bar never carries.
+
+
+def place_of(path: str | PurePath) -> str:
+    """``notes.txt in Documents``: the file, and the folder it is in.
+
+    The folder's own name rather than its whole path: a path read aloud is a
+    string of backslashes, and the folder is what someone uses to find it
+    again. A file at the root of a drive names the drive itself.
+    """
+    target = PurePath(path)
+    folder = target.parent
+    where = folder.name or str(folder)
+    if not where or where == ".":
+        return target.name
+    return f"{target.name} in {where}"
+
+
+def saved_result(
+    path: str | PurePath, *, backup_failed: bool = False, changed_since: bool = False
+) -> str:
+    """The sentence a save ends with: the file, its folder, and what is not in it.
+
+    *changed_since* is a save that ran in the background while the person kept
+    typing: the file holds what the window held when Save was pressed, so the
+    window is not clean, and "Saved" alone would say that it is.
+    """
+    said = f"Saved {place_of(path)}"
+    if backup_failed:
+        said += ", but could not write a backup"
+    said += "."
+    if changed_since:
+        said += " What you typed while it saved is not in it yet."
+    return said
+
+
+def written_result(done: str, path: str | PurePath) -> str:
+    """``Exported 3 podcasts to subs.opml in Downloads.``: *done*, then where it went."""
+    return f"{done} to {place_of(path)}."
+
+
+def when_said(moment: datetime, now: datetime | None = None) -> str:
+    """``today at 3:42 PM``, ``yesterday at 9:05 AM``, ``on 14 November at 6:00 PM``.
+
+    A clock time alone is ambiguous across midnight, and a full date for this
+    morning is noise; this says the shortest thing that is still unambiguous.
+    """
+    current = now or datetime.now(moment.tzinfo)
+    hour = moment.hour % 12 or 12
+    clock = f"{hour}:{moment.minute:02d} {'AM' if moment.hour < 12 else 'PM'}"
+    day = moment.date()
+    if day == current.date():
+        return f"today at {clock}"
+    if day == current.date() - timedelta(days=1):
+        return f"yesterday at {clock}"
+    date = f"{moment.day} {moment.strftime('%B')}"
+    if moment.year != current.year:
+        date += f" {moment.year}"
+    return f"on {date} at {clock}"
+
+
+def _joined(names: Sequence[str]) -> str:
+    if len(names) <= 1:
+        return "".join(names)
+    return ", ".join(names[:-1]) + f" and {names[-1]}"
+
+
+def recovered_result(
+    restored: Sequence[str],
+    *,
+    asked: int,
+    when: datetime | None = None,
+    now: datetime | None = None,
+) -> str:
+    """What a recovery of unsaved work ends with: what came back, from when, and that it is unsaved.
+
+    *restored* names the documents that **did** come back -- counted from the
+    windows that hold them, never from the number asked for, because a restore
+    that failed has already said so in its own sentence and must not then be
+    counted as a success in this one. *when* is when the copy was last written,
+    said for a single document only: with several, a list of times is noise.
+    """
+    if asked <= 0:
+        return "Nothing was restored."
+    if not restored:
+        return f"Restored none of the {asked}. The work is still saved aside."
+    count = len(restored)
+    if count == 1 and asked == 1:
+        said = f"Recovered {restored[0]}"
+        if when is not None:
+            said += f", as it was {when_said(when, now)}"
+        return said + ". It is not saved yet."
+    noun = "document" if count == 1 else "documents"
+    head = f"Recovered {count} of {asked}"
+    if count == asked:
+        head = f"Recovered {count} unsaved {noun}"
+    tail = "It is not saved yet." if count == 1 else "None of them is saved yet."
+    return f"{head}: {_joined(list(restored))}. {tail}"
+
+
+def speed_still_playing(rate: float) -> str:
+    """The clause for a speed that was saved but is not what is playing."""
+    return f"The episode playing stays at {rate:g}x."
+
+
+def speed_result(speed: float, scope: str, *, playing_rate: float | None = None) -> str:
+    """``Speed 1.5x for The Daily.``, and the speed actually playing when it differs.
+
+    *playing_rate* is the rate the player is at now, passed only when the episode
+    playing is one this change was meant to reach. A scan in progress, or a file
+    with a speed of its own, keeps its rate; the sentence then says so rather
+    than letting the saved number stand for what is heard.
+    """
+    said = f"Speed {speed:g}x for {scope}."
+    if playing_rate is not None and abs(playing_rate - speed) >= 0.005:
+        said += " " + speed_still_playing(playing_rate)
+    return said
+
+
+def changes_result(count: int, *, pending: bool, extra: Sequence[str] = ()) -> str:
+    """One sentence for a settings window's OK, said once.
+
+    *pending* means the changes are already in use but the file that keeps them
+    is still being written in the background. The sentence then says they are
+    in use, which is true now, and does not say "saved", which is not true yet;
+    nothing follows when the write succeeds, and a write that fails says so.
+    """
+    noun = "change" if count == 1 else "changes"
+    head = (
+        f"Preferences changed: {count} {noun}, in use now."
+        if pending
+        else f"Preferences saved: {count} {noun}."
+    )
+    return " ".join(part.strip() for part in (head, *extra) if part and part.strip())

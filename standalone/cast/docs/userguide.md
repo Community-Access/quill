@@ -1130,6 +1130,13 @@ have to change it again.
 Press the same keys with nothing playing and you set the speed for every
 podcast that does not have its own. Cast tells you which one you changed.
 
+A speed set anywhere else, in Settings for This Podcast, Change Speed in the
+Podcast Manager or the shared default in Preferences, reaches the episode
+playing as soon as you save it. When it cannot, because a scan is holding the
+speed or an imported file has a speed of its own, Cast says so in the same
+sentence: "The episode playing stays at 1x." It never says the speed is saved
+while the old one goes on playing.
+
 > **QUILLBee wants you to know:** If an episode plays at a speed you didn't
 > expect, its podcast probably has a speed of its own. Press F6 to reach the
 > status bar, arrow to the Speed cell and press Enter. Cast tells you the
@@ -3347,9 +3354,11 @@ Saving refreshes the current library place only when **Hide caught-up
 podcasts** changes which rows are visible; other preference changes and
 closing without changes do not trigger that reload.
 Cast applies your choices before writing the podcast library, application
-history, and any changed shared-family choices in the background. An
-applied-changes message is not a saved-to-disk confirmation. If a write fails,
-Cast tells you which save failed instead of reporting that everything saved.
+history, and any changed shared-family choices in the background. You hear
+one sentence when you press Save, such as "Preferences changed: 2 changes, in
+use now." That is true the moment you hear it; it does not claim the files are
+written yet, and nothing more is said when they are. If a write fails, Cast
+tells you which save failed instead.
 
 Two sections have a shortcut by name. In the Command Palette (Ctrl+Shift+P),
 **Fetching Preferences** opens Preferences on Fetching, and **Playing
@@ -4279,7 +4288,8 @@ Simple mode, type "back up" or "restore" in the Command Palette
    if you want the audio files too.
 3. Choose where to save the file and press Save.
 
-Cast tells you when the backup is written. Do it now, while you think of it.
+Cast tells you when the backup is written, and where: "Backup saved to
+podcasts.qcbackup in Documents." Do it now, while you think of it.
 Then do it again whenever you have spent an evening sorting folders.
 
 #### Restoring from a backup
@@ -4293,7 +4303,9 @@ When you need your library back, from a backup you made earlier:
    many podcasts it holds. If that is the one you meant, confirm.
 
 The backup replaces the library on this computer. Anything playing stops
-first, and your podcasts are back straight away, with no restart.
+first, and your podcasts are back straight away, with no restart. Cast says
+what came back. If the files were restored but the window could not show them,
+it says that too, and asks you to restart Cast to see your library.
 
 #### Exporting your data to read
 
