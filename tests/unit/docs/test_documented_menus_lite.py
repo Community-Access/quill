@@ -74,6 +74,10 @@ ALLOW: dict[str, str] = {
     "path:tools > git and github > github > create release": _GITHUB_GUIDE_QUILL_MENU,
     "path:tools > git and github > github > fork repository": _GITHUB_GUIDE_QUILL_MENU,
     "path:tools > git and github > github > security alerts": _GITHUB_GUIDE_QUILL_MENU,
+    "path:tools > git and github > github > from this line": _GITHUB_GUIDE_QUILL_MENU,
+    "path:tools > git and github > local git > resolve conflicts": _GITHUB_GUIDE_QUILL_MENU,
+    "path:tools > git and github > local git > worktrees": _GITHUB_GUIDE_QUILL_MENU,
+    "path:tools > customize and support > profiles": _GITHUB_GUIDE_QUILL_MENU,
     "path:help > download optional components": _GITHUB_GUIDE_QUILL_MENU,
     "path:help > why don't i see": _GITHUB_GUIDE_QUILL_MENU,
     # Keys of the Review Dictation window, not of the menu bar: they work only
@@ -121,6 +125,34 @@ def _workbench() -> list[MenuItem]:
     return _items(lite_arrange(rows, workbench=True))
 
 
+def _github_workbench_window() -> list[MenuItem]:
+    """The GitHub Workbench window's own menu bar, which the GitHub guide teaches.
+
+    QUILL Lite's user guide reads the GitHub guide as a run of its own chapters,
+    and that book is mostly about the Workbench window: File, Edit, View, Go,
+    Item, Repository, Account, Tools, Window and Help there are the window's,
+    not the editor's. A path into that bar passes where its chapter says
+    "Workbench", which every GitHub chapter does when it means the window.
+    """
+    from quill.core.github.workbench_window_menu import WINDOW_MENU
+    from quill.core.workbench.menus import MenuRow, MenuSub
+
+    out: list[MenuItem] = []
+    for menu in WINDOW_MENU:
+        top = menu.title.replace("&", "")
+        out.append(MenuItem((top,)))
+        for row in menu.rows:
+            if isinstance(row, MenuRow):
+                out.append(MenuItem((top, row.label.replace("&", "")), row.key))
+            elif isinstance(row, MenuSub):
+                sub = row.title.replace("&", "")
+                out.append(MenuItem((top, sub)))
+                for inner in row.rows:
+                    if inner is not None:
+                        out.append(MenuItem((top, sub, inner.label.replace("&", "")), inner.key))
+    return out
+
+
 def _aliases() -> dict[str, str]:
     from quill.core.lite.commands import COMMANDS, plain_label
 
@@ -138,6 +170,8 @@ def test_every_documented_menu_path_and_command_is_on_a_new_install_menu() -> No
             OptIn(_everything(), _SWITCH_PHRASES),
             # A GitHub menu path passes where its section says workbench mode.
             OptIn(_workbench(), ("workbench mode",)),
+            # The GitHub Workbench window's own menus, in the GitHub guide.
+            OptIn(_github_workbench_window(), ("workbench",)),
         ],
     )
     assert not findings, (

@@ -246,30 +246,89 @@
 and the GitHub CLI</h1>
 <h2 id="what-this-chapter-covers">What this chapter covers</h2>
 <p>A codespace is a computer GitHub runs for you in the cloud, already
-set up with a repository and its tools. This chapter covers opening the
-Codespaces page from GitHub Items, QUILL’s Codespaces commands, and the
-GitHub CLI (command-line interface) those commands rely on, including
-how QUILL makes sure it is using the same account as you.</p>
+set up with a repository and its tools. You might want one to try a pull
+request without setting anything up on your own computer, or to work on
+a machine bigger than yours.</p>
+<p>In this chapter you list, make, start, stop and delete codespaces in
+the GitHub Workbench, and meet the GitHub CLI, the command-line tool a
+few of QUILL’s own Codespaces commands use, and how QUILL keeps the two
+sign-ins on the same account.</p>
+<p>By the end you will know where your codespaces are, what each command
+does before you run it, and how to keep one from running, and charging,
+when you are not using it.</p>
 <p>Codespaces can cost money. GitHub gives each account some free hours
-a month and charges for more. Everything here that could start one says
-so before it does.</p>
-<h2 id="opening-codespaces-from-github-items">Opening Codespaces from
-GitHub Items</h2>
-<p>In both apps, the context menu of any row in GitHub Items has
-<strong>Open in GitHub Codespaces…</strong>. On a branch, it opens
-Codespaces for that branch. QUILL asks first, reminds you that starting
-a codespace can incur charges, and then opens GitHub’s own Codespaces
-page in your browser. It does not create anything itself, and it does
-not send your token. You make your choices on GitHub’s page.</p>
+a month and charges for more, for as long as a codespace runs.
+Everything here needs a signed-in account.</p>
+<h2 id="your-codespaces-in-the-workbench">Your codespaces in the
+Workbench</h2>
+<p>Two places in the tree list codespaces:</p>
+<ul>
+<li><strong>Repositories &gt; My Codespaces</strong> lists every
+codespace of yours, in any repository.</li>
+<li>A repository’s <strong>Code &gt; Codespaces</strong> lists your
+codespaces for that one repository.</li>
+</ul>
+<p>Each row is one sentence: the codespace’s name, its repository and
+branch, its state as GitHub words it (such as Available or Shutdown),
+its machine, and when it was last used. Its context menu has:</p>
+<ul>
+<li><strong>Show Details</strong>: the same, with its address on
+GitHub.</li>
+<li><strong>Start</strong> and <strong>Stop</strong>. You hear
+“Starting” and its name, or “Stopping” and its name, and that its files
+are kept. A stopped codespace does not charge for computing time.</li>
+<li><strong>Change Machine…</strong> lists the machines GitHub offers
+for it and uses the one you choose from its next start. When there is no
+other, QUILL says so.</li>
+<li><strong>Export to a Branch</strong> puts the codespace’s changes on
+a branch of their own, and says when that is done.</li>
+<li><strong>Publish to a New Repository…</strong>, for a codespace made
+from a template: give the new repository a name, or leave it empty for
+GitHub’s, and choose private or public.</li>
+<li><strong>Delete…</strong>, under More, asks first: changes you have
+not pushed or exported are lost.</li>
+<li><strong>Open on GitHub</strong> and <strong>Copy Link</strong>.</li>
+</ul>
+<h2 id="making-a-codespace">Making a codespace</h2>
+<p>There are three ways:</p>
+<ul>
+<li><strong>In a repository’s Code &gt; Codespaces</strong>, press
+<code>Ctrl+N</code>. QUILL asks which branch, starting with
+<code>main</code>, then reads what a codespace for that repository can
+use and asks which machine, and which dev container when the repository
+has more than one. You hear “Making the codespace” and its name, and
+that it takes a minute or two to start.</li>
+<li><strong>On an open pull request</strong>, <strong>Open in a
+Codespace</strong> makes one on the pull request’s branch at once. Use
+it to try a change for real before you review it.</li>
+<li><strong>Open in Codespaces…</strong>, on the context menu of a
+repository, branch or pull request, asks first, reminds you that
+starting a codespace can cost money, and then opens GitHub’s own
+Codespaces page in your browser. It makes nothing itself and does not
+send your token. You make your choices on GitHub’s page.</li>
+</ul>
+<p><strong>Ctrl+N</strong> and <strong>Open in a Codespace</strong> make
+and start a codespace straight away, with no further question: choosing
+them is the decision. <strong>Stop</strong> it when you are done.</p>
+<p>If a repository’s dev container asks for permissions you have not
+accepted, QUILL says so and makes nothing. Open the repository’s
+Codespaces on GitHub once to accept them, then try again.</p>
+<p>Values your codespaces read, such as a key for a private package
+registry, are kept as secrets: <strong>People &gt; My Codespaces
+Secrets</strong> for yours, <strong>Settings &gt; Codespaces
+Secrets</strong> for one repository’s, and an organization’s own.
+Chapter 8 covers secrets.</p>
 <h2 id="the-github-cli">The GitHub CLI</h2>
-<p>QUILL’s own Codespaces commands use GitHub’s command-line tool,
-called <code>gh</code>, because it is the only way GitHub offers to
-manage codespaces from outside the website. QUILL needs it installed. If
-it is not, you hear that QUILL did not find it, with the address to get
-it from, <code>cli.github.com</code>.</p>
+<p>Two of QUILL’s Codespaces commands, below, use GitHub’s command-line
+tool, called <code>gh</code>. Everything in the Workbench above talks to
+GitHub directly and does not need it. If <code>gh</code> is not
+installed when a command needs it, you hear that QUILL did not find it,
+with the address to get it from, <code>cli.github.com</code>.</p>
 <p>On Windows and macOS, QUILL can fetch it for you instead:
 <strong>Help &gt; Download Optional Components…</strong> has the GitHub
-CLI, a portable copy of about 14 MB that QUILL checks before using.</p>
+CLI, a portable copy of about 14 MB that QUILL checks before using. A
+copy of <code>gh</code> already installed on your computer is always
+used first.</p>
 <h3 id="two-sign-ins-one-account">Two sign-ins, one account</h3>
 <p><code>gh</code> signs in to GitHub on its own, separately from QUILL.
 Sign in once in a terminal with <code>gh auth login</code>. QUILL never
@@ -282,10 +341,20 @@ QUILL is using, it stops and tells you, naming both: “GitHub CLI is
 signed in as” one, “but QUILL is using” the other, and asks you to
 switch one of them first. This is what keeps a codespace, and its bill,
 off the wrong account.</p>
+<h3 id="using-ghs-sign-in-in-quill">Using gh’s sign-in in QUILL</h3>
+<p>It works the other way too. If <code>gh</code> is already signed in,
+you do not have to sign in to QUILL again. In <strong>Manage GitHub
+Accounts…</strong> (<code>Ctrl+Shift+K</code> in the Workbench), choose
+<strong>Use GitHub CLI Sign-In…</strong>. QUILL asks which server’s
+sign-in to use, <code>github.com</code> or your GitHub Enterprise
+Server’s name, asks <code>gh</code> for it, checks with GitHub which
+account it is, and asks you before it keeps it. Chapter 1 covers
+accounts in full.</p>
 <h2 id="quills-codespaces-commands">QUILL’s Codespaces commands</h2>
-<p>In QUILL, these are on <strong>Tools &gt; Git and GitHub &gt;
-GitHub</strong>. They are QUILL’s alone, and need the GitHub CLI and a
-signed-in account.</p>
+<p>These two are QUILL’s alone, and need the GitHub CLI and a signed-in
+account. In QUILL they are on <strong>Tools &gt; Git and GitHub &gt;
+GitHub</strong>, and in the Workbench’s <strong>Repository
+Actions…</strong> (<code>Ctrl+Shift+G</code>).</p>
 <h3 id="codespaces">Codespaces…</h3>
 <p><strong>Codespaces…</strong> lists your codespaces. Each reads its
 name, its repository, whether it is running, and how far its branch is
@@ -294,7 +363,7 @@ account, and a pointer to Create Codespace.</p>
 <p>Choose one and a second list offers what to do with it:</p>
 <ul>
 <li><strong>Open in Browser (may start the codespace)</strong>, after a
-confirmation, because opening a stopped codespace starts it.</li>
+question, because opening a stopped codespace starts it.</li>
 <li><strong>View Codespace Health</strong>: its repository, state,
 machine, location, when it was last used and created, and its Git
 status.</li>
@@ -309,19 +378,39 @@ GitHub goes with it.</li>
 the default branch. It checks the CLI’s account, then asks you to
 confirm in a window whose title says it uses paid GitHub compute. You
 hear “Created codespace” with its name and state.</p>
-<p>These two commands are newer than the rest of the workbench, and have
-not yet been tried against every kind of codespace. If one says
-something that does not match what you see on GitHub, please tell us
-(Chapter 10).</p>
+<p><strong>In QUILL Lite</strong>, which has neither command, use the
+Workbench’s own Codespaces places above. They do not need the GitHub
+CLI.</p>
 <h2 id="other-things-that-use-git-or-the-cli">Other things that use Git
 or the CLI</h2>
 <p><strong>Sync Folder with GitHub…</strong>, on the same QUILL menu,
 keeps a folder on your computer in step with a repository, using Git.
-The QUILL user guide covers it under <a
-href="https://www.quillforall.org/docs/quill-guide-14-projects-notes-and-the-quillville-family.html#sync-a-folder-with-github">Sync
-a folder with GitHub</a>.</p>
-<p>Safe Mode switches off every command in this chapter: you hear
-“GitHub CLI commands are disabled in Safe Mode”.</p>
+The QUILL user guide covers it under Sync a folder with GitHub.</p>
+<p>Safe Mode switches off every command in this chapter. The Workbench
+does not open in Safe Mode, and the CLI commands say “GitHub CLI
+commands are disabled in Safe Mode”.</p>
+<h2
+id="a-walk-through-a-codespace-for-the-practice-pull-request-and-back">A
+walk-through: a codespace for the practice pull request, and back</h2>
+<p>This one costs a few minutes of GitHub’s free codespace hours. Make
+the practice repository first with <strong>Help &gt; Practice on
+GitHub…</strong> (<code>Ctrl+Alt+P</code>) if you have not.</p>
+<ol type="1">
+<li>In the Workbench, press <code>Ctrl+L</code>, type
+<code>quill-practice</code> and press Enter.</li>
+<li>Press <code>Ctrl+Shift+2</code> for its Pull Requests, and F6 to the
+list.</li>
+<li>On the pull request that fixes the greeting, press
+<code>Shift+F10</code>, open More, and choose <strong>Open in a
+Codespace</strong>. You hear “Making the codespace” and its name.</li>
+<li>Go to <strong>Repositories &gt; My Codespaces</strong> and press
+<code>F5</code> after a minute or two. Its row says Available when it is
+running.</li>
+<li>Press <code>Shift+F10</code> on it and choose <strong>Stop</strong>.
+You hear “Stopping” and its name, and that its files are kept.</li>
+<li>When you no longer need it, choose <strong>Delete…</strong> from the
+same menu and answer Yes.</li>
+</ol>
 <hr />
 <ul>
 <li>Previous: <a

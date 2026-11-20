@@ -455,6 +455,19 @@ def check_documents(
                     keys
                     and not (identities & keys)
                     and all(extra.get(i) != leaf for i in identities)
+                    # Another window's row of the same name, on that key, where
+                    # the section says which window (the GitHub Workbench's Help >
+                    # Tutorials is Ctrl+F2; the editor's has its own key).
+                    and not _opted_in(
+                        number,
+                        sections,
+                        opt_ins,
+                        lambda o, n=leaf, ids=identities: any(
+                            normalise(it.path[-1]) == n and it.key and chord_identity(it.key) in ids
+                            for it in o.items
+                            if len(it.path) > 1
+                        ),
+                    )
                 ):
                     key = f"key:{leaf}"
                     if key in allow:

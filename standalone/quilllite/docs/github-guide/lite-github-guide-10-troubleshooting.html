@@ -245,76 +245,202 @@
 <h1 id="chapter-10-troubleshooting-privacy-and-help">Chapter 10:
 Troubleshooting, privacy and help</h1>
 <h2 id="what-this-chapter-covers">What this chapter covers</h2>
-<p>When GitHub says no, QUILL tells you why in a sentence and what to do
-next. This chapter lists the sentences you are most likely to hear, what
-each one means and how to fix it. Then it covers using a token instead
-of signing in, says exactly what the workbench sends over the network,
-and how to get help from a person.</p>
+<p>Something did not work, and you want to know why and what to do.
+QUILL never answers with a bare error code. When GitHub says no, or
+QUILL holds a change back, you hear one sentence that says what it was
+trying to do, why it could not, and usually what to do next.</p>
+<p>This chapter collects those sentences, grouped by when you meet them,
+with the reason behind each and the fix. Then it covers using a token
+instead of signing in, says exactly what the Workbench sends over the
+network, and how to reach a person.</p>
+<p>By the end you should be back at work, and know whether the problem
+was GitHub, your account or the Workbench.</p>
+<h2 id="before-you-start-four-quick-checks">Before you start: four quick
+checks</h2>
+<p>Most problems are one of these:</p>
+<ol type="1">
+<li><strong>Are you signed in, and as whom?</strong> <code>Alt+9</code>
+in the Workbench says the account, and whether you are signed in at all.
+A guest only reads.</li>
+<li><strong>What is this account’s Workbench level?</strong>
+<code>Alt+5</code> says what you can do here. An account set to Read
+Only or Organize is held back on purpose; see “Held back by the
+Workbench”, below.</li>
+<li><strong>Is Dry Run on?</strong> The Account cell of the status bar
+says “Dry Run: nothing is sent” while it is. <code>Ctrl+Alt+D</code>
+turns it off.</li>
+<li><strong>Is it GitHub?</strong> <strong>Help &gt; GitHub Service
+Status…</strong> (<code>Ctrl+Alt+F1</code>) says whether GitHub itself
+is having trouble. See “Is it GitHub, or is it me?”, below.</li>
+</ol>
 <h2 id="how-a-refusal-sounds">How a refusal sounds</h2>
 <p>Most refusals have two parts: what QUILL was trying to do, and why it
 could not. “Could not re-run the failed jobs. Access denied. GitHub
 refused this request: check the token permissions and its organization
-SSO (single sign-on) authorization.” When GitHub gave a reason of its
-own, QUILL adds it after “GitHub said:”.</p>
+SSO authorization.” When GitHub gave a reason of its own, QUILL adds it
+after “GitHub said:”.</p>
 <p>Nothing is half-done. When a command is refused, nothing was changed
 on GitHub, and anything you had typed, such as a comment, a review or a
 new issue, is still on your computer.</p>
+<p><code>F9</code> says the last result again, and <code>Shift+F9</code>
+explains it: what it means, and what you might do next.</p>
 <h2 id="the-refusals-one-by-one">The refusals, one by one</h2>
+<p>The sentences come in three groups, by who said no:</p>
+<ul>
+<li><a href="#held-back-by-the-workbench">Held back by the
+Workbench</a>: QUILL stopped the change itself, because of the account’s
+level, Safe Mode, Dry Run or a check on another account. Nothing was
+sent.</li>
+<li><a href="#connecting-and-signing-in">Connecting and signing in</a>:
+adding an account, a token or a server.</li>
+<li><a href="#when-github-refuses">When GitHub refuses</a>: GitHub
+received the request and said no.</li>
+</ul>
+<h2 id="held-back-by-the-workbench">Held back by the Workbench</h2>
+<p>These sentences come from QUILL, not GitHub. Nothing was sent.</p>
+<h3
+id="cannot--it-needs-full-in-the-workbench-and-this-account-is-organize">“Cannot
+…: it needs Full in the Workbench, and this account is Organize”</h3>
+<p>Each account has a Workbench level: <strong>Read Only</strong>,
+<strong>Organize</strong> or <strong>Full</strong>. It limits what the
+Workbench may change with that account, whatever GitHub would allow.
+Organize allows organizing and comments, such as labels, reactions and
+closing issues, but not access, settings or deleting. The full sentence
+ends “Account, Roles and Access, Workbench Level for This Account
+changes it.” Do that if you meant to make the change; Chapter 13
+explains the levels.</p>
+<p>On a Properties sheet the same rule shows as a sentence beside the
+field, such as “This account is set to Organize in the Workbench, which
+allows organizing and comments, not access, settings or deleting.”</p>
+<h3 id="this-account-is-read-only-in-the-workbench">“This account is
+read only in the Workbench.”</h3>
+<p>The account is set to Read Only, so no command changes anything on
+GitHub with it. <strong>Account &gt; Roles and Access &gt; Workbench
+Level for This Account…</strong> changes it.</p>
+<h3
+id="quill-is-in-safe-mode-so-the-workbench-changes-nothing-on-github">“QUILL
+is in Safe Mode, so the Workbench changes nothing on GitHub.”</h3>
+<p>In Safe Mode every account is Read Only until QUILL is started
+normally. A command refused this way says “and QUILL is in Safe Mode,
+which keeps every account Read Only until QUILL is started normally.”
+Workbench Options cannot change that; restarting QUILL normally
+does.</p>
+<h3 id="github-item-browsing-is-disabled-in-safe-mode">“GitHub item
+browsing is disabled in Safe Mode.”</h3>
+<p>The full sentence ends “Restart QUILL normally to browse a
+repository.” QUILL started in Safe Mode, which keeps GitHub’s network
+services off, so the Workbench does not open. Restart it normally.</p>
+<h3 id="dry-run-quill-would-send--nothing-was-changed">“Dry run: QUILL
+would send … Nothing was changed.”</h3>
+<p>Dry Run is on (<code>Ctrl+Alt+D</code>, on the Tools menu). Every
+command still asks and previews, then stops at the moment it would
+change GitHub and says what it would have sent. Press
+<code>Ctrl+Alt+D</code> again to send for real. Chapter 12 has more.</p>
+<h3 id="cannot-act-as--from-act-as-another-account">“Cannot act as …”,
+from Act As Another Account</h3>
+<p><strong>Act As Another Account…</strong> sends one action as another
+of your signed-in accounts. Before it sends, QUILL asks GitHub whose
+that account’s saved token is, and holds the action to that account’s
+own Workbench level.</p>
+<ul>
+<li>“Cannot act as kelly-test on github.com: its saved token now belongs
+to someone-else, so nothing was sent. Sign in again as kelly-test from
+Manage GitHub Accounts.” The token was replaced, or now belongs to a
+different login. Sign that account in again.</li>
+<li>“Cannot act as kelly-test on github.com: GitHub did not say whose
+its saved token is, so nothing was sent.” GitHub did not answer. Try
+again, or sign the account in again.</li>
+<li>A sentence starting “Cannot approve this pull request as kelly-test:
+it needs …” means the other account’s level does not allow it. Change
+that account’s level, not yours.</li>
+<li>“Act As needs a second signed-in account: Account, Manage GitHub
+Accounts adds one.”</li>
+</ul>
+<h3 id="compare-accounts">Compare Accounts</h3>
+<p><strong>Compare Accounts…</strong> shows two of your accounts side by
+side, each as GitHub answered that account’s own token.</p>
+<ul>
+<li>“Compare Accounts needs two signed-in accounts: Account, Manage
+GitHub Accounts adds another.”</li>
+<li>“Cannot compare these: they are on different servers, and a
+repository lives on one.” One account is on github.com and the other on
+a GitHub Enterprise Server.</li>
+<li>“The token saved for jeff now belongs to someone-else, so nothing is
+shown for jeff.” QUILL checks whose each token is before it shows
+anything, so one account’s access never appears under another’s name.
+Sign that account in again.</li>
+</ul>
+<h3 id="open-a-repository-first-ctrll-opens-one-by-name-or-link">“Open a
+repository first. Ctrl+L opens one by name or link.”</h3>
+<p>The command works on one repository and you are not in one. Go to a
+repository in the tree, or press <code>Ctrl+L</code> and type
+<code>owner/name</code>.</p>
+<h2 id="connecting-and-signing-in">Connecting and signing in</h2>
 <h3 id="the-github-token-is-invalid-or-expired">“The GitHub token is
 invalid or expired.”</h3>
 <p>The full sentence ends “Add a valid token or switch accounts.” Your
 token has reached its expiry date, or was cancelled on GitHub, perhaps
 because QUILL was revoked under Authorized OAuth Apps. Open
-<strong>Manage GitHub Accounts…</strong>, remove the old account, and
-choose <strong>Sign In with GitHub…</strong> again. If you added the
-account with a token, you can make a new one instead: see “Advanced:
-using a token”, below.</p>
-<h3 id="access-denied-github-refused-this-request">“Access denied.
-GitHub refused this request”</h3>
-<p>GitHub knows who you are, but will not let this token do this. One of
-three things is usually true:</p>
-<ul>
-<li><strong>The token lacks a scope.</strong> For example, a token
-without <code>repo</code> cannot write to a private repository, and one
-without <code>delete_repo</code> cannot delete one. Chapter 1 lists the
-scopes. An account added with Sign In with GitHub has every scope the
-workbench uses, so this usually means a token you added yourself. You
-cannot add a scope to a token from QUILL: edit the token on GitHub, or
-sign in with GitHub instead.</li>
-<li><strong>Your account lacks permission.</strong> Only people with
-write access can merge, rerun or label, and only administrators can
-rename, archive or change visibility. Ask a maintainer.</li>
-<li><strong>The organization needs single sign-on.</strong> See the next
-section.</li>
-</ul>
-<p>Traffic in Insights is a special case. It needs push access, and
-QUILL says so in plain words while still showing the contributors.</p>
-<h3
-id="github-requires-organization-sso-authorization-for-this-token">“GitHub
-requires organization SSO authorization for this token.”</h3>
-<p>The organization signs its members in through its own system, and
-your token has not been authorized for it yet. On GitHub, open your
-personal access tokens, choose <strong>Configure SSO</strong> beside the
-token, and authorize it for the organization. Then try again. The token
-keeps working everywhere else in the meantime.</p>
-<h3 id="sign-in-with-github-the-code-expired-before-it-was-used">Sign In
-with GitHub: “The code expired before it was used.”</h3>
-<p>A code from Sign In with GitHub lasts about fifteen minutes. Close
-the window, choose <strong>Sign In with GitHub…</strong> again, and type
-the new code on GitHub’s page. You never have to retype an old one: each
-try gets a fresh code, already on the clipboard.</p>
-<h3
-id="sign-in-with-github-the-sign-in-was-declined-on-githubs-page">Sign
-In with GitHub: “The sign-in was declined on GitHub’s page.”</h3>
+<strong>Manage GitHub Accounts…</strong> (<code>Ctrl+Shift+K</code> in
+the Workbench), remove the old account, and choose <strong>Sign In with
+GitHub…</strong> again. If you added the account with a token, you can
+make a new one instead: see “Advanced: using a token”, below.</p>
+<h3 id="sign-in-with-github-that-code-expired-before-it-was-used">Sign
+In with GitHub: “That code expired before it was used.”</h3>
+<p>The full sentence ends “Nothing was saved.” A code from Sign In with
+GitHub lasts about fifteen minutes. Choose <strong>Sign In with
+GitHub…</strong> again, and type the new code on GitHub’s page. You
+never retype an old one: each try gets a fresh code, already on the
+clipboard.</p>
+<h3 id="sign-in-with-github-the-sign-in-was-declined">Sign In with
+GitHub: the sign-in was declined</h3>
 <p>Somebody chose Cancel on GitHub’s approval page instead of Authorize.
 Nothing was saved. Choose <strong>Sign In with GitHub…</strong> again if
 that was a slip.</p>
 <h3 id="sign-in-with-github-github-did-not-give-a-sign-in-code">Sign In
 with GitHub: “GitHub did not give a sign-in code.”</h3>
-<p>QUILL could not reach github.com. Check your connection, and any
-proxy or firewall that might block it, then try again. If your network
-will not let QUILL through at all, <strong>Add Token
-(Advanced)…</strong> still works wherever the workbench itself does.</p>
+<p>The full sentence ends “Check the connection and try again.” QUILL
+could not reach github.com. Check your connection, and any proxy or
+firewall that might block it. If your network will not let QUILL reach
+GitHub’s sign-in page, <strong>Add Token (Advanced)…</strong> still
+works wherever the Workbench itself does.</p>
+<p>Sign In with GitHub is for github.com only. For a GitHub Enterprise
+Server, make a token on that server and add it with <strong>Add Token
+(Advanced)…</strong>, or use the GitHub CLI’s sign-in.</p>
+<h3 id="use-github-cli-sign-in-what-it-can-say">Use GitHub CLI Sign-In:
+what it can say</h3>
+<p><strong>Use GitHub CLI Sign-In…</strong>, in Manage GitHub Accounts,
+adds the account the GitHub CLI (<code>gh</code>) is already signed in
+to. It can say:</p>
+<ul>
+<li>“QUILL did not find the GitHub CLI (gh). Sign In with GitHub works
+without it.” Install the CLI, or use Sign In with GitHub.</li>
+<li>“The GitHub CLI is not signed in to github.com. Run gh auth login
+there first, or use Sign In with GitHub.”</li>
+<li>“The GitHub CLI answered with something that is not a GitHub
+token.”</li>
+</ul>
+<p>When it works, QUILL names the account and server and asks before it
+keeps its own copy. Signing out of the CLI later does not sign QUILL
+out.</p>
+<h3
+id="github-did-not-confirm-an-account-for-that-token-nothing-was-saved">“GitHub
+did not confirm an account for that token. Nothing was saved.”</h3>
+<p>From <strong>Add Token (Advanced)…</strong>: QUILL asks GitHub who a
+token belongs to before it keeps it, and GitHub did not say. The token
+is mistyped, expired, or made on a different server from the one under
+<strong>GitHub server</strong>.</p>
+<h3 id="a-github-enterprise-server-name-is-refused">A GitHub Enterprise
+Server name is refused</h3>
+<p>When you type a server under <strong>GitHub server</strong>, QUILL
+can say:</p>
+<ul>
+<li>“A GitHub server is reached over HTTPS only.”</li>
+<li>“Type the server’s name only, such as github.example.com, without a
+path.”</li>
+<li>A sentence ending “is not a server name QUILL can reach.”</li>
+</ul>
+<p>Type the server’s name alone, as your administrator gives it.</p>
 <h3
 id="an-organizations-repositories-are-missing-after-sign-in-with-github">An
 organization’s repositories are missing after Sign In with GitHub</h3>
@@ -328,50 +454,18 @@ Beside the organization, choose <strong>Request</strong>. GitHub emails
 the organization’s owners, and once one of them approves, the
 repositories appear the next time you refresh. If you are an owner
 yourself, the button says <strong>Grant</strong> and works at once. You
-only ask once per app and organization, however many times you sign
-in.</p>
+only ask once per app and organization.</p>
 <p>If the organization would rather not approve apps, a token still
 works: see “Advanced: using a token”, below.</p>
-<h3 id="github-could-not-find-it-or-this-account-cannot-see-it">“GitHub
-could not find it, or this account cannot see it.”</h3>
-<p>The full sentence ends “Refresh the list; it may already be gone.”
-Either the thing really is gone, perhaps deleted or transferred, or it
-is private and this account cannot see it. GitHub answers both the same
-way, on purpose, so that private repositories cannot be discovered by
-guessing. Check that you are using the right account
-(<code>Manage GitHub Accounts...</code> in QUILL), and that the token
-has the <code>repo</code> scope if the repository is private.</p>
-<h3 id="github-rate-limited-this-request">“GitHub rate-limited this
-request.”</h3>
-<p>You have used up an allowance, or sent many requests close together.
-Press <code>Ctrl+Shift+L</code> to hear how much is left and when it
-resets. Signed out you get far fewer requests, so signing in is often
-the fix.</p>
-<p>Two related sentences:</p>
-<ul>
-<li>“GitHub asked QUILL to wait 60 seconds.” is a short pause GitHub
-asks for after a burst of requests. QUILL waits by itself and stops
-sending until the time is up. You hear it once.</li>
-<li>“GitHub API (application programming interface) rate limit reached.
-Retry after” a number of seconds means the hourly allowance is gone. It
-comes back at the reset time the readout gives.</li>
-</ul>
-<h3
-id="github-reported-a-conflict-and-github-refused-the-request">“GitHub
-reported a conflict” and “GitHub refused the request”</h3>
-<p>A conflict means the thing changed while you were looking at it:
-someone else merged, closed or edited it. Refresh and try again.</p>
-<p>“GitHub refused the request” with a reason means GitHub will not do
-this in the current state, such as rerunning the failed jobs of a run
-where nothing failed. The reason that follows is GitHub’s own.</p>
-<h3 id="github-had-a-server-error">“GitHub had a server error”</h3>
-<p>The problem is at GitHub’s end. Wait a moment and try again. GitHub
-keeps a status page at <code>githubstatus.com</code>.</p>
 <h3 id="write-actions-need-a-signed-in-github-account">“Write actions
 need a signed-in GitHub account”</h3>
-<p>You are working as a guest, so the workbench only reads. Sign in with
-<strong>Manage GitHub Accounts…</strong> (Chapter 1): in QUILL it’s on
-File &gt; Open from Remote, and in QUILL Lite it’s on File
+<p>The full sentence ends “this session is read-only.” Some commands say
+“To comment you need a signed-in GitHub account” instead. You are
+working as a guest, so the Workbench only reads. Sign in with
+<strong>Manage GitHub Accounts…</strong> (Chapter 1): in the Workbench
+it is <strong>Account &gt; Manage GitHub Accounts…</strong>
+(<code>Ctrl+Shift+K</code>); in QUILL it is also on <strong>File &gt;
+Open from Remote</strong>, and in QUILL Lite on <strong>File</strong>
 (<code>Alt+F</code>, then <code>H</code>).</p>
 <h3 id="the-github-menus-are-missing-in-quill">The GitHub menus are
 missing in QUILL</h3>
@@ -380,14 +474,120 @@ the others. Press <code>Alt+Shift+P</code> and choose Developer, or turn
 on GitHub Remote Access alone in <strong>Profiles and
 Features…</strong>. <strong>Help &gt; Why Don’t I See a
 Feature?</strong> explains any missing command.</p>
-<h3 id="github-item-browsing-is-disabled-in-safe-mode">“GitHub item
-browsing is disabled in Safe Mode.”</h3>
-<p>QUILL started in Safe Mode, which keeps every GitHub window closed.
-Restart it normally.</p>
+<h2 id="when-github-refuses">When GitHub refuses</h2>
+<h3 id="access-denied-github-refused-this-request">“Access denied.
+GitHub refused this request”</h3>
+<p>The full sentence goes on “check the token permissions and its
+organization SSO authorization.” GitHub knows who you are, but will not
+let this token do this. One of three things is usually true:</p>
+<ul>
+<li><strong>The token lacks a permission or scope.</strong> When GitHub
+names what it needed, QUILL says it: “GitHub says it needs the token
+permission contents=write.” for a fine-grained token, or “GitHub accepts
+the scope repo for it.” for a classic one. You cannot add a permission
+to a token from QUILL: edit the token on GitHub, or sign in with GitHub
+instead. An account added with Sign In with GitHub has every scope the
+Workbench uses, so this usually means a token you added yourself.
+<strong>Account &gt; GitHub Permissions…</strong>
+(<code>Ctrl+Shift+P</code>) lists every permission and whether you have
+it.</li>
+<li><strong>Your account lacks permission on GitHub.</strong> Only
+people with write access can merge, rerun or label, and only
+administrators can rename, archive or change visibility. <strong>Account
+&gt; Roles and Access &gt; My Access Here…</strong> says your role here
+and where it comes from. Ask a maintainer.</li>
+<li><strong>The organization needs single sign-on.</strong> See the next
+section.</li>
+</ul>
+<p>Traffic in Insights is a special case. It needs push access, and
+QUILL says so in plain words while still showing the contributors.</p>
+<h3
+id="github-requires-organization-sso-authorization-for-this-token">“GitHub
+requires organization SSO authorization for this token.”</h3>
+<p>The full sentence ends “In your GitHub token settings, authorize it
+for the organization, then try again.” The organization signs its
+members in through its own system, and your token has not been
+authorized for it yet. On GitHub, open your personal access tokens,
+choose <strong>Configure SSO</strong> beside the token, and authorize it
+for the organization. The token keeps working everywhere else in the
+meantime.</p>
+<h3 id="github-could-not-find-it-or-this-account-cannot-see-it">“GitHub
+could not find it, or this account cannot see it.”</h3>
+<p>The full sentence ends “Refresh the list; it may already be gone.”
+Either the thing really is gone, perhaps deleted or transferred, or it
+is private and this account cannot see it. GitHub answers both the same
+way, on purpose, so that private repositories cannot be discovered by
+guessing. Check the account with <code>Alt+9</code>, and that the token
+can read private repositories if this one is private.</p>
+<h3 id="this-servers-github-does-not-have-">“This server’s GitHub does
+not have …”</h3>
+<p>Only on a GitHub Enterprise Server. The sentence names the server
+and, when QUILL knows it, its version: “This server’s GitHub does not
+have this, or this account cannot see it: GitHub Enterprise Server at
+github.example.com, version 3.12, answered ‘not found’. An older server
+lacks some of what GitHub.com has; its administrator can say which
+version it runs.” The feature is newer than your server. Ask the
+administrator whether an upgrade is planned, or do it on the server’s
+own pages.</p>
+<h3 id="github-rate-limited-this-request">“GitHub rate-limited this
+request.”</h3>
+<p>The full sentence ends “Wait before retrying.” You have used up an
+allowance, or sent many requests close together. Press
+<code>Ctrl+Shift+L</code> to hear how much is left and when it resets,
+or <code>Alt+6</code> to hear it in one line. Signed out you get far
+fewer requests, so signing in is often the fix.</p>
+<p>Two related sentences:</p>
+<ul>
+<li>“GitHub asked QUILL to wait 60 seconds.” is a short pause GitHub
+asks for after a burst of requests. QUILL waits by itself and stops
+sending until the time is up. You hear it once.</li>
+<li>“GitHub API rate limit reached. Retry after” a number of seconds
+means the hourly allowance is gone. It comes back at the reset time the
+readout gives.</li>
+</ul>
+<h3
+id="github-reported-a-conflict-and-github-refused-the-request">“GitHub
+reported a conflict” and “GitHub refused the request”</h3>
+<p>A conflict means the thing changed while you were looking at it:
+someone else merged, closed or edited it. Refresh (<code>F5</code>) and
+try again.</p>
+<p>“GitHub refused the request” with a reason means GitHub will not do
+this in the current state, such as rerunning the failed jobs of a run
+where nothing failed. The reason that follows is GitHub’s own.</p>
+<h3 id="github-had-a-server-error">“GitHub had a server error”</h3>
+<p>The sentence gives the code, such as “(HTTP 502)”, and ends “Wait a
+moment and retry.” The problem is at GitHub’s end. Check GitHub’s
+status, below.</p>
+<h3 id="github-redirected-the-request-quill-did-not-follow-it">“GitHub
+redirected the request; QUILL did not follow it”</h3>
+<p>The sentence ends “so your token stayed on api.github.com” (or on
+your Enterprise Server). QUILL never carries your token to another
+address. Use <strong>Open on GitHub</strong> (<code>Shift+Enter</code>)
+for that item instead.</p>
 <h3 id="a-file-shows-no-text">A file shows no text</h3>
-<p>Repository Files shows text only for UTF-8 text files up to 1 MB, and
-says which rule a file broke. Open it on GitHub, or download it
-there.</p>
+<p>The Workbench shows text only for text files up to 1 MB, the most
+GitHub sends this way, and says which rule a file broke. Open it on
+GitHub, or download it there.</p>
+<h2 id="is-it-github-or-is-it-me">Is it GitHub, or is it me?</h2>
+<p>When GitHub is slow or failing, the Workbench’s errors can look like
+your own mistake. <strong>Help &gt; GitHub Service Status…</strong>
+(<code>Ctrl+Alt+F1</code>) reads GitHub’s public status page, <a
+href="http://www.githubstatus.com">www.githubstatus.com</a>, and says
+what it says: “GitHub says: All Systems Operational.”, or which parts
+are slow or down, and any incident GitHub is working on, with its latest
+update.</p>
+<p>The first time, it asks before reading the page. If the page cannot
+be read, you hear “QUILL could not read GitHub’s status page” and why.
+The command is greyed in Safe Mode.</p>
+<h2 id="when-the-help-itself-is-wrong">When the help itself is
+wrong</h2>
+<p>If a help sentence, a step in this book or a tutorial was wrong,
+missing or hard to follow, tell us. In the Workbench’s tree, open
+<strong>Help and Learning &gt; Ask a Person</strong>, and press Enter on
+<strong>Report a Help Problem</strong>. It opens a message in your own
+email, already saying where you were and the last thing the Workbench
+said, for you to change and send. The Workbench sends nothing, and no
+token or password is ever in it.</p>
 <h2 id="advanced-using-a-token">Advanced: using a token</h2>
 <p>Sign In with GitHub is the way to connect, and most people never need
 anything else. A token is a long code you make yourself on GitHub’s
@@ -400,12 +600,15 @@ only the things you allow in them.</li>
 approve QUILL, but still lets its members use tokens.</li>
 <li><strong>Your organization issues you a token</strong> and asks you
 to use that one.</li>
+<li><strong>Your account is on a GitHub Enterprise Server.</strong> Sign
+In with GitHub is for github.com only.</li>
 <li><strong>Your network blocks GitHub’s sign-in page</strong>,
-github.com/login/device, but lets the workbench itself through.</li>
+github.com/login/device, but lets the Workbench itself through.</li>
 </ul>
 <h3 id="making-a-token">Making a token</h3>
 <ol type="1">
-<li>Open github.com in your browser and sign in.</li>
+<li>Open github.com, or your Enterprise Server, in your browser and sign
+in.</li>
 <li>Go to your profile settings, then <strong>Developer
 settings</strong>, then <strong>Personal access tokens</strong>.</li>
 <li>For a token limited to a few repositories, choose
@@ -426,15 +629,24 @@ GitHub’s token page, choose <strong>Configure SSO</strong> beside the
 token and authorize it for the organization. Until you do, GitHub
 refuses the organization’s repositories even though the token is fine
 everywhere else.</p>
+<p>Not sure which scopes to give it? <strong>Account &gt; Roles and
+Access &gt; Least Privilege Advice…</strong> lists the smallest scopes,
+fine-grained permissions and Workbench level that cover what QUILL saw
+this account do. Chapter 13 has more.</p>
 <h3 id="adding-it-to-quill">Adding it to QUILL</h3>
 <p>Open <strong>Manage GitHub Accounts…</strong> and choose <strong>Add
 Token (Advanced)…</strong>. The <strong>Add GitHub Token</strong> window
-has one field, <strong>Personal access token</strong>. Paste the token
-and press <strong>Connect</strong>. QUILL asks GitHub who the token
-belongs to before it keeps it, so a mistyped or expired token is turned
-away with “GitHub did not confirm an account for that token. Nothing was
-saved.” When GitHub confirms it, you hear “Added and switched to GitHub
-account” and your GitHub username.</p>
+has two fields:</p>
+<ul>
+<li><strong>Personal access token:</strong> paste the token.</li>
+<li><strong>GitHub server:</strong> <code>github.com</code>, or your
+GitHub Enterprise Server’s name, such as
+<code>github.example.com</code>. The token is only ever sent to this
+server.</li>
+</ul>
+<p>Press <strong>Connect</strong>. QUILL asks GitHub who the token
+belongs to before it keeps it. When GitHub confirms it, you hear “Added
+and switched to GitHub account” and your GitHub username.</p>
 <p>The same window has <strong>Continue Anonymously</strong> for working
 as a guest, and <strong>Cancel</strong>. None of its buttons has an
 access key, so Tab to the one you want.</p>
@@ -449,15 +661,14 @@ next time you open Manage GitHub Accounts: “This account uses a token.
 Sign In with GitHub is easier to keep up to date.” Then it asks whether
 to sign in with GitHub now. Choose <strong>Yes</strong> to go straight
 to Sign In with GitHub. Choose <strong>No</strong> and nothing changes:
-the token keeps working, the window opens as usual, and QUILL doesn’t
-ask again for that account. It never asks about an account you signed in
-with, or about a fine-grained token, since that’s the kind people choose
-on purpose.</p>
+the token keeps working, and QUILL doesn’t ask again for that account.
+It never asks about an account you signed in with, or about a
+fine-grained token, since that’s the kind people choose on purpose.</p>
 <h3 id="when-a-token-is-about-to-expire">When a token is about to
 expire</h3>
 <p>Tokens you make yourself usually have an expiry date, and GitHub
 tells QUILL when it is. If the active account’s token expires within
-seven days, QUILL says so the first time the workbench talks to GitHub
+seven days, QUILL says so the first time the Workbench talks to GitHub
 that day, for example “Your GitHub token for your-name expires in 3
 days.” If it has already expired, you hear “Your GitHub token for
 your-name has expired.” Either way it’s said at most once a day, and it
@@ -467,31 +678,53 @@ new token.</p>
 <p>QUILL Lite does all of this the same way.</p>
 <h2 id="privacy-what-goes-over-the-network">Privacy: what goes over the
 network</h2>
-<p>The workbench talks to GitHub and to nobody else, and only when you
-ask it to.</p>
+<p>The Workbench talks to GitHub, and only when you ask it to. Two other
+addresses are read, each only when you choose the command that reads
+it.</p>
 <ul>
 <li><strong>Before the first connection</strong> QUILL asks your
 permission, once (Chapter 1).</li>
 <li><strong>Requests go to GitHub’s own servers</strong>:
 <code>api.github.com</code> for nearly everything, and
-<code>uploads.github.com</code> when you upload a release file. They use
-encrypted connections, and QUILL refuses to follow a redirect to any
-other address while carrying your token.</li>
+<code>uploads.github.com</code> when you upload a release file. An
+account on a GitHub Enterprise Server talks to that server only, and its
+token is never sent anywhere else. Connections are encrypted, and QUILL
+refuses to follow a redirect to any other address while carrying your
+token.</li>
+<li><strong>Signing in</strong> uses github.com’s own sign-in page and
+code, with QUILL’s public app id. Your password never passes through
+QUILL.</li>
 <li><strong>Downloads</strong> of logs and artifacts are handed by
 GitHub to a short-lived address elsewhere. QUILL fetches those without
 your token.</li>
-<li><strong>Links opened in your browser</strong> never carry your token
-either.</li>
+<li><strong>Compare Accounts and Act As</strong> send each account’s own
+token to that account’s own server, and nowhere else.</li>
+<li><strong>GitHub Service Status</strong> reads <a
+href="http://www.githubstatus.com">www.githubstatus.com</a>, after
+asking the first time. It sends nothing about you, your accounts or your
+repositories.</li>
+<li><strong>Links opened in your browser</strong> never carry your
+token.</li>
 <li><strong>The GitHub CLI</strong> uses its own sign-in, never QUILL’s
-token (Chapter 9).</li>
-<li><strong>AI summaries</strong> in QUILL send the issue’s text to the
-AI (artificial intelligence) you chose, after the same questions as
-every AI feature. Nothing else in the workbench uses AI.</li>
+token (Chapter 9). Use GitHub CLI Sign-In reads the CLI’s sign-in once,
+after asking, and keeps QUILL’s own copy.</li>
+<li><strong>AI</strong> is used only where you ask for it, such as
+Summarize Discussion. It sends the text to the AI you chose, after the
+same questions as every AI feature.</li>
+</ul>
+<!-- PR#1975 -->
+
+<ul>
+<li><strong>Help &gt; Ask How…</strong> (<code>Alt+Shift+A</code>) sends
+your question and the Workbench’s own help text to the AI you chose, and
+nothing about your repositories. It is greyed without an AI and in Safe
+Mode.</li>
 </ul>
 <p>What stays on your computer and never goes to GitHub: your token (in
-the operating system’s secure store), your pins and favorites, where you
-left off, your local drafts and pending review comments, your saved
-searches, the attention queue’s settings and filters, and the copies of
+the operating system’s secure store), each account’s Workbench level,
+your pins and favorites, where you left off, your local drafts and
+pending review comments, your saved searches, access templates, Change
+History, the attention queue’s settings and filters, and the copies of
 earlier answers QUILL keeps so that unchanged reloads cost nothing.</p>
 <p>Safe Mode switches all of it off.</p>
 <h2 id="getting-help">Getting help</h2>
@@ -502,14 +735,17 @@ href="mailto:support@community-access.org">support@community-access.org</a></str
 A real person reads every message and replies by email. Nothing you send
 is posted on GitHub or anywhere else in public.</p>
 <p>The quickest way to write is <strong>Help &gt; Get Help from
-Support…</strong>, in both apps. It fills in your app’s version and your
-screen reader for you, and opens your own mail program with the message
-written. Nothing is sent until you send it from there.</p>
+Support…</strong> (<code>Ctrl+Alt+F2</code>), in both editors. It fills
+in your app’s version and your screen reader for you, and opens your own
+mail program with the message written. Nothing is sent until you send it
+from there.</p>
 <p>It helps to say:</p>
 <ul>
 <li>which app and version you are using, and which screen reader;</li>
-<li>which window you were in, and what you pressed;</li>
-<li>what QUILL said, word for word if you can; and</li>
+<li>where in the Workbench you were (<code>Alt+1</code> says it), and
+what you pressed;</li>
+<li>what QUILL said, word for word if you can (<code>F9</code> says it
+again); and</li>
 <li>what you expected instead.</li>
 </ul>
 <hr />

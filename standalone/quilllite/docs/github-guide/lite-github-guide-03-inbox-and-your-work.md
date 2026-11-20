@@ -2,38 +2,58 @@
 
 ## What this chapter covers
 
-GitHub sends you a notification whenever something you are part of moves. On
-a busy project that is dozens a day, and the website's inbox is a long page of
-links and icons. This chapter shows you how to go through it from the
-keyboard: what each notification says, how to clear it, and how to keep your
-place. Then it covers My Work, the attention queue that gathers everything
-waiting for you and says where each pull request stands, and the activity
-views.
+GitHub tells you whenever something you are part of moves. On a busy project
+that is dozens of notifications a day, and the website shows them as a long
+page of links and icons. In QUILL they are a list you work through from the
+keyboard.
 
-All of this needs a signed-in account, because it is your inbox and your work.
+In this chapter you open Needs My Attention, read what each notification
+says, mark it read or done, put it off for a day, and stop hearing about a
+thread. You set up inbox rules for the notifications that always get the same
+answer, answer an invitation, and use the lists that split your open work by
+why it is yours.
 
-**In QUILL Lite**, these views work once you sign in with **File > Manage
-GitHub Accounts...** (`Alt+F`, then `H`). As a guest they say "Sign in to
-GitHub for this account view."
+By the end you will be able to clear your inbox every morning, and know where
+to look for the reviews, assignments and mentions waiting on you.
 
-## Opening your notifications
+All of this needs a signed-in account, because it is your own inbox and your
+own work. Until you sign in, each of these places says so and names the way
+in: **Manage GitHub Accounts...** (`Ctrl+Shift+K` in the Workbench). Chapter 1
+shows how.
 
-In QUILL, choose **Tools > Git and GitHub > GitHub > Notifications...**. Explore
-GitHub opens straight at your inbox. From GitHub Items, press **Explore...**
-(`Alt+E`) and choose **GitHub notifications** in **View:** (`Alt+V`).
+## Needs My Attention
 
-When the inbox loads, QUILL says how many are unread, once:
+Everything waiting on you is under **Needs My Attention**, near the top of the
+Workbench's tree. `Ctrl+1` goes straight to its first place, Inbox, from
+anywhere in the window, and so does `Alt+Home`. From the editor, the GitHub
+menu's **Inbox** row opens the Workbench there (Chapter 2 has the GitHub
+menu).
 
-- "12 unread."
-- "3 unread of 40.", when you are showing read ones too.
-- "No unread notifications; 40 read."
-- "No notifications."
+The places under it, in order:
 
-## What a notification says
+| Place | What it holds |
+| --- | --- |
+| Inbox | What needs you to act: work assigned to you, review requests, mentions, and pull requests whose checks failed |
+| Notifications | GitHub's own notifications, unread ones |
+| Invitations | Repositories you have been invited to |
+| Review Requests | Pull requests waiting for your review, or your team's |
+| Assigned to Me | Issues and pull requests assigned to you |
+| Mentions | Issues and pull requests where someone wrote your name |
+| My Open Pull Requests | Pull requests you opened that are still open |
+| My Open Issues | Issues you opened that are still open |
+| My Activity Feed | What you did on GitHub lately, newest first |
+
+When one of them is empty, its details say so and say what would fill it, so
+an empty list never leaves you wondering whether it loaded.
+
+## Reading your notifications
+
+Arrow down the tree to **Notifications**. The list loads by itself. Press
+`Tab` to move into it, or `F6` to move from pane to pane.
 
 Each row says, in this order, whether it is unread, why it reached you, the
-repository and the title: "Unread, review requested: community-access/quill
-— Fix the status bar".
+repository and the title: "Unread, review requested: community-access/quill",
+then the title.
 
 The reason is in words, not GitHub's code names:
 
@@ -49,87 +69,96 @@ The reason is in words, not GitHub's code names:
 - "you were invited to the repository"
 - "you were credited on a security advisory"
 
-**Selected result** holds the rest, one line each: what the subject is (an
-issue, a pull request, a release, a discussion, a commit, a workflow run, a
-security alert), the repository, why you got it, its state and when it last
-changed, and the link.
+The details pane holds the rest, one line each: what the subject is (an
+issue, a pull request, a release, a discussion, a commit, a workflow run or a
+security alert), the repository, why you got it, whether it is read and when
+it last changed, and its link.
 
-## Opening one
+**Why?**, on a notification's context menu, says the reason in a sentence and
+what decides it, such as watching the repository or being on a team.
 
-Press Enter on a notification. Two things happen.
+Notifications lists the unread ones. A notification you mark read leaves the
+list the next time it loads.
 
-First, QUILL marks it read, the way opening it on GitHub would. It does this
-quietly. The row's first word changes from Unread to Read, which you hear when
-you next arrive on it.
+## Opening a notification
 
-Then it opens the notification in the best place for it:
+**Enter** moves you to the details pane, so you can read the notification in
+full. To act on what it is about:
 
-- **A pull request** opens in the review window, on top of Explore. Close the
-  review and you are back in your inbox, on the same row.
-- **An issue** opens in GitHub Items, at that issue, and Explore closes.
-- **Anything else**, such as a release or a workflow run, opens in your
-  browser.
+- `Shift+Enter` opens it on GitHub, in your browser.
+- `Ctrl+Shift+C` copies its address.
+- `Ctrl+L` (**File > Open GitHub Address...**) takes an address or a number,
+  such as `owner/name#42`, and goes to its place in the tree. Chapter 2 has
+  more on it.
 
-## Triage: Done, Unsubscribe and Mark All Read
+Opening a notification does not mark it read. Mark it read yourself when you
+have dealt with it, as the next section shows.
 
-In the notifications view, and only there, four controls appear under the
-Results list:
+## Clearing your inbox: Mark Read, Mark Done, Snooze and Unsubscribe
 
-- **Include read notifications** (`Alt+I`), a check box. Check it to see
-  notifications you have already read as well. The list reloads.
-- **Mark Done** (`Alt+D`) takes the selected notification out of your inbox.
-  It is the same as Done on GitHub. The Delete key in the list does the same.
-- **Unsubscribe** (`Alt+U`) stops notifications from that thread for good, and
-  takes it out of the inbox.
-- **Mark All Read** (`Alt+A`) marks everything read.
+Each of these is on a notification's context menu (`Shift+F10` or the
+Applications key), and the commonest have keys of their own:
 
-### Keeping your place
+| Command | Key | What it does |
+| --- | --- | --- |
+| Mark Read | `Ctrl+Q` | Marks it read, here and on GitHub. You hear "Marked read." |
+| Mark Done | `Delete` | Takes it out of your inbox, the same as Done on GitHub. You hear "Marked done." |
+| Unsubscribe from Thread | none | Stops notifications from that thread for good, and takes it out of the inbox. You hear "Unsubscribed." |
+| Snooze for One Day | none | Notes on this computer that you have put it off until tomorrow. GitHub is not told. You hear "Snoozed here for one day. GitHub was not changed." |
+| Unsnooze Locally | none | Takes the snooze off again. |
+| Mark All Read in View | `Ctrl+Shift+Q` | Marks every notification in the list read. |
 
-Mark Done and Unsubscribe take the row out of the list and put you on the next
-one, with focus still in the list, so you can keep going: read, Delete, read,
-Delete. You hear "Marked done." or "Unsubscribed from the thread." When the
-last one goes, QUILL adds "No notifications left in this list."
+After Mark Read, Mark Done or Unsubscribe the list loads again.
 
-If you reload, QUILL puts you back on the same notification, if it is still
-there.
+The Workbench does not hide a snoozed notification yet: it stays in the list,
+so Snooze is a note to yourself for now.
+
+`Ctrl+.` moves to the next unread row in the list, and `Ctrl+Shift+.` to the
+one before, so you can skip what you have already read.
 
 ### Mark All Read
 
-Mark All Read asks first: "Mark every notification in your GitHub inbox read,
-up to when this list was loaded? Newer notifications stay unread." That second
-sentence is the safety: anything that arrived after you loaded the list stays
-unread, so you never clear something you have not seen.
+**Item > Mark All Read in View** (`Ctrl+Shift+Q`) marks every notification in
+the list read. When there are more than twenty, it asks first: "Mark all 41
+notifications in this view read?" You then hear how many it marked, such as
+"Marked 41 read."
 
-You hear "Marked all notifications read." On a large inbox GitHub may do the
-work in the background instead. Then you hear "GitHub accepted the request and
-is marking them read in the background. Refresh in a minute to check."
+### Keeping your place
 
-### The context menu
-
-Shift+F10 on a notification has the same commands, plus one more:
-**Mark Notification Read**, **Mark Done**, **Unsubscribe from Thread**, and,
-for the whole view, **Mark All Read...**. Mark Notification Read marks it read
-without opening it. **Inbox Rules...** is in the Item menu, below.
+When you come back to Notifications with Back (`Alt+Left`), or the list loads
+again after a change, QUILL returns you to the row you left rather than the
+top of the list.
 
 ## Invitations
 
 When someone invites you to a repository, GitHub sends a notification, and
 the invitation itself waits in **Needs My Attention > Invitations**. Each row
-says the repository, who invited you and with what access, "octo/app: ann
-invited you, write access", and the details say when. Enter, or **Accept
-Invitation...** on the context menu, asks and then joins you to the
-repository; **Decline Invitation...** asks and says no. An invitation expires
-after a week; an expired one says so, cannot be accepted, and can still be
-declined to clear it away.
+says the repository, who invited you and with what access: "octo/app: ann
+invited you, write access". The details say when.
+
+- **Enter**, or **Accept Invitation...** on the context menu, asks first, then
+  joins you to the repository.
+- **Decline Invitation...** asks first, then says no.
+
+An invitation expires after a week. An expired one ends in "expired", cannot
+be accepted, and can still be declined to clear it away.
+
+<!-- PR#1974 -->
+An organization's invitation is different. On an organization's row,
+**Your Invitation** says whether it has invited you. GitHub lets apps accept
+an organization's invitation but not decline one, so it also says where on
+GitHub to decline it. **Accept Membership**, on the same menu, joins you.
 
 ## Inbox rules
 
 Some notifications always get the same answer: a Dependabot update you will
 never read before it merges, a busy repository you only watch, a mention you
 always want first. An inbox rule gives that answer for you as the list
-arrives. In the GitHub Workbench, choose **Item > Inbox Rules...**
-(`Ctrl+Alt+N`). The window lists your rules, each read as a sentence, and
-**New Rule...**:
+arrives.
+
+Choose **Item > Inbox Rules...** (`Ctrl+Alt+N`). The window lists your rules,
+each read as a sentence, and **New Rule...** at the end. A new rule asks five
+questions, one at a time:
 
 1. **What should the rule do?** Mark it done, Mark it read, or Move it to the
    top.
@@ -143,132 +172,139 @@ arrives. In the GitHub Workbench, choose **Item > Inbox Rules...**
 5. **Words its title must contain**, or blank for any. Dependabot's titles
    start with "Bump".
 
-A rule needs at least one of these; one with none would act on every
-notification, and QUILL Lite will not save it. Before saving, QUILL Lite reads the rule
-back and tries it on the notifications already loaded today: "When a
-notification is from octo/*, about a pull request, with 'Bump' in its title:
-mark it done. It matches 3 of the 41 notifications loaded today, and would
-mark them done:" and their titles. Yes saves it; No saves nothing.
+A rule needs at least one of these. One with none would act on every
+notification, so QUILL will not save it.
+
+Before saving, QUILL reads the rule back and tries it on the notifications
+already loaded today: "When a notification is from octo/*, about a pull
+request, with 'Bump' in its title: mark it done. It matches 3 of the 41
+notifications loaded today, and would mark them done:" and their titles. Yes
+saves it; No saves nothing.
 
 From then on the rules run every time Notifications loads, before you see the
-list, the first rule that fits each notification deciding what happens to it.
+list. The first rule that fits a notification decides what happens to it.
 Marking done and marking read are sent to GitHub, as if you had pressed the
-keys yourself; moving to the top only changes the order here. After the list
-loads you hear what they did: "Inbox rules: 3 marked done, 1 moved to the
-top." To delete a rule, choose it in the Inbox Rules window and say Yes.
+keys yourself. Moving to the top only changes the order here. The status bar
+then says what the rules did, such as "Inbox rules: 3 marked done, 1 moved to
+the top."
+
+To delete a rule, choose it in the Inbox Rules window and say Yes.
+
+Rules are kept on this computer.
 
 ## How often QUILL checks
 
-GitHub tells apps how often they may check the inbox, usually once a minute,
-and asks them to keep to it. QUILL does. If you reload sooner, it keeps the
-list it already has, and adds to the unread count: "GitHub asks apps to check
-notifications no more often than it says; this is the list from the last
-check. Try again in" and the number of seconds.
+The Workbench reads Notifications when you arrive on it, and again when you
+press `F5` (**View > Refresh**). Each time, QUILL asks GitHub only for what
+has changed since the last read. An unchanged inbox comes back in a moment
+and costs nothing from your hourly allowance.
 
-When you do reload, QUILL asks GitHub only for what has changed since last
-time. An unchanged inbox comes back in a moment and costs nothing from your
-hourly allowance. When the allowance is running low, QUILL waits longer
-between checks on its own: twice as long under a quarter left, four times as
-long under a tenth.
+While QUILL is open, it can also check for new notifications in the
+background. **Tools > Workbench Options...** (`Ctrl+Shift+O`), on the
+**Notifications and Inbox** page, sets how often, from 5 minutes to a day,
+whether each check plays a short sound, and whether a new notification may
+interrupt what is being said. GitHub may ask for longer between checks, and
+then it gets longer. When your hourly allowance runs low, QUILL waits longer
+on its own: twice as long with under a quarter left, four times as long with
+under a tenth.
 
-## My Work
+## The Inbox: what needs you to act
 
-**My Work**, in Explore's **View:** list, is everything open that involves
-you, across every repository you can see. It runs four searches and puts the
-results in one list:
-
-- **Assigned**: open issues and pull requests assigned to you.
-- **Review requested**: open pull requests waiting for your review.
-- **Mentioned**: where someone mentioned you.
-- **Authored**: what you opened.
-
-An item that turns up in more than one search appears once. Its details start
-with the searches that found it, so you know whether it is here because you
-were assigned or because you were mentioned. Each row reads the repository,
-the number, the title, and whether it is an issue or a pull request.
-
-## The attention queue
-
-The attention queue is a shorter, sharper list: only what is waiting for you
-to act. It is the view Explore opens on when you are signed in. It gathers four
-kinds of work:
+**Inbox** is the short, sharp list: only what is waiting for you to do
+something. It gathers four kinds of open work, the most recently updated
+first:
 
 - **Assigned to me**
-- **Review requested**
+- **Review requested**, from you or from a team you are on
 - **Mentioned**
-- **Failed checks**: open pull requests whose checks failed, in the
-  repositories the queue covers.
+- **Failed checks**: open pull requests whose checks failed
 
-Each row names where it came from and when it last changed. QUILL remembers
-when you last finished loading the queue, so the next time it can tell you
-what moved: changed items say "Changed since your last visit." in their
-details, and the status line adds how many changed. The first time, it says
-"This is your first recorded visit."
+Each row's details start with where it came from, so you know whether it is
+there because you were assigned or because you were mentioned. An item found
+for more than one reason appears once, its details starting "Also:" and every
+reason. A review asked
+of a team you are on, rather than of you by name, ends in "team review
+request", because someone else on the team may take it.
 
 ### Where each pull request stands
 
-A pull request in the queue also says where it stands, in the same sentence the
-review window opens with: "Approved, 2 checks failing, 1 open thread". It comes
-after the row's name in the list, and in the details it follows the reason the
-row is there, so you still hear why it is in your queue first.
+A pull request in the Inbox also says where it stands, in the same sentence
+the review window opens with: "Approved, 2 checks failing, 1 open thread". It
+comes after the row's name in the list, and in the details it follows the
+reason the row is there.
 
-QUILL reads every pull request's sentence in one request when the queue loads,
-however many there are. It covers the twenty newest; when the queue holds more,
-the status line says so, such as "Summaries cover the newest 20 of 26 pull
-requests".
+QUILL reads every pull request's sentence in one request when the Inbox
+loads. It covers the twenty newest. When there are more, the status bar says
+so, such as "Summaries cover the newest 20 of 26 pull requests".
 
 The sentence never calls a pull request ready on data it does not have. When
 GitHub sent only part of the picture, it says "merge readiness unknown". When
 GitHub did not answer for a pull request at all, its row says "Summary
-unavailable" and the status line says how many.
+unavailable".
 
-If part of the queue could not load, perhaps because GitHub refused one of the
-searches, QUILL does not pretend the list is complete. You hear the count "with
-incomplete data. Check the status for details.", and the status line says
-which part is missing.
+If part of the Inbox could not load, perhaps because GitHub refused one of
+the searches, QUILL does not pretend the list is complete. The status bar
+says which part is missing.
 
-### Queue Options
+## Your open work, split by why it is yours
 
-**Queue Options...** (`Alt+O`) opens a menu for shaping the queue. It is
-available once the queue has loaded.
+The next five places under Needs My Attention are the same work split by
+reason:
 
-- **Choose Repositories...** limits the queue to up to ten repositories. Type
-  them as `owner/repo`, separated by commas, or leave the box empty to search
-  everything you can see.
-- **Choose Categories...** picks which of the four kinds to include. Check the
-  ones you want; at least one has to stay.
-- **Save Current Filter...** names the current repositories and categories, so
-  you can switch to them again. Each saved filter then has its own
-  **Use Filter** and **Remove Filter** rows in this menu.
+- **Review Requests** holds two kinds: pull requests that ask you by name,
+  and those that ask a team you belong to. A team's row ends in "team review
+  request". The pull request's own Properties sheet (`Alt+Enter`) names the
+  team under Team reviewers. GitHub's search cannot say which team from the
+  list itself. Enter on a pull request here opens its review (Chapter 5).
+- **Assigned to Me**, **Mentions**, **My Open Pull Requests** and **My Open
+  Issues** are what their names say, across every repository you can see.
 
-Filters are kept on this computer, for each account separately. None of this
-changes anything on GitHub.
+An item that turns up for more than one reason appears once in each list it
+fits. Its details start with every reason that found it.
+
+Every list here works like any other in the Workbench: the filter box
+(`Ctrl+E`) narrows it, **View > Sort By** and **View > Group By** shape it,
+and **File > Export List...** (`Ctrl+Shift+X`) saves it. Chapter 13 has
+filtering and grouping.
 
 ## Activity
 
-Three views show what has been happening rather than what is waiting:
+Three places show what has been happening rather than what is waiting:
 
-- **My activity feed**: events from the people you follow and the repositories
-  you watch.
-- **Repository activity**: recent events in the repository named in
-  **Repository:**.
-- **Person's public activity**: one person's public events. Type their
-  username in **Person:** (`Alt+P`).
+- **Needs My Attention > My Activity Feed**: what you did lately.
+- **Activity**, under a repository: its recent events.
+- **Activity**, under a person: their public events. Enter on a person, in
+  People or anywhere else, gives them a place in the tree.
 
-Each row reads the kind of event, the repository and who did it, such as
-"Push: community-access/quill — jeff".
+Each row reads the kind of event, the repository and who did it.
 
-## A morning routine
+## A walk-through: clearing your inbox in the morning
 
-1. Open your notifications: in QUILL, **Tools > Git and GitHub > GitHub >
-   Notifications...**.
-2. Listen to the unread count.
-3. Arrow down. For each row, decide: read it now (Enter), clear it (Delete), or
-   stop hearing about it (`Alt+U`).
-4. After opening a pull request, close the review window to come back to the
-   same place in the list.
-5. When the inbox is clear, choose **Attention queue** in **View:** and work
-   from the top.
+You start the day with a handful of notifications. Here is the routine.
+
+1. Open the Workbench and press `Ctrl+1`. You hear "Inbox", and how many rows
+   it has. These are the things waiting on you to act.
+2. Arrow down the tree to **Notifications**, and press `Tab` to move into the
+   list. You hear the first row, such as "Unread, review requested:", the
+   repository and the title.
+3. Press `Enter` to read it in full in the details pane. Press `Shift+Tab` to
+   go back to the list.
+4. Decide. If you have dealt with it, press `Ctrl+Q`: you hear "Marked read."
+   If it needs nothing from you, press `Delete`: you hear "Marked done." If
+   you never want to hear about that thread again, choose **Unsubscribe from
+   Thread** from the context menu.
+5. When the list is clear, arrow down the tree to **Review Requests** and
+   work from the top. Enter on a pull request opens its review.
+
+If the same kind of notification turns up every morning, make an inbox rule
+for it with `Ctrl+Alt+N`, and tomorrow it is dealt with before you arrive.
+
+## Learn it with a guided lesson
+
+**Help > Tutorials** (`Ctrl+F2` in the Workbench) has **Triage your inbox**,
+a six-minute lesson that goes to the Inbox, looks at Review Requests, marks a
+notification read, snoozes one and brings it back. Each step says what to
+press and what you should hear.
 
 ---
 

@@ -245,27 +245,47 @@
 <h1 id="chapter-7-code-and-repositories">Chapter 7: Code and
 repositories</h1>
 <h2 id="what-this-chapter-covers">What this chapter covers</h2>
-<p>This chapter is about the code itself and the repository around it.
-It covers browsing files at any branch, tag or commit, blame and file
-history, opening a file to edit, branches and comparing them, commit
-comments, tags and releases, searching across GitHub, forks, templates
-and topics, the community profile, insights, looking after a repository,
-watching, starring and following, your packages, writing and editing
-gists, and cloning a repository to your computer.</p>
+<p>You are here because you want the code itself, or the repository
+around it: a file at an old tag, who changed a line, what a branch adds,
+a release to publish, or a setting to change. Everything in this chapter
+happens in the GitHub Workbench, under a repository’s place in the tree,
+or from the line you are on in the editor.</p>
+<p>You will browse files at any branch, tag or commit, read blame and
+history, compare branches, tag and publish releases, check a download,
+search all of GitHub, and look after a repository: its settings, Pages
+site, wiki, webhooks, packages, stars and watchers. You will also clone
+a repository to your computer.</p>
+<p>By the end you will know where each of these lives in the Workbench,
+which key reaches it, and which ones ask before they change
+anything.</p>
+<p>Reading a public repository works signed out. Anything that changes
+GitHub needs a signed-in account, and blame and code search need one
+too.</p>
+<p><strong>In QUILL Lite</strong>, the Workbench is the same. QUILL Lite
+cannot send a file back to GitHub from the editor, and it has no Local
+Git or Tools menu rows; each section says where that matters.</p>
 <h2 id="browsing-a-repositorys-files">Browsing a repository’s files</h2>
-<p><strong>Files…</strong> (<code>Alt+F</code>) in GitHub Items, or
-<strong>Browse Repository Files…</strong> on any row’s context menu,
-opens <strong>Repository Files:</strong> and the repository. It reads
-public repositories signed out.</p>
-<p>In Tab order:</p>
+<p><strong>Code &gt; Files</strong> under a repository
+(<code>Ctrl+Shift+5</code>) lists the default branch a folder at a time.
+Enter on a folder opens it, and its first row, Up one folder, comes back
+out. Enter on a file opens it in the editor (<code>Ctrl+Enter</code>
+does the same, from the File menu’s <strong>Open in Editor</strong>).
+Each row says what it is, a file with its size or a folder.</p>
+<p>For any branch, tag or commit, open <strong>Files, History and
+Blame…</strong> from <strong>Repository &gt; Repository
+Actions…</strong> (<code>Ctrl+Shift+G</code>). On a branch row it starts
+at that branch. The <strong>Repository Files</strong> window has, in Tab
+order:</p>
 <ul>
 <li><strong>Branch, tag or commit:</strong> (<code>Alt+B</code>). Pick a
 branch or tag from the list, or type any of them, including a commit’s
 SHA, and press Enter. <strong>Go</strong> (<code>Alt+G</code>) does the
 same.</li>
 <li><strong>Files</strong> (<code>Alt+F</code>), a tree of the
-repository at that point.</li>
-<li><strong>Contents</strong> (<code>Alt+C</code>), read-only, where a
+repository at that point. Right or Enter opens a folder, fetching it the
+first time, and Left closes it. Each row says what it is: “status.py,
+4.2 kilobytes”, or “docs, folder”.</li>
+<li><strong>Contents</strong> (<code>Alt+C</code>), read only, where a
 file’s text appears.</li>
 <li>The status line.</li>
 <li><strong>View File</strong> (<code>Alt+V</code>), <strong>Open in
@@ -274,97 +294,103 @@ Editor</strong> (<code>Alt+E</code>), <strong>README</strong>
 <strong>Blame…</strong> (<code>Alt+L</code>) and
 <strong>Close</strong>.</li>
 </ul>
-<p>In the tree, Right or Enter opens a folder, fetching it the first
-time, and Left closes it. Each row says what it is: “status.py, 4.2
-kilobytes”, or “docs, folder”. Enter on a file shows it in
-<strong>Contents</strong> and says how many lines it has; so does
-<strong>View File</strong>.</p>
-<p><strong>README</strong> shows the README of the selected folder, or
-of the folder the selected file is in, or of the whole repository.</p>
+<p>Enter on a file shows it in Contents and says how many lines it has;
+so does <strong>View File</strong>. <strong>README</strong> shows the
+README of the selected folder, of the folder the selected file is in, or
+of the whole repository.</p>
 <p>Some files have no text to show, and QUILL says why instead of
 filling Contents with noise: a file over the 1 MB GitHub sends this way
 (“Open it on GitHub instead”), a binary file, or one that is not UTF-8
 text.</p>
 <h3 id="opening-a-file-to-edit">Opening a file to edit</h3>
-<p><strong>Open in Editor</strong> (<code>Alt+E</code>) closes
-Repository Files and opens the file in QUILL’s editor, through the same
-path as a GitHub file link. You can then change it and send it back with
-<strong>File &gt; Open from Remote &gt; Save to GitHub…</strong>,
-below.</p>
-<p><strong>In QUILL Lite</strong>, <strong>Open in Editor</strong> opens
-the file’s text as a new untitled document, and you hear the file’s name
-“from GitHub, opened as a new untitled document. Save As keeps a copy.”
-QUILL Lite cannot save back to GitHub.</p>
+<p><strong>Open in Editor</strong> opens the file in QUILL’s editor,
+through the same path as a GitHub file link. Change it, then send it
+back with <strong>Commit to GitHub…</strong> (see <a
+href="#opening-and-saving-files-in-quill">Opening and saving files in
+QUILL</a>).</p>
+<p><strong>In QUILL Lite</strong>, Open in Editor opens the file’s text
+as a new untitled document, and you hear the file’s name “from GitHub,
+opened as a new untitled document. Save As keeps a copy.” QUILL Lite
+cannot commit back to GitHub.</p>
 <h2 id="blame-and-file-history">Blame and file history</h2>
-<p>Select a file, or a folder, in Repository Files.</p>
+<p>Select a file or a folder in Repository Files.</p>
 <ul>
 <li><strong>History…</strong> (<code>Alt+H</code>) lists the commits
-that changed it, newest first, up to 50: “Fix the status bar: alice, 4
-November, 1a2b3c4”.</li>
+that changed it, newest first: “Fix the status bar: alice, 4 November,
+1a2b3c4”.</li>
 <li><strong>Blame…</strong> (<code>Alt+L</code>) says who last changed
-each part of a file. Rather than one row per line, which would mean
-hearing the same commit forty times, neighbouring lines from the same
-commit are joined into one run: “Lines 10 to 14: alice, 4 November,
-1a2b3c4, Fix the status bar”. Blame needs a signed-in account.</li>
+each part of a file. Neighbouring lines from the same commit are joined
+into one run, so you do not hear the same commit forty times: “Lines 10
+to 14: alice, 4 November, 1a2b3c4, Fix the status bar”. Blame needs a
+signed-in account.</li>
 </ul>
 <p>Both windows have the list (<strong>Commits</strong> or
 <strong>Runs</strong>), <strong>Details</strong> (<code>Alt+D</code>),
 <strong>Open Commit</strong> (<code>Alt+O</code>),
-<strong>Refresh</strong> and <strong>Close</strong>. <code>Alt+N</code>
-and <code>Alt+P</code> move to the next and previous row from anywhere
-in the window, and say the row if focus is somewhere else, so you can
-read Details and keep stepping. At the ends you hear “Last one.” or
-“First one.” Enter opens the commit on GitHub.</p>
-<p>In the Blame window, <code>Alt+R</code> belongs to the
-<strong>Runs</strong> list, so reach <strong>Refresh</strong> with
-Tab.</p>
+<strong>Refresh</strong> (<code>Alt+F</code>) and
+<strong>Close</strong>. <code>Alt+N</code> and <code>Alt+P</code> move
+to the next and previous row from anywhere in the window, and say the
+row when focus is elsewhere, so you can read Details and keep stepping.
+At the ends you hear “Last one.” or “First one.” Enter opens the commit
+on GitHub.</p>
 <h2 id="from-the-line-you-are-on">From the line you are on</h2>
-<p>When a file you have open lives in a GitHub repository on your
-computer, one you cloned or a worktree, eight rows in the GitHub menu
-answer questions about the line your cursor is on, or the lines you have
-selected. They sit between separators, and open the Workbench only when
-they must. With workbench mode off, find them in the Command Palette.
-QUILL has the same rows as a submenu, From This Line.</p>
+<p>When the file you have open lives in a GitHub repository on your
+computer, one you cloned or a worktree, <strong>GitHub &gt; From This
+Line</strong> (<code>R</code>) answers questions about the line your
+cursor is on, or the lines you have selected. With workbench mode off,
+the same submenu is at <strong>Tools &gt; Git and GitHub &gt; GitHub
+&gt; From This Line</strong> (<code>L</code>). It opens the Workbench
+only when it must.</p>
 <ul>
 <li><strong>Copy GitHub Link to This Line</strong> (<code>K</code>) puts
-a link on the clipboard to these lines in the commit you have checked
+a link to these lines on the clipboard, at the commit you have checked
 out, so it keeps showing the same text after the file changes: “Copied
 the link to lines 12 to 15.”</li>
 <li><strong>Who Changed This Line?</strong> (<code>O</code>) says the
 last commit that touched the line: “Changed by alice on 4 November 2026:
 Fix the status bar (1a2b3c4).” Press it again within ten seconds to open
-the pull request that brought that commit. Until November 2026 it was
-Local Git’s <strong>Who Wrote This Line…</strong>, and it answered for
-line 1 wherever your cursor was; it now answers for the line you are on.
-Like the rest of Local Git, it needs the Developer profile or Developer
-Tools turned on.</li>
+the pull request that brought the commit. Like the rest of Local Git, it
+needs the Developer profile or Developer Tools turned on.</li>
 <li><strong>Open the Pull Request for This Line</strong>
-(<code>E</code>) opens that pull request straight away, in the
-Workbench’s Pull Requests list narrowed to its number. If the commit
-went straight to its branch, QUILL says so.</li>
+(<code>Q</code>) opens that pull request in the Workbench’s Pull
+Requests, narrowed to its number. If the commit went straight to its
+branch, QUILL says so.</li>
 <li><strong>Open This Line on GitHub</strong> (<code>U</code>) opens the
 same link in your browser.</li>
-<li><strong>New Issue from Selection…</strong> (<code>N</code>) starts
+<li><strong>New Issue from Selection…</strong> (<code>L</code>) starts
 an issue that quotes what you selected, as a code block, under a link to
-those lines. It opens the Workbench’s own New Issue window with the
-title and body filled in, so you can change them, and nothing is sent
-until you have read the preview and said yes. Select some text
-first.</li>
+those lines. It opens the Workbench’s New Issue window filled in, and
+nothing is sent until you have read the preview and said yes. Select
+some text first.</li>
 <li><strong>Issues Mentioning This File</strong> (<code>F</code>) opens
 the Workbench’s <strong>Search &gt; Issues and Pull Requests</strong> on
 the file’s path.</li>
 <li><strong>Comment on This Line in the Open Pull Request…</strong>
 (<code>T</code>) is for a branch you have checked out that has an open
-pull request. It asks for your comment, in Markdown, then posts it on
-these lines of that pull request. If your copy and the pull request are
-at different commits, or the file has changes you have not committed, it
-says so and stops, because the line numbers would not match.</li>
+pull request. It asks for your comment, in Markdown, and posts it on
+these lines. If your copy and the pull request are at different commits,
+or the file has changes you have not committed, it says so and stops,
+because the line numbers would not match.</li>
+</ul>
+<!-- PR#1975 -->
+
+<ul>
 <li><strong>Open the GitHub Reference at the Cursor</strong>
-(<code>R</code>) opens what is written where your cursor is:
-<code>#42</code> or <code>GH-42</code> in this repository,
-<code>owner/name#42</code> in another, or a commit hash, each in the
-Workbench with the list narrowed to it; or <code>@person</code>, whose
-profile opens in your browser.</li>
+(<code>R</code>) opens the Properties sheet of what is written where
+your cursor is, in the Workbench: <code>#42</code> or <code>GH-42</code>
+in this repository, <code>owner/name#42</code> in another, a commit
+hash, <code>@person</code>, or a GitHub address of an issue, pull
+request, discussion or commit. A bare <code>#42</code> is read from
+GitHub first, to know whether it is an issue or a pull request.</li>
+</ul>
+<!-- PR#1975 -->
+
+<ul>
+<li><strong><code>Alt+Enter</code> on a reference</strong> does the same
+without the menu: with the cursor on <code>#42</code>,
+<code>@person</code> or a GitHub address, <code>Alt+Enter</code> opens
+its Properties sheet. Anywhere else in the document
+<code>Alt+Enter</code> does what it always did.</li>
 </ul>
 <p>The link points at the commit you have checked out. If that commit is
 not on GitHub yet, QUILL says the link will not open until you push; if
@@ -374,48 +400,55 @@ Optional Components</strong> has a portable copy. Safe Mode turns them
 off. A private repository needs a signed-in account to open its pull
 requests or to comment. None of the rows has a key out of the box; give
 the ones you use a key in the Keymap Editor.</p>
+<p><strong>In QUILL Lite</strong> the eight rows sit straight in the
+GitHub menu, between separators, with the same letters, because QUILL
+Lite’s GitHub menu has no submenus. With workbench mode off, they are in
+the Command Palette.</p>
 <h2 id="opening-and-saving-files-in-quill">Opening and saving files in
 QUILL</h2>
 <p>QUILL has three more ways in, on <strong>File &gt; Open from
-Remote</strong>. These are QUILL’s alone.</p>
+Remote</strong>. They are QUILL’s alone.</p>
 <ul>
-<li><strong>GitHub Repository…</strong> opens a simpler browser: your
-account, a <strong>Repository (owner/repo):</strong> field,
-<strong>Branch or tag:</strong>, the current path and a file list. Enter
-opens a folder or a file; Backspace goes up a level; F5 refreshes. The
-buttons are <strong>Open File</strong>, <strong>Go Up</strong>,
-<strong>Refresh</strong>, <strong>Show all refs</strong>, <strong>Copy
-URL</strong> and <strong>Cancel</strong>.</li>
+<li><strong>GitHub Repository…</strong> opens a simple file browser:
+your account, a <strong>Repository (owner/repo):</strong> box with
+<strong>Load</strong>, <strong>Branch or tag:</strong>, the current path
+and a file list. Enter opens a folder or a file; Backspace goes up a
+level; <code>F5</code> refreshes. The buttons are <strong>Open
+File</strong>, <strong>Go Up</strong>, <strong>Refresh</strong>,
+<strong>Show all refs</strong>, <strong>Copy URL</strong> and
+<strong>Cancel</strong>.</li>
 <li><strong>GitHub File URL…</strong> takes the address of one file,
 such as
 <code>https://github.com/owner/repo/blob/main/docs/readme.md</code>, and
 opens it.</li>
-<li><strong>Commit to GitHub…</strong> sends your changes back. It was
-called Save to GitHub until November 2026; it is the same command. It
-works on a file you opened from GitHub, and asks for a commit message,
+<li><strong>Commit to GitHub…</strong> sends your changes back. It works
+on a file you opened from GitHub, and asks for a commit message,
 starting with “Update” and the file’s name. QUILL commits to the same
 repository, branch and path. If the file changed on GitHub since you
 opened it, QUILL tells you, so you never overwrite someone else’s
-change. Pressing <code>Ctrl+S</code> saves on your computer only;
-sending is always this separate command.</li>
+change. <code>Ctrl+S</code> saves on your computer only; sending is
+always this separate command.</li>
 </ul>
-<p>To commit several files from your computer at once, QUILL has
+<p>To commit several files from your computer at once, use
 <strong>Commit Multiple Files…</strong> on <strong>Tools &gt; Git and
 GitHub &gt; GitHub</strong>.</p>
-<p>In workbench mode these rows are in the GitHub menu: <strong>GitHub
-File URL…</strong>, <strong>Commit to GitHub…</strong>, and
-<strong>Commit Multiple Files…</strong> in its <strong>Repository
-Admin</strong> submenu. Chapter 2 lists the whole menu.</p>
+<p>In workbench mode these rows are in the GitHub menu: <strong>Commit
+to GitHub…</strong> is there directly, and <strong>GitHub File
+URL…</strong> and <strong>Commit Multiple Files…</strong> are under
+Repository Actions. Chapter 2 lists the whole menu.</p>
 <h2 id="cloning-a-repository">Cloning a repository</h2>
 <p>Cloning copies a whole repository to your computer, with its history,
-so you can work on it in a folder of your own. Both apps can do it:</p>
+so you can work on it in a folder of your own. Both editors can do
+it:</p>
 <ul>
 <li>In QUILL, <strong>File &gt; Open from Remote &gt; Clone
 Repository…</strong>.</li>
 <li>In QUILL Lite, <strong>File &gt; Clone Repository…</strong>:
 <code>Alt+F</code>, then <code>Y</code>.</li>
-<li>In workbench mode, in either app, <strong>GitHub &gt; Clone
+<li>In workbench mode, in either editor, <strong>GitHub &gt; Clone
 Repository…</strong>: <code>Alt+G</code>, then <code>C</code>.</li>
+<li>In the Workbench, <strong>Clone…</strong> on a repository row, or
+<strong>Clone Repository…</strong> in Repository Actions.</li>
 </ul>
 <p>The Clone Repository window asks two things:</p>
 <ul>
@@ -423,59 +456,84 @@ Repository…</strong>: <code>Alt+G</code>, then <code>C</code>.</li>
 <code>owner/name</code>, such as <code>community-access/quill</code>, or
 paste the address from GitHub’s green Code button, or any GitHub page in
 the repository. When the document you have open is already in a GitHub
-repository, its name is filled in for you.</li>
-<li><strong>Into this folder</strong>: the folder the copy goes in.
-QUILL makes a new folder inside it, named after the repository.
-<strong>Browse…</strong> picks the folder. It starts in the GitHub
-folder in your Documents folder when you have one, and in Documents
-otherwise.</li>
+repository, its name is filled in.</li>
+<li><strong>Into this folder</strong>: QUILL makes a new folder inside
+it, named after the repository. <strong>Browse…</strong> picks the
+folder. It starts in the GitHub folder in your Documents folder when you
+have one, and in Documents otherwise.</li>
 </ul>
 <p>Press <strong>Clone</strong>. QUILL says “Cloning” and the
 repository’s name, and then, once, how it went: “Cloned” and the name,
 or why it could not, in Git’s own words. A large repository can take a
-minute or two. You can keep working while it runs.</p>
+minute or two, and you can keep working while it runs.</p>
 <p>When the clone is done, QUILL offers to open a file from it. In
 QUILL, when the Developer profile is on, it also offers <strong>Open as
-Project</strong>, which opens the new folder as your project.</p>
+Project</strong>.</p>
 <p>A few things worth knowing:</p>
 <ul>
 <li><strong>Private repositories work when you are signed in.</strong>
-QUILL hands your GitHub account’s token to Git for this one command
-only. It is never written into the copy’s settings, its remote address,
-or QUILL’s log, so nothing in the new folder holds your token
-afterwards. To pull or push later from another tool, that tool signs in
-its own way.</li>
-<li><strong>Cloning needs Git for Windows.</strong> If it is not
-installed, QUILL says so and offers to open its download page. Install
-it, then choose Clone Repository again.</li>
+QUILL hands your token to Git for this one command only. It is never
+written into the copy’s settings, its remote address, or QUILL’s
+log.</li>
+<li><strong>Cloning needs Git for Windows.</strong> If it is missing,
+QUILL says so and offers to open its download page.</li>
 <li><strong>The folder must be new or empty.</strong> If a folder with
 the repository’s name already has something in it, QUILL asks you to
-choose another folder rather than mixing the two.</li>
+choose another.</li>
 <li><strong>Safe Mode turns cloning off</strong>, along with everything
 else that reaches the network.</li>
 </ul>
 <h2 id="branches">Branches</h2>
-<p>The <strong>Branches</strong> view lists every branch, whether it is
-protected, and its last commit. Enter on a branch opens its commits, in
-the Commits view, and Backspace comes back.</p>
-<p>Signed in, the context menu has <strong>Delete Branch</strong> and
-the branch name. To confirm, you type the branch’s name. It cannot be
-undone from QUILL.</p>
-<h3 id="comparing-branches">Comparing branches</h3>
-<p>Select a branch and press <strong>Compare…</strong>
-(<code>Alt+C</code>) or <code>Ctrl+Shift+B</code>. QUILL asks for the
-base branch, starting with <code>main</code>, then the branch to compare
-with it, starting with the one you selected. The window
-<strong>Compare</strong> and the two branches has two tabs:</p>
+<p><strong>Code &gt; Branches</strong> under a repository lists every
+branch, whether it is protected, and its last commit. Its
+<strong>Against default</strong> column says “3 ahead, 1 behind main”,
+“even with main” or “the default branch”. Enter on a branch opens its
+commits, and Backspace comes back.</p>
+<p>A branch’s context menu (<code>Shift+F10</code>) has:</p>
 <ul>
-<li><strong>Commits</strong>, with every commit between them, and how
-far ahead and behind the branches are.</li>
+<li><strong>Merge Into…</strong>, which merges the branch into another
+on GitHub, as a merge commit, with no pull request. QUILL offers the
+default branch first and asks before merging. You hear “Merged topic
+into main as abc1234.”, or that there was nothing to merge, or that the
+two conflict and nothing was merged. Branch protection still applies: a
+branch that needs a pull request refuses.</li>
+<li><strong>Download Source…</strong>, the branch’s files as a zip or
+tar.gz file, saved where you choose. A tag has it too.</li>
+<li><strong>Copy Name</strong>, <strong>Open in Codespaces…</strong>
+(Chapter 9), and <strong>Delete Branch…</strong>, or the
+<code>Delete</code> key. To confirm, you type the branch’s name. It
+cannot be undone from QUILL, and the default branch is never
+offered.</li>
+</ul>
+<h3 id="comparing-branches">Comparing branches</h3>
+<p>Select a branch and press <strong>Compare Branches…</strong>
+(<code>Ctrl+Shift+B</code>). QUILL asks for the base branch, starting
+with the default branch, and compares the selected branch against it.
+Two quicker ways skip the question:</p>
+<ul>
+<li><strong>Compare With Default</strong> (<code>Ctrl+B</code>): a
+branch against the default branch, which is what it adds; or a tag,
+release or commit against the default branch, which is what has happened
+since.</li>
+<li><strong>Compare With Previous</strong> (<code>Alt+Shift+B</code>): a
+tag or release against the one before it, or a commit against its
+parent.</li>
+</ul>
+<p>The <strong>Compare</strong> window has two tabs:</p>
+<ul>
+<li><strong>Commits</strong>, newest first, and how far ahead and behind
+the branches are. GitHub gives at most 250 commits for one comparison,
+so when there are more the tab says so, such as “Commits (250 of 1,204,
+newest)”.</li>
 <li><strong>Changed Files</strong>, which walks each file’s differences
 the same way the pull request diff does.</li>
 </ul>
 <p><strong>Open on GitHub</strong> (<code>Alt+G</code>) opens the
-comparison in your browser. Comparing only reads, so it works signed
-out.</p>
+comparison in your browser, and <strong>Open Pull Request</strong>
+(<code>Alt+P</code>) opens the pull request already open between the
+two, greyed when there is none. Comparing only reads, so it works signed
+out. A <code>compare</code> link pasted into <strong>Open GitHub
+Address…</strong> (<code>Ctrl+L</code>) opens the same window.</p>
 <h2 id="setting-a-commits-status">Setting a commit’s status</h2>
 <p>People who run their own checks outside GitHub Actions, in a test lab
 or by hand, report the result on the commit as a status. On a commit
@@ -486,64 +544,76 @@ link to the details if there is one. It shows beside the commit’s other
 checks, and branch protection can require it like any other. You hear
 “Set lab tests to failed on commit 3f9a2c1.” You need write access.</p>
 <h2 id="commit-comments">Commit comments</h2>
-<p>On a commit row, in the Commits view or in a branch’s commits, the
-context menu has <strong>Commit Comments…</strong>. It opens the
-commit’s comments, oldest first. Each reads as who wrote it, the date
-and its first line: “octocat, 2026-11-07: Looks good”. A comment on a
-line of a file says where, such as “on docs/readme.md line 12”. Tab
-reaches the whole comment.</p>
-<p>To add one, type it in <strong>New comment</strong>
+<p>On a commit row, under <strong>Code &gt; Commits</strong> or in a
+branch’s commits, the context menu has <strong>Commit
+Comments…</strong>. A tag has it too. It opens the commit’s comments,
+oldest first, in <strong>Comments:</strong> (<code>Alt+C</code>). Each
+reads as who wrote it, the date and its first line: “octocat,
+2026-11-07: Looks good”. A comment on a line of a file says where, such
+as “on docs/readme.md line 12”. <strong>Selected comment:</strong>
+(<code>Alt+M</code>) has the whole of it.</p>
+<p>To add one, type it in <strong>New comment:</strong>
 (<code>Alt+N</code>) and press <strong>Post Comment</strong>
 (<code>Alt+P</code>). It goes on the whole commit unless you name a file
-in <strong>File, optional</strong> (<code>Alt+F</code>); give a
-<strong>Line, optional</strong> (<code>Alt+L</code>) as well to put it
+in <strong>File, optional:</strong> (<code>Alt+F</code>); give a
+<strong>Line, optional:</strong> (<code>Alt+L</code>) as well to put it
 on one line of that file. You hear “Comment posted on” and where only
-when GitHub sends the comment back, and then the list is read again.
-<strong>Refresh</strong> (<code>Alt+R</code>) reads it again whenever
-you like. As a guest you can read the comments, but posting needs a
-signed-in account.</p>
+when GitHub sends the comment back. <strong>Refresh</strong>
+(<code>Alt+R</code>) reads the list again. Signed out you can read the
+comments, but posting needs an account.</p>
+<p><strong>Code &gt; Commit Comments</strong> lists every commit comment
+in the repository. Change… rewrites one of yours, and
+<code>Delete</code> deletes it after asking.</p>
 <h2 id="tags-and-releases">Tags and releases</h2>
-<p>The <strong>Tags</strong> view lists each tag and the commit it
+<p><strong>Code &gt; Tags</strong> lists each tag and the commit it
 points at.</p>
-<p>A tag can be made on its own, without a release. In the Tags view,
-New Here on the Workbench’s File menu asks for the tag’s name, such as
-<code>v1.2.0</code>, and which branch, tag or commit to put it on,
-starting with <code>main</code>. QUILL Lite refuses a name git would
-refuse, and a tag that already exists, before sending anything, and says
-“Made tag v1.2.0 on main, commit 3f9a2c1.”</p>
-<p>Then QUILL Lite asks for a message. Leave it empty for a lightweight
-tag, which is only a name for the commit. Type a message, such as “First
-beta”, and the tag is annotated: git keeps the message with who made it
-and when, the way most projects tag a release. You hear “Made annotated
-tag v1.2.0 on main, commit 3f9a2c1.” Cancel at any of the three
-questions and nothing is made.</p>
-<p><strong>Read Tag Message</strong>, on a tag’s context menu, says who
-made an annotated tag, when, and its message: “v1.2.0, tagged by Jeff
-Bishop on 2026-11-18: First beta”. For a lightweight tag it says there
-is no message.</p>
-<p><strong>Delete Tag…</strong> on a tag’s context menu asks first. If a
-release is built on the tag, the question says so, because deleting the
-tag leaves the release without one. The commit itself stays; only the
-name goes.</p>
-<p>The <strong>Releases</strong> view lists each release: its tag, name,
-how many times its files have been downloaded, how many files it has,
-when it was made, and whether it is a draft or a pre-release. Enter on a
-release lists its files with their download counts and sizes. Enter on a
-file opens its download in your browser, and Backspace goes back to the
-releases. A download count is how many times the file was fetched, not
-how many people fetched it, and QUILL says so.</p>
+<p>To make a tag on its own, without a release, press
+<code>Ctrl+N</code> (<strong>File &gt; New Here…</strong>) in Tags.
+QUILL asks for the tag’s name, such as <code>v1.2.0</code>, and which
+branch, tag or commit to put it on, starting with <code>main</code>. It
+refuses a name git would refuse, and a tag that already exists, before
+sending anything. Then it asks for a message. Leave it empty for a
+lightweight tag, which is only a name for a commit. Type a message, such
+as “First beta”, and the tag is annotated: git keeps the message with
+who made it and when, the way most projects tag a release. You hear
+“Made annotated tag v1.2.0 on main, commit 3f9a2c1.” Cancel at any of
+the three questions and nothing is made.</p>
+<p>On a tag’s context menu:</p>
+<ul>
+<li><strong>Read Tag Message</strong> says who made an annotated tag,
+when, and its message: “v1.2.0, tagged by Jeff Bishop on 2026-11-18:
+First beta”. For a lightweight tag it says there is no message.</li>
+<li><strong>Delete Tag…</strong>, or <code>Delete</code>, asks first. If
+a release is built on the tag, the question says so, because deleting
+the tag leaves the release without one. The commit stays; only the name
+goes.</li>
+</ul>
+<p><strong>Releases</strong> under a repository
+(<code>Ctrl+Shift+6</code>) lists each release: its tag, name, how many
+times its files have been downloaded, how many files it has, when it was
+made, and whether it is a draft or a pre-release. Enter on a release
+lists its files with their download counts and sizes, and Backspace goes
+back. A download count is how many times the file was fetched, not how
+many people fetched it, and QUILL says so.</p>
+<p>A file’s context menu has <strong>Download</strong>, <strong>Copy
+Link</strong>, <strong>Attestations…</strong> and <strong>Delete
+Asset…</strong>. Deleting a file asks first, and its download count goes
+with it.</p>
 <h3 id="writing-release-notes">Writing release notes</h3>
 <p><strong>Draft Release Notes…</strong>, on a release’s context menu,
-asks GitHub to write notes for a release from the pull requests merged
-since the previous one. Give it the release’s tag, the previous tag,
-and, for a tag that does not exist yet, the branch or commit it will
-point at. Press <strong>Generate Draft</strong> and the name and notes
-appear, ready to read and copy with <strong>Copy Draft</strong>. Nothing
-is published; it says so.</p>
+asks GitHub to write notes from the pull requests merged since the
+previous release. Give it the release’s tag, the previous tag, and, for
+a tag that does not exist yet, the branch or commit it will point at.
+Press <strong>Generate Draft</strong>: <strong>Draft name:</strong> and
+<strong>Draft body (Markdown):</strong> fill in, ready to read, and
+<strong>Copy Draft</strong> copies them. Nothing is published, and the
+window says so.</p>
+<p><strong>GitHub’s Release Notes…</strong>, under More on the same
+menu, shows the notes GitHub writes from the changes since another tag,
+in a window to read and copy.</p>
 <h3 id="editing-and-publishing-a-release">Editing and publishing a
 release</h3>
-<p>Signed in, a release’s context menu and <strong>Actions…</strong>
-have:</p>
+<p>Signed in, a release’s context menu has:</p>
 <ul>
 <li><strong>Edit Release…</strong> opens <strong>Edit Release</strong>
 and the tag, with <strong>Release name:</strong> (<code>Alt+N</code>),
@@ -555,11 +625,25 @@ publishing notifies everyone watching the repository and makes the
 release public. What you hear afterwards is built from GitHub’s reply,
 so a publish GitHub did not do is never reported as done.</li>
 <li><strong>Upload Asset…</strong> adds a file to the release. Choose
-the file, confirm, and QUILL says how far it has got at 25, 50 and 75
-percent, then “Uploaded” with the file’s name and size.</li>
-<li><strong>Delete Asset</strong>, inside a release’s file list, removes
-a file after asking. Its download count goes with it.</li>
+the file and confirm. When it is done you hear “Uploaded”, the file’s
+name and size, and the release.</li>
+<li><strong>Delete Release…</strong>, under More, deletes the release,
+its notes and its files. Choose <strong>Delete the release, keep the
+tag</strong>, which leaves the tagged commit as it was, or
+<strong>Delete the release and its tag</strong>. It cannot be
+undone.</li>
 </ul>
+<p>To make a new release, press <code>Ctrl+N</code> in Releases, or use
+<strong>Create Release…</strong> in Repository Actions. In QUILL it is
+also on <strong>Tools &gt; Git and GitHub &gt; GitHub</strong>, which
+opens the Workbench’s Releases and runs it there. It asks for the
+repository, a tag, an optional title, whether GitHub should write the
+notes from the merged pull requests or you will, and whether to save it
+as a draft. You hear “Created draft release” or “Created published
+release”, with its tag and address.</p>
+<p><strong>In QUILL Lite</strong>, Create Release is not there: make the
+tag in Tags, then publish the release on GitHub with <strong>Open on
+GitHub</strong>.</p>
 <h3 id="release-evidence-and-attestations">Release evidence and
 attestations</h3>
 <p><strong>Release Evidence…</strong>, on a release’s context menu,
@@ -589,78 +673,109 @@ not read”, never as none, so a missing permission is never mistaken for
 missing evidence.</p>
 <p><strong>Attestations…</strong>, on one file in a release’s file list,
 is the same for that file alone. The release’s
-<strong>Properties…</strong> page says whether it is immutable, and a
-file’s says its digest.</p>
-<p>In QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub &gt; Create
-Release…</strong> makes a new release: a tag, an optional title, your
-own notes or GitHub’s, and whether to publish it now or keep it as a
-draft.</p>
+<strong>Properties…</strong> (<code>Alt+Enter</code>) says whether it is
+immutable, and a file’s says its digest.</p>
+<!-- PR#1970 -->
+
+<h3 id="checking-a-download">Checking a download</h3>
+<p><strong>Check Download…</strong>, on one file in a release’s file
+list, checks the copy you downloaded. Download the file first (Enter
+opens it in your browser), then choose <strong>Check Download…</strong>:
+an Open box starts in your Downloads folder with the file’s name filled
+in. QUILL works out the SHA-256 of your copy on this computer, compares
+it with the digest GitHub has for the file, read fresh, and says whether
+it matches. A copy that does not match is said so, with the start of
+both values: do not use it, download it again. A file GitHub keeps no
+digest for, one uploaded before GitHub kept them, is said as not
+checkable, never as a match. A match says the bytes are the ones GitHub
+holds; it does not say who built them, which is what the attestations’
+signatures are for.</p>
 <h2 id="searching">Searching</h2>
-<p>Search in GitHub Items stays inside one repository (Chapter 2).
-Explore searches all of GitHub. Choose one of the search views in
-<strong>View:</strong> (<code>Alt+V</code>), type in <strong>Global
-search:</strong> (<code>Alt+G</code>) and press Enter.</p>
+<p><strong>Search</strong> (<code>Ctrl+3</code>) searches all of GitHub.
+Choose the kind of search under it, press <code>Ctrl+E</code> to move to
+the filter box, type, and press Enter.</p>
 <ul>
-<li><strong>Global issue and PR search</strong> finds issues and pull
-requests. Each row reads the repository, the number, the title, and
-which it is.</li>
-<li><strong>Code search</strong> finds code. Each row reads the file’s
-path, the line that matched, and the words that matched. Details has
-each excerpt. GitHub does not give a line number for these, so QUILL
-does not claim one. Code search needs a signed-in account.</li>
-<li><strong>Commit search</strong> finds commits: the repository, the
-short SHA, the first line of the message, who made it and when.</li>
-<li><strong>Repository search</strong> finds repositories: the name, the
+<li><strong>Issues and Pull Requests</strong> finds both. Each row reads
+the repository, the number, the title, and which it is.</li>
+<li><strong>Code</strong> finds code. Each row reads the file’s path,
+the line that matched, and the words that matched; the details have each
+excerpt. GitHub gives no line number for these, so QUILL does not claim
+one. Code search needs a signed-in account.</li>
+<li><strong>Commits</strong> finds commits: the repository, the short
+SHA, the first line of the message, who made it and when.</li>
+<li><strong>Repositories</strong> finds repositories: the name, the
 description, the stars and the language, and whether it is archived or a
 fork.</li>
+<li><strong>Security Advisories</strong>, <strong>People and
+Organizations</strong> and <strong>Topics</strong> are in Chapter 8 and
+Chapter 12.</li>
 </ul>
-<p>GitHub’s qualifiers work in every one: <code>repo:owner/name</code>,
-<code>language:python</code>, <code>author:alice</code>,
-<code>is:open</code>. A query GitHub cannot run comes back with GitHub’s
-reason.</p>
-<p><strong>Save Search</strong> keeps the current query on this
-computer. <strong>Saved Searches…</strong> (<code>Alt+S</code>) lists
-them, and choosing one runs it. On a search view’s context menu,
-<strong>Remove Saved Search</strong> forgets the one in the box.</p>
-<h3 id="the-repository-chooser">The repository chooser</h3>
-<p><strong>Repository chooser</strong>, in <strong>View:</strong>, lists
-the repositories you are most likely to want: your pinned ones first,
-then the ones you opened recently, then your own, your starred and your
-watched repositories. Enter on one sends it to GitHub Items.</p>
+<p>GitHub’s own qualifiers work in every one:
+<code>repo:owner/name</code>, <code>language:python</code>,
+<code>author:alice</code>, <code>is:open</code>. A query GitHub cannot
+run comes back with GitHub’s reason. Plain words in the filter box of
+any other list only narrow the rows already there.</p>
+<p><code>Ctrl+N</code> in a search keeps it under <strong>Saved
+Searches</strong> (<code>Ctrl+8</code>). There, Enter runs one,
+<strong>Pin as Node</strong> gives it a place of its own in the tree,
+<strong>Unpin Node</strong> takes that place away, and <strong>Remove
+Saved Search</strong> forgets it. <strong>Go &gt; Run a Saved
+Search</strong> lists them from anywhere.</p>
 <h2 id="forks-templates-and-topics">Forks, templates and topics</h2>
-<p>These are on the <strong>Repository Actions for</strong> submenu of
-Explore’s context menu, which acts on the selected repository row, or on
-the repository in <strong>Repository:</strong> when you are in one of
-the repository views. You need to be signed in.</p>
+<p>A fork is your own copy of someone else’s repository. <strong>Fork
+Repository…</strong> in Repository Actions (<code>Ctrl+Shift+G</code>)
+makes one, in your account or an organization; in QUILL it is also on
+<strong>Tools &gt; Git and GitHub &gt; GitHub</strong>. On a fork,
+<strong>Code &gt; Upstream</strong> opens the repository it came from,
+and <strong>People &gt; Forks</strong> under any repository lists its
+forks. The repository’s <strong>Properties</strong>
+(<code>Alt+Enter</code>) has a <strong>Fork</strong> page: whether it is
+a fork, what it was forked from, and, for an organization’s private
+repositories, whether forking is allowed.</p>
+<p><strong>Topics</strong> are the tags that help people find a
+repository. They are on the <strong>General</strong> page of its
+Properties: separate them with commas, lower-case letters, numbers and
+hyphens, up to 20. Clear the box to remove them all.</p>
+<p>A <strong>template repository</strong> is one other repositories can
+start from. Whether a repository is one is on the
+<strong>Templates</strong> page of its Properties.</p>
+<!-- PR#1971 -->
+
+<p>On a repository row’s context menu (<code>Shift+F10</code>):</p>
+<!-- PR#1971 -->
+
 <ul>
 <li><strong>Sync Fork with Upstream…</strong> brings a fork up to date
-with the repository it was forked from. QUILL counts the new commits
-first, so it can say “Merged 3 commits from” the upstream, or “Already
-up to date with” it.</li>
-<li><strong>Set Topics…</strong> sets the repository’s topics, the tags
-that help people find it. The box starts with the current ones. Separate
-them with spaces or commas, or leave it empty to remove them all. Topics
-are lower-case letters, numbers and hyphens, up to 20 of them.</li>
-<li><strong>Create Repository from This Template…</strong> makes a new
-repository from a template repository. Give it a name, an optional
-description and organization, and choose whether it is private.</li>
+with the repository it came from, after asking. QUILL counts the new
+commits first, so it can say “Merged 3 commits from” the upstream, or
+“Already up to date with” it.</li>
 </ul>
-<p><strong>Repository forks</strong>, in <strong>View:</strong>, lists a
-repository’s forks. In GitHub Items, <strong>View Upstream</strong>
-(<code>Alt+U</code>) on a fork loads the repository it came from. In
-QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub &gt; Fork
-Repository…</strong> makes a fork.</p>
+<!-- PR#1963 -->
+
+<ul>
+<li><strong>Create Repository from This Template…</strong> opens Create
+Repository with the template filled in: give it a name, an optional
+description and owner, choose private or public, and whether to copy all
+of the template’s branches or only its default one.</li>
+</ul>
+<!-- PR#1971 -->
+
+<ul>
+<li><strong>Delete Repository…</strong> is under <a
+href="#looking-after-a-repository">Looking after a repository</a>.</li>
+</ul>
 <h2 id="the-community-profile">The community profile</h2>
-<p><strong>Community profile checklist</strong>, in Explore’s
-<strong>View:</strong>, checks a repository for the files GitHub
-recommends. The first row says the score and what is present and
-missing; then one row each says “present” or “missing” for the README,
-licence, contributing guide, code of conduct, issue templates and pull
-request template.</p>
+<p><strong>Insights &gt; Community Profile</strong> under a repository
+checks it for the files GitHub recommends. The first row says the score
+and what is present and missing; then one row each says “present” or
+“missing” for the README, licence, contributing guide, code of conduct,
+issue templates and pull request template. <strong>Templates</strong>
+under the repository is where you make the missing ones (Chapter
+12).</p>
 <h2 id="dependabot-code-owners-and-configuration">Dependabot, code
 owners and configuration</h2>
-<p>These live on <strong>Repository &gt; Templates</strong>, beside the
-community files, and on <strong>Repository Actions…</strong>
+<p>These live on <strong>Templates</strong> under a repository, beside
+the community files, and on <strong>Repository Actions…</strong>
 (<code>Ctrl+Shift+G</code>).</p>
 <h3 id="dependabot">Dependabot</h3>
 <p>The <strong>Dependabot configuration</strong> row opens
@@ -691,11 +806,12 @@ answers with the rule that wins, as GitHub decides. <strong>Check
 Owners</strong> asks GitHub whether each owner exists and can write.
 <strong>Problems found</strong> lists rules GitHub would skip by their
 shape, the problems GitHub itself reports for the file on the default
-branch, and what Check Owners found.</p>
-<p><strong>Who Owns This?</strong> on a file or folder in the
-repository’s files says its owners and the line of the rule that wins.
-From Repository Actions, <strong>Who Owns This Path?…</strong> asks for
-any path.</p>
+branch, and what Check Owners found. <strong>Settings &gt; CODEOWNERS
+Problems</strong> under the repository lists GitHub’s own report on its
+own.</p>
+<p><strong>Who Owns This?</strong>, on a file or folder in Files, says
+its owners and the line of the rule that wins. <strong>Who Owns This
+Path?…</strong>, in Repository Actions, asks for any path.</p>
 <h3 id="comparing-configuration-with-another-repository">Comparing
 configuration with another repository</h3>
 <p><strong>Compare Configuration With Another Repository…</strong>, in
@@ -712,21 +828,28 @@ then opens one pull request with the checked files and a summary of
 each. Nothing changes until that pull request is merged; QUILL never
 pushes these to the default branch.</p>
 <h2 id="insights">Insights</h2>
-<p><strong>Insights: traffic and contributors</strong> gives a
-repository’s last 14 days in one sentence, such as
-“community-access/quill: 120 views (30 unique) and 14 clones (6 unique)
-in the last 14 days, 9 contributors.” Each row after it is one figure:
-views and clones on each day, the sites that sent people, the most
-visited pages, and each contributor’s commits. The list is the
-table.</p>
-<p>Traffic figures need push access to the repository. Without it, QUILL
-says so, and still lists the contributors.</p>
+<p><strong>Insights</strong> under a repository
+(<code>Ctrl+Shift+0</code>) has four places.</p>
+<p><strong>Traffic and Contributors</strong> gives the last 14 days in
+one sentence, such as “community-access/quill: 120 views (30 unique) and
+14 clones (6 unique) in the last 14 days, 9 contributors.” Each row
+after it is one figure: views and clones on each day, the sites that
+sent people, the most visited pages, and each contributor’s commits.
+Traffic figures need push access. Without it, QUILL says so and still
+lists the contributors.</p>
+<p><strong>Health Snapshot</strong> is a set of counts that stays on
+this computer and ranks nobody. It loads only when <strong>Load the
+repository Health Snapshot</strong> is checked on the Privacy page of
+<strong>Workbench Options</strong> (<code>Ctrl+Shift+O</code>).</p>
+<!-- PR#1973 -->
+
+<p>It says how many ready pull requests are waiting for a review and how
+long the oldest has waited, without naming who was asked.</p>
+<p><strong>Community Profile</strong> is described above.</p>
 <h3 id="commit-activity-as-tables">Commit activity, as tables</h3>
 <p>GitHub’s Insights pages draw a repository’s history as charts.
-<strong>Repository &gt; Insights &gt; Commit Activity</strong> in the
-GitHub Workbench (<strong>Commit activity as tables</strong> in
-Explore’s <strong>View:</strong>) reads the same numbers as rows, each a
-whole sentence, newest first:</p>
+<strong>Insights &gt; Commit Activity</strong> reads the same numbers as
+rows, each a whole sentence, newest first:</p>
 <ul>
 <li><strong>Last 4 weeks</strong>: “Last 4 weeks: 30 commits, 10 by the
 owner.”</li>
@@ -746,90 +869,204 @@ background, so the first time you open a repository’s Commit Activity
 the first row may say “GitHub is still counting its statistics; refresh
 in a moment.” Press <code>F5</code> a few seconds later. A repository
 with no commits, or with 10,000 commits or more, gets no statistics from
-GitHub at all, and QUILL Lite says that rather than showing an empty
-table. Anyone can read these for a public repository.</p>
+GitHub at all, and QUILL says so rather than showing an empty table.
+Anyone can read these for a public repository.</p>
 <h2 id="looking-after-a-repository">Looking after a repository</h2>
-<h3 id="in-explore-in-both-apps">In Explore, in both apps</h3>
-<p>The <strong>Repository Actions for</strong> submenu also holds:</p>
+<h3 id="repository-settings-in-properties">Repository settings in
+Properties</h3>
+<p><code>Alt+Enter</code> on a repository opens its Properties: a page
+for each part of GitHub’s settings. You change a field, and nothing is
+sent until you save; Chapter 13 has how saving and undoing work.</p>
 <ul>
-<li><strong>Watch Level…</strong>, below.</li>
-<li><strong>Archive Repository…</strong> makes a repository read-only:
-no pushes, issues or pull requests until it is unarchived.
-<strong>Unarchive Repository…</strong> undoes it. Both ask first.</li>
-<li><strong>Delete Repository…</strong> deletes the repository and
-everything in it: code, issues, pull requests, wiki and releases. It
-cannot be undone, so you type the repository’s full name, exactly, to
-confirm. Deleting needs the token’s <code>delete_repo</code> scope, and
-QUILL says so if it is missing. Sign In with GitHub asks for it, so an
-account added that way can delete; a token you added yourself needs the
-scope too (Chapter 1).</li>
+<li><strong>General</strong>: the name, description, website, topics and
+default branch. Renaming moves the repository, and GitHub forwards the
+old address.</li>
+<li><strong>You</strong>: whether you have starred it, and your
+<strong>Watch level</strong> (below).</li>
+<li><strong>Fork</strong> and <strong>Templates</strong>: above.</li>
+<li><strong>Features</strong>: issues, projects, the wiki and
+discussions on or off, and whether web commits need a sign-off.</li>
 </ul>
-<h3 id="on-quills-tools-menu">On QUILL’s Tools menu</h3>
-<p><strong>Tools &gt; Git and GitHub &gt; GitHub</strong> has the rest.
-All of them need you to be signed in, and offer to sign you in if you
-are not.</p>
+<!-- PR#1963 -->
+
+<p><strong>Sponsor button links</strong> reads the links from the
+repository’s FUNDING.yml. Whether the Sponsor button shows is a setting
+GitHub’s API cannot change, so the field only reads and says so.</p>
 <ul>
-<li><strong>Create Repository…</strong>: a name, a description, private
-or public, and an optional organization. QUILL then offers to set up a
-folder on your computer that stays in step with it.</li>
-<li><strong>Fork Repository…</strong>, into your account or an
-organization.</li>
-<li><strong>Rename Repository…</strong>. GitHub forwards the old
-address, but anything that has the old name written into it will need
-changing. You confirm by typing the repository’s current name.</li>
-<li><strong>Change Visibility…</strong> switches between private and
-public. QUILL says which it is now before asking, warns that making it
-public shows its whole history, and asks you to type the name.</li>
-<li><strong>Change Default Branch…</strong>, from a list of the
-branches.</li>
-<li><strong>Configure Branch Protection…</strong>: pick a branch, then
-the required reviews, required checks, and whether the rules apply to
-administrators.</li>
-<li><strong>Delete Branch…</strong>, from a list that never includes the
-default branch. You type the branch’s name to confirm.</li>
-<li><strong>Commit Multiple Files…</strong>: pick files on your
-computer, a branch and a commit message, and QUILL commits them
-together.</li>
-<li><strong>Browse Organization Repositories…</strong> lists your
-organizations, then an organization’s repositories. Choosing one opens
-it in GitHub Items.</li>
+<li><strong>Merging</strong>: which merge methods are allowed,
+auto-merge, suggesting branch updates, deleting head branches after
+merging, and the default title and message of a squash merge and of a
+merge commit.</li>
+<li><strong>Branches and Rules</strong>, <strong>Access</strong>,
+<strong>Actions</strong> and <strong>Security</strong>: branch
+protection and rulesets, who has access, whether Actions runs and what
+its token may do, and Dependabot, private vulnerability reporting,
+secret scanning and push protection. Chapter 13 covers rules and
+access.</li>
+<li><strong>Pages</strong>: the site’s address and source, the custom
+domain and Enforce HTTPS. See <a href="#github-pages">GitHub
+Pages</a>.</li>
+<li><strong>Environments</strong>, <strong>Webhooks</strong>,
+<strong>Deploy Keys</strong>, <strong>Autolinks</strong>, and
+<strong>Secrets and Variables</strong>: tables of each, which are also
+lists of their own in the tree.</li>
+<li><strong>Insights</strong>: stars, forks, watchers and open issues,
+read only.</li>
+<li><strong>Danger Zone</strong>: the visibility, private or public, and
+<strong>Archived</strong>. An archived repository is read only for
+everyone until it is unarchived. Making a repository public shows its
+whole history, and the save asks first.</li>
 </ul>
-<p>The four riskiest commands, renaming, changing visibility, deleting a
-branch and merging a pull request, all make you type a name or number. A
-stray Enter on one of these is much harder to put right than most
-things.</p>
+<!-- PR#1971 -->
+
+<p><strong>Delete Repository…</strong>, on a repository row’s context
+menu, deletes the repository and everything in it: code, issues, pull
+requests, wiki and releases. It cannot be undone, so you type the
+repository’s full name, exactly, to confirm. Deleting needs the token’s
+<code>delete_repo</code> scope, and QUILL says so if it is missing. Sign
+In with GitHub asks for it; a token you made yourself needs it too
+(Chapter 1).</p>
+<h3 id="from-the-editors-tools-menu">From the editor’s Tools menu</h3>
+<p>In QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub</strong> has
+the same jobs as editor commands. Each opens the Workbench at the right
+place and does the job there, so there is one way to do each thing:</p>
+<ul>
+<li><strong>Rename Repository…</strong> and <strong>Change Default
+Branch…</strong> open the repository’s Properties at General.</li>
+<li><strong>Change Visibility…</strong> opens it at Danger Zone.</li>
+<li><strong>Configure Branch Protection…</strong> opens it at Branches
+and Rules.</li>
+<li><strong>Delete Branch…</strong> opens <strong>Code &gt;
+Branches</strong>; press <code>Delete</code> on the branch.</li>
+<li><strong>Create Release…</strong>, <strong>Dispatch
+Workflow…</strong> and <strong>Security Alerts…</strong> open Releases,
+Workflows and Alerts.</li>
+<li><strong>Browse Organization Repositories…</strong> opens
+<strong>Repositories &gt; Organizations</strong>.</li>
+<li><strong>Create Repository…</strong>, <strong>Fork
+Repository…</strong> and <strong>Commit Multiple Files…</strong> open
+their own windows, in front of the Workbench.</li>
+</ul>
+<!-- PR#1963 -->
+
+<p><strong>Create Repository…</strong> asks everything GitHub can set
+when a repository is made: the owner (blank for your own account, or an
+organization), the name, a description and a website, and private or
+public. Then how it starts: from a <strong>template</strong>
+(owner/name), with or without all of the template’s branches; or fresh,
+with a README, a <strong>.gitignore template</strong> and a
+<strong>licence</strong>. When GitHub would refuse a combination, such
+as a README as well as a template, the window stays open and the Problem
+box at its top says why, before anything is sent. QUILL then offers to
+set up a folder on your computer that stays in step with it.</p>
+<p>The riskiest commands, renaming, changing visibility, deleting a
+branch or a repository, and merging a pull request, all make you type a
+name or number. A stray Enter on one of these is much harder to put
+right than most things.</p>
 <h3 id="transferring-a-repository">Transferring a repository</h3>
 <p><strong>Transfer Repository…</strong> moves a repository to another
 person or to an organization, with its issues, pull requests, wiki,
-stars and watchers. It is on the GitHub Workbench’s Repository menu and
-on Repository Actions. QUILL Lite asks for the new owner, then asks you
-to type the repository’s full name, because you may lose access to it
-and only the new owner can move it back.</p>
+stars and watchers. It is on the Workbench’s <strong>Repository</strong>
+menu (<code>Ctrl+Alt+T</code>) and in Repository Actions. QUILL asks for
+the new owner,</p>
+<!-- PR#1963 -->
+
+<p>then its name there (keep it to leave it unchanged), then, for an
+organization, the teams there that should have access, by name,
+separated by commas. A team the organization does not have is named
+before anything moves.</p>
+<p>Last it asks you to type the repository’s full name, because you may
+lose access to it and only the new owner can move it back.</p>
 <p>Moving it to an organization you can create repositories in happens
 at once, and you hear the new name, such as “Transferred jeff/notes; it
 is now community-access/notes. The old address redirects.” Moving it to
-a person sends them a request they have a day to accept, and QUILL Lite
-says so. Only an owner or administrator of the repository can transfer
+a person sends them a request they have a day to accept, and QUILL says
+so. Only an owner or administrator of the repository can transfer
 it.</p>
+<h2 id="github-pages">GitHub Pages</h2>
+<p><strong>GitHub Pages</strong> under a repository lists its website
+and recent builds. <code>Ctrl+N</code> there is <strong>Turn On
+Pages…</strong>: from a branch (which branch, and the top of it or
+<code>/docs</code>), or by a GitHub Actions workflow. On the site’s
+row:</p>
+<ul>
+<li><strong>Check Site</strong> says how the latest build went and
+whether a custom domain points at GitHub Pages.</li>
+<li><strong>Rebuild</strong> asks GitHub for a fresh build.</li>
+<li><strong>Turn Off Pages…</strong> stops publishing the site after
+asking, and leaves the repository as it is.</li>
+</ul>
+<p>Everything else about the site is on the <strong>Pages</strong> page
+of the repository’s Properties. A site deployed by a workflow is
+deployed by the workflow’s own <code>actions/deploy-pages</code> step,
+so QUILL does not deploy one itself.</p>
 <h2 id="the-wiki">The wiki</h2>
 <p>A wiki is a repository’s own pages of documentation. GitHub keeps
 them as a git repository of their own, with no API for the pages, so
-QUILL Lite works on them the way git does.</p>
-<p><strong>Repository &gt; Wiki</strong> in the GitHub Workbench says
-whether the repository’s wiki is on. When it is, Enter opens it on
-GitHub to read, and <strong>Clone Wiki…</strong>
-(<code>Ctrl+Alt+W</code>, on the Repository menu) opens the same Clone
-Repository window as any clone, with the wiki’s address already filled
-in, such as <code>community-access/quill.wiki</code>. Its pages arrive
-in that folder as Markdown files, one for each page, named after the
-page’s title. Open one in the editor, change it, then commit and push
-with git, and GitHub shows the change at once. A wiki that is turned off
-says so, and that its administrators turn it on in the repository’s
-Properties, on the Features page.</p>
+QUILL works on them the way git does.</p>
+<p><strong>Wiki</strong> under a repository says whether its wiki is on.
+When it is, Enter opens it on GitHub to read, and <strong>Clone
+Wiki…</strong> (<code>Ctrl+Alt+W</code>, on the Repository menu) opens
+the Clone Repository window with the wiki’s address filled in, such as
+<code>community-access/quill.wiki</code>. Its pages arrive as Markdown
+files, one for each page, named after the page’s title.</p>
+<!-- PR#1973 -->
+
+<p>The Wiki row’s context menu also edits it here:</p>
+<!-- PR#1973 -->
+
+<ul>
+<li><strong>Edit Wiki Pages…</strong> copies the wiki to QUILL’s own
+folder the first time, and brings that copy up to date after that, then
+lists its pages, Home first. Enter on a page opens it in the editor.
+Change it and save it as you would any file; nothing reaches GitHub
+yet.</li>
+<li><strong>New Wiki Page…</strong> asks for a title and makes the
+page’s file, named the way GitHub names one (spaces become hyphens),
+then opens it.</li>
+<li><strong>Publish Wiki Changes…</strong> says which pages changed and
+asks before it sends them, naming the wiki and your account. It asks for
+a short description of the change, commits the pages with it and pushes
+them, and everyone who can read the wiki sees them at once. When someone
+else changed the wiki meanwhile, your change goes on top of theirs. When
+you both changed the same lines, nothing is forced: it says so, and your
+edits stay committed in the copy for you to compare.</li>
+</ul>
+<!-- PR#1973 -->
+
+<p>GitHub makes a wiki’s git repository only when its first page is
+saved on the web, so a brand-new wiki says to save its Home page there
+once first.</p>
+<p>These commands use git, which Git for Windows provides. A wiki that
+is turned off says so, and that its administrators turn it on in the
+repository’s Properties, on the Features page.</p>
+<!-- PR#1973 -->
+
+<h2 id="github-models-prompt-files">GitHub Models prompt files</h2>
+<p>A prompt file is a <code>.prompt.yml</code> file that GitHub Models
+reads: the model and its settings, the messages with their
+<code>{{variables}}</code>, rows of test data, and the evaluators that
+judge each answer. <strong>Prompt Files…</strong> on a repository’s row,
+or on the repository’s own place, lists every prompt file on the default
+branch. The details read the selected one as its parts: its name, its
+model, each message by role, how many test rows it has, its evaluators,
+and any problem GitHub Models would trip on, such as a variable no test
+row fills. <strong>Open in Editor</strong> opens the file to edit, and
+saving it there commits it, as with any file you open from GitHub.</p>
+<p>QUILL does not run a prompt or an evaluation, because it has no
+GitHub Models client. Run one on the repository’s Models page on GitHub,
+or with <code>gh models run</code> and <code>gh models eval</code>.</p>
+<!-- PR#1973 -->
+
+<h2 id="opening-githubdev">Opening github.dev</h2>
+<p><strong>Open in github.dev</strong>, on a file of a repository or on
+a pull request, opens GitHub’s free web editor in your browser at
+exactly that file or pull request. Nothing is created and nothing costs
+money; a codespace, which can cost money, is Chapter 9.</p>
 <h2 id="webhooks-deploy-keys-and-autolinks">Webhooks, deploy keys and
 autolinks</h2>
-<p>Three of a repository’s settings are lists, under <strong>Repository
-&gt; Settings</strong> in the GitHub Workbench. Each needs you to
+<p>Three of a repository’s settings are lists under
+<strong>Settings</strong> in the repository’s place. Each needs you to
 administer the repository; anyone else hears that instead of an empty
 list.</p>
 <h3 id="webhooks">Webhooks</h3>
@@ -841,27 +1078,31 @@ delivery succeeded (200).” A webhook whose last delivery failed says so,
 with GitHub’s reason, which is usually the first thing to check when a
 build stopped starting.</p>
 <p><code>Ctrl+N</code> there adds one: the address, JSON or form, which
-events (just push, everything, or a check list of the common ones), and
-a secret GitHub signs each message with. The secret is typed in a
-password box. QUILL Lite sends it once and never shows, says or keeps
-it; GitHub never gives it back either, so to change it you set a new
-one. GitHub sends a new webhook a ping straight away.</p>
+events (just push, everything, or a list of the common ones to check),
+and a secret GitHub signs each message with. The secret is typed in a
+password box. QUILL sends it once and never shows, says or keeps it;
+GitHub never gives it back either, so to change it you set a new one.
+GitHub sends a new webhook a ping straight away.</p>
 <p>On a webhook:</p>
 <ul>
 <li><strong>Ping</strong> sends it a test message.</li>
+<li><strong>Send Test Push</strong> asks GitHub to send it the latest
+push as a test, if it listens for pushes.</li>
+<li><strong>Turn On or Off…</strong> stops GitHub sending it anything,
+without deleting it, or starts it again.</li>
 <li><strong>Recent Deliveries…</strong> lists what GitHub sent, newest
 first: “push at 2026-11-18 09:30: succeeded (200)”, or failed with the
 code it got back. Choose one to deliver it again, after a question.</li>
 <li><strong>Change Address or Secret…</strong> offers the address to
 edit and a password box for a new secret; leave either as it is to keep
 it.</li>
-<li><strong>Delete Webhook…</strong>, or the Delete key, asks first. Its
-delivery history goes with it.</li>
+<li><strong>Delete Webhook…</strong>, or <code>Delete</code>, asks
+first. Its delivery history goes with it.</li>
 </ul>
 <p>An organization has webhooks of its own, which hear about every
-repository in it: <strong>Organizations &gt;</strong> the organization
-<strong>&gt; Webhooks</strong>, with the same commands. They need you to
-own the organization.</p>
+repository in it: <strong>Webhooks</strong> under the organization’s
+place, with the same commands. They need you to own the
+organization.</p>
 <h3 id="deploy-keys">Deploy keys</h3>
 <p>A deploy key is an SSH key that reaches this one repository only, so
 a server can clone or pull it without anyone’s account. <strong>Deploy
@@ -881,39 +1122,47 @@ numbers only.” <code>Ctrl+N</code> asks for the prefix, the address with
 <code>&lt;num&gt;</code> where the reference goes, and whether letters
 may follow the prefix or only numbers. <strong>Delete Autolink…</strong>
 asks first; text already written keeps its words, without the link.</p>
+<p>To make a webhook, deploy key or autolink the same across many
+repositories, use <strong>Settings by Name</strong> under Across
+Repositories (Chapter 12).</p>
 <h2 id="watching-starring-and-following">Watching, starring and
 following</h2>
-<p>On a repository row in Explore, signed in, the context menu has
-<strong>Watch Repository</strong>, <strong>Unwatch Repository</strong>,
-<strong>Star Repository</strong> and <strong>Unstar Repository</strong>.
-Each asks first.</p>
-<p><strong>Watch Level…</strong>, on the Repository Actions submenu,
-sets exactly how much you hear about a repository: “Watching: all
-activity”, “Releases only”, “Ignoring: never notified”, or “Not
-watching: only when participating or mentioned”. It says the current
-level first. GitHub does not let apps choose “Releases only”, so QUILL
-opens the repository’s page for you to choose it with GitHub’s own Watch
-button, and tells you so.</p>
-<p>On a person’s row, the context menu has <strong>Follow</strong> or
-<strong>Unfollow</strong> and their username. These happen straight
-away, without a question: “You now follow” them. <strong>Explore
-Person’s Activity</strong> shows what they have been doing.</p>
+<p>On a repository row’s context menu:</p>
+<ul>
+<li><strong>Star or Unstar</strong> asks which, then does it: “Starred
+owner/name.”</li>
+<li><strong>Watch or Unwatch</strong> opens the repository’s Properties
+at the <strong>You</strong> page, on <strong>Watch level</strong>:
+<strong>all activity</strong>, <strong>participating and
+mentions</strong>, or <strong>ignore</strong>. Watching only some kinds
+of activity, such as releases only, is set on GitHub’s own page, because
+GitHub has no API for it; the <strong>Custom watching</strong> field
+says so, and <strong>Open on GitHub</strong> (<code>Shift+Enter</code>)
+goes there.</li>
+</ul>
+<p><strong>Repositories &gt; Starred</strong> and <strong>Repositories
+&gt; Watched</strong> list what you star and watch, and <strong>People
+&gt; Watchers</strong> under a repository lists who watches it.</p>
+<p>On a person’s row, <strong>Follow or Unfollow</strong> asks which,
+then says “You now follow” them, or that you no longer do.
+<strong>People I Follow</strong> and <strong>My Followers</strong> are
+under People.</p>
 <h3 id="star-lists">Star lists</h3>
 <p>GitHub lets you sort your stars into lists of your own, such as
 “Screen readers” or “Tools I use”. <strong>Repositories &gt; Star
-Lists</strong> in the GitHub Workbench lists every repository on every
-list, each row starting with its list: “Screen readers: nvaccess/nvda,
-NVDA”. They are ordinary repository rows, so Enter opens the repository
-and Star, Watch and Clone work as anywhere else. The node’s note names
-any list that is empty.</p>
+Lists</strong> lists every repository on every list, each row starting
+with its list: “Screen readers: nvaccess/nvda, NVDA”. They are ordinary
+repository rows, so Enter opens the repository and Star, Watch and Clone
+work as anywhere else. The place’s note names any list that is
+empty.</p>
 <ul>
 <li><strong>New Star List…</strong>: press <code>Ctrl+N</code> in Star
-Lists. QUILL Lite asks for the name, up to 32 characters, a description
-you can leave empty, and whether only you or everyone can see it.</li>
+Lists. QUILL asks for the name, up to 32 characters, a description you
+can leave empty, and whether only you or everyone can see it.</li>
 <li><strong>Star Lists…</strong>, on any repository’s context menu,
-wherever it is listed, shows your lists with the ones it is on already
-checked. Check and uncheck, then OK. You hear “nvaccess/nvda is now on:
-Screen readers, Tools I use.”</li>
+shows your lists with the ones it is on already checked. Check and
+uncheck, then OK. You hear “nvaccess/nvda is now on: Screen readers,
+Tools I use.”</li>
 <li><strong>Rename or Delete Star List…</strong>, on a row in Star
 Lists, works on that row’s list: rename it or change its description,
 make it private or public, or delete it. Deleting a list leaves its
@@ -922,94 +1171,138 @@ repositories starred.</li>
 <h2 id="packages">Packages</h2>
 <p>GitHub Packages holds what a project publishes besides its code:
 container images, and npm, Maven, RubyGems and NuGet packages.
-<strong>Repositories &gt; My Packages</strong> in the GitHub Workbench
-lists yours as one list, each row whole on its own: “container
-quill-engine: private, 12 versions, from community-access/quill, updated
-2026-11-12.” GitHub keeps packages by type, so QUILL Lite asks for each
-type in turn; the list is every type together, in alphabetical
-order.</p>
+<strong>Repositories &gt; My Packages</strong> lists yours as one list,
+each row whole on its own: “container quill-engine: private, 12
+versions, from community-access/quill, updated 2026-11-12.” GitHub keeps
+packages by type, so QUILL asks for each type in turn; the list is every
+type together, in alphabetical order.</p>
 <p>A package’s context menu has:</p>
 <ul>
-<li><strong>Show Details</strong> and <strong>Open on
-GitHub</strong>.</li>
-<li><strong>Delete Package Version…</strong> lists the package’s
-versions, newest first, with their tags, such as “sha256:bbb, tagged
-latest, 1.2, updated 2026-11-12”. Choose one and QUILL Lite asks before
-deleting it. GitHub will not delete a package’s only version, or one
-downloaded more than 5,000 times, and QUILL Lite says so.</li>
+<li><strong>Show Details</strong>, <strong>Open on GitHub</strong> and
+<strong>Copy Link</strong>.</li>
+<li><strong>Show Versions</strong> lists every version in a window to
+read.</li>
+<li><strong>Delete Package Version…</strong> lists the versions, newest
+first, with their tags, such as “sha256:bbb, tagged latest, 1.2, updated
+2026-11-12”. Choose one, and QUILL asks before deleting it.</li>
+</ul>
+<!-- PR#1963 -->
+
+<p>To confirm, you type the package’s name, because a version’s own name
+is often a long digest. GitHub will not delete a package’s only version,
+or one downloaded more than 5,000 times, and QUILL says so.</p>
+<ul>
+<li><strong>Restore Package Version…</strong> lists the versions deleted
+in the last 30 days and brings back the one you choose.</li>
 <li><strong>Delete Package…</strong> deletes the package and every
 version, after you type its name.</li>
 </ul>
-<p>GitHub keeps a deleted package or version for 30 days, and you can
-restore it from the Packages page of your GitHub settings. Reading
-private packages needs the <code>read:packages</code> permission and
-deleting needs <code>delete:packages</code>; Sign In with GitHub asks
-for both, and an account signed in before November 2026 is told to sign
-in again rather than seeing an empty list.</p>
-<p>An organization’s packages are under <strong>Organizations
-&gt;</strong> the organization <strong>&gt; Packages</strong>, read and
-deleted the same way.</p>
-<p><code>Ctrl+N</code> in My Packages, or in an organization’s Packages,
-brings back a package deleted in the last 30 days: QUILL Lite asks its
-type and name, and says “Restored the npm package left-pad.”, or that
-GitHub has no such deleted package.</p>
+<p>GitHub keeps a deleted package or version for 30 days.
+<code>Ctrl+N</code> in My Packages, or in an organization’s Packages,
+brings back a whole deleted package: QUILL asks its type and name, and
+says “Restored the npm package left-pad.”, or that GitHub has no such
+deleted package. Reading private packages needs the
+<code>read:packages</code> permission and deleting needs
+<code>delete:packages</code>. Sign In with GitHub asks for both; an
+account signed in before they were asked for is told to sign in again
+rather than shown an empty list.</p>
+<p>An organization’s packages are under <strong>Packages</strong> in the
+organization’s place, and a person’s under <strong>Packages</strong> in
+theirs.</p>
+<!-- PR#1963 -->
+
+<p>A repository’s own are under <strong>Packages</strong> in the
+repository’s place: the packages its owner published from it. Another
+person’s packages can be read, and their versions listed, but only they
+can change them.</p>
 <h2 id="gists">Gists</h2>
-<p>Explore’s <strong>My gists</strong> view lists your gists, each with
-its description and whether it is public or secret. Signed in, the
-context menu has:</p>
+<p>A gist is a small piece of text or code you share, with its own
+history. <strong>Gists &gt; My Gists</strong> (<code>Ctrl+5</code>)
+lists yours, each with its description and whether it is public or
+secret. Chapter 12 has every gist command; in short:</p>
 <ul>
-<li><strong>New Gist…</strong>, anywhere in the view. It starts from the
-document you are editing: the selection if there is one, otherwise the
-whole document, under the document’s file name. Where there is no
-document, such as QUILL Lite’s empty window, it starts blank.</li>
-<li><strong>Edit Gist…</strong>, on a gist. QUILL reads the gist from
-GitHub first.</li>
-<li><strong>Star Gist</strong> and <strong>Unstar Gist</strong>.</li>
-<li><strong>Delete Gist…</strong>, which asks first. A deleted gist
-cannot be brought back from QUILL.</li>
+<li><strong>New Gist</strong> (<code>Ctrl+N</code> in My Gists) starts
+from the editor that opened the Workbench: the selection if there is
+one, otherwise the whole document, under the document’s file name.</li>
+<li><strong>Edit Gist…</strong> (Enter on a gist) reads it from GitHub
+first.</li>
+<li><strong>Star or Unstar</strong>, <strong>Comments…</strong>,
+<strong>History…</strong>, <strong>Forks…</strong>, <strong>Fork
+Gist</strong>, and <strong>Delete Gist…</strong>, which asks first.</li>
 </ul>
-<p>The gist window has <strong>Description</strong>
+<p>The gist window has <strong>Description:</strong>
 (<code>Alt+D</code>), <strong>Public gist</strong> (<code>Alt+B</code>)
-when the gist is new, the <strong>Files</strong> list
-(<code>Alt+F</code>), and <strong>File text</strong>
-(<code>Alt+T</code>) for the chosen file. <strong>Add File…</strong>
-(<code>Alt+A</code>), <strong>Rename File…</strong> (<code>Alt+N</code>)
-and <strong>Delete File…</strong> (<code>Alt+L</code>) change the list.
-Delete File asks first, and a gist always keeps at least one file.
-Nothing goes to GitHub until <strong>Create Gist</strong> or
-<strong>Save Gist</strong>, which have no access key; Cancel sends
+when the gist is new, <strong>Files:</strong> (<code>Alt+F</code>), and
+<strong>File text:</strong> (<code>Alt+T</code>) for the chosen file.
+<strong>Add File…</strong> (<code>Alt+A</code>), <strong>Rename
+File…</strong> (<code>Alt+N</code>) and <strong>Delete File…</strong>
+(<code>Alt+L</code>) change the list. Delete File asks first, and a gist
+always keeps at least one file. Nothing goes to GitHub until
+<strong>Create Gist</strong> or <strong>Save Gist</strong>; Cancel sends
 nothing.</p>
 <p>A secret gist is unlisted, not private: anyone with its link can read
 it, and GitHub does not let you switch a gist between public and secret
 later. When you save, QUILL says what GitHub confirmed, such as “Gist
 saved. GitHub confirmed: rename notes.md to todo.md.” A file over about
-a megabyte reaches QUILL cut short, so it is read-only in the gist
+a megabyte reaches QUILL cut short, so it is read only in the gist
 window and never sent back; you can still rename it.</p>
-<h2 id="other-repository-views-in-explore">Other repository views in
-Explore</h2>
-<p>Explore has more views of one repository, each in
-<strong>View:</strong> with the repository in
-<strong>Repository:</strong>:</p>
+<h2 id="other-places-under-a-repository">Other places under a
+repository</h2>
+<p>Every repository’s place has more lists, each read the same way:</p>
 <ul>
-<li><strong>Repository overview</strong>, the repository at a
-glance.</li>
-<li><strong>Repository people</strong> and <strong>Collaborators and
-team access</strong>.</li>
-<li><strong>Deployments and environments</strong>.</li>
-<li><strong>Repository labels</strong>, with <strong>Create
-Label…</strong> on the context menu.</li>
-<li><strong>GitHub Pages and builds</strong>, for a repository with a
-website.</li>
-<li><strong>Repository health snapshot (opt-in)</strong>, a set of
-counts that stays on this computer and does not rank anybody.</li>
+<li><strong>Overview</strong>, the repository at a glance.</li>
+<li><strong>People &gt; Contributors and People</strong>,
+<strong>Collaborators and Team Access</strong>,
+<strong>Invitations</strong> and <strong>Watchers</strong> (Chapter 13
+has access).</li>
+<li><strong>Labels</strong> and <strong>Milestones</strong> (Chapter
+4).</li>
+<li><strong>Deployments and Environments</strong> (Chapter 6).</li>
+<li><strong>Activity &gt; All Issue Comments</strong>, <strong>Push
+Activity</strong> and <strong>My Notifications Here</strong>, read
+only.</li>
+<li><strong>Code &gt; Codespaces</strong> (Chapter 9).</li>
 </ul>
-<p>And views of people: <strong>Person’s repositories</strong>,
-<strong>Person’s followers</strong> and <strong>People followed by
-person</strong>, with the username in <strong>Person:</strong>; and your
-own, <strong>My repositories</strong>, <strong>Starred
-repositories</strong>, <strong>Watched repositories</strong>,
-<strong>People I follow</strong>, <strong>My followers</strong> and
-<strong>My gists</strong> (see Gists, above).</p>
+<h2 id="a-walk-through-from-a-branch-to-a-tagged-release">A
+walk-through: from a branch to a tagged release</h2>
+<p>This uses the practice repository. If you have not made it, choose
+<strong>Help &gt; Practice on GitHub…</strong> (<code>Ctrl+Alt+P</code>)
+in the Workbench first.</p>
+<ol type="1">
+<li>Press <code>Ctrl+L</code>, type <code>quill-practice</code> with
+your login in front, such as <code>jeff/quill-practice</code>, and press
+Enter. The repository gets a place in the tree.</li>
+<li>Press <code>Ctrl+Shift+5</code>. You hear the Files list. Arrow to
+<code>README.md</code> and press Enter: it opens in the editor. Press
+<code>Alt+Tab</code> to come back to the Workbench.</li>
+<li>Press <code>Ctrl+Shift+G</code>, choose <strong>Files, History and
+Blame…</strong>, Tab to Files, select <code>README.md</code>, and press
+<code>Alt+H</code>. You hear the commits that changed it. Press
+<code>Alt+N</code> to step through them, then Escape.</li>
+<li>Arrow up the tree to <strong>Code &gt; Branches</strong> and select
+<code>fix-greeting</code>. You hear how far it is ahead of the default
+branch. Press <code>Ctrl+B</code>: the Compare window opens on its
+Commits tab. Press <code>Ctrl+Tab</code> for Changed Files, then
+Escape.</li>
+<li>Go to <strong>Code &gt; Tags</strong> and press <code>Ctrl+N</code>.
+Type <code>v0.1.0</code>, press Enter, keep <code>main</code>, press
+Enter, type “First practice tag” as the message, and press Enter. You
+hear “Made annotated tag v0.1.0 on main” and the commit.</li>
+<li>In QUILL, press <code>Ctrl+Shift+6</code> for Releases, then
+<code>Ctrl+N</code>. Keep the repository, type <code>v0.1.0</code> as
+the tag, answer Yes to GitHub writing the notes and Yes to a draft. On
+the new release, press <code>Shift+F10</code> and choose <strong>Release
+Evidence…</strong>: you hear one sentence about it, and the list
+follows.</li>
+<li>To tidy up, <code>Delete</code> on the release removes it after
+asking; choose <strong>Delete the release and its tag</strong>.</li>
+</ol>
+<h2 id="learn-it-with-a-guided-lesson">Learn it with a guided
+lesson</h2>
+<p><strong>Help &gt; Tutorials</strong> (<code>Ctrl+F2</code>) has
+<strong>Make a repository to practise on</strong>, which makes the
+practice repository and walks round it, including its files and
+branches.</p>
 <hr />
 <ul>
 <li>Previous: <a

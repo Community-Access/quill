@@ -245,11 +245,20 @@
 <h1 id="chapter-13-properties-filters-and-permissions">Chapter 13:
 Properties, filters and permissions</h1>
 <h2 id="what-this-chapter-covers">What this chapter covers</h2>
-<p>Everything the GitHub Workbench shows has a Properties sheet, and the
-sheet is where you change it. This chapter covers the sheet, changing
-many things at once, undoing a change, filtering a list on anything, and
-the permissions side: what you are allowed to do, how to get what you
-are missing, and how to manage who else has access.</p>
+<p>On GitHub’s website, the facts about an issue or a repository are
+spread over a page, with the controls to change them tucked into menus
+and side panels. In the Workbench, everything about one thing is on one
+sheet, and the sheet is where you change it. This chapter is about that
+sheet, and about the two questions that come with changing things: which
+ones, and am I allowed?</p>
+<p>You open a Properties sheet and change a field, change many things at
+once, say a change in words, undo a change, and filter and shape a list.
+Then you look at permissions: what you are allowed to do, how to get
+what you are missing, what the Workbench itself allows each account, and
+who else has access and why.</p>
+<p>By the end you will be able to change anything the Workbench shows,
+safely, and answer “why can’t I?” and “who can?” without leaving the
+window.</p>
 <h2 id="properties-altenter-on-anything">Properties: Alt+Enter on
 anything</h2>
 <p>Select a row in the list and press <code>Alt+Enter</code>. A
@@ -280,26 +289,48 @@ for example “changing this needs triage access to owner/name; you have
 read access”, and who can change that. <code>F1</code> on the field says
 the same.</p>
 <ul>
-<li>Labels, assignees, reviewers and your reactions are lists of check
-boxes, and a repository’s features (Issues, Projects, Wiki, Discussions)
-are check boxes too. Each one says its state in its own words, “bug, on”
-or “Issues, off”, and Space checks or clears it once; the words change
-with it, and nothing else is said.</li>
-<li>New Label… and New Milestone… beside their lists make a new one on
-GitHub and check it straight away. If one by that name is already there,
-that is not a failure: QUILL Lite says “bug already exists; using it”
-and checks the one GitHub has.</li>
+<li>Labels, assignees, reviewers, Projects and your reactions are lists
+of check boxes, and a repository’s features (Issues, Projects, Wiki,
+Discussions) are check boxes too. Each one says its state in its own
+words, “bug, on” or “Issues, off”, and Space checks or clears it once;
+the words change with it, and nothing else is said. Unchecking a Project
+takes the item out of it, along with whatever the project’s own fields
+said about it, so that one cannot be undone.</li>
+<li>New Label…, New Milestone… and New Project… beside their lists make
+a new one on GitHub and check it straight away. If one by that name is
+already there, that is not a failure: QUILL says “bug already exists;
+using it” and checks the one GitHub has.</li>
+<li>An issue’s <strong>Issue type</strong> and a pull request’s
+<strong>Into branch</strong> are lists too, of the types your
+organization has and the repository’s branches. New Issue Type… makes a
+type for the whole organization, which needs an organization owner. New
+Branch… makes a branch from the one the pull request merges into now,
+then selects it. “(none)” clears an issue type, but a pull request
+always merges into some branch, so choosing “(none)” there leaves it as
+it was and QUILL says so.</li>
+</ul>
+<!-- PR#1974 -->
+
+<ul>
+<li>An issue’s <strong>Issue Fields</strong> page edits its
+organization’s issue fields, each with its own kind of control: a date,
+a number, a single choice or text. Saving sets only the fields you
+changed and reads the issue again to check GitHub kept them; emptying a
+field clears it. A field with several choices, or of a kind QUILL does
+not know, stays read only. Without triage access the page says why each
+field is locked.</li>
 <li><strong>OK</strong> saves and closes, and Enter on a check box, a
 list or a one-line box is OK. <strong>Apply</strong>, or
 <code>Ctrl+S</code>, saves and keeps the sheet open, and focus comes
 back to the check box or field you were on. <code>Ctrl+Enter</code> is
 OK from anywhere, even in a long text box. Escape is Cancel.</li>
 </ul>
-<p>The menus still name the common changes. <strong>Item &gt;
-Labels…</strong>, <strong>Assignees…</strong> and
-<strong>Milestone…</strong> open the sheet at the right page. There are
-no separate keys for single properties: <code>Alt+Enter</code>, then the
-page.</p>
+<p>The context menu of an issue or pull request still names the common
+changes: <strong>Edit Title…</strong>, <strong>Labels…</strong>,
+<strong>Assignees…</strong>, <strong>Milestone…</strong> and
+<strong>Projects…</strong> open the sheet with focus already on that
+field. There are no separate keys for single properties:
+<code>Alt+Enter</code>, then the page.</p>
 <h3 id="you-your-own-relationships">You: your own relationships</h3>
 <p>Anything you can have a relationship with has a <strong>You</strong>
 page, right after General: the second page, so <code>Ctrl+2</code>
@@ -334,12 +365,52 @@ Unstar, Watch or Unwatch, Follow or Unfollow, React… and Pin or Unpin
 Issue, send the same requests as the You page. Read Only and Safe Mode
 lock the You page like every other page, with the reason under each
 field.</p>
+<!-- PR#1974 -->
+
+<p>The rest of the relationships, and every one as a row on the context
+menu too, each saying its outcome in one sentence:</p>
+<ul>
+<li><strong>A repository’s You page</strong> also has <strong>Star
+lists</strong> (your lists, the ones holding it checked, as Star Lists…
+sets them), <strong>Forked by you</strong> (check it to fork the
+repository to your account; a fork is a repository of its own, so
+clearing the box is refused and says where to delete it), and the
+read-only <strong>Sponsoring the owner</strong>. The rows
+<strong>Fork…</strong> and <strong>Sponsor the Owner…</strong> are on
+the repository’s context menu: Sponsor the Owner opens the owner’s
+Sponsor tiers, and nothing is charged until you choose a tier with
+Sponsor at This Tier… and type their name.</li>
+<li><strong>In Favorites</strong> and <strong>Pinned in the
+Workbench</strong> close a repository’s You page, and In Favorites an
+issue’s and a pull request’s. These live on this computer, not on
+GitHub, so they change at once, as the Favorites and Pin rows do.</li>
+<li><strong>Subscribe or Unsubscribe…</strong> on an issue, a pull
+request, a discussion or a commit: all activity, or only when you take
+part or are mentioned.</li>
+<li><strong>Block or Unblock…</strong> on a person.</li>
+<li><strong>Block from Organization…</strong> on an organization (it
+asks whose account) and on a member in its Members list; its Blocked
+People list unblocks. <strong>Leave Organization…</strong> asks first.
+<strong>Your Invitation</strong> says whether the organization has
+invited you: Accept Membership joins, and since GitHub’s API cannot
+decline an organization’s invitation, it gives the page where GitHub
+does. A repository’s invitations have Accept and Decline rows.</li>
+<li><strong>React to a Comment…</strong> on an issue or a pull request
+(its conversation and its line comments) and on a discussion (comments
+and replies): choose a comment, then a reaction; one you gave already is
+taken back. On a commit, <strong>React to a Commit Comment…</strong>
+reacts to its comments, and <strong>Commit Comments…</strong> reads and
+adds them. GitHub’s API reacts to a commit’s comments, never to a commit
+itself.</li>
+</ul>
 <h3 id="saving-safely">Saving safely</h3>
 <ul>
 <li><strong>If somebody else changed it meanwhile,</strong> the sheet
 says so before anything is sent: “Changed on GitHub since you opened
 this: milestone is now 2027.2.” For each such field you choose Keep
-Theirs or Use Mine.</li>
+Theirs or Use Mine. Lists you add to and take from (labels, reviewers,
+Projects) never ask: only your own additions and removals are sent, so a
+label somebody else added while you had the sheet open stays on.</li>
 <li><strong>Only what really changed is reported.</strong> After saving,
 the Workbench reads the object again and says one sentence about what
 changed: “Issue #42: added bug, removed docs.” GitHub sometimes accepts
@@ -384,9 +455,9 @@ for each.</li>
 <p>Batches pause a second between items, because GitHub limits how
 quickly one account may make changes.</p>
 <h3 id="saying-it-in-words">Saying it in words</h3>
-<p><strong>Plain-Language Batch…</strong>, on the Workbench’s Tools menu
-(<code>Ctrl+Shift+S</code> there), takes the change as a sentence, for
-the repository you are in:</p>
+<p><strong>Tools &gt; Plain-Language Batch…</strong>
+(<code>Ctrl+Shift+S</code>) takes the change as a sentence, for the
+repository you are in:</p>
 <ul>
 <li>“close every issue labelled duplicate older than 90 days”</li>
 <li>“close all issues labeled stale that nobody touched in 90 days as
@@ -399,18 +470,20 @@ from all pull requests”</li>
 the list, and “how many issues are labelled bug?” says how many. Neither
 changes anything.</li>
 </ul>
-<p>There is no AI in it. QUILL Lite reads a fixed set of words:
-labelled, without label, with no label, by, assigned to, unassigned, in
-milestone, waiting on me, mentioning me, open or closed, an age (“older
-than 90 days”, “updated before March 2024”), and oldest or newest first.
-The same sentence always means the same thing, and a word it does not
-know is never guessed: it says what it does read, and gives you your
-sentence back to correct.</p>
+<p>There is no AI in it. QUILL reads a fixed set of words: labelled,
+without label, with no label, by, assigned to, unassigned, in milestone,
+waiting on me, mentioning me, open or closed, an age (“older than 90
+days”, “updated before March 2024”), and oldest or newest first. The
+same sentence always means the same thing, and a word it does not know
+is never guessed: it says what it does read, and gives you your sentence
+back to correct.</p>
 <p>It then searches GitHub and shows every item it found as a checked
 list. Uncheck any you want left alone, and OK goes on to the same
-preview and results as any batch above. Closing as a duplicate is not a
-batch, because each one needs the issue it duplicates; close those one
-at a time with <code>Delete</code> on the row.</p>
+preview and results as any batch above: “Change 12 issues: state to
+closed as completed.” Closing as a duplicate is not a batch, because
+each one needs the issue it duplicates; close those one at a time with
+<code>Delete</code> on the row. The WordPress Workbench’s Plain-Language
+Batch reads ages the same way.</p>
 <h2 id="undoing-a-change">Undoing a change</h2>
 <p><code>Ctrl+Z</code> in the list or the tree undoes your last change
 on GitHub, where GitHub allows it, and <code>Ctrl+Y</code> makes it
@@ -422,32 +495,35 @@ the milestone it was and a ruleset keeps its other rules. If somebody
 changed the field since, Undo stops and says so rather than overwrite
 them. A redone change can be undone again. A change GitHub cannot
 reverse says why in its preview, before you save it, and again if you
-ask to undo it: a secret’s old value, for one, is never given back.</p>
+ask to undo it: a secret’s old value is never given back, and taking an
+item out of a Project deletes its field values there.</p>
 <p><strong>Account &gt; Change History…</strong>
 (<code>Ctrl+Shift+H</code>) lists every change the Workbench has made,
 newest first: what, when, before and after, and whether GitHub confirmed
 it. Undo This Change reverses the selected one. You can save the list as
 a CSV file or clear it. It stays on this computer for 90 days, and a
 secret’s value is never in it.</p>
-<p><strong>Set Your Status…</strong>, on the Workbench’s Account menu,
-reads your GitHub status, the short message beside your name, and offers
-to set a new one or clear it. A new one asks, a question at a time, for
-the message, an emoji by its GitHub name (<code>palm_tree</code>,
-<code>house</code>, or none), whether to mark yourself busy, and when it
-clears itself. You hear the status as it is now.</p>
+<p><strong>Account &gt; Set Your Status…</strong>
+(<code>Ctrl+Alt+S</code>) reads your GitHub status, the short message
+beside your name, and offers to set a new one or clear it. A new one
+asks, a question at a time, for the message (“Back Monday”), an emoji by
+its GitHub name (<code>palm_tree</code>, <code>house</code>, or none),
+whether to mark yourself busy, which tells people asking for your review
+that you may answer slowly, and when it clears itself: never, in 30
+minutes, an hour, four hours, tomorrow or in a week. You hear the status
+as it is now.</p>
 <h2 id="filtering">Filtering</h2>
 <p>The filter box (<code>Ctrl+E</code>) takes plain words, which narrow
 the loaded list, and GitHub’s own search terms such as
 <code>label:bug</code> or <code>no:milestone</code>, which ask GitHub.
 Three other ways write into the same box.</p>
 <ul>
-<li><strong>Quick Filters,</strong> on the Workbench’s View menu:
-Assigned to Me, Assigned To…, Opened by Me, Opened By…, Mentions Me,
-Review Requested from Me, Reviewed by Me, No Assignee, No Milestone, No
-Label, No Project, No Type, Drafts, Has Conflicts, Checks Failing and
-Updated This Week. Each one is checked while it is on, they combine, and
-the window title names them. Clear These Filters turns them all
-off.</li>
+<li><strong>View &gt; Quick Filters:</strong> Assigned to Me, Assigned
+To…, Opened by Me, Opened By…, Mentions Me, Review Requested from Me,
+Reviewed by Me, No Assignee, No Milestone, No Label, No Project, No
+Type, Drafts, Has Conflicts, Checks Failing and Updated This Week. Each
+one is checked while it is on, they combine, and the window title names
+them. Clear These Filters turns them all off.</li>
 <li><strong>Show Only and Hide:</strong> the context menu of a row has
 both, with every value in that row: “label bug”, “author
 dependabot”.</li>
@@ -461,39 +537,80 @@ Search also keeps it under Saved Searches.</li>
 </ul>
 <p>Has Conflicts is the one GitHub’s search cannot answer, so the
 Workbench checks the pull requests already loaded and the Items cell of
-the status bar says so. <strong>Load All</strong> on the Workbench’s
-View menu (<code>Ctrl+Shift+Page Down</code>) loads every page to be
-sure.</p>
+the status bar says so. <strong>View &gt; Load All</strong>
+(<code>Ctrl+Shift+Page Down</code>) loads every page to be sure.</p>
+<!-- PR#1971 -->
+
+<h3 id="filtering-every-other-list">Filtering every other list</h3>
+<p>Branches, tags, commits, releases, workflows, runs and the other
+lists are read whole, so the words before a colon are checked here, over
+the rows already loaded. Each list answers its own:</p>
+<ul>
+<li><strong>Branches:</strong> <code>name:</code>,
+<code>protected:</code>, <code>ahead:</code>, <code>behind:</code>,
+<code>author:</code> (the last commit’s) and <code>committed:</code>
+(its date).</li>
+<li><strong>Tags:</strong> <code>name:</code> and <code>sha:</code>.
+<strong>Commits:</strong> <code>author:</code>, <code>committed:</code>,
+<code>message:</code> (words in it) and <code>sha:</code>.</li>
+<li><strong>Releases:</strong> <code>tag:</code>, <code>name:</code>,
+<code>draft:</code>, <code>prerelease:</code> and <code>created:</code>.
+<strong>Release assets:</strong> <code>name:</code>, <code>size:</code>,
+<code>downloads:</code>, <code>type:</code> and
+<code>updated:</code>.</li>
+<li><strong>Workflows:</strong> <code>name:</code>, <code>path:</code>
+and <code>state:</code>. <strong>Runs:</strong> <code>workflow:</code>,
+<code>branch:</code>, <code>event:</code>, <code>status:</code>,
+<code>conclusion:</code>, <code>created:</code> and
+<code>sha:</code>.</li>
+<li><strong>Every other list</strong> (repositories, labels, milestones,
+notifications, packages and the rest): <code>name:</code>,
+<code>repo:</code>, <code>owner:</code> and <code>updated:</code>.</li>
+</ul>
+<p>A name takes <code>*</code> as a pattern
+(<code>name:release-*</code>). A minus in front leaves those out
+(<code>-conclusion:success</code>). Numbers and dates take
+<code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>,
+<code>&lt;=</code> and a range with two dots (<code>ahead:&gt;=3</code>,
+<code>created:2026-01..2026-06</code>); a date can be just a year or a
+month. <code>no:repo</code> keeps the rows with none. The Items cell of
+the status bar says how many the filter kept of how many loaded, such as
+“Filtered here: 2 of 3 loaded. Load All to be sure.”, and names any word
+this list cannot filter on, so nothing is quietly ignored.</p>
+<p>The Search place’s lists send the whole box to GitHub instead, so
+there GitHub’s own search terms work: <code>language:</code> and
+<code>stars:</code> for repositories, <code>committer:</code> for
+commits, <code>location:</code> for people.</p>
 <h3 id="more-rows">More rows</h3>
 <p>Every list starts with one page: 30 issues or pull requests, 50 rows
-of anything else. <strong>Load More</strong>, on the Workbench’s View
-menu (Alt+Page Down there), reads one page more each time, and
-<strong>Load All</strong> on the same menu reads up to a thousand at
-once. Both work on every list in the Workbench, Notifications, My Work,
-discussions, labels and the merge queue included. When a list holds only
-part of what GitHub has, the Items cell of the status bar says so, for
-example “Gists: showing the first 50 items; more may exist. Load More or
-Load All reads the rest.”, so a short list is never mistaken for the
-whole of it.</p>
+of anything else. <strong>Load More</strong>
+(<code>Alt+Page Down</code>) reads one page more each time, and
+<strong>Load All</strong> (<code>Ctrl+Shift+Page Down</code>) reads up
+to a thousand at once. Both work on every list in the Workbench,
+Notifications, My Work, discussions, labels and the merge queue
+included. When a list holds only part of what GitHub has, the Items cell
+of the status bar says so, for example “Gists: showing the first 50
+items; more may exist. Load More or Load All reads the rest.”, so a
+short list is never mistaken for the whole of it.</p>
 <h3 id="shaping-the-list">Shaping the list</h3>
 <ul>
-<li>On the Workbench’s View menu, <strong>Show</strong> chooses issues,
-pull requests or both, and <strong>Open or Closed</strong> which
-ones.</li>
-<li><strong>Sort By</strong> on the same menu orders the list, and
-<strong>Columns…</strong> (<code>Ctrl+Shift+U</code>) chooses its
+<li><strong>View &gt; Show</strong> chooses issues, pull requests or
+both, and <strong>View &gt; Open or Closed</strong> which ones.</li>
+<li><strong>View &gt; Sort By</strong> orders the list, and <strong>View
+&gt; Columns…</strong> (<code>Ctrl+Shift+U</code>) chooses its
 columns.</li>
-<li><strong>Group By</strong>, also on the View menu, puts the groups in
-the tree as nodes: by label, milestone, assignee, author, type, state,
-repository or review state. Each node reads with its count, and
-selecting it shows that group.</li>
+<li><strong>View &gt; Group By</strong> puts the groups in the tree as
+nodes: by label, milestone, assignee, author, type, state, repository or
+review state. Each node reads with its count, and selecting it shows
+that group.</li>
 <li>Those orders and groups are an issue’s. Every other list (branches,
 tags, releases, workflows, runs, discussions, notifications, alerts,
-people, teams, repositories and the rest) has <strong>By
-Column…</strong> at the end of Sort By and of Group By instead: any of
-its columns, first to last or last to first, and for a list of one
-column its name, repository, kind or last update. Each list remembers
-its own choice, for this account, as it remembers its columns.</li>
+people, teams, repositories and the rest) has <strong>Sort By &gt; By
+Column…</strong> and <strong>Group By &gt; By Column…</strong> instead:
+any of its columns, first to last or last to first, and for a list of
+one column its name, repository, kind or last update. Each list
+remembers its own choice, for this account, as it remembers its
+columns.</li>
 <li><strong>Your place is kept.</strong> Coming back to a list, with
 Back (<code>Backspace</code>) or from a sheet, a dialog or a document,
 puts you on the row you left, even if it has moved; a refresh while you
@@ -530,9 +647,18 @@ rather than guessing.</p>
 Account…</strong> sets what the Workbench may change with an account,
 whatever GitHub would allow. Read Only changes nothing, which suits
 demonstrating or looking around someone else’s organization. Organize
-allows labels, assignees, comments and the like, but not access,
-settings or deleting. Full allows everything your access allows. Safe
-Mode makes every account Read Only.</p>
+allows organizing and comments, such as labels, assignees, reactions and
+closing issues, but not access, settings or deleting. Full allows
+everything your access allows. Safe Mode makes every account Read
+Only.</p>
+<p>Every change is checked against the level once, before anything is
+sent, whether it comes from a menu row, a sheet, a batch,
+<code>F11</code> or the API Console. A change the level does not allow
+is refused in one sentence naming the level it needs: “Cannot delete the
+label: it needs Full in the Workbench, and this account is Organize;
+Account, Roles and Access, Workbench Level for This Account changes it.”
+On a sheet, the reason is beside each locked field. <code>Alt+5</code>
+says what you can do where you are.</p>
 <h3 id="the-smallest-permissions-that-would-do">The smallest permissions
 that would do</h3>
 <p><strong>Account &gt; Roles and Access &gt; Least Privilege
@@ -573,22 +699,33 @@ whether two-factor sign-in is on: “kim, person, member, direct,
 two-factor off”. GitHub shows two-factor only to owners; anyone else
 hears “two-factor not shown to you”. Change… on a member offers member,
 owner, or outside collaborator; making someone an outside collaborator
-takes them out of the organization and its teams, so QUILL Lite asks you
-to type their name first. On the Outside Collaborators page, Add makes a
-member an outside collaborator, Change… invites one to be a member, and
-Remove takes away every repository they have here, again after their
-name is typed. You cannot make yourself an outside collaborator, remove
-yourself while you are the last owner, or remove the last owner.</p>
-<p>A team’s Repositories page lists every repository the team reaches
-with its role there: Add, Change… and Remove work on it too. The last
-maintainer cannot remove themselves, and taking admin away from a team
-you are on is refused when that team is how you administer the
-repository. The General page’s <strong>Parent team</strong> moves the
-team under another, and <strong>New Team…</strong> asks for the parent
-and whether mentions notify the team. The organization’s
-<strong>Members</strong> list reads “kim, member, two-factor off.”, and
-<strong>Members Without Two-Factor</strong> on the organization’s row
-lists only those, for owners.</p>
+takes them out of the organization and its teams and leaves only the
+repositories they were given directly, so QUILL asks you to type their
+name first. On the Outside Collaborators page, Add makes a member an
+outside collaborator, Change… invites one to be a member, and Remove
+takes away every repository they have here, again after their name is
+typed. You cannot make yourself an outside collaborator, remove yourself
+while you are the last owner, or remove the last owner.</p>
+<p>A team’s sheet lists its maintainers and members, and its
+Repositories page lists every repository the team reaches with its role
+there. Add gives the team a repository, Change… changes its role, and
+Remove takes it away. The last maintainer cannot remove themselves. When
+you take admin away from a team you are on, QUILL asks GitHub first
+whether that team is how you administer the repository, and if it is,
+says so and changes nothing. The General page’s <strong>Parent
+team</strong> moves the team under another (empty makes it a top-level
+team), and <strong>New Team…</strong> on an organization asks for the
+parent and whether mentions notify the team.</p>
+<p>The organization’s <strong>Members</strong> list in the tree reads
+the same way (“kim, member, two-factor off.”), and Delete there asks for
+the name typed and keeps the last owner. <strong>Members Without
+Two-Factor</strong> on the organization’s row lists only those, for
+owners.</p>
+<p>On the pending invitations, Remove cancels the invitation (they can
+be invited again), and Change… changes the role a repository invitation
+offers before it is answered. GitHub cannot change an organization
+invitation’s role, so for one of those, Remove it and invite them
+again.</p>
 <p><strong>Account &gt; Roles and Access</strong> also has:</p>
 <ul>
 <li><strong>My Access Here…</strong>, your role on this repository and
@@ -669,23 +806,32 @@ account’s. Your own account, its lists and its remembered reads are
 never touched: everything QUILL remembers is kept per account.</p>
 <h3 id="who-has-what-and-why">Who has what, and why</h3>
 <p>Under an organization in the tree, three lists answer “who can do
-what here” a row at a time:</p>
+what here” a row at a time, so you never have to read a grid:</p>
 <ul>
-<li><strong>Access Review: People</strong>: “jeff on quill: Admin, from
-team Maintainers; also Write directly; also Read from the organization’s
-base permission.” The highest role comes first, and every other way they
-have access follows “also”.</li>
-<li><strong>Access Review: Teams</strong>: “Docs on site: Reviewer, for
-3 members, a child team of Maintainers.”</li>
-<li><strong>Custom Property Values</strong>: a row a repository with
-every custom property, unset ones said as “not set”.</li>
+<li><strong>Access Review: People</strong> has a row for every person
+and repository pair, with the role they really have and where it comes
+from: “jeff on quill: Admin, from team Maintainers; also Write directly;
+also Read from the organization’s base permission.” The highest comes
+first; every other way they have access follows “also”. An outside
+collaborator’s direct access says so, and an owner’s reads “from being
+an owner of the organization”.</li>
+<li><strong>Access Review: Teams</strong> has a row for every team and
+repository pair: “Docs on site: Reviewer, for 3 members, a child team of
+Maintainers.”</li>
+<li><strong>Custom Property Values</strong> has a row a repository with
+every custom property, unset ones said as “not set”: “site: tier is not
+set; areas is docs and ui.”</li>
 </ul>
-<p>The filter box and Show Only narrow them, and <strong>Export
-List…</strong> (<code>Ctrl+Shift+X</code>), on the Workbench’s File
-menu, saves what is shown. When GitHub will not show part of the answer,
-the status bar says which. <strong>Set Repositories’ Custom
-Property…</strong> on the organization’s row sets one property in
-several repositories at once.</p>
+<p>Type a name, a role or a team in the filter box, or use Show Only, to
+narrow any of them, and <strong>Export List…</strong>
+(<code>Ctrl+Shift+X</code>), on the Workbench’s File menu, saves what is
+shown. When GitHub will not show part of the answer, for example a
+repository’s direct collaborators to someone who is not its admin, the
+status bar says which, rather than leaving people out silently.
+<strong>Set Repositories’ Custom Property…</strong> on the
+organization’s row gives one property a value in several repositories at
+once, and <strong>Issue Types</strong> under the organization lists its
+issue types.</p>
 <h3 id="rules-in-plain-words">Rules in plain words</h3>
 <p>A ruleset’s sheet, and a branch’s protection, list every rule as a
 check box with its settings, and a Summary page reads the whole thing as
@@ -695,19 +841,140 @@ pushes are blocked.” Read that page first.</p>
 <p>A repository’s <strong>Settings &gt; Rulesets</strong> list, and an
 organization’s <strong>Rulesets</strong>, show each ruleset as a
 sentence; Alt+Enter opens its sheet, and Delete removes it after you
-type its name. The sheet’s Rules page also lists every rule with every
-setting GitHub sent; its Bypass page has a check list of the roles that
-may bypass the rules, keeping teams and apps as they are; and an
-organization ruleset’s Repositories page says which repositories it
-covers and lets you choose them by name. A branch’s classic protection
-sheet has every setting GitHub offers, and its <strong>Who</strong> page
-says who may push, dismiss reviews and skip the pull request; saving
-keeps those lists as they were.</p>
+type its name.</p>
+<ul>
+<li>The <strong>Rules</strong> page also has <strong>Every rule and its
+settings</strong>, a line a rule with every setting GitHub sent: file
+paths, file sizes, patterns, workflows, code scanning tools, and any
+rule type QUILL has no check box for yet.</li>
+<li>The <strong>Bypass</strong> page has a check list of the roles that
+may bypass the rules (organization admins, admins, maintainers, writers,
+deploy keys), and lists everyone who may, teams and apps included. Teams
+and apps you have not changed are kept as they are.</li>
+<li>An organization ruleset’s <strong>Repositories</strong> page says
+which repositories it covers, by name or by a custom property, and lets
+you choose them by name, and stop those repositories being renamed out
+of it.</li>
+<li>A branch’s classic protection sheet has every setting GitHub offers:
+approvals, stale approvals, code owners, the most recent push, status
+checks and up to date, signed commits, administrators, linear history,
+force pushes, deletion, conversations, blocking new branches, locking
+the branch, and fork syncing. Its <strong>Who</strong> page says who may
+push, dismiss reviews and skip the pull request; saving keeps those
+lists exactly as they were.</li>
+<li><strong>Rule Insights</strong> under a repository’s settings, and
+under an organization, lists the pushes its rules passed, blocked or let
+through.</li>
+</ul>
+<h3 id="an-organizations-roles">An organization’s roles</h3>
+<p>GitHub gives every organization roles that reach all its repositories
+at once: All-repository read, triage, write, maintain and admin, the
+security manager, the app manager, and any custom roles. Choose
+<strong>Roles…</strong> on an organization’s row (in the Workbench’s
+Organizations place) to open <strong>Roles in</strong> that
+organization.</p>
+<ul>
+<li><strong>Roles</strong> lists them, each with what it is based on and
+what it is for. Choose one, and <strong>Who holds it</strong> fills with
+its people and teams, each row starting with “Person:” or “Team:”. A
+person who holds the role because of a team says so: “Person: kim,
+through docs”.</li>
+<li><strong>Give to Person…</strong> (<code>Alt+P</code>) asks for a
+GitHub username; <strong>Give to Team…</strong> (<code>Alt+T</code>)
+asks for the team’s short name, as it appears in the team’s
+address.</li>
+<li><strong>Take Away…</strong> (<code>Alt+A</code>) asks whether the
+selected person or team should lose only this role or every organization
+role. A role that comes through a team is taken from that team instead,
+and QUILL says which.</li>
+</ul>
+<p>After each change QUILL reads the list back from GitHub and says what
+happened, such as “sam now has all_repo_write.” These need an owner’s
+sign-in with the <strong>admin:org</strong> scope.</p>
+<h3 id="an-organizations-rulesets">An organization’s rulesets</h3>
+<p>An organization ruleset applies across its repositories. Choose
+<strong>Rulesets…</strong> on the organization’s row to open
+<strong>Rulesets in</strong> that organization. Each row gives its name,
+its enforcement and what it targets: “Protect main: Active, on
+branches”.</p>
+<ul>
+<li>Choosing one reads it in plain words in <strong>Details</strong>,
+the same sentences as a repository’s Summary page, and which
+repositories it covers.</li>
+<li><strong>Enforcement…</strong> (<code>Alt+E</code>) makes it
+<strong>Active</strong> (enforced), <strong>Evaluate</strong> (reports
+what it would have blocked, blocks nothing, a safe way to try a rule
+first) or <strong>Disabled</strong>.</li>
+<li><strong>History</strong> (<code>Alt+H</code>) lists its earlier
+versions, with when and by whom.</li>
+<li><strong>Rule Insights…</strong> (<code>Alt+I</code>) lists recent
+pushes across the organization that its rulesets passed, blocked or let
+through on a bypass, for the last day, week or month.</li>
+<li><strong>Delete…</strong> (<code>Alt+L</code>) deletes it from every
+repository it covers. QUILL asks you to type its name exactly, because
+this cannot be undone.</li>
+</ul>
+<p>To make an organization ruleset from repositories that each have the
+same one, use <strong>Promote to Organization</strong> under Across
+Repositories.</p>
+<h3 id="repository-settings-from-the-editor">Repository settings from
+the editor</h3>
+<p>With the Workbench in use, the editor’s Rename Repository, Change
+Visibility, Change Default Branch and Configure Branch Protection open
+the repository’s sheet at the right page, and Create Repository, Fork,
+Commit Multiple Files and the Codespaces commands open the Workbench on
+the repository and run from there.</p>
+<h2 id="a-walk-through-labelling-two-issues-then-taking-it-back">A
+walk-through: labelling two issues, then taking it back</h2>
+<p>This uses the practice repository (<strong>Help &gt; Practice on
+GitHub…</strong>, <code>Ctrl+Alt+P</code>). It changes two practice
+issues and puts them back.</p>
+<ol type="1">
+<li>In the Workbench, go to the practice repository and press
+<code>Ctrl+Shift+1</code> for its Issues. Press <code>F6</code> until
+you reach the list.</li>
+<li>Press <code>Ctrl+E</code>, type <code>no:label</code>, and press
+Enter. The list narrows to the issues with no label. <code>Alt+7</code>
+says the filter in words.</li>
+<li>Press <code>F6</code> to come back to the list, select the first
+issue, then hold Shift and press Down Arrow to select the second as
+well. <code>Alt+2</code> says how many are selected.</li>
+<li>Press <code>Alt+Enter</code>. One sheet opens, “Properties of 2
+issues”. <code>Ctrl+Tab</code> moves through its pages to the one with
+the labels.</li>
+<li>Tab to the labels list and check “practice: question” with Space.
+You hear “practice: question, on”.</li>
+<li>Press <code>Ctrl+Enter</code>. You hear the preview, “Change 2
+issues: add practice: question.”, and Enter goes ahead. The results list
+says Done for each. Escape closes it.</li>
+<li>Press <code>Ctrl+Shift+H</code> for Change History. Each issue’s
+change is a row of its own, newest first. Escape closes it.</li>
+<li>Back in the list, press <code>Ctrl+Z</code>. The label comes off the
+issue changed last, and you hear what was undone. Press
+<code>Ctrl+Z</code> again for the other.</li>
+<li>Press <code>Escape</code> in the filter box to clear the
+filter.</li>
+</ol>
+<p>To try the same without changing anything, turn on Dry Run
+(<code>Ctrl+Alt+D</code>) before step 6: you hear what would have been
+sent, and nothing is.</p>
+<h2 id="learn-it-with-a-guided-lesson">Learn it with a guided
+lesson</h2>
+<p><strong>Help &gt; Tutorials</strong> (<code>Ctrl+F2</code>) has the
+GitHub lessons. For this chapter:</p>
+<ul>
+<li><strong>Label, comment on and close an issue:</strong> one issue’s
+changes, on the practice repository.</li>
+<li><strong>Give someone access:</strong> an access template, applied to
+a person, stopping at the preview so nothing is sent.</li>
+</ul>
 <hr />
 <ul>
 <li>Previous: <a href="lite-github-guide-12-the-workbench.html">Chapter
 12: The GitHub Workbench, place by place</a></li>
-<li><a href="github-guide.html">Contents</a></li>
+<li>Next: <a href="lite-github-guide-14-quill-lite.html">Chapter 14:
+GitHub in QUILL Lite</a></li>
+<li><a href="lite-github-guide.html">Contents</a></li>
 </ul>
 </main>
 </body>
