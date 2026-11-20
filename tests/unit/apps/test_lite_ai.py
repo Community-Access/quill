@@ -1111,14 +1111,16 @@ def image_dialog(monkeypatch, tmp_path):
 
     import quill.ui.dialog_contract as contract
     import quill.ui.hosted_ai_image as image_ui
+    import quill.ui.hosted_ai_picture_consent as consent
 
     picture = tmp_path / "door.png"
     picture.write_bytes(b"png")
     state = {"answer": wx.ID_OK, "shown": 0, "path": picture, "question": "What colour?"}
 
     class Dialog:
-        def __init__(self, parent, *, announce=None):
+        def __init__(self, parent, *, announce=None, destination=""):
             state["shown"] += 1
+            state["destination"] = destination
 
         def chosen(self):
             return state["path"], state["question"]
@@ -1128,6 +1130,8 @@ def image_dialog(monkeypatch, tmp_path):
 
     monkeypatch.setattr(image_ui, "AskImageDialog", Dialog)
     monkeypatch.setattr(contract, "show_modal_dialog", lambda _d, _t: state["answer"])
+    # The first-picture question is answered Yes here; No is in test_ai_data_routing_ui.
+    monkeypatch.setattr(consent, "ask_picture_consent", lambda *_a: True)
     return state
 
 

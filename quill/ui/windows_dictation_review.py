@@ -45,6 +45,10 @@ NO_DIRECT_ROUTE = (
     "Changing your words with AI needs your ChatGPT subscription or your own AI key, "
     "set up from the AI menu. You can still edit them here, then insert."
 )
+NO_AI_READY = (
+    "No AI is ready. Choose one in Choose Your AI, then try again. You can still edit "
+    "your words here, then insert."
+)
 SAFE_MODE = "Safe Mode is on, so the AI is not used. You can still edit your words, then insert."
 RESCUE_NOTICE = (
     "A dictation review did not finish last time. Review Dictation, in the Dictation "
@@ -97,19 +101,27 @@ class ServiceReviewAi:
             return SAFE_MODE
         if not bool(getattr(self._service, "direct", False)):
             return NO_DIRECT_ROUTE
+        if not self._route():
+            return NO_AI_READY  # no receiver to name, so nothing is asked or sent
         return ""
 
-    def provider(self) -> str:
-        route = getattr(self._service, "route", "")
-        # Codex sends single requests over the ChatGPT plan (decision 21).
-        if route in {"chatgpt", "codex"}:
-            return "OpenAI, on your ChatGPT subscription"
-        if route == "copilot":
-            return "GitHub Copilot, on your Copilot plan"
-        from quill.core.ai.own_key import provider_name
+    def _route(self) -> str:
+        """Where a request goes: the stored route, or the connection Auto will use."""
+        route = str(getattr(self._service, "route", "") or "")
+        if route == "auto":  # named for real, never "your own key" (audit gap 11)
+            pick = getattr(self._service, "auto_connection", None)
+            route = str(pick(("text",)) or "") if callable(pick) else ""
+        return route
 
-        name = provider_name(str(getattr(self._service, "own_key_provider", "") or "openai"))
-        return f"{name}, with your own key"
+    def provider(self) -> str:
+        """Who receives the words, in the words the picture consent uses."""
+        from quill.core.ai.connection_choice import request_route
+        from quill.core.ai.picture_consent import receiver
+
+        # Codex sends single requests over the ChatGPT plan (decision 21).
+        route = request_route(self._route())
+        own = str(getattr(self._service, "own_key_provider", "") or "openai")
+        return receiver(route, own)
 
     def consented(self) -> bool:
         try:

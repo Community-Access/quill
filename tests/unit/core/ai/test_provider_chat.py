@@ -331,7 +331,7 @@ def test_make_default_backend_uses_configured_provider(
         encoding="utf-8",
     )
     monkeypatch.setattr(assistant_ai, "assistant_connection_path", lambda: conn)
-    monkeypatch.setattr(provider_backend, "load_assistant_api_key", lambda: "sk-test")
+    monkeypatch.setattr(provider_backend, "provider_api_key", lambda _provider: "sk-test")
     backend = make_default_backend()
     assert isinstance(backend, ProviderChatBackend)
 
