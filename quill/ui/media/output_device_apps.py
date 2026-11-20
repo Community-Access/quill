@@ -55,23 +55,30 @@ def read_device_pref(filename: str, key: str) -> str:
     return str(data.get(key, "") or "")
 
 
-def save_device_pref(filename: str, key: str, device: str) -> None:
-    """Remember *device* for the next launch. Best effort, never raising.
+def save_device_pref(filename: str, key: str, device: str) -> bool:
+    """Remember *device* for the next launch; never raising.
 
-    Reads the file back first so this writes one key rather than replacing
-    whatever else the app keeps beside it.
+    Reads the file back as it writes, so this writes one key rather than
+    replacing whatever else the app keeps beside it -- and so does Retry. A
+    failure is said once, in Activity, with Retry (the family settings audit:
+    it used to be swallowed); ``False`` then, and the device stays in use for
+    this session.
     """
+    from quill.core import storage
     from quill.core.paths import app_data_dir
-    from quill.core.storage import read_json, write_json_atomic
+    from quill.core.reported_save import save_reported
 
     path = app_data_dir() / filename
-    try:
-        data = read_json(path, {})
-        prefs = dict(data) if isinstance(data, dict) else {}
-        prefs[key] = device
-        write_json_atomic(path, prefs)
-    except Exception:  # noqa: BLE001 - losing a preference beats crashing
-        pass
+
+    def current() -> dict[str, object]:
+        data = storage.read_json(path, {})
+        return dict(data) if isinstance(data, dict) else {}
+
+    return save_reported(
+        "Quill Media Player's settings",
+        path,
+        lambda: storage.write_json_atomic(path, {**current(), key: device}),
+    )
 
 
 def own_audio_device(host: Any) -> str | None:

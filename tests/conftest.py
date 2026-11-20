@@ -922,6 +922,22 @@ def _github_rate_limits_start_clear() -> Iterator[None]:
 
 
 @pytest.fixture(autouse=True)
+def _no_window_owns_quills_settings() -> Iterator[None]:
+    """No test inherits another test's window as the owner of QUILL's settings.
+
+    ``quill.core.live_settings`` remembers each window that owns a settings
+    copy, so a dialog's change lands on it; a window another test built (the
+    shared wx.App outlives them all) would otherwise receive this test's
+    change and save its own stale copy over this test's file. Only cleared
+    when the module is already loaded.
+    """
+    yield
+    live = sys.modules.get("quill.core.live_settings")
+    if live is not None:
+        live._forget()
+
+
+@pytest.fixture(autouse=True)
 def _wordpress_discovery_starts_clear() -> Iterator[None]:
     """No test inherits what another test's fake site said about its taxonomies.
 

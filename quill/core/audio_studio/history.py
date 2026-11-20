@@ -15,7 +15,8 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from quill.core.storage import write_json_atomic
+from quill.core import storage
+from quill.core.persistence_outcome import guarded_write
 
 _FILE_NAME = "audio_studio_history.json"
 _MAX_ENTRIES = 15
@@ -106,10 +107,15 @@ def load_history(data_dir: Path) -> AudioStudioHistory:
 
 def save_history(data_dir: Path, history: AudioStudioHistory) -> None:
     """Persist history atomically (temp file + ``os.replace``)."""
-    write_json_atomic(
-        _store_path(data_dir),
-        {
-            "resume_on_launch": history.resume_on_launch,
-            "books": [b.to_dict() for b in history.books],
-        },
+    path = _store_path(data_dir)
+    guarded_write(  # Activity says a failure, with a Retry that writes what is current
+        "QUILL Studio's listening history",
+        path,
+        lambda: storage.write_json_atomic(
+            path,
+            {
+                "resume_on_launch": history.resume_on_launch,
+                "books": [b.to_dict() for b in history.books],
+            },
+        ),
     )

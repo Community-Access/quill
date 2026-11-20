@@ -17,8 +17,9 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from quill.core import storage
+from quill.core.persistence_outcome import guarded_write
 from quill.core.recent import recent_audiobook_files
-from quill.core.storage import write_json_atomic
 
 #: The fixed set of pinned views shown above the folder tree. Order matters:
 #: it is the order the tree builder appends them as root children.
@@ -81,12 +82,17 @@ def load_library(data_dir: Path) -> LibraryState:
 
 def save_library(data_dir: Path, state: LibraryState) -> None:
     """Persist the library atomically (temp file + ``os.replace``)."""
-    write_json_atomic(
-        _store_path(data_dir),
-        {
-            "books": [b.__dict__ for b in state.books],
-            "folders": list(state.folders),
-        },
+    path = _store_path(data_dir)
+    guarded_write(  # Activity says a failure, with a Retry that writes what is current
+        "QUILL Studio's library",
+        path,
+        lambda: storage.write_json_atomic(
+            path,
+            {
+                "books": [b.__dict__ for b in state.books],
+                "folders": list(state.folders),
+            },
+        ),
     )
 
 
