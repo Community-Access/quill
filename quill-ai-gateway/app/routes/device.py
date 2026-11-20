@@ -19,7 +19,6 @@ from app.limits import (
     RegistrationThrottled,
     check_device_budget,
     check_registration_allowed,
-    note_device_registered,
     note_registration_blocked,
     release_device_slot,
 )
@@ -88,7 +87,7 @@ def device_code():
             429,
             {"Retry-After": str(exc.retry_after_seconds)},
         )
-    return jsonify(start_device_flow(current_app)), 200
+    return jsonify(start_device_flow(current_app, network=client_ip())), 200
 
 
 @bp.post("/v1/device/token")
@@ -121,10 +120,9 @@ def connect():
         return render_template_string(_CONNECT_PAGE, prefill=prefill, error=None, confirmed=False)
 
     code = request.form.get("code", "").strip().upper()
-    if confirm_device_code(current_app, code):
-        # Counted here rather than at /v1/device/code: a code that is minted and
-        # never confirmed has cost nobody a slot.
-        note_device_registered(current_app, client_ip())
+    # Confirming also counts the device against the network its code was
+    # minted from (app/auth.py::confirm_device_code).
+    if confirm_device_code(current_app, code, confirming_network=client_ip()):
         return render_template_string(_CONNECT_PAGE, prefill="", error=None, confirmed=True)
     return render_template_string(
         _CONNECT_PAGE,
@@ -145,9 +143,13 @@ def revoke_device(device_id: str):
     device = db.session.get(Device, device_id)
     if device is None or device.user_id != g.user.id:
         return jsonify({"status": "not_found"}), 404
+    was_active = device.status == "active"
     device.status = "revoked"
     db.session.commit()
     # Give the slot back, so somebody who signs an old laptop out before
-    # connecting a new one is not refused for doing exactly the right thing.
-    release_device_slot(current_app, client_ip())
+    # connecting a new one is not refused for doing exactly the right thing --
+    # to the network it was counted against, not the one the person happens to
+    # be on now, and only once however many times sign-out is pressed.
+    if was_active:
+        release_device_slot(current_app, client_ip(), device_id=device.id)
     return "", 204
