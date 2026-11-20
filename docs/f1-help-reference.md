@@ -2336,7 +2336,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 406 audited sites (406 helped).
+Control coverage: 408 audited sites (408 helped).
 
 ### Every window, and what it is for
 
@@ -3220,6 +3220,10 @@ Control coverage: 406 audited sites (406 helped).
 
 **Account > Apply Access Template....** Give one person everything a template holds: previewed, then a result per change.
 
+**Account > Compare Accounts....** Two of your signed-in accounts on this repository, side by side: each one's role and sign-in, as GitHub answered that account.
+
+**Account > Act As Another Account....** One action sent as another signed-in account, such as approving your own pull request: the account is named before and after, and held to its own level.
+
 **Account > Workbench Level for This Account....** Read Only, Organize or Full: what the Workbench may change with this account, whatever GitHub would allow.
 
 **Account > Least Privilege Advice....** The smallest token scopes, fine-grained permissions and Workbench level that cover what QUILL saw this account do here, and what it cannot know. Changes nothing.
@@ -4056,6 +4060,7 @@ Control coverage: 406 audited sites (406 helped).
 #### GitHubSignInDialog (`quill/ui/github_dialogs.py`)
 
 - `self._token_ctrl`: A personal access token you made on GitHub. QUILL asks GitHub whose it is before it keeps it.
+- `self._host_ctrl`: github.com, or your GitHub Enterprise Server's name, such as github.example.com. The token is only ever sent to this server.
 - `self._connect_btn`: Sign in with the token you typed or the browser sign-in.
 - `anon_btn`: Go on without signing in. Public repositories can still be read.
 - `cancel_button`: Close without changing anything. Escape does the same.
@@ -4065,6 +4070,7 @@ Control coverage: 406 audited sites (406 helped).
 - `self._switch_btn`: Make the selected account the one QUILL uses for GitHub.
 - `self._remove_btn`: Forget the selected account on this computer. Its token is removed.
 - `add_btn`: Paste a personal access token you made on GitHub, for example a fine-grained token limited to a few repositories.
+- `gh_btn`: If you already signed in to the GitHub CLI (gh), QUILL asks it for that sign-in, checks whose it is, asks you, and keeps its own copy. Works for github.com and a GitHub Enterprise Server.
 - `close_btn`: Close Manage GitHub Accounts.
 - `self._choice`: The GitHub accounts QUILL knows. Choose one to use or remove.
 #### GitHubDiscussionDialog (`quill/ui/github_discussion_dialog.py`)

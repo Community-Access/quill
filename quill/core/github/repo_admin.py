@@ -28,6 +28,7 @@ from typing import Any
 from quill.core.error_codes import CodedError
 from quill.core.github.auth_diagnostics import github_exception_hint
 from quill.core.github.github_provider import _get_gh_module, require_pygithub
+from quill.core.github.hosts import pygithub_host
 from quill.core.github.models import RemoteRepository
 
 
@@ -101,7 +102,7 @@ class GitHubRepoAdminProvider:
         if not token:
             raise GitHubRepoAdminError("Repository admin actions need a signed-in GitHub account.")
         gh = _get_gh_module()
-        self._gh: Any = gh.Github(auth=gh.Auth.Token(token))
+        self._gh: Any = gh.Github(auth=gh.Auth.Token(token), **pygithub_host(token))
         self._token = token
 
     def _repo(self, full_name: str) -> Any:

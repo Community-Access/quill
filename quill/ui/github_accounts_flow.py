@@ -40,6 +40,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core.github.accounts import (
+    ADDED_BY_GH_CLI,
     ADDED_BY_SIGN_IN,
     ADDED_BY_TOKEN,
     ADDED_BY_UNKNOWN,
@@ -285,6 +286,8 @@ class GitHubAccountsFlow:
             self.sign_in()
         elif action == "add":
             self.add_token()
+        elif action == "gh_cli":
+            self.reuse_gh_sign_in()
 
     # -- Sign In with GitHub ---------------------------------------------- #
 
@@ -315,13 +318,67 @@ class GitHubAccountsFlow:
         if result is None or not result.token:
             return
         token = result.token
+        server = getattr(result, "host", "github.com")
         self.host.set_status_quiet("Checking the GitHub account...")
-        self.host.run_in_background(lambda: self.verify_new_token(token, ADDED_BY_TOKEN))
+        self.host.run_in_background(lambda: self.verify_new_token(token, ADDED_BY_TOKEN, server))
 
-    def verify_new_token(self, token: str, added_by: str = ADDED_BY_UNKNOWN) -> None:
-        """Worker thread: one read-only identity check, then back to the UI thread."""
+    # -- the GitHub CLI's sign-in (2026-11-19) ------------------------------ #
+
+    def ask_gh_host(self) -> str:
+        """UI thread: which server's ``gh`` sign-in to use; "" when cancelled."""
+        import wx
+
+        from quill.ui.dialog_contract import show_modal_dialog
+
+        with wx.TextEntryDialog(
+            self.host.parent,
+            "Which server's GitHub CLI sign-in? github.com, or your GitHub Enterprise "
+            "Server's name:",
+            "Use GitHub CLI Sign-In",
+            "github.com",
+        ) as dialog:
+            dialog.SetName("GitHub server")
+            if show_modal_dialog(dialog, "Use GitHub CLI Sign-In") != wx.ID_OK:
+                return ""
+            return str(dialog.GetValue()).strip()
+
+    def reuse_gh_sign_in(self) -> None:
+        """UI thread: ask which server, then ask ``gh`` for its sign-in off the UI thread."""
+        server = self.ask_gh_host()
+        if not server:
+            return
+        self.host.set_status_quiet("Asking the GitHub CLI for its sign-in...")
+        self.host.run_in_background(lambda: self.read_gh_sign_in(server))
+
+    def read_gh_sign_in(self, server: str) -> None:
+        """Worker thread: ``gh auth token --hostname``, then the same identity check."""
+        from quill.core.github.gh_sign_in import GhSignInError, read_gh_token
+
+        try:
+            token = read_gh_token(server)
+        except GhSignInError as exc:
+            said = str(exc.args[0]) if exc.args else str(exc)
+            self.host.call_after(self.add_token_done, "", None, said, ADDED_BY_GH_CLI, server)
+            return
+        self.verify_new_token(token, ADDED_BY_GH_CLI, server)
+
+    def verify_new_token(
+        self, token: str, added_by: str = ADDED_BY_UNKNOWN, server: str = "github.com"
+    ) -> None:
+        """Worker thread: one read-only identity check, then back to the UI thread.
+
+        The token is bound to *server* first, so the check itself goes there
+        and nowhere else.
+        """
         login: str | None = None
         error = ""
+        try:
+            from quill.core.github.hosts import GitHubHostError, bind_token
+
+            bind_token(token, server)
+        except GitHubHostError as exc:
+            self.host.call_after(self.add_token_done, token, None, str(exc), added_by, server)
+            return
         try:
             provider = GitHubRemoteProvider(token=token)
             identity = provider.get_identity()
@@ -330,12 +387,21 @@ class GitHubAccountsFlow:
             provider.close()
         except Exception:  # noqa: BLE001 - report without retaining an unverified token
             error = "QUILL could not verify that token with GitHub."
-        self.host.call_after(self.add_token_done, token, login, error, added_by)
+        self.host.call_after(self.add_token_done, token, login, error, added_by, server)
 
     def add_token_done(
-        self, token: str, login: str | None, error: str, added_by: str = ADDED_BY_UNKNOWN
+        self,
+        token: str,
+        login: str | None,
+        error: str,
+        added_by: str = ADDED_BY_UNKNOWN,
+        server: str = "github.com",
     ) -> None:
-        """UI thread: save a verified token, or say why nothing was saved."""
+        """UI thread: save a verified token, or say why nothing was saved.
+
+        A sign-in reused from the GitHub CLI is saved only after the person
+        says yes to the account it turned out to be.
+        """
         import wx
 
         warning = wx.ICON_WARNING | wx.OK
@@ -346,8 +412,19 @@ class GitHubAccountsFlow:
                 warning,
             )
             return
+        if added_by == ADDED_BY_GH_CLI:
+            from quill.core.github.gh_sign_in import confirm_question
+
+            answer = self.host.message_box(
+                confirm_question(login, server, credential_store_name()),
+                "Use GitHub CLI Sign-In",
+                wx.YES_NO | wx.ICON_QUESTION,
+            )
+            if answer != wx.YES:
+                self.host.set_status("Nothing was added.")
+                return
         try:
-            account = save_github_account(login, token, added_by=added_by)
+            account = save_github_account(login, token, host=server, added_by=added_by)
             delete_legacy_github_token()
         except Exception:  # noqa: BLE001 - credential-store errors must be clear
             self.host.message_box(
@@ -357,6 +434,30 @@ class GitHubAccountsFlow:
                 warning,
             )
             return
-        self.host.set_status(f"Added and switched to GitHub account {account.login}")
+        server_host = str(getattr(account, "host", "github.com") or "github.com")
+        if server_host != "github.com":
+            self.host.run_in_background(lambda: remember_server(account.id, token, server_host))
+        where = "" if server_host == "github.com" else f" on {server_host}"
+        self.host.set_status(f"Added and switched to GitHub account {account.login}{where}")
         if self.on_signed_in is not None:
             self.on_signed_in()
+
+
+def remember_server(account_id: str, token: str, host: str) -> None:
+    """Worker thread: keep an Enterprise Server's version (``GET /meta``) with its account.
+
+    It lets a row grey itself before anyone tries an endpoint the server lacks
+    (:func:`quill.core.github.api_coverage.unavailable_reason`). Best effort: a
+    server that will not say is simply not greyed by version.
+    """
+    try:
+        from quill.core.github.hosts import remember_server_version
+        from quill.core.github.rest_transport import request_json
+
+        meta = request_json(token, "GET", "/meta").data
+        version = str(meta.get("installed_version", "")) if isinstance(meta, dict) else ""
+        if version:
+            remember_server_version(host, version)
+            update_account_state(account_id, server_version=version)
+    except Exception:  # noqa: BLE001 - the version only greys rows early
+        return
