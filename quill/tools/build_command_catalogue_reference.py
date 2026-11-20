@@ -22,7 +22,13 @@ from quill.core.command_catalogue import CommandSpec, Risk, rows_for_app
 _ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_PATH = _ROOT / "docs" / "command-catalogue.md"
 
-_APP_NAMES = {"quill": "QUILL", "lite": "QUILL Lite", "radio": "Quill Radio"}
+_APP_NAMES = {
+    "quill": "QUILL",
+    "lite": "QUILL Lite",
+    "radio": "Quill Radio",
+    "github_workbench": "The GitHub Workbench",
+    "wordpress_workbench": "The WordPress Workbench",
+}
 
 
 def _quill_key(command_id: str) -> str:
@@ -47,10 +53,24 @@ def _radio_key(command_id: str) -> str:
     return APP_KEYMAPS["radio"].get(command_id, "")
 
 
+def _github_workbench_key(command_id: str) -> str:
+    from quill.core.github.workbench_window_menu import WORKBENCH_KEYS
+
+    return WORKBENCH_KEYS.get(command_id, "")
+
+
+def _wordpress_workbench_key(command_id: str) -> str:
+    from quill.core.wordpress.workbench_window_menu import WORDPRESS_KEYS
+
+    return WORDPRESS_KEYS.get(command_id, "")
+
+
 _KEYS: dict[str, Callable[[str], str]] = {
     "quill": _quill_key,
     "lite": _lite_key,
     "radio": _radio_key,
+    "github_workbench": _github_workbench_key,
+    "wordpress_workbench": _wordpress_workbench_key,
 }
 
 
@@ -105,7 +125,7 @@ def render() -> str:
         "as well as by its name. Commands that change or lose something ask first.",
         "",
     ]
-    for app in ("quill", "lite", "radio"):
+    for app in _APP_NAMES:  # each Workbench window is its own app, in either editor
         lines.extend(_app_section(app))
     return "\n".join(lines).rstrip() + "\n"
 

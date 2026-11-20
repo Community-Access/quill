@@ -27,6 +27,7 @@ from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 
 __all__ = [
+    "command_key_rows",
     "MenuRow",
     "MenuSpec",
     "MenuSub",
@@ -48,6 +49,30 @@ class MenuRow:
     help: str = ""
     check: bool = False
     radio: str = ""
+
+
+def command_key_rows(prefix: str) -> tuple[MenuRow, MenuRow]:
+    """Help's Say or Type a Command and What Can I Say Here, the family's keys (command-key.md).
+
+    The same two rows in both Workbench windows, on the keys every family app
+    uses: F11 runs one of *this window's* commands from a sentence, and
+    Ctrl+Alt+Shift+F1 lists what can be said here (quill/ui/command_key_workbench.py).
+    """
+    return (
+        MenuRow(
+            f"{prefix}command_key",
+            "Say or Type a &Command...",
+            "F11",
+            "Type what you want this window to do, such as show the issues; only this "
+            "window's commands, matched on this computer.",
+        ),
+        MenuRow(
+            f"{prefix}what_can_i_say_here",
+            "What Can I Sa&y Here?",
+            "Ctrl+Alt+Shift+F1",
+            "What Say or Type a Command can do in this window, with an example for each.",
+        ),
+    )
 
 
 @dataclass(frozen=True)

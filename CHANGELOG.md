@@ -20,6 +20,23 @@
 - Attestation signatures are still checked with `gh attestation verify`:
   verifying them inside QUILL needs Sigstore, which QUILL does not ship.
 
+### GitHub Workbench: access templates, more tutorials, team review requests, and the Command Key in the Workbench (2026-11-20)
+
+- **Access templates.** Account > Roles and Access > Access Templates... keeps
+  named sets of team and repository roles for each account, and Apply Access
+  Template... gives one person a whole set as one batch, previewed before it
+  is sent.
+- **Ten GitHub tutorials.** Help > Tutorials (Ctrl+F2) opens the GitHub
+  lessons: triage, building and using an issue form, milestones, projects,
+  access and the API Console join the earlier lessons, each on the practice
+  repository.
+- **Team review requests in Needs My Attention.** Review Requests and the
+  Inbox now include pull requests waiting on a team you are in, marked
+  "team review request".
+- **Say or Type a Command (F11) in both Workbench windows.** It runs that
+  window's own commands, including the Plain-Language Batch, through the same
+  checks as the menu. What Can I Say Here (Ctrl+Alt+Shift+F1) lists them.
+
 ### GitHub Workbench: every field proved, and Undo that puts things back (2026-11-20)
 
 Every editable field on every Properties sheet now has a test that checks
