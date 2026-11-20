@@ -607,6 +607,7 @@ class AIHubDialog:
     def _on_save_services(self, _event: object) -> None:
         from quill.core.datalab_ocr import save_datalab_api_key
         from quill.core.live_settings import change_and_save
+        from quill.core.settings import Settings
 
         values = self._services_values()
         endpoint = str(values["endpoint"])
@@ -614,7 +615,7 @@ class AIHubDialog:
             self._announce(str(_("The endpoint must start with https:// - not saved.")))
             return
 
-        def change(stored) -> None:  # the window's own copy: in effect now
+        def change(stored: Settings) -> None:  # the window's own copy: in effect now
             stored.datalab_enabled = bool(values["enabled"])
             stored.datalab_endpoint = endpoint or "https://www.datalab.to"
             stored.datalab_mode = str(values["mode"])
@@ -1167,8 +1168,9 @@ class AIHubDialog:
                 else:
                     self._vision_overrides.pop(img_style_id, None)
             from quill.core.live_settings import change_and_save
+            from quill.core.settings import Settings
 
-            def change(vision) -> None:  # the window's own copy: in effect now
+            def change(vision: Settings) -> None:  # the window's own copy: in effect now
                 vision.vision_disabled_builtin_styles = sorted(self._vision_disabled)
                 vision.vision_builtin_overrides = dict(self._vision_overrides)
                 if vision.vision_default_prompt_style in self._vision_disabled:
