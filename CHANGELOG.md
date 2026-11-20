@@ -2,6 +2,58 @@
 
 ## 1.0.0
 
+### Crash and support reports: what is sent is what was checked (2026-11-20)
+
+- **A crash email's subject is redacted like its body.** A password or key
+  in an error message was removed from the report you reviewed and still sent
+  in the subject line. Every field of the message is now scrubbed: the
+  subject, the version, the platform, the screen reader, the support facts,
+  and the copy that goes to the clipboard.
+- **A long subject no longer breaks the email.** Only the body used to be
+  shortened, so a long subject made a link your mail program refused. The
+  subject is shortened too, counted after encoding so accented letters and
+  emoji fit, and the complete message is still on your clipboard.
+- **Save Diagnostics always writes a readable bundle.** A long task name
+  could leave `metadata.json` unreadable. Each value is now redacted and
+  shortened on its own, and the file is checked before it is saved.
+- **Work that must finish is never told to stop part way.** Background
+  writes marked as unsafe to cancel, such as saving Inkwell's settings or a
+  Word file in QUILL Lite, were signalled to stop while the cancel request
+  reported that nothing had been cancelled. Now a write that has started runs
+  to the end and the request says it was not cancelled; one that has not
+  started is still cancelled.
+- **The shared progress throttle cannot hang and keeps the last update.** It
+  could lock up when there was no window to report to, and could drop the
+  final update. No shipping window was seen to freeze from this.
+- **F1 on Check What QUILL Says** explains the command and how to fill in
+  its report, instead of saying no help is available.
+
+### WordPress: local writing keeps its file, its pictures and its unsaved text (2026-11-20)
+
+- **Renaming a draft no longer loses it.** Changing a draft's title in
+  Properties used to make Open Local Draft open an empty, new file; the
+  writing was still in the old one. A draft now keeps the file it started
+  with through renaming, sending, closing and reopening, and restarting, in
+  QUILL and QUILL Lite. A draft already renamed opens its writing again.
+- **Uploaded pictures stay uploaded.** After Save Draft or Publish uploaded a
+  picture from this computer, the open document still held the picture's
+  local address, and the next Ctrl+S put it back. The site's address now goes
+  into the open document and its file, without touching anything typed while
+  the send was on its way or moving the caret.
+- **Previous Versions keeps what Restore replaces.** Restore now keeps the
+  text in the editor, saved or not, rather than the last saved copy. If you
+  switched documents while the history loaded, Restore says so and changes
+  nothing.
+- **Open by Web Address picks the right site.** A different port is a
+  different site, so `127.0.0.1:8080` no longer opens a site connected at
+  `127.0.0.1:9400`, and a site at `/blog` no longer claims `/blogger`.
+- **A renamed Practice Site starts.** The Practice Site no longer has to be
+  called Practice Site to count as ready: after a rename it used to wait five
+  minutes, stop and suggest a reset. Your posts are kept.
+- **Discussion counts links as WordPress does.** The Discussion explanation
+  counted one ordinary link twice, so it said a one-link comment would be
+  held under the two-link rule.
+
 ### Hosted AI service: accounting you can trust, and one sign-in per code (2026-11-20)
 
 These are fixes to the free AI service itself (`quill-ai-gateway/`), found
@@ -30,6 +82,51 @@ by a review of it. Nothing changes in QUILL or QUILL Lite.
   migration runbook lists all ten database migrations in order, a new
   migration (010) adds the per-person cost figure, and a new CI workflow
   tests every migration on a clean PostgreSQL database.
+
+### Quill Radio: recordings are kept safe through crashes, reconnects and Stop (2026-11-20)
+
+- **Crash recovery never replaces a recording.** When Quill Radio starts after a
+  crash, it moves recordings left in the temporary folder to your recordings
+  folder. If a recording with the same name is already there, both are kept and
+  the recovered one is named with " (2)". Before, the recovered file replaced
+  the one you had. This also holds when the folders are on different drives: a
+  copy that fails leaves both files as they were.
+- **Raw recordings are recovered too.** Recovery now finds every kind of file
+  the recorder writes, including raw captures such as .aac and .mka. A
+  recording made for a schedule with its own folder goes back to that folder.
+- **Stop All stops a recording that is reconnecting.** A recording whose
+  stream dropped stays stoppable at every step of getting back on air. Before,
+  Stop All could miss it while the new connection was starting, and it went on
+  recording.
+- **The recording limit holds while a recording reconnects.** A recording that
+  is reconnecting keeps its place. If you have set a limit, a new recording
+  waits instead of taking that place, and a scheduled one is held and tried
+  again in its time window, as it is when the limit is reached.
+- **A change of time zone or daylight saving no longer changes how long a
+  recording runs.** Recording lengths are measured as elapsed time. File names
+  and schedules still use your local time.
+- **The Recordings window opens with a daily schedule.** Its summary line
+  failed when any daily or weekly schedule was turned on, so the window did not
+  refresh. It now says when the next recording starts.
+- **Time left is right after a reconnect.** A 60-minute recording that
+  reconnected after 50 minutes said "less than a minute left". The status bar
+  and the Recordings window now count down to the real end.
+- **A deleted schedule does not start.** If you delete or change a schedule
+  while its recording is starting, that recording does not start.
+
+### QUILL Lite: the setting you chose last is the one that is saved (2026-11-20)
+
+- Turning a View setting on and straight back off, such as Word Wrap, could
+  save the first choice and lose the second, while QUILL Lite said nothing
+  was wrong. After a restart the setting had changed back.
+- A View setting changed just before you pressed OK in Preferences could be
+  written after the Preferences save, so the older choice won.
+- Every settings save in QUILL Lite now goes through one queue, in the order
+  you made the changes, and the last one always wins. Settings changed by a
+  second QUILL Lite window are still kept.
+- If a save fails, QUILL Lite still says so and does not say "Preferences
+  saved". Retry in Activity (Shift+F9) now saves your current settings, not
+  the older ones that failed.
 
 ### GitHub Workbench: roles from GitHub's own answers, two accounts side by side, and gh sign-in (2026-11-20)
 

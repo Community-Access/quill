@@ -247,6 +247,45 @@
 <code>docs/release-notes-3.2.md</code> (Help &gt; Release Notes,
 Shift+F1) for the fuller narrative version of the latest release.</p>
 <h2 id="unreleased---2026-11-07">[Unreleased] - 2026-11-07</h2>
+<h3
+id="recordings-are-kept-safe-through-crashes-reconnects-and-stop-2026-11-20">Recordings
+are kept safe through crashes, reconnects and Stop (2026-11-20)</h3>
+<ul>
+<li><strong>Crash recovery never replaces a recording.</strong> When
+Quill Radio starts after a crash, it moves recordings left in the
+temporary folder to your recordings folder. If a recording with the same
+name is already there, both are kept and the recovered one is named with
+“ (2)“. Before, the recovered file replaced the one you had. This also
+holds when the folders are on different drives: a copy that fails leaves
+both files as they were.</li>
+<li><strong>Raw recordings are recovered too.</strong> Recovery now
+finds every kind of file the recorder writes, including raw captures
+such as .aac and .mka. A recording made for a schedule with its own
+folder goes back to that folder.</li>
+<li><strong>Stop All stops a recording that is reconnecting.</strong> A
+recording whose stream dropped stays stoppable at every step of getting
+back on air. Before, Stop All could miss it while the new connection was
+starting, and it went on recording.</li>
+<li><strong>The recording limit holds while a recording
+reconnects.</strong> A recording that is reconnecting keeps its place.
+If you have set a limit, a new recording waits instead of taking that
+place, and a scheduled one is held and tried again in its time window,
+as it is when the limit is reached.</li>
+<li><strong>A change of time zone or daylight saving no longer changes
+how long a recording runs.</strong> Recording lengths are measured as
+elapsed time. File names and schedules still use your local time.</li>
+<li><strong>The Recordings window opens with a daily schedule.</strong>
+Its summary line failed when any daily or weekly schedule was turned on,
+so the window did not refresh. It now says when the next recording
+starts.</li>
+<li><strong>Time left is right after a reconnect.</strong> A 60-minute
+recording that reconnected after 50 minutes said “less than a minute
+left”. The status bar and the Recordings window now count down to the
+real end.</li>
+<li><strong>A deleted schedule does not start.</strong> If you delete or
+change a schedule while its recording is starting, that recording does
+not start.</li>
+</ul>
 <h3 id="ideas-from-blindradio">Ideas from BlindRadio</h3>
 <p>Seven things arrive together, each an idea from BlindRadio, a
 screen-reader-first radio player by serrebidev
@@ -297,6 +336,36 @@ Preferences.</li>
 Libre.fm; each is off until you turn it on and sign in, and a song
 counts after a minute heard. Identify This Song can ask AudD instead of
 AcoustID, with your own AudD token.</li>
+</ul>
+<h3 id="fixes-to-the-new-features-2026-11-09">Fixes to the new features
+(2026-11-09)</h3>
+<ul>
+<li><strong>Scrobbling counts only what you hear.</strong> Time with the
+station stopped or paused no longer counts toward the minute, so a song
+played for ten seconds and stopped is never sent. Songs heard just
+before you close Quill Radio are kept and sent next time, one song a
+service refuses no longer throws away the rest sent with it, and a send
+that never came back no longer stops scrobbling until you restart.</li>
+<li><strong>Typing your own last.fm key after signing in</strong> now
+asks you to sign in again, instead of keeping a sign-in that the new key
+makes every scrobble fail with.</li>
+<li><strong>Save Songs from the Buffer is safer.</strong> Closing Quill
+Radio while it saves no longer risks a crash, and changing station
+partway through stops the save instead of writing songs from the new
+station’s buffer.</li>
+<li><strong>IPRD folders and Find Stations no longer wait on each
+other.</strong> While the catalogue is fetched, folders use the copy
+already held, and an outage makes each waiting folder give up at once
+rather than in turn. An odd or oversized catalogue is refused instead of
+failing.</li>
+<li><strong>A reply cut short</strong> from IPRD or a station’s playlist
+is a plain failure, and What the Station Played goes on to try the
+station’s other Triton mounts.</li>
+<li><strong>What’s Playing keeps talking</strong> if dial tuning has a
+problem with a title.</li>
+<li><strong>The dial hiss plays on its own.</strong> Stopping it no
+longer cuts off other sounds, and a sound played while it runs no longer
+stops it for good.</li>
 </ul>
 <h2 id="320---2026-10-03">[3.2.0] - 2026-10-03</h2>
 <p>Testing rebuild: <strong>3.2.0 (build 5)</strong>. The packages have

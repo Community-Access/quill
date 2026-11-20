@@ -70,6 +70,13 @@ def bench(wx_session_app, quill_data_dir, monkeypatch):
     monkeypatch.setattr(
         "quill.ui.dialog_contract.show_modal_dialog", lambda dialog, title: wx.ID_OK
     )
+    # The batch results window binds show_modal_dialog by name at import, so
+    # patching dialog_contract alone only works when this test happens to be
+    # the first to import it. Once another test has imported it first, a
+    # batch of two or more opened a real modal and hung the worker in CI.
+    monkeypatch.setattr(
+        "quill.ui.github_workbench_results.show_modal_dialog", lambda dialog, title: wx.ID_OK
+    )
     frame = WorkbenchFrame(provider, announce=said.append, run_background=_inline)
     frame.said = said  # type: ignore[attr-defined]
     frame.ran = ran  # type: ignore[attr-defined]

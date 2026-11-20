@@ -310,6 +310,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
                     job_id=getattr(j, "job_id", "") or "",
                     scheduled_minutes=int(getattr(j, "minutes", 0) or 0),
                     duration_requested=bool(getattr(j, "duration_requested", False)),
+                    ends_at=getattr(j, "ends_at", None),
                 )
                 for j in jobs()
             ]
@@ -324,8 +325,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
                 started_at=getattr(rec, "current_started_at", None),
                 scheduled_minutes=int(getattr(rec, "current_minutes", 0) or 0),
                 # The old scalar getters predate the requested/cap distinction
-                # and cannot answer it, so this path counts up. Under-claiming
-                # is the right way to be wrong here.
+                # and cannot answer it, so this path counts up (under-claims).
                 duration_requested=False,
             )
         ]

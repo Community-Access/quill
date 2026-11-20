@@ -222,6 +222,12 @@
     "body": "Says which editing surface is live and the settings that decide how it reaches a braille display -- the surface kind, the window class, the system-edit and border fixes, and which announcement backend is in use. Nothing from your document is included, deliberately: this is for filing a bug report you cannot take a screenshot of. Details specific to Windows Rich Edit report as unavailable elsewhere."
   },
   {
+    "id": "app.say_check",
+    "title": "Check What QUILL Says",
+    "body": "Run every command whose only job is to speak -- Where Am I, Say Time and Date, Speak Window Title and the rest -- once, then twice in a row, and open the results as a new document. Nothing is spoken while it runs and no window opens: a command that would open one is written down as opening it instead. Each press gets a row with the command, its key and what QUILL meant to say. The last two columns are yours: run each command yourself with your screen reader, write what you actually heard, and mark the row Same, Extra or Missing. Extra means you heard more than QUILL meant, or something the screen reader had already said; Missing means QUILL meant to say it and nothing arrived. Those are the two speech problems an automated test cannot hear, so a filled-in table attached to a message to support is the most useful report of either. It is in the command palette; give it a key in the Keymap Editor if you use it often. It comes from EdSharp's testSay.",
+    "user_guide_section": "accessibility"
+  },
+  {
     "id": "braille.back_translate",
     "title": "Back-Translate",
     "body": "Convert braille back to print. Back-translation is always opened as a clearly labelled draft because automatic back-translation is not authoritative. The draft uses the same proofing rules as the active profile when available. Requires the QUILL Braille Pack.",
