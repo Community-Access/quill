@@ -2889,24 +2889,14 @@
    ]
   ]
  },
- "repository.merge_commit_message": {
+ "repository.merge_default": {
   "set": [
    [
     "PATCH",
     "/repos/owner/repo",
     {
-     "merge_commit_message": "PR_TITLE"
-    }
-   ]
-  ]
- },
- "repository.merge_commit_title": {
-  "set": [
-   [
-    "PATCH",
-    "/repos/owner/repo",
-    {
-     "merge_commit_title": "MERGE_MESSAGE"
+     "merge_commit_message": "BLANK",
+     "merge_commit_title": "PR_TITLE"
     }
    ]
   ]
@@ -2919,6 +2909,17 @@
     "/repos/owner/repo",
     {
      "name": "new words"
+    }
+   ]
+  ]
+ },
+ "repository.pages_build_type": {
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/pages",
+    {
+     "build_type": "workflow"
     }
    ]
   ]
@@ -2950,6 +2951,21 @@
     "/repos/owner/repo/pages",
     {
      "https_enforced": true
+    }
+   ]
+  ]
+ },
+ "repository.pages_source": {
+  "refused": "GitHub Pages always builds from a branch and folder, so it was left as it is.",
+  "set": [
+   [
+    "PUT",
+    "/repos/owner/repo/pages",
+    {
+     "source": {
+      "branch": "main",
+      "path": "/docs"
+     }
     }
    ]
   ]
@@ -3073,24 +3089,14 @@
    ]
   ]
  },
- "repository.squash_merge_commit_message": {
+ "repository.squash_default": {
   "set": [
    [
     "PATCH",
     "/repos/owner/repo",
     {
-     "squash_merge_commit_message": "COMMIT_MESSAGES"
-    }
-   ]
-  ]
- },
- "repository.squash_merge_commit_title": {
-  "set": [
-   [
-    "PATCH",
-    "/repos/owner/repo",
-    {
-     "squash_merge_commit_title": "COMMIT_OR_PR_TITLE"
+     "squash_merge_commit_message": "BLANK",
+     "squash_merge_commit_title": "PR_TITLE"
     }
    ]
   ]
