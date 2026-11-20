@@ -345,6 +345,18 @@ Two-Factor** on the organization's row lists only those, for owners.
   with their role and where it comes from, copied as CSV too;
 - **Bulk Access Changes...**, one team or person on many repositories at
   once, previewed person by person, with a result per change;
+- **Access Templates...**, named sets of access, such as Contributor: write
+  on these repositories and member of a team. Choose New Template..., give it
+  a name, and write one line for each place: `write on owner/name` (read,
+  triage, write, maintain or admin), `member of org/team` or `maintainer of
+  org/team`, and `member of org` or `owner of org`. A line it cannot read is
+  said and left out. Templates are kept on this computer, for this account,
+  and making one sends nothing;
+- **Apply Access Template...**, everything a template holds, given to one
+  person by login in one batch: organization first, then teams, then
+  repositories. The preview says every change in words and asks once; each
+  change then has its own result and its own line in Change History. It
+  needs Full for this account in the Workbench, as any access change does;
 - **Compare Accounts...**, two of your signed-in accounts on this repository,
   side by side;
 - **Act As Another Account...**, one action done as another of your

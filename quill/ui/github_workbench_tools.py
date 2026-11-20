@@ -9,9 +9,11 @@
   Classic Token Page, Fine-grained Steps, and Check Again.
 - **Account > Change History** (Ctrl+Shift+H): every write, before and after;
   Undo on any row GitHub allows, Copy, Save as CSV, Clear.
-- **Roles and Access:** this account's Workbench level here; the rest (My
-  Access Here, View As Role, Compare Roles, Why Can't They?, Access Review,
-  Bulk Access Changes, Compare Accounts, Act As) is
+- **Roles and Access:** this account's Workbench level here, and Access
+  Templates and Apply Access Template (GH-R-068,
+  :mod:`quill.ui.github_workbench_access_templates`); the rest (My Access
+  Here, View As Role, Compare Roles, Why Can't They?, Access Review, Bulk
+  Access Changes, Compare Accounts, Act As) is
   :mod:`quill.ui.github_workbench_roles`, answered from GitHub's replies.
 - **Access pages:** Add..., Change Role... and Remove on a sheet's list, each
   previewed in words, refused when it would lock you out (18.4), and recorded:
@@ -33,6 +35,7 @@ from quill.core.github.permissions import (
     scope_rows,
 )
 from quill.ui.github_workbench_access_pages import GitHubWorkbenchAccessPagesMixin
+from quill.ui.github_workbench_access_templates import GitHubWorkbenchAccessTemplatesMixin
 from quill.ui.github_workbench_least_privilege import GitHubWorkbenchLeastPrivilegeMixin
 from quill.ui.github_workbench_roles import ROLE_TOOLS, GitHubWorkbenchRolesMixin
 
@@ -43,6 +46,8 @@ _TOOLS = frozenset({
     "filter_builder",
     "permissions",
     "change_history",
+    "access_templates",  # GH-R-068: github_workbench_access_templates.py
+    "apply_access_template",
     "account_level",
     "least_privilege",
     *ROLE_TOOLS,
@@ -50,7 +55,10 @@ _TOOLS = frozenset({
 
 
 class GitHubWorkbenchToolsMixin(
-    GitHubWorkbenchAccessPagesMixin, GitHubWorkbenchLeastPrivilegeMixin, GitHubWorkbenchRolesMixin
+    GitHubWorkbenchAccessPagesMixin,
+    GitHubWorkbenchAccessTemplatesMixin,
+    GitHubWorkbenchLeastPrivilegeMixin,
+    GitHubWorkbenchRolesMixin,
 ):
     """Filter Builder, permissions, history and access, for the GitHub provider."""
 

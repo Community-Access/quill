@@ -122,7 +122,7 @@ def test_my_work_combines_categories_without_duplicate_rows() -> None:
     assert "Assigned" in rows[0].detail
     assert "Review requested" in rows[0].detail
     assert rows[0].title == "Work 7"
-    assert len(provider.searches) == 4
+    assert len(provider.searches) == 5  # review requests: yours, then your teams'
 
 
 def test_explore_reports_capped_results_but_not_an_exact_limit(monkeypatch) -> None:
@@ -193,7 +193,7 @@ def test_attention_queue_combines_categories_and_deduplicates_by_url() -> None:
 
     assert result.complete
     assert len(result.items) == 1
-    assert len(provider.searches) == 4
+    assert len(provider.searches) == 5  # review requests: yours, then your teams'
     assert "status:failure" in provider.searches[-1]
     assert "Also:" in result.items[0].detail
     assert result.items[0].title == "Work 7"

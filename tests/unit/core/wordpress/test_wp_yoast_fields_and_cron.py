@@ -25,6 +25,7 @@ from quill.core.wordpress.workbench_seo_fields import (
     SCHEMA_ARTICLE,
     SCHEMA_PAGE,
     YOAST_FIELDS,
+    canonical_shown,
     schema_types,
     seo_page,
     with_seo_page,
@@ -85,6 +86,45 @@ def test_a_page_without_registered_meta_is_read_only_with_one_sentence() -> None
         "wp-admin, because this site does not give Yoast's setting for it to the REST API; "
         "Open in wp-admin on the post's row opens its editor there."
     )
+
+
+#: The test site's Welcome post as Yoast SEO 28.9 heads it (2026-11-19), trimmed: the
+#: site discourages search engines, so the head is noindex and has no canonical key.
+LIVE_HEAD = {
+    "title": "Welcome to the QUILL test site - QUILL WordPress Test Site",
+    "robots": {"index": "noindex", "follow": "follow"},
+    "og_url": "https://lp.csedesigns.com/wordpress/welcome/",
+    "schema": {
+        "@graph": [
+            {"@type": "NewsArticle", "articleSection": ["News", "Training"]},
+            {"@type": "WebPage"},
+            {"@type": "BreadcrumbList"},
+            {"@type": "WebSite"},
+            {"@type": "Organization"},
+        ]
+    },
+}
+#: The Yoast meta that site registers for REST: three, none of the four on the SEO page.
+LIVE_YOAST_META = {
+    "_yoast_wpseo_focuskw": {"type": "string", "title": "", "description": "", "default": ""},
+    "_yoast_wpseo_title": {"type": "string", "title": "", "description": "", "default": ""},
+    "_yoast_wpseo_metadesc": {"type": "string", "title": "", "description": "", "default": ""},
+}
+
+
+def test_a_noindex_post_has_no_canonical_in_its_head_and_its_address_is_said() -> None:
+    fresh = {"type": "post", "categories": [3, 7], "yoast_head_json": LIVE_HEAD}
+    page, values = seo_page(fresh, LIVE_YOAST_META, {"News": 3, "Training": 7})
+    assert page is not None
+    assert all(f.readonly for f in page.fields)
+    assert values[f"yoast.{CANONICAL}"] == (
+        "https://lp.csedesigns.com/wordpress/welcome/, its address; Yoast gives search engines "
+        "no canonical address while the post is not indexed"
+    )
+    assert values[f"yoast.{SCHEMA_PAGE}"] == "Web page"
+    assert values[f"yoast.{PRIMARY_CATEGORY}"].endswith("its categories: News, Training")
+    assert canonical_shown({}) == "none given"
+    assert canonical_shown({"robots": {"index": "noindex"}}).startswith("none: Yoast")
 
 
 def test_registered_meta_is_editable_and_a_registered_enum_limits_the_choices() -> None:
@@ -156,6 +196,11 @@ class _Api:
         if isinstance(self.answer, Exception):
             raise self.answer
         return self.answer
+
+
+def test_cron_events_opens_the_slug_wp_crontrol_registers() -> None:
+    # WP Crontrol 2.0.0 on the test site: add_management_page(..., 'wp-crontrol', ...).
+    assert CRON_EVENTS == "tools.php?page=wp-crontrol"
 
 
 def test_crontrol_active_reads_only_the_plugin_list() -> None:

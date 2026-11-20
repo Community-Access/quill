@@ -2508,7 +2508,7 @@ Control coverage: 402 audited sites (402 helped).
 
 **Invitations.** Invitations: repositories you have been invited to, who invited you and with what access. Accept or Decline from a row's context menu.
 
-**Review Requests.** Review Requests: pull requests somebody asked you to review. Enter opens the review.
+**Review Requests.** Review Requests: pull requests somebody asked you, or a team you are on, to review. A team's ends in team review request. Enter opens the review.
 
 **Assigned to Me.** Assigned to Me: issues and pull requests assigned to you, anywhere.
 
@@ -3214,6 +3214,10 @@ Control coverage: 402 audited sites (402 helped).
 
 **Account > Bulk Access Changes....** One team or person, many repositories: previewed, then a result per change.
 
+**Account > Access Templates....** Named sets of access, such as Contributor: write on these repositories and member of a team. Kept on this computer for this account.
+
+**Account > Apply Access Template....** Give one person everything a template holds: previewed, then a result per change.
+
 **Account > Compare Accounts....** Two of your signed-in accounts on this repository, side by side: each one's role and sign-in, as GitHub answered that account.
 
 **Account > Act As Another Account....** One action sent as another signed-in account, such as approving your own pull request: the account is named before and after, and held to its own level.
@@ -3236,11 +3240,17 @@ Control coverage: 402 audited sites (402 helped).
 
 **Help > What Can I Do Here?....** Every action for the selection, its key, and why any is greyed.
 
+**Help > Say or Type a Command....** Type what you want this window to do, such as show the issues; only this window's commands, matched on this computer.
+
+**Help > What Can I Say Here?.** What Say or Type a Command can do in this window, with an example for each.
+
 **Help > What Is This?.** The GitHub word for this row, explained.
 
 **Help > GitHub Workbench Guide.** The guide, opened at the chapter for where you are.
 
 **Help > Search Help....** Type a few words to find a help topic, a command or a GitHub word.
+
+**Help > Tutorials.** The GitHub lessons, each on the practice repository, with what you have done.
 
 **Help > Practice on GitHub....** Make, open or delete quill-practice, a private repository with issues, a pull request and a failing run to learn on.
 
