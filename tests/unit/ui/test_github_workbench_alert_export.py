@@ -9,6 +9,7 @@ Every file format is checked, and so is every alert list the Workbench has.
 
 from __future__ import annotations
 
+import importlib.util
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -170,7 +171,20 @@ def _exported(path: Path) -> str:
     return path.read_text(encoding="utf-8-sig")
 
 
-@pytest.mark.parametrize("suffix", [".csv", ".md", ".xlsx"])
+#: Excel needs openpyxl, which the ``ui`` extra installs and CI's unit shards do not.
+_SUFFIXES = [
+    ".csv",
+    ".md",
+    pytest.param(
+        ".xlsx",
+        marks=pytest.mark.skipif(
+            importlib.util.find_spec("openpyxl") is None, reason="openpyxl is not installed"
+        ),
+    ),
+]
+
+
+@pytest.mark.parametrize("suffix", _SUFFIXES)
 def test_a_repositorys_alerts_export_without_a_secret_or_a_token(
     bench, monkeypatch, tmp_path: Path, suffix: str
 ) -> None:
