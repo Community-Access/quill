@@ -18,6 +18,7 @@ from typing import Any
 
 from quill import __version__
 from quill.stability.crash_email import build_crash_support_message
+from quill.stability.redaction import redact_text_for_bundle
 from quill.ui import support_dialog
 from quill.ui.crash_report_dialog import merge_user_context_into_body
 
@@ -47,7 +48,9 @@ def act_on_crash_choice(
     act = getattr(result, "act", "cancel")
     if act == "cancel":
         return "cancelled"
-    merged = merge_user_context_into_body(payload.body, result)
+    # Redacted here as well as in the dialog: this text goes straight to the
+    # clipboard on Copy, and nothing downstream of the clipboard scrubs it.
+    merged = redact_text_for_bundle(merge_user_context_into_body(payload.body, result))
     if act == "copy":
         copy(merged)
         notify(
