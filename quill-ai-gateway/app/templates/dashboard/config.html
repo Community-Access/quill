@@ -38,6 +38,14 @@
   </table>
 
   <p>{{ cost.headroom_sentence(budget_cap) }}</p>
+  <p>The two money limits (the cost ceiling per person and the total budget)
+    are estimates, not exact caps. Each is checked before a request is sent,
+    but a request's cost is only known once it is answered. Requests already
+    in flight when a limit is reached still finish and are counted. So a month
+    can end above a limit by up to
+    ${{ "%.5f"|format(cost.per_request_usd) }} for each of those requests, plus
+    ${{ "%.2f"|format(search_fee) }} for each web search (total budget
+    only).</p>
   <p class="text-secondary">{{ pricing_caveat }}</p>
 </section>
 {% else %}
