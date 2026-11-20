@@ -1,11 +1,14 @@
 """The GitHub lessons, on the practice repository (GitHub PRD 22.8 and D8).
 
-Six short lessons in the shared tutorials engine. Every one works in
+Short lessons in the shared tutorials engine. Every one works in
 ``quill-practice``, the private repository Help > Practice on GitHub... makes
 in your own account, so nothing a lesson asks you to change matters to anyone:
 make it and look round; your first issue (label, comment, close); Dry Run;
 reviewing and merging a pull request; reading a failed run; and deleting the
-repository when you are done.
+repository when you are done. The rest of D8's list (triage, forms,
+milestones, projects, access, the API Console) is in
+:mod:`quill.core.tutorials.github_lessons_more`, between the failed run and
+the clean-up.
 
 A step about a Workbench command names it and carries the key from the
 Workbench's own table (:data:`~quill.core.github.workbench_window_menu.WORKBENCH_KEYS`),
@@ -26,8 +29,10 @@ GITHUB_TRACK = Track(
     GITHUB_TRACK_ID,
     "GitHub, on a practice repository",
     "Make a private repository to practise on, then file and close an issue, "
-    "try Dry Run, review and merge a pull request, read a failed run, and "
-    "delete the repository when you finish.",
+    "try Dry Run, review and merge a pull request, read a failed run, triage "
+    "your inbox, build and use an issue form, plan a milestone and a project, "
+    "give someone access, use the API Console, and delete the repository when "
+    "you finish.",
 )
 
 _SURFACES = ("GitHub Workbench",)
@@ -73,7 +78,9 @@ def _go_practice() -> Step:
 
 
 def github_lessons() -> tuple[Tutorial, ...]:
-    """The six GitHub lessons, in teaching order."""
+    """The GitHub lessons, in teaching order; the clean-up is always last."""
+    from quill.core.tutorials.github_lessons_more import FIRST_MORE, more_github_lessons
+
     track = GITHUB_TRACK_ID
     return (
         Tutorial(
@@ -296,8 +303,9 @@ def github_lessons() -> tuple[Tutorial, ...]:
                 ),
             ),
             closing="What Failed is usually all you need; the jobs window has the whole log.",
-            then=("github-practice-finish",),
+            then=(FIRST_MORE,),
         ),
+        *more_github_lessons(),  # the rest of D8 (github_lessons_more.py)
         Tutorial(
             slug="github-practice-finish",
             title="Delete the practice repository",

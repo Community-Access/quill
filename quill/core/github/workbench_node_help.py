@@ -79,7 +79,8 @@ NODE_HELP: dict[str, str] = {
         "access. Accept or Decline from a row's context menu."
     ),
     ":review_requests": (
-        "Review Requests: pull requests somebody asked you to review. Enter opens the review."
+        "Review Requests: pull requests somebody asked you, or a team you are on, to review. "
+        "A team's ends in team review request. Enter opens the review."
     ),
     ":assigned": "Assigned to Me: issues and pull requests assigned to you, anywhere.",
     ":mentions": "Mentions: issues and pull requests where somebody wrote your name.",

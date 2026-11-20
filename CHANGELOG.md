@@ -35,6 +35,23 @@
   ready pull requests are waiting for a review and how long the oldest has
   waited. It never names who was asked.
 
+### GitHub Workbench: access templates, more tutorials, team review requests, and the Command Key in the Workbench (2026-11-20)
+
+- **Access templates.** Account > Roles and Access > Access Templates... keeps
+  named sets of team and repository roles for each account, and Apply Access
+  Template... gives one person a whole set as one batch, previewed before it
+  is sent.
+- **Ten GitHub tutorials.** Help > Tutorials (Ctrl+F2) opens the GitHub
+  lessons: triage, building and using an issue form, milestones, projects,
+  access and the API Console join the earlier lessons, each on the practice
+  repository.
+- **Team review requests in Needs My Attention.** Review Requests and the
+  Inbox now include pull requests waiting on a team you are in, marked
+  "team review request".
+- **Say or Type a Command (F11) in both Workbench windows.** It runs that
+  window's own commands, including the Plain-Language Batch, through the same
+  checks as the menu. What Can I Say Here (Ctrl+Alt+Shift+F1) lists them.
+
 ### GitHub Workbench: every field proved, and Undo that puts things back (2026-11-20)
 
 Every editable field on every Properties sheet now has a test that checks
@@ -104,6 +121,47 @@ The second part of the family UX pilot (FUX-04 and FUX-06).
   Discarding drafts in the recovery window keeps the check you gave every other
   row and puts focus on the next one, not the first. Focus never moves and
   nothing extra is said.
+
+### WordPress Workbench: the shop, memberships and Gravity Forms tried on a real site (2026-11-20)
+
+Every plugin feature built since the last live run was tried on the test site
+(WordPress 7.1.5 with WooCommerce 11.3.1, Yoast SEO 28.9, Paid Memberships Pro
+3.9.2, Gravity Forms 3.2.3.1, QUILL Accessible Forms 1.0.0, Advanced Custom
+Fields 6.8.12 and Redirection 5.10.1). What it found is fixed:
+
+- **Edit Membership Level made a second level** instead of changing the one
+  you chose, because Paid Memberships Pro makes a new level for every POST. It
+  now changes the level in place. After New or Edit Membership Level, QUILL
+  reads the level back and names anything Paid Memberships Pro did not keep
+  (its REST API drops the billing and expiry periods), and Ctrl+Z on a new
+  level explains that Paid Memberships Pro does not allow deleting a level
+  through its REST API, and where to delete it instead.
+- **Members of This Level** says plainly when your account cannot list the
+  site's people, and shows when each member joined as a date.
+- **Change Items** keeps a line's price per item when you change its quantity.
+  WooCommerce kept the old line total, so 3 mugs still cost the price of 1.
+  A quantity of 0 does take the line off the order.
+- **Shop Analytics** says on its total row how many orders WooCommerce has not
+  imported into Analytics yet, so the figures do not look complete when they
+  are not.
+- **Yoast SEO:** where Yoast gives no canonical address because the site asks
+  search engines not to index it, the SEO page says so and shows the post's
+  address, instead of "none given".
+- **Gravity Forms:** Submit a Test Entry used an example.com address, which
+  Gravity Forms 2.9.15 and later turn away as spam. It now uses one Gravity
+  Forms accepts. Ctrl+Z now moves the test entry to the Trash again, because
+  QUILL finds the entry itself when Gravity Forms does not say which one it
+  made. On a site with no feed add-on, Feeds is empty instead of showing an
+  error as if it were a feed.
+- **The Watch for new form responses** works with QUILL Accessible Forms,
+  whose responses are listed one form at a time; before this it skipped the
+  site with "Missing parameter(s): form_id".
+- **QUILL Site Types:** a post type you define keeps its fields in the REST
+  API. Before this, the values you saved were dropped without a word.
+- **WP Crontrol:** Open Cron Events opens WP Crontrol 2.0's real page.
+
+The live run (`docs/qa/wordpress-live-run.py`) gains tests 127 to 143 for
+these features, and `--only` to run just some of them.
 
 ### GitHub Workbench: write workflows, Dependabot and CODEOWNERS (2026-11-19)
 

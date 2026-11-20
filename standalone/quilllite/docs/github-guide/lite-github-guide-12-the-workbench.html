@@ -303,6 +303,12 @@ it asks first when there are more than twenty.</li>
 <strong>Mentions</strong>, <strong>My Open Pull Requests</strong> and
 <strong>My Open Issues</strong> are the same work split by why it is
 yours.</li>
+<li><strong>Review Requests</strong> holds two kinds: pull requests that
+ask you by name, and those that ask a team you belong to. A team’s row
+ends in “team review request”, so you know someone else on the team may
+take it; the pull request’s own sheet names the team under Team
+reviewers. GitHub’s search cannot say which team from the list itself.
+The Inbox marks them the same way.</li>
 <li><strong>My Activity Feed</strong> is what you did lately.</li>
 </ul>
 <p>When one of these is empty, the details pane says so and says what
@@ -891,6 +897,10 @@ one.</li>
 to it.</li>
 <li><strong>Keys</strong> has every key in the window, grouped by what
 it does.</li>
+<li><strong>Tutorials</strong> lists the GitHub lessons; Tutorials on
+the Workbench’s own Help menu (<code>Ctrl+F2</code>) goes there. Enter
+walks the selected lesson here, one step at a time, with your keys. Each
+lesson uses the practice repository below.</li>
 <li><strong>What Changed</strong> says what is new.</li>
 <li><strong>Ask a Person</strong> says how to write to <a
 href="mailto:support@community-access.org">support@community-access.org</a>.</li>
@@ -928,8 +938,34 @@ href="mailto:support@community-access.org">support@community-access.org</a>.</li
 <td><code>Alt+Shift+F1</code></td>
 <td>Every key in the window</td>
 </tr>
+<tr>
+<td><code>Ctrl+F2</code></td>
+<td>Help &gt; Tutorials: the GitHub lessons, under Help and
+Learning</td>
+</tr>
+<tr>
+<td><code>F11</code></td>
+<td>Say or Type a Command, in this window</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+Shift+F1</code></td>
+<td>What Can I Say Here: what F11 can do in this window</td>
+</tr>
 </tbody>
 </table>
+<h2 id="say-or-type-a-command">Say or Type a Command</h2>
+<p><code>F11</code> works here as it does in the editor, with this
+window’s own commands. Type what you want, such as “show the pull
+requests”, “what failed” or “how much rate limit is left”, and press
+<code>Enter</code>. Only the Workbench’s commands are offered, and each
+runs exactly as its menu row would: a change still asks and previews
+first, and a Read Only account is still refused. Commands that send a
+change by themselves, such as Merge or Close, are not offered from a
+sentence; their menu rows and keys still work.</p>
+<p><strong>Help &gt; What Can I Say Here?</strong>
+(<code>Ctrl+Alt+Shift+F1</code>) lists what you can ask for in this
+window, with an example for each. In this window, requests are matched
+on this computer only and are never sent anywhere.</p>
 <h2 id="dry-run">Dry Run</h2>
 <p><strong>Dry Run</strong>, on the Workbench’s Tools menu, is a switch
 for the whole Workbench (its key there is Ctrl+Alt+D). While it is on,
