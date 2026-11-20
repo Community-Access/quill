@@ -80,6 +80,9 @@ class QuillWordPressHost:
         editor.ShowPosition(offset)
         editor.SetFocus()
 
+    def set_caret(self, offset: int) -> None:
+        self._mf.editor.SetInsertionPoint(offset)
+
     def open_path(self, path: Path) -> None:
         self._mf.open_file(path)
 
