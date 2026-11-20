@@ -14,7 +14,10 @@ save, wx-free:
   rate limits (a second between items by default), with a progress callback
   for the status bar and a :class:`BatchResult` per item: Done, Skipped
   (already so) or Failed and why;
-- :func:`results_text` is Copy Results; failed items can be run again.
+- :func:`results_text` is Copy Results; failed items can be run again
+  (Retry Failed), each read afresh first (``reload=True``), so a field that
+  took the first time counts as already so rather than as somebody else's
+  change.
 
 Removal and replacement are as available as adding (GH-R-041): the deltas
 remove as readily as they add.
@@ -26,7 +29,8 @@ import time
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 
-from quill.core.github.sheet_engine import SheetDef, save, sentence
+from quill.core.github.sheet_engine import SheetDef, adopted, load, save, sentence
+from quill.core.github.sheet_values import as_sent
 from quill.core.github.workbench_api import GitHubApi
 from quill.core.workbench.properties import FieldChange, ListDelta, Value, apply_delta
 
@@ -133,17 +137,27 @@ def run(
     sleep: Callable[[float], None] = time.sleep,
     progress: Callable[[int, int], None] | None = None,
     done: Callable[[BatchItem, list[FieldChange]], None] | None = None,
+    reload: bool = False,
 ) -> list[BatchResult]:
     """Change each item in turn and say what happened to each.
 
     *done* is told each item's proven changes, so the caller can record them
     in Change History. Each item's save checks for conflicts and verifies
-    with a re-read, as a single sheet does.
+    with a re-read, as a single sheet does. *reload* reads each item again
+    first (Retry Failed: what the first run did is now on GitHub).
     """
     results: list[BatchResult] = []
+    changes = as_sent(sheet.sheet, changes)
     for index, item in enumerate(items, start=1):
         if progress is not None:
             progress(index, len(items))
+        if reload:
+            try:
+                ident = adopted(sheet, item.ident, item.values)
+                item = BatchItem(item.name, item.ident, load(api, sheet, ident).values)
+            except Exception as exc:  # noqa: BLE001 - one failure never stops the rest
+                results.append(BatchResult(item.name, "Failed", str(exc)))
+                continue
         own = item_changes(changes, item.values)
         if not own:
             results.append(BatchResult(item.name, "Skipped", "already so"))
