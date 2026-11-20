@@ -264,15 +264,15 @@ def _full_provider_with_dialogs(
 _TWO_ADMINS = ("me, person, admin, direct", "bob, person, admin, direct")
 
 
-@pytest.mark.parametrize(("typed", "sent"), [("1", 1), ("one", 0), ("", 0)])
-def test_removing_an_admin_needs_the_count_typed(
+@pytest.mark.parametrize(("typed", "sent"), [("bob", 1), ("1", 0), ("bub", 0), ("", 0)])
+def test_removing_an_admin_needs_their_name_typed(
     monkeypatch: pytest.MonkeyPatch, typed: str, sent: int
 ) -> None:
     provider, said, api = _full_provider_with_dialogs(monkeypatch, typed)
     act = provider.table_action(_REPO, _sheet_list(_TWO_ADMINS))
     act(SimpleNamespace(key="collaborators"), "remove", "bob, person, admin, direct")
     assert len(api.sent) == sent
-    if typed == "one":
+    if typed in ("1", "bub"):
         assert said == ["The name did not match. Nothing changed."]
     elif sent:
         assert said == ["1 done, 0 failed."]
@@ -323,9 +323,9 @@ def test_no_write_handler_is_called_except_through_the_checked_dispatcher() -> N
 #: and the sheet-list doors (reached from ``table_action``, which checks first).
 _CHECKED_ENTRIES = {
     "quick_start": {"github_workbench_quick.py", "github_workbench_discussions.py"},
-    "vote_from_sheet": {"github_workbench_tools.py"},
-    "act_on_linked_branch": {"github_workbench_tools.py"},
-    "act_on_invitation": {"github_workbench_tools.py"},
+    "vote_from_sheet": {"github_workbench_access_pages.py"},
+    "act_on_linked_branch": {"github_workbench_access_pages.py"},
+    "act_on_invitation": {"github_workbench_access_pages.py"},
 }
 
 
