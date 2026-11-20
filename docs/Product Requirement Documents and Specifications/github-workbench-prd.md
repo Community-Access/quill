@@ -4,18 +4,78 @@
 |---|---|
 | Product | The GitHub Workbench, in QUILL and QUILL Lite |
 | Owner | Jeff Bishop, Community Access |
-| Status | Accepted by Jeff, 2026-11-09, with every decision taken as recommended (decision 11 as he amended it). This is the accepted scope; current implementation status and later scope decisions are in the [Workbench implementation status](../planning/workbench-implementation-status.md) |
+| Status | Accepted by Jeff, 2026-11-09, with every decision taken as recommended (decision 11 as he amended it). Built in both editors by 2026-11-20; see "Where it stands" below. This is the accepted scope; current implementation status and later scope decisions are in the [Workbench implementation status](../planning/workbench-implementation-status.md) |
 | Version | 1.0 of this PRD, 2026-11-09 |
 | Grew from | `github-workbench-menus-plan.md` (2026-11-07) and this file's plan of 2026-11-09 |
 | Code it was checked against | `Community-Access/quill` main at `c9da793`, then `a72efa13b` |
 | API it was checked against | GitHub's OpenAPI description 1.1.4 (1,272 operations) and public GraphQL schema (284 mutations), both read 2026-11-09 |
 | Reference app | Kelly Ford's GHManage 1.1.0 (`kellylford/GHManage` at `60f3b71`), released 2026-11-09 |
 
+## Where it stands (2026-11-20)
+
+Everything in this PRD's Parts B to D is built, in both editors, apart from
+the few rows listed under "What is left". The GitHub Workbench is the one
+GitHub window: GitHub Items and Explore GitHub are retired, and every door in
+the editor opens the Workbench (section 11, Phase 6). The user's account of
+it is the [GitHub Guide](../user%20guide/github-guide/github-guide.md), in 14
+chapters and an appendix, and the record of each change is `CHANGELOG.md`.
+
+### What shipped, by area
+
+- **The window (sections 3 to 9, Part C).** A top-level window with a tree,
+  a filter box, a list, details and a status bar; its own menu bar, with a
+  key on every row; context menus by row type; Workbench Options; the Go,
+  Say and help key families; Say or Type a Command (F11) and the Key
+  Describer in the window. A dialog opened from it blocks only the
+  Workbench, never the editor (GH-R-002).
+- **Properties and editing (sections 15 and 16).** Alt+Enter on every object
+  in Appendix C, several rows at once on one sheet, every editable field
+  proved by a test that reads the save back, Undo and Redo that read the
+  object again first and stop when someone else changed it, and Change
+  History kept 90 days. A You page on every sheet with a relationship.
+
+### Decisions after acceptance
+
+26. **Enterprise Cloud only features are out** (Jeff, 2026-11-19: "if
+    enterprise then do away with this"). The organization audit log, custom
+    repository roles, writing custom organization roles, and reviewing
+    dismissal and bypass requests were built and taken out again; their
+    coverage rows are out of scope with that reason. GitHub Enterprise
+    **Server** stays in scope as a place an account lives: everything for
+    that account goes to its own server, and a feature the server's GitHub
+    lacks is named with the server's version (section A5).
+27. **Organization-only features are tested in a test organization,** with
+    the test repository, once the code is in.
+28. **Documentation and live testing run side by side once the code is in**
+    (Jeff, 2026-11-20).
+
+### What is left
+
+- **Live checks waiting on people:** the live run with `--create` and the
+  rows marked "needs Jeff"; Read Only, Organize, Full and Safe Mode against
+  GitHub; several roles and accounts, protected branches, organization
+  restrictions, rate limits, private repositories, project fields, failure
+  and retry; the organization-only features in a test organization; the
+  Copilot cloud agent commands on a Copilot plan; and the timed
+  find-the-answer sessions with people (GH-R-119, section 12).
+- **Rows still planned** (section 14 and 22.1): wiki pages listed inside the
+  Workbench without cloning; Git LFS; OpenID Connect claims; account and
+  organization migrations; other branches' merge queues; hiding whitespace
+  in the review window itself; the AI image description and the
+  table-header check in the comment composer.
+- **Smaller defects found while writing the guide,** in the documentation
+  pass's report: read notifications never shown although Workbench Options
+  has the choice, Snooze recorded but not hidden, the Inbox's failed-checks
+  query not limited to you, Run Workflow on Branch ignoring the selected
+  workflow, and the tier 1 "asks first" option of decision 13 never built.
+
 UX means user experience, PR means pull request, and API means the
 programming interface GitHub offers, throughout.
 
 ## How this document is organized
 
+- **Where it stands:** what shipped by 2026-11-20, decisions taken after
+  acceptance (26 to 28), and what is left.
 - **Part A, the product:** what it is, who it is for, what it must achieve,
   and what a great day with it sounds like.
 - **Part B, the design:** sections 1 to 22, the window, tree, menus,
@@ -103,7 +163,8 @@ maintainer, a new contributor and an organization owner can all run all day.
 
 ### A3. The problem
 
-Section 1 records what a new user meets today, verified in the code: two
+Section 1 records what a new user met before the Workbench, verified in
+the code on 2026-11-09: two
 modal windows with overlapping jobs, about 28 controls before the list, a
 context menu of 15 rows across three scopes, Codespaces offered on every
 item, F1 on 6 controls, and a GitHub menu with seven doors that lead to two
@@ -121,6 +182,8 @@ windows. Beyond that:
 - **github.com is hard work with a screen reader.** Project boards, the
   rulesets editor, the conflict editor, settings pages and the access pages
   are among its least accessible screens, and they are where the power is.
+
+Every one of these is answered now ("Where it stands", above).
 
 ### A4. Goals
 
@@ -145,8 +208,12 @@ windows. Beyond that:
 - Hosting anything. The Workbench talks only to GitHub (and, by consent, to
   githubstatus.com).
 - GitHub Enterprise Server administration and enterprise accounts
-  (Appendix F marks them out of scope). GitHub Enterprise Cloud organizations
-  are in scope.
+  (Appendix F marks them out of scope). An account that lives on a GitHub
+  Enterprise Server is in scope: the Workbench works against that server,
+  and says when its GitHub is too old for something (decision 26).
+- Features only GitHub Enterprise Cloud offers, such as the organization
+  audit log and custom repository roles (decision 26). Organizations on
+  github.com's other plans are in scope.
 - Classic Projects, which GitHub has retired.
 - Visual charts as the only form of anything. Every insight is a table or a
   sentence first.
@@ -263,7 +330,11 @@ PRD changes what they open.
 
 ## Part B: the design (sections 1 to 22)
 
-## 1. What a new user meets today (verified in the code)
+## 1. What a new user met before the Workbench (verified in the code, 2026-11-09)
+
+This is the starting point, kept as history. Every problem below is gone:
+GitHub Items and Explore GitHub are retired, and the Workbench replaced
+them (section 11, Phase 6).
 
 1. **Two windows with overlapping jobs.**
    - GitHub Items has 7 views: Issues & PRs, Branches, Commits, Tags,
@@ -687,7 +758,9 @@ This Repository's Issues
 This Repository's Pull Requests
 Actions Runs
 -
-Open GitHub Address...
+From This Line             >
+-
+Open GitHub Address...       (QUILL only)
 Clone Repository...
 -
 Commit to GitHub...          (QUILL only)
@@ -710,6 +783,13 @@ Open GitHub Guide
 - **The normal-mode homes** (File > Open from Remote, Tools > Git and GitHub)
   keep their rows for one release so nobody's habits break, then slim down
   the same way (decision 4).
+
+*Built.* The menu above is what both editors show, with QUILL's own rows left
+out of QUILL Lite's and From This Line as rows in QUILL Lite rather than a
+submenu (PRD 22.3). The normal-mode homes still have their rows. One wording
+is left behind: QUILL's **File > Open from Remote > GitHub Items...** opens
+the Workbench under its old name, and its Command Palette name is "Open
+GitHub Items...". QUILL Lite's row is **File > GitHub Workbench...**.
 
 ## 7. F1 everywhere, and help that teaches
 
@@ -868,6 +948,12 @@ Each phase is its own PR with every gate green.
 Phases 7 to 11, for Properties, editing, filtering, permissions and coverage,
 are in section 20.
 
+*Where they stand, 2026-11-20:* Phases 0 to 6 are done. Phase 6 retired the
+old windows: `github_items_dialog.py` and `github_explore_dialog.py` are
+parked (no door opens them; `tests/unit/ui/fixtures/surface_reachability.json`
+says so), and every editor command that used to open them opens the
+Workbench at the matching place.
+
 ## 12. Checking it with people
 
 Before Phase 3 and again before Phase 6, run the same tasks with about five
@@ -922,9 +1008,15 @@ decision 11 as Jeff amended it (no per-property keys).
     already a core dependency (`PyNaCl>=1.6.2`, bundled for Quillin signing),
     so no package was added. Built first in Explore GitHub on branch
     `feat/github-secret-values`: Set New Value, New Secret, New Variable, Edit
-    Value and Delete, for repository and environment scopes.
+    Value and Delete, for repository and environment scopes. Now in the
+    Workbench's secret lists, for repository, environment, organization,
+    Dependabot, Codespaces and Copilot agent secrets, and Set Secret
+    Everywhere across repositories.
 13. **The four tiers and their defaults** (section 18.4), tier 1 saving at once
-    unless Workbench Options asks first? Recommendation: yes.
+    unless Workbench Options asks first? Recommendation: yes. *As built:*
+    tier 1 always saves at once. The Workbench Options choice to ask first
+    was never added, although the tier's own description still names it
+    (`permissions.py`, `_TIER_WORDS`).
 14. **Read Only, Organize and Full per account,** with Safe Mode making every
     account Read Only? Recommendation: yes.
 15. **Change History kept 90 days** on this device by default?
@@ -951,6 +1043,10 @@ decision 11 as Jeff amended it (no per-property keys).
 
 ## 14. GitHub features QUILL does not have yet
 
+*2026-11-20:* nearly every row below is built; its "Status today" says when
+and how. The rows still planned are listed under "Where it stands" at the
+top. The heading is kept because code and other plans cite "section 14".
+
 Checked against the code at `c9da793` by searching `quill/core/github` and the
 GitHub UI modules for each feature, and against
 `docs/planning/github-roadmap.md` (the GX01 to GX15 waves). "Roadmap" means
@@ -967,23 +1063,23 @@ tree, so adding it later does not reshape anything.
 | Wiki | **Partly built 2026-11-18.** Repository > Wiki (explore view `wiki`, row type `wiki`) reads `has_wiki` and says whether the wiki is on, Enter opening it on GitHub; Clone Wiki... (`Ctrl+Alt+W`, verb `clone_wiki`) runs the existing clone with `owner/name.wiki` filled in, which the clone already parses to `https://github.com/owner/name.wiki.git` with the token in the child's environment (`quill/core/github/wiki.py`). GitHub has no API for wiki pages, so listing and editing pages inside the Workbench stays planned, as "Wiki: pages listed and edited in the Workbench" | Repository > Wiki (pages as a list, read in details, edit in the editor) |
 | Repository invitations: accept or decline | **Built 2026-11-18.** Needs My Attention > Invitations lists them (who invited you, the access, expired or not); Accept Invitation... (Enter) and Decline Invitation... ask first (`quill/core/github/repo_invitations.py`) | Needs My Attention > Invitations |
 | Edit description, website and features (issues, wiki, discussions, projects on or off) | Rename, visibility, default branch and topics only | Repository > Settings > General |
-| Rulesets: read them | Read only inside merge readiness, with a link out | Repository > Settings > Rulesets (read-only list; editing stays on github.com) |
+| Rulesets: read them | **Built 2026-11-19, and editable:** Settings > Rulesets for a repository and Rulesets for an organization list each ruleset in a sentence; Alt+Enter opens its sheet, with every rule and setting GitHub sent, a Bypass page and, for an organization, the repositories it covers; Delete wants its name typed | Repository > Settings > Rulesets (read-only list; editing stays on github.com) |
 | Enable or disable a workflow | **Built:** the workflow sheet's Enabled field; since 2026-11-18 also Turn Workflow On or Off... on the row, which says the state in words first, including GitHub's own sixty-day switch-off (`quill/core/github/workflow_state.py`) | Workflow context menu; Item menu |
 | Revert a merged pull request | **Built 2026-11-17.** Revert Pull Request... on a merged pull request's row opens the pull request that undoes it (GraphQL `revertPullRequest`), asking its title and whether it is a draft | PR context menu > Revert Pull Request... |
-| Security policy, private vulnerability reports, repository security advisories | **Built 2026-11-18:** Security > Policy (explore view `security_policy`: SECURITY.md in the root, `.github` or `docs`, opened in the editor, and whether private reporting is on), Security > Advisories (`security_advisories`, row type `advisory`; drafts for administrators and security managers, refusal said), New Here: report privately (`POST .../reports`) or draft (`POST .../security-advisories`, optional package), Publish or Close Advisory... (`PATCH`, publishing wants the GHSA id typed), Request CVE... (`POST .../cve`), and Search > Security Advisories (`GET /advisories` by package, CVE or GHSA id); `quill/core/github/security_advisories.py`, `quill/ui/github_workbench_advisories.py`. Advisory comments, temporary private forks and an organization's advisories remain planned | Repository > Security > Policy; Security > Advisories (roadmap GX11) |
+| Security policy, private vulnerability reports, repository security advisories | **Built 2026-11-18:** Security > Policy (explore view `security_policy`: SECURITY.md in the root, `.github` or `docs`, opened in the editor, and whether private reporting is on), Security > Advisories (`security_advisories`, row type `advisory`; drafts for administrators and security managers, refusal said), New Here: report privately (`POST .../reports`) or draft (`POST .../security-advisories`, optional package), Publish or Close Advisory... (`PATCH`, publishing wants the GHSA id typed), Request CVE... (`POST .../cve`), and Search > Security Advisories (`GET /advisories` by package, CVE or GHSA id); `quill/core/github/security_advisories.py`, `quill/ui/github_workbench_advisories.py`. Advisory Comments, Comment on Advisory..., Edit an Advisory Comment... and Make a Private Fork for the Fix followed; an organization's advisories remain planned | Repository > Security > Policy; Security > Advisories (roadmap GX11) |
 
 ### 14.2 Worth adding later (useful, less often)
 
 | Feature | Status today | New home |
 |---|---|---|
 | Packages (GitHub Packages, container registry) | **Built 2026-11-18:** Repositories > My Packages (explore view `my_packages`, row type `package`; `GET /user/packages` once per package type), Delete Package Version... (versions newest first with container tags; a 400 for the only or a heavily downloaded version is said) and Delete Package... (typed name), in `quill/core/github/packages.py` and `quill/ui/github_workbench_packages.py`. An organization's packages (Organizations > org > Packages, `/orgs/{org}/packages`, row keys `@org/type/name`) and restoring (Ctrl+N in either list, `POST .../restore` by type and name) followed the same day | Repository > Packages; Repositories > My Packages |
-| Teams and organization members | Out of scope by a code comment ("Organizations in, Teams out"); roadmap GX13 adds team permissions. Now in scope: section 18.3.3 | Repositories > Organizations > org > Members, Teams; People > My Teams |
+| Teams and organization members | **Built 2026-11-19:** members with their role and two-factor state, Members Without Two-Factor, outside collaborators, teams with their parent, members and repositories, Access Review: People and Teams, and a refusal before anything that would leave nobody to manage the organization (section 18.3.3) | Repositories > Organizations > org > Members, Teams; People > My Teams |
 | Insights charts as tables: commit activity, code frequency, punch card | **Built 2026-11-18:** Repository > Insights > Commit Activity (explore view `commit_stats`, `quill/core/github/repo_activity.py`): `/stats/participation`, `/stats/commit_activity` (twelve weeks, busiest day), `/stats/code_frequency`, `/stats/punch_card` (ten busiest hours, UTC) and `/stats/contributors` (commits, lines added and removed), each row a sentence; a 202 says "still counting", and no statistics says why | Repository > Insights (tables, never charts only) |
 | Dependency graph and software bill of materials (SBOM) export | **Built 2026-11-18:** Repository > Export Software Bill of Materials... (`Ctrl+Alt+B`, also on Repository Actions) saves `GET /repos/{owner}/{repo}/dependency-graph/sbom` as an SPDX (Software Package Data Exchange) JSON file and says the package count; a repository without a dependency graph is told where to turn it on (`quill/core/github/runners_sbom.py`) | Repository > Security > Dependencies |
 | Tags: create and delete outside a release | **Built 2026-11-18.** New Tag... (Ctrl+N in Tags) makes a lightweight tag on a branch, tag or commit; Delete Tag... asks, naming a release built on the tag (`quill/core/github/tags.py`). A message makes the tag annotated (`POST .../git/tags`, then the ref points at the tag object); Read Tag Message says tagger, date and message (`GET .../git/tags/{sha}`); a taken name is found with `GET .../git/matching-refs` | Repository > Code > Tags context menu |
 | Hide a comment | **Built 2026-11-18** in the timeline: Hide or Show Comment... on the comment at the cursor, for a reason (`minimizeComment`, `unminimizeComment`; `quill/core/github/comment_moderation.py`) | Details > Hide Comment... |
 | Transfer a repository | **Built 2026-11-18:** Repository > Transfer Repository... (`Ctrl+Alt+T`, also on Repository Actions; `POST /repos/{owner}/{repo}/transfer`). Asks the new owner, then the typed full name (tier 3, needs administration); says whether it moved at once or waits for a person to accept; 403 and 422 said in words (`quill/core/github/repo_transfer.py`) | Repository > Settings > Transfer... |
-| Self-hosted runners | **Built 2026-11-18,** read-only: Repository > Actions > Runners (`GET /repos/{owner}/{repo}/actions/runners`), row type `runner` reading "name: online, busy, Linux" with labels in the details; administrators only, and anyone else is told so in the node note (`quill/core/github/runners_sbom.py`). New Runner... (Ctrl+N; `GET .../runners/downloads`, `POST .../registration-token`; the setup commands for the chosen system, with the download's SHA-256 check, copied to the clipboard and the token never said, remembered for redaction), Runner Labels... (`POST`/`DELETE .../labels`, only custom labels removable) and Remove Runner... (`DELETE .../runners/{id}`) followed the same day in `quill/core/github/runner_admin.py`. Just-in-time configuration and removal tokens remain planned | Repository > Actions > Runners (read-only) |
+| Self-hosted runners | **Built 2026-11-18,** read-only: Repository > Actions > Runners (`GET /repos/{owner}/{repo}/actions/runners`), row type `runner` reading "name: online, busy, Linux" with labels in the details; administrators only, and anyone else is told so in the node note (`quill/core/github/runners_sbom.py`). New Runner... (Ctrl+N; `GET .../runners/downloads`, `POST .../registration-token`; the setup commands for the chosen system, with the download's SHA-256 check, copied to the clipboard and the token never said, remembered for redaction), Runner Labels... (`POST`/`DELETE .../labels`, only custom labels removable) and Remove Runner... (`DELETE .../runners/{id}`) followed the same day in `quill/core/github/runner_admin.py`. Just-in-time runners (Just-in-Time Runner...) and removal commands (Removal Commands..., copied to the clipboard, never said) followed on 2026-11-18 | Repository > Actions > Runners (read-only) |
 | Star lists | **Built 2026-11-18:** Repositories > Star Lists (explore view `star_lists`, `viewer.lists`): every repository on every list as an ordinary repository row, the list's name first, empty lists named in the node note. New Star List... (`Ctrl+N`, `createUserList`), Star Lists... on any repository row (`updateUserListsForItem`, current lists checked), Rename or Delete Star List... on a Star Lists row (`updateUserList`, `deleteUserList`). Needs the `user` scope (`quill/core/github/star_lists.py`, `quill/ui/github_workbench_star_lists.py`) | Repositories > Starred > each list |
 | Your profile and status | **Status built 2026-11-18:** Account > Set Your Status... (`Ctrl+Alt+S`, `changeUserStatus`; message, emoji by name, busy, when it clears; `quill/core/github/user_status.py`). **Profile built 2026-11-18:** People > My Profile (`viewer`) and Profile first under every person (`user(login)`; explore views `my_profile`, `person_profile`): who they are, bio, status, website, the year's contributions by kind (`contributionsCollection`), the calendar as the busiest day, longest and current streak and a row per month, and `pinnedItems` as repository rows (`quill/core/github/profile.py`). Editing the profile stays on GitHub | Account > Profile and Status... |
 
@@ -1025,9 +1121,11 @@ a home and a Properties sheet:
   repositories may use them (all, private only, or selected).
 - **Billing and usage:** Account > Billing and Usage, read-only: Actions
   minutes, Packages and Codespaces storage, Copilot seats, as tables.
+  *Built* as People > My Billing and Usage, from GitHub's billing report.
 - **Organization audit log:** Organizations > org > Audit Log, read-only and
   filterable by actor, action, repository and date (needs `read:audit_log`
-  and an organization plan that offers the API).
+  and an organization plan that offers the API). *Taken out 2026-11-19:* the
+  audit log API is GitHub Enterprise Cloud only (decision 26).
 - **SSH and GPG keys, SSH signing keys:** Account > Keys. List, add, delete.
   **Built 2026-11-18** as People > My Keys (explore view `my_keys`, row type
   `key`; `/user/keys`, `/user/gpg_keys`, `/user/ssh_signing_keys`): each key a
@@ -1774,6 +1872,10 @@ with every gate green. Phase 0's quick wins can take a first slice of each.
   repository, then the missing GitHub features of 22.1 as the coverage gate
   lists them.
 
+*Where they stand, 2026-11-20:* Phases 7 to 13 are done, and Phase 14,
+Across Repositories, too (G1). What is left is the short list under "Where it
+stands" at the top.
+
 ## 21. Building templates: issue forms, pull request templates and more
 
 ### 21.1 Where it stands today
@@ -2017,30 +2119,6 @@ coverage gate (section 19) from day one.
   license from GitHub's list with each license explained in plain words, a
   template with or without all its branches, and the starting labels,
   milestones, rules and access from a saved template (section 18.3.2).
-- **Moving work in and out:** export your account's data or an organization
-  migration archive (where the API allows) and download it; import issues
-  from CSV with a preview (section 22.7); fork with only the default branch.
-- **Git LFS:** files tracked, storage used, and file locks (who holds which
-  lock, lock, unlock, force unlock with permission).
-- **Insights in words:** Pulse for a week or month ("12 pull requests
-  merged by 5 people"), forks with ahead and behind as the network graph's
-  readable form, traffic referrers, popular paths, clones, and the
-  dependency graph and dependents.
-- **Your contributions:** the contribution graph as a table by week and day,
-  with streaks, totals and the repositories contributed to, read row by row.
-- **GitHub Apps and OAuth apps:** apps installed on an organization or
-  repository, which repositories each may reach (add, remove), suspend and
-  unsuspend, and requests to install; apps you have authorized.
-- **OpenID Connect:** the subject claim template for an organization or
-  repository, for people deploying to clouds from Actions.
-- **Security, the remaining pieces:** push protection bypass requests and
-  alert dismissal requests to review and decide; Copilot Autofix suggestions
-  on code scanning alerts, applied as a pull request; the organization
-  security overview as a table; dependency review on a pull request.
-- **Discussions, the remaining pieces:** spotlight, category sections, and
-  polls built in the template builder's style.
-- **GitHub status:** a status bar cell and Help > Is GitHub Working? that
-  read githubstatus.com (a new egress row, with consent).
 
 ### 22.2 The escape hatch: an API Console
 
@@ -3351,7 +3429,9 @@ githubstatus.com (Is GitHub Working?).
 ### G1. Phases
 
 Phases 0 to 6 are in section 11, Phases 7 to 13 in section 20. In one line
-each:
+each. Every phase had shipped by 2026-11-20; GitHub Items and Explore were
+retired once the Workbench did everything they did, rather than after a
+release of both.
 
 | Phase | What ships |
 |---|---|
@@ -3386,13 +3466,14 @@ ships with every phase, never after.
 | Rate limits on big organizations | ETags, pacing, lazy loading, cached views |
 | Keys collide with a reader or a layout | the C1 checks, the Key Describer, rebinding |
 | Help falls behind features | help ships in the same PR as its feature; GATE-GITHUB-HELP |
-| `github_items_dialog.py` and friends grow past their size budgets | extract into mixins and wx-free tables; GATE-11 |
+| `github_items_dialog.py` and friends grow past their size budgets | extract into mixins and wx-free tables; GATE-11. Resolved: the old windows are parked |
 | Secret values need sealed-box encryption | Resolved: PyNaCl is already a core dependency, approved for this by Jeff on 2026-11-09 (decision 12) |
 
 ### G3. Decisions
 
 Section 13 holds decisions 1 to 21, each with a recommendation; 22 to 25
-follow. All 25 were accepted on 2026-11-09.
+follow. All 25 were accepted on 2026-11-09. Decisions 26 to 28, taken later,
+are under "Where it stands" at the top.
 The keyboard adds two more:
 
 22. **Delete on an issue or pull request opens Close... with its reason,**

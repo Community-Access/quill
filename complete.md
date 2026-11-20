@@ -16,7 +16,7 @@ For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claud
 
 - **Screen-reader testing** is done by Jeff's testers and is not tracked here.
 - **Where it stands (2026-11-20):** merged since 2026-11-19: #1943 to #1962, #1964 to #1966, #1968, #1969, #1972, #1976, #1977 and #1979 to #1983. Built and waiting to merge: #1963, #1967, #1970, #1971, #1973, #1974 and #1975. Rule (Jeff): nothing Enterprise Cloud only; organization-only checks run in a test organization.
-- **Next (Jeff, 2026-11-20):** the known defects in Part 0 come first, worst harm first, then the documentation pass (1.4). Screen-reader testing is a given on everything. A tester's defect report always comes first.
+- **Next (Jeff, 2026-11-20):** the known defects in Part 0 come first, worst harm first. Screen-reader testing is a given on everything. A tester's defect report always comes first.
 - **Live testing runs alongside.** On 2026-11-19 Jeff said live testing waits until all code is done. On 2026-11-20 he changed that: the known defects are fixed while live testing goes on, and documentation and live testing run side by side once the code is in. The WordPress live run (#1976) followed that. The test site is reached over SSH (`ssh lp.csedesigns.com`, wp-cli through `~/app/wordpress-test/wpcli.sh`, which needs more PHP memory). Gravity Forms 3.2.3.1 is licensed there with its REST API v2 on.
 - **How to work here:**
   - Squash-merge with `gh api -X PUT repos/Community-Access/quill/pulls/N/merge -f merge_method=squash`.
@@ -28,7 +28,7 @@ For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claud
 
 1. **A tester's defect report**, whenever one arrives.
 2. **The known defects (Part 0)**, in the order given there.
-3. **Documentation (1.4)**, and merging the GitHub Workbench pull requests waiting in Part 1.
+3. **Merging the GitHub Workbench pull requests** waiting in Part 1, and documenting what they add in the GitHub Guide.
 4. **Live testing**, alongside: 1.5, 2.4 and 2.5, the test site and the GitHub test repository.
 5. **Other work (Part 3):** the Copilot runtime build and the family UX pilots' follow-ups.
 6. **The wider code review (Part 0, H to L)**, last. (Earshot parity was taken off the list by Jeff, 2026-11-19.)
@@ -88,10 +88,6 @@ The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. On main (
 - [ ] **GH-R-150 and 151:** more kinds under Across Repositories (see the by-name collections row above).
 - [ ] **Shoulds and Mays in #1975:** Alt+Enter on a GitHub reference in a document (036), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116) and Ask How (118).
 - [ ] **GH-R-105:** the branch rule tutorial, the eleventh lesson of D8. The ruleset and branch protection editing it needs is in (#1961). Not started.
-
-### 1.4 Then: documentation as good as WordPress's
-
-When 1.3 is done, the GitHub Workbench's documentation is brought up to the WordPress standard: the GitHub Guide's chapters in both editors, F1 help, the GitHub PRD, the release notes and the live-run rows, all rendered and checked. Until then, batches are written up in both changelogs only, by Jeff's choice.
 
 ### 1.5 Waiting on Jeff and the testers
 

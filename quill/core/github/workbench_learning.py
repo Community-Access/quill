@@ -30,7 +30,8 @@ TIPS: tuple[str, ...] = (
     "F9 says the last result again, and Shift+F9 explains what it means and what to do next.",
     "Alt+1 to Alt+9 say where you are, the counts, your access and the hourly allowance, "
     "and move nothing.",
-    "Ctrl+L takes owner/name, #42, owner/name#42 or any GitHub link, and goes there.",
+    "Ctrl+L takes owner/name or any link into a repository, and gives that repository "
+    "a place in the tree.",
     "When a list stops short, Load More, Alt+PageDown, reads the next page.",
     "Shift+F1 says why a command is greyed, and lists Why? first when something happened "
     "on its own.",
