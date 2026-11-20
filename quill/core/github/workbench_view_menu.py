@@ -7,7 +7,8 @@ letter (decision 11: no chord per toggle), a top-level row a key.
 
 - **View:** Show (issues, pull requests or both), Open or Closed, Sort By,
   Quick Filters (the Filter menu of section 17.1), Group By (17.4), Columns...
-  and Load All (17.3).
+  and Load All (17.3). Sort By and Group By end in By Column..., for every
+  list other than Issues.
 - **Go:** Next and Previous Unread (Ctrl+Period, Ctrl+Shift+Period), and the
   person's own Pinned, Favorites and saved searches as dynamic submenus.
 - **Account:** GitHub Permissions (18.1), Change History (18.5), and the
@@ -27,11 +28,13 @@ __all__ = [
     "COLUMNS_ROW",
     "FILTER_SUB",
     "GO_ROWS",
+    "GROUP_COLUMN_ROW",
     "GROUP_SUB",
     "LOAD_ALL_ROW",
     "ROLES_SUB",
     "SHOW_CHOICES",
     "SHOW_SUB",
+    "SORT_COLUMN_ROW",
     "SORT_SUB",
     "STATE_SUB",
 ]
@@ -74,11 +77,30 @@ _SORT_LABELS = {
     "updated_asc": "&Least Recently Updated",
     "comments_desc": "&Most Comments",
 }
+#: Sort By and Group By on every list other than the Issues lists (17.4).
+SORT_COLUMN_ROW = MenuRow(
+    f"{_P}column_sort",
+    "By &Column...",
+    help="Order this list by one of its columns, first to last or last to first; "
+    "remembered for this list. For lists other than Issues, which GitHub orders.",
+)
+GROUP_COLUMN_ROW = MenuRow(
+    f"{_P}column_group",
+    "By &Column...",
+    help="Group this list by one of its columns, the groups as tree nodes; remembered "
+    "for this list. For lists other than Issues, which group by the rows above.",
+)
 SORT_SUB = MenuSub(
     "Sort B&y",
-    tuple(
-        MenuRow(f"{_P}sort_{key}", _SORT_LABELS[key], help="Order the list this way.", radio="sort")
-        for key in CHOICES["default_sort"]
+    (
+        *(
+            MenuRow(
+                f"{_P}sort_{key}", _SORT_LABELS[key], help="Order the list this way.", radio="sort"
+            )
+            for key in CHOICES["default_sort"]
+        ),
+        None,
+        SORT_COLUMN_ROW,
     ),
     help="How the list is ordered.",
 )
@@ -127,6 +149,8 @@ GROUP_SUB = MenuSub(
             )
             for key, label in GROUP_FIELDS
         ),
+        None,
+        GROUP_COLUMN_ROW,
     ),
     help="Groups as tree nodes, which a screen reader reads better than rows (17.4).",
 )
