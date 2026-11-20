@@ -238,10 +238,11 @@ def ruleset_body(raw: Mapping[str, Any], edits: Mapping[str, object]) -> dict[st
                 ref[key] = [str(item) for item in value] if isinstance(value, tuple) else []
         body["conditions"] = {**(body.get("conditions") or {}), "ref_name": ref}
     if "rules" in edits and isinstance(edits["rules"], tuple):
-        wanted = {_TYPES.get(str(words), str(words)) for words in edits["rules"]}
+        wanted = [_TYPES.get(str(words), str(words)) for words in edits["rules"]]
         rules = {kind: rule for kind, rule in rules.items() if kind in wanted}
-        for kind in wanted - set(rules):
-            rules[kind] = _default_rule(kind)
+        for kind in wanted:  # in the order checked, so the same edit sends the same body
+            if kind not in rules:
+                rules[kind] = _default_rule(kind)
     pr_keys = {
         "approvals": "required_approving_review_count",
         "dismiss_stale": "dismiss_stale_reviews_on_push",
