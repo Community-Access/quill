@@ -512,10 +512,10 @@ def test_the_builder_pickers_set_labels_and_check_assignees(help_ready) -> None:
 
 
 def test_the_sheets_build_their_files(help_ready) -> None:
+    from quill.ui.github_config_sheets_dialog import CodeownersDialog
     from quill.ui.github_template_sheets_dialog import (
         ChooserDialog,
         CitationDialog,
-        CodeownersDialog,
         FundingDialog,
     )
 
@@ -549,7 +549,10 @@ def test_the_sheets_build_their_files(help_ready) -> None:
     owners = CodeownersDialog(None, "* @all\n/docs/ @writers\n")
     try:
         owners.path.SetValue("docs/a.md")
-        assert owners.look_up() == "Line 2, /docs/: @writers own docs/a.md."
+        assert owners.look_up() == (
+            "@writers own docs/a.md: line 2 of this file, /docs/, the last rule that matches. "
+            "It wins over 1 earlier matching rule."
+        )
     finally:
         owners.dialog.Destroy()
 

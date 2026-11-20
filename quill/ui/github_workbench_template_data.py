@@ -35,6 +35,11 @@ COMMUNITY_STARTERS: dict[str, str] = {
         "  - name: \n"
     ),
     "CODEOWNERS": "# Path patterns and their owners, one per line.\n# * @owner\n",
+    # Keeps the repository's own workflows' actions up to date (PRD 22.1).
+    "dependabot.yml": (
+        "version: 2\nupdates:\n  - package-ecosystem: github-actions\n    directory: /\n"
+        "    schedule:\n      interval: weekly\n"
+    ),
 }
 
 #: New Template's kinds: (label, kind, folder).
