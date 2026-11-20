@@ -33,6 +33,17 @@
   to another provider, the older saved key could be sent with it. Now it is
   used only for the provider it was saved for.
 
+### WordPress: Custom Fields shows the fields you came for (2026-11-20)
+
+- **Another plugin's fields are hidden until you ask for them.** Some plugins
+  add their fields to every post: on the test site, The Events Calendar's 34
+  event, venue and organizer fields buried an ordinary post's SEO title.
+  Custom Fields now hides them and says how many and whose; **Show all
+  fields** (Alt+S) opens the window again with every one, keeping what you
+  typed. WordPress's own fields, QUILL's, Yoast SEO's and any field QUILL
+  cannot place are always shown. In the Workbench, those fields move to a
+  page of their own, Fields Plugins Add to Every Item.
+
 ### Plans: one list of open work, and the planning documents put right (2026-11-20)
 
 - **complete.md** says who owns what: it is the list of open work,

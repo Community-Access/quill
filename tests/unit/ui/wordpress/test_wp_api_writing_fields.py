@@ -513,3 +513,70 @@ def test_a_list_put_back_as_it_was_is_not_sent(
     wp_dialogs.press("&Keep Changes")
     assert kept(wpx) == {}
     assert wpx.host.announced[-1] == "Speakers is the same as on Community Radio."
+
+
+# -- another plugin's fields, hidden until Show All Fields (Jeff, 2026-11-20) --------------
+
+_CROWDED = {
+    "schema": {
+        "properties": {
+            "meta": {
+                "properties": {
+                    "_yoast_wpseo_title": {"type": "string"},
+                    "_EventStartDate": {"type": "string"},
+                    "_VenueCity": {"type": "string"},
+                    "pmpro_default_level": {"type": "integer"},
+                }
+            }
+        }
+    }
+}
+
+
+def _crowded_site(wp_site: Any) -> None:
+    site(wp_site)
+    wp_site.on("OPTIONS", f"{API}/posts", _CROWDED)
+    wp_site.on("GET", f"{API}/posts/41", {"meta": {"_yoast_wpseo_title": "Old"}})
+
+
+def test_other_plugins_fields_wait_behind_show_all_and_typing_is_kept(
+    wpx: Any, wp_site: Any, form: Form
+) -> None:
+    from quill.core.wordpress import custom_fields as cf
+
+    _crowded_site(wp_site)
+    open_doc(wpx)
+    form.answers.append({cf.SHOW_ALL_KEY: True, "_yoast_wpseo_title": "Spring fair SEO"})
+    form.answers.append({"_yoast_wpseo_title": "Spring fair SEO", "_VenueCity": "Phoenix"})
+    wpx.cmd_custom_fields()
+    first, second = form
+    assert [f.key for f in first["fields"]] == [cf.SHOW_ALL_KEY, "_yoast_wpseo_title"]
+    assert first["fields"][0].label == "&Show all fields, including 3 hidden"
+    assert (
+        "3 fields are hidden because a plugin adds them to every item: "
+        "2 from The Events Calendar, 1 from Paid Memberships Pro." in first["purpose"]
+    )
+    # The same page again with every field, the SEO title as it was typed.
+    keys = [f.key for f in second["fields"]]
+    assert cf.SHOW_ALL_KEY not in keys and "_EventStartDate" in keys and "_VenueCity" in keys
+    assert next(f for f in second["fields"] if f.key == "_yoast_wpseo_title").value == (
+        "Spring fair SEO"
+    )
+    assert kept(wpx) == {"_yoast_wpseo_title": "Spring fair SEO", "_VenueCity": "Phoenix"}
+    # The second page counts both, as each differs from the site.
+    assert wpx.host.announced[-1].startswith("2 custom fields kept")
+
+
+def test_after_properties_a_post_with_only_other_plugins_fields_opens_nothing(
+    wpx: Any, wp_site: Any, form: Form
+) -> None:
+    site(wp_site)
+    only = {"schema": {"properties": {"meta": {"properties": {"_EventStartDate": {}}}}}}
+    only["schema"]["properties"]["meta"]["properties"]["_EventStartDate"] = {"type": "string"}
+    wp_site.on("OPTIONS", f"{API}/posts", only)
+    wp_site.on("GET", f"{API}/posts/41", {"meta": {}})
+    copy = open_doc(wpx)
+    wpx.custom_fields_after_properties(copy, wpx.profile)
+    assert form == []
+    wpx.cmd_custom_fields()  # asked for, it offers the box
+    assert [f.label for f in form[0]["fields"]] == ["&Show all fields, including 1 hidden"]
