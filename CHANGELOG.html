@@ -245,6 +245,39 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="wordpress-local-writing-keeps-its-file-its-pictures-and-its-unsaved-text-2026-11-20">WordPress:
+local writing keeps its file, its pictures and its unsaved text
+(2026-11-20)</h3>
+<ul>
+<li><strong>Renaming a draft no longer loses it.</strong> Changing a
+draft’s title in Properties used to make Open Local Draft open an empty,
+new file; the writing was still in the old one. A draft now keeps the
+file it started with through renaming, sending, closing and reopening,
+and restarting, in QUILL and QUILL Lite. A draft already renamed opens
+its writing again.</li>
+<li><strong>Uploaded pictures stay uploaded.</strong> After Save Draft
+or Publish uploaded a picture from this computer, the open document
+still held the picture’s local address, and the next Ctrl+S put it back.
+The site’s address now goes into the open document and its file, without
+touching anything typed while the send was on its way or moving the
+caret.</li>
+<li><strong>Previous Versions keeps what Restore replaces.</strong>
+Restore now keeps the text in the editor, saved or not, rather than the
+last saved copy. If you switched documents while the history loaded,
+Restore says so and changes nothing.</li>
+<li><strong>Open by Web Address picks the right site.</strong> A
+different port is a different site, so <code>127.0.0.1:8080</code> no
+longer opens a site connected at <code>127.0.0.1:9400</code>, and a site
+at <code>/blog</code> no longer claims <code>/blogger</code>.</li>
+<li><strong>A renamed Practice Site starts.</strong> The Practice Site
+no longer has to be called Practice Site to count as ready: after a
+rename it used to wait five minutes, stop and suggest a reset. Your
+posts are kept.</li>
+<li><strong>Discussion counts links as WordPress does.</strong> The
+Discussion explanation counted one ordinary link twice, so it said a
+one-link comment would be held under the two-link rule.</li>
+</ul>
+<h3
 id="hosted-ai-service-accounting-you-can-trust-and-one-sign-in-per-code-2026-11-20">Hosted
 AI service: accounting you can trust, and one sign-in per code
 (2026-11-20)</h3>
