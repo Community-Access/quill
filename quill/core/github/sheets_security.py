@@ -106,8 +106,10 @@ def _compose_alert(
     path = f"/repos/{ident['repo']}/{alert_path}/{ident['number']}"
     current = str(ident.get("state") or "open")
     state = str(edits.get("state") or current)
-    if current not in ("open", kind.closed_state) or state not in ("open", kind.closed_state):
-        settled = current if current not in ("open", kind.closed_state) else state
+    # Only GitHub moves an alert to fixed or auto-dismissed, and nothing moves it back.
+    by_github = ("fixed", "auto_dismissed")
+    if current in by_github or state not in ("open", kind.closed_state):
+        settled = current if current in by_github else state
         raise SheetSaveError(
             f"A {kind.label.lower()} alert is open or {kind.closed_state}, never set to "
             f"{settled} from here; GitHub marks an alert {settled} itself."
