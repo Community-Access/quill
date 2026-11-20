@@ -418,7 +418,10 @@ def test_the_switches_page_separates_never_built_from_paused(dash):
     that has no way to be reached."""
     c, _user, _device = dash
     html = c.get("/dashboard/feature-flags").get_data(as_text=True)
-    assert "The five features" in html
+    from app.prompts import OPT_IN_FEATURES, SHIPPED_FEATURES
+
+    # Counted, not written down: it said "five" long after there were eighteen.
+    assert f"The {len(SHIPPED_FEATURES) + len(OPT_IN_FEATURES)} features" in html
     assert "Features that were never built" in html
     assert "not a shipped feature" in html
 

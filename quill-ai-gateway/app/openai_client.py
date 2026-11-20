@@ -128,20 +128,43 @@ def build_request_body(
     return body
 
 
-def _parse(payload: object) -> Completion:
+def _json(response) -> object:
+    """The reply's JSON body, or :class:`OpenAICallError`.
+
+    An HTTP 200 whose body is not JSON -- a proxy's HTML error page, a
+    truncated reply -- used to raise straight out of here, past the route's
+    error handling and its refund: the person was charged a request, shown a
+    server error, and never told nothing was used.
+    """
     try:
-        assert isinstance(payload, dict)
+        return response.json()
+    except ValueError as exc:  # requests.JSONDecodeError is a ValueError
+        raise OpenAICallError("OpenAI returned a reply that is not JSON") from exc
+
+
+def _parse(payload: object) -> Completion:
+    """One reply in the shape the rest of the service needs, or
+    :class:`OpenAICallError` for anything else -- including a well-formed
+    JSON reply whose fields are the wrong types, which would otherwise fail
+    later, outside the error path that refunds the request."""
+    try:
+        if not isinstance(payload, dict):
+            raise TypeError("reply is not an object")
         text = payload["choices"][0]["message"]["content"] or ""
+        if not isinstance(text, str):
+            raise TypeError("content is not text")
         usage = payload["usage"]
         tokens_in = int(usage["prompt_tokens"])
         tokens_out = int(usage["completion_tokens"])
-    except (AssertionError, KeyError, IndexError, TypeError) as exc:
+        if tokens_in < 0 or tokens_out < 0:
+            raise ValueError("negative token count")
+        details = usage.get("completion_tokens_details") or {}
+    except (AttributeError, KeyError, IndexError, TypeError, ValueError) as exc:
         raise OpenAICallError("OpenAI returned an unexpected response shape") from exc
 
-    details = usage.get("completion_tokens_details") or {}
     try:
         reasoning = int(details.get("reasoning_tokens", 0) or 0)
-    except (TypeError, ValueError):
+    except (AttributeError, TypeError, ValueError):
         reasoning = 0
 
     return Completion(
@@ -203,7 +226,7 @@ def complete(
         # place where an upstream change doing so would leak the key into a log.
         raise OpenAICallError(f"OpenAI request failed: {type(exc).__name__}") from exc
 
-    return _parse(response.json())
+    return _parse(_json(response))
 
 
 def build_search_body(model_id: str, prompt: str, max_output_tokens: int) -> dict:
@@ -245,4 +268,4 @@ def search(app, model_id: str, prompt: str, max_output_tokens: int) -> Completio
         response.raise_for_status()
     except requests.RequestException as exc:
         raise OpenAICallError(f"OpenAI search request failed: {type(exc).__name__}") from exc
-    return _parse(response.json())
+    return _parse(_json(response))
