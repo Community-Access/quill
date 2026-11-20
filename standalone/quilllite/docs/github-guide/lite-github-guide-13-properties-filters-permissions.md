@@ -36,15 +36,19 @@ allowed to change is read-only, and the line under it says why, for example
 "changing this needs triage access to owner/name; you have read access", and
 who can change that. `F1` on the field says the same.
 
-- Labels, assignees, reviewers and your reactions are lists of check boxes.
-  Space checks or clears one.
+- Labels, assignees, reviewers and your reactions are lists of check boxes,
+  and a repository's features (Issues, Projects, Wiki, Discussions) are
+  check boxes too. Each one says its state in its own words, "bug, on" or
+  "Issues, off", and Space checks or clears it once; the words change with
+  it, and nothing else is said.
 - New Label... and New Milestone... beside their lists make a new one on
   GitHub and check it straight away. If one by that name is already there,
   that is not a failure: QUILL Lite says "bug already exists; using it" and
   checks the one GitHub has.
-- **OK** saves and closes. **Apply**, or `Ctrl+S`, saves and keeps the sheet
-  open. `Ctrl+Enter` is OK from anywhere, even in a long text box. Escape is
-  Cancel.
+- **OK** saves and closes, and Enter on a check box, a list or a one-line
+  box is OK. **Apply**, or `Ctrl+S`, saves and keeps the sheet open, and
+  focus comes back to the check box or field you were on. `Ctrl+Enter` is
+  OK from anywhere, even in a long text box. Escape is Cancel.
 
 The menus still name the common changes. **Item > Labels...**,
 **Assignees...** and **Milestone...** open the sheet at the right page.
@@ -127,6 +131,35 @@ issues".
 Batches pause a second between items, because GitHub limits how quickly one
 account may make changes.
 
+### Saying it in words
+
+**Plain-Language Batch...**, on the Workbench's Tools menu (`Ctrl+Shift+S`
+there), takes the change as a sentence, for the repository you are in:
+
+- "close every issue labelled duplicate older than 90 days"
+- "close all issues labeled stale that nobody touched in 90 days as not
+  planned"
+- "add label triage to every issue with no label", or "remove label wontfix
+  from all closed issues"
+- "assign alice to every open issue labelled bug", or "unassign me from all
+  pull requests"
+- "which pull requests are waiting on me, oldest first?" shows them in the
+  list, and "how many issues are labelled bug?" says how many. Neither
+  changes anything.
+
+There is no AI in it. QUILL Lite reads a fixed set of words: labelled,
+without label, with no label, by, assigned to, unassigned, in milestone,
+waiting on me, mentioning me, open or closed, an age ("older than 90 days",
+"updated before March 2024"), and oldest or newest first. The same sentence
+always means the same thing, and a word it does not know is never guessed:
+it says what it does read, and gives you your sentence back to correct.
+
+It then searches GitHub and shows every item it found as a checked list.
+Uncheck any you want left alone, and OK goes on to the same preview and
+results as any batch above. Closing as a duplicate is not a batch, because
+each one needs the issue it duplicates; close those one at a time with
+`Delete` on the row.
+
 ## Undoing a change
 
 `Ctrl+Z` in the list or the tree undoes your last change on GitHub, where
@@ -200,6 +233,17 @@ rest.", so a short list is never mistaken for the whole of it.
 - **Group By**, also on the View menu, puts the groups in the tree as nodes: by label,
   milestone, assignee, author, type, state, repository or review state. Each
   node reads with its count, and selecting it shows that group.
+- Those orders and groups are an issue's. Every other list (branches, tags,
+  releases, workflows, runs, discussions, notifications, alerts, people,
+  teams, repositories and the rest) has **By Column...** at the end of Sort
+  By and of Group By instead: any of its columns, first to last or last to
+  first, and for a list of one column its name, repository, kind or last
+  update. Each list remembers its own choice, for this account, as it
+  remembers its columns.
+- **Your place is kept.** Coming back to a list, with Back (`Backspace`) or
+  from a sheet, a dialog or a document, puts you on the row you left, even
+  if it has moved; a refresh while you are in a group keeps you in that
+  group, on that row.
 - **Go > Next Unread** (`Ctrl+Period`) and **Previous Unread**
   (`Ctrl+Shift+Period`) move between unread notifications. Go also has
   submenus for your pinned repositories, favorites and saved searches.
