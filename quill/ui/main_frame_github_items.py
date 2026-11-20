@@ -19,6 +19,7 @@ is the glue that enforces the same gates every other GitHub entry point uses:
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from quill.core.github.references import (
     GitHubReference,
@@ -173,6 +174,7 @@ class GitHubItemsMixin:
             open_file_url=self.open_github_file_url,
             gist_source=self._github_gist_source,
             ai_summarizer=self._github_ai_summarizer,
+            ai_ask=self._github_ai_ask,
             start_worktree=self.start_github_issue_worktree,
             resolve_conflicts=self.resolve_github_pull_conflicts,
             open_document=lambda path: self.open_file(path),
@@ -214,6 +216,12 @@ class GitHubItemsMixin:
             text = editor.GetValue()
         path = getattr(getattr(self, "document", None), "path", None)
         return (Path(path).name if path else "notes.md"), text
+
+    def _github_ai_ask(self, prompt: str, on_answer: Any) -> bool:
+        """Ask How's request through QUILL's Choose Your AI (GH-R-118), as QUILL Lite's."""
+        from quill.ui.github_workbench_ask_how import ask_through_editor
+
+        return ask_through_editor(self, prompt, on_answer)
 
     def _github_ai_summarizer(self):
         """Resolve QUILL's AI connection for a thread summary, on demand.

@@ -13,9 +13,8 @@ Mine; GitHub's re-read decides what is reported; one sentence says it
 through the announcement service; and each proven change is a row in Change
 History that Undo GitHub Change (Ctrl+Z in the list) can reverse.
 
-The wx-free work is :mod:`quill.core.github.sheet_engine` and
-:mod:`quill.core.github.batch`; this mixin only sequences dialogs and the
-background runner.
+The wx-free work is :mod:`quill.core.github.sheet_engine` and :mod:`quill.core.github.batch`;
+this mixin only sequences dialogs and the background runner.
 """
 
 from __future__ import annotations
@@ -182,6 +181,8 @@ class GitHubWorkbenchPropertiesMixin(GitHubWorkbenchHistoryMixin, GitHubWorkbenc
             self._say("Select rows of one kind for one sheet: these are of different kinds.")
             return
         if len(found) == 1:
+            if len(getattr(self.frame, "rows", ())) > 1 and not page:
+                self.offer_tip("properties_one_at_a_time")  # type: ignore[attr-defined]
             self._open_one(found[0], page, field)
         else:
             self._open_many(found, page, field)

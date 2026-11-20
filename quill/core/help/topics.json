@@ -4440,7 +4440,7 @@
   {
     "id": "github.open_reference_at_cursor",
     "title": "GitHub: Open the GitHub Reference at the Cursor",
-    "body": "Opens what is written where your cursor is: #42 or GH-42 in this file's repository, owner/name#42 in another, or a commit hash, each in the GitHub Workbench with its list narrowed to it; or @person, whose profile opens in your browser. A bare #42 needs the document to be in a GitHub repository. Refused in Safe Mode.",
+    "body": "Opens the Properties sheet of what is written where your cursor is, in the GitHub Workbench: #42 or GH-42 in this file's repository, owner/name#42 in another, a commit hash, @person, or a GitHub address of an issue, pull request, discussion or commit. Alt+Enter does the same with the cursor on a reference; anywhere else Alt+Enter does what it always did. A bare #42 needs the document to be in a GitHub repository. Refused in Safe Mode.",
     "user_guide_section": "from-the-line-you-are-on"
   }
 ]

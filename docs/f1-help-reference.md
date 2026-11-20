@@ -3252,6 +3252,10 @@ Control coverage: 408 audited sites (408 helped).
 
 **Help > Search Help....** Type a few words to find a help topic, a command or a GitHub word.
 
+**Help > Take the Tour.** A spoken tour of the window: each pane, and one thing to do there. F6 moves on, Escape stops.
+
+**Help > Ask How....** Ask in your own words how to do something here. The answer comes only from this help, through the AI you chose. A command it names runs only when you choose it.
+
 **Help > Tutorials.** The GitHub lessons, each on the practice repository, with what you have done.
 
 **Help > Practice on GitHub....** Make, open or delete quill-practice, a private repository with issues, a pull request and a failing run to learn on.
@@ -4037,6 +4041,12 @@ Control coverage: 408 audited sites (408 helped).
 **Notifications and Inbox: Include read notifications.** Show notifications you have already read, as well as unread ones, in Notifications.
 
 **Lists: Say column names before values.** Put each column's name before its value in a list row, as in Number 42, Title Crash on start. Off keeps rows short.
+
+**Lists: Short rows for braille.** Each list row as one short line for a braille display: the number and title first, no column names, and short words (cl for closed, PR for pull request, 3c for three comments, 9 Nov for a date). Details still says everything.
+
+**General: Offer a tip when it would help.** Now and then, after you do something a longer way, the details pane offers one tip on a shorter way, once per tip. Off keeps tips in Help and Learning, Tips, only.
+
+**General: Plain help, without QUILLBert and QUILLBee.** Help and tips without the two characters' names: the same words, said plainly, as Tip and Help.
 
 **Privacy: Load the repository Health Snapshot.** Insights, Health Snapshot reads extra data from GitHub about a repository's activity. It loads only when this is checked.
 

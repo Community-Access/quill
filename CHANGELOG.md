@@ -424,6 +424,25 @@ organization or a second account wait for the test organization.
   and type their name.
 - **React to a Comment...** on an issue, a pull request (including review
   comments) and a discussion adds a reaction, or takes back one you gave.
+
+### GitHub Workbench: help that knows where you are (2026-11-19)
+
+- **Alt+Enter on a GitHub reference** in a document, in both editors, opens
+  its Properties sheet in the Workbench: `#42`, `owner/name#42`, `@person`, a
+  commit hash or a GitHub address. Anywhere else Alt+Enter does what it did.
+- **Examples from your own work.** F1 in the Workbench ends with an example
+  built from the repository and row you have open. Nothing is read or sent
+  for it.
+- **Short rows for braille.** Workbench Options, Lists: each row is one short
+  line, number and title first, with no column names and nothing cut off.
+- **Key cards and a tour.** A print key card and a braille-ready one, the
+  GitHub guide as one book for each editor, and Help > Take the Tour
+  (Alt+Shift+T), a spoken step per pane.
+- **QUILLBert and QUILLBee tips.** The third time something is done the slow
+  way, a tip waits in the details pane, once. Workbench Options can turn tips
+  off or give plain help without the names.
+- **Ask How...** (Alt+Shift+A) asks your chosen AI, using only the GitHub
+  help. A command it names can be run from the answer.
 ### GitHub Workbench: access templates, more tutorials, team review requests, and the Command Key in the Workbench (2026-11-20)
 
 - **Access templates.** Account > Roles and Access > Access Templates... keeps

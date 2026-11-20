@@ -1,0 +1,141 @@
+       GITHUB WORKBENCH KEY CARD
+
+
+FILE
+Ctrl+N: New Here
+Ctrl+Shift+N: New
+Ctrl+L: Open GitHub Address
+Ctrl+G: Go to Number
+Shift+Enter: Open on GitHub
+Ctrl+Enter: Open in Editor
+Ctrl+Shift+X: Export List
+Ctrl+Alt+I: Import Issues from a
+  Spreadsheet
+Ctrl+Alt+L: New Issues from Lines
+Alt+F4: Close Workbench
+
+EDIT
+Ctrl+Z: Undo GitHub Change
+Ctrl+Y: Redo GitHub Change
+Ctrl+C: Copy
+Ctrl+Shift+C: Copy Link
+Ctrl+E: Filter
+Ctrl+Alt+F: Filter Builder
+Ctrl+A: Select All
+
+
+VIEW
+F5: Refresh
+Ctrl+F5: Refresh Ignoring Cache
+Alt+PageDown: Load More
+Ctrl+Shift+PageDown: Load All
+Ctrl+Shift+U: Columns
+Alt+Left: Back
+Alt+Right: Forward
+F6: Next Pane
+Shift+F6: Previous Pane
+Alt+1: Where Am I
+Alt+2: Say Selection
+Alt+3: Say Item State
+Alt+4: Say Counts
+Alt+5: Say Your Access
+Alt+6: Say Rate Limit
+Alt+7: Say Filter
+Alt+8: Say Loading
+Alt+9: Say Account
+
+GO
+Ctrl+1: Inbox
+Ctrl+2: Current Repository
+Ctrl+3: Search
+Ctrl+4: People
+
+Ctrl+5: Gists
+Ctrl+6: Projects
+Ctrl+7: Watches
+Ctrl+8: Saved Searches
+Ctrl+9: Start Here
+Ctrl+0: Across Repositories
+Ctrl+Shift+1: Issues
+Ctrl+Shift+2: Pull Requests
+Ctrl+Shift+3: Discussions
+Ctrl+Shift+4: Actions Runs
+Ctrl+Shift+5: Files
+Ctrl+Shift+6: Releases
+Ctrl+Shift+7: Repository Projects
+Ctrl+Shift+8: Security
+Ctrl+Shift+9: Settings
+Ctrl+Shift+0: Insights
+Alt+Up: Parent Node
+Ctrl+.: Next Unread
+Ctrl+Shift+.: Previous Unread
+
+ITEM
+Alt+Enter: Properties
+Ctrl+Shift+M: Comment
+Ctrl+Shift+D: File Differences
+Ctrl+Shift+Enter: Merge
+
+Ctrl+Shift+A: Assign to Copilot
+Ctrl+Shift+T: Start in Local Worktree
+Ctrl+Shift+I: Read as Document
+Ctrl+Shift+W: What Failed
+Ctrl+Shift+F5: Re-run Failed Jobs
+Ctrl+Q: Mark Read
+Ctrl+Shift+Q: Mark All Read in View
+Ctrl+Alt+N: Inbox Rules
+Ctrl+D: Add to or Remove from Favorites
+
+REPOSITORY
+Ctrl+Shift+B: Compare Branches
+Ctrl+B: Compare With Default
+Alt+Shift+B: Compare With Previous
+Ctrl+Shift+R: Run Workflow on Branch
+Ctrl+Shift+G: Repository Actions
+Ctrl+Alt+B: Export Software Bill of
+  Materials
+Ctrl+Alt+T: Transfer Repository
+Ctrl+Alt+W: Clone Wiki
+
+ACCOUNT
+Ctrl+Shift+K: Manage GitHub Accounts
+Ctrl+Shift+L: GitHub API Rate Limit
+Ctrl+Shift+P: GitHub Permissions
+
+Ctrl+Shift+H: Change History
+Ctrl+Alt+S: Set Your Status
+
+TOOLS
+Ctrl+Shift+O: Workbench Options
+Ctrl+Alt+D: Dry Run
+Ctrl+Shift+S: Plain-Language Batch
+Ctrl+Shift+J: GitHub API Console
+
+WINDOW
+Ctrl+Shift+E: Switch to Editor
+
+HELP
+F1: Help for This View
+Shift+F1: What Can I Do Here?
+F11: Say or Type a Command
+Ctrl+Alt+Shift+F1: What Can I Say Here?
+Alt+F1: What Is This?
+Ctrl+F1: GitHub Workbench Guide
+Ctrl+Shift+F1: Search Help
+Alt+Shift+T: Take the Tour
+Alt+Shift+A: Ask How
+Ctrl+F2: Tutorials
+Ctrl+Alt+P: Practice on GitHub
+Ctrl+Alt+F1: GitHub Service Status
+
+Alt+Shift+F1: Workbench Keys
+Ctrl+Alt+K: Key Describer
+F9: Say Last Result Again
+Shift+F9: Explain That
+
+ALSO
+Ctrl+Shift+F: Filter box (second key)
+Alt+Home: Inbox (second key)
+Ctrl+R: Refresh (second key)
+Delete: Remove the selected row, safely
+Ctrl+Cancel: Cancel a run, asking first

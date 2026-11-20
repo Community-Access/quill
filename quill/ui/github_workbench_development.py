@@ -30,6 +30,11 @@ from quill.ui.github_workbench_advisories import (
     ADVISORY_VERBS,
     GitHubWorkbenchAdvisoriesMixin,
 )
+from quill.ui.github_workbench_ask_how import (
+    ASK_HOW_REASONS,
+    ASK_HOW_VERBS,
+    GitHubWorkbenchAskHowMixin,
+)
 from quill.ui.github_workbench_authoring import (
     AUTHORING_REASONS,
     AUTHORING_VERBS,
@@ -191,6 +196,11 @@ from quill.ui.github_workbench_tier2 import (
     TIER2_VERBS,
     GitHubWorkbenchTier2Mixin,
 )
+from quill.ui.github_workbench_tour import (
+    TOUR_REASONS,
+    TOUR_VERBS,
+    GitHubWorkbenchTourMixin,
+)
 
 __all__ = [
     "DEVELOPMENT_REASONS",
@@ -214,6 +224,8 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **PLAIN_BATCH_VERBS,
     **PRACTICE_VERBS,
     **SERVICE_STATUS_VERBS,
+    **ASK_HOW_VERBS,
+    **TOUR_VERBS,
     **TIER2_VERBS,
     **PACKAGE_VERBS,
     **STAR_LIST_VERBS,
@@ -254,6 +266,8 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **PLAIN_BATCH_REASONS,
     **PRACTICE_REASONS,
     **SERVICE_STATUS_REASONS,
+    **ASK_HOW_REASONS,
+    **TOUR_REASONS,
     **TIER2_REASONS,
     **PACKAGE_REASONS,
     **STAR_LIST_REASONS,
@@ -292,6 +306,8 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchPlainBatchMixin,
     GitHubWorkbenchPracticeMixin,
     GitHubWorkbenchServiceStatusMixin,
+    GitHubWorkbenchAskHowMixin,
+    GitHubWorkbenchTourMixin,
     GitHubWorkbenchTier2Mixin,
     GitHubWorkbenchPackagesMixin,
     GitHubWorkbenchStarListsMixin,

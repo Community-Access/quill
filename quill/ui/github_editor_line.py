@@ -8,11 +8,12 @@ the commands, their sentences and their refusals exist once.
 
 They open no window unless they must: Copy GitHub Link to This Line, Who
 Changed This Line? and Open This Line on GitHub only speak (or open the
-browser); Open the Pull Request for This Line and the reference at the cursor
-open the Workbench's own view; New Issue from Selection... opens the
-Workbench's issue window with the draft filled in and its preview before
-anything is sent; Issues Mentioning This File opens the Workbench's search;
-Comment on This Line in the Open Pull Request... asks for the comment.
+browser); Open the Pull Request for This Line opens the Workbench's own
+view, and the reference at the cursor (also Alt+Enter on it) its Properties
+sheet; New Issue from Selection... opens the Workbench's issue window with
+the draft filled in and its preview before anything is sent; Issues
+Mentioning This File opens the Workbench's search; Comment on This Line in
+the Open Pull Request... asks for the comment.
 
 Reading the working copy runs git in the background through
 ``safe_subprocess``; asking GitHub uses the editor's signed-in account. Both
@@ -39,6 +40,7 @@ __all__ = [
     "issues_mentioning_file",
     "open_line",
     "open_line_pull",
+    "alt_enter_on_reference",
     "open_reference_at_cursor",
     "who_changed_line",
 ]
@@ -365,7 +367,13 @@ def _ask_comment(host: LineHost, title: str) -> str:
 
 
 def open_reference_at_cursor(host: LineHost) -> None:
-    """Open ``#42``, ``owner/name#42``, ``@person`` or a commit under the caret."""
+    """Open the Properties sheet of the GitHub reference under the caret (GH-R-036).
+
+    ``#42``, ``owner/name#42``, ``@person``, a commit hash, or a GitHub
+    address of an issue, pull request, discussion or commit. The Workbench
+    opens at the reference's repository and then its sheet (``properties:``),
+    the same sheet Alt+Enter opens on that row there.
+    """
     if host.safe_mode:
         host.announce(SAFE_MODE)
         return
@@ -378,21 +386,40 @@ def open_reference_at_cursor(host: LineHost) -> None:
     if found is None:
         host.announce("No GitHub reference at the cursor.")
         return
-    url = el.reference_url(found)
-    if not url:
+    request = el.sheet_request(found)
+    if request is None:
         host.announce(
             f"{found.describe()} needs a repository: save this document in a GitHub "
             "repository, or write it as owner/name#number."
         )
         return
+    then = "properties:" + json.dumps(list(request))
     if found.kind == "person":
-        if webbrowser.open(url, new=2):
-            host.announce(f"Opened {found.describe()} on GitHub in your browser.")
-        else:
-            host.announce("Could not open your browser.")
+        host.open_workbench("", then)
         return
-    then = f"filter:#{found.number}" if found.kind == "item" else f"filter:{found.sha[:7]}"
     try:
-        host.open_reference(parse_github_reference(url), then)
+        host.open_reference(parse_github_reference(el.reference_url(found)), then)
     except GitHubReferenceError as exc:
         host.announce(str(exc))
+
+
+def alt_enter_on_reference(
+    event: Any, text_and_offset: Callable[[], tuple[str, int]], host: Callable[[], LineHost]
+) -> bool:
+    """Alt+Enter in either editor's text: True when it opened a reference's sheet.
+
+    Only Alt+Enter (no Ctrl or Shift), and only with the caret on a GitHub
+    reference; anywhere else the key goes on as it did before (decision 23,
+    PRD C9), so the caller skips the event when this says False.
+    """
+    import wx
+
+    if event.GetKeyCode() not in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+        return False
+    if not event.AltDown() or event.ControlDown() or event.ShiftDown():
+        return False
+    text, offset = text_and_offset()
+    if el.reference_at(text, offset) is None:
+        return False
+    open_reference_at_cursor(host())
+    return True
