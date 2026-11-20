@@ -311,75 +311,7 @@ Alt+Enter on every object in Appendix C, several rows at once on one
 sheet, every editable field proved by a test that reads the save back,
 Undo and Redo that read the object again first and stop when someone
 else changed it, and Change History kept 90 days. A You page on every
-sheet with a relationship.
-<!-- PR#1974 -->
-
-Issue fields edited on their own sheet page, and the rest of 16.7
-(subscribe, block, reactions, star lists, forks and pins on the You
-page).</li>
-<li><strong>Filtering (section 17).</strong> The filter box with
-GitHub’s words, Quick Filters, the Filter Builder, Sort By and Group By
-on every list, the row kept on return, and issue types and issue fields
-as typed values.
-<!-- PR#1971 -->
-
-Filters on every list, with Appendices A to C kept in step by a
-gate.</li>
-<li><strong>Permissions (section 18).</strong> GitHub Permissions with a
-one-step add; every write held to the account’s Workbench level (Read
-Only, Organize or Full) and checked once; tiers and previews; roles read
-from GitHub’s own answers, with custom roles by name; My Access Here,
-Why Can’t They?, View As Role, Compare Roles, Access Review, Bulk Access
-Changes, Access Templates, Compare Accounts, Act As Another Account and
-Least Privilege Advice. Rulesets, branch protection, organization
-people, teams and roles.</li>
-<li><strong>Templates (section 21).</strong> Issue and discussion forms
-filled natively, the Templates node and its builder, CODEOWNERS,
-FUNDING.yml and CITATION.cff as sheets, Copy to Repositories, and forms
-written as plain text in the editor.</li>
-<li><strong>Beyond parity (section 22).</strong> The API Console, Read
-as Document, Watches, GitHub from the line you are on, Export List and
-issues in from a spreadsheet or lines, plain-language batches, View As
-Role, Dry Run, the practice repository and the GitHub lessons, workflow
-authoring, Dependabot and Compare Configuration, Merge Selected, release
-evidence and attestations, Security Overview with safe alert exports,
-Dependency Review, GitHub Service Status, and Across Repositories with
-Repository Sets and every kind by name (22.11).
-<!-- PR#1963 -->
-
-Repository administration: every repository setting, Create Repository
-with every option, Transfer, Pages and Packages.
-<!-- PR#1970 -->
-
-The rule that blocks a merge, by name; Watch Readiness; Check Download…
-against a release’s digest.
-<!-- PR#1973 -->
-
-The wiki, discussion to issue to pull request, Copilot seats and
-settings, GitHub Models prompt files, github.dev, and AI drafts with
-their sources.
-<!-- PR#1967 -->
-
-Every object’s lifecycle, from making it to deleting it, proved by
-tests.</li>
-<li><strong>Accounts.</strong> Several accounts side by side, GitHub
-Enterprise Server accounts (decision 26), and Use GitHub CLI
-Sign-In….</li>
-<li><strong>Help (Part D).</strong> F1 on every node, row, field and
-command, at zero on GATE-GITHUB-HELP; Shift+F1, the glossary, Search
-Help, Help and Learning, Walk Me Through It, What Changed, QUILLBert’s
-tips, Report a Help Problem, and the generated Workbench reference.
-<!-- PR#1975 -->
-
-Alt+Enter on a GitHub reference in a document, examples from your own
-data in F1, short rows for braille, key cards and the spoken tour (Help
-&gt; Take the Tour), tips the third time a slow way is used, and Help
-&gt; Ask How…</li>
-<li><strong>Coverage (section 19).</strong> Every REST operation and
-GraphQL mutation in Appendices E and F is classified, and
-GATE-GITHUB-COVER keeps <code>missing</code> at zero: of 2,007 rows, 855
-are covered, 286 need no API call, 866 are out of scope with a reason,
-and none is planned.</li>
+sheet with a relationship.</li>
 </ul>
 <h3 id="decisions-after-acceptance">Decisions after acceptance</h3>
 <ol start="26" type="1">
@@ -1881,10 +1813,7 @@ to <code>https://github.com/owner/name.wiki.git</code> with the token in
 the child’s environment (<code>quill/core/github/wiki.py</code>). GitHub
 has no API for wiki pages, so listing and editing pages inside the
 Workbench stays planned, as “Wiki: pages listed and edited in the
-Workbench”. <!-- PR#1973 --> <strong>Editing built 2026-11-20:</strong>
-Edit Wiki Pages… keeps a clone in QUILL’s own folder and opens a page in
-the editor, New Wiki Page… makes one, and Publish Wiki Changes… names
-the pages and the account and asks before it pushes, never forcing</td>
+Workbench”</td>
 <td>Repository &gt; Wiki (pages as a list, read in details, edit in the
 editor)</td>
 </tr>
@@ -1899,10 +1828,7 @@ Accept Invitation… (Enter) and Decline Invitation… ask first
 <tr>
 <td>Edit description, website and features (issues, wiki, discussions,
 projects on or off)</td>
-<td>Rename, visibility, default branch and topics only. <!-- PR#1963 -->
-<strong>Built 2026-11-20:</strong> the repository’s Properties has every
-setting GitHub takes, in the words of GitHub’s settings page: General,
-Features, merge buttons and their commit messages, and more</td>
+<td>Rename, visibility, default branch and topics only</td>
 <td>Repository &gt; Settings &gt; General</td>
 </tr>
 <tr>
@@ -3367,49 +3293,7 @@ you type), description, visibility, a README, a <code>.gitignore</code>
 from GitHub’s list, a license from GitHub’s list with each license
 explained in plain words, a template with or without all its branches,
 and the starting labels, milestones, rules and access from a saved
-template (section 18.3.2).
-<!-- PR#1963 -->
-
-<em>Built 2026-11-20:</em> Create Repository asks every option GitHub
-takes.</li>
-<li><strong>Moving work in and out:</strong> export your account’s data
-or an organization migration archive (where the API allows) and download
-it; import issues from CSV with a preview (section 22.7); fork with only
-the default branch.</li>
-<li><strong>Git LFS:</strong> files tracked, storage used, and file
-locks (who holds which lock, lock, unlock, force unlock with
-permission).</li>
-<li><strong>Insights in words:</strong> Pulse for a week or month (“12
-pull requests merged by 5 people”), forks with ahead and behind as the
-network graph’s readable form, traffic referrers, popular paths, clones,
-and the dependency graph and dependents.</li>
-<li><strong>Your contributions:</strong> the contribution graph as a
-table by week and day, with streaks, totals and the repositories
-contributed to, read row by row.</li>
-<li><strong>GitHub Apps and OAuth apps:</strong> apps installed on an
-organization or repository, which repositories each may reach (add,
-remove), suspend and unsuspend, and requests to install; apps you have
-authorized.</li>
-<li><strong>OpenID Connect:</strong> the subject claim template for an
-organization or repository, for people deploying to clouds from
-Actions.</li>
-<li><strong>Security, the remaining pieces:</strong> push protection
-bypass requests and alert dismissal requests to review and decide;
-Copilot Autofix suggestions on code scanning alerts, applied as a pull
-request; the organization security overview as a table; dependency
-review on a pull request. <em>Where it stands, 2026-11-20:</em> Copilot
-Autofix…, Dependency Review and Security Overview (every page, worst
-first, with safe alert exports) are built. Reviewing bypass and
-dismissal requests is Enterprise Cloud only and out (decision 26).</li>
-<li><strong>Discussions, the remaining pieces:</strong> spotlight,
-category sections, and polls built in the template builder’s style.
-<em>Built 2026-11-19:</em> polls read as a table with Vote…, the Pinned
-place (the spotlight), and categories by section.</li>
-<li><strong>GitHub status:</strong> a status bar cell and Help &gt; Is
-GitHub Working? that read githubstatus.com (a new egress row, with
-consent). <em>Built 2026-11-18</em> as Help &gt; GitHub Service Status…
-(Ctrl+Alt+F1), read only when asked and only after consent; there is no
-status bar cell.</li>
+template (section 18.3.2).</li>
 </ul>
 <h3 id="222-the-escape-hatch-an-api-console">22.2 The escape hatch: an
 API Console</h3>
