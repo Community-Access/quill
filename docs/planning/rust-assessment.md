@@ -2,6 +2,8 @@
 
 Date: 2026-08-02
 Status: analysis / decision document. Nothing here is committed work.
+Historical: written 2026-08-02. Version numbers below are as of that date;
+QUILL now pins wxPython 4.3.2 and needs Python 3.14 (`pyproject.toml`).
 
 ## 1. Verdict first
 
@@ -257,7 +259,7 @@ with causes 1, 3 and 6 now measured and cleared *for the core layer only*:
    name are the architecture. Nuitka compiles what it can see; everything else
    needs explicit `--include-module` / `--include-package`, and the failure
    shows up at runtime as import errors, not at compile time.
-4. **wxPython standalone.** The `wx` plugin exists, but wx 4.2.5 plus
+4. **wxPython standalone.** The `wx` plugin exists, but wx (4.2.5 then, 4.3.2 now) plus
    `wx.html2` (WebView2), `wx.stc`, and the accessibility layer is a heavy
    standalone case; typical symptom is a clean compile and a runtime failure on
    missing DLLs or data files.
@@ -296,8 +298,9 @@ Being honest about what could change my answer:
   Even then, it does not justify rewriting QUILL; it would justify choosing
   Rust for something greenfield.
 - **wxWidgets stagnating or wxPython falling behind Python releases** would be
-  a real forcing function. It has not happened; wxPython 4.2.5 is current and
-  we are on 3.12/3.13. Watch it, do not pre-empt it.
+  a real forcing function. It has not happened; wxPython 4.2.5 was current and
+  we were on 3.12/3.13 when this was written (2026-08). Today it is 4.3.2 on
+  Python 3.14. Watch it, do not pre-empt it.
 - **Windows itself deprecating the classic common controls** would break the
   bet. There is no sign of it, and Microsoft's own accessibility posture makes
   it unlikely this decade.
