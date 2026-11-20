@@ -214,35 +214,76 @@ def register_cli_commands(app: Flask) -> None:
         crash ever left the running aggregate slightly behind the
         durable event log (see app/limits.py::record_usage's docstring
         on why this is a safety net, not a routine necessity). Intended
-        to run nightly from cron."""
+        to run nightly from cron.
+
+        Two figures, kept apart. A person's total is rebuilt from each
+        event's ``user_cost_usd`` -- what counts against *their* ceiling --
+        never from ``estimated_cost_usd``, which carries the web-search fee
+        that belongs to the global budget only. Rebuilding from the full cost
+        once turned a $0.001 search into a $0.031 one overnight. The global
+        figure is rebuilt from the full cost, and refreshes Redis's cached
+        spend if Redis has lost it or holds less.
+
+        An admin's reset is respected: a person's events from before their
+        most recent ``reset_usage`` this month are not counted back in.
+        """
         from sqlalchemy import func
 
-        from app.models import MonthlyUsageSummary, UsageEvent, db
+        from app.limits import recorded_spend
+        from app.models import AdminAction, MonthlyUsageSummary, UsageEvent, db
 
         now = datetime.now(UTC)
         year_month = now.strftime("%Y-%m")
-        rows = (
+        month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        person_cost = func.coalesce(UsageEvent.user_cost_usd, UsageEvent.estimated_cost_usd)
+
+        resets = dict(
             db.session
-            .query(
-                UsageEvent.user_id,
-                func.count(UsageEvent.id),
-                func.sum(UsageEvent.estimated_cost_usd),
-            )
-            .filter(
-                UsageEvent.created_at
-                >= now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-            )
-            .group_by(UsageEvent.user_id)
+            .query(AdminAction.target, func.max(AdminAction.created_at))
+            .filter(AdminAction.action == "reset_usage", AdminAction.created_at >= month_start)
+            .group_by(AdminAction.target)
             .all()
         )
+
+        def _totals(since, user_id=None):
+            query = db.session.query(
+                UsageEvent.user_id, func.count(UsageEvent.id), func.sum(person_cost)
+            ).filter(UsageEvent.created_at >= since)
+            if user_id is not None:
+                query = query.filter(UsageEvent.user_id == user_id)
+            return query.group_by(UsageEvent.user_id).all()
+
+        rows = _totals(month_start)
+        touched = {user_id for user_id, _count, _cost in rows}
+        for user_id in resets:
+            if user_id in touched:
+                rows = [row for row in rows if row[0] != user_id]
+            after = _totals(resets[user_id], user_id)
+            rows.extend(after or [(user_id, 0, 0)])
+
+        reconciled = 0
         for user_id, count, total_cost in rows:
             summary = db.session.get(
                 MonthlyUsageSummary, {"user_id": user_id, "year_month": year_month}
             )
             if summary is None:
+                if not count:
+                    continue
                 summary = MonthlyUsageSummary(user_id=user_id, year_month=year_month)
                 db.session.add(summary)
             summary.request_count = count
             summary.total_cost_usd = float(total_cost or 0)
+            reconciled += 1
         db.session.commit()
-        click.echo(f"Reconciled {len(rows)} user(s) for {year_month}.")
+
+        # The global spend: never lowered here (a request recorded between the
+        # SUM and the SET would be lost), only restored.
+        spent = recorded_spend(year_month)
+        client = app.extensions["gateway_redis"]
+        key = f"gwspend:{year_month}"
+        cached = client.get(key)
+        if cached is None or float(cached) < spent:
+            client.set(key, spent, ex=40 * 24 * 3600)
+        click.echo(
+            f"Reconciled {reconciled} user(s) for {year_month}; ${spent:,.4f} spent in total."
+        )

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from app.auth import (
     _load_grant,
-    _save_grant,
     confirm_device_code,
     hash_token,
     poll_device_token,
@@ -16,14 +15,13 @@ from app.auth import (
 def allow_immediate_poll(app, device_code: str) -> None:
     """Clear the poll-interval stamp so a test can poll again at once.
 
-    The old version of this reached into a module-level dict. Grants live in
-    Redis now (so two Gunicorn workers can complete each other's sign-ins), so
-    the equivalent is a load-edit-save -- still reaching into internals, and
-    still preferable to making the test sleep for the real interval.
+    The old version of this reached into a module-level dict, then edited the
+    grant in Redis. The stamp is a key of its own now (a poll never writes the
+    grant back -- see ``poll_device_token``), so this deletes that key: still
+    reaching into internals, and still preferable to making the test sleep for
+    the real interval.
     """
-    grant = _load_grant(app, device_code)
-    grant["last_poll_at"] = None
-    _save_grant(app, grant, 600)
+    app.extensions["gateway_redis"].delete(f"devpoll:{device_code}")
 
 
 def test_start_device_flow_returns_rfc8628_shape(app):
