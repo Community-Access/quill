@@ -4,6 +4,17 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+### Quill Cast says what really happened, once (2026-11-19)
+
+Part of the family UX pilot (FUX-04). A speed change is reported after it is
+saved, and when the episode playing kept its own rate (a scan, or a file with a
+speed of its own) Cast says so, as "The episode playing stays at 1x." Chris's
+report of "saved" while the old speed played is the reason. Preferences says
+one sentence for one OK ("Preferences changed: 2 changes, in use now.") instead
+of three. Backups, exported audio, OPML exports, import reports and saved
+transcripts say the folder as well as the file. A restored backup that could
+not refresh the view says so aloud instead of ending in silence.
+
 ### Downloading an episode no longer stalls Cast (2026-11-18)
 
 Chris Nova reported (2026-11-18) that while an episode downloaded, the

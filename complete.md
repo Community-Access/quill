@@ -47,11 +47,9 @@ Each is done only with evidence: a test or a live run.
 - [ ] Role comparison and learning workflows reach real permission evidence, not guessed privileges.
 - [ ] Repository General/features, complete creation/template options, transfer, topics and star lists (standalone tags are done).
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
-- [ ] Least-privilege advice based on observed usage with honest uncertainty (attestations and immutable releases are done).
 - [ ] First-class by-name collections for the PRD 22.11 kinds still "not yet" in `quill/core/github/across_scope_matrix.py`: workflows, templates, Dependabot and CODEOWNERS, people, settings and packages.
 - [ ] Saved replies/favorites/watch levels/stars, alerts/packages/Pages where supported.
 - [ ] Cross-repository coverage is complete only when the corresponding single-repository operation and batch behavior are complete; read-only category views are tracked separately from multi-target writes.
-- [ ] GX11, what is left: a severity breakdown beyond the first 100 alerts of each kind in Security Overview, and a test that exporting an alert list leaves out sensitive fields. (Dismissal and bypass request review is Enterprise Cloud only and stays on GitHub, decided 2026-11-18.)
 - [ ] GX13: account-aware repository switching (Compare Accounts and Act As, still open).
 - [ ] GX09: Why Can't I Merge? and Merge Selected... do not yet name the specific ruleset or CODEOWNERS rule that blocks (only the review window's Check Merge Policy does), and nothing watches a pull request to say when its readiness changes.
 - [ ] GX10: attestation signatures are not verified in QUILL (it points to gh attestation verify), and a downloaded release file is not checked against its digest.
@@ -157,6 +155,5 @@ All of the following has tests over recorded or fake answers and none has met a 
 
 Decided on 2026-11-19 in `docs/design/2026-11-19-family-ux-pilots.md`: the pilots are Quill Cast and QUILL Lite, and the work starts with truthful results and stable lists. Lost work or misdirected input seen in a pilot jumps the queue.
 
-- [ ] FUX-04 (the actual result, once) in Quill Cast and QUILL Lite, and FUX-06 (lists that stay still) in QUILL Lite, as written in each PRD. The QUILL Lite part goes in the shared package so QUILL has it too. (FUX-06 in Cast is done.)
 - [ ] Testers, with a screen reader, on Cast's still lists: one re-read, not two, when rows arrive above the selected episode; the list's changing name ("Inbox (9)") is not read again; QUILL's Play Queue window keeps its caret when an episode finishes (speech and braille); "3 new episodes in The Daily." is heard once.
 - [ ] Journey A, from Cast to a saved place to QUILL, once FUX-04 and FUX-06 are in.
