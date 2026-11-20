@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import platform
 import sys
 import time
@@ -176,10 +177,14 @@ def build_diagnostic_bundle(
             }
         # H-2: metadata.json also carries user-derived strings -- task names
         # embed document paths/titles, and plugin/feature identifiers can leak
-        # local paths -- so the serialized payload is redacted with the same
-        # helper as every other text file before it enters the archive.
-        metadata_json = json.dumps(payload, indent=2, ensure_ascii=False)
-        archive.writestr("metadata.json", redact_text_for_bundle(metadata_json) + "\n")
+        # local paths -- so every string in it is redacted with the same rules
+        # as every other text file before it enters the archive. The values
+        # are redacted and bounded *before* serializing, not the serialized
+        # text afterwards: that line-by-line pass cut a long task name's line
+        # at 200 characters, closing quote and all, and the file stopped being
+        # JSON (plan.md, "Shared diagnostics and background-runtime review").
+        metadata_json = _serialize_metadata(payload)
+        archive.writestr("metadata.json", metadata_json + "\n")
         for label, body in redacted_texts.items():
             archive.writestr(label, body)
     if redaction_stats:
@@ -242,6 +247,66 @@ _SNAPSHOT_TASK_FIELDS = (
     "submitted_at",
     "result_summary",
 )
+
+
+#: How long one string in metadata.json may be after redaction. A task name or
+#: a plugin id longer than this is cut with an ellipsis -- inside the string,
+#: where the cut cannot break the file.
+_MAX_METADATA_STRING = 200
+
+#: How deep metadata.json may nest. Nothing QUILL writes nests past four; the
+#: bound is only there so a self-referencing task attribute cannot recurse.
+_MAX_METADATA_DEPTH = 8
+
+
+def _redact_metadata_string(text: str) -> str:
+    """One metadata string, redacted and bounded, never dropped."""
+    redacted = redact_text_for_bundle(text)
+    if text and not redacted.strip():
+        # The bundle contract drops a line that is all secret; a JSON value
+        # cannot vanish, so it says what happened instead.
+        redacted = "[REDACTED]"
+    if len(redacted) > _MAX_METADATA_STRING:
+        redacted = redacted[:_MAX_METADATA_STRING] + "…"
+    return redacted
+
+
+def _redact_metadata_value(value: Any, depth: int = 0) -> Any:
+    """*value* with every string in it -- keys too -- redacted and bounded."""
+    if value is None or isinstance(value, bool | int):
+        return value
+    if isinstance(value, float):
+        # NaN and infinity are not JSON; json.dumps would write them anyway.
+        return value if math.isfinite(value) else str(value)
+    if isinstance(value, str):
+        return _redact_metadata_string(value)
+    if depth >= _MAX_METADATA_DEPTH:
+        return "[nested too deeply]"
+    if isinstance(value, Mapping):
+        return {
+            _redact_metadata_string(str(key)): _redact_metadata_value(item, depth + 1)
+            for key, item in value.items()
+        }
+    if isinstance(value, list | tuple | set | frozenset):
+        return [_redact_metadata_value(item, depth + 1) for item in value]
+    return _redact_metadata_string(str(value))
+
+
+def _serialize_metadata(payload: Mapping[str, Any]) -> str:
+    """metadata.json's text: redacted value by value, then checked to parse.
+
+    The check is the contract, not decoration: a diagnostic bundle support
+    cannot open is worse than none, so a payload that somehow does not
+    round-trip is replaced with one that says so.
+    """
+    safe = _redact_metadata_value(payload)
+    text = json.dumps(safe, indent=2, ensure_ascii=False, allow_nan=False)
+    try:
+        json.loads(text)
+    except ValueError:  # pragma: no cover - the walk above only emits JSON types
+        logger.exception("Diagnostic bundle metadata did not round-trip as JSON")
+        text = json.dumps({"error": "metadata could not be serialized"}, indent=2)
+    return text
 
 
 def _snapshot_task(task: object) -> dict[str, Any]:

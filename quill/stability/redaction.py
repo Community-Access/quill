@@ -290,6 +290,28 @@ def redact_text_for_bundle(
     return redacted
 
 
+def redact_outbound_line(text: str, *, keep_prefix: str = "") -> str:
+    """One line of outbound text -- an email subject, a support fact -- redacted.
+
+    :func:`redact_text_for_bundle` *drops* a line that is all secret, which
+    is right for a log and wrong for a subject: the line would vanish and
+    leave nothing to say what happened. Here the secret goes and a marker
+    stays, so a crash subject still reads ``RuntimeError: [REDACTED]``
+    (*keep_prefix*). Whitespace is collapsed first: a subject has one line.
+    Added 2026-11, when a credential in an exception's text was found in the
+    crash email's subject although the preview and body were clean.
+    """
+    single = re.sub(r"\s+", " ", text or "").strip()
+    if not single:
+        return ""
+    redacted = redact_text_for_bundle(single).strip()
+    if redacted:
+        return redacted
+    if keep_prefix and single.startswith(keep_prefix):
+        return keep_prefix + "[REDACTED]"
+    return "[REDACTED]"
+
+
 class BundleRedactionStats:
     """Tally of redaction actions taken by :func:`redact_text_for_bundle_with_stats`."""
 

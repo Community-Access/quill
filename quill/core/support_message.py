@@ -122,6 +122,15 @@ def build_mailto_url(
     ``was_shortened`` is the caller's cue to put the full body on the clipboard
     and say so out loud. A mail client that quietly opens with half a bug
     report is the failure this flag exists to prevent.
+
+    The limit is on the **encoded** URL and every field counts toward it.
+    Until 2026-11 only the body was shortened, so a long subject produced a
+    4,735-character URL against the 1,800 limit while still reporting
+    ``was_shortened=True``. Now the subject is cut too (it may take at most
+    a third of the room), lengths are measured after percent-encoding, so an
+    accented letter costs six characters and an emoji twelve, and a cut never
+    splits a character. The complete text is the caller's clipboard fallback
+    (:func:`build_subject` and :func:`build_body` are untouched).
     """
     subject = build_subject(message)
     body = build_body(message)
@@ -129,16 +138,57 @@ def build_mailto_url(
     if len(url) <= limit:
         return url, False
 
-    # Shrink the body until the encoded URL fits, keeping the beginning --
-    # which is what the person actually typed -- and losing the tail.
-    keep = len(body)
-    while keep > 0:
-        candidate = body[:keep].rstrip() + _TRUNCATION_NOTE
-        url = _mailto(address, subject, candidate)
-        if len(url) <= limit:
-            return url, True
-        keep -= 64
-    return _mailto(address, subject, _TRUNCATION_NOTE.strip()), True
+    fixed = len(_mailto(address, "", ""))
+    note = _TRUNCATION_NOTE.strip()
+    # The subject keeps its beginning -- the product and what the person
+    # typed first -- and gives up its tail. It may use whatever a short body
+    # leaves, but never less than a third of the room, and never so much that
+    # the body cannot say the full text is on the clipboard.
+    total = limit - fixed
+    body_need = _encoded_len(body.rstrip() + _TRUNCATION_NOTE)
+    subject_room = max(0, min(_encoded_len(subject), max(total // 3, total - body_need)))
+    subject = _fit_encoded(subject, subject_room, marker="…")
+    body_room = limit - fixed - _encoded_len(subject)
+    # Shrink the body to fit, keeping the beginning -- which is what the
+    # person actually typed -- and losing the tail.
+    tail = _TRUNCATION_NOTE
+    head_room = body_room - _encoded_len(tail)
+    if head_room > 0:
+        candidate = _fit_encoded(body, head_room).rstrip() + tail
+    else:
+        candidate = _fit_encoded(note, body_room)
+    url = _mailto(address, subject, candidate)
+    if len(url) > limit:  # pragma: no cover - only an absurdly small limit
+        url = _mailto(address, _fit_encoded(subject, 0), _fit_encoded(note, limit - fixed))
+    return url, True
+
+
+def _encoded_len(text: str) -> int:
+    return len(quote(text, safe=""))
+
+
+def _fit_encoded(text: str, room: int, *, marker: str = "") -> str:
+    """The longest prefix of *text* whose percent-encoding fits in *room*.
+
+    Cut on whole characters, so a multi-byte character is either all there
+    or not there, and the URL still decodes. *marker* (an ellipsis on a
+    subject) is appended when anything was cut, and counted in the room.
+    """
+    if _encoded_len(text) <= room:
+        return text
+    marker_cost = _encoded_len(marker)
+    budget = room - marker_cost
+    if budget <= 0:
+        return ""
+    used = 0
+    end = 0
+    for char in text:
+        cost = _encoded_len(char)
+        if used + cost > budget:
+            break
+        used += cost
+        end += 1
+    return text[:end].rstrip() + marker
 
 
 def _mailto(address: str, subject: str, body: str) -> str:

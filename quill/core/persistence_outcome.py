@@ -21,7 +21,8 @@ from __future__ import annotations
 import errno
 import logging
 import threading
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -102,18 +103,47 @@ def _notify(outcome: WriteOutcome) -> None:
             logger.exception("persistence outcome listener failed")
 
 
-def guarded_write(what: str, path: Path, write: Callable[[], None]) -> None:
-    """Run *write*; report the outcome; re-raise ``OSError`` unchanged."""
+_retry_override = threading.local()
+
+
+@contextmanager
+def retry_with(retry: Callable[[], None]) -> Iterator[None]:
+    """Inside this block, a failed guarded write on this thread retries with *retry*.
+
+    For a writer whose content can go stale while its failure waits in
+    Activity: Retry must write what is current. Re-sending a settings snapshot
+    taken before a later, successful save would put the older choice back on
+    disk (plan.md, settings review: the latest choice must win).
+    """
+    previous = getattr(_retry_override, "retry", None)
+    _retry_override.retry = retry
+    try:
+        yield
+    finally:
+        _retry_override.retry = previous
+
+
+def guarded_write(
+    what: str,
+    path: Path,
+    write: Callable[[], None],
+    *,
+    retry: Callable[[], None] | None = None,
+) -> None:
+    """Run *write*; report the outcome; re-raise ``OSError`` unchanged.
+
+    *retry* (or the one :func:`retry_with` set for this thread) replaces the
+    default Retry, which writes the same content again.
+    """
     try:
         write()
     except OSError as error:
         reason = reason_for(error)
         logger.warning("QUILL-PERSIST-WRITE %s: %s (%s)", what, reason, type(error).__name__)
-        _notify(
-            WriteOutcome(
-                what, path, ok=False, reason=reason, retry=lambda: guarded_write(what, path, write)
-            )
-        )
+        again = retry or getattr(_retry_override, "retry", None)
+        if again is None:
+            again = lambda: guarded_write(what, path, write)  # noqa: E731 - the default Retry
+        _notify(WriteOutcome(what, path, ok=False, reason=reason, retry=again))
         raise
     _notify(WriteOutcome(what, path, ok=True))
 
@@ -128,5 +158,6 @@ __all__ = [
     "WriteOutcome",
     "guarded_write",
     "reason_for",
+    "retry_with",
     "subscribe",
 ]
