@@ -1487,6 +1487,9 @@ scheduled; each waits for a reason to start.
 - **A WordPress-layer key for page commands** such as Check This Page. Today
   they have a written reason for having no key (`wordpress/menu_unbound.py`).
 - **A Workbench tree node for menu items**, beside the Menus window's Undo.
+- **A date range for Shop Analytics' Customers report.** Today Customers
+  shows how things are now, with no dates. Moved here by Jeff on 2026-11-20:
+  not this release.
 
 Rank Math stays read only: confirmed by Jeff on 2026-11-19.
 

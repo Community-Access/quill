@@ -4,14 +4,20 @@
 **Trimmed:** 2026-11-19 to open work only. Everything done, every proposal not adopted, and the old source files (`complete2.md`, `wp_missing.md`, `how.md`, the delivery checklist, the design companion and the requirement ledgers) are in git history: `git log -- complete.md`.
 **Rule:** this is the one place to track open work. Add to it rather than starting a new root file. When an item is built, delete it here and say so in the changelog. Partly built items keep only what is left.
 
+**Who owns what (2026-11-20):**
+- **This file** is the list of open work. Each item stays until it is built.
+- **`D:\quill\status.md`** is the live count of what remains, kept by Jeff and the coordinator. It is not committed.
+- **The requirement audit** (`docs/qa/github-workbench-requirement-audit-2026-11.md`) holds the status of every GH-R requirement. This file names only the requirements still open.
+- `docs/planning/workbench-implementation-status.md` is the Workbench delivery log, and `docs/planning/roadmap.md` is the July plan of record, kept for history. Neither lists open work.
+
 ## Pick up here
 
 For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claude.log`. The commands and gates are in `CLAUDE.md`.
 
 - **Screen-reader testing** is done by Jeff's testers and is not tracked here.
-- **Where it stands (2026-11-19, night):** merged today: every PR from #1943 to #1957. Open: #1958 (Cast lists that stay still), #1959 (workflow authoring, Dependabot, CODEOWNERS), #1960 (sort, group, place kept, plain-language batch), #1961 (rulesets, members, teams, access matrices; Enterprise Cloud-only parts being removed). Paused by the usage limit, to be resumed: roles and accounts, Across Repositories, repository administration, wiki/collaboration/Copilot, and the GH-R items not met. Rule (Jeff): nothing Enterprise Cloud only; organization-only checks run in a test organization.
-- **Next:** finish 1.3 smallest first, then the documentation pass (1.4), then the rest of 2.3 and 3.2. A tester's defect report always comes first.
-- **Live testing waits until all code is done (Jeff, 2026-11-19).** That covers the WordPress test site over SSH (`ssh lp.csedesigns.com`, wp-cli through `~/app/wordpress-test/wpcli.sh`, which needs more PHP memory), installing QAF and the other plugins, the GitHub test repository, and the 1.5 and 2.4 rows. Gravity Forms waits until later.
+- **Where it stands (2026-11-20):** merged since 2026-11-19: #1943 to #1962, #1964 to #1966, #1968, #1969, #1972 and #1976. Built and waiting to merge: #1963, #1967, #1970, #1971, #1973, #1974 and #1975. Rule (Jeff): nothing Enterprise Cloud only; organization-only checks run in a test organization.
+- **Next (Jeff, 2026-11-20):** the known defects in Part 0 come first, worst harm first, then the documentation pass (1.4). Screen-reader testing is a given on everything. A tester's defect report always comes first.
+- **Live testing runs alongside.** On 2026-11-19 Jeff said live testing waits until all code is done. On 2026-11-20 he changed that: the known defects are fixed while live testing goes on, and documentation and live testing run side by side once the code is in. The WordPress live run (#1976) followed that. The test site is reached over SSH (`ssh lp.csedesigns.com`, wp-cli through `~/app/wordpress-test/wpcli.sh`, which needs more PHP memory). Gravity Forms 3.2.3.1 is licensed there with its REST API v2 on.
 - **How to work here:**
   - Squash-merge with `gh api -X PUT repos/Community-Access/quill/pulls/N/merge -f merge_method=squash`.
   - Log each step to `claude.log`, with the time read from a clock.
@@ -21,10 +27,33 @@ For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claud
 ## The order of work
 
 1. **A tester's defect report**, whenever one arrives.
-2. **The GitHub Workbench (Part 1)**, code first.
-3. **WordPress (Part 2)**, code first.
-4. **Other work (Part 3):** the family UX pilots and the Copilot runtime build. (Earshot parity was taken off the list by Jeff, 2026-11-19.)
-5. **Then all live testing:** 1.5, 2.4 and 2.5, the test site and the GitHub test repository.
+2. **The known defects (Part 0)**, in the order given there.
+3. **Documentation (1.4)**, and merging the GitHub Workbench pull requests waiting in Part 1.
+4. **Live testing**, alongside: 1.5, 2.4 and 2.5, the test site and the GitHub test repository.
+5. **Other work (Part 3):** the Copilot runtime build and the family UX pilots' follow-ups.
+6. **The wider code review (Part 0, H to L)**, last. (Earshot parity was taken off the list by Jeff, 2026-11-19.)
+
+## Part 0. Code review fixes (plan.md, 2026-11-19)
+
+The code review in `D:\quill\plan.md` found these, each confirmed by a reproduction or a probe; plan.md is the record of how. Jeff, 2026-11-20: add them all and fix them, worst harm first (settings, and anything that can lose work, charge the wrong amount or leak data). Each group is one agent and one pull request. Delete a group here when its pull request merges. Group F (the native launcher and macOS Radio) is in the Backlog, not this release.
+
+### The known defects, in order of harm
+
+- [ ] **D. Settings that do not stick** (8): QUILL Lite can save a stale setting and report success (two interleavings); a portable backup carries the startup folder and accepts another app's envelope; Converter loses settings-write failures silently; malformed Inkwell and Weather settings crash their loaders; Radio does not publish or adopt shared family choices.
+- [ ] **B. Windows Radio recording** (8): crash recovery can overwrite a finished recording; Stop All can miss a reconnect handing off; raw captures other than `.copy` are stranded; a continuation can exceed the concurrency cap; deadlines use local wall time; an enabled daily schedule crashes the Recordings summary; continued captures report the wrong time left; a deleted schedule can still start.
+- [ ] **A. WordPress local writing** (6): renaming the Practice Site stops it starting; Open by Web Address ignores ports and path boundaries; changing a draft's Properties breaks reopening it; an uploaded image's address reverts on the next save; Previous Versions saves the disk copy, not your unsaved writing; the Discussion preview counts one link twice.
+- [ ] **C. Diagnostics and help** (5): the crash email subject skips redaction; long task names make invalid `metadata.json`; a long subject defeats the mailto limit; the wx coalescing helper can deadlock; `app.say_check` has no F1 help topic (write a real topic, not a stub).
+- [ ] **E. Hosted AI gateway** (6): nightly reconciliation raises a user's charge; two confirmations of one device code make two devices; Redis can lose quota and spend counters; dollar caps can be overshot in flight (document it or reserve); the migration runbook stops at 002; smaller gaps (device slot release, malformed provider JSON, Reduced quota, feature-page wording).
+- [ ] **G. Practice Site payload**: the built runtime is missing `tools\wp-playground-cli`, so the runtime-inventory gate fails. Ship it; do not rebaseline it away. Waits on the Windows build (Part 3).
+
+### The wider review, after the defects
+
+- [ ] **H. Practice Site follow-ups**: a synchronous stop may block the UI; missing tools hide the reset and cleanup choices; lesson markers do not prove the PHP seeding worked; reset, history and late completion callbacks need lifecycle tests. Sizing the Practice Site for shipping (installer increase, installed size, first start, offline start) waits on the Windows build with G.
+- [ ] **I. Diagnostics follow-ups**: the stdlib regex fallback drops its timeout; diagnostic readers lack the bounds their comments promise; fault-handler ownership during handle cleanup; full logging queues on relocation and shutdown; the app shell's modal entered/exited cue setting has no callback (reconcile it with GATE-13, with no duplicate speech).
+- [ ] **K. AI choices and settings people can understand**: every AI entry point says which provider and model, local or cloud, what is sent, limits, consent and fallback, before use, and never switches provider silently. Settings whose effect is not obvious (AI, privacy, accessibility, portability) show the effective value, where it comes from, and how to reset it. Fix real gaps only; no duplicate UI.
+- [ ] **L. The rest of the code audit** (plan.md Phase 3), with the "change it, use it, reopen it" checks, in three parts: L1 Cast and the rest of Windows Radio; L2 WordPress operations and the GitHub Actions workflows; L3 Beacon, Converter, Inkwell, Media Player, Social, Studio, Transcribe and Weather. Confirmed defects are fixed with tests; everything else is reported.
+
+Group J, the records and design documents, was done in the pull request that added this part.
 
 ## Part 1. The GitHub Workbench
 
@@ -36,20 +65,19 @@ Each is done only with evidence: a test or a live run.
 
 #### Features and verification
 
-- [ ] Complete Appendix A/B "nothing dropped" mapping and Appendix C object/sheet/filter mapping.
-- [ ] Edit issue fields directly on the Properties sheet's Issue Fields page (today read only; Issue Fields... on the row edits them).
-- [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle.
-- [ ] Live check on the GitHub test repository: Read Only, Organize, Full and Safe Mode refuse and allow as tested, and the permission explanations (greyed rows, Shift+F1, GitHub's own refusals) match what GitHub does.
-- [ ] Verify View As Role, Compare Roles, Why Can't They?, My Access Here, access reviews and bulk changes against actual server authority.
-- [ ] Wiki, and cross-linked discussion → issue → pull request workflows (saved replies and repository invitations are done).
-- [ ] Repository General/features, complete creation/template options, transfer, topics and star lists (standalone tags are done).
-- [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
+Built and waiting to merge (delete each row when its pull request merges):
+
+- [ ] Appendix A/B "nothing dropped" mapping and Appendix C object/sheet/filter mapping (#1971). It found that 128 of 290 Appendix C filter words are not built yet, and that Choose Categories, Save Current Filter and Find Possible Duplicates have no Workbench home.
+- [ ] Edit issue fields directly on the Properties sheet's Issue Fields page (#1974).
+- [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle (#1967).
+- [ ] Wiki, cross-linked discussion → issue → pull request workflows, Copilot seats and settings, and GitHub Models prompt files (#1973). This is most of GX12.
+- [ ] Repository General/features, complete creation/template options, transfer, Pages and packages (#1963); watch levels, stars and star lists (#1974).
+- [ ] GX09: the rule that blocks a merge, by name, and Watch Readiness (#1970).
+- [ ] GX10: a downloaded release file checked against its digest (#1970). Verifying attestation signatures inside QUILL is in the Backlog.
+
+Not started:
+
 - [ ] First-class by-name collections for the PRD 22.11 kinds still "not yet" in `quill/core/github/across_scope_matrix.py`: workflows, templates, Dependabot and CODEOWNERS, people, settings and packages.
-- [ ] Saved replies/favorites/watch levels/stars, alerts/packages/Pages where supported.
-- [ ] Cross-repository coverage is complete only when the corresponding single-repository operation and batch behavior are complete; read-only category views are tracked separately from multi-target writes.
-- [ ] GX12 collaboration/knowledge.
-- [ ] GX09: Why Can't I Merge? and Merge Selected... do not yet name the specific ruleset or CODEOWNERS rule that blocks (only the review window's Check Merge Policy does), and nothing watches a pull request to say when its readiness changes.
-- [ ] GX10: attestation signatures are not verified in QUILL (it points to gh attestation verify), and a downloaded release file is not checked against its digest.
 - [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance.
 
 #### Documentation at the end of each delivery batch
@@ -58,11 +86,12 @@ Each is done only with evidence: a test or a live run.
 
 #### Requirement audit: what is still open
 
-The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`: 82 of 100 GH-R ids met, 11 partly met, 7 not met; every Must is at least partly met.
+The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. On main (2026-11-20) it counts 86 of 100 GH-R ids met, 8 partly met and 6 not met; every Must is at least partly met. The six not met are all in #1975.
 
-- [ ] **The rest of PRD 16.7:** a menu row for Subscribe and Block, star lists, Fork and Pin and Favorite on the You page, sponsoring a repository's owner from the repository, blocking from an organization, leaving an organization and answering an invitation, reactions on comments, and commits.
+- [ ] **The rest of PRD 16.7** (#1974): Subscribe and Block, star lists, Fork and Pin and Favorite on the You page, sponsoring a repository's owner, blocking from an organization, leaving an organization and answering an invitation, reactions on comments, and commits.
 - [ ] **GH-R-150 and 151:** more kinds under Across Repositories (see the by-name collections row above).
-- [ ] **Shoulds and Mays:** Alt+Enter on a GitHub reference in a document (036), the branch rule tutorial (105; the ruleset and branch protection editing it needs is now in, #1961), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116) and Ask How (118).
+- [ ] **Shoulds and Mays in #1975:** Alt+Enter on a GitHub reference in a document (036), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116) and Ask How (118).
+- [ ] **GH-R-105:** the branch rule tutorial, the eleventh lesson of D8. The ruleset and branch protection editing it needs is in (#1961). Not started.
 
 ### 1.4 Then: documentation as good as WordPress's
 
@@ -71,6 +100,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 ### 1.5 Waiting on Jeff and the testers
 
 - [ ] Run `python docs/qa/github-live-run.py --create` after signing in again, and the live rows marked "needs Jeff".
+- [ ] Read Only, Organize, Full and Safe Mode on the test repository refuse and allow as tested, and the permission explanations (greyed rows, Shift+F1, GitHub's own refusals) match what GitHub does.
 - [ ] GitHub live scenarios: multiple roles/accounts, protected branches, organization restrictions, rate limiting, private repositories, project fields, secrets, failure/retry and no-API fallbacks; the Copilot cloud agent commands on a Copilot plan.
 - [ ] Vote... in a real discussion poll, and the Pinned (spotlight) place, on the test repository.
 - [ ] Edit Workflow..., New Workflow... and Compare Configuration... on the test repository (each through a pull request, then closed); Dependabot Commands... on a real Dependabot pull request, and whether GitHub still accepts `@dependabot merge`, `squash and merge`, `cancel merge`, `close` and `reopen`.
@@ -82,7 +112,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - [ ] Roles and accounts on GitHub: My Access Here, Why Can't They? and Access Review against real permissions (a custom role, a team grant, an outside collaborator); Bulk Access Changes on the test organization; Compare Accounts and Act As with two signed-in accounts; Use GitHub CLI Sign-In...; and an account on a GitHub Enterprise Server, if one can be borrowed.
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
 - [ ] Plain-Language Batch on the test repository (assign, then unassign, by sentence; GitHub's search may need a moment to index a new issue), and Ctrl+Shift+S in the real window.
-- [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.
+- [ ] **GH-R-157:** the JAWS and NVDA checks for the checklists. The VoiceOver part is in the Backlog with the other macOS work.
 - [ ] WordPress current candidate: run the documented live regression on an authorized test site and distinguish existing site-side failures from regressions.
 - [ ] Seed QUILL Accessible Forms (QAF), Gravity Forms, Paid Memberships Pro (PMPro), custom types/taxonomies/meta, constrained roles and realistic media/content for the supported scope.
 - [ ] Verify taxonomy discovery, nested fields, block notes, upload/chunking/regenerate sizes, media listening/watching and contributor restrictions where still unverified.
@@ -106,15 +136,12 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 
 "Route" means the REST route that does it. "wp-admin" means there is no route.
 
-##### Shop (WooCommerce)
-
-
 Scheduled Actions and the extensions marketplace are wp-admin only. Subscriptions and Bookings are paid extensions with their own routes, not in scope.
 
 ##### Payments in QAF: waiting on the test site and a person
 
 - [ ] **Square and connections on a real site.** On the test site's sandbox: a Square payment, a declined card (4000 0000 0000 0002), a refund, and a webhook replay, with the receipt and the entry showing the same amount and status; then a form with two Stripe connections, a PayPal and a Square routing a test payment by each kind of rule, and each refund returning to the account that took it.
-- [ ] **Square's card field with a screen reader**, before any live use: NVDA and JAWS on Windows, VoiceOver on macOS and iOS (the field is Square's iframe, so this is a check of Square's markup, with QAF's group label and status messages around it).
+- [ ] **Square's card field with a screen reader**, before any live use: NVDA and JAWS on Windows (the field is Square's iframe, so this is a check of Square's markup, with QAF's group label and status messages around it). The VoiceOver check on macOS and iOS is in the Backlog.
 - [ ] **Per-connection test or live mode**, only if a site needs a live connection beside a test one. Today the site's one mode covers all its connections; the contract already reports `test_mode` per connection.
 
 ### 2.4 Built but not yet tried live
@@ -124,7 +151,6 @@ What is left here has tests over recorded or fake answers but has not been check
 - [ ] The whole Workbench, W1 to W8 and packages 1 to 14. It is now the default, so this comes before the next release.
 - [ ] A WooCommerce refund, only against a gateway's test mode: the test site has no gateway in test mode yet (only Cash on Delivery).
 - [ ] PMPro Members of This Level on a big site (it asks about each person; the test site has 10), and the paged discount-code list past one page.
-- [ ] Shop Analytics: whether Customers should take a date range (Jeff).
 - [ ] Yoast: Open in wp-admin landing on the Yoast panel (needs a browser).
 - [ ] QAF's spam settings with a live submission. (QAF 1.0.0 now runs on the test site, BAF is inactive, and the Forms tests 63 to 66 pass against it.)
 - [ ] Gravity Forms feeds and results: they need a feed add-on and the Quiz, Poll or Survey add-on on the test site (building, conversion, notifications, confirmations and test submissions pass live).
@@ -136,7 +162,7 @@ What is left here has tests over recorded or fake answers but has not been check
 ### 2.5 Open rows from the WordPress delivery checklist
 
 - [ ] **QAF name migration, live:** QAF is deployed and BAF inactive on the test site; check that BAF's old forms, entries and pages came across (the run only uses forms QAF made).
-- [ ] **QAF spam, live:** the five spam guarantees are proven in QAF's PHPUnit suite; what is left is a live submission on the test site once QAF is deployed there.
+- [ ] **QAF spam, live:** the five spam guarantees are proven in QAF's PHPUnit suite; what is left is a live submission on the test site, where QAF 1.0.0 now runs.
 - [ ] **PMPro, live:** WordPress 6.9+ with PMPro 3.9+ and a role with customized PMPro capabilities (the card and billing field stripping is done).
 - [ ] **Payments, live:** QAF's and PMPro's PHP suites, Stripe test mode, a PayPal sandbox and a reachable webhook endpoint on the test site: webhook authenticity/replay/order, duplicate submission and accessible checkout acceptance.
 - [ ] **Practice Site from an installed build:** start/connect/reset/stop/restart with the bundled Node and payloads on a clean installation (the source run passes).
@@ -150,4 +176,14 @@ What is left here has tests over recorded or fake answers but has not been check
 Decided on 2026-11-19 in `docs/design/2026-11-19-family-ux-pilots.md`: the pilots are Quill Cast and QUILL Lite, and the work starts with truthful results and stable lists. Lost work or misdirected input seen in a pilot jumps the queue.
 
 - [ ] Testers, with a screen reader, on Cast's still lists: one re-read, not two, when rows arrive above the selected episode; the list's changing name ("Inbox (9)") is not read again; QUILL's Play Queue window keeps its caret when an episode finishes (speech and braille); "3 new episodes in The Daily." is heard once.
-- [ ] Journey A, from Cast to a saved place to QUILL, once FUX-04 and FUX-06 are in.
+- [ ] Journey A, from Cast to a saved place to QUILL. Ready now that FUX-04 and FUX-06 are in (#1958, #1969).
+
+## Backlog (not this release, Jeff 2026-11-20)
+
+Not scheduled for this release. All macOS features are here: where a row above covers Windows and macOS, only its macOS part is here.
+
+- **A runnable macOS Radio app.** Its entry point and UI do not exist yet, although `standalone/radio-mac/pyproject.toml` names them.
+- **Code-review group F, the native launcher and macOS Radio** (9). Launcher: a damaged portable can fall back to the host runtime and storage; ANSI path APIs lose characters; the launcher icon macro is never defined; a launch failure shows two dialogs; a failed runtime installer is left in the temporary folder. Mac Radio: Stop can lose a reconnect race; continuations restart the full duration; same-name starts overwrite; three tests fail with a NameError on a missing import; packaging names a README that is missing. Not started; plan.md ("Native launcher delivery review", "macOS Radio review") is the record.
+- **Verifying release attestation signatures inside QUILL**, which would add Sigstore. QUILL keeps pointing to `gh attestation verify` (GX10).
+- **A date range for Shop Analytics' Customers report** (also in the WordPress Workbench PRD's Backlog).
+- **The macOS and iOS screen-reader checks:** VoiceOver on Square's card field, and on the GitHub checklists (GH-R-157).
