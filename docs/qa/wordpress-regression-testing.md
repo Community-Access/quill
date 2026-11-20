@@ -850,7 +850,9 @@ in QUILL, on one form the run builds and deletes. Its notifications go only to
 153. **Discount codes past one page.** 30 codes made through New Discount Code.
      PMPro 3.9.2 has no discount-codes ability, only its quick search, which
      answers 20 at most and cannot page: the node lists 20, each once, and a
-     row saying the rest are in wp-admin. Look Up reads any code.
+     row saying the rest are in wp-admin. Look Up reads any code. The 30
+     codes are cleaned up with wp-cli afterwards, since pmpro/v1 has no
+     delete route.
 154. **Members of This Level at size.** 250 throwaway people (60 with the
      level) added, so the site has 260: the question says it is slow, every
      person is asked about, the members are all found, Stop keeps what was
@@ -890,7 +892,7 @@ section by hand. A result marked "no sign-in" was checked without signing in.
 - **Mode:** signed in as quilladmin, quill-editor, quill-author, quill-contributor
 - **Site:** QUILL WordPress Test Site (https://lp.csedesigns.com/wordpress), WordPress 7.1.5
 - **Plugins:** WooCommerce 11.3.1 (`wc/v3`); Yoast SEO 28.9 (`yoast/v1`); The Events Calendar 6.18.4.1 (`tribe/events/v1`); BITS Accessible Forms 1.0.0 (`baf/v1`); QUILL Accessible Forms 1.0.0 (`qaf/v1`); Gravity Forms 3.2.3.1 (`gf/v2`); Paid Memberships Pro 3.9.2 (`pmpro/v1`); Redirection 5.10.1 (`redirection/v1`); QUILL Site Types 0.1.0 (`quill-site-types/v1`); Abilities (version not shown) (`wp-abilities/v1`); Advanced Custom Fields 6.8.12 (on `wp/v2`)
-- **Results:** 171 pass, 0 fail, 35 needs Jeff, 10 not run
+- **Results:** 173 pass, 0 fail, 33 needs Jeff, 10 not run
 
 ### Site and routes
 
@@ -1179,8 +1181,8 @@ section by hand. A result marked "no sign-in" was checked without signing in.
 | 152 | QAF: BAF's forms, entries and pages came across | pass | quilladmin | BAF's form 9 (QUILL live test: Ask us anything (2026-11-14 21..., made 2026-11-14) is QAF's: 2 active, 1 spam, 1 trash entries; baf/v1 reads it; BAF's block and shortcode on a page show it (2 forms) and QUILL finds th... |
 | 153 | Paid Memberships Pro: discount codes past one page | pass | quilladmin | 30 codes made through New Discount Code (Code QLTPAGE001 on QUILL WordPress Test Site: 1...); the node lists 20 in 25.7 s, each once, then: QUILL WordPress Test Site may have more discount codes than these 20: Paid Me... |
 | 154 | Paid Memberships Pro: Members of This Level at 260 people | pass | quilladmin | 260 people; asked first: Find every member of QUILL Free on QUILL WordPress Test Site? Paid Memberships Pro has... Read in 276 s (1061 ms a person): QUILL Free on QUILL WordPress Test Site has 62 members. Stopped at 4... |
-| 102 | New Discount Code | needs Jeff | - | pmpro/v1 has no route to delete a code, so the run only previews one |
-| 105 | Resend Notifications | needs Jeff | - | it sends email to real people |
+| 102 | New Discount Code | pass | - | covered by live test 153 (30 codes made through New Discount Code; cleaned up with wp-cli, since pmpro/v1 has no delete route) |
+| 105 | Resend Notifications | pass | - | covered by live test 147 (Resend Notifications previewed and sent only to example.invalid) |
 
 ### Workbench, two sites (15.2, 15.12)
 

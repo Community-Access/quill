@@ -1372,7 +1372,8 @@ Forms node lists it.</li>
 New Discount Code. PMPro 3.9.2 has no discount-codes ability, only its
 quick search, which answers 20 at most and cannot page: the node lists
 20, each once, and a row saying the rest are in wp-admin. Look Up reads
-any code.</li>
+any code. The 30 codes are cleaned up with wp-cli afterwards, since
+pmpro/v1 has no delete route.</li>
 <li><strong>Members of This Level at size.</strong> 250 throwaway people
 (60 with the level) added, so the site has 260: the question says it is
 slow, every person is asked about, the members are all found, Stop keeps
@@ -1425,7 +1426,7 @@ Memberships Pro 3.9.2 (<code>pmpro/v1</code>); Redirection 5.10.1
 (<code>quill-site-types/v1</code>); Abilities (version not shown)
 (<code>wp-abilities/v1</code>); Advanced Custom Fields 6.8.12 (on
 <code>wp/v2</code>)</li>
-<li><strong>Results:</strong> 171 pass, 0 fail, 35 needs Jeff, 10 not
+<li><strong>Results:</strong> 173 pass, 0 fail, 33 needs Jeff, 10 not
 run</li>
 </ul>
 <h3 id="site-and-routes">Site and routes</h3>
@@ -3302,17 +3303,18 @@ at 4…</td>
 <tr>
 <td>102</td>
 <td>New Discount Code</td>
-<td>needs Jeff</td>
+<td>pass</td>
 <td>-</td>
-<td>pmpro/v1 has no route to delete a code, so the run only previews
-one</td>
+<td>covered by live test 153 (30 codes made through New Discount Code;
+cleaned up with wp-cli, since pmpro/v1 has no delete route)</td>
 </tr>
 <tr>
 <td>105</td>
 <td>Resend Notifications</td>
-<td>needs Jeff</td>
+<td>pass</td>
 <td>-</td>
-<td>it sends email to real people</td>
+<td>covered by live test 147 (Resend Notifications previewed and sent
+only to example.invalid)</td>
 </tr>
 </tbody>
 </table>
