@@ -1,9 +1,13 @@
-"""How old, in the plain-language batch grammar (PRD 15.8): "older than a year", "before 2024".
+"""How old, in the plain-language batch grammars: "older than a year", "before 2024".
+
+Shared by the WordPress Workbench's Plain-Language Batch (WordPress PRD 15.8)
+and the GitHub Workbench's (GitHub PRD 22.6, GH-R-086): one reading of an age
+for both, moved here from ``quill.core.wordpress`` so neither forks it.
 
 :func:`find_age` takes the age out of a batch phrase's filters and turns it
-into the dates WordPress's ``before`` and ``after`` query parameters take, by
-the item's date. It reads a fixed set of shapes, so the same words always
-mean the same dates:
+into ISO dates, ``before`` and ``after``: WordPress's query parameters of
+those names, and GitHub's ``created:<`` and ``updated:>`` qualifiers. It
+reads a fixed set of shapes, so the same words always mean the same dates:
 
 - ``older than a year``, ``older than six months``, ``older than 30 days``,
   ``older than 3 weeks`` (counted back from today);
@@ -19,12 +23,13 @@ from __future__ import annotations
 
 import calendar
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date, timedelta
 
 from quill.core.error_codes import CodedError
 
-__all__ = ["Age", "AgeError", "find_age"]
+__all__ = ["STOPS", "Age", "AgeError", "find_age"]
 
 _NUMBERS = {
     "a": 1, "an": 1, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6,
@@ -32,11 +37,9 @@ _NUMBERS = {
 }  # fmt: skip
 _MONTHS = {name.lower(): i for i, name in enumerate(calendar.month_name) if name}
 _MONTHS.update({name.lower(): i for i, name in enumerate(calendar.month_abbr) if name})
-_AGE = re.compile(
-    r"\b(?P<rel>older than|newer than|younger than|before|after|since)\s+"
-    r"(?P<what>.+?)(?=\s+(?:by|in)\b|$)",
-    re.IGNORECASE,
-)
+_RELATIONS = r"\b(?P<rel>older than|newer than|younger than|before|after|since)\s+"
+#: The words that end an age in WordPress's grammar: "older than a year by Ann".
+STOPS: tuple[str, ...] = ("by", "in")
 _SPAN = re.compile(
     r"^(?P<n>\d+|[a-z]+)\s+(?P<unit>day|week|month|year)s?(?:\s+old)?$", re.IGNORECASE
 )
@@ -45,7 +48,7 @@ _SPAN = re.compile(
 class AgeError(CodedError):
     """An age the batch grammar does not read."""
 
-    code = "QUILL-WP-WORKBENCH-AGE"
+    code = "QUILL-WORKBENCH-PLAIN-AGE"
 
     @property
     def plain(self) -> str:
@@ -54,7 +57,7 @@ class AgeError(CodedError):
 
 @dataclass(frozen=True)
 class Age:
-    """WordPress's ``before`` and ``after`` (ISO dates, either may be empty), and the words."""
+    """``before`` and ``after`` (ISO dates, either may be empty), and the words."""
 
     before: str = ""
     after: str = ""
@@ -119,9 +122,15 @@ def _iso(day: date, end: bool = False) -> str:
     return f"{day.isoformat()}T{'23:59:59' if end else '00:00:00'}"
 
 
-def find_age(text: str, today: date) -> tuple[Age, str]:
-    """The age in *text* and *text* without it; an empty :class:`Age` when it names none."""
-    found = _AGE.search(text)
+def find_age(text: str, today: date, *, stops: Sequence[str] = STOPS) -> tuple[Age, str]:
+    """The age in *text* and *text* without it; an empty :class:`Age` when it names none.
+
+    The age runs to the end of *text* or to the first of *stops*, the words
+    that start the grammar's next filter.
+    """
+    ending = "|".join(re.escape(word) for word in stops)
+    what = rf"(?P<what>.+?)(?=\s+(?:{ending})\b|$)" if ending else r"(?P<what>.+)"
+    found = re.search(_RELATIONS + what, text, re.IGNORECASE)
     if not found:
         return Age(), text
     rel, what = found.group("rel").lower(), found.group("what")

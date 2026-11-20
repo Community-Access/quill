@@ -248,10 +248,7 @@ class GitHubOrgAdmin:
             (200,),
         )
         whole = data if isinstance(data, Mapping) else {}
-        repos = whole.get("conditions", {}) or {}
-        names = (repos.get("repository_name") or {}).get("include") or ()
-        where = f" In repositories {', '.join(map(str, names))}." if names else ""
-        return ruleset_words.summary(whole) + where
+        return ruleset_words.summary(whole)  # names the repositories it covers, too
 
     def set_enforcement(self, org: str, ruleset: RulesetRow, enforcement: str) -> None:
         if enforcement not in dict(ENFORCEMENTS):

@@ -687,6 +687,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Rule Insights (`repository:repo_rule_insights`) | repository, settings | Rule Insights: recent pushes the rulesets here passed, blocked or let through. |
 | My Notifications Here (`repository:repo_my_notifications`) | repository, activity | My Notifications Here: your notifications from this repository only. |
 | Custom Property Values (`repository:repo_property_values`) | repository, settings | Custom Property Values: the organization's custom properties, as set here. |
+| Rulesets (`repository:repo_rulesets`) | repository, settings | Rulesets: every ruleset on this repository, its own and the organization's. Alt+Enter opens one's sheet: its target, every rule and setting, who may bypass it, and a Summary in plain words. Delete removes one after its name is typed. |
 | person (`person:person`) | person | A person: their repositories, activity, followers and who they follow. |
 | Profile (`person:person_profile`) | person, person | Profile: who this person is, their year of contributions as numbers, and what they pinned. |
 | Sponsor (`person:person_sponsor`) | person, person | Sponsor: whether this person takes sponsorships, and each tier with its price. |
@@ -719,10 +720,10 @@ Everything below is generated from the tables the window is built from. The GitH
 | Runner Groups (`organization:runner_groups`) | organization, organization | Runner Groups: which repositories may use which of the organization's runners. |
 | Runners (`organization:org_runners`) | organization, organization | Runners: the organization's own machines that run jobs. |
 | Larger Runners (`organization:hosted_runners`) | organization, organization | Larger Runners: GitHub's bigger machines the organization pays for. |
-| Members (`organization:org_members`) | organization, organization | Members: the organization's people. Ctrl+N invites someone; Delete removes them. |
+| Members (`organization:org_members`) | organization, organization | Members: the organization's people, each an owner or a member, with two-factor sign-in on or off where you may see it. Ctrl+N invites someone; Delete removes them, after their name is typed, and never removes the last owner or your own ownership. |
 | Invitations (`organization:org_invitations`) | organization, organization | Invitations: people asked to join the organization who have not answered. |
 | Blocked People (`organization:org_blocks`) | organization, organization | Blocked People: who cannot take part in the organization's repositories. |
-| Outside Collaborators (`organization:outside_collaborators`) | organization, organization | Outside Collaborators: people with access to repositories but not members. |
+| Outside Collaborators (`organization:outside_collaborators`) | organization, organization | Outside Collaborators: people with access to repositories but not members. Delete takes away every repository they have here, after their name is typed. |
 | Security Managers (`organization:security_managers`) | organization, organization | Security Managers: teams that see and manage every security alert. |
 | Custom Properties (`organization:custom_properties`) | organization, organization | Custom Properties: labels the organization gives its repositories. |
 | Issue Types (`organization:org_issue_types`) | organization, organization | Issue Types: the kinds of issue, such as Bug, the organization's repositories offer. |
@@ -739,7 +740,11 @@ Everything below is generated from the tables the window is built from. The GitH
 | Secret Scanning Alerts (`organization:org_secret_alerts`) | organization, organization | Secret Scanning Alerts: secrets found in any repository. The secret itself is never asked for, so it is never shown here. |
 | Security Advisories (`organization:org_advisories`) | organization, organization | Security Advisories: the repository advisories across this organization. |
 | Recent Events (`organization:org_events`) | organization, organization | Recent Events: the organization's public activity, newest first. |
-| Custom Property Values (`organization:org_property_values`) | organization, organization | Custom Property Values: every repository's custom properties in one list. Change a repository's on its Properties. |
+| Custom Property Values (`organization:org_property_values`) | organization, organization | Custom Property Values: every repository and every custom property, a row a repository, with unset properties said as not set. Change a repository's on its Properties, or several at once with Set Repositories' Custom Property... on the organization. |
+| Rulesets (`organization:org_rulesets`) | organization, organization | Rulesets: the organization's rulesets, which apply across its repositories. Alt+Enter opens one's sheet, with the repositories it covers by name or property; Delete removes it from every repository after its name is typed. |
+| Rule Insights (`organization:org_rule_insights`) | organization, organization | Rule Insights: recent pushes the organization's rulesets passed, blocked or let through, in every repository. |
+| Access Review: People (`organization:access_people`) | organization, organization | Access Review: People: every person and repository pair, a row each, with the effective role and where it comes from: being an owner, the base permission, a team or direct access, and the others after 'also'. Filter it by a name, a role or a team; File, Export List saves it. |
+| Access Review: Teams (`organization:access_teams`) | organization, organization | Access Review: Teams: every team and repository pair, a row each, with the team's role there and how many people it reaches. File, Export List saves it. |
 | Saved search (`pinned_search:pinned_search`) | pinned_search | A saved search pinned as a node: its list is the search's results, read afresh each time. Unpin Node, on its row in Saved Searches, takes the node away. |
 
 ### The menu bar and its keys
@@ -792,6 +797,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Sort By > Recently Updated | (submenu letter) | Order the list this way. |
 | Sort By > Least Recently Updated | (submenu letter) | Order the list this way. |
 | Sort By > Most Comments | (submenu letter) | Order the list this way. |
+| Sort By > By Column... | (submenu letter) | Order this list by one of its columns, first to last or last to first; remembered for this list. For lists other than Issues, which GitHub orders. |
 | Quick Filters > Assigned to Me | (submenu letter) | Show only items assigned to me. Checked when it is on; it combines with the others and with what you type in the filter box. |
 | Quick Filters > Assigned To... | (submenu letter) | Show only items assigned to someone you name. Checked when it is on; it combines with the others and with what you type in the filter box. |
 | Quick Filters > Opened by Me | (submenu letter) | Show only items opened by me. Checked when it is on; it combines with the others and with what you type in the filter box. |
@@ -818,6 +824,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Group By > State | (submenu letter) | Put the list's groups in the tree, one node per state. |
 | Group By > Repository | (submenu letter) | Put the list's groups in the tree, one node per repository. |
 | Group By > Review State | (submenu letter) | Put the list's groups in the tree, one node per review state. |
+| Group By > By Column... | (submenu letter) | Group this list by one of its columns, the groups as tree nodes; remembered for this list. For lists other than Issues, which group by the rows above. |
 | Columns... | Ctrl+Shift+U | Choose which columns this list shows, and their order. |
 | Back | Alt+Left | The view you were on before. Backspace too. |
 | Forward | Alt+Right | The view you went back from. |
@@ -918,6 +925,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | --- | --- | --- |
 | Workbench Options... | Ctrl+Shift+O | Where the Workbench opens, how notifications check, lists and privacy. |
 | Dry Run | Ctrl+Alt+D | Turn Dry Run on or off. While it is on, every write asks and previews as usual, then stops before sending and says what it would have sent. |
+| Plain-Language Batch... | Ctrl+Shift+S | Say a change to many issues or pull requests in words, such as close every issue labelled duplicate older than 90 days; check the exact items it found, then send them. No AI: the same words always mean the same thing. |
 | GitHub API Console... | Ctrl+Shift+J | Send any GitHub REST request or GraphQL query: completion from GitHub's API description, what it does and needs said first, the answer as a tree. |
 
 #### Window
@@ -979,7 +987,7 @@ Keys the window answers that are not menu rows:
 - **template**: Open Template..., Convert Form or Template..., Copy to Repositories..., Copy Link, Open on GitHub; Properties...
 - **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link, New View..., Items in a View..., Rename a View..., Delete a View..., Rename a Field..., Add an Issue Field..., Edit a Draft..., Make a Draft an Issue..., Move an Item..., Edit a Status Update..., Delete a Status Update..., Delete a Workflow..., Share the Project..., Link a Team..., Unlink a Team...; Properties...
 - **team**: Members and Access..., Copy Link, Open on GitHub, Delete Team..., Pending Invitations; Properties...
-- **organization**: Open, Roles..., Rulesets..., Open on GitHub, Fork Workflow Settings, Fork Workflows from Private Repositories...; More: Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, My Activity Here, Require Sign-off on Web Commits..., Follow Organization, Unfollow Organization, Security Overview, Block from Organization..., Leave Organization..., Your Invitation; Properties...
+- **organization**: Open, Roles..., Rulesets..., Open on GitHub, Fork Workflow Settings, Fork Workflows from Private Repositories...; More: Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, Members Without Two-Factor, My Activity Here, Require Sign-off on Web Commits..., Follow Organization, Unfollow Organization, Security Overview, Block from Organization..., Leave Organization..., Your Invitation; Properties...
 - **favorite**: Open, Copy Link, Open on GitHub, Add to or Remove from Favorites; Properties...
 - **admin_action**: Open; Properties...
 - **watch**: Edit Watch..., Pause or Resume Watch, Check Watches Now, Remove Watch, Why?, Open on GitHub; Properties...
@@ -1116,7 +1124,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 851 yes, 0 planned, 290 not needed and 866 left to GitHub.
+In all: 853 yes, 0 planned, 288 not needed and 866 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1512,24 +1520,24 @@ In all: 851 yes, 0 planned, 290 not needed and 866 left to GitHub.
 
 #### Branches
 
-38 operations: 8 yes, 30 not needed.
+38 operations: 10 yes, 28 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
 | List branches | `GET /repos/{owner}/{repo}/branches` | Yes | Navigator: Repository > owner/name > Code > Branches |
 | Get a branch | `GET /repos/{owner}/{repo}/branches/{branch}` | Yes | Properties (Alt+Enter) on Branch |
 | Delete branch protection | `DELETE /repos/{owner}/{repo}/branches/{branch}/protection` | Yes | editor GitHub menu > Configure Branch Protection... |
-| Get branch protection | `GET /repos/{owner}/{repo}/branches/{branch}/protection` | Yes | editor GitHub menu > Configure Branch Protection... |
-| Update branch protection | `PUT /repos/{owner}/{repo}/branches/{branch}/protection` | Yes | editor GitHub menu > Configure Branch Protection... |
+| Get branch protection | `GET /repos/{owner}/{repo}/branches/{branch}/protection` | Yes | Properties (Alt+Enter) on Branch Protection |
+| Update branch protection | `PUT /repos/{owner}/{repo}/branches/{branch}/protection` | Yes | Properties (Alt+Enter) on Branch Protection: Approvals needed |
 | Delete admin branch protection | `DELETE /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
 | Get admin branch protection | `GET /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
 | Set admin branch protection | `POST /repos/{owner}/{repo}/branches/{branch}/protection/enforce_admins` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
 | Delete pull request review protection | `DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
 | Get pull request review protection | `GET /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
 | Update pull request review protection | `PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_pull_request_reviews` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
-| Delete commit signature protection | `DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
+| Delete commit signature protection | `DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures` | Yes | Properties (Alt+Enter) on Branch Protection: Require signed commits |
 | Get commit signature protection | `GET /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
-| Create commit signature protection | `POST /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
+| Create commit signature protection | `POST /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures` | Yes | Properties (Alt+Enter) on Branch Protection: Require signed commits |
 | Remove status check protection | `DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
 | Get status checks protection | `GET /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
 | Update status check protection | `PATCH /repos/{owner}/{repo}/branches/{branch}/protection/required_status_checks` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
@@ -2293,13 +2301,13 @@ In all: 851 yes, 0 planned, 290 not needed and 866 left to GitHub.
 | Remove public organization membership for the authenticated user | `DELETE /orgs/{org}/public_members/{username}` | Yes | Properties (Alt+Enter) on Organization: Show my membership publicly |
 | Check public organization membership for a user | `GET /orgs/{org}/public_members/{username}` | Yes | Properties (Alt+Enter) on Organization |
 | Set public organization membership for the authenticated user | `PUT /orgs/{org}/public_members/{username}` | Yes | Properties (Alt+Enter) on Organization: Show my membership publicly |
-| Get all organization repository rulesets | `GET /orgs/{org}/rulesets` | Yes | context menu > Rulesets... |
+| Get all organization repository rulesets | `GET /orgs/{org}/rulesets` | Yes | Navigator: Organization > organization > Rulesets |
 | Create an organization repository ruleset | `POST /orgs/{org}/rulesets` | Yes | context menu > Promote to Organization... |
-| List organization rule suites | `GET /orgs/{org}/rulesets/rule-suites` | Yes | context menu > Rulesets... |
+| List organization rule suites | `GET /orgs/{org}/rulesets/rule-suites` | Yes | Navigator: Organization > organization > Rule Insights |
 | Get an organization rule suite | `GET /orgs/{org}/rulesets/rule-suites/{rule_suite_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
-| Delete an organization repository ruleset | `DELETE /orgs/{org}/rulesets/{ruleset_id}` | Yes | context menu > Rulesets... |
-| Get an organization repository ruleset | `GET /orgs/{org}/rulesets/{ruleset_id}` | Yes | context menu > Rulesets... |
-| Update an organization repository ruleset | `PUT /orgs/{org}/rulesets/{ruleset_id}` | Yes | context menu > Rulesets... |
+| Delete an organization repository ruleset | `DELETE /orgs/{org}/rulesets/{ruleset_id}` | Yes | context menu > Delete... |
+| Get an organization repository ruleset | `GET /orgs/{org}/rulesets/{ruleset_id}` | Yes | Properties (Alt+Enter) on Organization Ruleset |
+| Update an organization repository ruleset | `PUT /orgs/{org}/rulesets/{ruleset_id}` | Yes | Properties (Alt+Enter) on Organization Ruleset: Repository names to include |
 | Get organization ruleset history | `GET /orgs/{org}/rulesets/{ruleset_id}/history` | Yes | context menu > Rulesets... |
 | Get organization ruleset version | `GET /orgs/{org}/rulesets/{ruleset_id}/history/{version_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | List security manager teams | `GET /orgs/{org}/security-managers` | Yes | Navigator: Organization > organization > Security Managers |
@@ -2575,13 +2583,13 @@ In all: 851 yes, 0 planned, 290 not needed and 866 left to GitHub.
 | Get a repository README | `GET /repos/{owner}/{repo}/readme` | Yes | Navigator: Repository > owner/name > Overview |
 | Get a repository README for a directory | `GET /repos/{owner}/{repo}/readme/{dir}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Get rules for a branch | `GET /repos/{owner}/{repo}/rules/branches/{branch}` | Yes | Properties (Alt+Enter) on Branch |
-| Get all repository rulesets | `GET /repos/{owner}/{repo}/rulesets` | Yes | Navigator: Repository > owner/name > Settings > Branch Protection |
+| Get all repository rulesets | `GET /repos/{owner}/{repo}/rulesets` | Yes | Navigator: Repository > owner/name > Settings > Rulesets |
 | Create a repository ruleset | `POST /repos/{owner}/{repo}/rulesets` | Yes | context menu > Add to Missing... |
 | List repository rule suites | `GET /repos/{owner}/{repo}/rulesets/rule-suites` | Yes | Navigator: Repository > owner/name > Settings > Rule Insights |
 | Get a repository rule suite | `GET /repos/{owner}/{repo}/rulesets/rule-suites/{rule_suite_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Delete a repository ruleset | `DELETE /repos/{owner}/{repo}/rulesets/{ruleset_id}` | Yes | context menu > Promote to Organization... |
 | Get a repository ruleset | `GET /repos/{owner}/{repo}/rulesets/{ruleset_id}` | Yes | Properties (Alt+Enter) on Ruleset |
-| Update a repository ruleset | `PUT /repos/{owner}/{repo}/rulesets/{ruleset_id}` | Yes | Properties (Alt+Enter) on Ruleset: Approvals needed |
+| Update a repository ruleset | `PUT /repos/{owner}/{repo}/rulesets/{ruleset_id}` | Yes | Properties (Alt+Enter) on Ruleset: Rules |
 | Get repository ruleset history | `GET /repos/{owner}/{repo}/rulesets/{ruleset_id}/history` | Yes | context menu > Ruleset History... |
 | Get repository ruleset version | `GET /repos/{owner}/{repo}/rulesets/{ruleset_id}/history/{version_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | List repository tags | `GET /repos/{owner}/{repo}/tags` | Yes | Navigator: Repository > owner/name > Code > Tags |
@@ -2669,7 +2677,7 @@ In all: 851 yes, 0 planned, 290 not needed and 866 left to GitHub.
 | Create a team | `POST /orgs/{org}/teams` | Yes | context menu > New Team... |
 | Delete a team | `DELETE /orgs/{org}/teams/{team_slug}` | Yes | context menu > Delete Team... |
 | Get a team by name | `GET /orgs/{org}/teams/{team_slug}` | Yes | Properties (Alt+Enter) on Team |
-| Update a team | `PATCH /orgs/{org}/teams/{team_slug}` | Yes | Properties (Alt+Enter) on Team: Description |
+| Update a team | `PATCH /orgs/{org}/teams/{team_slug}` | Yes | Properties (Alt+Enter) on Team: Parent team |
 | List pending team invitations | `GET /orgs/{org}/teams/{team_slug}/invitations` | Yes | context menu > Pending Invitations |
 | List team members | `GET /orgs/{org}/teams/{team_slug}/members` | Yes | Properties (Alt+Enter) on Team |
 | Remove team membership for a user | `DELETE /orgs/{org}/teams/{team_slug}/memberships/{username}` | Yes | Account > Roles and Access > Bulk Access Changes... |

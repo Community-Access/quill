@@ -32,7 +32,7 @@ from typing import Any, Protocol
 from quill.core.counted import plural
 from quill.core.workbench.actions import ActionRow, ActionTable
 from quill.core.workbench.filters import Query, describe, matches_words, parse
-from quill.core.workbench.list_place import landing_index, same_cells
+from quill.core.workbench.list_place import same_cells
 from quill.core.workbench.menus import MenuSpec
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import NodeSpec, TreeSpec
@@ -318,6 +318,7 @@ class WorkbenchFrame(
     def _show_node(self, ref: NodeRef, *, remember: bool) -> None:
         if self.current is not None and self.current != ref:
             self.write_count(self.current)  # on the node being left, so it is never announced
+            self.keep_row_place()  # so Back lands on the same row
         if remember and self.current is not None and self.current != ref:
             self.history.append(self.current)
             self.forward.clear()
@@ -491,7 +492,7 @@ class WorkbenchFrame(
         else:
             # Keep the place: the same item, selected and focused in ONE change.
             # Select then Focus was two, and a screen reader read the row twice.
-            landing = landing_index(self.rows, self.list.GetFocusedItem(), rows)
+            landing = self.landing_for(rows)
             self.rows, self._shown_cells = rows, cells
             self.list.DeleteAllItems()
             for index, row_cells in enumerate(cells):
