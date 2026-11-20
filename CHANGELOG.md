@@ -20,6 +20,28 @@
   off or give plain help without the names.
 - **Ask How...** (Alt+Shift+A) asks your chosen AI, using only the GitHub
   help. A command it names can be run from the answer.
+### GitHub Workbench: every field proved, and Undo that puts things back (2026-11-20)
+
+Every editable field on every Properties sheet now has a test that checks
+what is sent, that the save is read back, that it lands in Change History and
+that Undo works or says why not. That found these, now fixed:
+- **Undo and Redo put things back properly.** Undo read nothing fresh first,
+  so a milestone went back as no milestone, a ruleset, branch protection or
+  environment was rebuilt from nothing, and a project field could not be
+  undone at all. Undo now reads the object again, stops if someone has
+  changed it since, and then saves. A renamed label or repository can be
+  undone, and a redone change can be undone again.
+- **Number fields save.** A number was sent as text, so every number field
+  said it did not change.
+- **Your change no longer undoes someone else's.** Saving a ruleset or
+  protection put back fields another person had changed since you opened
+  the sheet, including ones you chose to keep as theirs.
+- **Retry Failed works** on a field that took the first time.
+- **A required field left empty is refused** before anything is sent, such
+  as a title, a name, a tag or a retention period.
+- **A change that cannot be undone says so** in its preview, before it
+  happens, such as a secret or taking an item out of a project.
+
 ### GitHub Workbench: every alert counted, safe alert exports and Least Privilege Advice (2026-11-20)
 
 - **Security Overview reads every page.** It used to count only the first 100
@@ -67,6 +89,47 @@ The second part of the family UX pilot (FUX-04 and FUX-06).
   Discarding drafts in the recovery window keeps the check you gave every other
   row and puts focus on the next one, not the first. Focus never moves and
   nothing extra is said.
+
+### WordPress Workbench: the shop, memberships and Gravity Forms tried on a real site (2026-11-20)
+
+Every plugin feature built since the last live run was tried on the test site
+(WordPress 7.1.5 with WooCommerce 11.3.1, Yoast SEO 28.9, Paid Memberships Pro
+3.9.2, Gravity Forms 3.2.3.1, QUILL Accessible Forms 1.0.0, Advanced Custom
+Fields 6.8.12 and Redirection 5.10.1). What it found is fixed:
+
+- **Edit Membership Level made a second level** instead of changing the one
+  you chose, because Paid Memberships Pro makes a new level for every POST. It
+  now changes the level in place. After New or Edit Membership Level, QUILL
+  reads the level back and names anything Paid Memberships Pro did not keep
+  (its REST API drops the billing and expiry periods), and Ctrl+Z on a new
+  level explains that Paid Memberships Pro does not allow deleting a level
+  through its REST API, and where to delete it instead.
+- **Members of This Level** says plainly when your account cannot list the
+  site's people, and shows when each member joined as a date.
+- **Change Items** keeps a line's price per item when you change its quantity.
+  WooCommerce kept the old line total, so 3 mugs still cost the price of 1.
+  A quantity of 0 does take the line off the order.
+- **Shop Analytics** says on its total row how many orders WooCommerce has not
+  imported into Analytics yet, so the figures do not look complete when they
+  are not.
+- **Yoast SEO:** where Yoast gives no canonical address because the site asks
+  search engines not to index it, the SEO page says so and shows the post's
+  address, instead of "none given".
+- **Gravity Forms:** Submit a Test Entry used an example.com address, which
+  Gravity Forms 2.9.15 and later turn away as spam. It now uses one Gravity
+  Forms accepts. Ctrl+Z now moves the test entry to the Trash again, because
+  QUILL finds the entry itself when Gravity Forms does not say which one it
+  made. On a site with no feed add-on, Feeds is empty instead of showing an
+  error as if it were a feed.
+- **The Watch for new form responses** works with QUILL Accessible Forms,
+  whose responses are listed one form at a time; before this it skipped the
+  site with "Missing parameter(s): form_id".
+- **QUILL Site Types:** a post type you define keeps its fields in the REST
+  API. Before this, the values you saved were dropped without a word.
+- **WP Crontrol:** Open Cron Events opens WP Crontrol 2.0's real page.
+
+The live run (`docs/qa/wordpress-live-run.py`) gains tests 127 to 143 for
+these features, and `--only` to run just some of them.
 
 ### GitHub Workbench: write workflows, Dependabot and CODEOWNERS (2026-11-19)
 

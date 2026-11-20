@@ -243,7 +243,7 @@
   "/wc-analytics/reports/import/cancel": "planned: Sites > site > Shop, reports",
   "/wc-analytics/reports/import/delete": "planned: Sites > site > Shop, reports",
   "/wc-analytics/reports/import/status": "planned: Sites > site > Shop, reports",
-  "/wc-analytics/reports/import/totals": "planned: Sites > site > Shop, reports",
+  "/wc-analytics/reports/import/totals": "covered: Sites > site > Shop Analytics, read only",
   "/wc-analytics/reports/orders": "planned: Sites > site > Shop, reports",
   "/wc-analytics/reports/orders/stats": "covered: Sites > site > Shop Analytics, read only",
   "/wc-analytics/reports/performance-indicators": "planned: Sites > site > Shop, reports",

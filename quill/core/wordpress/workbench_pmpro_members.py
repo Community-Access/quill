@@ -26,8 +26,9 @@ Wx-free; the reads take an injected API. Nothing here reads payment details.
 from __future__ import annotations
 
 import threading
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterator, Mapping
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import Any
 
 from quill.core.counted import plural
@@ -153,13 +154,44 @@ def levels_reader(api: Any) -> Callable[[int], list[dict[str, Any]]]:
     return read
 
 
+def _people(api: Any, params: Mapping[str, object], site: str) -> Iterator[Mapping[str, Any]]:
+    """The site's people, page by page; a refusal of the list itself is said plainly.
+
+    Listing people with their email is WordPress's ``list_users`` capability, which
+    Paid Memberships Pro's own capabilities do not give: on the test site an editor
+    given ``pmpro_memberslist`` was refused ``wp/v2/users?context=edit`` (403,
+    2026-11-19). Asking without ``context=edit`` would list only people who have
+    published something, a wrong list, so it is not tried.
+    """
+    try:
+        yield from api.iter_collection(USERS_ROUTE, dict(params))
+    except WordPressApiError as exc:
+        if exc.status not in (401, 403):
+            raise
+        raise WordPressApiError(
+            f"Your account on {site} cannot list the site's people, which finding a level's "
+            "members needs: WordPress gives that to Administrators (the list_users "
+            "capability), and Paid Memberships Pro's Members List permission does not "
+            "include it. Memberships > Members in wp-admin lists them.",
+            status=exc.status,
+        ) from exc
+
+
+def _since(raw: object) -> str:
+    """A start date as ISO text: the ability gives one, ``pmpro/v1`` a Unix time ("1795104492")."""
+    text = str(raw or "").strip()
+    if text.isdigit() and len(text) >= 9:
+        return datetime.fromtimestamp(int(text), UTC).isoformat(timespec="seconds")
+    return text
+
+
 def _holds(levels: list[dict[str, Any]], level_id: int) -> tuple[bool, str]:
     """Whether *levels* hold *level_id* now, and since when."""
     for level in levels:
         found = level.get("id") or level.get("membership_id") or level.get("level_id")
         status = str(level.get("status") or "active").lower()
         if str(found) == str(level_id) and status == "active":
-            return True, str(level.get("startdate") or level.get("start_date") or "")
+            return True, _since(level.get("startdate") or level.get("start_date"))
     return False, ""
 
 
@@ -186,7 +218,7 @@ def find_members(
     checked = unread = 0
     stopped = False
     params = {"context": "edit", "_fields": "id,name,email", "orderby": "name"}
-    for person in api.iter_collection(USERS_ROUTE, params):
+    for person in _people(api, params, site):
         if stop is not None and stop.is_set():
             stopped = True
             break

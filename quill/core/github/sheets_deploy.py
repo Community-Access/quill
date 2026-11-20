@@ -399,7 +399,14 @@ SECRET = SheetDef(
     ),
     {
         "secret_value": Write(
-            _ACT + "/secrets/{name}", "repo:admin", _A, "PUT", "put", encode=_seal, undo=False
+            _ACT + "/secrets/{name}",
+            "repo:admin",
+            _A,
+            "PUT",
+            "put",
+            encode=_seal,
+            undo=False,
+            why_no_undo="GitHub never gives a secret's value back, so the old one is not known",
         )
     },
     title=lambda ident: f"Secret {ident['name']}",
