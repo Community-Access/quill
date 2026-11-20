@@ -324,6 +324,39 @@ by a review of it. Nothing changes in QUILL or QUILL Lite.
   server's GitHub is too old for something, QUILL says so and names its
   version.
 
+### GitHub Workbench: the wiki, discussion to issue to pull request, Copilot seats, prompt files and AI drafts (2026-11-20)
+
+- **The wiki.** Edit Wiki Pages... copies a repository's wiki to your
+  computer, or brings your copy up to date, and lists its pages with Home
+  first. Enter opens a page in the editor. New Wiki Page... makes one, and
+  Publish Wiki Changes... names the pages and the account, asks for a message
+  and sends them. Nothing is ever forced: if someone else changed the wiki
+  first, QUILL puts your changes on top of theirs, and if that conflicts it
+  undoes the attempt and says so.
+- **From a discussion to a pull request.** Create Issue from Discussion...
+  opens an issue that quotes and links the discussion. Start Pull Request for
+  This Issue... makes a linked branch and a draft pull request that closes the
+  issue. Related... lists everything that links to an issue, pull request or
+  discussion, with its repository.
+- **Copilot for an organization.** Copilot Plan, Copilot Seats, A Member's
+  Copilot Seat..., giving and taking seats from people and teams (owners only,
+  and it asks first), the usage report, agent access and content exclusions.
+  On a repository, Copilot Agent Configuration and Copilot Review Settings.
+  Nothing here needs GitHub Enterprise Cloud.
+- **Prompt files.** Prompt Files... lists a repository's GitHub Models
+  prompts and reads each one as its model, settings, messages, test rows and
+  evaluators, with any problems. Open in Editor edits one.
+- **Open in github.dev** on a file or a pull request, GitHub's free editor in
+  the browser.
+- **AI drafts you check first.** Draft Description and Reviewer Brief on a
+  pull request, Draft Task Breakdown on an issue, and Draft Release Notes on
+  the rows you choose. Each draft opens in the editor with the sources it used
+  and anything it left out. They use your own AI connection, and are greyed
+  with a reason when there is none.
+- **Where review is stuck.** The repository health snapshot now says how many
+  ready pull requests are waiting for a review and how long the oldest has
+  waited. It never names who was asked.
+
 ### GitHub Workbench: access templates, more tutorials, team review requests, and the Command Key in the Workbench (2026-11-20)
 
 - **Access templates.** Account > Roles and Access > Access Templates... keeps
@@ -1231,7 +1264,6 @@ Checked and already fixed: menu letters in Insert, View, Tools and Edit (every
 WordPress row has a key of its own, shown in the label), and the filter and
 reload keys catching chords that menu rows own.
 
-
 Most people meet WordPress because they write something: a blog, or the news
 for their organization's site. That is where this story starts. You connect a
 site, write a post in the editor you already use, and publish it when you are
@@ -1881,7 +1913,6 @@ From EdSharp's recent history, checked against QUILL:
   about ninth grade, as EdSharp does, and each tutorial's estimated time
   against what it promises. What is over today is listed (9 chapters, 14
   tutorials); nothing new may be, and nothing listed may get harder.
-
 
 ### WordPress: five ways the Workbench could lose your work, closed (2026-11-18)
 
@@ -3067,7 +3098,6 @@ be lived in.
 - Escape in an open Show or Source list on the Problems pane closes the list
   and leaves you in the pane.
 
-
 ### Language servers: VS Code's smarts, inside QUILL (2026-11-08)
 
 - QUILL now carries the language servers VS Code uses: VS Code's own for HTML,
@@ -3196,7 +3226,6 @@ be lived in.
   have installed run only for the one in front. QUILL Lite does the same
   across its windows.
 
-
 ### The Problems pane checks on save, and after a pause if you like (2026-11-08)
 
 - While the Problems pane is on, saving checks the file again.
@@ -3204,7 +3233,6 @@ be lived in.
   moment after you stop typing. It's off by default and remembered.
 - These checks say nothing but the new count, such as "2 problems", and only
   when the count has changed. QUILL Lite has the same pane and the same box.
-
 
 ### Word Prediction knows your project (2026-11-08)
 
@@ -3226,7 +3254,6 @@ be lived in.
 - The list is ready within a tenth of a second on a 1 MB file. QUILL Lite has
   the same list.
 
-
 ### Word Prediction in every profile, and in QUILL Lite (2026-11-08)
 
 - **Edit > Word Prediction...** (Ctrl+.) works in every profile. The two
@@ -3236,7 +3263,6 @@ be lived in.
   switch it off.
 - The list moved into one shared module, so QUILL Lite runs the same list on
   the same key. Nothing about how it sounds or what Escape does changed.
-
 
 ### The Problems pane (2026-11-08)
 
@@ -3297,7 +3323,6 @@ be lived in.
   and Forms manual now go to their pages on the website, because a relative
   link out of an EPUB finds nothing.
 - The download page lists the GitHub Guide beside the user guide.
-
 
 ### GitHub Workbench: review threads, Explore and job logs (2026-11-07)
 
@@ -9999,7 +10024,6 @@ whether last session is reopened at all. One shared core
 (`quill/core/session_restore.py`), one shared window, and QUILL Lite has both on
 the same key.
 
-
 ### QUILL and QUILL Lite became one family (2026-09-18)
 
 A twenty-nine item program, closed. The two editors now agree about their keys,
@@ -10094,7 +10118,6 @@ cells promoted into the fifteen-minute pass), the four new windows in
 `docs/release/screen-reader-test-plan.md` for everything in this entry that is
 announced rather than shown.
 
-
 ### Ctrl+F6 walks documents, and Word Count stopped opening a window (2026-09-17)
 
 **`Ctrl+F6` and `Ctrl+Shift+F6` move between documents.** That is Windows' own
@@ -10130,7 +10153,6 @@ is wanted makes it unpredictable, and a navigation key you cannot predict is
 one you press and then have to listen to find out where you are. A region that
 is not showing stays out of the ring, which is the same rule from the other
 side.
-
 
 ### Ctrl+Space means sentence, and four surfaces got a key (2026-09-17)
 
@@ -10185,7 +10207,6 @@ the core's own Insert Equation, so the extension was shadowing the command it
 duplicates. Both of those lost their hotkey entirely rather than moving,
 because a Quillin may add a verb and never re-ship one the core has. Explore
 Equation Structure is genuinely new and took the free leader position.
-
 
 ### Extend Selection Mode moves the way Windows does (2026-09-17)
 
@@ -10258,7 +10279,6 @@ editors already know --- no setting can express "except in code", and asking
 somebody to switch it off per file is asking them to do the classification the
 app has already done.
 
-
 ### Selections say one thing, in one shape (2026-09-17)
 
 **Every selection is announced as its scope and its word count** --- "Selected
@@ -10289,7 +10309,6 @@ reach for --- were the ones it could not put back.
 `unselect_all` and `say_selected` moved out of `main_frame.py` into the
 selection mixin where their subject lives; the module ratcheted **down** again,
 19430 to 19415.
-
 
 ### Five line tools got a key (2026-09-17)
 

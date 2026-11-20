@@ -635,6 +635,20 @@ a comment, such as rebase, recreate, merge, or ignore this version, each with
 what it does. Choosing one posts it as a comment, after asking, and Dependabot
 does the rest.
 
+## Drafts, github.dev and Related
+
+A few more commands on a pull request's row:
+
+- **Draft Description with AI...**, **Draft Reviewer Brief with AI...** and,
+  on selected issues and pull requests, **Draft Release Notes with AI...** are
+  QUILL's: they use QUILL's AI connection. In QUILL Lite they are greyed, and
+  `Shift+F1` says why. **Draft Release Notes...** on a release drafts notes
+  without AI in both.
+- **Open in github.dev** opens the pull request in GitHub's free web editor,
+  in your browser; nothing is created and nothing costs money.
+- **Related...** lists the issues it closes, what mentioned it, and what its
+  text links to (chapter 8).
+
 ## Writing a new pull request
 
 In a repository's **Pull Requests**, press `Ctrl+N`. To start from a branch,

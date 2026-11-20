@@ -14,6 +14,7 @@ from quill.core.workbench.actions import ActionRow, Tier
 __all__ = [
     "ACCOUNT_ROWS",
     "AUTHORING_ROWS",
+    "COLLAB_ROWS",
     "PROJECT_ROWS",
     "PROPERTIES_COMMAND",
 ]
@@ -250,6 +251,21 @@ ACCOUNT_ROWS: dict[str, tuple[ActionRow, ...]] = {
     ),
     "wiki": (
         _default("open_on_github", "Open on GitHub", "Read the wiki in your browser."),
+        _a(
+            "wiki_pages",
+            "Edit Wiki Pages...",
+            _O,
+            "",
+            "Copy the wiki here or bring the copy up to date, list its pages, open one.",
+        ),
+        _a("new_wiki_page", "New Wiki Page...", _O, "", "Make a page here, then open it."),
+        _a(
+            "publish_wiki",
+            "Publish Wiki Changes...",
+            _W,
+            "push",
+            "Commit the pages changed here and push them to GitHub; asks first.",
+        ),
         _a("clone_wiki", "Clone Wiki...", _O, "", "Copy its pages to a folder, to edit them."),
         _COPY_LINK,
         _PROPERTIES,
@@ -281,6 +297,88 @@ PROJECT_ROWS: tuple[ActionRow, ...] = (
     _a("project_copy", "Copy Project...", _W, "sign_in", "Fields and views, not its items."),
     _a("project_delete", "Delete Project...", _D, "sign_in", "Asks for its title typed out."),
 )
+
+
+_RELATED = _a(
+    "related",
+    "Related...",
+    help="The issues, pull requests and discussions linked to it, and how each is linked.",
+)
+_AI_RELEASE = _a(
+    "ai_release_notes",
+    "Draft Release Notes with AI...",
+    _R,
+    "ai",
+    "Release notes drafted by AI from the selected issues and pull requests only.",
+)
+_GITHUB_DEV = _a(
+    "open_github_dev",
+    "Open in github.dev",
+    help="GitHub's free web editor, at exactly this; nothing is created.",
+)
+
+_PROMPT_FILES = _a(
+    "prompt_files",
+    "Prompt Files...",
+    help="A repository's GitHub Models prompt files, each read as model, messages and tests.",
+)
+
+#: Collaboration, handoff and grounded-draft rows (GX12, GX14, GX15), each put
+#: before Properties on its row type (quill/ui/github_workbench_collab.py and
+#: quill/ui/github_workbench_drafts.py).
+COLLAB_ROWS: dict[str, tuple[ActionRow, ...]] = {
+    "issue": (
+        _RELATED,
+        _a(
+            "pull_for_issue",
+            "Start Pull Request for This Issue...",
+            _W,
+            "push",
+            "A linked branch and a draft pull request that closes the issue; asks first.",
+        ),
+        _a(
+            "ai_task_breakdown",
+            "Draft Task Breakdown with AI...",
+            _R,
+            "ai",
+            "Small ordered tasks drafted by AI from the issue; opens as a draft.",
+        ),
+        _AI_RELEASE,
+    ),
+    "pull_request": (
+        _RELATED,
+        _GITHUB_DEV,
+        _a(
+            "ai_pr_description",
+            "Draft Description with AI...",
+            _R,
+            "ai",
+            "A description drafted by AI from the changed files; opens as a draft.",
+        ),
+        _a(
+            "ai_reviewer_brief",
+            "Draft Reviewer Brief with AI...",
+            _R,
+            "ai",
+            "What a reviewer should check, drafted by AI from the changed files.",
+        ),
+        _AI_RELEASE,
+    ),
+    "discussion": (
+        _RELATED,
+        _a(
+            "issue_from_discussion",
+            "Create Issue from Discussion...",
+            _W,
+            "sign_in",
+            "An issue that links back to the discussion; asks first.",
+        ),
+    ),
+    "file": (_GITHUB_DEV,),
+    "repository": (_PROMPT_FILES,),
+    "node": (_PROMPT_FILES,),
+}
+
 
 #: Workflow authoring, Dependabot's commands and Who Owns This? (PRD 22.1), each
 #: merged into its row type before Properties (quill/ui/github_workbench_authoring.py).

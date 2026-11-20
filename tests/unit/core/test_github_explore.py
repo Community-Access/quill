@@ -432,6 +432,47 @@ def test_opt_in_repository_metrics_include_health_counts_without_people_rankings
     assert "does not rank contributors" in result.items[0].detail
 
 
+def test_repository_metrics_say_the_review_bottleneck_without_naming_people(
+    monkeypatch,
+) -> None:
+    from datetime import UTC, datetime, timedelta
+
+    provider = _Provider()
+    now = datetime.now(UTC)
+    alice = SimpleNamespace(login="alice")
+
+    def _pull(draft: bool, people: list, teams: list, age: int) -> SimpleNamespace:
+        return SimpleNamespace(
+            draft=draft,
+            requested_reviewers=people,
+            requested_teams=teams,
+            created_at=now - timedelta(days=age),
+        )
+
+    pulls = [
+        _pull(False, [alice], [], 9),
+        _pull(False, [], [alice], 2),
+        _pull(True, [alice], [], 40),
+        _pull(False, [], [], 30),
+    ]
+    target = SimpleNamespace(
+        full_name="o/r",
+        html_url="https://github.com/o/r",
+        open_issues_count=4,
+        get_pulls=lambda **_kwargs: list(pulls),
+        get_workflow_runs=lambda **_kwargs: [],
+        get_deployments=lambda: [],
+    )
+    client = GitHubExploreClient(provider)  # type: ignore[arg-type]
+    monkeypatch.setattr(client, "_repo", lambda _repo: target)
+    provider.fetch_security_alerts = lambda _repo, *, limit: []
+
+    detail = client.fetch_with_status("metrics", repo="o/r").items[0].detail
+
+    assert "Waiting for a review: 2; the oldest has waited 9 days" in detail
+    assert "alice" not in detail
+
+
 def test_repository_metrics_require_sign_in() -> None:
     anonymous = GitHubExploreClient(_Provider(False))  # type: ignore[arg-type]
 

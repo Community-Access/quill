@@ -384,6 +384,16 @@ def release_evidence(run: Any) -> str:
     return found.sentence
 
 
+def prompt_files(run: Any) -> str:
+    """Prompt Files...: find the prompt files and read each as structure; reads only."""
+    from quill.core.github.prompt_files import describe, find_prompt_files, read_prompt_file
+
+    found = find_prompt_files(run.api, run.repo)
+    for path in found.paths[:3]:
+        describe(read_prompt_file(run.api, run.repo, path, found.ref))
+    return found.sentence
+
+
 def environment_sheet_and_deployments(run: Any) -> str:
     """An environment's sheet (counts, custom rules, branch policies) and its Deployments..."""
     from quill.core.github.environments import fetch_environments
@@ -402,6 +412,71 @@ def environment_sheet_and_deployments(run: Any) -> str:
         f"variables, {len(values.get('custom_rules') or ())} custom rules; "
         f"{len(found)} recent deployments"
     )
+
+
+def pull_for_issue(run: Any) -> str:
+    """Start Pull Request for This Issue..., then Related... on the issue: the PR closes it."""
+    from quill.core.github.collab_links import pull_for_issue as start
+    from quill.core.github.collab_links import related
+
+    number = _new_issue(run, "pull for issue")
+    branch = f"quill-live-pull-for-{number}"
+    try:
+        pr, said = start(run.api, run.repo, number, f"{TAG} pull for issue", branch)
+        pull = run.rest("GET", f"/repos/{run.repo}/pulls/{pr}")
+        _expect(f"Closes #{number}" in str(pull.get("body")), "the body does not close the issue")
+        chain = related(run.api, run.repo, "issue", number)
+        _expect(any(link.number == pr for link in chain.links), chain.sentence)
+        run.rest("PATCH", f"/repos/{run.repo}/pulls/{pr}", {"state": "closed"})
+    finally:
+        if run.exists(f"/repos/{run.repo}/branches/{branch}") is not None:
+            run.rest("DELETE", f"/repos/{run.repo}/git/refs/heads/{branch}")
+        _delete_issue(run, run.repo, number)
+    return f"{said} Related listed it."
+
+
+def issue_from_discussion(run: Any) -> str:
+    """Create Issue from Discussion... on the newest discussion, without the comment back."""
+    from quill.core.github.collab_links import discussion_issue_body
+    from quill.core.github.collab_links import issue_from_discussion as make
+    from quill.core.github.discussions import list_discussions
+
+    found, _complete, _warning = list_discussions(_token(run), run.repo, limit=1)
+    if not found:
+        raise NotHere("the test repository has no discussions")
+    row = found[0]
+    body = discussion_issue_body(row.url, "", "QUILL live test")
+    number, said = make(run.api, run.repo, int(row.key), f"{TAG} from discussion", body)
+    try:
+        issue = _issue_state(run, run.repo, number)
+        _expect(row.url in str(issue.get("body")), "the issue does not link back")
+    finally:
+        _delete_issue(run, run.repo, number)
+    return said
+
+
+def publish_wiki(run: Any) -> str:
+    """Edit Wiki Pages... and Publish Wiki Changes...: a page added, published, then removed."""
+    from pathlib import Path
+
+    from quill.core.git_binaries import find_git
+    from quill.core.github import wiki_pages as wp
+    from quill.stability.safe_subprocess import run_subprocess_safely as runner
+
+    git = find_git()
+    if git is None:
+        raise NotHere("git is not installed")
+    with tempfile.TemporaryDirectory() as tmp:
+        folder = wp.wiki_folder(Path(tmp), run.repo)
+        try:
+            wp.fetch_copy(git, run.repo, folder, token=_token(run), runner=runner)
+        except wp.WikiPagesError as exc:
+            raise NotHere(f"the test repository's wiki: {exc}") from exc
+        page = wp.new_page(folder, f"QUILL live {int(time.time())}", TAG + "\n")
+        said = wp.publish(git, run.repo, folder, TAG, token=_token(run), runner=runner)
+        page.unlink()
+        wp.publish(git, run.repo, folder, f"{TAG}: remove", token=_token(run), runner=runner)
+    return said
 
 
 def undo_and_redo_over_a_fresh_read(run: Any) -> str:
@@ -1390,6 +1465,11 @@ VERBS: dict[str, Scenario | str] = {
     "mark_read": "needs Jeff: would mark one of your real notifications read",
     "merge": merge_and_delete_branch,
     "merge_selected": merge_selected,
+    "pull_for_issue": pull_for_issue,
+    "issue_from_discussion": issue_from_discussion,
+    "publish_wiki": publish_wiki,
+    "wiki_pages": "with publish_wiki: the wiki copied here and its pages listed",
+    "new_wiki_page": "with publish_wiki: a page made here, published, then removed",
     "revert_pull": revert_merged,
     "workflow_state": workflow_state,
     "new_tag": tags_made_and_deleted,
@@ -1815,6 +1895,16 @@ FEATURES: dict[str, Scenario | str] = {
         release_evidence
     ),
     "An environment's sheet and its Deployments... (GX10)": environment_sheet_and_deployments,
+    "Related...: what links to an issue, pull request or discussion (GX12)": (
+        "with pull_for_issue: the new pull request is listed as closing the issue"
+    ),
+    "Prompt Files...: GitHub Models prompt files read as structure": prompt_files,
+    "Copilot Plan, Seats and Usage Report on an organization": (
+        "needs Jeff: an organization with Copilot Business"
+    ),
+    "Draft Description, Reviewer Brief, Task Breakdown and Release Notes with AI (GX15)": (
+        "needs Jeff: an AI connection in QUILL, run from the Workbench by hand"
+    ),
     "Merge Selected... with a branch that requires a merge queue": (
         "not here: a merge queue needs an organization repository's ruleset"
     ),

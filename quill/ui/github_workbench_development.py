@@ -50,10 +50,20 @@ from quill.ui.github_workbench_codespaces import (
     CODESPACE_VERBS,
     GitHubWorkbenchCodespacesMixin,
 )
+from quill.ui.github_workbench_collab import (
+    COLLAB_REASONS,
+    COLLAB_VERBS,
+    GitHubWorkbenchCollabMixin,
+)
 from quill.ui.github_workbench_discussions import (
     DISCUSSION_REASONS,
     DISCUSSION_VERBS,
     GitHubWorkbenchDiscussionsMixin,
+)
+from quill.ui.github_workbench_drafts import (
+    DRAFT_REASONS,
+    DRAFT_VERBS,
+    GitHubWorkbenchDraftsMixin,
 )
 from quill.ui.github_workbench_dry_run import (
     DRY_RUN_REASONS,
@@ -197,6 +207,8 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **MERGE_VERBS,
     **BATCH_MERGE_VERBS,
     **EVIDENCE_VERBS,
+    **COLLAB_VERBS,
+    **DRAFT_VERBS,
     **INBOX_RULE_VERBS,
     **DRY_RUN_VERBS,
     **PLAIN_BATCH_VERBS,
@@ -235,6 +247,8 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **MERGE_REASONS,
     **BATCH_MERGE_REASONS,
     **EVIDENCE_REASONS,
+    **COLLAB_REASONS,
+    **DRAFT_REASONS,
     **INBOX_RULE_REASONS,
     **DRY_RUN_REASONS,
     **PLAIN_BATCH_REASONS,
@@ -271,6 +285,8 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchMergeMixin,
     GitHubWorkbenchBatchMergeMixin,
     GitHubWorkbenchEvidenceMixin,
+    GitHubWorkbenchCollabMixin,
+    GitHubWorkbenchDraftsMixin,
     GitHubWorkbenchInboxRulesMixin,
     GitHubWorkbenchDryRunMixin,
     GitHubWorkbenchPlainBatchMixin,

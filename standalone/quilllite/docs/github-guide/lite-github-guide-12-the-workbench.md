@@ -774,6 +774,14 @@ has not given the Workbench either one, the row is greyed and says why.
 
 ### What you hear afterwards
 
+Copilot in an organization, which an organization buys as Copilot Business on any
+GitHub plan, is on the organization's row: Copilot Plan, Copilot Seats, A
+Member's Copilot Seat..., Give Copilot Seats..., Take Copilot Seats Away...,
+Give Teams Copilot..., Take Copilot from Teams..., Copilot Usage Report, Copilot
+Agent Access and Copilot Content Exclusions; on a repository's row, Copilot
+Agent Configuration and Copilot Review Settings. Giving or taking a seat changes
+what the organization pays, so you need to own it, and each asks first.
+
 Every change asks first when it cannot be undone, runs without freezing the
 window, and says one sentence about what GitHub confirmed. `F9` says it
 again.
