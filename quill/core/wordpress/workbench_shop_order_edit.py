@@ -9,19 +9,24 @@ each previewed in words first:
   WooCommerce works out the prices and totals.
 - **Change Items:** ``POST wc/v3/orders/{id}`` with ``line_items``: an item
   already on the order is named by its item id with its new quantity, and a
-  quantity of 0 removes it; a new product is added by its product id.
+  quantity of 0 removes it; a new product is added by its product id. A new
+  quantity also carries the line's ``subtotal`` and ``total`` at the price
+  per item the order already has, because WooCommerce does not work a line's
+  price out again when only its quantity changes (seen on the test site,
+  WooCommerce 11.3.1: 1 x 12.00 became 3 x 12.00).
 - **Change Address:** the billing or shipping address, sending only the
   fields that changed, and the old values kept for undo.
 
 Removing an item by a quantity of 0 is WooCommerce's documented route in its
-version 2 and 3 order controllers; it is marked for a live check on the test
-site in complete.md 2.4. Wx-free.
+version 2 and 3 order controllers, and it does remove the line on the test
+site (WooCommerce 11.3.1, 2026-11-19). Wx-free.
 """
 
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 from typing import Any
 
 from quill.core.wordpress.plugin_shop_seo import SHOP_NAMESPACE, ShopValueError
@@ -89,6 +94,10 @@ class OrderItem:
     product_id: int
     name: str
     quantity: int
+    subtotal: str = ""
+    """The line's price before discounts, as WooCommerce writes it ("12.00")."""
+    total: str = ""
+    """The line's price after discounts."""
 
     def words(self) -> str:
         return f"{self.quantity} x {self.name}"
@@ -107,7 +116,8 @@ def order_items(order: Mapping[str, Any]) -> list[OrderItem]:
             continue
         if item_id:
             name = raw_text(raw.get("name")) or f"Product {product}"
-            found.append(OrderItem(item_id, product, name, quantity))
+            subtotal, total = str(raw.get("subtotal") or ""), str(raw.get("total") or "")
+            found.append(OrderItem(item_id, product, name, quantity, subtotal, total))
     return found
 
 
@@ -175,15 +185,41 @@ class ItemChange:
     quantity: int
 
 
-def items_body(changes: Sequence[ItemChange]) -> dict[str, Any]:
+def _scaled(amount: str, old: int, new: int) -> str:
+    """*amount* for *old* items, at the same price each, for *new*; "" when unreadable."""
+    try:
+        value = Decimal(amount)
+    except (InvalidOperation, ValueError):
+        return ""
+    exponent = value.as_tuple().exponent
+    if old <= 0 or not value.is_finite() or not isinstance(exponent, int):
+        return ""
+    step = Decimal(1).scaleb(min(exponent, 0))  # "12.00" keeps two places
+    return str((value / old * new).quantize(step, rounding=ROUND_HALF_UP))
+
+
+def items_body(changes: Sequence[ItemChange], items: Sequence[OrderItem] = ()) -> dict[str, Any]:
+    """``line_items`` for *changes*; *items* are the order's lines as read.
+
+    A line whose quantity changes is sent with its ``subtotal`` and ``total``
+    at its price per item, since WooCommerce otherwise leaves both as they were.
+    """
+    before = {item.item_id: item for item in items}
     lines: list[dict[str, Any]] = []
     for change in changes:
         if change.item_id:
-            lines.append({
+            line: dict[str, Any] = {
                 "id": change.item_id,
                 "product_id": change.product_id,
                 "quantity": change.quantity,
-            })
+            }
+            old = before.get(change.item_id)
+            if old is not None and 0 < change.quantity != old.quantity:
+                subtotal = _scaled(old.subtotal, old.quantity, change.quantity)
+                total = _scaled(old.total, old.quantity, change.quantity)
+                if subtotal and total:
+                    line["subtotal"], line["total"] = subtotal, total
+            lines.append(line)
         elif change.quantity > 0:
             lines.append({"product_id": change.product_id, "quantity": change.quantity})
     if not lines:
@@ -205,8 +241,9 @@ def items_preview(
         else:
             lines.append(f"{old.name}: {old.quantity} becomes {change.quantity}.")
     lines.append(
-        "WooCommerce works out the total again. A refund or a payment for the difference is "
-        "yours to make; QUILL does not move money here."
+        "A changed line keeps its price per item, and WooCommerce works out the order's "
+        "total again. A refund or a payment for the difference is yours to make; QUILL does "
+        "not move money here."
     )
     return lines
 

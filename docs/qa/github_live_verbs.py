@@ -404,6 +404,36 @@ def environment_sheet_and_deployments(run: Any) -> str:
     )
 
 
+def undo_and_redo_over_a_fresh_read(run: Any) -> str:
+    """Rename a label, Undo it at its new name, Redo it at its old one, then put it back."""
+    from quill.core.github.sheet_catalog import SHEETS
+    from quill.core.github.sheet_engine import load, save
+    from quill.core.github.sheet_replay import redo, undo
+    from quill.core.workbench.properties import FieldChange
+
+    sheet = SHEETS["label"]
+    old, new = f"quill-live-undo-{int(time.time())}", f"quill-live-redo-{int(time.time())}"
+    run.rest("POST", f"/repos/{run.repo}/labels", {"name": old, "color": "ededed"})
+    try:
+        ident = {"repo": run.repo, "name": old}
+        loaded = load(run.api, sheet, ident).values
+        done = save(
+            run.api, sheet, ident, [FieldChange("name", "Name", old, new)], loaded=loaded
+        ).done
+        where = sheet.ident_after(ident, done)
+        undone = undo(run.api, sheet, where, done)
+        redone = redo(run.api, sheet, where, done)
+        if not (done and undone.ok and redone.ok):
+            raise AssertionError(f"undo {undone.ok}, redo {redone.ok}")
+        return f"{old} renamed, undone at {new}, redone at {old}"
+    finally:
+        for name in (new, old):
+            try:
+                run.rest("DELETE", f"/repos/{run.repo}/labels/{name}")
+            except Exception:  # noqa: BLE001 - only one of the two names exists
+                pass
+
+
 def revert_merged(run: Any) -> str:
     """Revert Pull Request on a freshly merged pull request, then close the revert."""
     import base64
@@ -1706,6 +1736,9 @@ FEATURES: dict[str, Scenario | str] = {
         "not here: a merge queue needs an organization repository's ruleset"
     ),
     "Runners and Export Software Bill of Materials (PRD 14.2)": runners_and_sbom,
+    "Undo and Redo GitHub Change over a fresh read, at a renamed label (PRD 16.5)": (
+        undo_and_redo_over_a_fresh_read
+    ),
     "Commit Activity as tables (PRD 14.2)": commit_activity,
     "My Packages, or the permission it needs said in words (PRD 14.2)": my_packages,
     "My Profile, with the contribution calendar as numbers (PRD 14.2)": my_profile,

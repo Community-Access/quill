@@ -13,13 +13,17 @@ route asked again for the same number of days just before.
 Money is said the way the store writes it
 (:func:`~quill.core.wordpress.workbench_shop_analytics_period.read_money`).
 A customer's email and address stay out of the rows, as they do for shop
-orders. Nothing here writes to the site. Wx-free.
+orders. Analytics reads its own copy of the orders, which WooCommerce imports,
+at once or on a schedule; while some are not imported yet
+(``import/totals?skip_existing=true``) the total row's sentence says so,
+because the figures would otherwise read as complete. Nothing here writes to
+the site. Wx-free.
 """
 
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from typing import Any
 
@@ -45,11 +49,13 @@ from quill.core.wordpress.workbench_shop_analytics_places import (
 
 __all__ = [
     "BASE",
+    "IMPORT_TOTALS",
     "has_analytics",
     "load_analytics",
     "no_analytics_words",
     "summary_of",
     "today",
+    "unimported_words",
 ]
 
 BASE = f"{ANALYTICS_NAMESPACE}/reports"
@@ -508,7 +514,52 @@ def load_analytics(ctx: Any, what: str, query: Mapping[str, object]) -> list[WbR
     period = Period.from_params(query)
     start, end = period.dates(today())
     ask = _Ask(ctx.api, ctx.name, read_money(ctx.api), period, start, end)
-    return _READERS[report.key](ask, report)
+    rows = _READERS[report.key](ask, report)
+    if report.key not in _NOT_FROM_ORDERS and rows:
+        rows[0] = _with_unimported(rows[0], _unimported(ctx.api), ctx.name)
+    return rows
+
+
+_NOT_FROM_ORDERS = frozenset({"stock", "downloads"})
+"""Reports that are not built from the order history Analytics imports."""
+
+IMPORT_TOTALS = f"{BASE}/import/totals"
+
+
+def _unimported(api: Any) -> int:
+    """How many orders WooCommerce has not brought into Analytics yet; 0 when it will not say.
+
+    ``import/totals`` with ``skip_existing`` counts only the orders still to import
+    (without it, every order). On the test site an order made while Analytics
+    imported on a schedule was left out of every report until it was imported.
+    """
+    try:
+        found = api.get(IMPORT_TOTALS, skip_existing="true")
+    except WordPressApiError:
+        return 0
+    try:
+        return int(number(found.get("orders"))) if isinstance(found, Mapping) else 0
+    except (TypeError, ValueError):
+        return 0
+
+
+def unimported_words(count: int) -> str:
+    """The sentence a report's total row gains while orders are waiting to be imported."""
+    return (
+        f"{plural(count, 'order')} {'is' if count == 1 else 'are'} not in WooCommerce Analytics "
+        "yet, so these figures leave "
+        f"{'it' if count == 1 else 'them'} out; Import historical data, under WooCommerce > "
+        "Settings > Advanced > Analytics, brings them in."
+    )
+
+
+def _with_unimported(row: WbRow, count: int, site: str) -> WbRow:
+    if count <= 0 or not row.raw.get("summary"):
+        return row
+    said = f"{row.raw['summary']} {unimported_words(count)}"
+    raw = {**row.raw, "summary": said, "unimported": count}
+    detail = row.detail.replace(str(row.raw["summary"]), said, 1)
+    return replace(row, detail=detail, raw=raw)
 
 
 def summary_of(rows: Sequence[object]) -> str:
