@@ -107,13 +107,14 @@ class GitHubWorkbenchReadingMixin:
         self._background(f"read #{number} as a document", work, lambda doc: self._deliver(doc, how))
 
     def _deliver(self, doc: Any, how: str) -> None:
+        from quill.core.counted import plural
         from quill.core.github.thread_document import (
             suggested_name,
             thread_html,
             thread_markdown,
         )
 
-        posts = f"{len(doc.entries)} posts"
+        posts = plural(len(doc.entries), "post")
         if how == "Open in Editor" and self._open_document is not None:
             folder = documents_folder()
             target = folder / suggested_name(doc)

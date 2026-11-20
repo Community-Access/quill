@@ -39,12 +39,10 @@ Each is done only with evidence: a test or a live run.
 - [ ] Complete Appendix A/B "nothing dropped" mapping and Appendix C object/sheet/filter mapping.
 - [ ] Verify every editable field, mixed value, field removal, batch operation, conflict resolution, verify-after-save, history and supported undo/redo.
 - [ ] Edit issue fields directly on the Properties sheet's Issue Fields page (today read only; Issue Fields... on the row edits them).
-- [ ] Repository and item-property checklists expose state in the row; Space changes it once, Enter saves, focus returns predictably, and JAWS/NVDA/VoiceOver do not hear a duplicate row.
 - [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle.
 - [ ] Live check on the GitHub test repository: Read Only, Organize, Full and Safe Mode refuse and allow as tested, and the permission explanations (greyed rows, Shift+F1, GitHub's own refusals) match what GitHub does.
 - [ ] Verify View As Role, Compare Roles, Why Can't They?, My Access Here, access reviews and bulk changes against actual server authority.
-- [ ] Grouping, sorting and the column chooser beyond issues and pull requests (filters, Show Only/Hide, Load More and Load All are done).
-- [ ] Plain-language query/batch commands through the shared catalogue, with resolved targets, editable previews and deterministic non-AI paths.
+- [ ] Command Key rows for the GitHub and WordPress Plain-Language Batch (Command Key has no Workbench-window host yet; both Workbenches take the sentence in their own window).
 - [ ] Compare Accounts and one-action Act As with unambiguous identity and cache isolation.
 - [ ] Role comparison and learning workflows reach real permission evidence, not guessed privileges.
 - [ ] Wiki, and cross-linked discussion → issue → pull request workflows (saved replies and repository invitations are done).
@@ -67,7 +65,6 @@ Each is done only with evidence: a test or a live run.
 - [ ] GX09: Why Can't I Merge? and Merge Selected... do not yet name the specific ruleset or CODEOWNERS rule that blocks (only the review window's Check Merge Policy does), and nothing watches a pull request to say when its readiness changes.
 - [ ] GX10: attestation signatures are not verified in QUILL (it points to gh attestation verify), and a downloaded release file is not checked against its digest.
 - [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance; GX16 category-first cross-repository browsing.
-- [ ] Apply provider-neutral patterns: read long issue/pull request/discussion threads as one structured page; preserve the selected row on return; say the actual outcome once through QUILL's existing feedback settings.
 
 #### Documentation at the end of each delivery batch
 
@@ -94,6 +91,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - [ ] Issue types and fields in an organization that has them: typed values in the Issue fields column (a date, a number, a choice), `type:Bug` and `field.priority:high` searches, the Properties Issue Fields page, "hidden from you" for an account that cannot see fields, a person's repository (`/user/issue-fields`).
 - [ ] Merge Selected... on two throwaway pull requests, and Release Evidence on `v0.0.1-quill-live`, on the test repository; Merge Selected on a queue-only branch needs an organization repository with a merge-queue ruleset; confirm GitHub's `immutable` and asset `digest` fields.
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
+- [ ] Plain-Language Batch on the test repository (assign, then unassign, by sentence; GitHub's search may need a moment to index a new issue), and Ctrl+Shift+S in the real window.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.
 - [ ] WordPress current candidate: run the documented live regression on an authorized test site and distinguish existing site-side failures from regressions.
 - [ ] Seed QUILL Accessible Forms (QAF), Gravity Forms, Paid Memberships Pro (PMPro), custom types/taxonomies/meta, constrained roles and realistic media/content for the supported scope.
@@ -112,7 +110,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - **Backups:** snapshots and WXR (WordPress's export file) only.
 - **Security:** no Security Review for now.
 - **Plugin scope:** WooCommerce and Yoast are in, with QAF, Gravity Forms and PMPro.
-- **Rank Math:** read only (assumed; Jeff did not answer).
+- **Rank Math:** read only (confirmed by Jeff, 2026-11-19).
 
 ### 2.3 Missing in QUILL
 
@@ -157,12 +155,6 @@ All of the following has tests over recorded or fake answers and none has met a 
 - [ ] **PMPro, live:** WordPress 6.9+ with PMPro 3.9+ and a role with customized PMPro capabilities (the card and billing field stripping is done).
 - [ ] **Payments, live:** QAF's and PMPro's PHP suites, Stripe test mode, a PayPal sandbox and a reachable webhook endpoint on the test site: webhook authenticity/replay/order, duplicate submission and accessible checkout acceptance.
 - [ ] **Practice Site from an installed build:** start/connect/reset/stop/restart with the bundled Node and payloads on a clean installation (the source run passes).
-- [ ] **Backups, restores, security/sign-ins/2FA/vulnerability data, caching/performance, multilingual content, consent, email, newsletters, courses, event attendance, analytics and social sharing:** each already has a disposition per site; Jeff decides which, if any, get first-class integration.
-
-### 2.6 Jeff's calls from the WordPress UX review
-
-- [ ] Whether page commands such as Check This Page should have a WordPress-layer key (they have a written reason, `wordpress/menu_unbound.py`).
-- [ ] Whether menu items want a Workbench tree node beside the Menus window's Undo.
 
 ## Part 3. Other work
 

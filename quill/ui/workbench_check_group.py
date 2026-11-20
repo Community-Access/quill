@@ -9,6 +9,12 @@ Over several objects the group is three-state (section 15.2): a choice on
 some but not all of them is a third-state box whose label says how many,
 "bug, on 3 of 5", and is left alone unless you change it. :meth:`delta` is
 what you did, as additions and removals, so nothing you did not touch is sent.
+
+Every row says its state in its own text, "bug, on" or "bug, off" (GH-R-157),
+and the text follows the box when Space changes it. Space is the check box's
+own key: nothing here handles a key, so one press is one change, and nothing
+here announces the change either, because the screen reader already says the
+new state of the focused box (GATE-13); saying it as well would be heard twice.
 """
 
 from __future__ import annotations
@@ -73,12 +79,8 @@ class CheckGroup:
         if self._empty is not None:  # the first real choice replaces "(None ...)"
             self._empty.Destroy()
             self._empty = None
-        count = self._counts.get(item, 0)
-        label = item
-        if self.total > 1 and 0 < count < self.total:
-            label = f"{item}, on {count} of {self.total}"
         style = wx.CHK_3STATE | wx.CHK_ALLOW_3RD_STATE_FOR_USER if self.total > 1 else 0
-        box = wx.CheckBox(self.panel, label=label, style=style)
+        box = wx.CheckBox(self.panel, label=item.replace("&", "&&"), style=style)
         box.SetHelpText(self._help or self.name)
         if on is None:
             box.Set3StateValue(wx.CHK_UNDETERMINED)
@@ -86,6 +88,8 @@ class CheckGroup:
             box.SetValue(bool(on))
         self.boxes[item] = box
         self._start[item] = self.state(item)
+        self.relabel(item)
+        box.Bind(wx.EVT_CHECKBOX, lambda event, i=item: self._toggled(event, i))
         self._sizer.Add(box, 0, wx.BOTTOM, 2)
         self.panel.Layout()
 
@@ -97,18 +101,38 @@ class CheckGroup:
             return "mixed"
         return "on" if box.GetValue() else "off"
 
+    def row_text(self, item: str) -> str:
+        """The row as it reads: "bug, on", "bug, off", or "bug, on 3 of 5" when mixed."""
+        state = self.state(item)
+        if state == "mixed":
+            return f"{item}, on {self._counts.get(item, 0)} of {self.total}"
+        return f"{item}, {state}"
+
+    def relabel(self, item: str) -> None:
+        """Put the row's state in its text; untouched when it already says it."""
+        box = self.boxes[item]
+        text = self.row_text(item).replace("&", "&&")
+        if box.GetLabel() != text:
+            box.SetLabel(text)
+
+    def _toggled(self, event: Any, item: str) -> None:
+        """Space or a click changed the box (once, natively): the row's text follows."""
+        self.relabel(item)
+        event.Skip()
+
     def set(self, item: str, on: bool) -> None:
         box = self.boxes[item]
         if box.Is3State():
             box.Set3StateValue(self._wx.CHK_CHECKED if on else self._wx.CHK_UNCHECKED)
         else:
             box.SetValue(on)
+        self.relabel(item)
 
     def checked(self) -> tuple[str, ...]:
         return tuple(item for item in self.boxes if self.state(item) == "on")
 
     def labels(self) -> list[str]:
-        return [box.GetLabel() for box in self.boxes.values()]
+        return [box.GetLabelText() for box in self.boxes.values()]
 
     def reset(self, have: tuple[str, ...]) -> None:
         """After a save or reload: the boxes show *have*, and that is the new start."""
