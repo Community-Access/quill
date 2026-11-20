@@ -94,7 +94,10 @@ class GitHubWorkbenchWritesMixin:
         self._background(
             f"{verb.lower()} #{row.number}",
             lambda: self.items.update_items(ref.instance, [row.number], state=state),
-            lambda _result: (self._say(f"{verb}d #{row.number}."), self.frame.reload()),
+            lambda _result: (
+                self._say(f"{verb.rstrip('e')}ed #{row.number}."),
+                self.frame.reload(),
+            ),
         )
 
     def _do_rerun(self, ref: Any, row: object) -> None:

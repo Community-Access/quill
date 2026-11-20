@@ -221,6 +221,31 @@ def assignees(run: Any) -> str:
     return "assigned, then unassigned"
 
 
+def plain_batch(run: Any) -> str:
+    """A sentence through the grammar, GitHub's search and the batch: assign, then unassign."""
+    from quill.core.github.batch import BatchItem
+    from quill.core.github.batch import run as run_batch
+    from quill.core.github.plain_batch import parse_request
+    from quill.core.github.sheet_catalog import SHEETS
+    from quill.core.github.sheet_engine import load
+
+    number = int(run.ids["issue"])
+    sheet, ident = SHEETS["issue"], {"repo": run.repo, "number": str(number)}
+    for sentence in (
+        f"assign {run.login} to every open issue",
+        f"unassign {run.login} from all issues",
+    ):
+        request = parse_request(sentence)
+        found = run.items.search_items(run.repo, request.query, limit=100)
+        _expect(any(item.number == number for item in found), f"{request.query} missed #{number}")
+        item = BatchItem(f"#{number}", ident, load(run.api, sheet, ident).values)
+        results = run_batch(run.api, sheet, [item], request.changes(), pace=0)
+        _expect(results[0].status == "Done", f"{sentence}: {results[0].detail}")
+    who = {a["login"] for a in _issue_state(run, run.repo, number)["assignees"]}
+    _expect(run.login not in who, "the unassign sentence did not take")
+    return "assigned by a sentence through search and the batch, then unassigned"
+
+
 def lock(run: Any) -> str:
     from quill.core.github.issue_housekeeping import GitHubIssueHousekeeping
 
@@ -1014,6 +1039,7 @@ VERBS: dict[str, Scenario | str] = {
     "cancel_run": cancel_run,
     "clone": "needs Jeff: clones into a folder you choose, then opens it in the editor",
     "close_reopen": close_reopen,
+    "plain_batch": plain_batch,
     "create_branch": create_branch,
     "unlink_branch": "with create_branch: linked, unlinked, then deleted",
     "new_webhook": webhook_round_trip,

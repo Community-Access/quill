@@ -258,7 +258,7 @@ def test_read_as_document_saves_html_from_a_discussion_row(bench, monkeypatch, t
         lambda _s, name, html: target if html and name == "o-r-discussion-9.html" else None,
     )
     bench.provider._do_read_as_document(NodeRef("repository", "discussions", "o/r"), row)
-    assert bench.said[-1] == "Saved thread.html, 1 posts."
+    assert bench.said[-1] == "Saved thread.html, 1 post."
     assert "<h1" in target.read_text(encoding="utf-8")
 
 
