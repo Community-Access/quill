@@ -357,6 +357,37 @@ corrected routes: QUILL Lite’s is File &gt; GitHub Workbench…, batches
 are Alt+Enter on several rows or Plain-Language Batch, and Ask Copilot
 to Review is on the pull request’s row.</li>
 </ul>
+<h3
+id="more-settings-that-stick-studio-media-player-transcribe-beacon-weather-radio-and-quills-dialogs-2026-11-20">More
+settings that stick: Studio, Media Player, Transcribe, Beacon, Weather,
+Radio and QUILL’s dialogs (2026-11-20)</h3>
+<ul>
+<li><strong>QUILL Studio, Quill Media Player and QUILL Transcribe tell
+you when a setting cannot be saved.</strong> A full disk or a locked
+file used to be ignored: book volume, the sleep timer, the play queue,
+the library, Preferences, streaming, capture keys, the output device,
+Transcribe’s keys and Dictation Settings all carried on as if saved, and
+were gone at the next start. Now Activity says so once, with Retry and
+Open Folder, Retry saves what is current, and nothing says “saved” when
+it was not.</li>
+<li><strong>Beacon’s settings survive a full disk or a crash while
+saving.</strong> Its accessibility, external player, routing and sync
+settings are now written the safe way, so a save that fails part-way
+leaves your previous settings in place instead of an empty file.</li>
+<li><strong>Weather Center’s Settings no longer undo a tray
+choice.</strong> If you changed Close to Tray or Start in Tray from the
+tray while Weather Center was open, saving Weather Center’s Settings put
+the old choice back. The newest choice now wins.</li>
+<li><strong>Changes in QUILL’s AI Hub, Assistant, image prompts and
+chapter workbench take effect at once, and stay.</strong> These saved a
+separate copy of QUILL’s settings that the main window never saw, so the
+change waited for a restart, and the window’s next save could put the
+old value back.</li>
+<li><strong>A settings file containing Infinity or NaN no longer stops
+Quill Radio starting.</strong> Radio keeps every choice it can use, uses
+defaults for the rest, copies the file beside itself, and says once
+where the copy is.</li>
+</ul>
 <h3 id="settings-that-stick-in-every-app-2026-11-20">Settings that
 stick, in every app (2026-11-20)</h3>
 <ul>
