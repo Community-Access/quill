@@ -33,6 +33,7 @@ __all__ = [
     "fill",
     "gql",
     "plain",
+    "refusal",
     "repository_id",
 ]
 
@@ -81,6 +82,8 @@ class Quick:
     needs: tuple[str, ...] = ()  # context keys that must be known: repo, org, key, number, login
     node: str = ""  # with kinds {"view"}: the node key it belongs to
     copies: str = ""  # the answer holds a secret: put it on the clipboard, and say this
+    #: Reads every page, stoppable: called as ``paged(api, ctx, paging)`` behind a Cancel button.
+    paged: Callable[[Any, dict[str, str], Any], Any] | None = None
 
     @property
     def writes(self) -> bool:
@@ -112,11 +115,16 @@ def call(api: Any, method: str, template: str, ctx: Mapping[str, str], body: Any
             kwargs["query"] = query
         return api.rest(method, path, **kwargs).data
     except GitHubRestError as exc:
-        if exc.status in (401, 403):
-            raise QuickError(f"GitHub refused: {exc}. You may need more access here.") from exc
-        if exc.status == 404:
-            raise QuickError("GitHub does not show that to you, or it is gone.") from exc
-        raise QuickError(f"GitHub could not do it: {exc}") from exc
+        raise refusal(exc) from exc
+
+
+def refusal(exc: GitHubRestError) -> QuickError:
+    """GitHub's refusal as the sentence a quick command says."""
+    if exc.status in (401, 403):
+        return QuickError(f"GitHub refused: {exc}. You may need more access here.")
+    if exc.status == 404:
+        return QuickError("GitHub does not show that to you, or it is gone.")
+    return QuickError(f"GitHub could not do it: {exc}")
 
 
 def gql(api: Any, query: str, variables: Mapping[str, Any]) -> dict[str, Any]:

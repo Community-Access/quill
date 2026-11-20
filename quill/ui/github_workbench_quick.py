@@ -154,11 +154,48 @@ class GitHubWorkbenchQuickMixin:
         if quick.confirm and not self._confirm(title, quick.confirm.format_map(_Blank(ctx))):
             return
         api = self.github_api()
+        if quick.paged is not None:
+            self._quick_paged(quick, ctx, api)
+            return
 
         def work() -> Any:
             return quick.said(quick.run(api, ctx), ctx)
 
         self._background(title.lower(), work, lambda said: self._quick_done(quick, str(said)))
+
+    def _quick_paged(self, quick: Quick, ctx: dict[str, str], api: Any) -> None:
+        """Every page, behind a Cancel button; how much was read is said once, at the end."""
+        import threading
+
+        from quill.core.github.every_page import Paging, PagingStopped
+
+        title = quick.label.rstrip(".")
+        stop = threading.Event()
+        progress = self._paging_window(title, stop.set)
+        paging = Paging(should_cancel=stop.is_set, progress=progress.quietly)
+        paged = quick.paged
+        assert paged is not None
+
+        def work() -> Any:
+            try:
+                return quick.said(paged(api, ctx, paging), ctx)
+            except PagingStopped as exc:
+                return _Stopped(title, exc.rows)
+            finally:
+                progress.finish()
+
+        def done(said: Any) -> None:
+            if isinstance(said, _Stopped):
+                self._say(said.sentence())
+                return
+            self._quick_done(quick, str(said))
+
+        self._background(title.lower(), work, done)
+
+    def _paging_window(self, title: str, cancel: Callable[[], None]) -> Any:
+        from quill.ui.github_workbench_paging import PagingWindow
+
+        return PagingWindow(self.frame, title, cancel)
 
     def _quick_done(self, quick: Quick, said: str) -> None:
         if quick.copies:
@@ -174,6 +211,20 @@ class GitHubWorkbenchQuickMixin:
             self._say(said)
         if quick.reload:
             self.frame.reload()
+
+
+class _Stopped:
+    """A paged read the person stopped: nothing is shown, since a part reads as the whole."""
+
+    def __init__(self, title: str, rows: int) -> None:
+        self.title, self.rows = title, rows
+
+    def sentence(self) -> str:
+        read = f"{self.rows} {'entry' if self.rows == 1 else 'entries'}"
+        return (
+            f"Stopped {self.title} after reading {read}. Nothing is shown, because part of "
+            "the count would read as all of it."
+        )
 
 
 class _Blank(dict):  # type: ignore[type-arg]

@@ -47,6 +47,7 @@ from quill.core.github.permissions import (
     scope_rows,
 )
 from quill.ui.github_workbench_invitations import GitHubWorkbenchInvitationsMixin
+from quill.ui.github_workbench_least_privilege import GitHubWorkbenchLeastPrivilegeMixin
 
 __all__ = ["GitHubWorkbenchToolsMixin"]
 
@@ -62,6 +63,7 @@ _TOOLS = frozenset({
     "access_matrix",
     "bulk_access",
     "account_level",
+    "least_privilege",
 })
 _TABLE_SCOPES = {
     "repository": "repository",
@@ -80,7 +82,9 @@ def _table_command(key: str, verb: str) -> str:
     return f"{_P}access_{verb}" if key in _ACCESS_LISTS else ""
 
 
-class GitHubWorkbenchToolsMixin(GitHubWorkbenchInvitationsMixin):
+class GitHubWorkbenchToolsMixin(
+    GitHubWorkbenchInvitationsMixin, GitHubWorkbenchLeastPrivilegeMixin
+):
     """Filter Builder, permissions, history and access, for the GitHub provider."""
 
     items: Any
