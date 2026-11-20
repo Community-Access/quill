@@ -22,6 +22,29 @@
   templates, community files, Dependabot and CODEOWNERS with another
   repository, and proposes the files you choose as one pull request.
 
+### GitHub Workbench: tags, branches, secrets, webhooks and more across repositories (2026-11-20)
+
+- Across Repositories has eight more places by name, grouped by category:
+  Tags and Branches under Code, Environments, Secrets and Variables under
+  Actions, and Webhooks, Deploy Keys and Autolinks under Settings. Each row
+  is a name, with its variants and the repositories that lack it. A
+  repository that will not let you read it is named apart, never counted as
+  missing.
+- **Release Train...** makes a tag, with a draft or published release if you
+  want one, on each chosen repository. It skips a repository that already
+  has the tag and never moves a tag. **Rename Everywhere** renames a branch
+  and its preview says where the default branch, protection and open pull
+  requests change.
+- **Set Secret Everywhere...** asks for the value once. The value is never
+  shown in the plan, the preview or Change History.
+- Environments, variables and webhooks can be made the same, added where
+  missing and deleted everywhere. Webhooks can be turned on or off
+  everywhere.
+- **Promote to Organization** for secrets, variables and webhooks makes the
+  organization's copy first and only then deletes each repository's own.
+  Environments, deploy keys and autolinks have no organization form on
+  GitHub, and QUILL says so.
+
 ### GitHub Workbench: rulesets, branch protection, members, teams and access reviews (2026-11-19)
 
 - A repository's **Rulesets** list, under its settings, and an organization's

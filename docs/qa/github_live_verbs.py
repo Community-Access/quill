@@ -1104,6 +1104,43 @@ def across_move_open(run: Any) -> str:
     return "open issues moved to the other milestone, then back"
 
 
+def across_release_train(run: Any) -> str:
+    """A tag made in both test repositories, one of which already has it, then deleted."""
+    from quill.core.github.across_more_changes import apply_more, plan_more_delete
+    from quill.core.github.across_more_promote import plan_release_train
+    from quill.core.github.tags import create_tag
+
+    name = f"quill-live-train-{int(time.time())}"
+    create_tag(run.api, run.repo, name, run.ids["default_branch"])
+    found = _survey(run, "tags")
+    plan = plan_release_train(found, name, [run.repo, run.second], "tag")
+    _expect(plan.steps[0].action == "skip", "the existing tag was not skipped")
+    results = apply_more(run.api, plan)
+    _expect(all(r.ok for r in results), "; ".join(r.said for r in results))
+    found = _survey(run, "tags")
+    row = found.row(name)
+    _expect(row is not None and len(row.copies) == 2, "the tag is not in both")
+    apply_more(run.api, plan_more_delete(found, row))
+    return "made where missing, the existing one skipped, then deleted from both"
+
+
+def across_set_secret(run: Any) -> str:
+    """One value typed once, set in both test repositories, then the secret deleted."""
+    from quill.core.github.across_more_changes import apply_more, plan_more_delete, plan_set_secret
+
+    name = f"QUILL_LIVE_{int(time.time())}"
+    found = _survey(run, "secrets")
+    results = apply_more(
+        run.api, plan_set_secret(found, name, [run.repo, run.second]), secret="live run"
+    )
+    _expect(all(r.ok for r in results), "; ".join(r.said for r in results))
+    found = _survey(run, "secrets")
+    row = found.row(name)
+    _expect(row is not None and len(row.copies) == 2, "the secret is not in both")
+    apply_more(run.api, plan_more_delete(found, row))
+    return "sealed and set in both, then deleted"
+
+
 # -- the table -----------------------------------------------------------------------
 
 VERBS: dict[str, Scenario | str] = {
@@ -1297,6 +1334,9 @@ VERBS: dict[str, Scenario | str] = {
     "across_delete_name": across_delete_name,
     "across_move_open": across_move_open,
     "across_promote_org": "not here: would change a real organization",
+    "across_release_train": across_release_train,
+    "across_set_secret": across_set_secret,
+    "across_hooks_on_off": "needs Jeff: a webhook on both test repositories",
 }
 
 
