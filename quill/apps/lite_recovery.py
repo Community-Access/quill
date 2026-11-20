@@ -18,6 +18,7 @@ a checkbox on each row rather than a number in a sentence.
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -66,8 +67,8 @@ class LiteRecoveryMixin:
 
     def _offer_recovery(self, result: Triage) -> bool:
         """Put the triaged list up, act on the answer. ``True`` when any opened."""
+        from quill.core.action_feedback import recovered_result
         from quill.core.lite import recovery as recovery_mod
-        from quill.core.recovery_triage import describe_restored
         from quill.ui.recovery_dialog import ask_recovery
 
         answer = ask_recovery(self.shell, result)
@@ -76,14 +77,27 @@ class LiteRecoveryMixin:
         if answer.offer_untitled is not None:
             self.settings.recover_untitled_documents = bool(answer.offer_untitled)
             self._queue_settings_save()
-        restored = 0
+        # Counted from the windows that took their work, never from the number
+        # asked for (FUX-04): a restore that failed has said so in its own
+        # sentence, and counting it here as well said "Restored 2" over 1.
+        restored: list[str] = []
         for slot in answer.restore:
-            self.new_window(slot.mode, recovery_slot=slot)
-            restored += 1
-        parts = [describe_restored(restored, len(answer.restore)), answer.spoken]
+            frame = self.new_window(slot.mode, recovery_slot=slot)
+            if getattr(frame, "_slot", None) is slot:
+                restored.append(slot.title)
+        when = _written_at(answer.restore[0]) if len(answer.restore) == 1 else None
+        parts = [recovered_result(restored, asked=len(answer.restore), when=when), answer.spoken]
         if not answer.restore and not answer.discard:
             parts = ["Unsaved work kept. It will be offered again next time.", answer.spoken]
         said = " ".join(part for part in parts if part).strip()
         if said:
             self.voice.speak(said)
-        return restored > 0
+        return bool(restored)
+
+
+def _written_at(slot: object) -> datetime | None:
+    """When the saved-aside copy was last written: the "from when" of a recovered draft."""
+    try:
+        return datetime.fromtimestamp(slot.content_path.stat().st_mtime)  # type: ignore[attr-defined]
+    except (AttributeError, OSError, ValueError):
+        return None

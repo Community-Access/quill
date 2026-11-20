@@ -837,12 +837,14 @@ example, with the cursor on “Name”, <strong>Ctrl+Alt+Down</strong> says
 <ul>
 <li><strong>Ctrl+S</strong> writes the Word document. A long document
 can take a moment, so the save runs in the background: the status bar
-says “Saving report.docx”, and you hear “Saved report.docx” when it is
-written. If you press <strong>Ctrl+S</strong> again before then, you
-hear “Still saving report.docx” and nothing else happens; QUILL Lite
-never starts a second save over the first. Closing the window in that
-moment waits too: answer the question again once you have heard
-“Saved”.</li>
+says “Saving report.docx”, and you hear “Saved report.docx in Documents”
+(the file and its folder) when it is written. If you kept typing while
+it saved, you hear “What you typed while it saved is not in it yet” as
+well, and the window stays unsaved until you save again. If you press
+<strong>Ctrl+S</strong> again before then, you hear “Still saving
+report.docx” and nothing else happens; QUILL Lite never starts a second
+save over the first. Closing the window in that moment waits too: answer
+the question again once you have heard “Saved”.</li>
 <li>If you type while a save is running, what you typed is not in the
 file yet, so the document still counts as changed. Press
 <strong>Ctrl+S</strong> again afterwards.</li>
@@ -888,7 +890,8 @@ press <strong>Enter</strong>. You hear “Opening agenda.docx”, then
 hear “Heading 2: Actions”.</li>
 <li>Press <strong>Ctrl+End</strong> to go to the end of the agenda,
 press <strong>Enter</strong>, and type “Book the room by Friday.”</li>
-<li>Press <strong>Ctrl+S</strong>. You hear “Saved agenda.docx”.</li>
+<li>Press <strong>Ctrl+S</strong>. You hear “Saved agenda.docx in
+Documents”.</li>
 <li>Open <code>agenda.docx</code> in Word. “Actions” is still a Heading
 2 in the navigation pane, and “Book the room by Friday.” is the last
 paragraph.</li>
@@ -896,7 +899,8 @@ paragraph.</li>
 <p>The same document with a comment in it would first have asked the
 question above. Choosing <strong>Edit as Rich Text</strong> and saving
 would have said “Backed up the original to agenda.backup-…docx” before
-“Saved agenda.docx”, and the comment would still be in that copy.</p>
+“Saved agenda.docx in Documents”, and the comment would still be in that
+copy.</p>
 <h2 id="importing-and-converting-a-document">Importing and converting a
 document</h2>
 <p><strong>File &gt; Import / Convert Document (OCR)…</strong> turns a
@@ -1350,6 +1354,17 @@ back.</li>
 <p>You can change your mind about that last one later. In Preferences,
 turn on <strong>Offer untitled unsaved work back after a
 crash</strong>.</p>
+<p><strong>Discard Checked</strong> takes away only the rows you
+checked. The rows that are left stay as you left them, checked or not,
+and you land on the row after the first one that went, not back at the
+top.</p>
+<p>When the work comes back you hear one sentence saying what is now
+true. For one document it names the document and when its copy was made,
+like “Recovered notes.txt, as it was today at 2:02 PM. It is not saved
+yet.” For several, it names each one. If one of them could not be
+brought back, its own window says so, and the sentence counts only the
+ones that did: “Recovered 1 of 2: notes.txt.” QUILL says the same
+sentence after its own crash recovery.</p>
 <h3 id="text-looks-blurry-or-a-window-is-the-wrong-size">Text looks
 blurry, or a window is the wrong size</h3>
 <p>QUILL Lite scales itself for each monitor. Text stays sharp at 125,
@@ -1375,12 +1390,12 @@ each document. After that, the oldest go.</p>
 <p>The copy is made just after your file is saved, so a copy that cannot
 be made never stops the save. It is not kept quiet, though. If the
 backups folder is full or cannot be written to, you hear “Saved
-notes.txt, but could not write a backup” instead of the usual “Saved
-notes.txt”, and your braille display shows the same. Your file is saved
-either way. The reason, such as a full disk or a folder you do not have
-permission to write to, is written to QUILL Lite’s log in its
-<code>logs</code> folder, so support can find it later if you ask why a
-backup is missing.</p>
+notes.txt in Documents, but could not write a backup” instead of the
+usual “Saved notes.txt in Documents”, and your braille display shows the
+same. Your file is saved either way. The reason, such as a full disk or
+a folder you do not have permission to write to, is written to QUILL
+Lite’s log in its <code>logs</code> folder, so support can find it later
+if you ask why a backup is missing.</p>
 <p>The word count helps you tell copies apart. Two saves a minute apart
 sound almost the same, but a version that is suddenly two thousand words
 shorter is usually the one you are looking for.</p>
@@ -1558,6 +1573,11 @@ where it starts.</li>
 this computer. A file on a USB drive or a network share is kept, because
 it is usually just unplugged.</li>
 </ul>
+<p>If you save a document while this window is open, for example a Word
+document that finishes saving in the background, its row appears at the
+top. The row you are on stays selected, on the same line, and focus does
+not move. Nothing is said, because the save already said what it
+did.</p>
 <p>If a file has been moved or deleted, its row says “not found”. It
 stays in the window so you know what happened, and Remove from List
 tidies it away. The Open Recent menu leaves it out, so the quick keys
