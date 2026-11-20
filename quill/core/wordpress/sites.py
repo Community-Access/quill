@@ -111,24 +111,32 @@ class SiteStore:
     def match_url(self, url: str) -> SiteProfile | None:
         """The saved site a web address belongs to (Open by Web Address, 5.2).
 
-        Matches by host, ignoring ``www.``, and prefers the longest path prefix
-        so a site at ``example.org/blog`` wins over one at ``example.org``.
+        Matches the origin -- host, ignoring ``www.``, and the effective port,
+        so ``127.0.0.1:8080`` is not the site at ``127.0.0.1:9400`` -- and
+        prefers the longest path that owns whole segments, so a site at
+        ``example.org/blog`` wins over one at ``example.org`` and never owns
+        ``example.org/blogger``. The one scheme alias kept is http and https
+        on their default ports: the same site before and after its upgrade.
         """
-        parsed = urlparse(url.strip())
-        host = _bare_host(parsed.hostname or "")
-        if not host:
+        parsed = _parse(url.strip())
+        if parsed is None:
             return None
+        host, port, path = parsed
         best: SiteProfile | None = None
         best_len = -1
         for site in self.sites:
-            site_parsed = urlparse(site.site_url)
-            hosts = {_bare_host(site_parsed.hostname or "")}
+            own = _parse(site.site_url)
+            origins = {own[:2]} if own is not None else set()
             if site.wpcom_site:
-                hosts.add(_bare_host(site.wpcom_site))
-            if host not in hosts:
+                written = site.wpcom_site
+                alias = _parse(written if "//" in written else f"https://{written}")
+                if alias is not None:
+                    origins.add(alias[:2])
+            if (host, port) not in origins:
                 continue
-            base_path = site_parsed.path.rstrip("/")
-            if parsed.path.startswith(base_path) and len(base_path) > best_len:
+            base_path = own[2] if own is not None and (host, port) == own[:2] else ""
+            owns = not base_path or path == base_path or path.startswith(base_path + "/")
+            if owns and len(base_path) > best_len:
                 best, best_len = site, len(base_path)
         return best
 
@@ -226,6 +234,28 @@ def _import_publishing_connections() -> SiteStore:
 
 def _host_of(url: str) -> str:
     return urlparse(url).hostname or url
+
+
+_DEFAULT_PORTS = {"http": 80, "https": 443}
+
+
+def _parse(url: str) -> tuple[str, int, str] | None:
+    """(host without ``www.``, effective port, path without its last ``/``), or None.
+
+    The port is the written one, or the scheme's default; either default
+    port compares as 0, so http and https on their default ports are the
+    same origin -- the one alias a connected site has between its addresses.
+    """
+    parsed = urlparse(url)
+    scheme = parsed.scheme.lower()
+    host = _bare_host(parsed.hostname or "")
+    if scheme not in _DEFAULT_PORTS or not host:
+        return None
+    try:
+        port = parsed.port or _DEFAULT_PORTS[scheme]
+    except ValueError:
+        return None
+    return host, 0 if port == _DEFAULT_PORTS[scheme] else port, parsed.path.rstrip("/")
 
 
 def _bare_host(host: str) -> str:

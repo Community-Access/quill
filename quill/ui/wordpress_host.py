@@ -52,6 +52,13 @@ class WordPressHost(Protocol):
 
     def go_to_offset(self, offset: int) -> None: ...
 
+    def set_caret(self, offset: int) -> None:
+        """Put the caret at *offset* without moving focus or scrolling to it.
+
+        For text the commands changed underneath the person (an uploaded
+        picture's address, 6.4): where they were typing stays where it was.
+        """
+
     def open_path(self, path: Path) -> None:
         """Open *path* in the editor, or switch to it when it is already open."""
 
