@@ -2,6 +2,39 @@
 
 ## 1.0.0
 
+### GitHub Workbench: the wiki, discussion to issue to pull request, Copilot seats, prompt files and AI drafts (2026-11-20)
+
+- **The wiki.** Edit Wiki Pages... copies a repository's wiki to your
+  computer, or brings your copy up to date, and lists its pages with Home
+  first. Enter opens a page in the editor. New Wiki Page... makes one, and
+  Publish Wiki Changes... names the pages and the account, asks for a message
+  and sends them. Nothing is ever forced: if someone else changed the wiki
+  first, QUILL puts your changes on top of theirs, and if that conflicts it
+  undoes the attempt and says so.
+- **From a discussion to a pull request.** Create Issue from Discussion...
+  opens an issue that quotes and links the discussion. Start Pull Request for
+  This Issue... makes a linked branch and a draft pull request that closes the
+  issue. Related... lists everything that links to an issue, pull request or
+  discussion, with its repository.
+- **Copilot for an organization.** Copilot Plan, Copilot Seats, A Member's
+  Copilot Seat..., giving and taking seats from people and teams (owners only,
+  and it asks first), the usage report, agent access and content exclusions.
+  On a repository, Copilot Agent Configuration and Copilot Review Settings.
+  Nothing here needs GitHub Enterprise Cloud.
+- **Prompt files.** Prompt Files... lists a repository's GitHub Models
+  prompts and reads each one as its model, settings, messages, test rows and
+  evaluators, with any problems. Open in Editor edits one.
+- **Open in github.dev** on a file or a pull request, GitHub's free editor in
+  the browser.
+- **AI drafts you check first.** Draft Description and Reviewer Brief on a
+  pull request, Draft Task Breakdown on an issue, and Draft Release Notes on
+  the rows you choose. Each draft opens in the editor with the sources it used
+  and anything it left out. They use your own AI connection, and are greyed
+  with a reason when there is none.
+- **Where review is stuck.** The repository health snapshot now says how many
+  ready pull requests are waiting for a review and how long the oldest has
+  waited. It never names who was asked.
+
 ### Plans: the WordPress backlog (2026-11-19)
 
 The WordPress decisions still open have moved from the open-work list to a

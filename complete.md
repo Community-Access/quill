@@ -45,12 +45,10 @@ Each is done only with evidence: a test or a live run.
 - [ ] Command Key rows for the GitHub and WordPress Plain-Language Batch (Command Key has no Workbench-window host yet; both Workbenches take the sentence in their own window).
 - [ ] Compare Accounts and one-action Act As with unambiguous identity and cache isolation.
 - [ ] Role comparison and learning workflows reach real permission evidence, not guessed privileges.
-- [ ] Wiki, and cross-linked discussion → issue → pull request workflows (saved replies and repository invitations are done).
 - [ ] Repository General/features, complete creation/template options, transfer, topics and star lists (standalone tags are done).
 - [ ] Rulesets/protection management, organization/member/team access, custom roles and audit logs.
 - [ ] Accessible workflow authoring: triggers/jobs/steps/inputs/permissions/dependency graph as linear controls (turning a workflow on or off is done).
 - [ ] Dependabot configuration and pull request commands; CODEOWNERS editing/ownership lookup.
-- [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
 - [ ] Least-privilege advice based on observed usage with honest uncertainty (attestations and immutable releases are done).
 - [ ] First-class by-name collections for every kind in product requirements document (PRD) 22.11 beyond Labels, Milestones, Topics, Rules and Branch Protection, and the Fleet; the other kinds are classified in `quill/core/github/across_scope_matrix.py`.
@@ -61,10 +59,10 @@ Each is done only with evidence: a test or a live run.
 - [ ] Saved replies/favorites/watch levels/stars, alerts/packages/Pages where supported.
 - [ ] Cross-repository coverage is complete only when the corresponding single-repository operation and batch behavior are complete; read-only category views are tracked separately from multi-target writes.
 - [ ] GX11, what is left: a severity breakdown beyond the first 100 alerts of each kind in Security Overview, and a test that exporting an alert list leaves out sensitive fields. (Dismissal and bypass request review is Enterprise Cloud only and stays on GitHub, decided 2026-11-18.)
-- [ ] GX12 collaboration/knowledge; GX13 administration.
+- [ ] GX13 administration.
 - [ ] GX09: Why Can't I Merge? and Merge Selected... do not yet name the specific ruleset or CODEOWNERS rule that blocks (only the review window's Check Merge Policy does), and nothing watches a pull request to say when its readiness changes.
 - [ ] GX10: attestation signatures are not verified in QUILL (it points to gh attestation verify), and a downloaded release file is not checked against its digest.
-- [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance; GX16 category-first cross-repository browsing.
+- [ ] GX16 category-first cross-repository browsing.
 
 #### Documentation at the end of each delivery batch
 

@@ -734,7 +734,9 @@ repository in **Repository:**:
 - **Repository labels**, with **Create Label...** on the context menu.
 - **GitHub Pages and builds**, for a repository with a website.
 - **Repository health snapshot (opt-in)**, a set of counts that stays on this
-  computer and does not rank anybody.
+  computer and does not rank anybody. It says how many ready pull requests are
+  waiting for a review and how long the oldest has waited, without naming who
+  was asked.
 
 And views of people: **Person's repositories**, **Person's followers** and
 **People followed by person**, with the username in **Person:**; and your own,
