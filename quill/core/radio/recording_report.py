@@ -121,7 +121,15 @@ def build_report(
     hiccuped. Called after the reconnect decision, so a Stop pressed during a
     reconnect wait reads as :data:`STOPPED`, which is what it was.
     """
-    short = max(0, int((job.scheduled_end - now).total_seconds()))
+    # How far short of its end it stopped. A real job measures that on its
+    # monotonic deadline (``RecordingJob.seconds_left``), which a time-zone or
+    # daylight-saving change cannot move; ``scheduled_end - now`` is the
+    # fallback for anything that only has the wall-clock end.
+    seconds_left = getattr(job, "seconds_left", None)
+    if callable(seconds_left):
+        short = max(0, int(seconds_left()))
+    else:
+        short = max(0, int((job.scheduled_end - now).total_seconds()))
     planned = 0
     if job.duration_requested:
         planned = max(0, int((job.scheduled_end - job.started_at).total_seconds()))

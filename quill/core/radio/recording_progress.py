@@ -62,6 +62,13 @@ class RecordingProgress:
     started_at: datetime
     minutes: int
     duration_requested: bool
+    #: The absolute moment the deliberate end falls (timezone-aware), carried
+    #: from the recorder's job unchanged across reconnects. When present it is
+    #: the countdown's only source: a continued capture's ``started_at`` is the
+    #: original start while the recorder hands each part only the *remaining*
+    #: minutes, so ``started_at + minutes`` said "less than a minute left" ten
+    #: minutes before a 60-minute show ended (plan.md, Windows Radio review).
+    ends_at: datetime | None = None
 
     def elapsed(self, now: datetime) -> timedelta:
         """How long this capture has been running, never negative.
@@ -80,10 +87,19 @@ class RecordingProgress:
         cannot accidentally render a countdown to the safety cap, because there
         is no number here to render.
         """
-        if not self.duration_requested or self.minutes <= 0:
+        if not self.duration_requested:
+            return None
+        if self.ends_at is not None:
+            return max(timedelta(0), _absolute(self.ends_at) - _absolute(now))
+        if self.minutes <= 0:
             return None
         end = self.started_at + timedelta(minutes=self.minutes)
         return max(timedelta(0), end - now)
+
+
+def _absolute(moment: datetime) -> datetime:
+    """*moment* as an aware datetime; naive means system-local time."""
+    return moment if moment.tzinfo is not None else moment.astimezone()
 
 
 def _minutes_ceil(span: timedelta) -> int:
