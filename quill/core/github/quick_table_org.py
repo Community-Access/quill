@@ -4,7 +4,8 @@
   Repository...**, **Take a Repository from Dependabot...**, **Dependabot's
   Default Access...**, **Make Someone an Outside Collaborator...**, **Define
   a Custom Property...**, **Set Repositories' Custom Property...**, **New
-  Team...**, **Accept Membership**, **My Activity Here**.
+  Team...**, **Accept Membership**, **Members Without Two-Factor**, **My Activity
+  Here**.
 * A team: **Pending Invitations**, **Delete Team...**. An invitation to the
   organization: **Teams It Adds To**.
 * A Project: **New View...** and **Items in a View...**.
@@ -19,6 +20,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from quill.core.github.org_people import convert_problem
 from quill.core.github.quick_actions import (
     Ask,
     Quick,
@@ -90,9 +92,16 @@ def _values(api: Any, ctx: dict[str, str]) -> Any:
 
 
 def _team(api: Any, ctx: dict[str, str]) -> Any:
-    body = {"name": ctx["team"], "privacy": ctx["privacy"]}
+    body: dict[str, Any] = {"name": ctx["team"], "privacy": ctx["privacy"]}
     if ctx.get("about"):
         body["description"] = ctx["about"]
+    if ctx.get("notify"):
+        body["notification_setting"] = ctx["notify"]
+    if ctx.get("parent"):
+        if ctx["privacy"] == "secret":
+            raise QuickError("A secret team cannot sit under another team; make it visible.")
+        parent = call(api, "GET", "/orgs/{org}/teams/{parent}", ctx)
+        body["parent_team_id"] = (parent or {}).get("id")
     return call(api, "POST", "/orgs/{org}/teams", ctx, body)
 
 
@@ -109,6 +118,11 @@ def _event_rows(data: Any, _ctx: dict[str, str]) -> str:
         for e in data if isinstance(e, Mapping)
     ] if isinstance(data, list) else []  # fmt: skip
     return bulleted(rows, "No recent activity of yours here.")
+
+
+def _two_factor(data: Any, _ctx: dict[str, str]) -> str:
+    rows = [str(r.get("login")) for r in data or () if isinstance(r, Mapping)]
+    return bulleted(rows, "Every member has two-factor sign-in on.")
 
 
 def _invitees(data: Any, _ctx: dict[str, str]) -> str:
@@ -215,10 +229,11 @@ ORG_QUICK: tuple[Quick, ...] = (
           "Take someone out of the organization's members but keep their repository access.",
           ("PUT /orgs/{org}/outside_collaborators/{username}",),
           lambda api, ctx: call(api, "PUT", "/orgs/{org}/outside_collaborators/{who}", ctx, {}),
-          lambda _d, ctx: f"{ctx['who']} is an outside collaborator now.", tier="A",
+          lambda _d, ctx: f"{ctx['who']} is an outside collaborator now.", tier="D",
           need="org:owner", asks=(Ask("who", "Their login:"),),
           confirm="Make {who} an outside collaborator? They stop being a member of the "
-          "organization and its teams, and keep only their repositories.",
+          "organization and its teams, and keep only their repositories.", typed="who",
+          guard=lambda api, ctx: convert_problem(api, ctx["org"], ctx["who"]),
           needs=("org",), live="needs Jeff: a throwaway member of an organization he owns"),
     Quick("define_custom_property", "Define a Custom Property...", ("organization",), _ORG,
           "Add or change a property every repository here can be given.",
@@ -251,7 +266,11 @@ ORG_QUICK: tuple[Quick, ...] = (
                 Ask("privacy", "Who can see it?", "choice",
                     ("Every member of the organization", "Only its own members and owners"),
                     ("closed", "secret")),
-                Ask("about", "What it is for (optional):", optional=True)),
+                Ask("about", "What it is for (optional):", optional=True),
+                Ask("parent", "The team it sits under, by its short name (empty for none):",
+                    optional=True),
+                Ask("notify", "Notify the team when it is mentioned?", "choice",
+                    ("Yes", "No"), ("notifications_enabled", "notifications_disabled"))),
           needs=("org",), reload=True, live="needs Jeff: an organization he owns"),
     Quick("delete_team_now", "Delete Team...", ("team",), _TEAM,
           "Delete this team, and its child teams.",
@@ -282,6 +301,12 @@ ORG_QUICK: tuple[Quick, ...] = (
                                 {"state": "active"}),
           lambda _d, ctx: f"You are a member of {ctx['org']} now.", tier="A", need="sign_in",
           needs=("org",), live="not here: needs an invitation from another organization"),
+    Quick("two_factor_off", "Members Without Two-Factor", ("organization",), _ORG,
+          "Members who have not turned on two-factor sign-in. GitHub shows this to owners.",
+          ("GET /orgs/{org}/members",),
+          lambda api, ctx: call(api, "GET", "/orgs/{org}/members?filter=2fa_disabled"
+                                "&per_page=100", ctx),
+          _two_factor, report=True, needs=("org",)),
     Quick("my_org_activity", "My Activity Here", ("organization",), _ORG,
           "What you have done lately in this organization's repositories.",
           ("GET /users/{username}/events/orgs/{org}",),

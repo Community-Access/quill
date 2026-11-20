@@ -46,6 +46,7 @@ KIND_NAMES: dict[str, str] = {
     "pull_request_template": "pull request template",
     "discussion_form": "discussion category form",
     "community_file": "community file",
+    "dependabot": "Dependabot configuration",
 }
 
 #: The community health files GitHub reads, by upper-cased stem (or name).
@@ -210,6 +211,7 @@ class _Scan:
         self.entries: list[TemplateEntry] = []
         self.read_count = 0
         self.community: dict[str, Any] = {}
+        self.dependabot: Any = None
 
     def add(self, kind: str, entry: Any, *, inherited: bool, read: bool = True) -> None:
         path = _safe(entry, "path") or _safe(entry, "name")
@@ -252,6 +254,14 @@ class _Scan:
 
     def run(self, *, inherited: bool) -> None:
         listings = {where: _listing(self.repo, where) for where in ("", ".github", "docs")}
+        self.dependabot = next(
+            (
+                e
+                for e in listings[".github"]
+                if _safe(e, "name") in ("dependabot.yml", "dependabot.yaml")
+            ),
+            None,
+        )
         github_names = {_safe(e, "name").casefold(): e for e in listings[".github"]}
         for kind, folder in (
             ("issue", "issue_template"),
@@ -360,6 +370,20 @@ def list_templates(repo_for: Callable[[str], Any], full_name: str) -> tuple[Temp
                     missing=True,
                 )
             )
+    # Dependabot reads only the repository's own file; nothing is inherited (PRD 22.1).
+    found = own.dependabot
+    entries.append(
+        TemplateEntry(
+            kind="dependabot",
+            path=_safe(found, "path") if found is not None else ".github/dependabot.yml",
+            source=full_name,
+            name="Dependabot configuration",
+            missing=found is None,
+            size=_size(found) if found is not None else 0,
+            sha=_safe(found, "sha") if found is not None else "",
+            url=_safe(found, "html_url") if found is not None else "",
+        )
+    )
     return tuple(entries)
 
 

@@ -111,6 +111,8 @@ def test_every_declared_command_is_a_real_row() -> None:
         "upload_sarif",  # New Here in Code Scanning Analyses
         "codespace_new",  # New Here in a repository's Codespaces
         "pages_turn_on",  # New Here in a repository's GitHub Pages
+        "new_workflow",  # Repository Actions... (Ctrl+Shift+G)
+        "compare_config",  # Repository Actions... (Ctrl+Shift+G)
     }
     for command_id in COMMAND_REQUIREMENTS:
         verb = command_id.removeprefix("github.workbench.")

@@ -41,6 +41,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}convert_tasks": ("repo:triage", _V),
     f"{_P}clone": ("local", _O),
     f"{_P}close_reopen": ("viewer:viewerCanClose", _V),
+    # Each item's own field write is checked again as it is sent (labels are
+    # Organizing, state Visible); the sentence as a whole asks for Visible.
+    f"{_P}plain_batch": ("repo:triage", _V),
     f"{_P}comment": ("sign_in", _V),
     f"{_P}delete_asset": ("repo:write", _D),
     f"{_P}delete_branch": ("repo:write", _D),
@@ -85,6 +88,10 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}accept_invitation": ("sign_in", _A),
     f"{_P}decline_invitation": ("sign_in", _V),
     f"{_P}workflow_state": ("repo:write", _V),
+    f"{_P}edit_workflow": ("repo:write", _V),
+    f"{_P}new_workflow": ("repo:write", _V),
+    f"{_P}dependabot_command": ("sign_in", _V),
+    f"{_P}compare_config": ("repo:write", _V),
     f"{_P}new_tag": ("repo:write", _V),
     f"{_P}delete_tag": ("repo:write", _D),
     f"{_P}transfer_repository": ("repo:admin", _D),
@@ -229,6 +236,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}across_delete_name": ("repo:write", _D),
     f"{_P}across_move_open": ("repo:write", _V),
     f"{_P}across_promote_org": ("org:owner+repo:admin", _D),
+    f"{_P}across_release_train": ("repo:write", _V),
+    f"{_P}across_set_secret": ("repo:admin", _A),
+    f"{_P}across_hooks_on_off": ("repo:admin", _V),
 }
 
 

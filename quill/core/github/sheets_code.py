@@ -1,38 +1,26 @@
-"""Sheets for branches, tags, commits, files, rulesets and classic protection (Appendix C).
+"""Sheets for branches, tags, commits and files (Appendix C).
 
 Phase 8's "branches and rules": a Branch sheet (rename, and the rules that
 apply to it, read as a sentence), Tag and Commit sheets (immutable, so every
-fact is read-only and the commit's comments are counted), a File sheet, the
-Ruleset sheet with every rule and setting and its Summary page (section
-18.3.1), and the same sheet shape for classic branch protection. GitHub
-replaces a ruleset and a protection whole, so their saves go through
-:func:`quill.core.github.rulesets.ruleset_body` and ``classic_body``.
+fact is read-only and the commit's comments are counted) and a File sheet.
+The Ruleset sheets and classic branch protection are in
+:mod:`quill.core.github.sheets_rules`.
 
 wx-free and strict-typed.
 """
 
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping
 from typing import Any
 
 from quill.core.github.permissions import WriteTier
-from quill.core.github.rulesets import (
-    MERGE_METHODS,
-    RULES,
-    classic_as_rules,
-    classic_body,
-    rule_words,
-    ruleset_body,
-    ruleset_values,
-    summary,
-)
-from quill.core.github.sheet_engine import Ident, Read, SheetDef, Write
+from quill.core.github.rulesets import rule_words
+from quill.core.github.sheet_engine import Read, SheetDef, Write
 from quill.core.github.sheet_fields import dig, ed, lst, obj, page, ro, when
 from quill.core.workbench.properties import FieldKind, SheetSpec, Value
 
-__all__ = ["BRANCH", "BRANCH_PROTECTION", "COMMIT", "FILE", "RULESET", "TAG"]
+__all__ = ["BRANCH", "COMMIT", "FILE", "TAG"]
 
 _A, _D = WriteTier.ACCESS, WriteTier.DESTRUCTIVE
 _K = FieldKind
@@ -300,216 +288,4 @@ FILE = SheetDef(
     (Read("/repos/{repo}/contents/{path}", _file),),
     title=lambda ident: ident["path"].rsplit("/", 1)[-1],
     url=lambda ident: f"https://github.com/{ident['repo']}/blob/HEAD/{ident['path']}",
-)
-
-
-# ---------------------------------------------------------------------------
-# Rulesets (18.3.1)
-# ---------------------------------------------------------------------------
-
-_RULE_WORDS = tuple(words for _key, words in RULES)
-
-
-def _ruleset(data: Mapping[str, Any]) -> dict[str, Value]:
-    return {k: v for k, v in ruleset_values(data).items() if isinstance(v, (str, int, bool, tuple))}
-
-
-def _compose_ruleset(
-    ident: Ident, edits: Mapping[str, Value]
-) -> list[tuple[str, str, dict[str, object]]]:
-    raw = json.loads(ident.get("raw_json") or "{}")
-    body = ruleset_body(raw, dict(edits))
-    return [("PUT", f"/repos/{ident['repo']}/rulesets/{ident['id']}", body)]
-
-
-_RULES_FIELDS = (
-    ed(
-        "rules",
-        "Rules",
-        _K.CHECKLIST,
-        "Each rule GitHub offers, checked when it is on.",
-        choices=_RULE_WORDS,
-    ),
-    ed("approvals", "Approvals needed", _K.NUMBER, "For Require a pull request."),
-    ed("dismiss_stale", "Dismiss stale approvals on new pushes", _K.CHECK),
-    ed("code_owners", "Require a code owner's review", _K.CHECK),
-    ed("last_push", "Require approval of the most recent push", _K.CHECK),
-    ed("resolve_threads", "Require conversations to be resolved", _K.CHECK),
-    ed("merge_methods", "Allowed merge methods", _K.CHECKLIST, choices=MERGE_METHODS),
-    ed("status_checks", "Required status checks", _K.LIST, "Check names, comma-separated."),
-    ed("strict", "Branch must be up to date", _K.CHECK),
-)
-
-RULESET = SheetDef(
-    "ruleset",
-    SheetSpec(
-        "ruleset",
-        "Ruleset",
-        (
-            page(
-                "general",
-                "General",
-                ed("name", "Name"),
-                ed(
-                    "enforcement",
-                    "Enforcement",
-                    _K.CHOICE,
-                    "Active blocks; evaluate only "
-                    "reports what it would block; disabled does nothing.",
-                    choices=("active", "evaluate", "disabled"),
-                ),
-                ro("target", "Applies to"),
-            ),
-            page(
-                "target",
-                "Target",
-                ed(
-                    "include",
-                    "Include",
-                    _K.LIST,
-                    "Branch or tag patterns; ~DEFAULT_BRANCH is "
-                    "the default branch and ~ALL is all of them.",
-                ),
-                ed("exclude", "Exclude", _K.LIST),
-            ),
-            page(
-                "bypass",
-                "Bypass",
-                ro(
-                    "bypass",
-                    "May bypass",
-                    _K.TABLE,
-                    "Roles, teams and apps that may bypass it, always or for pull requests.",
-                ),
-            ),
-            page("rules", "Rules", *_RULES_FIELDS),
-            page(
-                "summary",
-                "Summary",
-                ro("summary", "In plain words", _K.MULTILINE, "The whole ruleset as sentences."),
-            ),
-            page(
-                "history",
-                "History",
-                ro(
-                    "history_note",
-                    "Rule insights",
-                    help="Which pushes it blocked or would have: Open on GitHub.",
-                ),
-            ),
-        ),
-    ),
-    (Read("/repos/{repo}/rulesets/{id}", _ruleset),),
-    {
-        key: Write("/repos/{repo}/rulesets/{id}", "repo:admin", _A, "PUT", "put")
-        for key in (
-            "name",
-            "enforcement",
-            "include",
-            "exclude",
-            "rules",
-            "approvals",
-            "dismiss_stale",
-            "code_owners",
-            "last_push",
-            "resolve_threads",
-            "merge_methods",
-            "status_checks",
-            "strict",
-        )
-    },
-    title=lambda ident: f"Ruleset {ident.get('name') or ident['id']}",
-    url=lambda ident: f"https://github.com/{ident['repo']}/rules/{ident['id']}",
-    compose=_compose_ruleset,
-    adopt=("raw_json",),
-)
-
-
-def _protection(data: Mapping[str, Any]) -> dict[str, Value]:
-    reviews = data.get("required_pull_request_reviews")
-    checks = data.get("required_status_checks")
-
-    def on(key: str) -> bool:
-        found = data.get(key)
-        return bool(found.get("enabled")) if isinstance(found, Mapping) else bool(found)
-
-    return {
-        "approvals": int(reviews.get("required_approving_review_count") or 0)
-        if isinstance(reviews, Mapping)
-        else 0,
-        "status_checks": tuple(str(c) for c in (checks or {}).get("contexts") or ())
-        if isinstance(checks, Mapping)
-        else (),
-        "enforce_admins": on("enforce_admins"),
-        "linear_history": on("required_linear_history"),
-        "allow_force_pushes": on("allow_force_pushes"),
-        "allow_deletions": on("allow_deletions"),
-        "resolve_threads": on("required_conversation_resolution"),
-        "raw_json": json.dumps(dict(data)),
-    }
-
-
-def _protection_summary(data: Mapping[str, Any]) -> dict[str, Value]:
-    return {"summary": summary(classic_as_rules(data, "this branch"))}
-
-
-def _compose_protection(
-    ident: Ident, edits: Mapping[str, Value]
-) -> list[tuple[str, str, dict[str, object]]]:
-    raw = json.loads(ident.get("raw_json") or "{}")
-    body = classic_body(raw, dict(edits))
-    return [("PUT", f"/repos/{ident['repo']}/branches/{ident['branch']}/protection", body)]
-
-
-BRANCH_PROTECTION = SheetDef(
-    "branch_protection",
-    SheetSpec(
-        "branch_protection",
-        "Branch Protection",
-        (
-            page(
-                "general",
-                "General",
-                ed(
-                    "approvals",
-                    "Approvals needed",
-                    _K.NUMBER,
-                    "0 turns off Require a pull request.",
-                ),
-                ed("status_checks", "Required status checks", _K.LIST),
-                ed("enforce_admins", "Include administrators", _K.CHECK),
-                ed("linear_history", "Require linear history", _K.CHECK),
-                ed("allow_force_pushes", "Allow force pushes", _K.CHECK),
-                ed("allow_deletions", "Allow deletion", _K.CHECK),
-                ed("resolve_threads", "Require conversations to be resolved", _K.CHECK),
-            ),
-            page("summary", "Summary", ro("summary", "In plain words", _K.MULTILINE)),
-        ),
-    ),
-    (
-        Read("/repos/{repo}/branches/{branch}/protection", _protection),
-        Read("/repos/{repo}/branches/{branch}/protection", _protection_summary),
-    ),
-    {
-        key: Write(
-            "/repos/{repo}/branches/{branch}/protection",
-            "repo:admin",
-            _D if key in ("allow_force_pushes", "allow_deletions") else _A,
-            "PUT",
-            "put",
-        )
-        for key in (
-            "approvals",
-            "status_checks",
-            "enforce_admins",
-            "linear_history",
-            "allow_force_pushes",
-            "allow_deletions",
-            "resolve_threads",
-        )
-    },
-    title=lambda ident: f"Protection of {ident['branch']}",
-    url=lambda ident: f"https://github.com/{ident['repo']}/settings/branches",
-    compose=_compose_protection,
-    adopt=("raw_json",),
 )

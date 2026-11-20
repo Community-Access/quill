@@ -1246,8 +1246,8 @@ Delete removes. Watches never mark notifications read.</td>
 <td>the top</td>
 <td>Across Repositories: the Repository Set in use, and under it its
 named sets, one kind of thing from every repository in the set, each
-name across the set, and the Fleet. Ctrl+N here edits the set’s
-repositories.</td>
+name across the set grouped as Planning, Code, Actions and Settings, and
+the Fleet. Ctrl+N here edits the set’s repositories.</td>
 </tr>
 <tr>
 <td>Repository Sets (<code>:across_sets</code>)</td>
@@ -1303,47 +1303,6 @@ each, or every release from the row’s menu.</td>
 in.</td>
 </tr>
 <tr>
-<td>Labels by Name (<code>:across_by_labels</code>)</td>
-<td>across</td>
-<td>Labels by Name: each label name across the set, where its colour and
-description differ and where it is missing. Make the copies the same,
-add it where missing, rename, merge or delete it everywhere, each with a
-preview and a result per repository.</td>
-</tr>
-<tr>
-<td>Milestones by Name (<code>:across_by_milestones</code>)</td>
-<td>across</td>
-<td>Milestones by Name: each milestone title across the set, its due
-dates, descriptions and progress. Make them the same, close them
-everywhere, move their open work to another milestone or add the missing
-ones, each with a preview and a result per repository.</td>
-</tr>
-<tr>
-<td>Topics by Name (<code>:across_by_topics</code>)</td>
-<td>across</td>
-<td>Topics by Name: each topic across the set and the repositories that
-lack it. Add it to the missing or remove it everywhere, with a preview
-and a result per repository; each repository’s other topics are
-kept.</td>
-</tr>
-<tr>
-<td>Rules and Branch Protection (<code>:across_by_rules</code>)</td>
-<td>across</td>
-<td>Rules and Branch Protection: each ruleset by name, and each default
-branch’s protection, compared across the set. Make them the same as the
-winner, add a ruleset where it is missing, or promote one to an
-organization ruleset; each needs admin access and shows a preview
-first.</td>
-</tr>
-<tr>
-<td>Fleet (<code>:across_fleet</code>)</td>
-<td>across</td>
-<td>Fleet: one line per repository in the set: the exact revision of its
-default branch, checks, open pull requests, latest release and alerts,
-and when it was read. A repository that could not be read keeps its
-line, with the reason.</td>
-</tr>
-<tr>
 <td>Help and Learning (<code>:help</code>)</td>
 <td>the top</td>
 <td>Help and Learning: the guide, the GitHub words, the keys, what
@@ -1396,6 +1355,133 @@ here and are never pushed at you.</td>
 <td>Ask a Person: write to <a
 href="mailto:support@community-access.org">support@community-access.org</a>.
 Nothing is sent until you send it from your own email.</td>
+</tr>
+<tr>
+<td>Planning by Name (<code>:across_planning</code>)</td>
+<td>across</td>
+<td>Planning by Name: labels, milestones and topics, each by name across
+the set.</td>
+</tr>
+<tr>
+<td>Labels by Name (<code>:across_by_labels</code>)</td>
+<td>across_planning</td>
+<td>Labels by Name: each label name across the set, where its colour and
+description differ and where it is missing. Make the copies the same,
+add it where missing, rename, merge or delete it everywhere, each with a
+preview and a result per repository.</td>
+</tr>
+<tr>
+<td>Milestones by Name (<code>:across_by_milestones</code>)</td>
+<td>across_planning</td>
+<td>Milestones by Name: each milestone title across the set, its due
+dates, descriptions and progress. Make them the same, close them
+everywhere, move their open work to another milestone or add the missing
+ones, each with a preview and a result per repository.</td>
+</tr>
+<tr>
+<td>Topics by Name (<code>:across_by_topics</code>)</td>
+<td>across_planning</td>
+<td>Topics by Name: each topic across the set and the repositories that
+lack it. Add it to the missing or remove it everywhere, with a preview
+and a result per repository; each repository’s other topics are
+kept.</td>
+</tr>
+<tr>
+<td>Code by Name (<code>:across_code</code>)</td>
+<td>across</td>
+<td>Code by Name: tags, branches, and rules and branch protection, each
+by name across the set.</td>
+</tr>
+<tr>
+<td>Tags by Name (<code>:across_by_tags</code>)</td>
+<td>across_code</td>
+<td>Tags by Name: each tag across the set and the commit it is on in
+each repository. Release Train makes it, or it and a release, where it
+is missing, and never moves an existing tag; Delete Everywhere keeps a
+tag a release is built on.</td>
+</tr>
+<tr>
+<td>Branches by Name (<code>:across_by_branches</code>)</td>
+<td>across_code</td>
+<td>Branches by Name: each branch across the set, where it is the
+default and where it is protected. Rename Everywhere uses GitHub’s
+rename; its preview says where the default changes, where protection
+moves and how many open pull requests are retargeted.</td>
+</tr>
+<tr>
+<td>Rules and Branch Protection (<code>:across_by_rules</code>)</td>
+<td>across_code</td>
+<td>Rules and Branch Protection: each ruleset by name, and each default
+branch’s protection, compared across the set. Make them the same as the
+winner, add a ruleset where it is missing, or promote one to an
+organization ruleset; each needs admin access and shows a preview
+first.</td>
+</tr>
+<tr>
+<td>Actions by Name (<code>:across_actions</code>)</td>
+<td>across</td>
+<td>Actions by Name: environments, secrets and variables, each by name
+across the set. Reading them needs admin access in each repository.</td>
+</tr>
+<tr>
+<td>Environments by Name (<code>:across_by_environments</code>)</td>
+<td>across_actions</td>
+<td>Environments by Name: wait timer, reviewers, self-review and which
+branches may deploy, compared across the set. Make them the same as the
+winner, or delete one everywhere. GitHub has no organization
+environments.</td>
+</tr>
+<tr>
+<td>Secrets by Name (<code>:across_by_secrets</code>)</td>
+<td>across_actions</td>
+<td>Secrets by Name: each Actions secret across the set, by name only,
+because GitHub never shows a secret’s value. Set Secret Everywhere takes
+one new value, typed once and sealed for each repository; Promote to
+Organization makes one organization secret for those repositories.</td>
+</tr>
+<tr>
+<td>Variables by Name (<code>:across_by_variables</code>)</td>
+<td>across_actions</td>
+<td>Variables by Name: each Actions variable and its values across the
+set. Make them the same, add the missing, delete everywhere, or promote
+to one organization variable for those repositories.</td>
+</tr>
+<tr>
+<td>Settings by Name (<code>:across_settings</code>)</td>
+<td>across</td>
+<td>Settings by Name: webhooks, deploy keys and autolinks, each by name
+across the set. Reading them needs admin access in each repository.</td>
+</tr>
+<tr>
+<td>Webhooks by Name (<code>:across_by_webhooks</code>)</td>
+<td>across_settings</td>
+<td>Webhooks by Name: each webhook by its address, with its events, on
+or off and content type. Make them the same, add the missing, turn them
+on or off, delete, or promote to one organization webhook, which GitHub
+sends for every repository in the organization. A webhook’s secret is
+never readable.</td>
+</tr>
+<tr>
+<td>Deploy Keys by Name (<code>:across_by_deploy_keys</code>)</td>
+<td>across_settings</td>
+<td>Deploy Keys by Name: each deploy key by title, with its fingerprint
+and access. Delete Everywhere removes it; GitHub accepts a deploy key in
+one repository only, so one cannot be added to more.</td>
+</tr>
+<tr>
+<td>Autolinks by Name (<code>:across_by_autolinks</code>)</td>
+<td>across_settings</td>
+<td>Autolinks by Name: each autolink by its prefix, with its address.
+Add the missing or delete everywhere; GitHub cannot change an autolink
+in place.</td>
+</tr>
+<tr>
+<td>Fleet (<code>:across_fleet</code>)</td>
+<td>across</td>
+<td>Fleet: one line per repository in the set: the exact revision of its
+default branch, checks, open pull requests, latest release and alerts,
+and when it was read. A repository that could not be read keeps its
+line, with the reason.</td>
 </tr>
 <tr>
 <td>People and Organizations (<code>:search_people</code>)</td>
@@ -1940,6 +2026,14 @@ only.</td>
 here.</td>
 </tr>
 <tr>
+<td>Rulesets (<code>repository:repo_rulesets</code>)</td>
+<td>repository, settings</td>
+<td>Rulesets: every ruleset on this repository, its own and the
+organization’s. Alt+Enter opens one’s sheet: its target, every rule and
+setting, who may bypass it, and a Summary in plain words. Delete removes
+one after its name is typed.</td>
+</tr>
+<tr>
 <td>person (<code>person:person</code>)</td>
 <td>person</td>
 <td>A person: their repositories, activity, followers and who they
@@ -2129,8 +2223,10 @@ for.</td>
 <tr>
 <td>Members (<code>organization:org_members</code>)</td>
 <td>organization, organization</td>
-<td>Members: the organization’s people. Ctrl+N invites someone; Delete
-removes them.</td>
+<td>Members: the organization’s people, each an owner or a member, with
+two-factor sign-in on or off where you may see it. Ctrl+N invites
+someone; Delete removes them, after their name is typed, and never
+removes the last owner or your own ownership.</td>
 </tr>
 <tr>
 <td>Invitations (<code>organization:org_invitations</code>)</td>
@@ -2149,7 +2245,8 @@ repositories.</td>
 (<code>organization:outside_collaborators</code>)</td>
 <td>organization, organization</td>
 <td>Outside Collaborators: people with access to repositories but not
-members.</td>
+members. Delete takes away every repository they have here, after their
+name is typed.</td>
 </tr>
 <tr>
 <td>Security Managers (<code>organization:security_managers</code>)</td>
@@ -2259,8 +2356,39 @@ first.</td>
 <td>Custom Property Values
 (<code>organization:org_property_values</code>)</td>
 <td>organization, organization</td>
-<td>Custom Property Values: every repository’s custom properties in one
-list. Change a repository’s on its Properties.</td>
+<td>Custom Property Values: every repository and every custom property,
+a row a repository, with unset properties said as not set. Change a
+repository’s on its Properties, or several at once with Set
+Repositories’ Custom Property… on the organization.</td>
+</tr>
+<tr>
+<td>Rulesets (<code>organization:org_rulesets</code>)</td>
+<td>organization, organization</td>
+<td>Rulesets: the organization’s rulesets, which apply across its
+repositories. Alt+Enter opens one’s sheet, with the repositories it
+covers by name or property; Delete removes it from every repository
+after its name is typed.</td>
+</tr>
+<tr>
+<td>Rule Insights (<code>organization:org_rule_insights</code>)</td>
+<td>organization, organization</td>
+<td>Rule Insights: recent pushes the organization’s rulesets passed,
+blocked or let through, in every repository.</td>
+</tr>
+<tr>
+<td>Access Review: People (<code>organization:access_people</code>)</td>
+<td>organization, organization</td>
+<td>Access Review: People: every person and repository pair, a row each,
+with the effective role and where it comes from: being an owner, the
+base permission, a team or direct access, and the others after ‘also’.
+Filter it by a name, a role or a team; File, Export List saves it.</td>
+</tr>
+<tr>
+<td>Access Review: Teams (<code>organization:access_teams</code>)</td>
+<td>organization, organization</td>
+<td>Access Review: Teams: every team and repository pair, a row each,
+with the team’s role there and how many people it reaches. File, Export
+List saves it.</td>
 </tr>
 <tr>
 <td>Saved search (<code>pinned_search:pinned_search</code>)</td>
@@ -2491,6 +2619,13 @@ everything.</td>
 <td>Order the list this way.</td>
 </tr>
 <tr>
+<td>Sort By &gt; By Column…</td>
+<td>(submenu letter)</td>
+<td>Order this list by one of its columns, first to last or last to
+first; remembered for this list. For lists other than Issues, which
+GitHub orders.</td>
+</tr>
+<tr>
 <td>Quick Filters &gt; Assigned to Me</td>
 <td>(submenu letter)</td>
 <td>Show only items assigned to me. Checked when it is on; it combines
@@ -2638,6 +2773,13 @@ combines with the others and with what you type in the filter box.</td>
 <td>Group By &gt; Review State</td>
 <td>(submenu letter)</td>
 <td>Put the list’s groups in the tree, one node per review state.</td>
+</tr>
+<tr>
+<td>Group By &gt; By Column…</td>
+<td>(submenu letter)</td>
+<td>Group this list by one of its columns, the groups as tree nodes;
+remembered for this list. For lists other than Issues, which group by
+the rows above.</td>
 </tr>
 <tr>
 <td>Columns…</td>
@@ -3099,6 +3241,14 @@ previews as usual, then stops before sending and says what it would have
 sent.</td>
 </tr>
 <tr>
+<td>Plain-Language Batch…</td>
+<td>Ctrl+Shift+S</td>
+<td>Say a change to many issues or pull requests in words, such as close
+every issue labelled duplicate older than 90 days; check the exact items
+it found, then send them. No AI: the same words always mean the same
+thing.</td>
+</tr>
+<tr>
 <td>GitHub API Console…</td>
 <td>Ctrl+Shift+J</td>
 <td>Send any GitHub REST request or GraphQL query: completion from
@@ -3249,7 +3399,8 @@ Codespaces…, Commit Comments…, View Timeline…, Read as Document…,
 Summarize Discussion, React…, Labels…, Assignees…, Milestone…,
 Projects…, Edit Title…, Add to or Remove from Favorites, Re-request
 Review…, Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn
-Off Agent Merge…, Dependency Review; Properties…</li>
+Off Agent Merge…, Dependency Review, Dependabot Commands…;
+Properties…</li>
 <li><strong>run</strong>: Jobs and Logs, What Failed…, Re-run Failed
 Jobs Only, Re-run Workflow, Cancel Run…, Re-run One Job…; More: Force
 Cancel…, Download Logs…, Delete Logs…, Approvals, Earlier Attempts…,
@@ -3257,7 +3408,8 @@ View Artifacts…, Open on GitHub, Combined Check Status, Review Pending
 Deployments…, Approve Run from a Fork…, Delete Run…, Copy Link, Read a
 Step’s Log…; Properties…</li>
 <li><strong>workflow</strong>: Runs, Run Workflow on Branch…, Turn
-Workflow On or Off…, Open on GitHub, Copy Link; Properties…</li>
+Workflow On or Off…, Open on GitHub, Copy Link, Edit Workflow…;
+Properties…</li>
 <li><strong>release</strong>: Assets, Edit Release…, Draft Release
 Notes…, Upload Asset…, React…, Release Evidence…; More: Delete Release…,
 Compare With Previous, Compare With Default, Copy Link, Open on GitHub,
@@ -3311,10 +3463,10 @@ Properties…</li>
 Saved Search; Properties…</li>
 <li><strong>result</strong>: Open, Copy Link, Open on GitHub;
 Properties…</li>
-<li><strong>file</strong>: Open in Editor, Copy Link, Open on GitHub;
-Properties…</li>
-<li><strong>folder</strong>: Open Folder, Open on GitHub;
-Properties…</li>
+<li><strong>file</strong>: Open in Editor, Copy Link, Open on GitHub,
+Who Owns This?; Properties…</li>
+<li><strong>folder</strong>: Open Folder, Open on GitHub, Who Owns
+This?; Properties…</li>
 <li><strong>milestone</strong>: Find Issues in Milestone, Delete
 Milestone…, Copy Link, Open on GitHub; Properties…</li>
 <li><strong>template</strong>: Open Template…, Convert Form or
@@ -3336,8 +3488,9 @@ Repositories…; More: Dependabot Repository Access, Give Dependabot a
 Repository…, Take a Repository from Dependabot…, Dependabot’s Default
 Access…, Make Someone an Outside Collaborator…, Define a Custom
 Property…, Set Repositories’ Custom Property…, New Team…, Accept
-Membership, My Activity Here, Require Sign-off on Web Commits…, Follow
-Organization, Unfollow Organization, Security Overview; Properties…</li>
+Membership, Members Without Two-Factor, My Activity Here, Require
+Sign-off on Web Commits…, Follow Organization, Unfollow Organization,
+Security Overview; Properties…</li>
 <li><strong>favorite</strong>: Open, Copy Link, Open on GitHub, Add to
 or Remove from Favorites; Properties…</li>
 <li><strong>admin_action</strong>: Open; Properties…</li>
@@ -3363,6 +3516,7 @@ Set Filter…, New Set…, Rename Set…, Delete Set…; Properties…</li>
 <li><strong>by_name</strong>: Variants and Missing From, Make Them the
 Same…, Add to Missing…, Find Uses, Rename Everywhere…, Merge Into…;
 More: Close Everywhere…, Move Open Work To…, Promote to Organization…,
+Release Train…, Set Secret Everywhere…, Turn On or Off Everywhere…,
 Delete Everywhere…; Properties…</li>
 <li><strong>fleet</strong>: Open Repository, Open on GitHub, Copy Link;
 Properties…</li>
@@ -3704,7 +3858,7 @@ such.</li>
 <li><strong>Left to GitHub</strong>: the Workbench does not do it, and
 the row says why.</li>
 </ul>
-<p>In all: 851 yes, 0 planned, 290 not needed and 866 left to
+<p>In all: 853 yes, 0 planned, 288 not needed and 866 left to
 GitHub.</p>
 <p><strong>Wikis</strong> have no API: GitHub serves each one as a Git
 repository (<code>owner/name.wiki.git</code>). Reading and editing them
@@ -6070,7 +6224,7 @@ QUILL is a writing and coding tool, not an accounts console.</td>
 </tbody>
 </table>
 <h4 id="branches">Branches</h4>
-<p>38 operations: 8 yes, 30 not needed.</p>
+<p>38 operations: 10 yes, 28 not needed.</p>
 <table>
 <thead>
 <tr>
@@ -6103,13 +6257,13 @@ QUILL is a writing and coding tool, not an accounts console.</td>
 <td>Get branch protection</td>
 <td><code>GET /repos/{owner}/{repo}/branches/{branch}/protection</code></td>
 <td>Yes</td>
-<td>editor GitHub menu &gt; Configure Branch Protection…</td>
+<td>Properties (Alt+Enter) on Branch Protection</td>
 </tr>
 <tr>
 <td>Update branch protection</td>
 <td><code>PUT /repos/{owner}/{repo}/branches/{branch}/protection</code></td>
 <td>Yes</td>
-<td>editor GitHub menu &gt; Configure Branch Protection…</td>
+<td>Properties (Alt+Enter) on Branch Protection: Approvals needed</td>
 </tr>
 <tr>
 <td>Delete admin branch protection</td>
@@ -6156,9 +6310,9 @@ the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 <tr>
 <td>Delete commit signature protection</td>
 <td><code>DELETE /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures</code></td>
-<td>Not needed</td>
-<td>Changes one part of branch protection; the Workbench reads and sets
-the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Branch Protection: Require signed
+commits</td>
 </tr>
 <tr>
 <td>Get commit signature protection</td>
@@ -6170,9 +6324,9 @@ the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
 <tr>
 <td>Create commit signature protection</td>
 <td><code>POST /repos/{owner}/{repo}/branches/{branch}/protection/required_signatures</code></td>
-<td>Not needed</td>
-<td>Changes one part of branch protection; the Workbench reads and sets
-the whole setting at once (GET/PUT /branches/{branch}/protection).</td>
+<td>Yes</td>
+<td>Properties (Alt+Enter) on Branch Protection: Require signed
+commits</td>
 </tr>
 <tr>
 <td>Remove status check protection</td>
@@ -10397,7 +10551,7 @@ publicly</td>
 <td>Get all organization repository rulesets</td>
 <td><code>GET /orgs/{org}/rulesets</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>Navigator: Organization &gt; organization &gt; Rulesets</td>
 </tr>
 <tr>
 <td>Create an organization repository ruleset</td>
@@ -10409,7 +10563,7 @@ publicly</td>
 <td>List organization rule suites</td>
 <td><code>GET /orgs/{org}/rulesets/rule-suites</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>Navigator: Organization &gt; organization &gt; Rule Insights</td>
 </tr>
 <tr>
 <td>Get an organization rule suite</td>
@@ -10422,19 +10576,20 @@ reads the list.</td>
 <td>Delete an organization repository ruleset</td>
 <td><code>DELETE /orgs/{org}/rulesets/{ruleset_id}</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>context menu &gt; Delete…</td>
 </tr>
 <tr>
 <td>Get an organization repository ruleset</td>
 <td><code>GET /orgs/{org}/rulesets/{ruleset_id}</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>Properties (Alt+Enter) on Organization Ruleset</td>
 </tr>
 <tr>
 <td>Update an organization repository ruleset</td>
 <td><code>PUT /orgs/{org}/rulesets/{ruleset_id}</code></td>
 <td>Yes</td>
-<td>context menu &gt; Rulesets…</td>
+<td>Properties (Alt+Enter) on Organization Ruleset: Repository names to
+include</td>
 </tr>
 <tr>
 <td>Get organization ruleset history</td>
@@ -11981,8 +12136,8 @@ reads the list.</td>
 <td>Get all repository rulesets</td>
 <td><code>GET /repos/{owner}/{repo}/rulesets</code></td>
 <td>Yes</td>
-<td>Navigator: Repository &gt; owner/name &gt; Settings &gt; Branch
-Protection</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt;
+Rulesets</td>
 </tr>
 <tr>
 <td>Create a repository ruleset</td>
@@ -12020,7 +12175,7 @@ reads the list.</td>
 <td>Update a repository ruleset</td>
 <td><code>PUT /repos/{owner}/{repo}/rulesets/{ruleset_id}</code></td>
 <td>Yes</td>
-<td>Properties (Alt+Enter) on Ruleset: Approvals needed</td>
+<td>Properties (Alt+Enter) on Ruleset: Rules</td>
 </tr>
 <tr>
 <td>Get repository ruleset history</td>
@@ -12454,7 +12609,7 @@ reads the list.</td>
 <td>Update a team</td>
 <td><code>PATCH /orgs/{org}/teams/{team_slug}</code></td>
 <td>Yes</td>
-<td>Properties (Alt+Enter) on Team: Description</td>
+<td>Properties (Alt+Enter) on Team: Parent team</td>
 </tr>
 <tr>
 <td>List pending team invitations</td>

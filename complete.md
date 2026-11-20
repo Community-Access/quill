@@ -39,35 +39,25 @@ Each is done only with evidence: a test or a live run.
 - [ ] Complete Appendix A/B "nothing dropped" mapping and Appendix C object/sheet/filter mapping.
 - [ ] Verify every editable field, mixed value, field removal, batch operation, conflict resolution, verify-after-save, history and supported undo/redo.
 - [ ] Edit issue fields directly on the Properties sheet's Issue Fields page (today read only; Issue Fields... on the row edits them).
-- [ ] Repository and item-property checklists expose state in the row; Space changes it once, Enter saves, focus returns predictably, and JAWS/NVDA/VoiceOver do not hear a duplicate row.
 - [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle.
 - [ ] Live check on the GitHub test repository: Read Only, Organize, Full and Safe Mode refuse and allow as tested, and the permission explanations (greyed rows, Shift+F1, GitHub's own refusals) match what GitHub does.
 - [ ] Verify View As Role, Compare Roles, Why Can't They?, My Access Here, access reviews and bulk changes against actual server authority.
-- [ ] Grouping, sorting and the column chooser beyond issues and pull requests (filters, Show Only/Hide, Load More and Load All are done).
-- [ ] Plain-language query/batch commands through the shared catalogue, with resolved targets, editable previews and deterministic non-AI paths.
+- [ ] Command Key rows for the GitHub and WordPress Plain-Language Batch (Command Key has no Workbench-window host yet; both Workbenches take the sentence in their own window).
 - [ ] Compare Accounts and one-action Act As with unambiguous identity and cache isolation.
 - [ ] Role comparison and learning workflows reach real permission evidence, not guessed privileges.
 - [ ] Wiki, and cross-linked discussion → issue → pull request workflows (saved replies and repository invitations are done).
 - [ ] Repository General/features, complete creation/template options, transfer, topics and star lists (standalone tags are done).
-- [ ] Rulesets/protection management, organization/member/team access, custom roles and audit logs.
-- [ ] Accessible workflow authoring: triggers/jobs/steps/inputs/permissions/dependency graph as linear controls (turning a workflow on or off is done).
-- [ ] Dependabot configuration and pull request commands; CODEOWNERS editing/ownership lookup.
 - [ ] Copilot sessions/review/configuration/organization administration and GitHub Models prompt/evaluation files, wherever actual APIs allow.
 - [ ] gh sign-in reuse as an additional account path; enterprise hosts and API-version differences.
 - [ ] Least-privilege advice based on observed usage with honest uncertainty (attestations and immutable releases are done).
-- [ ] First-class by-name collections for every kind in product requirements document (PRD) 22.11 beyond Labels, Milestones, Topics, Rules and Branch Protection, and the Fleet; the other kinds are classified in `quill/core/github/across_scope_matrix.py`.
-- [ ] Tags, release trains and branch renames across repositories: comparison, publishing, feature-specific safeguards (topics are done).
-- [ ] Align or promote to organization, where supported: environments, secrets, variables, webhooks, keys and autolinks (rulesets and default-branch protection are done; labels cannot be promoted).
-- [ ] Workflow/template/community/Dependabot/CODEOWNERS content: compare and update through reviewable pull requests.
-- [ ] People/teams/settings/custom properties/issue types: access and setting matrices with inherited-role explanations.
+- [ ] First-class by-name collections for the PRD 22.11 kinds still "not yet" in `quill/core/github/across_scope_matrix.py`: workflows, templates, Dependabot and CODEOWNERS, people, settings and packages.
 - [ ] Saved replies/favorites/watch levels/stars, alerts/packages/Pages where supported.
 - [ ] Cross-repository coverage is complete only when the corresponding single-repository operation and batch behavior are complete; read-only category views are tracked separately from multi-target writes.
 - [ ] GX11, what is left: a severity breakdown beyond the first 100 alerts of each kind in Security Overview, and a test that exporting an alert list leaves out sensitive fields. (Dismissal and bypass request review is Enterprise Cloud only and stays on GitHub, decided 2026-11-18.)
-- [ ] GX12 collaboration/knowledge; GX13 administration.
+- [ ] GX12 collaboration/knowledge; GX13: account-aware repository switching (Compare Accounts and Act As, still open).
 - [ ] GX09: Why Can't I Merge? and Merge Selected... do not yet name the specific ruleset or CODEOWNERS rule that blocks (only the review window's Check Merge Policy does), and nothing watches a pull request to say when its readiness changes.
 - [ ] GX10: attestation signatures are not verified in QUILL (it points to gh attestation verify), and a downloaded release file is not checked against its digest.
-- [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance; GX16 category-first cross-repository browsing.
-- [ ] Apply provider-neutral patterns: read long issue/pull request/discussion threads as one structured page; preserve the selected row on return; say the actual outcome once through QUILL's existing feedback settings.
+- [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance.
 
 #### Documentation at the end of each delivery batch
 
@@ -90,10 +80,14 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - [ ] Run `python docs/qa/github-live-run.py --create` after signing in again, and the live rows marked "needs Jeff".
 - [ ] GitHub live scenarios: multiple roles/accounts, protected branches, organization restrictions, rate limiting, private repositories, project fields, secrets, failure/retry and no-API fallbacks; the Copilot cloud agent commands on a Copilot plan.
 - [ ] Vote... in a real discussion poll, and the Pinned (spotlight) place, on the test repository.
+- [ ] Edit Workflow..., New Workflow... and Compare Configuration... on the test repository (each through a pull request, then closed); Dependabot Commands... on a real Dependabot pull request, and whether GitHub still accepts `@dependabot merge`, `squash and merge`, `cancel merge`, `close` and `reopen`.
 - [ ] Secrets on the test repository (create, change, list shows only the name, delete); Dependency Review on an open pull request and Security Overview on an organization repository; an organization secret in Community-Access set to selected with a repository added and removed, then back to private (confirms a visibility-only change is accepted); Allow a Blocked Secret... needs a real blocked push and its placeholder id.
 - [ ] Issue types and fields in an organization that has them: typed values in the Issue fields column (a date, a number, a choice), `type:Bug` and `field.priority:high` searches, the Properties Issue Fields page, "hidden from you" for an account that cannot see fields, a person's repository (`/user/issue-fields`).
 - [ ] Merge Selected... on two throwaway pull requests, and Release Evidence on `v0.0.1-quill-live`, on the test repository; Merge Selected on a queue-only branch needs an organization repository with a merge-queue ruleset; confirm GitHub's `immutable` and asset `digest` fields.
+- [ ] Rulesets, members and teams on GitHub: the organization ruleset sheet on a throwaway organization; push restrictions and signed commits surviving a branch protection save; members' two-factor as an owner and as a member; making a member an outside collaborator and removing one; a team's parent and repository changes; the team-admin guard; and Access Review: People and Teams against real permissions.
+- [ ] Across Repositories on the two test repositories: Release Train..., Set Secret Everywhere..., Turn On or Off Everywhere... (needs a webhook on both), Rename Everywhere on a throwaway branch, and Promote to Organization for a secret, a variable and a webhook in the test organization.
 - [ ] **GH-R-119:** timed find-the-answer sessions with people.
+- [ ] Plain-Language Batch on the test repository (assign, then unassign, by sentence; GitHub's search may need a moment to index a new issue), and Ctrl+Shift+S in the real window.
 - [ ] **GH-R-157:** the JAWS, NVDA and VoiceOver checks for the checklists.
 - [ ] WordPress current candidate: run the documented live regression on an authorized test site and distinguish existing site-side failures from regressions.
 - [ ] Seed QUILL Accessible Forms (QAF), Gravity Forms, Paid Memberships Pro (PMPro), custom types/taxonomies/meta, constrained roles and realistic media/content for the supported scope.
@@ -112,7 +106,7 @@ When 1.3 is done, the GitHub Workbench's documentation is brought up to the Word
 - **Backups:** snapshots and WXR (WordPress's export file) only.
 - **Security:** no Security Review for now.
 - **Plugin scope:** WooCommerce and Yoast are in, with QAF, Gravity Forms and PMPro.
-- **Rank Math:** read only (assumed; Jeff did not answer).
+- **Rank Math:** read only (confirmed by Jeff, 2026-11-19).
 
 ### 2.3 Missing in QUILL
 
@@ -157,12 +151,6 @@ All of the following has tests over recorded or fake answers and none has met a 
 - [ ] **PMPro, live:** WordPress 6.9+ with PMPro 3.9+ and a role with customized PMPro capabilities (the card and billing field stripping is done).
 - [ ] **Payments, live:** QAF's and PMPro's PHP suites, Stripe test mode, a PayPal sandbox and a reachable webhook endpoint on the test site: webhook authenticity/replay/order, duplicate submission and accessible checkout acceptance.
 - [ ] **Practice Site from an installed build:** start/connect/reset/stop/restart with the bundled Node and payloads on a clean installation (the source run passes).
-- [ ] **Backups, restores, security/sign-ins/2FA/vulnerability data, caching/performance, multilingual content, consent, email, newsletters, courses, event attendance, analytics and social sharing:** each already has a disposition per site; Jeff decides which, if any, get first-class integration.
-
-### 2.6 Jeff's calls from the WordPress UX review
-
-- [ ] Whether page commands such as Check This Page should have a WordPress-layer key (they have a written reason, `wordpress/menu_unbound.py`).
-- [ ] Whether menu items want a Workbench tree node beside the Menus window's Undo.
 
 ## Part 3. Other work
 

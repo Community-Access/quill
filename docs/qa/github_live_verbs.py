@@ -221,6 +221,31 @@ def assignees(run: Any) -> str:
     return "assigned, then unassigned"
 
 
+def plain_batch(run: Any) -> str:
+    """A sentence through the grammar, GitHub's search and the batch: assign, then unassign."""
+    from quill.core.github.batch import BatchItem
+    from quill.core.github.batch import run as run_batch
+    from quill.core.github.plain_batch import parse_request
+    from quill.core.github.sheet_catalog import SHEETS
+    from quill.core.github.sheet_engine import load
+
+    number = int(run.ids["issue"])
+    sheet, ident = SHEETS["issue"], {"repo": run.repo, "number": str(number)}
+    for sentence in (
+        f"assign {run.login} to every open issue",
+        f"unassign {run.login} from all issues",
+    ):
+        request = parse_request(sentence)
+        found = run.items.search_items(run.repo, request.query, limit=100)
+        _expect(any(item.number == number for item in found), f"{request.query} missed #{number}")
+        item = BatchItem(f"#{number}", ident, load(run.api, sheet, ident).values)
+        results = run_batch(run.api, sheet, [item], request.changes(), pace=0)
+        _expect(results[0].status == "Done", f"{sentence}: {results[0].detail}")
+    who = {a["login"] for a in _issue_state(run, run.repo, number)["assignees"]}
+    _expect(run.login not in who, "the unassign sentence did not take")
+    return "assigned by a sentence through search and the batch, then unassigned"
+
+
 def lock(run: Any) -> str:
     from quill.core.github.issue_housekeeping import GitHubIssueHousekeeping
 
@@ -759,6 +784,80 @@ def copy_template(run: Any) -> str:
     return f"copied to {run.second}, then removed"
 
 
+# -- workflow authoring and configuration (PRD 22.1, 22.11) ------------------------------
+
+
+def _close_pull(run: Any, repo: str, number: int, branch: str) -> None:
+    run.rest("PATCH", f"/repos/{repo}/pulls/{number}", {"state": "closed"})
+    run.rest("DELETE", f"/repos/{repo}/git/refs/heads/{branch}")
+
+
+def edit_workflow(run: Any) -> str:
+    """Change the live workflow's name through a pull request, read it back, close it."""
+    from quill.core.github.template_catalog import read_entry_text
+    from quill.core.github.template_save import plan_save, save_template
+    from quill.core.github.workflow_authoring import dump_workflow, load_workflow
+    from quill.core.github.workflow_checks import check_workflow
+
+    path = ".github/workflows/quill-live.yml"
+    repo = run.items.template_repository(run.repo)
+    text, sha = read_entry_text(repo, path)
+    draft = load_workflow(text)
+    _expect(check_workflow(draft) == [], "the live workflow already has problems")
+    draft.data["name"] = f"{draft.data.get('name', 'quill-live')} ({TAG})"
+    made = save_template(
+        repo,
+        plan_save(repo, run.repo, path),
+        dump_workflow(draft),
+        expected_sha=sha,
+        use_pull_request=True,
+        message=TAG,
+    )
+    held = run.rest("GET", f"/repos/{run.repo}/contents/{path}", ref=made.branch)
+    _close_pull(run, run.repo, made.pull_request_number, made.branch)
+    _expect(bool(held), "the branch did not hold the workflow")
+    return f"saved through pull request #{made.pull_request_number}, read back, closed"
+
+
+def new_workflow(run: Any) -> str:
+    """Propose the starter workflow as a pull request, then close it unmerged."""
+    from quill.core.github.template_save import plan_save, save_template
+    from quill.core.github.workflow_authoring import dump_workflow
+    from quill.core.github.workflow_authoring import new_workflow as starter
+    from quill.core.github.workflow_checks import check_workflow
+
+    path = ".github/workflows/quill-live-new.yml"
+    repo = run.items.template_repository(run.repo)
+    draft = starter(TAG)
+    _expect(check_workflow(draft) == [], "the starter has problems")
+    plan = plan_save(repo, run.repo, path)
+    _expect(not plan.current_sha, f"{path} is left over from an earlier run")
+    made = save_template(
+        repo, plan, dump_workflow(draft), expected_sha="", use_pull_request=True, message=TAG
+    )
+    _close_pull(run, run.repo, made.pull_request_number, made.branch)
+    return f"the starter opened as pull request #{made.pull_request_number}, then closed"
+
+
+def compare_config(run: Any) -> str:
+    """Compare with the second repository, propose one file, close the pull request."""
+    from quill.core.github.config_compare import compare_files, propose_update
+
+    diffs = compare_files(
+        run.items.template_repository(run.second),
+        run.second,
+        run.items.template_repository(run.repo),
+        run.repo,
+    )
+    chosen = [d for d in diffs if d.can_update][:1]
+    if not chosen:
+        return f"{run.repo} already matches {run.second}; nothing to propose"
+    repo = run.items.template_repository(run.repo)
+    made = propose_update(repo, run.repo, run.second, chosen)
+    _close_pull(run, run.repo, made.pull_request_number, made.branch)
+    return f"{len(diffs)} files compared; {chosen[0].path} proposed and closed"
+
+
 # -- local lists (this device) ----------------------------------------------------------
 
 
@@ -1005,6 +1104,43 @@ def across_move_open(run: Any) -> str:
     return "open issues moved to the other milestone, then back"
 
 
+def across_release_train(run: Any) -> str:
+    """A tag made in both test repositories, one of which already has it, then deleted."""
+    from quill.core.github.across_more_changes import apply_more, plan_more_delete
+    from quill.core.github.across_more_promote import plan_release_train
+    from quill.core.github.tags import create_tag
+
+    name = f"quill-live-train-{int(time.time())}"
+    create_tag(run.api, run.repo, name, run.ids["default_branch"])
+    found = _survey(run, "tags")
+    plan = plan_release_train(found, name, [run.repo, run.second], "tag")
+    _expect(plan.steps[0].action == "skip", "the existing tag was not skipped")
+    results = apply_more(run.api, plan)
+    _expect(all(r.ok for r in results), "; ".join(r.said for r in results))
+    found = _survey(run, "tags")
+    row = found.row(name)
+    _expect(row is not None and len(row.copies) == 2, "the tag is not in both")
+    apply_more(run.api, plan_more_delete(found, row))
+    return "made where missing, the existing one skipped, then deleted from both"
+
+
+def across_set_secret(run: Any) -> str:
+    """One value typed once, set in both test repositories, then the secret deleted."""
+    from quill.core.github.across_more_changes import apply_more, plan_more_delete, plan_set_secret
+
+    name = f"QUILL_LIVE_{int(time.time())}"
+    found = _survey(run, "secrets")
+    results = apply_more(
+        run.api, plan_set_secret(found, name, [run.repo, run.second]), secret="live run"
+    )
+    _expect(all(r.ok for r in results), "; ".join(r.said for r in results))
+    found = _survey(run, "secrets")
+    row = found.row(name)
+    _expect(row is not None and len(row.copies) == 2, "the secret is not in both")
+    apply_more(run.api, plan_more_delete(found, row))
+    return "sealed and set in both, then deleted"
+
+
 # -- the table -----------------------------------------------------------------------
 
 VERBS: dict[str, Scenario | str] = {
@@ -1014,6 +1150,7 @@ VERBS: dict[str, Scenario | str] = {
     "cancel_run": cancel_run,
     "clone": "needs Jeff: clones into a folder you choose, then opens it in the editor",
     "close_reopen": close_reopen,
+    "plain_batch": plain_batch,
     "create_branch": create_branch,
     "unlink_branch": "with create_branch: linked, unlinked, then deleted",
     "new_webhook": webhook_round_trip,
@@ -1168,6 +1305,12 @@ VERBS: dict[str, Scenario | str] = {
     "open_template": open_template,
     "convert_template": convert_template,
     "copy_template": copy_template,
+    "edit_workflow": edit_workflow,
+    "new_workflow": new_workflow,
+    "compare_config": compare_config,
+    "dependabot_command": (
+        "needs Jeff: posts a command Dependabot acts on, on a pull request Dependabot opened"
+    ),
     "account_level": account_level,
     "bulk_access": "not here: needs a second GitHub account to give access to",
     "access_add": "not here: needs a second GitHub account to give access to",
@@ -1191,6 +1334,9 @@ VERBS: dict[str, Scenario | str] = {
     "across_delete_name": across_delete_name,
     "across_move_open": across_move_open,
     "across_promote_org": "not here: would change a real organization",
+    "across_release_train": across_release_train,
+    "across_set_secret": across_set_secret,
+    "across_hooks_on_off": "needs Jeff: a webhook on both test repositories",
 }
 
 
