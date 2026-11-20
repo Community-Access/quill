@@ -42,7 +42,7 @@ AI_ENTRIES: dict[str, str] = {
     # computer (decision 20), assistant-own-key-hosts.json beside the AI Hub's
     # assistant-connection.json: a schema_version envelope and one address per
     # provider, never a key. Lost, each provider reads its default address.
-    "core/ai/own_key_providers.py::save_host": "versioned",
+    "core/ai/own_key_providers.py::_write": "versioned",
     # <app data>/<app>-ai.json: Quill Weather's, Quill Converter's, Quill Media
     # Player's, Quill Inkwell's and QuillBeacon's own Choose Your AI choice and
     # picture consent (codex.md Phase 3), as Studio's studio-ai.json: names and
