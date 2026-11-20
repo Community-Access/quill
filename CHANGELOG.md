@@ -94,6 +94,37 @@ by a review of it. Nothing changes in QUILL or QUILL Lite.
   migration (010) adds the per-person cost figure, and a new CI workflow
   tests every migration on a clean PostgreSQL database.
 
+### Quill Radio: recordings are kept safe through crashes, reconnects and Stop (2026-11-20)
+
+- **Crash recovery never replaces a recording.** When Quill Radio starts after a
+  crash, it moves recordings left in the temporary folder to your recordings
+  folder. If a recording with the same name is already there, both are kept and
+  the recovered one is named with " (2)". Before, the recovered file replaced
+  the one you had. This also holds when the folders are on different drives: a
+  copy that fails leaves both files as they were.
+- **Raw recordings are recovered too.** Recovery now finds every kind of file
+  the recorder writes, including raw captures such as .aac and .mka. A
+  recording made for a schedule with its own folder goes back to that folder.
+- **Stop All stops a recording that is reconnecting.** A recording whose
+  stream dropped stays stoppable at every step of getting back on air. Before,
+  Stop All could miss it while the new connection was starting, and it went on
+  recording.
+- **The recording limit holds while a recording reconnects.** A recording that
+  is reconnecting keeps its place. If you have set a limit, a new recording
+  waits instead of taking that place, and a scheduled one is held and tried
+  again in its time window, as it is when the limit is reached.
+- **A change of time zone or daylight saving no longer changes how long a
+  recording runs.** Recording lengths are measured as elapsed time. File names
+  and schedules still use your local time.
+- **The Recordings window opens with a daily schedule.** Its summary line
+  failed when any daily or weekly schedule was turned on, so the window did not
+  refresh. It now says when the next recording starts.
+- **Time left is right after a reconnect.** A 60-minute recording that
+  reconnected after 50 minutes said "less than a minute left". The status bar
+  and the Recordings window now count down to the real end.
+- **A deleted schedule does not start.** If you delete or change a schedule
+  while its recording is starting, that recording does not start.
+
 ### QUILL Lite: the setting you chose last is the one that is saved (2026-11-20)
 
 - Turning a View setting on and straight back off, such as Word Wrap, could

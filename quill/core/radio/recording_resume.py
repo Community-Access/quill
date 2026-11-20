@@ -19,11 +19,13 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from quill.core.radio.recording import RECORD_FORMATS, _default_dir, _finalize_move
+from quill.core.radio.recording import _default_dir, _finalize_move
+from quill.core.radio.recording_commands import RECORDING_FILE_SUFFIXES
 
 #: Resume a scheduled/in-progress recording only if its end is within this many
 #: minutes of now (settable via the host). Past the grace window the show is
@@ -47,7 +49,10 @@ _MARKER_FILE = "radio_active_recording.json"
 #: race on a shared file.
 _MARKERS_DIR = "radio_active_recordings"
 
-_RECORDING_SUFFIXES = frozenset(f".{fmt}" for fmt in RECORD_FORMATS)
+#: What a recording file can actually be called -- the shared contract, not
+#: ``RECORD_FORMATS``: a raw capture is ``.aac``/``.mka``/..., never ``.copy``,
+#: so deriving this from the format names stranded every raw capture in temp.
+_RECORDING_SUFFIXES = RECORDING_FILE_SUFFIXES
 
 
 @dataclass(slots=True)
@@ -277,15 +282,50 @@ def within_resume_grace(
     return (end_abs - now_abs) >= -timedelta(minutes=max(0, grace_minutes))
 
 
-def reconcile_temp_strays(settings: object, *, now: datetime | None = None) -> list[Path]:
+def _same_file_name(a: Path, b: Path) -> bool:
+    try:
+        return os.path.normcase(str(a.resolve())) == os.path.normcase(str(b.resolve()))
+    except OSError:
+        return os.path.normcase(str(a)) == os.path.normcase(str(b))
+
+
+def _recorded_home(path: Path, markers: list[ActiveRecordingMarker]) -> Path | None:
+    """Where the marker that owns *path* says its recording belongs, if any.
+
+    A per-schedule folder (``settings_for_folder``) sends that schedule's
+    recordings somewhere other than ``destination_root``; the marker written at
+    start is the only record of that once the app has crashed.
+    """
+    for marker in markers:
+        if not marker.temp_path or not marker.output_path:
+            continue
+        if _same_file_name(Path(marker.temp_path), path):
+            home = Path(marker.output_path)
+            return home.parent / f"{home.stem}{path.suffix}"
+    return None
+
+
+def reconcile_temp_strays(
+    settings: object,
+    *,
+    now: datetime | None = None,
+    markers: list[ActiveRecordingMarker] | None = None,
+) -> list[Path]:
     """Move finished orphan recording files from the temp dir to the destination
-    (R3/12, R3/13.6). Returns the files moved, earliest first.
+    (R3/12, R3/13.6). Returns where the files landed, earliest first.
 
     Only files whose mtime is older than :data:`_STILL_WRITING_SECS` are moved,
     so a file an orphaned ffmpeg is still writing is left intact. Files already
     in the destination are untouched. A temp dir that equals the destination
-    (or none set) is a no-op. Name collisions in the destination are uniquified
-    via :func:`_finalize_move` so an orphan never clobbers an existing recording.
+    (or none set) is a no-op. Every actual recording suffix is recognised
+    (``RECORDING_FILE_SUFFIXES``), raw captures included.
+
+    *markers* (the active-recording markers a crash left) say where each orphan
+    was going: a file a marker names goes to that marker's ``output_path``
+    folder rather than the default one. Name collisions are never resolved by
+    replacement: :func:`_finalize_move` gives the orphan a free ``" (2)"`` name,
+    so an existing recording and the recovered one are both kept byte for byte.
+    A file that cannot be moved stays in the temp dir and is not reported.
     """
     temp_root = getattr(settings, "temp_dir", "") or ""
     if not temp_root:
@@ -305,7 +345,6 @@ def reconcile_temp_strays(settings: object, *, now: datetime | None = None) -> l
         candidates = sorted(temp_dir.iterdir())
     except OSError:
         return []
-    dest_root.mkdir(parents=True, exist_ok=True)
     for path in candidates:
         if not path.is_file() or path.suffix.lower() not in _RECORDING_SUFFIXES:
             continue
@@ -315,8 +354,11 @@ def reconcile_temp_strays(settings: object, *, now: datetime | None = None) -> l
             continue
         if mtime >= cutoff:
             continue  # still being written
-        target = dest_root / path.name
+        target = _recorded_home(path, markers or []) or dest_root / path.name
+        if _same_file_name(target.parent, temp_dir):
+            continue  # its recorded home *is* the temp dir: nothing to move
         landed = _finalize_move(path, target)
-        moved.append(landed)
+        if landed != path:
+            moved.append(landed)
     moved.sort(key=lambda p: p.name)
     return moved
