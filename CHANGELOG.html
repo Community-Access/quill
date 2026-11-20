@@ -244,6 +244,105 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="settings-that-stick-in-every-app-2026-11-20">Settings that
+stick, in every app (2026-11-20)</h3>
+<ul>
+<li><strong>The newest choice is the one saved, everywhere.</strong>
+QUILL Lite’s fix is now shared by the other apps. In Quill Inkwell,
+QUILL Cast, Quill Radio and QUILL, an older settings save that was still
+running could finish after a newer one and put your old choice back
+after a restart. Each settings file is now written in the order the
+changes were made.</li>
+<li><strong>Retry in Activity no longer brings back an old
+choice.</strong> If a save failed, a later save worked, and you then
+pressed Retry on the old failure, the older settings were written again.
+Retry now leaves the newer save alone.</li>
+<li><strong>Quill Converter tells you when it cannot save your
+choices.</strong> A locked or read-only settings file used to be
+ignored, and your choices were gone at the next start. Now Activity
+reports it with Retry and Open Folder, and Converter never says it saved
+them.</li>
+<li><strong>Damaged settings no longer stop Quill Inkwell or Quill
+Weather starting.</strong> A settings file with a value the app cannot
+use (an unreadable version number, or a number too large to use) is
+copied beside itself. The app starts with defaults for the values it
+could not read, and says once where the copy is.</li>
+<li><strong>Back Up and Restore Settings in QUILL Lite.</strong> The
+startup folder stays on this computer, like recent files. Restoring
+keeps this computer’s recent files, session, window size and startup
+folder. A backup made by QUILL or another app in the family is refused,
+with a plain explanation, and nothing is changed.</li>
+<li><strong>Quill Radio shares your choices like QUILL Cast.</strong>
+With sharing on, changing <em>Announce dialog transitions</em> in
+Radio’s Preferences now reaches your other Quill apps. Radio also picks
+up a newer shared choice when it starts, and says so.</li>
+</ul>
+<h3
+id="crash-and-support-reports-what-is-sent-is-what-was-checked-2026-11-20">Crash
+and support reports: what is sent is what was checked (2026-11-20)</h3>
+<ul>
+<li><strong>A crash email’s subject is redacted like its body.</strong>
+A password or key in an error message was removed from the report you
+reviewed and still sent in the subject line. Every field of the message
+is now scrubbed: the subject, the version, the platform, the screen
+reader, the support facts, and the copy that goes to the clipboard.</li>
+<li><strong>A long subject no longer breaks the email.</strong> Only the
+body used to be shortened, so a long subject made a link your mail
+program refused. The subject is shortened too, counted after encoding so
+accented letters and emoji fit, and the complete message is still on
+your clipboard.</li>
+<li><strong>Save Diagnostics always writes a readable bundle.</strong> A
+long task name could leave <code>metadata.json</code> unreadable. Each
+value is now redacted and shortened on its own, and the file is checked
+before it is saved.</li>
+<li><strong>Work that must finish is never told to stop part
+way.</strong> Background writes marked as unsafe to cancel, such as
+saving Inkwell’s settings or a Word file in QUILL Lite, were signalled
+to stop while the cancel request reported that nothing had been
+cancelled. Now a write that has started runs to the end and the request
+says it was not cancelled; one that has not started is still
+cancelled.</li>
+<li><strong>The shared progress throttle cannot hang and keeps the last
+update.</strong> It could lock up when there was no window to report to,
+and could drop the final update. No shipping window was seen to freeze
+from this.</li>
+<li><strong>F1 on Check What QUILL Says</strong> explains the command
+and how to fill in its report, instead of saying no help is
+available.</li>
+</ul>
+<h3
+id="wordpress-local-writing-keeps-its-file-its-pictures-and-its-unsaved-text-2026-11-20">WordPress:
+local writing keeps its file, its pictures and its unsaved text
+(2026-11-20)</h3>
+<ul>
+<li><strong>Renaming a draft no longer loses it.</strong> Changing a
+draft’s title in Properties used to make Open Local Draft open an empty,
+new file; the writing was still in the old one. A draft now keeps the
+file it started with through renaming, sending, closing and reopening,
+and restarting, in QUILL and QUILL Lite. A draft already renamed opens
+its writing again.</li>
+<li><strong>Uploaded pictures stay uploaded.</strong> After Save Draft
+or Publish uploaded a picture from this computer, the open document
+still held the picture’s local address, and the next Ctrl+S put it back.
+The site’s address now goes into the open document and its file, without
+touching anything typed while the send was on its way or moving the
+caret.</li>
+<li><strong>Previous Versions keeps what Restore replaces.</strong>
+Restore now keeps the text in the editor, saved or not, rather than the
+last saved copy. If you switched documents while the history loaded,
+Restore says so and changes nothing.</li>
+<li><strong>Open by Web Address picks the right site.</strong> A
+different port is a different site, so <code>127.0.0.1:8080</code> no
+longer opens a site connected at <code>127.0.0.1:9400</code>, and a site
+at <code>/blog</code> no longer claims <code>/blogger</code>.</li>
+<li><strong>A renamed Practice Site starts.</strong> The Practice Site
+no longer has to be called Practice Site to count as ready: after a
+rename it used to wait five minutes, stop and suggest a reset. Your
+posts are kept.</li>
+<li><strong>Discussion counts links as WordPress does.</strong> The
+Discussion explanation counted one ordinary link twice, so it said a
+one-link comment would be held under the two-link rule.</li>
+</ul>
 <h3
 id="hosted-ai-service-accounting-you-can-trust-and-one-sign-in-per-code-2026-11-20">Hosted
 AI service: accounting you can trust, and one sign-in per code

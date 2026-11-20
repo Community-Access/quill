@@ -123,28 +123,43 @@ def retry_with(retry: Callable[[], None]) -> Iterator[None]:
         _retry_override.retry = previous
 
 
-def guarded_write(
-    what: str,
-    path: Path,
-    write: Callable[[], None],
-    *,
-    retry: Callable[[], None] | None = None,
-) -> None:
+#: Successful writes per file, so a Retry can tell a later save already worked.
+_saved_count: dict[Path, int] = {}
+
+
+def _count_saved(path: Path) -> int:
+    with _lock:
+        return _saved_count.get(path, 0)
+
+
+def guarded_write(what: str, path: Path, write: Callable[[], None]) -> None:
     """Run *write*; report the outcome; re-raise ``OSError`` unchanged.
 
-    *retry* (or the one :func:`retry_with` set for this thread) replaces the
-    default Retry, which writes the same content again.
+    The failure's Retry writes the same content again -- unless a later write
+    of the same file has worked since, in which case that newer content is the
+    answer and Retry leaves it alone (the family settings audit, 2026-11-20:
+    an old failure's Retry put the older choice back). :func:`retry_with`
+    replaces the Retry for a writer that can write what is current instead.
     """
     try:
         write()
     except OSError as error:
         reason = reason_for(error)
         logger.warning("QUILL-PERSIST-WRITE %s: %s (%s)", what, reason, type(error).__name__)
-        again = retry or getattr(_retry_override, "retry", None)
+        again = getattr(_retry_override, "retry", None)
         if again is None:
-            again = lambda: guarded_write(what, path, write)  # noqa: E731 - the default Retry
+            saved_before = _count_saved(path)
+
+            def again() -> None:
+                if _count_saved(path) > saved_before:
+                    _notify(WriteOutcome(what, path, ok=True))  # already saved since
+                    return
+                guarded_write(what, path, write)
+
         _notify(WriteOutcome(what, path, ok=False, reason=reason, retry=again))
         raise
+    with _lock:
+        _saved_count[path] = _saved_count.get(path, 0) + 1
     _notify(WriteOutcome(what, path, ok=True))
 
 

@@ -24,6 +24,7 @@ from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
 from quill.core.app_version import describe_version, installed_version
 from quill.core.net import configure_ssl_trust
+from quill.core.settings_recovery import announce_later
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.dpi import dip_size
@@ -104,6 +105,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, WeatherOptionsMixin, WeatherA
         # Resume/start the alert watch once the frame and task manager are up
         # (deferred: it touches the network).
         wx.CallAfter(self._weather_app_startup_monitoring)
+        announce_later("Quill Weather", self._announce, wx.CallAfter)  # a damaged file, kept
         # Repair "start with Windows" and the background check if an older
         # build wrote them as the bare runtime exe (launch_heal, 2026-09-27).
         if not safe_mode:

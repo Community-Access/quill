@@ -8,6 +8,15 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased] - 2026-11-07
 
+### Shared choices, and settings that stick after closing (2026-11-20)
+
+With *Share these choices with my other Quill apps* on, changing *Announce
+dialog transitions* in Preferences now reaches your other Quill apps; before,
+only turning sharing on or off did. Radio also picks up a newer shared choice
+when it starts, saves it and says so, as QUILL Cast does. A setting saved
+just as Radio's window closed can no longer be undone by an older save still
+being written.
+
 ### Add a Folder: type or paste the path, and choose about subfolders (2026-11-09)
 
 Chris Nova asked to type the path to a folder, such as `d:\other files\downloads`,
