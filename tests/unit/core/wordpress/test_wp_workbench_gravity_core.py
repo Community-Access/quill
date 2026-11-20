@@ -475,3 +475,30 @@ def test_the_gravity_routes_have_homes() -> None:
     assert classify("/gf/v2/feeds/(?P<feed_id>[\\d]+)").home == "Sites > site > Forms > Feeds"
     assert classify("/gf/v2/forms/(?P<form_id>[\\d]+)/results").status == "covered"
     assert classify("/gf/v2/entries/(?P<entry_id>[\\d]+)/notifications").status == "covered"
+
+
+def test_sample_inputs_match_the_phone_format_and_fill_a_time() -> None:
+    # Live, Gravity Forms 3.2.3.1 (2026-11-20): Test This Form on a form QUILL built was
+    # refused, "Phone format: (###) ###-####", because the US format refuses "555-0100";
+    # and a Time field was sent nothing, since its three inputs were not filled.
+    form = {
+        "fields": [
+            {"id": 4, "type": "phone", "label": "Phone", "phoneFormat": "standard"},
+            {"id": 5, "type": "phone", "label": "Abroad", "phoneFormat": "international"},
+            {"id": 6, "type": "time", "label": "When", "timeFormat": "12",
+             "inputs": [{"id": "6.1", "label": "HH"}, {"id": "6.2", "label": "MM"},
+                        {"id": "6.3", "label": "AM/PM"}]},
+            {"id": 7, "type": "time", "label": "At", "timeFormat": "24", "inputs": []},
+            {"id": 8, "type": "phone", "label": "Plain"},
+        ]
+    }  # fmt: skip
+    inputs, skipped = submitting.sample_inputs(form)
+    assert {i.name: i.value for i in inputs} == {
+        "input_4": "(555) 555-0100",
+        "input_5": "555-0100",
+        "input_6": "10:30 am",
+        "input_7": "10:30",
+        "input_8": "(555) 555-0100",
+    }
+    assert skipped == []
+    assert submitting.parse_inputs("input_6: 10:30 am") == {"input_6": "10:30 am"}

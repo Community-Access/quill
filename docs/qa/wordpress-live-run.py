@@ -2521,6 +2521,7 @@ def _load_workbench_checks() -> None:
         "wordpress_live_publish",
         "wordpress_live_gravity_build",
         "wordpress_live_plugins",
+        "wordpress_live_gravity_more",
     ):
         path = Path(__file__).with_name(f"{name}.py")
         spec = importlib.util.spec_from_file_location(name, path)
