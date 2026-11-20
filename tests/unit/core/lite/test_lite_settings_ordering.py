@@ -31,6 +31,7 @@ from quill.core import persistence_outcome
 from quill.core.lite import settings as settings_mod
 from quill.core.lite import settings_merge
 from quill.core.storage import write_json_atomic as _real_write
+from tests.wx_session import patch_call_after
 
 WAIT = 10.0
 
@@ -75,8 +76,7 @@ def shared_file(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
     target = tmp_path / "settings.json"
     monkeypatch.setattr(settings_mod, "settings_path", lambda: target)
     monkeypatch.setattr(settings_merge, "settings_path", lambda: target)
-    # Failure notices are delivered inline: no wx.App in a unit test.
-    monkeypatch.setattr(persistence.wx, "CallAfter", lambda fn, *a: fn(*a), raising=False)
+    patch_call_after(monkeypatch)  # failure notices delivered inline
     return target
 
 
