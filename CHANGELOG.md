@@ -2,6 +2,12 @@
 
 ## 1.0.0
 
+### Plans: the WordPress backlog (2026-11-19)
+
+The WordPress decisions still open have moved from the open-work list to a
+Backlog section in the WordPress Workbench PRD. They are which areas get
+first-class integrations, a WordPress-layer key for page commands, and a tree
+node for menu items. Rank Math staying read only is confirmed.
 ### GitHub Workbench: sort and group any list, keep your place, and say it in words (2026-11-19)
 
 - **Sort By and Group By on every list.** View > Sort By > By Column... and
