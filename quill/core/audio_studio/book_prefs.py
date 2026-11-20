@@ -13,7 +13,8 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from quill.core.storage import write_json_atomic
+from quill.core import storage
+from quill.core.persistence_outcome import guarded_write
 
 _FILE_NAME = "audio_studio_book_prefs.json"
 
@@ -94,7 +95,12 @@ def load_prefs(data_dir: Path) -> BookPrefsStore:
 
 def save_prefs(data_dir: Path, store: BookPrefsStore) -> None:
     """Persist the store atomically (temp file + ``os.replace``)."""
-    write_json_atomic(
-        _store_path(data_dir),
-        {"entries": {k: v.to_dict() for k, v in store.entries.items()}},
+    path = _store_path(data_dir)
+    guarded_write(  # Activity says a failure, with a Retry that writes what is current
+        "QUILL Studio's book settings",
+        path,
+        lambda: storage.write_json_atomic(
+            path,
+            {"entries": {k: v.to_dict() for k, v in store.entries.items()}},
+        ),
     )

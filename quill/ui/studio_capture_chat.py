@@ -9,6 +9,7 @@ from pathlib import Path
 import wx
 from wx.lib.scrolledpanel import ScrolledPanel
 
+from quill.core.reported_save import saved
 from quill.core.settings import load_settings
 from quill.core.studio_capture import save_capture_description, save_capture_report, verify_capture
 from quill.core.studio_capture_ai import (
@@ -200,7 +201,9 @@ class ScreenshotChatDialog(wx.Dialog):
         preferences = load_capture_ai_preferences()
         if not self.automatic.GetValue():
             preferences["auto_ai_enabled"] = False
-            save_capture_ai_preferences(preferences)
+            if not saved(lambda: save_capture_ai_preferences(preferences)):
+                self.automatic.SetValue(True)  # still on: Activity has said why, with Retry
+                return
             self._say("Automatic screenshot AI disabled. Already sent requests may finish.")
             return
         # The connection in use in Choose Your AI, after the same gate and
@@ -230,7 +233,9 @@ class ScreenshotChatDialog(wx.Dialog):
             "prompt_id": self.choices[self.style.GetSelection()]["id"],
             "instructions": self.prompt.GetValue().strip(),
         })
-        save_capture_ai_preferences(preferences)
+        if not saved(lambda: save_capture_ai_preferences(preferences)):
+            self.automatic.SetValue(False)  # not on: Activity has said why, with Retry
+            return
         self._say("Automatic screenshot AI enabled for future user-triggered captures.")
 
     def _use_automatic_prompt(self, _event):

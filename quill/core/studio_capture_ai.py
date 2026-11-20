@@ -110,7 +110,12 @@ def load_capture_ai_preferences() -> dict[str, Any]:
 
 
 def save_capture_ai_preferences(preferences: dict[str, Any]) -> None:
-    write_json_atomic(app_data_dir() / "studio-capture-ai.json", preferences)
+    """Save; a failure is reported (Activity, with Retry) and re-raised."""
+    from quill.core.persistence_outcome import guarded_write
+
+    path = app_data_dir() / "studio-capture-ai.json"
+    write = lambda: write_json_atomic(path, preferences)  # noqa: E731 - Retry writes it again
+    guarded_write("QUILL Studio's screenshot AI settings", path, write)
 
 
 @dataclass(frozen=True, slots=True)

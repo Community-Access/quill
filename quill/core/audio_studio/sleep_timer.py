@@ -21,7 +21,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
-from quill.core.storage import write_json_atomic
+from quill.core import storage
+from quill.core.persistence_outcome import guarded_write
 
 _FILE_NAME = "audio_studio_sleep_timer.json"
 
@@ -78,14 +79,19 @@ def load_sleep_setting(data_dir: Path) -> SleepTimerSetting:
 
 def save_sleep_setting(data_dir: Path, setting: SleepTimerSetting) -> None:
     """Persist the setting atomically (temp file + ``os.replace``)."""
-    write_json_atomic(
-        _store_path(data_dir),
-        {
-            "enabled": setting.enabled,
-            "delay_minutes": setting.delay_minutes,
-            "end_of_chapter": setting.end_of_chapter,
-            "last_started_at": setting.last_started_at,
-        },
+    path = _store_path(data_dir)
+    guarded_write(  # Activity says a failure, with a Retry that writes what is current
+        "QUILL Studio's sleep timer",
+        path,
+        lambda: storage.write_json_atomic(
+            path,
+            {
+                "enabled": setting.enabled,
+                "delay_minutes": setting.delay_minutes,
+                "end_of_chapter": setting.end_of_chapter,
+                "last_started_at": setting.last_started_at,
+            },
+        ),
     )
 
 

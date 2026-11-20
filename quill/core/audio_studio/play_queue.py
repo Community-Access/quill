@@ -12,7 +12,8 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from quill.core.storage import write_json_atomic
+from quill.core import storage
+from quill.core.persistence_outcome import guarded_write
 
 _FILE_NAME = "audio_studio_play_queue.json"
 
@@ -124,10 +125,15 @@ def load_queue(data_dir: Path) -> PlayQueue:
 
 def save_queue(data_dir: Path, queue: PlayQueue) -> None:
     """Persist the queue atomically (temp file + ``os.replace``)."""
-    write_json_atomic(
-        _store_path(data_dir),
-        {
-            "entries": [e.to_dict() for e in queue.entries],
-            "current_index": queue.current_index,
-        },
+    path = _store_path(data_dir)
+    guarded_write(  # Activity says a failure, with a Retry that writes what is current
+        "QUILL Studio's play queue",
+        path,
+        lambda: storage.write_json_atomic(
+            path,
+            {
+                "entries": [e.to_dict() for e in queue.entries],
+                "current_index": queue.current_index,
+            },
+        ),
     )
