@@ -1246,8 +1246,8 @@ Delete removes. Watches never mark notifications read.</td>
 <td>the top</td>
 <td>Across Repositories: the Repository Set in use, and under it its
 named sets, one kind of thing from every repository in the set, each
-name across the set, and the Fleet. Ctrl+N here edits the set’s
-repositories.</td>
+name across the set grouped as Planning, Code, Actions and Settings, and
+the Fleet. Ctrl+N here edits the set’s repositories.</td>
 </tr>
 <tr>
 <td>Repository Sets (<code>:across_sets</code>)</td>
@@ -1303,47 +1303,6 @@ each, or every release from the row’s menu.</td>
 in.</td>
 </tr>
 <tr>
-<td>Labels by Name (<code>:across_by_labels</code>)</td>
-<td>across</td>
-<td>Labels by Name: each label name across the set, where its colour and
-description differ and where it is missing. Make the copies the same,
-add it where missing, rename, merge or delete it everywhere, each with a
-preview and a result per repository.</td>
-</tr>
-<tr>
-<td>Milestones by Name (<code>:across_by_milestones</code>)</td>
-<td>across</td>
-<td>Milestones by Name: each milestone title across the set, its due
-dates, descriptions and progress. Make them the same, close them
-everywhere, move their open work to another milestone or add the missing
-ones, each with a preview and a result per repository.</td>
-</tr>
-<tr>
-<td>Topics by Name (<code>:across_by_topics</code>)</td>
-<td>across</td>
-<td>Topics by Name: each topic across the set and the repositories that
-lack it. Add it to the missing or remove it everywhere, with a preview
-and a result per repository; each repository’s other topics are
-kept.</td>
-</tr>
-<tr>
-<td>Rules and Branch Protection (<code>:across_by_rules</code>)</td>
-<td>across</td>
-<td>Rules and Branch Protection: each ruleset by name, and each default
-branch’s protection, compared across the set. Make them the same as the
-winner, add a ruleset where it is missing, or promote one to an
-organization ruleset; each needs admin access and shows a preview
-first.</td>
-</tr>
-<tr>
-<td>Fleet (<code>:across_fleet</code>)</td>
-<td>across</td>
-<td>Fleet: one line per repository in the set: the exact revision of its
-default branch, checks, open pull requests, latest release and alerts,
-and when it was read. A repository that could not be read keeps its
-line, with the reason.</td>
-</tr>
-<tr>
 <td>Help and Learning (<code>:help</code>)</td>
 <td>the top</td>
 <td>Help and Learning: the guide, the GitHub words, the keys, what
@@ -1396,6 +1355,133 @@ here and are never pushed at you.</td>
 <td>Ask a Person: write to <a
 href="mailto:support@community-access.org">support@community-access.org</a>.
 Nothing is sent until you send it from your own email.</td>
+</tr>
+<tr>
+<td>Planning by Name (<code>:across_planning</code>)</td>
+<td>across</td>
+<td>Planning by Name: labels, milestones and topics, each by name across
+the set.</td>
+</tr>
+<tr>
+<td>Labels by Name (<code>:across_by_labels</code>)</td>
+<td>across_planning</td>
+<td>Labels by Name: each label name across the set, where its colour and
+description differ and where it is missing. Make the copies the same,
+add it where missing, rename, merge or delete it everywhere, each with a
+preview and a result per repository.</td>
+</tr>
+<tr>
+<td>Milestones by Name (<code>:across_by_milestones</code>)</td>
+<td>across_planning</td>
+<td>Milestones by Name: each milestone title across the set, its due
+dates, descriptions and progress. Make them the same, close them
+everywhere, move their open work to another milestone or add the missing
+ones, each with a preview and a result per repository.</td>
+</tr>
+<tr>
+<td>Topics by Name (<code>:across_by_topics</code>)</td>
+<td>across_planning</td>
+<td>Topics by Name: each topic across the set and the repositories that
+lack it. Add it to the missing or remove it everywhere, with a preview
+and a result per repository; each repository’s other topics are
+kept.</td>
+</tr>
+<tr>
+<td>Code by Name (<code>:across_code</code>)</td>
+<td>across</td>
+<td>Code by Name: tags, branches, and rules and branch protection, each
+by name across the set.</td>
+</tr>
+<tr>
+<td>Tags by Name (<code>:across_by_tags</code>)</td>
+<td>across_code</td>
+<td>Tags by Name: each tag across the set and the commit it is on in
+each repository. Release Train makes it, or it and a release, where it
+is missing, and never moves an existing tag; Delete Everywhere keeps a
+tag a release is built on.</td>
+</tr>
+<tr>
+<td>Branches by Name (<code>:across_by_branches</code>)</td>
+<td>across_code</td>
+<td>Branches by Name: each branch across the set, where it is the
+default and where it is protected. Rename Everywhere uses GitHub’s
+rename; its preview says where the default changes, where protection
+moves and how many open pull requests are retargeted.</td>
+</tr>
+<tr>
+<td>Rules and Branch Protection (<code>:across_by_rules</code>)</td>
+<td>across_code</td>
+<td>Rules and Branch Protection: each ruleset by name, and each default
+branch’s protection, compared across the set. Make them the same as the
+winner, add a ruleset where it is missing, or promote one to an
+organization ruleset; each needs admin access and shows a preview
+first.</td>
+</tr>
+<tr>
+<td>Actions by Name (<code>:across_actions</code>)</td>
+<td>across</td>
+<td>Actions by Name: environments, secrets and variables, each by name
+across the set. Reading them needs admin access in each repository.</td>
+</tr>
+<tr>
+<td>Environments by Name (<code>:across_by_environments</code>)</td>
+<td>across_actions</td>
+<td>Environments by Name: wait timer, reviewers, self-review and which
+branches may deploy, compared across the set. Make them the same as the
+winner, or delete one everywhere. GitHub has no organization
+environments.</td>
+</tr>
+<tr>
+<td>Secrets by Name (<code>:across_by_secrets</code>)</td>
+<td>across_actions</td>
+<td>Secrets by Name: each Actions secret across the set, by name only,
+because GitHub never shows a secret’s value. Set Secret Everywhere takes
+one new value, typed once and sealed for each repository; Promote to
+Organization makes one organization secret for those repositories.</td>
+</tr>
+<tr>
+<td>Variables by Name (<code>:across_by_variables</code>)</td>
+<td>across_actions</td>
+<td>Variables by Name: each Actions variable and its values across the
+set. Make them the same, add the missing, delete everywhere, or promote
+to one organization variable for those repositories.</td>
+</tr>
+<tr>
+<td>Settings by Name (<code>:across_settings</code>)</td>
+<td>across</td>
+<td>Settings by Name: webhooks, deploy keys and autolinks, each by name
+across the set. Reading them needs admin access in each repository.</td>
+</tr>
+<tr>
+<td>Webhooks by Name (<code>:across_by_webhooks</code>)</td>
+<td>across_settings</td>
+<td>Webhooks by Name: each webhook by its address, with its events, on
+or off and content type. Make them the same, add the missing, turn them
+on or off, delete, or promote to one organization webhook, which GitHub
+sends for every repository in the organization. A webhook’s secret is
+never readable.</td>
+</tr>
+<tr>
+<td>Deploy Keys by Name (<code>:across_by_deploy_keys</code>)</td>
+<td>across_settings</td>
+<td>Deploy Keys by Name: each deploy key by title, with its fingerprint
+and access. Delete Everywhere removes it; GitHub accepts a deploy key in
+one repository only, so one cannot be added to more.</td>
+</tr>
+<tr>
+<td>Autolinks by Name (<code>:across_by_autolinks</code>)</td>
+<td>across_settings</td>
+<td>Autolinks by Name: each autolink by its prefix, with its address.
+Add the missing or delete everywhere; GitHub cannot change an autolink
+in place.</td>
+</tr>
+<tr>
+<td>Fleet (<code>:across_fleet</code>)</td>
+<td>across</td>
+<td>Fleet: one line per repository in the set: the exact revision of its
+default branch, checks, open pull requests, latest release and alerts,
+and when it was read. A repository that could not be read keeps its
+line, with the reason.</td>
 </tr>
 <tr>
 <td>People and Organizations (<code>:search_people</code>)</td>
@@ -3430,6 +3516,7 @@ Set Filter…, New Set…, Rename Set…, Delete Set…; Properties…</li>
 <li><strong>by_name</strong>: Variants and Missing From, Make Them the
 Same…, Add to Missing…, Find Uses, Rename Everywhere…, Merge Into…;
 More: Close Everywhere…, Move Open Work To…, Promote to Organization…,
+Release Train…, Set Secret Everywhere…, Turn On or Off Everywhere…,
 Delete Everywhere…; Properties…</li>
 <li><strong>fleet</strong>: Open Repository, Open on GitHub, Copy Link;
 Properties…</li>
