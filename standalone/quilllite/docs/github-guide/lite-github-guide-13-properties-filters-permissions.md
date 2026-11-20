@@ -272,6 +272,27 @@ and recorded in Change History. The Workbench refuses to remove your own admin
 access or the last owner, and says who else could do it. Organization and
 team sheets work the same way for members and maintainers.
 
+On an organization's sheet, each member reads with their role and whether
+two-factor sign-in is on: "kim, person, member, direct, two-factor off".
+GitHub shows two-factor only to owners; anyone else hears "two-factor not
+shown to you". Change... on a member offers member, owner, or outside
+collaborator; making someone an outside collaborator takes them out of the
+organization and its teams, so QUILL Lite asks you to type their name first.
+On the Outside Collaborators page, Add makes a member an outside
+collaborator, Change... invites one to be a member, and Remove takes away
+every repository they have here, again after their name is typed. You cannot
+make yourself an outside collaborator, remove yourself while you are the last
+owner, or remove the last owner.
+
+A team's Repositories page lists every repository the team reaches with its
+role there: Add, Change... and Remove work on it too. The last maintainer
+cannot remove themselves, and taking admin away from a team you are on is
+refused when that team is how you administer the repository. The General
+page's **Parent team** moves the team under another, and **New Team...** asks
+for the parent and whether mentions notify the team. The organization's
+**Members** list reads "kim, member, two-factor off.", and **Members Without
+Two-Factor** on the organization's row lists only those, for owners.
+
 **Account > Roles and Access** also has:
 
 - **My Access Here...**, your role on this repository and where each part
@@ -335,6 +356,25 @@ whose the token is first, and sends nothing if it is not that account's. Your
 own account, its lists and its remembered reads are never touched: everything
 QUILL remembers is kept per account.
 
+### Who has what, and why
+
+Under an organization in the tree, three lists answer "who can do what here"
+a row at a time:
+
+- **Access Review: People**: "jeff on quill: Admin, from team Maintainers;
+  also Write directly; also Read from the organization's base permission."
+  The highest role comes first, and every other way they have access follows
+  "also".
+- **Access Review: Teams**: "Docs on site: Reviewer, for 3 members, a child
+  team of Maintainers."
+- **Custom Property Values**: a row a repository with every custom property,
+  unset ones said as "not set".
+
+The filter box and Show Only narrow them, and **Export List...**
+(`Ctrl+Shift+X`), on the Workbench's File menu, saves what is shown. When GitHub will not show part of the answer, the status bar
+says which. **Set Repositories' Custom Property...** on the organization's
+row sets one property in several repositories at once.
+
 ### Rules in plain words
 
 A ruleset's sheet, and a branch's protection, list every rule as a check box
@@ -342,6 +382,16 @@ with its settings, and a Summary page reads the whole thing as sentences: "On
 the default branch: changes need a pull request with 2 approvals including a
 code owner; checks build and test must pass; force pushes are blocked." Read
 that page first.
+
+A repository's **Settings > Rulesets** list, and an organization's
+**Rulesets**, show each ruleset as a sentence; Alt+Enter opens its sheet, and
+Delete removes it after you type its name. The sheet's Rules page also lists
+every rule with every setting GitHub sent; its Bypass page has a check list of
+the roles that may bypass the rules, keeping teams and apps as they are; and
+an organization ruleset's Repositories page says which repositories it covers
+and lets you choose them by name. A branch's classic protection sheet has
+every setting GitHub offers, and its **Who** page says who may push, dismiss
+reviews and skip the pull request; saving keeps those lists as they were.
 
 ---
 

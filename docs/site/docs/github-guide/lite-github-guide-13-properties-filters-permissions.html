@@ -524,25 +524,126 @@ work too). Each change is read back to you first, and recorded in Change
 History. The Workbench refuses to remove your own admin access or the
 last owner, and says who else could do it. Organization and team sheets
 work the same way for members and maintainers.</p>
+<p>On an organization’s sheet, each member reads with their role and
+whether two-factor sign-in is on: “kim, person, member, direct,
+two-factor off”. GitHub shows two-factor only to owners; anyone else
+hears “two-factor not shown to you”. Change… on a member offers member,
+owner, or outside collaborator; making someone an outside collaborator
+takes them out of the organization and its teams, so QUILL Lite asks you
+to type their name first. On the Outside Collaborators page, Add makes a
+member an outside collaborator, Change… invites one to be a member, and
+Remove takes away every repository they have here, again after their
+name is typed. You cannot make yourself an outside collaborator, remove
+yourself while you are the last owner, or remove the last owner.</p>
+<p>A team’s Repositories page lists every repository the team reaches
+with its role there: Add, Change… and Remove work on it too. The last
+maintainer cannot remove themselves, and taking admin away from a team
+you are on is refused when that team is how you administer the
+repository. The General page’s <strong>Parent team</strong> moves the
+team under another, and <strong>New Team…</strong> asks for the parent
+and whether mentions notify the team. The organization’s
+<strong>Members</strong> list reads “kim, member, two-factor off.”, and
+<strong>Members Without Two-Factor</strong> on the organization’s row
+lists only those, for owners.</p>
 <p><strong>Account &gt; Roles and Access</strong> also has:</p>
 <ul>
 <li><strong>My Access Here…</strong>, your role on this repository and
-where it comes from;</li>
+where each part comes from;</li>
 <li><strong>View As Role…</strong> and <strong>Compare Roles…</strong>,
 what a role may do, read-only;</li>
 <li><strong>Why Can’t They?…</strong>, what stops a person doing
 something, and who can change it;</li>
-<li><strong>Access Review…</strong>, every person and repository pair in
-an organization with their role, copied as CSV too;</li>
+<li><strong>Access Review…</strong>, every person, team and repository
+in an organization with their role and where it comes from, copied as
+CSV too;</li>
 <li><strong>Bulk Access Changes…</strong>, one team or person on many
-repositories at once, previewed, with a result per change.</li>
+repositories at once, previewed person by person, with a result per
+change;</li>
+<li><strong>Compare Accounts…</strong>, two of your signed-in accounts
+on this repository, side by side;</li>
+<li><strong>Act As Another Account…</strong>, one action done as another
+of your signed-in accounts.</li>
 </ul>
+<p>Every one of these answers from what GitHub itself says, and each
+line names the reply it came from, such as “(GitHub: /repos/acme/web
+permissions)”. My Access Here reads the repository’s permissions,
+GitHub’s own <code>viewerPermission</code>, your role name (a custom
+role is named too), your place in the organization and its base
+permission, the teams that give you access, the rules on the default
+branch, and this sign-in’s scopes. Why Can’t They? reads the person’s
+real role from GitHub rather than asking you for it, then the rules
+GitHub says apply to the branch, and names the one that stops them.</p>
+<p>Two things GitHub does not say, and the Workbench says so rather than
+guessing. GitHub’s API does not list what a role may do, so View As Role
+and Compare Roles show GitHub’s documented defaults for its built-in
+roles, say that is what they are, and then list who on this repository
+GitHub says has each role; a custom role is named, but what it adds is
+on the organization’s Repository roles page. And GitHub does not list a
+fine-grained token’s permissions: My Access Here says so, and when
+GitHub refuses something, the Workbench says the permission GitHub named
+in its refusal. When GitHub will not tell your account something at all
+(only people with write access may read others’ roles, for example), the
+answer says it cannot be known.</p>
+<p>Bulk Access Changes reads each repository’s current role first, and
+the preview says it per person: “kelly on acme/web: write now, maintain
+after.” A repository where they already have that role is listed as
+“nothing is sent”, and nothing is.</p>
+<h4 id="compare-accounts-and-act-as">Compare Accounts and Act As</h4>
+<p>With more than one account in Manage GitHub Accounts, <strong>Compare
+Accounts…</strong> asks GitHub, with each account’s own sign-in, about
+the open repository: its role, <code>viewerPermission</code>, its role
+name and its sign-in’s scopes, then what one may do that the other may
+not. Before showing anything under an account’s name, it asks GitHub
+whose the saved token is; if GitHub names somebody else, nothing is
+shown for that account, and you are told to sign in again.</p>
+<p><strong>Act As Another Account…</strong> does one thing as another of
+your accounts and then forgets it: approve the selected pull request
+(approving your own needs a second account), comment on the selected
+issue or pull request, close or reopen it, or star the repository. You
+choose the account, then the action. The question names the account and
+its server (“As kelly-test on github.com, not as you: approve pull
+request #7”), and so does the result (“Approved pull request #7 in
+acme/web as kelly-test.”). Act As is held to that account’s own
+Workbench level, not yours, and Safe Mode stops it like any write. It
+checks whose the token is first, and sends nothing if it is not that
+account’s. Your own account, its lists and its remembered reads are
+never touched: everything QUILL remembers is kept per account.</p>
+<h3 id="who-has-what-and-why">Who has what, and why</h3>
+<p>Under an organization in the tree, three lists answer “who can do
+what here” a row at a time:</p>
+<ul>
+<li><strong>Access Review: People</strong>: “jeff on quill: Admin, from
+team Maintainers; also Write directly; also Read from the organization’s
+base permission.” The highest role comes first, and every other way they
+have access follows “also”.</li>
+<li><strong>Access Review: Teams</strong>: “Docs on site: Reviewer, for
+3 members, a child team of Maintainers.”</li>
+<li><strong>Custom Property Values</strong>: a row a repository with
+every custom property, unset ones said as “not set”.</li>
+</ul>
+<p>The filter box and Show Only narrow them, and <strong>Export
+List…</strong> (<code>Ctrl+Shift+X</code>), on the Workbench’s File
+menu, saves what is shown. When GitHub will not show part of the answer,
+the status bar says which. <strong>Set Repositories’ Custom
+Property…</strong> on the organization’s row sets one property in
+several repositories at once.</p>
 <h3 id="rules-in-plain-words">Rules in plain words</h3>
 <p>A ruleset’s sheet, and a branch’s protection, list every rule as a
 check box with its settings, and a Summary page reads the whole thing as
 sentences: “On the default branch: changes need a pull request with 2
 approvals including a code owner; checks build and test must pass; force
 pushes are blocked.” Read that page first.</p>
+<p>A repository’s <strong>Settings &gt; Rulesets</strong> list, and an
+organization’s <strong>Rulesets</strong>, show each ruleset as a
+sentence; Alt+Enter opens its sheet, and Delete removes it after you
+type its name. The sheet’s Rules page also lists every rule with every
+setting GitHub sent; its Bypass page has a check list of the roles that
+may bypass the rules, keeping teams and apps as they are; and an
+organization ruleset’s Repositories page says which repositories it
+covers and lets you choose them by name. A branch’s classic protection
+sheet has every setting GitHub offers, and its <strong>Who</strong> page
+says who may push, dismiss reviews and skip the pull request; saving
+keeps those lists as they were.</p>
 <hr />
 <ul>
 <li>Previous: <a href="lite-github-guide-12-the-workbench.html">Chapter

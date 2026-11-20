@@ -10,11 +10,84 @@ from __future__ import annotations
 from quill.core.workbench.coverage import CoverageRow, CoverageStatus, CoverageTable
 from quill.core.workbench.tree import Need, NodeSpec, Scope
 
-__all__ = ["MORE_FIXED", "MORE_REPOSITORY", "PINNED_SEARCH", "PLANNED"]
+__all__ = [
+    "ACROSS_BY_NAME",
+    "ACROSS_GROUPS",
+    "MORE_FIXED",
+    "MORE_REPOSITORY",
+    "PINNED_SEARCH",
+    "PLANNED",
+]
 
 _SIGN_IN = frozenset({Need.SIGN_IN})
 
+#: Across Repositories' by-name places, category first (GX16): each group is a
+#: node whose children are its kinds, every one a row per name (PRD 22.11).
+ACROSS_GROUPS: tuple[tuple[str, str, tuple[tuple[str, str], ...]], ...] = (
+    (
+        "across_planning",
+        "Planning by Name",
+        (
+            ("labels", "Labels by Name"),
+            ("milestones", "Milestones by Name"),
+            ("topics", "Topics by Name"),
+        ),
+    ),
+    (
+        "across_code",
+        "Code by Name",
+        (
+            ("tags", "Tags by Name"),
+            ("branches", "Branches by Name"),
+            ("rules", "Rules and Branch Protection"),
+        ),
+    ),
+    (
+        "across_actions",
+        "Actions by Name",
+        (
+            ("environments", "Environments by Name"),
+            ("secrets", "Secrets by Name"),
+            ("variables", "Variables by Name"),
+        ),
+    ),
+    (
+        "across_settings",
+        "Settings by Name",
+        (
+            ("webhooks", "Webhooks by Name"),
+            ("deploy_keys", "Deploy Keys by Name"),
+            ("autolinks", "Autolinks by Name"),
+        ),
+    ),
+)
+
+ACROSS_BY_NAME: tuple[NodeSpec, ...] = (
+    *(
+        node
+        for key, label, kinds in ACROSS_GROUPS
+        for node in (
+            NodeSpec(key, label, "across", needs=_SIGN_IN),
+            *(
+                NodeSpec(
+                    f"across_by_{kind}",
+                    name,
+                    key,
+                    needs=_SIGN_IN,
+                    loader=f"across:by_{kind}",
+                    row_type="by_name",
+                )
+                for kind, name in kinds
+            ),
+        )
+    ),
+    NodeSpec(
+        "across_fleet", "Fleet", "across", needs=_SIGN_IN, loader="across:fleet", row_type="fleet"
+    ),
+)
+
 MORE_FIXED: tuple[NodeSpec, ...] = (
+    *ACROSS_BY_NAME,
     NodeSpec(
         "search_people",
         "People and Organizations",

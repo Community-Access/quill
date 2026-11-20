@@ -2,6 +2,85 @@
 
 ## 1.0.0
 
+### GitHub Workbench: roles from GitHub's own answers, two accounts side by side, and gh sign-in (2026-11-20)
+
+- **My Access Here**, **Why Can't They?**, **Access Review** and **Bulk
+  Access Changes** now read what GitHub says, not a fixed table: your real
+  role (custom roles by name), the teams that give it, your organization's
+  base permission, the rules on the default branch and what your token
+  allows. Each line says where it came from. When GitHub will not say, QUILL
+  says it does not know rather than guessing. **Why Can't They?** reads the
+  person's real role and names the rule that blocks them.
+- **View As Role** and **Compare Roles** say they show GitHub's documented
+  defaults, then list who on this repository has each role.
+- When GitHub refuses a request, the message names the permission or scope it
+  asked for.
+- **Compare Accounts...** and **Act As Another Account...** under Roles and
+  Access. QUILL checks whose token it is before it shows or sends anything,
+  each account keeps its own remembered reads, and Act As is held to the
+  other account's Workbench level.
+- **Use GitHub CLI Sign-In...** in Manage GitHub Accounts adds the account
+  gh is already signed in to.
+- An account can be on a GitHub Enterprise Server: Add Token asks for the
+  server, and everything for that account goes to that server only. When the
+  server's GitHub is too old for something, QUILL says so and names its
+  version.
+
+### GitHub Workbench: tags, branches, secrets, webhooks and more across repositories (2026-11-20)
+
+- Across Repositories has eight more places by name, grouped by category:
+  Tags and Branches under Code, Environments, Secrets and Variables under
+  Actions, and Webhooks, Deploy Keys and Autolinks under Settings. Each row
+  is a name, with its variants and the repositories that lack it. A
+  repository that will not let you read it is named apart, never counted as
+  missing.
+- **Release Train...** makes a tag, with a draft or published release if you
+  want one, on each chosen repository. It skips a repository that already
+  has the tag and never moves a tag. **Rename Everywhere** renames a branch
+  and its preview says where the default branch, protection and open pull
+  requests change.
+- **Set Secret Everywhere...** asks for the value once. The value is never
+  shown in the plan, the preview or Change History.
+- Environments, variables and webhooks can be made the same, added where
+  missing and deleted everywhere. Webhooks can be turned on or off
+  everywhere.
+- **Promote to Organization** for secrets, variables and webhooks makes the
+  organization's copy first and only then deletes each repository's own.
+  Environments, deploy keys and autolinks have no organization form on
+  GitHub, and QUILL says so.
+
+### GitHub Workbench: rulesets, branch protection, members, teams and access reviews (2026-11-19)
+
+- A repository's **Rulesets** list, under its settings, and an organization's
+  **Rulesets** list each ruleset in a sentence. Alt+Enter opens its sheet. The
+  Rules page now lists every rule with every setting GitHub sent, including
+  rule types QUILL has no check box for yet. The Bypass page has a check list
+  of the roles that may bypass the rules, and keeps teams and apps as they
+  were. An organization ruleset has a Repositories page that says which
+  repositories it covers and lets you choose them by name. Delete asks you to
+  type the ruleset's name. **Rule Insights** is now under an organization too.
+- Saving a branch's classic protection no longer wipes who may push, who may
+  dismiss reviews and who may skip the pull request. The sheet now has every
+  setting GitHub offers, signed commits included, and a Who page.
+- An organization's members now read with their role and whether two-factor
+  sign-in is on (GitHub shows that to owners). **Members Without
+  Two-Factor** lists only those. Making a member an outside collaborator, and
+  removing an outside collaborator or a member, ask you to type their name.
+- A team's parent can be changed on its sheet, **New Team...** asks for the
+  parent and whether mentions notify the team, and a team's Repositories page
+  can add, change and remove repositories.
+- QUILL refuses, before sending anything, a change that would leave you or
+  the organization with nobody to manage it: removing the last owner or your
+  own ownership, making yourself an outside collaborator, the last maintainer
+  leaving a team, or taking admin away from the team that is your way into a
+  repository.
+- **Access Review: People** and **Access Review: Teams**, under an
+  organization, list every person or team and repository with the role they
+  have and where it comes from: "jeff on quill: Admin, from team Maintainers;
+  also Write directly." **Custom Property Values** now shows every property
+  on every repository, unset ones as "not set". All three filter and export
+  like any other list.
+
 ### Plans: the WordPress backlog (2026-11-19)
 
 The WordPress decisions still open have moved from the open-work list to a

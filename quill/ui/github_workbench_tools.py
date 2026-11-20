@@ -14,34 +14,25 @@
   Bulk Access Changes, Compare Accounts, Act As) is
   :mod:`quill.ui.github_workbench_roles`, answered from GitHub's replies.
 - **Access pages:** Add..., Change Role... and Remove on a sheet's list, each
-  previewed in words, refused when it would lock you out (18.4), and recorded.
+  previewed in words, refused when it would lock you out (18.4), and recorded:
+  :mod:`quill.ui.github_workbench_access_pages`.
 """
 
 from __future__ import annotations
 
-import time
 from collections.abc import Callable
 from typing import Any
 
-from quill.core.github.access import (
-    lockout_problem,
-    parse_row,
-    plan_add,
-    plan_change,
-    plan_remove,
-)
 from quill.core.github.permissions import (
-    REPO_ROLES,
     SCOPES,
     AccessLevel,
-    WriteTier,
     classic_token_url,
     fine_grained_steps,
     gh_refresh_command,
     missing_scopes,
     scope_rows,
 )
-from quill.ui.github_workbench_invitations import GitHubWorkbenchInvitationsMixin
+from quill.ui.github_workbench_access_pages import GitHubWorkbenchAccessPagesMixin
 from quill.ui.github_workbench_roles import ROLE_TOOLS, GitHubWorkbenchRolesMixin
 
 __all__ = ["GitHubWorkbenchToolsMixin"]
@@ -54,24 +45,9 @@ _TOOLS = frozenset({
     "account_level",
     *ROLE_TOOLS,
 })
-_TABLE_SCOPES = {
-    "repository": "repository",
-    "team": "team",
-    "organization": "organization",
-}
-_ACCESS_LISTS = frozenset({"collaborators", "teams", "members", "maintainers", "invitations"})
 
 
-def _table_command(key: str, verb: str) -> str:
-    """The declared command a sheet list's Add, Change Role or Remove is ("" for none)."""
-    if key == "branches":
-        return {"add": f"{_P}create_branch", "remove": f"{_P}unlink_branch"}.get(verb, "")
-    if key == "poll":  # a discussion's poll: Add and Change vote; Remove only explains
-        return f"{_P}poll_vote" if verb in ("add", "change") else ""
-    return f"{_P}access_{verb}" if key in _ACCESS_LISTS else ""
-
-
-class GitHubWorkbenchToolsMixin(GitHubWorkbenchInvitationsMixin, GitHubWorkbenchRolesMixin):
+class GitHubWorkbenchToolsMixin(GitHubWorkbenchAccessPagesMixin, GitHubWorkbenchRolesMixin):
     """Filter Builder, permissions, history and access, for the GitHub provider."""
 
     items: Any
@@ -346,118 +322,3 @@ class GitHubWorkbenchToolsMixin(GitHubWorkbenchInvitationsMixin, GitHubWorkbench
         account = self.account_name()  # type: ignore[attr-defined]
         AccessStore.load().set(self.level_key(), levels[index])  # type: ignore[attr-defined]
         self._say(f"{account or 'This account'} is now {levels[index].label} in the Workbench.")
-
-    # -- Access pages: Add, Change Role, Remove (18.3) --------------------------------------
-
-    def table_action(self, target: Any, state: dict[str, Any]) -> Callable[[Any, str, str], None]:
-        """The Access buttons on a sheet's list (people, teams, members)."""
-
-        def act(spec: Any, verb: str, row: str) -> None:
-            if self.refused(_table_command(spec.key, verb)):  # type: ignore[attr-defined]
-                return  # the level check, as the dispatcher makes it for a command
-            if spec.key == "branches" and target.kind == "issue":
-                self.act_on_linked_branch(state, verb, row)  # type: ignore[attr-defined]
-                return
-            scope = _TABLE_SCOPES.get(target.kind)
-            if spec.key == "invitations" and scope in ("repository", "organization"):
-                self.act_on_invitation(scope, state["ident"], verb, row, target.title())
-                return
-            if target.kind == "discussion" and spec.key == "poll":
-                self.vote_from_sheet(dict(state["ident"]), verb)  # type: ignore[attr-defined]
-                return
-            if scope is None or spec.key not in (
-                "collaborators",
-                "teams",
-                "members",
-                "maintainers",
-            ):
-                self._say("This list is changed on GitHub's page; Open on GitHub goes there.")
-                return
-            ident = state["ident"]
-            rows = [parse_row(r) for r in state["loaded"].values.get(spec.key) or ()]
-            roles = (
-                ["member", "maintainer"]
-                if scope == "team"
-                else (["member", "owner"] if scope == "organization" else list(REPO_ROLES))
-            )
-            if verb == "add":
-                who = self._ask_text("Add", "Login, or team slug for a team:")
-                if not who:
-                    return
-                index = self._choose("Add", f"Role for {who}:", roles)
-                if index < 0:
-                    return
-                kind = "team" if spec.key == "teams" else "person"
-                change = plan_add(scope, ident, who, kind, roles[index])
-            else:
-                found = parse_row(row)
-                if verb == "change":
-                    index = self._choose("Change Role", f"New role for {found.name}:", roles)
-                    if index < 0:
-                        return
-                    problem = lockout_problem(
-                        rows,
-                        found,
-                        self.account_name(),  # type: ignore[attr-defined]
-                        new_role=roles[index],
-                    )
-                    change = plan_change(scope, ident, found, roles[index])
-                else:
-                    problem = lockout_problem(rows, found, self.account_name())  # type: ignore[attr-defined]
-                    change = plan_remove(scope, ident, found)
-                if problem:
-                    self._say(problem)
-                    return
-            self._run_changes([change], target.title())
-
-        return act
-
-    def _run_changes(self, changes: list[Any], title: str) -> None:
-        """Preview every change in words, then send them, a result per change (18.4)."""
-        if not changes:
-            return
-        tier = max(change.tier for change in changes)
-        words = "\n".join(change.words for change in changes)
-        if not self.confirm_tier(max(tier, WriteTier.ACCESS), words, str(len(changes))):  # type: ignore[attr-defined]
-            return
-        api = self.github_api()  # type: ignore[attr-defined]
-
-        def work() -> list[str]:
-            results: list[str] = []
-            for index, change in enumerate(changes):
-                if index:
-                    time.sleep(getattr(self, "batch_pace", 1.0))
-                try:
-                    api.rest(change.method, change.path, body=change.body)
-                except Exception as exc:  # noqa: BLE001 - a result per change
-                    results.append(f"{change.words} Failed: {exc}")
-                else:
-                    results.append(f"{change.words} Done.")
-            return results
-
-        def done(results: list[str]) -> None:
-            failed = sum(1 for r in results if "Failed:" in r)
-            self._say(f"{len(results) - failed} done, {failed} failed.")
-            self._record_access(changes, results)
-            if len(results) > 1 or failed:
-                self._show_text(title, "\n".join(results))
-
-        self._background("change access", work, done)
-
-    def _record_access(self, changes: list[Any], results: list[str]) -> None:
-        try:
-            log = self.change_log()  # type: ignore[attr-defined]
-            for change, result in zip(changes, results, strict=True):
-                log.record(
-                    account=self.account_name(),  # type: ignore[attr-defined]
-                    kind="access",
-                    ident={"path": change.path},
-                    target=change.path,
-                    summary=change.words,
-                    changes=[],
-                    tier=int(change.tier),
-                    confirmed="Done." in result,
-                    can_undo=False,
-                )
-        except OSError:
-            pass
