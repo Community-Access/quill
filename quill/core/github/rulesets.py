@@ -381,10 +381,11 @@ def ruleset_body(raw: Mapping[str, Any], edits: Mapping[str, object]) -> dict[st
     if "bypass_roles" in edits and isinstance(edits["bypass_roles"], tuple):
         body["bypass_actors"] = _bypass_body(body.get("bypass_actors") or (), edits["bypass_roles"])
     if "rules" in edits and isinstance(edits["rules"], tuple):
-        wanted = {_TYPES.get(str(words), str(words)) for words in edits["rules"]}
+        wanted = [_TYPES.get(str(words), str(words)) for words in edits["rules"]]
         rules = {kind: rule for kind, rule in rules.items() if kind in wanted}
-        for kind in wanted - set(rules):
-            rules[kind] = _default_rule(kind)
+        for kind in wanted:  # in the order checked, so the same edit sends the same body
+            if kind not in rules:
+                rules[kind] = _default_rule(kind)
     pr_keys = {
         "approvals": "required_approving_review_count",
         "dismiss_stale": "dismiss_stale_reviews_on_push",

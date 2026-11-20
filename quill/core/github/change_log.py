@@ -247,8 +247,9 @@ class ChangeLog:
                 return index
         return -1
 
-    def mark_undone(self, index: int) -> None:
-        self.entries[index] = replace(self.entries[index], undone=True)
+    def mark_undone(self, index: int, undone: bool = True) -> None:
+        """Mark a row undone; ``undone=False`` after Redo makes it undoable again."""
+        self.entries[index] = replace(self.entries[index], undone=undone)
         self.save()
 
     def clear(self) -> None:

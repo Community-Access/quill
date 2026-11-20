@@ -224,6 +224,8 @@ def colour_hex(text: str) -> str:
         return COLOURS[word]
     if len(word) == 6 and all(ch in "0123456789abcdef" for ch in word):
         return word
+    if not word:  # a label always has a colour, so an emptied box is asked about, not sent
+        raise ValueError("A colour is needed: type a name such as green, or six hex digits.")
     raise ValueError(f"{text} is not a colour: type a name such as green, or six hex digits.")
 
 
