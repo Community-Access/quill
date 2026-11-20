@@ -24,6 +24,7 @@ newest first, capped per document so the folder does not grow without end.
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -41,6 +42,11 @@ REASON_SITE_BEFORE_UPDATE = "Site copy before update"
 REASON_BEFORE_AI = "Before AI change"
 REASON_BEFORE_RESTORE = "Before restore"
 REASON_PUBLISHED = "Published"
+
+#: In a working copy's properties: each uploaded picture's ``file:`` address
+#: and the address the site gave it, so a ``file:`` address that comes back --
+#: an editor saving its older text -- is swapped again (plan.md 2026-11-20, 4).
+UPLOADED_MEDIA = "uploaded_media"
 
 
 @dataclass
@@ -164,8 +170,19 @@ class LocalStore:
 
         The editor opens and saves this file like any other; the WordPress
         commands find the working copy beside it by :meth:`copy_for_path`.
+
+        The name is chosen from the title once, at the first write, and
+        recorded as ``document_file``; after that the recorded name is the
+        document's identity. Properties can change the title at any time, and
+        a path rebuilt from it opened a file that did not exist -- an empty
+        editor, with the writing still in the old file (plan.md 2026-11-20,
+        item 3).
         """
         suffix = ".html" if copy.text_format == "html" else ".md"
+        recorded = str(copy.properties.get("document_file") or "")
+        plain = not any(c in recorded for c in "/\\:") and not recorded.startswith(".")
+        if recorded and plain and recorded.endswith(suffix):
+            return self._dir(copy.key) / recorded
         return self._dir(copy.key) / f"{_safe(copy.title)[:60] or 'untitled'}{suffix}"
 
     def write_document(self, copy: WorkingCopy) -> Path:
@@ -201,6 +218,23 @@ class LocalStore:
             pass
         return copy
 
+    def swap_uploads_in_document(self, copy: WorkingCopy, swaps: Mapping[str, str]) -> bool:
+        """Swap uploaded pictures' addresses into the saved file, in place. True if changed.
+
+        Only those addresses change, so anything saved since the send began
+        stays as it was saved.
+        """
+        path = self.document_path(copy)
+        try:
+            text = path.read_bytes().decode("utf-8")
+        except (OSError, UnicodeDecodeError):
+            return False
+        swapped = swap_uploads(text, swaps)
+        if swapped == text:
+            return False
+        path.write_bytes(swapped.encode("utf-8"))
+        return True
+
     # -- versions ----------------------------------------------------------
 
     def add_version(
@@ -235,9 +269,12 @@ class LocalStore:
         if target is None:
             return copy
         self.add_version(copy, REASON_BEFORE_RESTORE)
+        document_file = copy.properties.get("document_file")
         copy.title = target.title
         copy.text = target.text
         copy.properties = dict(target.properties)
+        if document_file:  # the file the editor has open stays the document's file
+            copy.properties["document_file"] = document_file
         return self.save(copy)
 
     def _write_versions(self, key: str, versions: list[Version]) -> None:
@@ -291,6 +328,14 @@ def _friendly(stamp: str) -> str:
     from quill.core.wordpress.site import friendly_date
 
     return friendly_date(stamp.split(".", 1)[0])
+
+
+def swap_uploads(text: str, swaps: Mapping[str, str]) -> str:
+    """*text* with each uploaded picture's ``file:`` address replaced by its site address."""
+    for local_uri, site_url in swaps.items():
+        if local_uri and site_url:
+            text = text.replace(str(local_uri), str(site_url))
+    return text
 
 
 def _safe(part: str) -> str:

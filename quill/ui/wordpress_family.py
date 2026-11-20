@@ -82,6 +82,9 @@ class FamilyWordPressHost:
     def go_to_offset(self, offset: int) -> None:
         del offset
 
+    def set_caret(self, offset: int) -> None:
+        del offset
+
     def open_path(self, path: Path) -> None:
         """Hand a finished draft to QUILL, or say where it waits."""
         if not self._launch(path):

@@ -180,6 +180,7 @@ class WordPressMoreCommands:
         copy.link = saved.link
         copy.status = saved.status
         self.local.save(copy)
+        self._reconcile_uploads(copy)
         if saved.status == "publish":
             self.local.add_version(copy, lc.REASON_PUBLISHED)
             self.host.set_clipboard_text(saved.link)
@@ -192,7 +193,17 @@ class WordPressMoreCommands:
         self.after_sent(copy, profile, saved, was_public=was_public)  # type: ignore[attr-defined]
 
     def _upload_pending(self, api: Any, copy: lc.WorkingCopy) -> None:
-        """Upload pictures inserted from this computer, and swap in their addresses (6.4)."""
+        """Upload pictures inserted from this computer, and swap in their addresses (6.4).
+
+        Off the UI thread, so it changes only what is sent and the working
+        copy: each upload's ``file:`` address and its site address are kept in
+        ``uploaded_media``, and :meth:`_reconcile_uploads` puts them in the
+        editor and the file afterwards, on the UI thread. Rewriting the file
+        from here left the open editor holding the ``file:`` address, and its
+        next ordinary save put it back (plan.md 2026-11-20, item 4).
+        """
+        swaps: dict[str, str] = dict(copy.properties.get(lc.UPLOADED_MEDIA) or {})
+        before = (dict(swaps), len(copy.pending_uploads))
         for pending in list(copy.pending_uploads):
             path = Path(pending["path"])
             if not path.exists():
@@ -206,12 +217,38 @@ class WordPressMoreCommands:
                 alt_text=str(pending.get("alt", "")),
                 caption=str(pending.get("caption", "")),
             )
-            copy.text = copy.text.replace(path.as_uri(), media.source_url)
+            swaps[path.as_uri()] = media.source_url
             if pending.get("featured"):
                 copy.properties["featured_media"] = media.id
             copy.pending_uploads.remove(pending)
-        if not copy.pending_uploads:
-            self.local.write_document(copy)
+            # Kept as each one lands, so a later failure never uploads it twice.
+            copy.properties[lc.UPLOADED_MEDIA] = dict(swaps)
+            self.local.save(copy)
+        # An address a save put back since is swapped again, every send.
+        copy.text = lc.swap_uploads(copy.text, swaps)
+        if (swaps, len(copy.pending_uploads)) != before:
+            self.local.save(copy)
+
+    def _reconcile_uploads(self, copy: lc.WorkingCopy) -> None:
+        """Put uploaded pictures' site addresses in the editor and the file (6.4).
+
+        Only the ``file:`` addresses change: whatever was typed while the send
+        was on its way stays, and so does the caret. The editor is touched only
+        when this document is the one in front; the saved file is changed in
+        place, never rewritten from the copy that was sent.
+        """
+        swaps = copy.properties.get(lc.UPLOADED_MEDIA) or {}
+        if not swaps:
+            return
+        front = self.local.copy_for_path(self.host.current_path())
+        if front is not None and front.key == copy.key:
+            text = self.host.current_text()
+            swapped = lc.swap_uploads(text, swaps)
+            if swapped != text:
+                caret = self.host.caret_offset()
+                self.host.replace_text(swapped)
+                self.host.set_caret(len(lc.swap_uploads(text[:caret], swaps)))
+        self.local.swap_uploads_in_document(copy, swaps)
 
     # ------------------------------------------------------------------ #
     # properties (5.5)
@@ -318,7 +355,25 @@ class WordPressMoreCommands:
             "reading the site's history", work, lambda revs: self._show_versions(copy, revs)
         )  # type: ignore[attr-defined]
 
+    def _still_in_front(self, copy: lc.WorkingCopy, outcome: str) -> lc.WorkingCopy | None:
+        """*copy*, fresh, when it is still the document in front; else say so and None.
+
+        The site's history arrives in the background, and the person may have
+        switched documents meanwhile: a Restore then would replace the wrong
+        document's text.
+        """
+        front = self.local.copy_for_path(self.host.current_path())
+        if front is not None and front.key == copy.key:
+            return front
+        self.host.announce(
+            f"{copy.title or 'That document'} is no longer the document in front, so {outcome}. "
+            "Switch back to it and choose Previous Versions again."
+        )
+        return None
+
     def _show_versions(self, copy: lc.WorkingCopy, revisions: list[wp.Revision]) -> None:
+        if self._still_in_front(copy, "Previous Versions did not open") is None:
+            return
         local = self.local.versions(copy.key)
         rows: list[tuple[str, str, str]] = [(v.spoken(), v.title, v.text) for v in local]
         for rev in revisions:
@@ -349,7 +404,20 @@ class WordPressMoreCommands:
         def restore(index: int | None) -> object:
             if index is None:
                 return None
-            self.local.add_version(copy, lc.REASON_BEFORE_RESTORE)
+            front = self._still_in_front(copy, "nothing was restored")
+            if front is None:
+                return None
+            # The editor's text, saved or not, is what Restore replaces: keep
+            # that, not the file on disk (plan.md 2026-11-20, item 5).
+            before = self.host.current_text()
+            self.local.add_version(front, lc.REASON_BEFORE_RESTORE, text=before)
+            kept = self.local.versions(front.key)
+            if not kept or kept[0].text != before:
+                self.host.announce(
+                    "QUILL could not keep your current text in Previous Versions, so nothing "
+                    "was restored."
+                )
+                return None
             self.host.replace_text(rows[index][2])
             self.host.announce(
                 "Version put in the editor. Nothing was sent; your text before is in Previous "
