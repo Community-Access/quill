@@ -244,25 +244,6 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
-<h3
-id="quill-lite-the-setting-you-chose-last-is-the-one-that-is-saved-2026-11-20">QUILL
-Lite: the setting you chose last is the one that is saved
-(2026-11-20)</h3>
-<ul>
-<li>Turning a View setting on and straight back off, such as Word Wrap,
-could save the first choice and lose the second, while QUILL Lite said
-nothing was wrong. After a restart the setting had changed back.</li>
-<li>A View setting changed just before you pressed OK in Preferences
-could be written after the Preferences save, so the older choice
-won.</li>
-<li>Every settings save in QUILL Lite now goes through one queue, in the
-order you made the changes, and the last one always wins. Settings
-changed by a second QUILL Lite window are still kept.</li>
-<li>If a save fails, QUILL Lite still says so and does not say
-“Preferences saved”. Retry in Activity (Shift+F9) now saves your current
-settings, not the older ones that failed. =======</li>
-</ul>
 <h3
 id="hosted-ai-service-accounting-you-can-trust-and-one-sign-in-per-code-2026-11-20">Hosted
 AI service: accounting you can trust, and one sign-in per code
@@ -301,21 +282,24 @@ in order, a new migration (010) adds the per-person cost figure, and a
 new CI workflow tests every migration on a clean PostgreSQL
 database.</li>
 </ul>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>origin/main</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
+<h3
+id="quill-lite-the-setting-you-chose-last-is-the-one-that-is-saved-2026-11-20">QUILL
+Lite: the setting you chose last is the one that is saved
+(2026-11-20)</h3>
+<ul>
+<li>Turning a View setting on and straight back off, such as Word Wrap,
+could save the first choice and lose the second, while QUILL Lite said
+nothing was wrong. After a restart the setting had changed back.</li>
+<li>A View setting changed just before you pressed OK in Preferences
+could be written after the Preferences save, so the older choice
+won.</li>
+<li>Every settings save in QUILL Lite now goes through one queue, in the
+order you made the changes, and the last one always wins. Settings
+changed by a second QUILL Lite window are still kept.</li>
+<li>If a save fails, QUILL Lite still says so and does not say
+“Preferences saved”. Retry in Activity (Shift+F9) now saves your current
+settings, not the older ones that failed.</li>
+</ul>
 <h3
 id="github-workbench-roles-from-githubs-own-answers-two-accounts-side-by-side-and-gh-sign-in-2026-11-20">GitHub
 Workbench: roles from GitHub’s own answers, two accounts side by side,
