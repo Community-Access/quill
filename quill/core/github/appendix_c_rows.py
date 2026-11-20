@@ -79,7 +79,8 @@ APPENDIX_C: tuple[ObjectEntry, ...] = (
     ObjectEntry("File and folder", ("file",), ("file", "folder"), (
         _NAME, _n("extension"), _n("path"), _n("size"), _n("last changed"),
     )),
-    ObjectEntry("Ruleset and branch protection rule", ("ruleset", "branch_protection"), (), (
+    ObjectEntry("Ruleset and branch protection rule",
+                ("ruleset", "org_ruleset", "branch_protection"), (), (
         _n("target", _NO_LIST), _n("enforcement", _NO_LIST), _n("rule kind", _NO_LIST),
         _n("bypass actor", _NO_LIST),
     ), home="The Repository sheet's Branches and Rules page; Across Repositories > Rules "

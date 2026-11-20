@@ -3568,6 +3568,11 @@ a door gains something no row maps.
 | Licences | Repositories > Licences | `explore:res_licenses` |
 | .gitignore Templates | Repositories > .gitignore Templates | `explore:res_gitignore_templates` |
 | Codes of Conduct | Repositories > Codes of Conduct | `explore:res_codes_of_conduct` |
+| Repository Rulesets | Repository > Settings > Rulesets | `explore:res_repo_rulesets` |
+| Organization Rulesets | Organization > Rulesets | `explore:res_org_rulesets` |
+| Organization Rule Insights | Organization > Rule Insights | `explore:res_org_rule_insights` |
+| Organization Access Review: People | Organization > Access Review: People | `explore:res_access_people` |
+| Organization Access Review: Teams | Organization > Access Review: Teams | `explore:res_access_teams` |
 
 ### GitHub Items' and Explore GitHub's buttons and choices
 
@@ -3701,7 +3706,7 @@ Generated from `quill/core/github/appendix_c_rows.py`, the sheet catalogue, the 
 | Tag | `tag`: General, Commit, Release | Repository > Code > Tags | `name:`, `sha:` | None | date, has release, annotated: its list's rows do not carry it yet; its Properties sheet shows it |
 | Commit | `commit`: General, Files, Checks, Comments, Branches and Tags | Repository > Code > Commits | `author:`, `committed:`, `message:`, `sha:` | `committer:`, `author-date:`, `committer-date:`, `merge:` | path, branch, verified signature, check state: its list's rows do not carry it yet; its Properties sheet shows it |
 | File and folder | `file`: General, History, Code Owners | Repository > Code > Files | `name:` | None | extension, path, size, last changed: its list's rows do not carry it yet; its Properties sheet shows it |
-| Ruleset and branch protection rule | `ruleset`: General, Target, Bypass, Rules, Summary, History; `branch_protection`: General, Summary | The Repository sheet's Branches and Rules page; Across Repositories > Rules and Branch Protection | None | None | target, enforcement, rule kind, bypass actor: there is no list of these to filter yet |
+| Ruleset and branch protection rule | `ruleset`: General, Target, Bypass, Rules, Summary, History; `org_ruleset`: General, Target, Repositories, Bypass, Rules, Summary, History; `branch_protection`: General, Who, Summary | The Repository sheet's Branches and Rules page; Across Repositories > Rules and Branch Protection | None | None | target, enforcement, rule kind, bypass actor: there is no list of these to filter yet |
 | Issue | `issue`: General, You, Organize, Projects, Relationships, Description, Conversation, Timeline, Access | Needs My Attention > My Open Issues, Repository > Issues | None | `is:`, `reason:`, `type:`, `label:`, `milestone:`, `assignee:`, `author:`, `mentions:`, `commenter:`, `involves:`, `team:`, `project:`, `parent-issue:`, `has:`, `linked:`, `created:`, `updated:`, `closed:`, `merged:`, `comments:`, `reactions:`, `interactions:`, `archived:`, `draft:`, `review:`, `review-requested:`, `team-review-requested:`, `reviewed-by:`, `base:`, `head:`, `status:`, `language:`, `in:` | None |
 | Pull request | `pull_request`: General, You, Organize, Projects, Branches, Reviews, Checks, Merge, Files, Commits, Relationships, Description, Conversation, Timeline | Needs My Attention > Review Requests, Needs My Attention > My Open Pull Requests, Repository > Pull Requests | `conflicts:` | `is:`, `reason:`, `type:`, `label:`, `milestone:`, `assignee:`, `author:`, `mentions:`, `commenter:`, `involves:`, `team:`, `project:`, `parent-issue:`, `has:`, `linked:`, `created:`, `updated:`, `closed:`, `merged:`, `comments:`, `reactions:`, `interactions:`, `archived:`, `draft:`, `review:`, `review-requested:`, `team-review-requested:`, `reviewed-by:`, `base:`, `head:`, `status:`, `language:`, `in:` | files changed, lines added and removed, auto-merge on: its list's rows do not carry it yet; its Properties sheet shows it |
 | Comment | `comment`: General, History | Inside a conversation: Read as Document..., Review..., Open Discussion Thread | None | None | author, date, edited, hidden, reactions, mentions me: there is no list of these to filter yet |
