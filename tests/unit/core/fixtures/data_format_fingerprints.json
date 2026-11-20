@@ -1598,7 +1598,7 @@
             "read_only": "bool"
           }
         },
-        "function:quill.core.transcribe.settings:save_settings": "sha256:85d2deedd73931a3",
+        "function:quill.core.transcribe.settings:save_settings": "sha256:a56ec0b467983505",
         "constant:quill.core.transcribe.settings:SCHEMA_VERSION": "1"
       },
       "classification": "additive, compatible",
