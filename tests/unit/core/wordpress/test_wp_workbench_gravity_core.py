@@ -241,6 +241,20 @@ def test_feeds_fall_back_to_each_form_when_the_site_has_no_feeds_route() -> None
     assert [r.title for r in rows] == ["Newsletter list"]
 
 
+def test_a_site_with_no_feed_add_on_has_no_feeds_rather_than_an_error_row(monkeypatch) -> None:
+    # Live (Gravity Forms 3.2.3.1, no feed add-on): 200 with an error object, no table.
+    api = Api()
+    missing = {"errors": {"missing_table": ["The wp_gf_addon_feed table does not exist."]},
+               "error_data": []}  # fmt: skip
+    real = api.get
+    monkeypatch.setattr(api, "get", lambda r, **p: missing if r == "gf/v2/feeds" else real(r, **p))
+    assert gravity.load_feeds(_ctx(api)) == []
+    other = {"errors": {"db": ["The database said no."]}, "error_data": []}
+    monkeypatch.setattr(api, "get", lambda r, **p: other if r == "gf/v2/feeds" else real(r, **p))
+    with pytest.raises(WordPressApiError, match="could not list Gravity Forms feeds: The database"):
+        gravity.load_feeds(_ctx(api))
+
+
 def test_a_feed_change_keeps_every_other_setting() -> None:
     body, lines = gravity.feed_body(FEED, active=False)
     assert body["is_active"] == 0 and body["meta"] == FEED["meta"]
@@ -370,10 +384,12 @@ def test_sample_inputs_fill_what_they_can_and_name_what_they_cannot() -> None:
     inputs, skipped = submitting.sample_inputs(FORM)
     assert [(i.name, i.value) for i in inputs] == [
         ("input_1", "QUILL test"),
-        ("input_2", "test@example.com"),
+        ("input_2", "quill-test@example.org"),
         ("input_3", "gpoll1a"),
         ("input_6_1", "news"),
     ]
+    # Gravity Forms 2.9.15+ refuses example.com and domain.com addresses as spam (live, 3.2.3.1).
+    assert not any(i.value.endswith(("@example.com", "@domain.com")) for i in inputs)
     assert skipped == ["Photo"]
     assert submitting.parse_inputs("input_1: Ann\ninput_6_1: news\nnot a line\nwebsite: x") == {
         "input_1": "Ann",
@@ -392,6 +408,31 @@ def test_validation_messages_survive_a_400_and_a_submission_names_its_entry() ->
     ok = submitting.submit(api, "1", {"input_1": "Ann"}, validate_only=False)
     assert ok.valid and ok.entry_id == "12" and ok.confirmation == "Thanks!"
     assert api.writes[-1][1] == "gf/v2/forms/1/submissions"
+
+
+def test_a_submission_without_an_entry_id_finds_the_entry_it_made() -> None:
+    # Live (Gravity Forms 3.2.3.1): the submissions route answers is_valid and the
+    # confirmation but no entry_id, so the newest entry is read before and after.
+    newest = iter(["7", "8"])
+
+    class _Gf:
+        def get(self, route: str, **params: Any) -> Any:
+            assert route == "gf/v2/forms/1/entries" and params["sorting[direction]"] == "DESC"
+            return {"total_count": 1, "entries": [{"id": next(newest)}]}
+
+        def post(self, route: str, body: Any = None, **params: Any) -> Any:
+            return {"is_valid": True, "confirmation_message": "Thanks!", "is_spam": False}
+
+    made = submitting.submit(_Gf(), "1", {"input_1": "Ann"}, validate_only=False)
+    assert made.valid and made.entry_id == "8"
+
+    class _Nothing(_Gf):  # spam held, or a form that keeps no entries: nothing new to undo
+        def get(self, route: str, **params: Any) -> Any:
+            return {"total_count": 1, "entries": [{"id": "7"}]}
+
+    assert (
+        submitting.submit(_Nothing(), "1", {"input_1": "Ann"}, validate_only=False).entry_id == ""
+    )
 
 
 def test_a_refusal_keeps_its_body_for_gravity_forms() -> None:

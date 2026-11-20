@@ -8,7 +8,22 @@ with the level's ``id`` changes it, and the fields are the
 amounts and never anything about a member or a payment.
 
 Changing a price changes it for new signups; PMPro does not change what
-existing members pay, and the preview says so. Wx-free.
+existing members pay, and the preview says so.
+
+Three things the route does that its documentation does not say, all seen on
+the test site (PMPro 3.9.2, 2026-11-20), and all read from its
+``pmpro_rest_api_set_membership_level``:
+
+- a ``POST`` *always* makes a new level, even with an ``id``; only ``PUT`` or
+  ``PATCH`` changes one, so :func:`save_level` sends ``PUT`` for a change (a
+  ``POST`` made a second level instead of saving the first);
+- ``DELETE`` is turned off unless the site's ``pmpro_rest_api_methods`` filter
+  adds it, so deleting a level (New Membership Level's Ctrl+Z) is refused with
+  403 and :func:`delete_refused_words` says where to delete it instead;
+- the recurring payment's period is never stored (``cycle_period`` is read and
+  not set) and the expiry period is cast to a number, so :func:`not_saved` reads
+  the level back and names what the site left out, rather than reporting a
+  saved level that differs from the one previewed. Wx-free.
 """
 
 from __future__ import annotations
@@ -26,10 +41,13 @@ __all__ = [
     "PERIODS",
     "LevelSpec",
     "LevelValueError",
+    "delete_refused_words",
     "level_body",
     "level_from",
     "level_preview",
     "money",
+    "not_saved",
+    "save_level",
     "unchanged",
 ]
 
@@ -175,3 +193,67 @@ def level_preview(spec: LevelSpec, site: str, old: LevelSpec | None = None) -> l
 
 def unchanged(spec: LevelSpec, old: LevelSpec) -> bool:
     return all(getattr(spec, f.name) == getattr(old, f.name) for f in fields(LevelSpec))
+
+
+def save_level(api: Any, body: Mapping[str, Any]) -> Any:
+    """Make a level (``POST``, no ``id``) or change one (``PUT``, with its ``id``).
+
+    PMPro's route makes a new level for every ``POST``, ``id`` or not.
+    """
+    method = "PUT" if body.get("id") else "POST"
+    return api.request(method, LEVEL_ROUTE, json_body=dict(body)).payload
+
+
+def delete_refused_words(name: str, site: str) -> str:
+    """Why a level could not be deleted through REST, and where to delete it."""
+    return (
+        f"{site} would not delete the membership level {name}: Paid Memberships Pro turns "
+        "deleting off in its REST API unless the site allows it (the pmpro_rest_api_methods "
+        "filter). Delete it under Memberships > Settings > Levels in wp-admin."
+    )
+
+
+_CHECKED = (
+    ("name", "Name"),
+    ("initial_payment", "Initial payment"),
+    ("billing_amount", "Recurring payment"),
+    ("cycle_number", "Billing every"),
+    ("cycle_period", "Billing period"),
+    ("billing_limit", "Billing limit"),
+    ("expiration_number", "Expiry"),
+    ("expiration_period", "Expiry period"),
+    ("allow_signups", "New signups"),
+)
+
+
+def _same(key: str, sent: Any, stored: Any) -> bool:
+    if key in ("initial_payment", "billing_amount"):
+        try:
+            return Decimal(str(sent or 0)) == Decimal(str(stored or 0))
+        except InvalidOperation:
+            return False
+    if key in ("cycle_period", "expiration_period"):
+        return str(sent or "").casefold() == str(stored or "").casefold()
+    if key == "name":
+        return " ".join(str(sent).split()) == " ".join(plain_text(str(stored or "")).split())
+    return str(_whole(sent, -1)) == str(_whole(stored, -1))
+
+
+def not_saved(body: Mapping[str, Any], stored: Mapping[str, Any]) -> list[str]:
+    """What the site did not keep of *body*, read back as *stored*, by name.
+
+    A period only matters where its number does: no recurring payment, no period.
+    A field the answer leaves out entirely is not judged: only one it gives back
+    different from what was sent.
+    """
+    missed: list[str] = []
+    for key, label in _CHECKED:
+        if key not in body or key not in stored:
+            continue
+        if key == "cycle_period" and not _whole(body.get("cycle_number")):
+            continue
+        if key == "expiration_period" and not _whole(body.get("expiration_number")):
+            continue
+        if not _same(key, body[key], stored.get(key)):
+            missed.append(label)
+    return missed

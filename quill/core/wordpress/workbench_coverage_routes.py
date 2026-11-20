@@ -112,7 +112,7 @@ COVERED: tuple[tuple[str, str], ...] = (
     (r"wc/v3/data/currencies/current$", "Sites > site > Shop > Shop Reports, the currency"),
     (
         r"wc-analytics/reports/((revenue|orders|downloads)/stats"
-        r"|(products|coupons|taxes|stock|customers)(/stats)?|categories)$",
+        r"|(products|coupons|taxes|stock|customers)(/stats)?|categories|import/totals)$",
         "Sites > site > Shop Analytics, read only",
     ),
     (r"wc/v3/settings(/\(\?P<group_id>[^)]*\))?$", "Sites > site > Shop > Store Settings"),

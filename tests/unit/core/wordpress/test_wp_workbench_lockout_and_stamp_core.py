@@ -291,6 +291,14 @@ def test_site_types_definitions_kinds_and_bodies() -> None:
         qst.define_body("field_group", "empty", "Empty")
     with pytest.raises(EditRefused, match="small letters"):
         qst.define_body("type", "Has Spaces!", "Nope")
+    # Live (QUILL Site Types 0.1.0): a type without custom-fields kept its fields out of REST.
+    book = qst.define_body("type", "qbook", "QUILL Books")
+    assert book == {
+        "slug": "qbook",
+        "name": "QUILL Books",
+        "singular_name": "QUILL Books",
+        "supports": ["title", "editor", "excerpt", "revisions", "custom-fields"],
+    }
     summary, lines = qst.define_preview("Radio", "taxonomy", qst.define_body(
         "taxonomy", "genre", "Genres", attach="book, post"))  # fmt: skip
     assert "Define the taxonomy Genres on Radio" in summary

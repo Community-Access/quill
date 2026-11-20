@@ -2775,6 +2775,15 @@
    ]
   ]
  },
+ "repository.forked": {
+  "set": [
+   [
+    "POST",
+    "/repos/owner/repo/forks",
+    {}
+   ]
+  ]
+ },
  "repository.github_owned_allowed": {
   "set": [
    [
@@ -3091,6 +3100,31 @@
     "/repos/owner/repo",
     {
      "squash_merge_commit_title": "COMMIT_OR_PR_TITLE"
+    }
+   ]
+  ]
+ },
+ "repository.star_lists": {
+  "clear": [
+   [
+    "GRAPHQL",
+    "mutation(\n  updateUserListsForItem(input: ",
+    {
+     "itemId": "N_1",
+     "listIds": []
+    }
+   ]
+  ],
+  "set": [
+   [
+    "GRAPHQL",
+    "mutation(\n  updateUserListsForItem(input: ",
+    {
+     "itemId": "N_1",
+     "listIds": [
+      "ID_first",
+      "ID_second"
+     ]
     }
    ]
   ]

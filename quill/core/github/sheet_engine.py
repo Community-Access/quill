@@ -95,6 +95,9 @@ class Read:
     """Reads of its own (an issue's fields: definitions, then values); says failures as values."""
 
 
+OwnRequest = Callable[[FieldChange, Value, Ident], tuple[str, str, dict[str, object] | None]]
+
+
 @dataclass(frozen=True)
 class Write:
     """How one field is saved, and what it needs.
@@ -131,11 +134,8 @@ class Write:
     """For a toggle whose off request is not a DELETE (a workflow's PUT .../disable)."""
     encode_item: Callable[[str, bool, Mapping[str, object], Ident], dict[str, object]] | None = None
     """For ``set_graphql``: (item, added?, choices, ident) to the mutation's variables."""
-    request: (
-        Callable[[FieldChange, Value, Ident], tuple[str, str, dict[str, object] | None]] | None
-    ) = None
-    """A field that builds its own one request, (method, path, body): an issue field's
-    value is a POST, and clearing it a DELETE of that field alone (issue_admin.field_request)."""
+    request: OwnRequest | None = None
+    """Builds the field's one (method, path, body): an issue field (issue_admin.field_request)."""
     why_no_undo: str = ""
     """With ``undo=False``: why, in words, said before the save and again on Undo."""
 
@@ -191,18 +191,14 @@ class SheetDef:
     renames: tuple[str, str] = ("", "")
     """(field, ident key): changing that field moves the object (a label's name)."""
     prefixed: Mapping[str, Write] = field(default_factory=dict)
-    """Writes for fields named only once loaded, by key prefix: ``issue_field:`` is every
-    field an issue's owner defines (issue_fields_rows.with_field_page)."""
+    """Writes by key prefix, for fields named once loaded: ``issue_field:`` (an issue's own)."""
+    derive: Callable[[Mapping[str, Value]], dict[str, Value]] | None = None
+    """Values made from several reads together (each member with their role and two-factor)."""
 
     def write_for(self, key: str) -> Write | None:
         """How the field *key* is saved: its own write, or its prefix's; None when it is not."""
-        found = self.writes.get(key)
-        if found is None:
-            found = next((w for p, w in self.prefixed.items() if key.startswith(p)), None)
-        return found
-
-    derive: Callable[[Mapping[str, Value]], dict[str, Value]] | None = None
-    """Values made from several reads together (each member with their role and two-factor)."""
+        by_prefix = (w for p, w in self.prefixed.items() if key.startswith(p))
+        return self.writes.get(key) or next(by_prefix, None)
 
     def ident_after(self, ident: Ident, done: Sequence[FieldChange]) -> dict[str, str]:
         """*ident* after a save that may have renamed the object."""
@@ -311,17 +307,10 @@ def _with_owner(ident: Ident) -> dict[str, str]:
 
 
 def locked_fields(sheet: SheetDef, ctx: ViewerContext, keys: Sequence[str] = ()) -> dict[str, str]:
-    """Each editable field the person may not change, with the reason (GH-R-032).
-
-    *keys* adds the fields a sheet names only once loaded (an issue's own fields).
-    """
-    locked: dict[str, str] = {}
+    """Each editable field (and each of *keys*, named once loaded) locked, and why (GH-R-032)."""
     found = [(key, sheet.write_for(key)) for key in keys if key not in sheet.writes]
-    for key, write in [*sheet.writes.items(), *found]:
-        reason = check(write.requirement, ctx, write.tier) if write is not None else ""
-        if reason:
-            locked[key] = reason
-    return locked
+    why = {k: check(w.requirement, ctx, w.tier) for k, w in [*sheet.writes.items(), *found] if w}
+    return {key: reason for key, reason in why.items() if reason}
 
 
 # ---------------------------------------------------------------------------
@@ -391,8 +380,7 @@ def plan(
             before = change.before if isinstance(change.before, tuple) else ()
             value = apply_delta(before, value)
         if write.request is not None:
-            method, path, body = write.request(change, value, ident)
-            requests.append(Request(method, path, body, (change.key,)))
+            requests.append(Request(*write.request(change, value, ident), (change.key,)))
             continue
         picked = picks.get(change.key, {})
         if write.kind in ("set", "set_graphql"):

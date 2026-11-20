@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.github.explore_models import ExploreRow
+from quill.core.github.review_requests import REVIEW_SOURCES
 from quill.core.workbench.filters import Query, render
 from quill.core.workbench.tree import Need, NodeSpec, Scope
 
@@ -79,12 +80,13 @@ _KINDS = {
 }
 
 #: My Work's sources, as Explore labels them, for each reason preset.
-_REASONS = {
-    "review_requested": ("Review requested", ""),
-    "assigned": ("Assigned", ""),
-    "mentioned": ("Mentioned", ""),
-    "authored_pr": ("Authored", "pr"),
-    "authored_issue": ("Authored", "issue"),
+#: Review Requests holds both yours and your teams' (GH-R-143).
+_REASONS: dict[str, tuple[tuple[str, ...], str]] = {
+    "review_requested": (REVIEW_SOURCES, ""),
+    "assigned": (("Assigned",), ""),
+    "mentioned": (("Mentioned",), ""),
+    "authored_pr": (("Authored",), "pr"),
+    "authored_issue": (("Authored",), "issue"),
 }
 
 
@@ -116,9 +118,9 @@ def _more_note(warning: str) -> str:
 
 
 def _matches_reason(row: ExploreRow, reason: str) -> bool:
-    source, kind = _REASONS.get(reason, ("", ""))
-    first = row.detail.split("\n", 1)[0]
-    return source in first.split("; ") and (not kind or row.kind == kind)
+    sources, kind = _REASONS.get(reason, ((), ""))
+    first = row.detail.split("\n", 1)[0].split("; ")
+    return any(source in first for source in sources) and (not kind or row.kind == kind)
 
 
 def load_explore(

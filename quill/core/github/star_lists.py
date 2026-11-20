@@ -112,7 +112,7 @@ mutation($itemId: ID!, $listIds: [ID!]!) {
 
 
 #: Which lists a repository is on, the whole set at once: Star Lists... and the You page send it.
-FOR_ITEM_MUTATION = _FOR_ITEM
+FOR_ITEM_MUTATION = _FOR_ITEM.strip()
 
 
 def _nodes(value: object) -> list[Mapping[str, Any]]:

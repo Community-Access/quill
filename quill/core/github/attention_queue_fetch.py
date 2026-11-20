@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import TYPE_CHECKING
 
 from quill.core.github.attention_queue import QUEUE_CATEGORIES
@@ -14,6 +15,12 @@ from quill.core.github.explore_models import (
     _text,
 )
 from quill.core.github.fetch_results import GitHubFetchResult
+from quill.core.github.review_requests import (
+    TEAM_SOURCE,
+    as_team_request,
+    is_direct_request,
+    review_request_searches,
+)
 
 if TYPE_CHECKING:
     from quill.core.github.items_provider import GitHubItemsProvider
@@ -54,18 +61,18 @@ def fetch_attention_queue(
     )
     if any("/" not in repository for repository in selected_repositories):
         raise GitHubExploreError("Queue repositories must use owner/repo format.")
-    queries = {
-        "assigned": ("Assigned", f"is:open assignee:{login}"),
-        "review_requested": ("Review requested", f"is:open is:pr review-requested:{login}"),
-        "mentioned": ("Mentioned", f"is:open mentions:{login}"),
-        "failed_checks": ("Failed checks", "is:open is:pr status:failure"),
+    queries: dict[str, tuple[tuple[str, str], ...]] = {
+        "assigned": (("Assigned", f"is:open assignee:{login}"),),
+        # Yours by name, then those asked of a team you are on (GH-R-143).
+        "review_requested": review_request_searches(login),
+        "mentioned": (("Mentioned", f"is:open mentions:{login}"),),
+        "failed_checks": (("Failed checks", "is:open is:pr status:failure"),),
     }
     scopes: tuple[str | None, ...] = tuple(selected_repositories) or (None,)
     warnings: list[str] = []
     found: dict[str, ExploreRow] = {}
     for repository in scopes:
-        for category in selected_categories:
-            label, query = queries[category]
+        for label, query in (pair for key in selected_categories for pair in queries[key]):
             scope = f" in {repository}" if repository else " across repositories"
             source = f"{label}{scope}"
             scoped_query = f"{query} repo:{repository}" if repository else query
@@ -77,6 +84,16 @@ def fetch_attention_queue(
             for raw in _rows(matches, limit, source=source, warnings=warnings):
                 row = _issue_row(raw, label)
                 key = (row.url or f"{row.repo}/{row.kind}/{row.key}").casefold()
+                if label == TEAM_SOURCE:
+                    earlier = found[key].detail.splitlines()[0] if key in found else ""
+                    if is_direct_request(earlier):
+                        continue  # asked of you by name, not only of your team
+                    row = as_team_request(row)
+                    if earlier:  # assigned or mentioned too: the row says the team
+                        rest = row.detail.split("\n", 1)[1]
+                        also = earlier.removeprefix("Also: ")
+                        found[key] = replace(row, detail=f"Also: {also}, {label}\n{rest}")
+                        continue
                 if key in found:
                     previous = found[key]
                     sources = list(dict.fromkeys((previous.detail.splitlines()[0], label)))

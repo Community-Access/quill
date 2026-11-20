@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 from urllib.parse import quote
@@ -39,6 +40,12 @@ from quill.core.github.repository_views import (
     fetch_deployments,
     fetch_repository_access,
     fetch_repository_metrics,
+)
+from quill.core.github.review_requests import (
+    TEAM_SOURCE,
+    as_team_request,
+    is_direct_request,
+    review_request_searches,
 )
 from quill.core.net import verified_ssl_context
 
@@ -193,7 +200,7 @@ class GitHubExploreClient(ExploreNotificationsMixin, GitHubGistsMixin):
                 raise GitHubExploreError("Could not determine the signed-in GitHub user.")
             searches = (
                 ("Assigned", f"is:open assignee:{login}"),
-                ("Review requested", f"is:open is:pr review-requested:{login}"),
+                *review_request_searches(login),  # yours, then your teams' (GH-R-143)
                 ("Mentioned", f"is:open mentions:{login}"),
                 ("Authored", f"is:open author:{login}"),
             )
@@ -206,6 +213,16 @@ class GitHubExploreClient(ExploreNotificationsMixin, GitHubGistsMixin):
                     continue
                 for row in _rows(matches, limit, source=source, warnings=warnings):
                     mapped = _issue_row(row, source)
+                    if source == TEAM_SOURCE:
+                        previous_row = found.get(mapped.url)
+                        first = previous_row.detail.split("\n", 1)[0] if previous_row else ""
+                        if is_direct_request(first):
+                            continue  # asked of you by name, not only of your team
+                        mapped = as_team_request(mapped)
+                        if previous_row is not None:
+                            mapped = replace(mapped, detail=f"{first}; {mapped.detail}")
+                            found[mapped.url] = mapped
+                            continue
                     if mapped.url in found:
                         previous = found[mapped.url]
                         found[mapped.url] = ExploreRow(
