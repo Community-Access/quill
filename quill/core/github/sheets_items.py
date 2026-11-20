@@ -333,6 +333,10 @@ _PROJECTS_WRITE = Write(
     off_path=REMOVE_FROM_PROJECT,
     undo=False,
     encode_item=_project_vars,
+    why_no_undo=(
+        "taking an item out of a project deletes its field values there, and putting it "
+        "back would not bring them back"
+    ),
 )
 
 

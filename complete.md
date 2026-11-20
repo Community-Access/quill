@@ -37,7 +37,6 @@ Each is done only with evidence: a test or a live run.
 #### Features and verification
 
 - [ ] Complete Appendix A/B "nothing dropped" mapping and Appendix C object/sheet/filter mapping.
-- [ ] Verify every editable field, mixed value, field removal, batch operation, conflict resolution, verify-after-save, history and supported undo/redo.
 - [ ] Edit issue fields directly on the Properties sheet's Issue Fields page (today read only; Issue Fields... on the row edits them).
 - [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle.
 - [ ] Live check on the GitHub test repository: Read Only, Organize, Full and Safe Mode refuse and allow as tested, and the permission explanations (greyed rows, Shift+F1, GitHub's own refusals) match what GitHub does.
