@@ -124,7 +124,8 @@ HELP: dict[str, str] = {
     ),
     "download_folder": (
         "Where downloaded episodes are saved; blank uses the default podcasts "
-        "folder. Changing it applies to downloads from now on -- files already "
+        "folder. Changing it also moves downloads that are still waiting; one "
+        "already part downloaded finishes in the old folder, and files already "
         "on disk stay where they are and keep playing from there."
     ),
     "download_folder_button": "Choose a download location",

@@ -73,12 +73,18 @@ class PodcastDialogsMixin:
         dialog = PodcastSettingsDialog(
             self.frame, settings=self._podcast_library.settings, announce_cb=self._announce
         )
+        old_root = self._podcast_download_root()
         updated = dialog.show()
         if updated is None:
             return
         self._podcast_library.settings = updated
         self._save_podcast_library()
-        self._announce("Podcast settings saved")
+        from quill.core.podcasts.download_folder_change import follow_new_folder
+
+        moved = follow_new_folder(
+            getattr(self, "_podcast_download_queue", None), old_root, self._podcast_download_root()
+        )
+        self._announce(f"Podcast settings saved. {moved}" if moved else "Podcast settings saved")
 
     def _podcast_open_add_dialog(self) -> None:
         """A peer window (qc.md Phase 4): made once, raised when asked again."""
