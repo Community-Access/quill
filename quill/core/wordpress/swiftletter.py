@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
@@ -81,13 +81,14 @@ def _edit_version(value: object) -> str:
     return value
 
 
-def discover(api: WordPressApi) -> Discovery | None:
+def discover(api: WordPressApi, *, namespaces: Iterable[str] | None = None) -> Discovery | None:
     """Return None when a site lacks SwiftLetter or only has the dashboard API."""
     if api.address.is_wpcom:
         return None
-    index = _object(api.get(""))
-    namespaces = index.get("namespaces")
-    if not isinstance(namespaces, list) or _NAMESPACE not in namespaces:
+    if namespaces is None:
+        reported = _object(api.get("")).get("namespaces")
+        namespaces = reported if isinstance(reported, list) else ()
+    if _NAMESPACE not in namespaces:
         return None
     metadata = _object(api.get(_NAMESPACE)).get("swiftletter")
     if metadata is None:
@@ -109,8 +110,8 @@ def discover(api: WordPressApi) -> Discovery | None:
     return Discovery(browse, browse and features.get("article_save") is True)
 
 
-def newsletters(api: WordPressApi) -> Iterator[Newsletter]:
-    for item in api.iter_collection(f"{_NAMESPACE}/newsletters"):
+def newsletters(api: WordPressApi, *, max_pages: int = 3) -> Iterator[Newsletter]:
+    for item in api.iter_collection(f"{_NAMESPACE}/newsletters", max_pages=max_pages):
         row = _object(item)
         yield Newsletter(_id(row.get("id")), _text(row.get("title")))
 

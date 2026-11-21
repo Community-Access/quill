@@ -12,6 +12,9 @@ import pytest
 
 from quill.core.wordpress import swiftletter
 from quill.core.wordpress.api import SiteAddress, SiteAuth, WordPressApi, WordPressApiError
+from quill.core.wordpress.workbench_load import SiteContext, load
+from quill.core.wordpress.workbench_plugin_branches import shows
+from quill.core.wordpress.workbench_tree import WORDPRESS_TREE
 
 _VERSION = '"' + "1" * 64 + '"'
 _NEXT_VERSION = '"' + "2" * 64 + '"'
@@ -147,3 +150,26 @@ def test_wrong_site_or_missing_version_cannot_send_a_write():
     with pytest.raises(WordPressApiError, match="Reopen it before saving"):
         swiftletter.save_article(api, replace(article, edit_version=None), title="Edit", content="")
     assert [request.get_method() for request in site.requests] == ["GET"]
+
+
+def test_workbench_shows_swiftletter_only_when_discovered():
+    assert not shows("swiftletter", None)
+    assert not shows("swiftletter", ["wp/v2"])
+    assert shows("swiftletter", ["wp/v2", "swiftletter/v1"])
+    root = WORDPRESS_TREE.template_node("site", "swiftletter")
+    child = WORDPRESS_TREE.template_node("site", "swiftletter_newsletter")
+    assert child.parent == root.key and child.dynamic
+
+
+def test_workbench_loaders_preserve_order_and_present_review_state_in_words():
+    site = _Site()
+    ctx = SiteContext("Test", site.api())
+    newsletters = load(ctx, "swiftletter:newsletters", {}, {})
+    assert [(row.title, row.key) for row in newsletters] == [("December", "9")]
+    rows = load(ctx, "swiftletter:articles", {}, {}, dynamic="9")
+    assert [(row.title, row.cell("review"), row.cell("position")) for row in rows] == [
+        ("Draft", "Not reviewed", "1 of 2"),
+        ("Ready", "Reviewed", "2 of 2"),
+    ]
+    assert all(row.raw["newsletter_id"] == 9 for row in rows)
+    assert all(request.get_method() == "GET" for request in site.requests)

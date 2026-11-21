@@ -57,6 +57,8 @@ NODE_HELP: Mapping[str, str] = {
     "watches": "What you asked the Workbench to keep an eye on.",
     "sites": "Every connected site, with your role on each. Right Arrow opens one.",
     "calendar": "Every site's scheduled and published content, a day to a node.",
+    "swiftletter": "This site's newsletters. Press Enter on a newsletter to list its articles.",
+    "swiftletter_newsletter": "Articles in newsletter order, with review status and position.",
     "search": (
         "WordPress search results from every connected site, with the source site and "
         "content type shown."
@@ -306,6 +308,8 @@ ROW_HELP: Mapping[str, str] = {
     "across": "One name across sites. Alt+Enter shows its variants and the sites missing it.",
     "fleet": "One site in the fleet. Enter selects it in the tree; Alt+Enter reads each state.",
     "day": "A day with scheduled or published content. Enter lists it.",
+    "swiftletter_newsletter": "A SwiftLetter newsletter. Press Enter to list its articles.",
+    "swiftletter_article": "Title, review status and position. Press Enter for article details.",
     "update": (
         "A version on the site and whether an update waits, once Check for Updates on "
         "WordPress.org has asked. Enter opens Dashboard > Updates in your browser."

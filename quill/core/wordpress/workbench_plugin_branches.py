@@ -28,6 +28,7 @@ PLUGIN_BRANCHES: Mapping[str, tuple[str, ...]] = {
     "seo": tuple(SEO_NAMESPACES),
     "redirects": (REDIRECTION_NAMESPACE,),
     "forms": (GRAVITY_NAMESPACE, *QAF_NAMESPACES),
+    "swiftletter": ("swiftletter/v1",),
 }
 
 
@@ -37,6 +38,8 @@ def shows(node_key: str, namespaces: Iterable[str] | None) -> bool:
     *namespaces* None means the index has not been read yet: show it.
     """
     wanted = PLUGIN_BRANCHES.get(node_key)
+    if node_key == "swiftletter" and namespaces is None:
+        return False
     if wanted is None or namespaces is None:
         return True
     have = {str(n).strip("/") for n in namespaces}
