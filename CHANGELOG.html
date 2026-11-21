@@ -259,6 +259,38 @@ Downloads.” A download that has already started, or was paused part way,
 finishes in the old folder, so nothing already downloaded is lost, and
 Cast says that too. Episodes already on disk stay where they are and
 keep playing.</p>
+<h3 id="ai-one-choice-for-every-ai-command-2026-11-20">AI: one choice
+for every AI command (2026-11-20)</h3>
+<ul>
+<li><strong>Every AI command now uses the AI you choose in Choose Your
+AI</strong> (<code>Ctrl+4</code>). Before, spell check, grammar,
+translate, Document Q&amp;A, the thesaurus, rewrite and summarize, Ask
+Quill, the agents, Describe Image and AI alt text, Improve Reading
+Order, Train Writing Style, chapter inference, the watch folder, Picture
+Maker, and GitHub’s Summarize Discussion and Explain Selected Change
+used a second, older choice from the AI Hub. Which AI Am I Using
+(<code>Ctrl+8</code>) now describes all of them.</li>
+<li>They follow the same rules as the rest of the AI menu. If the AI you
+chose is not ready, QUILL says why and sends nothing. Before a request
+goes to a different company, QUILL asks, and No is the default. Under
+Auto, QUILL names its pick before sending. QUILL’s free AI asks for its
+Privacy Agreement, and the first picture on each connection asks
+first.</li>
+<li><strong>Your older choice moves once.</strong> The first time you
+start this version, the AI Hub’s provider and key move to My own key in
+Choose Your AI, if My own key was not set up yet. QUILL says so
+once.</li>
+<li><strong>A new app asks before its first AI request.</strong> It no
+longer starts using the family’s saved own key without a word. It names
+the AI and asks, and after that it follows your choice.</li>
+<li><strong>Explain Selected Change</strong> sends its own question,
+instead of wrapping it inside the discussion-summary question. Its help
+no longer promises a consent step that did not exist.</li>
+<li><strong>Picture Maker</strong> uses only your own OpenAI or Google
+Gemini key from Choose Your AI, never the older AI Hub provider.</li>
+<li><strong>Cloud transcription in the watch folder</strong> sends audio
+to OpenAI only with your OpenAI key, never another company’s key.</li>
+</ul>
 <h3 id="ai-nothing-goes-to-an-ai-you-did-not-choose-2026-11-20">AI:
 nothing goes to an AI you did not choose (2026-11-20)</h3>
 <ul>
@@ -383,6 +415,89 @@ reading the rules on the branch’s Protection page and in Settings &gt;
 Rulesets, then taking the rule off again. Each step says what to press
 and what you should hear. That makes all eleven of the GitHub lessons
 the plan asked for.</li>
+</ul>
+<h3
+id="scribe-for-documents-the-rest-of-quill-and-quill-lite-2026-11-21">Scribe
+for Documents: the rest of QUILL, and QUILL Lite (2026-11-21)</h3>
+<ul>
+<li><strong>Next Steps after a conversion.</strong> Scribe Conversions
+has a Next Steps button. It lists what you can do with what was made:
+Read Aloud with QUILL’s voices, Check Accessibility with GLOW, Summarize
+with your own AI, Open in the Braille View, and Send to Media Player.
+Each is a separate choice; nothing runs on its own.</li>
+<li><strong>Read while it converts.</strong> Check “Read while it
+converts” in the Convert dialog, and a read-only tab, “Notes (Scribe,
+converting)”, fills with the text a whole paragraph at a time, without
+moving your place or speaking. It becomes “(Scribe, complete)” or
+“(Scribe, incomplete)”. File, Replace with Finished Document swaps in
+the finished one and keeps your place.</li>
+<li><strong>The watch folder can use Scribe.</strong> A profile’s new
+action, Convert with Scribe for Documents, sends each arriving document,
+one after another, once you agree to it in that profile. Only the 23
+types Scribe takes are sent, and the results are said as every other
+watch result is.</li>
+<li><strong>Scribe Options from Preferences.</strong> More Preferences
+has a Scribe for Documents page. It opens the one set of Scribe options
+every QUILL app shares. Scribe Status, Repeat Last Scribe Message and
+every other Scribe command can be given a key in the Keymap Editor.</li>
+<li><strong>QUILL Lite has Scribe for Documents too</strong>, in File
+&gt; Scribe for Documents, with the same windows and the same commands.
+It is a feature area, off until you turn it on in Customize Features, or
+when a scanned PDF needs it.</li>
+<li><strong>A full guide chapter</strong> in each editor’s user guide,
+with walk-throughs, every error code and F1 help for every command.</li>
+</ul>
+<h3 id="scribe-for-documents-in-quill-phase-1-2026-11-20">Scribe for
+Documents in QUILL, phase 1 (2026-11-20)</h3>
+<ul>
+<li><strong>QUILL can send a hard document to Scribe for
+Documents.</strong> Pneuma Solutions’ Scribe rebuilds scanned and badly
+made documents, with headings, tables and described pictures, into
+accessible HTML, Word, tagged PDF, EPUB, Kindle, DAISY, MP3 audio and
+braille. Tools &gt; Scribe for Documents has Convert a File, Convert
+This Document, Convert from a Link, My Scribe Documents, Conversions,
+Scribe Status, Sign In and Out, your Scribe account, Options and About.
+You sign in with your own Scribe account and pay Scribe for your own
+pages; QUILL never takes payment or sees your Scribe password.</li>
+<li><strong>Nothing is sent without your say, every time.</strong> The
+convert dialog opens on exactly what will be sent and where, warns about
+a file whose name looks private, gives the privacy notes before your
+first upload, and sends nothing until you press Send and Convert. There
+is no “don’t ask again”. Safe Mode turns Scribe off.</li>
+<li><strong>One document at a time, for the whole family.</strong>
+Scribe Conversions (Window menu) lists every job from every QUILL app on
+this computer. Each stage is said once, the 25, 50 and 75 percent marks
+only while QUILL is in front, and each job ends with one sentence saying
+what was made and where. A job survives closing QUILL: the next start
+picks it up without uploading again. A password-protected PDF waits for
+its password there, with three tries.</li>
+<li><strong>Where QUILL meets an inaccessible document, Scribe is
+offered.</strong> A scanned PDF’s OCR question and Import / Convert
+Document now offer Scribe beside free OCR. File &gt; Export &gt; With
+Scribe for Documents reaches tagged PDF, Kindle, DAISY with audio and
+large print, which QUILL cannot make itself, and Tools &gt; Braille &gt;
+Translate with Scribe for Documents opens Scribe’s braille in the
+braille view.</li>
+<li><strong>Switched on.</strong> Pneuma Solutions approved QUILL on
+2026-11-21 and issued its client ID, which is in this build. QUILL Lite
+and Media Player get their Scribe commands in a later change.</li>
+<li><strong>Pneuma’s answers of 2026-11-21 are built in.</strong>
+Several files chosen together now go one after another without asking
+again (Pneuma approved this), a file that fails does not stop the rest,
+and the last one ends with a sentence saying what was made and what was
+not; Send Next File is gone. Scribe is offered only for the 23 kinds of
+file it takes, and a web page or a file over 500 MB is refused before
+anything is sent. QUILL keeps every QUILL app under Scribe’s limit of 10
+actions a minute and, if Scribe still asks it to slow down, says so once
+and tries again a minute later. The convert dialog starts from your
+Scribe account’s own settings, sends them all with the upload, and
+changes your account defaults only when you tick the box; speed now
+offers the website’s choices, from half to four times, and braille lines
+run 20 to 42 cells and pages 20 to 30 lines. Another format of a
+document already in your account says “no pages used”, an organization’s
+pages say whose credits they are, a DAISY book is unpacked so it opens
+straight away, and the privacy notes say where documents are processed,
+that Pneuma never trains AI on them, and how long they are kept.</li>
 </ul>
 <h3
 id="more-settings-that-stick-studio-media-player-transcribe-beacon-weather-radio-and-quills-dialogs-2026-11-20">More

@@ -611,18 +611,19 @@ own, have permission for, or that are out of copyright.”</p>
 Convert</strong>.</p>
 <h3 id="what-you-want-back">What you want back</h3>
 <p>A group of nine check boxes, one for each format in <a
-href="#what-you-can-get-back">What you can get back</a>. The ones
-checked at the start are the ones you chose last time. The very first
-time, it is the command’s own choice: Word for most commands, Tagged PDF
-for Export, and Braille (BRF) for Translate.</p>
+href="#what-you-can-get-back">What you can get back</a>. A command made
+for one format starts with it checked: Word for Import, Tagged PDF for
+Export, and Braille (BRF) for Translate. The other commands start with
+the formats you chose last time, or your Default formats the very first
+time.</p>
 <p>For a document already in your account, a format you have already
 made says “, already made”, and the others say “, no pages used”.</p>
 <h3 id="read-while-it-converts">Read while it converts</h3>
 <p><strong>Read while it converts, in a new tab (adds Accessible
 HTML)</strong> opens a read-only tab that fills with the text while
-Scribe works. Checking it checks Accessible HTML too. It works for one
-file at a time. See <a href="#reading-while-it-converts">Reading while
-it converts</a>.</p>
+Scribe works. Checking it checks Accessible HTML too. It is there only
+when you convert one file, not for a link or several files. See <a
+href="#reading-while-it-converts">Reading while it converts</a>.</p>
 <h3 id="settings-shown">Settings shown</h3>
 <p>A read-only line that says which groups of settings follow, for
 example “Settings below: Language and voice, Braille”. It changes as you
@@ -830,7 +831,7 @@ three choices:</p>
 uploaded)</strong></li>
 <li><strong>Convert with Scribe for Documents (rebuilds headings, tables
 and picture descriptions; uses about 12 pages of your Scribe
-credit)</strong></li>
+pages)</strong></li>
 <li><strong>Open the text there is</strong></li>
 </ul>
 <p>The free choice is first. The Scribe choice opens the Convert dialog,
@@ -1082,9 +1083,11 @@ AI…</strong></td>
 <p>Each one opens the file in QUILL first, or goes to its tab if it is
 already open, and then runs the command. When a job made more than one
 of Word, HTML and EPUB, each step names its format, such as “Read Aloud
-with QUILL’s Voices (Word)”. Summarize uses the AI you chose in Choose
-Your AI, which asks first as it always does. Scribe is not involved in
-that step.</p>
+with QUILL’s Voices (Word)”. Read Aloud always starts from the top of
+the document. Summarize uses the AI you chose in Choose Your AI, which
+asks first as it always does, and is not offered when AI is turned off.
+Scribe is not involved in that step. If the Media Player cannot be
+opened, QUILL says so and the file stays in its folder.</p>
 <h2 id="my-scribe-documents">My Scribe Documents</h2>
 <p><strong>File &gt; My Scribe Documents</strong>, or <strong>Tools &gt;
 Scribe for Documents &gt; My Scribe Documents</strong>, lists every
@@ -1199,9 +1202,9 @@ deletion</td>
 </tr>
 <tr>
 <td><strong>Default formats</strong></td>
-<td>Nine check boxes. They are checked in the Convert dialog until you
-have chosen formats there yourself; after that, your last choice
-wins</td>
+<td>Nine check boxes. Convert a File, Convert This Document and Convert
+from a Link check them until you have chosen formats yourself; after
+that, your last choice wins</td>
 </tr>
 <tr>
 <td><strong>Download folder</strong> and <strong>Browse…</strong></td>
@@ -1309,8 +1312,12 @@ Scribe for Documents, Sign In.”</li>
 <li><strong>No dialogs.</strong> A file that needs a password waits in
 Scribe Conversions.</li>
 <li><strong>Settings.</strong> The profile chooses the formats. The
-other settings, such as language and voice, are Scribe’s own
-defaults.</li>
+other settings, such as language and voice, are your Scribe account’s
+defaults, read when each file is sent, with any you set in Scribe for
+Documents Options on top.</li>
+<li><strong>Retries.</strong> If the watch folder tries a file again,
+QUILL reports the job Scribe already has rather than sending the file a
+second time.</li>
 <li><strong>Stopping.</strong> Uncheck the consent box, or disable the
 profile, and nothing more is sent.</li>
 </ul>
@@ -1325,7 +1332,7 @@ names and numbers will be different.</p>
 here “Letter.pdf”.</li>
 <li>QUILL finds little text and asks. Choose <strong>Convert with Scribe
 for Documents (rebuilds headings, tables and picture descriptions; uses
-about 3 pages of your Scribe credit)</strong>, and press OK.</li>
+about 3 pages of your Scribe pages)</strong>, and press OK.</li>
 <li>If you are not signed in, your browser opens. Sign in, come back,
 and press <strong>Continue</strong>.</li>
 <li>The Convert dialog opens on <strong>What will be sent</strong>. Read
@@ -1685,10 +1692,10 @@ Scribe website.</p>
 job carries on.</p>
 <h3 id="sign-in-could-not-reach-quill-quill-scribe-signin-local">Sign-in
 could not reach QUILL (QUILL-SCRIBE-SIGNIN-LOCAL)</h3>
-<p><strong>You hear:</strong> “QUILL could not open a port on this
-computer to receive the sign-in. Check that security software allows
-QUILL to listen on 127.0.0.1.” Or, when the browser did not open, that
-QUILL could not open your browser.</p>
+<p><strong>You hear:</strong> “No port could be opened on this computer
+to receive the sign-in. Check that security software allows QUILL apps
+to listen on 127.0.0.1.” Or, when the browser did not open, that QUILL
+could not open your browser.</p>
 <p><strong>Why:</strong> QUILL waits for Scribe’s answer on this
 computer only, at 127.0.0.1. Security software blocked that, or no
 browser opened.</p>

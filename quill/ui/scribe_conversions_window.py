@@ -83,6 +83,7 @@ def job_details(job: q.Job, now: float | None = None) -> str:
 class ScribeConversionsWindow(wx.Frame):
     def __init__(self, parent: Any, controller: Any) -> None:
         super().__init__(parent, title=TITLE, style=wx.DEFAULT_FRAME_STYLE)
+        self.SetName("scribe_conversions_window")  # F1 finds its topic by this name (topics.json)
         self._controller = controller
         self._opener: Any = None
         self._ids: list[str] = []
@@ -200,7 +201,9 @@ class ScribeConversionsWindow(wx.Frame):
             if job.state == q.CONVERTING and job.stage:
                 from quill.core.scribe.model import format_label, stage_words
 
-                words = f"{stage_words(job.stage).capitalize()}: {format_label(job.format)}"
+                stage = stage_words(job.stage)
+                stage = stage[:1].upper() + stage[1:]  # not capitalize(): it lowers "Scribe's"
+                words = f"{stage}: {format_label(job.format)}"
             if job.id not in self._ids:
                 row = self.list.InsertItem(self.list.GetItemCount(), job.display_name)
                 self.list.SetItem(row, 1, formats_phrase(job.formats))
@@ -296,7 +299,8 @@ class ScribeConversionsWindow(wx.Frame):
         elif method == "open_result":
             controller.open_job_result(job)
         elif method == "next_steps":
-            self._next_steps(job)
+            # After any menu that chose it has closed, so the popups never nest.
+            wx.CallAfter(self._next_steps, job)
             return
         elif method == "open_folder":
             _open_folder(Path(job.folder))
@@ -333,7 +337,7 @@ class ScribeConversionsWindow(wx.Frame):
         menu = wx.Menu()
         for label, action in steps:
             item = menu.Append(wx.ID_ANY, label)
-            button.Bind(wx.EVT_MENU, lambda _e, a=action: a(), item)
+            menu.Bind(wx.EVT_MENU, lambda _e, a=action: a(), item)
         button.PopupMenu(menu, wx.Point(0, button.GetSize().height))
         menu.Destroy()
 
@@ -361,8 +365,8 @@ _COMMAND_HELP = {
         "Opens the finished file where it is used: QUILL, Media Player or the braille view."
     ),
     "next_steps": (
-        "Lists what you can do next with what was made: read it aloud, check it, open "
-        "it in the braille view, send it to the Media Player. Nothing runs until you choose."
+        "Lists what this app can do next with what was made, such as reading it aloud "
+        "or sending it to the Media Player. Nothing runs until you choose."
     ),
     "open_folder": "Opens the folder the results were saved in.",
     "cancel_waiting": "Stops QUILL waiting. Scribe still finishes it and may use pages.",

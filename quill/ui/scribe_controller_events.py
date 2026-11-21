@@ -144,17 +144,27 @@ class ScribeEventsMixin:
         )
 
     def open_job_result(self, job: q.Job, *, speak: bool = True) -> str:
-        """Open Result: the first output, in the tool where it is used (section 9)."""
+        """Open Result: the first output that opens somewhere, in the tool where it
+        is used (section 9). A tagged PDF, MOBI or offline page is only saved, so
+        a BRF or MP3 made with it still opens."""
         from quill.core.scribe.model import valid_formats
+        from quill.core.scribe.sentences import friendly_folder
 
+        saved = False
         for format_id in valid_formats(list(job.outputs)):
             path = Path(job.outputs[format_id])
-            if path.exists():
-                said = self.host.scribe_open_result(job, format_id, path)
-                if speak and said:
+            if not path.exists():
+                continue
+            saved = True
+            said = self.host.scribe_open_result(job, format_id, path)
+            if said:
+                if speak:
                     self._say(said + ".")
                 return said
-        if speak:
+        if speak and saved:
+            where = friendly_folder(job.folder) if job.folder else "its folder"
+            self._say(f"{job.display_name} was saved in {where}. Open Folder shows it.")
+        elif speak:
             self._say(f"{job.display_name} has no result to open yet.")
         return ""
 

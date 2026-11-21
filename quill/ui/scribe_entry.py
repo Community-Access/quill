@@ -252,7 +252,7 @@ class ScribeEntryPoints:
         choices = [
             "Run free OCR on this computer (nothing is uploaded)",
             f"{verb} (rebuilds headings, tables and picture "
-            f"descriptions; uses {pages} of your Scribe credit)",
+            f"descriptions; uses {pages} of your Scribe pages)",
             "Open the text there is",
         ]
         app = controller.app_name

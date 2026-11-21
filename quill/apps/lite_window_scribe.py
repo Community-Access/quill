@@ -30,6 +30,7 @@ from typing import Any
 
 from quill.core.scribe import PRODUCT_NAME
 from quill.ui.scribe_entry import ScribeEntryPoints
+from quill.ui.scribe_entry import send_to_player as _send_to_player
 
 __all__ = ["DocumentScribeMixin", "LiteScribeHost"]
 
@@ -79,7 +80,6 @@ class LiteScribeHost:
 
     def scribe_open_result(self, job: Any, format_id: str, path: Path) -> str:
         from quill.core.scribe.results import opened_phrase
-        from quill.ui.scribe_entry import send_to_player as _send_to_player
 
         if format_id in _OPENS_HERE:
             self._app.open_path(path)
@@ -91,14 +91,13 @@ class LiteScribeHost:
     def scribe_next_steps(self, job: Any, ready: dict[str, Path]) -> list[tuple[str, Any]]:
         """Send to Media Player first, then Open in QUILL Lite (8.1.7, 8.2)."""
         from quill.core.scribe.model import format_label
-        from quill.ui.scribe_entry import send_to_player as _send_to_player
 
         steps: list[tuple[str, Any]] = []
         for format_id in ("mp3", "daisy"):
             if format_id in ready:
                 steps.append((
                     f"Send to Media Player ({format_label(format_id)})",
-                    lambda f=format_id: _send_to_player(f, ready[f]),
+                    lambda f=format_id: self._to_player(job, f, ready[f]),
                 ))
         for format_id in _OPENS_HERE:
             if format_id in ready:
@@ -107,6 +106,12 @@ class LiteScribeHost:
                     lambda f=format_id: self._app.open_path(ready[f]),
                 ))
         return steps
+
+    def _to_player(self, job: Any, format_id: str, path: Path) -> None:
+        if not _send_to_player(format_id, path):
+            self.scribe_announce(
+                f"Media Player could not be opened. {job.display_name} is saved in its folder."
+            )
 
 
 class DocumentScribeMixin(ScribeEntryPoints):
@@ -170,8 +175,8 @@ class DocumentScribeMixin(ScribeEntryPoints):
         on first when the person chose that, and saying so once afterwards."""
         self._scribe_turned_on = False
         self._scribe_turn_on()
-        self.scribe_import_file(source)
-        if self._scribe_turned_on:
+        jobs = self._scribe().convert_files([source], app_formats=["docx"], open_as="import")
+        if self._scribe_turned_on and jobs:  # said only when something was sent
             self._announce(f"{PRODUCT_NAME} is on. It is in the File menu.")  # type: ignore[attr-defined]
 
     # -- the rows (commands_scribe.py) -----------------------------------

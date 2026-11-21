@@ -36,6 +36,7 @@ class ScribeDocumentsDialog(wx.Dialog):
         super().__init__(
             parent, title="My Scribe Documents", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
+        self.SetName("scribe_documents_dialog")  # F1 finds its topic by this name (topics.json)
         self._controller = controller
         self._documents: list[DocumentSummary] = []
         app = controller.app_name

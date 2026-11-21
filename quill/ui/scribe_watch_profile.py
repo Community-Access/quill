@@ -35,8 +35,9 @@ WATCH_CONSENT_TEXT = (
     "Each file uses Scribe pages from your account, about one for each page. It is "
     "processed in the United States and kept in your Scribe account under your retention "
     "setting (30 days unless you changed it). Pictures may be described by AI. Pneuma "
-    "does not use documents to train AI. Each file uses your Scribe for Documents "
-    "Options as they are when it is sent. Only PDF, pictures, Office, OpenDocument, "
+    "does not use documents to train AI. Each file uses your Scribe account's default "
+    "settings as they are when it is sent, with any you set in Scribe for Documents "
+    "Options on top. Only PDF, pictures, Office, OpenDocument, "
     "text, EPUB and MOBI files are sent; anything else is left alone. " + COPYRIGHT_LINE
 )
 

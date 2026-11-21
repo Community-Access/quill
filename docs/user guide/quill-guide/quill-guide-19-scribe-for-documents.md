@@ -238,10 +238,10 @@ Pressing Enter in this box is the same as pressing **Send and Convert**.
 ### What you want back
 
 A group of nine check boxes, one for each format in
-[What you can get back](#what-you-can-get-back). The ones checked at the
-start are the ones you chose last time. The very first time, it is the
-command's own choice: Word for most commands, Tagged PDF for Export, and
-Braille (BRF) for Translate.
+[What you can get back](#what-you-can-get-back). A command made for one
+format starts with it checked: Word for Import, Tagged PDF for Export, and
+Braille (BRF) for Translate. The other commands start with the formats you
+chose last time, or your Default formats the very first time.
 
 For a document already in your account, a format you have already made says
 ", already made", and the others say ", no pages used".
@@ -250,7 +250,8 @@ For a document already in your account, a format you have already made says
 
 **Read while it converts, in a new tab (adds Accessible HTML)** opens a
 read-only tab that fills with the text while Scribe works. Checking it checks
-Accessible HTML too. It works for one file at a time. See
+Accessible HTML too. It is there only when you convert one file, not for a
+link or several files. See
 [Reading while it converts](#reading-while-it-converts).
 
 ### Settings shown
@@ -438,7 +439,7 @@ text. With Scribe available, the question has three choices:
 
 - **Run free OCR on this computer (nothing is uploaded)**
 - **Convert with Scribe for Documents (rebuilds headings, tables and
-  picture descriptions; uses about 12 pages of your Scribe credit)**
+  picture descriptions; uses about 12 pages of your Scribe pages)**
 - **Open the text there is**
 
 The free choice is first. The Scribe choice opens the Convert dialog, so you
@@ -566,8 +567,11 @@ one is a separate choice.
 Each one opens the file in QUILL first, or goes to its tab if it is already
 open, and then runs the command. When a job made more than one of Word,
 HTML and EPUB, each step names its format, such as "Read Aloud with QUILL's
-Voices (Word)". Summarize uses the AI you chose in Choose Your AI, which
-asks first as it always does. Scribe is not involved in that step.
+Voices (Word)". Read Aloud always starts from the top of the document.
+Summarize uses the AI you chose in Choose Your AI, which asks first as it
+always does, and is not offered when AI is turned off. Scribe is not
+involved in that step. If the Media Player cannot be opened, QUILL says so
+and the file stays in its folder.
 
 ## My Scribe Documents
 
@@ -631,7 +635,7 @@ In Tab order:
 | **Account** | Who is signed in and how many pages are left, or "Not signed in to Scribe for Documents." |
 | **Sign In...** or **Sign Out** | Signs in, or out, for every QUILL app on this computer |
 | **Open My Scribe Account in Browser** | Your account on the Scribe website: retention, purchases, account deletion |
-| **Default formats** | Nine check boxes. They are checked in the Convert dialog until you have chosen formats there yourself; after that, your last choice wins |
+| **Default formats** | Nine check boxes. Convert a File, Convert This Document and Convert from a Link check them until you have chosen formats yourself; after that, your last choice wins |
 | **Download folder** and **Browse...** | Where results are saved, one folder for each document. To start with, Documents\Scribe for Documents |
 | **Open each result when it is ready** | **Open it** (the default), **Ask me first**, or **Don't open** |
 | **Offer Scribe when a PDF has little or no text** | Adds Scribe to the scanned-PDF question. On to start with |
@@ -709,7 +713,10 @@ Things to know:
   Documents, Sign In."
 - **No dialogs.** A file that needs a password waits in Scribe Conversions.
 - **Settings.** The profile chooses the formats. The other settings, such
-  as language and voice, are Scribe's own defaults.
+  as language and voice, are your Scribe account's defaults, read when each
+  file is sent, with any you set in Scribe for Documents Options on top.
+- **Retries.** If the watch folder tries a file again, QUILL reports the
+  job Scribe already has rather than sending the file a second time.
 - **Stopping.** Uncheck the consent box, or disable the profile, and nothing
   more is sent.
 
@@ -726,7 +733,7 @@ numbers will be different.
 1. Choose **File > Open** and open the scanned PDF, here "Letter.pdf".
 2. QUILL finds little text and asks. Choose **Convert with Scribe for
    Documents (rebuilds headings, tables and picture descriptions; uses
-   about 3 pages of your Scribe credit)**, and press OK.
+   about 3 pages of your Scribe pages)**, and press OK.
 3. If you are not signed in, your browser opens. Sign in, come back, and
    press **Continue**.
 4. The Convert dialog opens on **What will be sent**. Read it with the arrow
@@ -941,8 +948,9 @@ you are signed in again, the job carries on.
 
 ### Sign-in could not reach QUILL (QUILL-SCRIBE-SIGNIN-LOCAL)
 
-**You hear:** "QUILL could not open a port on this computer to receive the
-sign-in. Check that security software allows QUILL to listen on 127.0.0.1."
+**You hear:** "No port could be opened on this computer to receive the
+sign-in. Check that security software allows QUILL apps to listen on
+127.0.0.1."
 Or, when the browser did not open, that QUILL could not open your browser.
 
 **Why:** QUILL waits for Scribe's answer on this computer only, at

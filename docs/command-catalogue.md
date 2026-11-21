@@ -173,12 +173,15 @@ These are never done from a sentence, because they send, delete, sign in, change
 - Language Servers: Navigate, Code, Language Servers.
 - Open a Web Address: File, Open a Web Address.
 - Preferences Hub: Tools, Preferences Hub.
+- Repeat Last Scribe Message: Tools, Scribe for Documents, Repeat Last Scribe Message.
 - Replace All: Edit, Replace.
+- Replace with Finished Document: File, Replace with Finished Document.
 - Report the Editor Surface: Help, Troubleshooting.
 - Restore a Backup: File, Restore a Backup.
 - Save to GitHub: the GitHub menu.
 - Save to Remote: File, Save to Remote.
 - Say or Type a Command: F11.
+- Scribe Status: Tools, Scribe for Documents, Scribe Status.
 - Send to Tray: View, Send to Tray.
 - Settings: Tools, Settings.
 - Speech and Braille Self-Test: Help, Troubleshooting.
@@ -331,7 +334,9 @@ These are never done from a sentence, because they send, delete, sign in, change
 - Exit: File, Exit.
 - Language Servers: Navigate, Code, Language Servers.
 - Open a Web Address: File, Open a Web Address.
+- Repeat Last Scribe Message: Tools, Scribe for Documents, Repeat Last Scribe Message.
 - Say or Type a Command: F11.
+- Scribe Status: Tools, Scribe for Documents, Scribe Status.
 - Settings: Tools, Settings.
 
 ## Quill Radio

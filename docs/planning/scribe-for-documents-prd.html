@@ -246,8 +246,9 @@
 in the QUILL family</h1>
 <p>Product requirements. Written 2026-11-20, updated 2026-11-21 with
 Pneuma’s answers and the app’s approval. Phase 1 (the shared foundation
-and QUILL) is built and switched on; phases 2 and 3 are not started.
-Section 2 says what is built and what is not.</p>
+and QUILL) is built and switched on; the rest of QUILL and QUILL Lite
+are built (PR for phase 2); the Media Player and phase 3 are not
+started. Section 2 says what is built and what is not.</p>
 <p>This replaces the June draft in <code>docs/planning/scribe.md</code>.
 That draft was written before the API existed and covered only three
 endpoints. The API that opened today does much more, and this PRD asks
@@ -316,22 +317,48 @@ Documents; Tools &gt; Braille &gt; Translate with Scribe for Documents;
 Window &gt; Scribe Conversions; the offer beside OCR when a PDF has
 little or no text.</li>
 </ul></li>
-<li><strong>Built differently from this document</strong> (to settle
-before phase 2):
+<li><strong>Built (phase 2, the rest of QUILL and QUILL Lite,
+2026-11-21; builds on #1994).</strong>
+<ul>
+<li>QUILL: Next Steps in Scribe Conversions (8.1.7: Read Aloud with
+QUILL’s voices, the GLOW accessibility check, Summarize with the
+person’s own AI, the braille view, Send to Media Player); the streaming
+read tab with File &gt; Replace with Finished Document (8.1.3); the
+watch-folder action “Convert with Scribe for Documents” (8.1.6); a
+Scribe for Documents page in More Preferences.</li>
+<li>QUILL Lite (8.2): the <code>scribe</code> feature area (off by
+default, on only in Everything; offered on first need from the
+scanned-import question), File &gt; Scribe for Documents and Window &gt;
+Scribe Conversions, through the shared entry points
+(<code>quill/ui/scribe_entry.py</code>) that QUILL uses too.</li>
+<li>A user guide chapter in each editor (QUILL chapter 19, Lite chapter
+17) and F1 topics for every command and window.</li>
+</ul></li>
+<li><strong>Built differently from this document</strong> (decided):
 <ul>
 <li>Options are their own dialog and their own file,
 <code>scribe/options.json</code> in the shared data folder, one set for
-the whole family, rather than a page in each app’s Preferences (7.7). So
-the settings vocabulary and documentation gates have nothing to check
-for them.</li>
-<li>Scribe Status and Repeat Last Scribe Message have no keys yet
-(12).</li>
+the whole family, rather than a page in each app’s Preferences (7.7).
+More Preferences has a Scribe for Documents page that opens it. The
+settings vocabulary and documentation gates have nothing to check for
+them.</li>
+<li>No Scribe command has a default key (12), Scribe Status and Repeat
+Last Scribe Message included, nor Replace with Finished Document
+(8.1.3); every one is in the Command Palette and can be given a key in
+the Keymap Editor. The reasons are in the family gate.</li>
+<li>QUILL Lite’s rows are one File &gt; Scribe for Documents submenu
+(Alt+F, B), not separate File rows (8.2): Lite’s File menu has three
+letters left.</li>
+<li>A watch-folder profile sends each file with the person’s Scribe
+account defaults, read when it is sent, plus any Options settings; the
+profile names its formats (8.1.6). Next Steps in Lite are Send to Media
+Player and Open in QUILL Lite.</li>
+<li>Saving a Beacon place (8.1.7) waits for Beacon’s part (8.7).</li>
 </ul></li>
-<li><strong>Not built yet.</strong> The chained actions after conversion
-(8.1.7), QUILL’s streaming read tab and watch-folder action (8.1), QUILL
-Lite (8.2), the Media Player (8.3), Converter, Studio, Cast, Beacon and
-Social (8.4 to 8.8), and the Explorer Send To item (8.10). Live testing
-against scribeit.io comes once the code is merged.</li>
+<li><strong>Not built yet.</strong> Save a Beacon place (8.1.7, with
+8.7), the Media Player (8.3), Converter, Studio, Cast, Beacon and Social
+(8.4 to 8.8), and the Explorer Send To item (8.10). Live testing against
+scribeit.io comes once the code is merged.</li>
 </ul>
 <h2 id="3-what-scribe-provides-all-of-it-from-the-api-client-source">3.
 What Scribe provides (all of it, from the API client source)</h2>
@@ -1585,15 +1612,16 @@ pointer here.</li>
 channel, sign-in, the convert dialog, the queue and progress, My Scribe
 Documents, options; QUILL’s Import tier, low-text PDF offer, Export with
 Scribe, braille. The client ID arrived on 2026-11-21 and is in the
-build; tested against the fake server, live testing still to do. Left
-from this phase: the chained actions, the streaming tab and the
-watch-folder action.</li>
-<li><strong>Lite and Media Player. Next.</strong> Lite’s area and
-commands (with QUILL already having them); Player’s Listen command and
-DAISY audio reading.</li>
+build; tested against the fake server, live testing still to do. The
+chained actions, the streaming tab and the watch-folder action followed
+in phase 2.</li>
+<li><strong>Lite and Media Player. Lite built (2026-11-21).</strong>
+Lite’s area and commands, with QUILL having every one; the rest of
+QUILL’s 8.1. Next: Player’s Listen command and DAISY audio reading.</li>
 <li><strong>Converter, Studio, Beacon, Cast, Social.</strong> Their
-entry points; the watch-folder action; the streaming read tab; the
-Explorer Send To item.</li>
+entry points, Beacon’s place from Next Steps, and the Explorer Send To
+item. (The watch-folder action and the streaming read tab were built in
+phase 2.)</li>
 <li><strong>Batch.</strong> The exception is approved (2026-11-21):
 several chosen files and the watch folder run one after another, from
 phase 1 on.</li>

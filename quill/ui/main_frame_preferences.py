@@ -101,8 +101,8 @@ class PreferencesMixin:
             ),
             (  # one set for the whole family, in its own file (PRD 7.7, 2026-11-21)
                 "Scribe for Documents",
-                "Sign in, default formats, the download folder and what is spoken. One "
-                "set for every QUILL app on this computer; it saves when you close it.",
+                "Sign in, default formats, the download folder and what is spoken. One set "
+                "for every QUILL app on this computer; its own OK saves it, whatever you do here.",
                 self.scribe_options,
                 None,
             ),

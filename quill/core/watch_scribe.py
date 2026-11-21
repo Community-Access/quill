@@ -138,6 +138,12 @@ class ScribeConvertAction(_BaseAction):
             from quill.core.scribe.options import load_options
 
             settings = dict(load_options().settings)
+        queue = self._queue()
+        earlier = _earlier_job(queue, path)
+        if earlier is not None:
+            # The watch queue retries a failed file; Scribe has it already, so a
+            # retry reports that job rather than uploading (and paying) again.
+            return self._wait(queue, earlier, item, signin_message)
         job = q.Job(
             app=self.app_name,
             file_name=path.name,
@@ -148,7 +154,6 @@ class ScribeConvertAction(_BaseAction):
             settings=settings,
             open_as=WATCH_OPEN_AS,
         )
-        queue = self._queue()
         queue.add([job])
         if self.on_wake is not None:
             self.on_wake()
@@ -193,6 +198,26 @@ class ScribeConvertAction(_BaseAction):
                     f"{name} is still converting; it carries on in Scribe Conversions."
                 )
             self.sleep(_POLL_S)
+
+
+def _earlier_job(queue: Any, path: Path) -> Any:
+    """This file's watch job from the last day, unless the person stopped it."""
+    from quill.core.scribe import queue as q
+
+    try:
+        jobs = queue.jobs()
+    except (OSError, TimeoutError):
+        return None
+    cutoff = time.time() - 24 * 60 * 60
+    for job in reversed(jobs):
+        if (
+            job.open_as == WATCH_OPEN_AS
+            and job.source_path == str(path)
+            and job.created >= cutoff
+            and job.state != q.STOPPED
+        ):
+            return job
+    return None
 
 
 __all__ = ["WATCH_OPEN_AS", "ScribeConvertAction"]

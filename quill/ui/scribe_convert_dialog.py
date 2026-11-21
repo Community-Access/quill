@@ -102,6 +102,7 @@ class ScribeConvertDialog(wx.Dialog):
             title="Convert with Scribe for Documents",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
+        self.SetName("scribe_convert_dialog")  # F1 finds its topic by this name (topics.json)
         self._controller = controller
         self._paths = list(paths or [])
         self._url = url
@@ -160,7 +161,8 @@ class ScribeConvertDialog(wx.Dialog):
         # Read while it converts (8.1.3): only in an app with a streaming tab,
         # and then always shown, so the tab order never changes under the person.
         self.stream: Any = None
-        if callable(getattr(controller.host, "scribe_stream_started", None)) and existing is None:
+        can_stream = callable(getattr(controller.host, "scribe_stream_started", None))
+        if can_stream and existing is None and not url and len(self._paths) == 1:
             # No access key: every letter it has is taken in this dialog (GATE-14).
             self.stream = wx.CheckBox(
                 panel, label="Read while it converts, in a new tab (adds Accessible HTML)"

@@ -67,7 +67,7 @@ ROWS: tuple[tuple[str, str, str, str], ...] = (
     ("scribe.file_documents", "My Scribe Doc&uments", "scribe_my_documents", "file"),
     (
         "scribe.replace_finished",
-        "Replace with Finished Doc&ument",
+        "Replace &with Finished Document",  # U is My Scribe Documents
         "scribe_replace_finished",
         "file",
     ),
@@ -173,19 +173,29 @@ class QuillScribeHost:
 
         for format_id in editable:
             path = ready[format_id]
-            for label, command in (
-                ("Read Aloud with QUILL's Voices", "toggle_read_aloud"),
+            commands = [
+                # read_all, not the Start/Pause toggle: from the top, never a pause.
+                ("Read Aloud with QUILL's Voices", "read_all"),
                 ("Check Accessibility (GLOW Audit)", "glow_audit_document"),
-                ("Summarize with Your AI...", "open_ai_summarize_selection"),
-            ):
+            ]
+            if not self.scribe_ai_off():  # a command that would only refuse is not offered
+                commands.append(("Summarize with Your AI...", "open_ai_summarize_selection"))
+            for label, command in commands:
                 steps.append((named(label, format_id), self._then(path, command)))
         if "brf" in ready:
             steps.append(("Open in the Braille View", self._then(ready["brf"], "")))
         for format_id in ("mp3", "daisy"):
             if format_id in ready:
                 label = f"Send to Media Player ({format_label(format_id)})"
-                steps.append((label, lambda f=format_id: _send_to_player(f, ready[f])))
+                steps.append((label, lambda f=format_id: self._to_player(job, f, ready[f])))
         return steps
+
+    def _to_player(self, job: q.Job, format_id: str, path: Path) -> None:
+        """Send to Media Player, saying so when it could not be opened."""
+        if not _send_to_player(format_id, path):
+            self.scribe_announce(
+                f"Media Player could not be opened. {job.display_name} is saved in its folder."
+            )
 
     def _then(self, path: Path, command: str) -> Any:
         """Open *path* in QUILL (or go to its tab), then run QUILL's *command*.

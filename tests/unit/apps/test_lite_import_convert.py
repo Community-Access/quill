@@ -24,6 +24,16 @@ from quill.io.docconvert import (
 )
 
 
+@pytest.fixture(autouse=True)
+def _scribe_not_offered(monkeypatch: pytest.MonkeyPatch) -> None:
+    """These are the free tiers' tests: Scribe's offer has its own
+    (test_lite_scribe.py), so here it is a build without a client ID."""
+    from quill.core import scribe
+
+    monkeypatch.setattr(scribe, "CLIENT_ID", "")
+    monkeypatch.delenv("QUILL_SCRIBE_CLIENT_ID", raising=False)
+
+
 class _SyncTasks:
     """Runs a submitted task at once, the way the app's pool eventually does."""
 

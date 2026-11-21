@@ -34,8 +34,8 @@ There are two ways to turn it on:
 - **When a document needs it.** If you import a scanned PDF with **File >
   Import / Convert Document (OCR)...**, the question offers **Turn on Scribe
   for Documents and convert**. Choose it, and QUILL Lite turns the area on
-  and opens the Convert dialog. Afterwards you hear "Scribe for Documents is
-  on. It is in the File menu."
+  and opens the Convert dialog. When you press **Send and Convert**, you
+  then hear "Scribe for Documents is on. It is in the File menu."
 
 Of the profiles, only **Everything** turns it on. If you reach a Scribe
 command while the area is off, you hear "Scribe for Documents is off. Turn
@@ -162,7 +162,7 @@ document. QUILL Lite never writes over a file: it adds "(2)" instead.
 no text. With Scribe on, the choices are **Run free OCR on this computer
 (nothing is uploaded)**, **Convert with Scribe for Documents (rebuilds
 headings, tables and picture descriptions; uses about 12 pages of your
-Scribe credit)**, and **Open the text there is**. With Scribe off, the
+Scribe pages)**, and **Open the text there is**. With Scribe off, the
 middle one reads **Turn on Scribe for Documents and convert**. The Scribe
 choice converts to Word, which opens in a new window.
 
@@ -353,7 +353,7 @@ such as QUILL-SCRIBE-PAGES, is in **Copy Details**, never spoken.
 | Code | What you hear, in short | What to do |
 |---|---|---|
 | QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended." | **Sign In...** on the job in Scribe Conversions |
-| QUILL-SCRIBE-SIGNIN-LOCAL | QUILL could not open a port, or your browser | Allow QUILL Lite in your security software, or use **Copy Sign-in Link** |
+| QUILL-SCRIBE-SIGNIN-LOCAL | No port could be opened on this computer, or your browser did not open | Allow QUILL Lite in your security software, or use **Copy Sign-in Link** |
 | QUILL-SCRIBE-PAGES | Scribe's message, then "Use Buy Pages in Scribe Conversions, then Retry." | **Buy Pages**, then **Retry** |
 | QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open Scribe Conversions to enter it." | **Enter Password...**; three tries, then **Retry** |
 | QUILL-SCRIBE-BUSY | "Scribe for Documents asked QUILL Lite to slow down; trying again in a minute." | Nothing: it tries again |

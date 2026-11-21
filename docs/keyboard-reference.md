@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 596.
+Editor commands with default bindings: 599.
 
 ## The QUILL editor
 
@@ -535,6 +535,9 @@ Editor commands with default bindings: 596.
 | (unbound by default) | Play favorite 8 | `radio.play_favorite_8` |
 | (unbound by default) | Play favorite 9 | `radio.play_favorite_9` |
 | (unbound by default) | Internet Radio: Sound Enhancements... | `radio.sound_enhancements` |
+| (unbound by default) | Repeat Last Scribe Message | `scribe.repeat` |
+| (unbound by default) | Replace with Finished Document | `scribe.replace_finished` |
+| (unbound by default) | Scribe Status | `scribe.status` |
 | (unbound by default) | Story Studio... | `story.open_studio` |
 | (unbound by default) | Sync Folder with GitHub... | `sync.sync_folder` |
 | (unbound by default) | Delete Column | `table.delete_column` |

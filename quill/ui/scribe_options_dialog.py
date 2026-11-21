@@ -33,6 +33,7 @@ class ScribeOptionsDialog(wx.Dialog):
             title="Scribe for Documents Options",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
+        self.SetName("scribe_options_dialog")  # F1 finds its topic by this name (topics.json)
         self._controller = controller
         self._options = controller.options()
         app = controller.app_name

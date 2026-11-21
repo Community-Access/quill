@@ -136,8 +136,9 @@ class LoopbackListener:
             return _V6(("::1", 0), handler)
         except OSError as error:
             raise ScribeSignInLocalError(
-                "QUILL could not open a port on this computer to receive the sign-in. "
-                "Check that security software allows QUILL to listen on 127.0.0.1."
+                # No app name: the listener does not know which app it serves (PRD 11).
+                "No port could be opened on this computer to receive the sign-in. Check "
+                "that security software allows QUILL apps to listen on 127.0.0.1."
             ) from error
 
     def wait(self, timeout: float, cancelled: Callable[[], bool]) -> AuthRedirect | None:
