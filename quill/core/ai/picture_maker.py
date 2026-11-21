@@ -112,12 +112,23 @@ class PictureSuggestion:
     why: str = ""
 
 
-def picture_connection(*, own_key_provider: str = "") -> PictureConnection | str:
+#: Said when the AI chosen in Choose Your AI cannot make pictures.
+NEEDS_OWN_PICTURE_KEY = (
+    "Nothing was sent. The AI you chose can't make pictures. Picture Maker needs your "
+    "own OpenAI or Google Gemini key. Set one up under My own key in Choose Your AI "
+    "(Ctrl+4), then try again."
+)
+
+
+def picture_connection(
+    *, own_key_provider: str = "", follows_choice: bool = False
+) -> PictureConnection | str:
     """The provider that will make the picture, or the sentence saying why none can.
 
-    The own key chosen in Choose Your AI comes first when its company makes
-    pictures and its key is saved; otherwise the assistant provider set up in
-    QUILL (Studio's path since roadmap V1).
+    The own key chosen in Choose Your AI, when its company makes pictures and
+    its key is saved. An app that has Choose Your AI (*follows_choice*) uses
+    nothing else: the older assistant provider is another company the person
+    did not choose there (2026-11 audit, gap 9). Without it, that provider.
     """
     from quill.core import assistant_ai
 
@@ -127,6 +138,8 @@ def picture_connection(*, own_key_provider: str = "") -> PictureConnection | str
         if key:
             label = "OpenAI" if own == "openai" else "Google Gemini"
             return PictureConnection(label, own, key)
+    if follows_choice:
+        return NEEDS_OWN_PICTURE_KEY
     settings = assistant_ai.load_assistant_connection_settings()
     provider = str(getattr(settings, "provider", "") or "").strip()
     image_provider = image_provider_for(provider)

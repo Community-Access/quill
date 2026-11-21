@@ -905,6 +905,10 @@ class MainFrame(
 
         self._wx = wx
         self._safe_mode = safe_mode
+        if not safe_mode:  # every AI command follows Choose Your AI (chosen_route)
+            from quill.ui.chosen_route_sender import install
+
+            wx.CallAfter(install, self)
         # Build a wx.Accessible subclass that replaces each layout container's
         # built-in accessible so screen readers encounter a nameless
         # ROLE_SYSTEM_WINDOW and skip it in the ancestor context chain (#170).
@@ -10236,6 +10240,7 @@ class MainFrame(
         self._open_ask_quill(voice_mode=True, initial_prompt=initial_prompt)
 
     def _open_ask_quill(self, *, voice_mode: bool, initial_prompt: str = "") -> None:
+        from quill.core.ai import chosen_route
         from quill.core.ai.model_manager import load_ai_enabled
         from quill.core.ai.onboarding import active_connection_consented, ai_connection_ready
         from quill.ui.assistant_panel import AskQuillChatDialog
@@ -10244,7 +10249,14 @@ class MainFrame(
         # isn't usable (no provider/key) or the active provider has no standing share
         # consent. Without consent QUILL must not send anything, so route to setup (where
         # the allow checkbox lives) instead of failing or hanging at request time.
-        if not load_ai_enabled() or not ai_connection_ready() or not active_connection_consented():
+        # In QUILL the AI is the one chosen in Choose Your AI, whose consent is asked
+        # the way every AI command asks it (maybe_offer_ai_setup, chosen_route).
+        if (
+            chosen_route.active()
+            or not load_ai_enabled()
+            or not ai_connection_ready()
+            or not active_connection_consented()
+        ):
             from quill.ui.ai_setup_wizard import maybe_offer_ai_setup
 
             if not maybe_offer_ai_setup(self, reason="Ask Quill needs AI to chat with you."):
@@ -10403,12 +10415,13 @@ class MainFrame(
         # with no preview; a provider without it is blocked here (covers a mid-chat provider
         # switch, or a provider configured outside the wizard). Redaction always applies.
         def conversation(message: str, document: str, selection: str):
+            from quill.core.ai import chosen_route
             from quill.core.ai.onboarding import active_connection_consented
             from quill.core.ai.providers import provider_display_name
             from quill.core.assistant_ai import load_assistant_connection_settings
             from quill.ui.agent_editor_host import prepare_companion_context
 
-            if not active_connection_consented():
+            if not chosen_route.active() and not active_connection_consented():
                 try:
                     pid = load_assistant_connection_settings().provider.strip().lower()
                     name = provider_display_name(pid) if pid else "this provider"
@@ -10483,7 +10496,8 @@ class MainFrame(
         from quill.core.ai.provider_backend import ProviderChatBackend
 
         backend = ProviderChatBackend()
-        model_id, provider_id = backend.settings.model, backend.settings.provider
+        model_id = backend.settings.model or "the AI you chose"
+        provider_id = backend.settings.provider
         prompt_text = grammar.text.replace("{selection}", selection)
         self._announce(f"Checking grammar with {model_id}...")
 
@@ -10547,28 +10561,26 @@ class MainFrame(
     # AI language tools: spell check, grammar, translation, transcription
     # ------------------------------------------------------------------
 
-    def _ai_require_connection(self) -> tuple[object, str] | None:
-        """Return (connection, api_key), or offer AI setup and return None.
+    def _ai_require_connection(self, capability: str = "text") -> tuple[object, str] | None:
+        """Return (connection, api_key) for the AI chosen in Choose Your AI, or None.
 
         The single choke point for keyed AI text features (spell/grammar check,
-        translate, Document Q&A, thesaurus, agent tasks). When AI is off or not
-        yet configured, it offers the setup wizard — an actionable dialog — rather
-        than dead-ending into a status line a screen-reader user can miss. This
-        mirrors what Ask Quill, Transcript Actions, and the AI Library already do,
-        so every keyed feature behaves the same when AI isn't ready.
+        translate, Document Q&A, thesaurus, agent tasks, GitHub's AI commands).
+        It asks what every AI-menu command asks (``_ai_ready``, ``_ai_capable``):
+        AI help switched on, the free AI's agreement, an AI in use that can do
+        text -- opening Choose Your AI when none is. Each request then goes the
+        shared route (:mod:`quill.ui.chosen_route_sender`), which names Auto's
+        pick and asks before a different company is used.
         """
-        from quill.core.assistant_ai import (
-            load_assistant_api_key,
-            load_assistant_connection_settings,
-        )
-        from quill.ui.ai_setup_wizard import maybe_offer_ai_setup
+        from quill.core.ai import chosen_route
 
-        if not maybe_offer_ai_setup(self, reason="To use this AI feature, QUILL needs AI."):
-            self._set_status("AI isn't set up. Use AI > Set Up AI, or turn on AI in the AI menu.")
+        if not chosen_route.active():
+            from quill.ui.chosen_route_sender import install
+
+            install(self)
+        if not self._ai_ready() or not self._ai_capable(capability):
             return None
-        conn = load_assistant_connection_settings()
-        api_key = load_assistant_api_key() or ""
-        return conn, api_key
+        return chosen_route.route_settings(), ""
 
     def ai_spell_check(self) -> None:
         result = self._ai_require_connection()

@@ -439,13 +439,38 @@ You can change your provider or model any time in **Use My Own AI Key**
 
 ## AI Assistant
 
-Beyond the free AI, QUILL has a full AI assistant. You can run it on your own
-computer (llama.cpp with a local GGUF model) or connect a provider: Ollama
-(local), Ollama Cloud, OpenAI, Claude, OpenRouter, Google Gemini, or a custom
-OpenAI-compatible endpoint. Every provider is optional, and you choose it
-yourself. Keys are kept in the Windows Credential Manager, with a
-DPAPI-encrypted file as a fallback, and are never written to disk as plain
-text. Where your keys are kept, later in this chapter, has the details.
+Beyond the free AI's own commands, QUILL has a full AI assistant: Ask Quill,
+the agents, spell check, grammar, translate, Document Q&A, the thesaurus,
+rewrite and summarize, Describe Image, Improve Reading Order, Train Writing
+Style, the watch folder's AI actions, Picture Maker, and the GitHub AI commands.
+
+### One AI for everything
+
+Every AI Assistant command listed above uses the AI you choose in **Choose Your
+AI** (`Ctrl+4`),
+the same one the rest of the AI menu uses, and **Which AI Am I Using**
+(`Ctrl+8`) tells you which it is. They follow the same rules:
+
+- If the AI you chose is not ready, QUILL says why and sends nothing.
+- If a request would go to a different company from the one you chose, QUILL
+  asks first. No is the default, and No sends nothing.
+- Under Auto, QUILL names the AI it picked before anything is sent.
+- QUILL's free AI asks you to accept its Privacy Agreement first.
+- The first time you send a picture to a company, QUILL asks first and names
+  the company.
+- The first AI request in each app asks first. No is the default.
+
+Earlier versions kept a second, separate choice for these commands, in the AI
+Hub. The first time you start this version, QUILL moves that choice to My own
+key in Choose Your AI, if My own key was not already set up. It says so once.
+My own key is the row that **Use My Own AI Key** (`Alt+F2`) sets up; they are
+the same place.
+
+Keys are kept in the Windows Credential Manager, with an encrypted file that
+only your Windows account can open as a fallback, and are never written to disk
+as plain text. A key is only ever sent to the company it belongs to.
+[Where your keys are kept](#where-your-keys-are-kept), later in this chapter,
+has the details.
 
 ### Setting up an AI provider
 
@@ -468,8 +493,8 @@ use the same model, or name a more capable model here for prompt library work.
 
 **AI > Ask Quill...** (`Alt+Q`) opens the assistant as a conversation.
 You can ask questions, draft text, suggest edits, and run QUILL commands, and
-nothing changes until you approve it. The window shows the provider and model in
-use, and you can switch either one there.
+nothing changes until you approve it. The window shows the AI in use. Its
+switch button opens Choose Your AI, so a change there is a change everywhere.
 
 Earlier versions also had a separate, plain Ask AI question window. It has
 been folded into **AI > Ask Quill...**, which is now the one chat window for

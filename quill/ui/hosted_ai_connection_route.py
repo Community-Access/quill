@@ -120,7 +120,51 @@ class ConnectionRouteMixin:
             chatgpt_signed_in=self._chatgpt_signed_in,
             own_key_ready=lambda: bool(self.own_key_ready),
             save=self._save_settings,
+            ask_first=(OWN_KEY,),  # the family-wide key; a plan sign-in is this app's own
         )
+
+    def _first_choice_pending(self) -> bool:
+        """Whether this app has never stored a choice, and would inherit one."""
+        settings = self._settings()
+        if settings is None or not hasattr(settings, "ai_connection"):
+            return False
+        return not str(getattr(settings, "ai_connection", "") or "") and self.connection != FREE
+
+    def _first_choice_allowed(self, on_error: Callable[[str], None]) -> bool:
+        """A new app's first request asks before using the AI it would inherit.
+
+        Yes stores that AI as this app's choice, and later requests follow it.
+        No sends nothing (Jeff's decision, 2026-11-20).
+        """
+        if not self._first_choice_pending():
+            return True
+        from quill.core.ai.connection_words import first_request_question
+
+        connection = self.connection
+        name, destination = self.route_names(connection)
+        app = str(getattr(self._app, "ai_agent_name", "") or "QUILL")
+        local = connection == OWN_KEY and self.own_key_provider == "ollama"
+        if self._confirm_first(first_request_question(app, name, destination, local=local)):
+            self.choose(connection)
+            return True
+        on_error(self._keyed("Nothing was sent. Press Ctrl+4 to choose an AI for this app."))
+        return False
+
+    def _confirm_first(self, question: str) -> bool:
+        confirm = getattr(self, "confirm_route_change", None)
+        if confirm is not None:
+            return bool(confirm(question))
+        import wx
+
+        from quill.ui.dialog_contract import show_message_box
+
+        answer = show_message_box(
+            question,
+            "Use This AI?",
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
+            wx.GetActiveWindow(),
+        )
+        return answer == wx.YES
 
     def connection_facts(self) -> ConnectionFacts:
         """Everything known about every connection, read locally (no network call)."""
@@ -332,6 +376,8 @@ class ConnectionRouteMixin:
 
     def request_connection(self, requires: tuple[str, ...], on_error: Callable[[str], None]) -> str:
         """Return the concrete route for a request, or report why nothing was sent."""
+        if not self._first_choice_allowed(on_error):
+            return ""
         facts = self.connection_facts()
         if self.connection == AUTO:
             problem = not_ready_sentence(facts)

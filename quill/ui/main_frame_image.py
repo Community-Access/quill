@@ -364,27 +364,17 @@ class ImageCaptureMixin:
             self._set_status("AI is off")
             return
 
-        from quill.core.assistant_ai import (
-            load_assistant_api_key,
-            load_assistant_connection_settings,
-        )
-
-        connection = load_assistant_connection_settings()
-        if connection.provider.strip().lower() == "off":
-            self._show_message_box(
-                "No AI provider is connected. Open AI Model & Connection and choose "
-                "a vision-capable model, then try again.",
-                _TITLE,
-                wx.ICON_INFORMATION | wx.OK,
-            )
-            self._set_status("No AI provider connected")
+        # The AI chosen in Choose Your AI, with its readiness, its picture
+        # capability and, when sent, its first-picture consent (chosen_route).
+        route = self._ai_require_connection("pictures")
+        if route is None:
             return
+        connection, api_key = route
 
         image_path = self._pick_image_source(_TITLE)
         if image_path is None:
             return
 
-        api_key = load_assistant_api_key()
         from quill.core.ai.vision import describe_image
         from quill.core.ai.vision_prompts import (
             resolve_prompt_text,

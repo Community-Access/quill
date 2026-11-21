@@ -1086,6 +1086,19 @@ def _no_saved_own_ai_key(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
+def _no_chosen_route_sender(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Start every test without a QUILL window's Choose Your AI sender.
+
+    A built ``MainFrame`` registers one process-wide (``chosen_route``), and it
+    would otherwise route the next test's provider calls through that window.
+    Tests of the route register their own fake.
+    """
+    from quill.core.ai import chosen_route
+
+    monkeypatch.setattr(chosen_route, "_sender", None)
+
+
+@pytest.fixture(autouse=True)
 def _no_copilot_or_codex_here(monkeypatch: pytest.MonkeyPatch) -> None:
     """Every hosted-AI test sees Copilot and Codex as not in this build.
 

@@ -38,7 +38,12 @@ class StudioPictureMakerMixin:
         if self._safe_mode or not load_ai_enabled():
             self._announce("AI is turned off or Studio is in Safe Mode, so no picture can be made.")
             return None
-        connection = picture_connection()
+        from quill.ui.wordpress_picture_ai import own_key_provider
+
+        follows = callable(getattr(self, "_ai_service", None))  # Studio's Choose Your AI
+        connection = picture_connection(
+            own_key_provider=own_key_provider(self) if follows else "", follows_choice=follows
+        )
         if isinstance(connection, str):
             self._announce(connection)
             return None

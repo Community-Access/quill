@@ -6,6 +6,34 @@
 
 Chris Nova changed their download folder and found that the episodes they had already asked to download still went to the old one. Each download's place was fixed the moment it was queued, so a new folder only reached episodes queued afterwards. Now, when you change the download folder in QUILL Cast's Preferences or QUILL's Podcast Settings, every download still waiting moves to the new folder, and Cast says how many: "2 downloads waiting will now save to D:\other files\Quill Cast Downloads." A download that has already started, or was paused part way, finishes in the old folder, so nothing already downloaded is lost, and Cast says that too. Episodes already on disk stay where they are and keep playing.
 
+### AI: one choice for every AI command (2026-11-20)
+
+- **Every AI command now uses the AI you choose in Choose Your AI**
+  (`Ctrl+4`). Before, spell check, grammar, translate, Document Q&A, the
+  thesaurus, rewrite and summarize, Ask Quill, the agents, Describe Image and
+  AI alt text, Improve Reading Order, Train Writing Style, chapter inference,
+  the watch folder, Picture Maker, and GitHub's Summarize Discussion and
+  Explain Selected Change used a second, older choice from the AI Hub. Which
+  AI Am I Using (`Ctrl+8`) now describes all of them.
+- They follow the same rules as the rest of the AI menu. If the AI you chose
+  is not ready, QUILL says why and sends nothing. Before a request goes to a
+  different company, QUILL asks, and No is the default. Under Auto, QUILL
+  names its pick before sending. QUILL's free AI asks for its Privacy
+  Agreement, and the first picture on each connection asks first.
+- **Your older choice moves once.** The first time you start this version,
+  the AI Hub's provider and key move to My own key in Choose Your AI, if My
+  own key was not set up yet. QUILL says so once.
+- **A new app asks before its first AI request.** It no longer starts using
+  the family's saved own key without a word. It names the AI and asks, and
+  after that it follows your choice.
+- **Explain Selected Change** sends its own question, instead of wrapping it
+  inside the discussion-summary question. Its help no longer promises a
+  consent step that did not exist.
+- **Picture Maker** uses only your own OpenAI or Google Gemini key from
+  Choose Your AI, never the older AI Hub provider.
+- **Cloud transcription in the watch folder** sends audio to OpenAI only with
+  your OpenAI key, never another company's key.
+
 ### AI: nothing goes to an AI you did not choose (2026-11-20)
 
 - **AI set to Off is honoured.** Ask Quill's chat setup can no longer send

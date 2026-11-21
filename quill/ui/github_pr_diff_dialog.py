@@ -121,12 +121,12 @@ class GitHubPullDiffDialog(GitHubPullDiffCommentsMixin):
         close_btn.SetHelpText("Close this window. Escape does the same.")
         close_btn.SetName("Close diff viewer")
         self._explain_btn = wx.Button(panel, wx.ID_ANY, label="Explain Selected Change with AI")
-        self._explain_btn.SetName(
-            "Explain the selected pull-request change using the configured AI provider"
-        )
+        self._explain_btn.SetName("Explain Selected Change with AI")
         self._explain_btn.SetHelpText(
-            "Send this selected file's bounded diff to the configured AI provider after consent. "
-            "The output includes the source file and head SHA."
+            "Sends this file's changes to the AI chosen in Choose Your AI; if they are very "
+            "long, only the first part is sent. Under Auto, QUILL says which AI it will "
+            "use first, and it asks before a different company is used. The answer names "
+            "the file and the commit it explains."
         )
         self._explain_btn.Enable(False)
         btn_row.Add(self._explain_btn, 0, wx.RIGHT, 8)
@@ -266,7 +266,9 @@ class GitHubPullDiffDialog(GitHubPullDiffCommentsMixin):
         if self._ai_acquire is None:
             self._announce("AI explanation is unavailable here.")
             return
-        explain = self._ai_acquire()
+        acquired = self._ai_acquire()
+        # The prompt is complete: sent as it is, not as a discussion to summarize.
+        explain = getattr(acquired, "whole_prompt", acquired)
         if explain is None:
             self._announce("AI is not configured; explanation cancelled.")
             return
@@ -279,7 +281,7 @@ class GitHubPullDiffDialog(GitHubPullDiffCommentsMixin):
             diff_text,
         )
         self._explain_btn.Enable(False)
-        self._detail.SetValue(f"Explaining {pull_file.filename} with the configured AI provider…")
+        self._detail.SetValue(f"Explaining {pull_file.filename} with your chosen AI...")
 
         def worker() -> None:
             try:

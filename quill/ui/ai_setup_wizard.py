@@ -965,16 +965,16 @@ def _probe_provider(provider: str, api_key: str) -> tuple[bool, str]:
 def maybe_offer_ai_setup(controller: Any, *, reason: str = "") -> bool:
     """If AI isn't ready, gently offer the setup wizard at a high-intent moment.
 
-    Returns True when AI is usable afterward (on AND actually configured), so the caller
-    can continue; False when it stays unusable (the user declined, finished without
-    enabling, or a deliberate skip is left in place). "Usable" means the master switch is
-    on AND the active connection is ready — saving us from the old trap where AI was
-    "enabled" by default but unconfigured, so the caller proceeded into a request that
-    failed with "no key / authentication failed" instead of getting this on-ramp.
+    True when AI is usable afterward (switched on AND configured), so the caller can
+    continue; False when it stays unusable. In QUILL that is Choose Your AI's own
+    question (chosen_route), asked the way every AI command asks it.
     """
+    from quill.core.ai import chosen_route
     from quill.core.ai.model_manager import load_ai_enabled
     from quill.core.ai.onboarding import ai_connection_ready, ai_needs_setup
 
+    if chosen_route.active() and callable(getattr(controller, "_ai_capable", None)):
+        return bool(controller._ai_ready()) and bool(controller._ai_capable("text"))
     if load_ai_enabled() and ai_connection_ready():
         return True
     # Don't nag a user who deliberately turned AI off and finished setup; but always offer

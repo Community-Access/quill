@@ -151,24 +151,23 @@ def _note_backend_fallback(provider: str) -> None:
 
 
 def make_default_backend() -> AIBackend:
-    """Pick the best available backend for this platform.
+    """Pick the backend: in QUILL, the AI chosen in Choose Your AI (chosen_route).
 
-    When the user has configured an AI connection (AI-13), the selected provider
-    actually responds: a saved connection that is not "off" and reports itself
-    available routes generation to ``ProviderChatBackend``. Otherwise generation
-    falls back to the bundled on-device model: macOS with Apple Intelligence ->
-    Foundation Models; everywhere else -> llama.cpp CPU. A fallback past a
-    provider the user explicitly configured is recorded via
-    :func:`last_backend_note` so the UI can say so instead of quietly answering
-    with a different engine.
+    Elsewhere, a configured provider (AI-13) that is not "off" and is available,
+    else the bundled on-device model (Foundation Models on macOS, else llama.cpp).
+    A fallback past a configured provider is recorded via
+    :func:`last_backend_note` so the UI can say so rather than switch quietly.
     """
     import sys
 
     global _LAST_BACKEND_NOTE
     _LAST_BACKEND_NOTE = ""
-    from quill.core.ai import backend_substitution
+    from quill.core.ai import backend_substitution, chosen_route
+    from quill.core.ai.provider_backend import ProviderChatBackend
 
     backend_substitution.reset()
+    if chosen_route.active():
+        return ProviderChatBackend(chosen_route.route_settings(), api_key="")
 
     # Honor an explicitly configured provider first (AI-13). The presence of the
     # connection file marks a deliberate user choice; an unconfigured install has
@@ -186,8 +185,6 @@ def make_default_backend() -> AIBackend:
             # only the on-device model is left (2026-11 audit, gap 2).
             switched_off = settings.provider.strip().lower() == "off"
             if not switched_off:
-                from quill.core.ai.provider_backend import ProviderChatBackend
-
                 backend = ProviderChatBackend(settings)
                 if backend.is_available()[0]:
                     return backend

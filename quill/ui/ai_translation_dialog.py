@@ -90,7 +90,7 @@ class AITranslationDialog:
 
         self._provider_ai_rb = wx.RadioButton(
             self.dialog,
-            label="&AI Assistant (uses your configured AI provider)",
+            label="&AI Assistant (uses the AI chosen in Choose Your AI)",
             style=wx.RB_GROUP,
         )
         self._provider_lt_rb = wx.RadioButton(
