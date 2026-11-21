@@ -1026,11 +1026,14 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin, AssistantConversationTools
         """A light switcher: pick a configured provider + model and Set. No key field —
         keys come from setup; on-device Ollama needs none. Applies live to the open chat."""
         import quill.core.ai.onboarding as ob
+        from quill.core.ai import chosen_route
         from quill.core.ai.providers import (
             default_model_for_provider,
             recommended_models_for_provider,
         )
 
+        if chosen_route.choose():  # QUILL: the one choice, in Choose Your AI
+            return
         wx = self._wx
         providers = self._switch_provider_list()
         if not providers:
@@ -1100,9 +1103,13 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin, AssistantConversationTools
         # Read the unified assistant_ai connection so chat reflects the same provider/model
         # the wizard and the rest of the app use (not the legacy chat-only settings).
         try:
+            from quill.core.ai import chosen_route
             from quill.core.ai.providers import provider_display_name
             from quill.core.assistant_ai import load_assistant_connection_settings
 
+            if chosen_route.active():
+                self._active_status.SetLabel(chosen_route.describe())
+                return
             conn = load_assistant_connection_settings()
             provider = conn.provider.strip().lower()
             if not provider or provider == "off":

@@ -90,7 +90,9 @@ def window(monkeypatch) -> dict[str, Any]:
 def openai(monkeypatch) -> list[dict[str, Any]]:
     asked: list[dict[str, Any]] = []
 
-    def connection(*, own_key_provider: str = ""):
+    def connection(*, own_key_provider: str = "", follows_choice: bool = False):
+        # WordPress follows Choose Your AI: never the older provider (gap 9).
+        assert follows_choice
         asked.append({"own_key_provider": own_key_provider})
         return pm.PictureConnection("OpenAI", "openai", "sk-test")
 

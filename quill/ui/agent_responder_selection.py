@@ -30,6 +30,16 @@ def _fall_back_allowed(pack_name: str, problem: str, backend: Any, controller: A
     text goes nowhere until they say Yes, No being the default. Native on this
     computer sends nothing, so that is said and not asked.
     """
+    from quill.core.ai import chosen_route
+
+    settings = getattr(backend, "settings", None)
+    if getattr(settings, "provider", "") == chosen_route.ROUTE_PROVIDER:
+        # The AI the person chose in Choose Your AI; its own route asks before
+        # any other company is used, and names Auto's pick.
+        chosen = chosen_route.describe()
+        named = f"your chosen AI, {chosen}," if chosen else "your chosen AI"
+        controller._set_status(f"{pack_name} {problem}, so QUILL is using {named} instead.")
+        return True
     name, company, local = _native_receiver(backend)
     if local:
         controller._set_status(

@@ -8258,9 +8258,11 @@ Arrow through it line by line.</li>
 patch context.</li>
 <li><code>close_btn</code>: Close this window. Escape does the
 same.</li>
-<li><code>self._explain_btn</code>: Send this selected file’s bounded
-diff to the configured AI provider after consent. The output includes
-the source file and head SHA.</li>
+<li><code>self._explain_btn</code>: Sends this file’s changes to the AI
+chosen in Choose Your AI; if they are very long, only the first part is
+sent. Under Auto, QUILL says which AI it will use first, and it asks
+before a different company is used. The answer names the file and the
+commit it explains.</li>
 </ul>
 <h4
 id="githubpullreviewdialog-quilluigithub_pr_review_dialogpy">GitHubPullReviewDialog

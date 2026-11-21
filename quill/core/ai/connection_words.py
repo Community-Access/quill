@@ -36,6 +36,7 @@ __all__ = [
     "ACTION_LABELS",
     "CODEX_MODEL",
     "COMMAND_NEEDS",
+    "first_request_question",
     "FREE_MODEL",
     "MODELS_FAILED",
     "NOT_AVAILABLE_MODELS",
@@ -287,3 +288,13 @@ def with_needs(label: str, suffix: str) -> str:
     if label.endswith("..."):
         return f"{label[:-3]} {suffix}..."
     return f"{label} {suffix}"
+
+
+def first_request_question(app: str, name: str, destination: str, *, local: bool = False) -> str:
+    """Asked at a new app's first AI request, before it uses the AI it would inherit."""
+    if local:
+        return f"This is {app}'s first AI request. It stays on this computer. Send it?"
+    return (
+        f"This is {app}'s first AI request. It will go to {destination}, using {name}. "
+        "If you choose No, nothing is sent. Send it?"
+    )

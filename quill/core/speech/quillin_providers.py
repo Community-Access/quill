@@ -59,9 +59,9 @@ def _resolve_api_key(credential_label: str) -> str | None:
             return None
     # Default: reuse the assistant's OpenAI key wiring.
     try:
-        from quill.core.assistant_ai import load_assistant_api_key
+        from quill.core.assistant_ai import load_keyed_provider_api_key
 
-        return load_assistant_api_key() or None
+        return load_keyed_provider_api_key("openai") or None
     except Exception:  # noqa: BLE001
         return None
 
