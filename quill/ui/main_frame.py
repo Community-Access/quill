@@ -415,6 +415,7 @@ from quill.ui.main_frame_rich_mode import RichModeMixin
 from quill.ui.main_frame_rich_paragraph import RichParagraphMixin
 from quill.ui.main_frame_say_check import SayCheckMixin
 from quill.ui.main_frame_say_commands import SayCommandsAdapterMixin
+from quill.ui.main_frame_scribe import ScribeMixin
 from quill.ui.main_frame_search import SearchCommandsMixin
 from quill.ui.main_frame_section_move import SectionMoveMixin
 from quill.ui.main_frame_selection import SelectionMarksMixin
@@ -686,6 +687,7 @@ class MainFrame(
     MediaPlayerMixin,
     GlowFileMixin,
     DocConvertMixin,
+    ScribeMixin,  # Scribe for Documents (PRD 8.1), placed after DocConvert's hooks
     PdfOpenOcrMixin,
     DictationHotkeysMixin,
     # QUILL's own free AI: the shared hosted-AI commands, five, none implemented here.

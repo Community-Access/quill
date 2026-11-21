@@ -2,6 +2,37 @@
 
 ## 1.0.0
 
+### Scribe for Documents in QUILL, phase 1 (2026-11-20)
+
+- **QUILL can send a hard document to Scribe for Documents.** Pneuma
+  Solutions' Scribe rebuilds scanned and badly made documents, with headings,
+  tables and described pictures, into accessible HTML, Word, tagged PDF, EPUB,
+  Kindle, DAISY, MP3 audio and braille. Tools > Scribe for Documents has
+  Convert a File, Convert This Document, Convert from a Link, My Scribe
+  Documents, Conversions, Scribe Status, Sign In and Out, your Scribe account,
+  Options and About. You sign in with your own Scribe account and pay Scribe
+  for your own pages; QUILL never takes payment or sees your Scribe password.
+- **Nothing is sent without your say, every time.** The convert dialog opens
+  on exactly what will be sent and where, warns about a file whose name looks
+  private, gives the privacy notes before your first upload, and sends nothing
+  until you press Send and Convert. There is no "don't ask again". Safe Mode
+  turns Scribe off.
+- **One document at a time, for the whole family.** Scribe Conversions (Window
+  menu) lists every job from every QUILL app on this computer. Each stage is
+  said once, the 25, 50 and 75 percent marks only while QUILL is in front, and
+  each job ends with one sentence saying what was made and where. A job
+  survives closing QUILL: the next start picks it up without uploading again.
+  A password-protected PDF waits for its password there, with three tries.
+- **Where QUILL meets an inaccessible document, Scribe is offered.** A
+  scanned PDF's OCR question and Import / Convert Document now offer Scribe
+  beside free OCR. File > Export > With Scribe for Documents reaches tagged
+  PDF, Kindle, DAISY with audio and large print, which QUILL cannot make
+  itself, and Tools > Braille > Translate with Scribe for Documents opens
+  Scribe's braille in the braille view.
+- **Not switched on yet.** Pneuma has not issued QUILL's client ID, so in this
+  build every Scribe command says Scribe for Documents is not available yet.
+  QUILL Lite and Media Player get their Scribe commands in a later change.
+
 ### More settings that stick: Studio, Media Player, Transcribe, Beacon, Weather, Radio and QUILL's dialogs (2026-11-20)
 
 - **QUILL Studio, Quill Media Player and QUILL Transcribe tell you when a

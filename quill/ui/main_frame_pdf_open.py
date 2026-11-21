@@ -61,12 +61,20 @@ class PdfOpenOcrMixin:
 
     def _ask_ocr_for_scanned_pdf(self, path: Path, found: PdfOpen) -> None:
         wx = self._wx
-        answer = self._show_message_box(
-            scanned_question(path.name, found.page_count, some_text=found.has_text),
-            SCANNED_DIALOG_TITLE,
-            wx.ICON_QUESTION | wx.YES_NO | wx.YES_DEFAULT,
-        )
-        if answer != wx.YES:
+        # Scribe for Documents joins the offer when it is available (PRD 8.1.2).
+        picked = getattr(self, "_scribe_scanned_choice", lambda *_a: None)(path, found.page_count)
+        if picked == "scribe":
+            self.scribe_import_file(path)
+            return
+        if picked is None:
+            answer = self._show_message_box(
+                scanned_question(path.name, found.page_count, some_text=found.has_text),
+                SCANNED_DIALOG_TITLE,
+                wx.ICON_QUESTION | wx.YES_NO | wx.YES_DEFAULT,
+            )
+            if answer != wx.YES:
+                return
+        elif picked != "ocr":
             return
         from quill.io.docconvert import _Deps
         from quill.io.tesseract_ocr import tesseract_available

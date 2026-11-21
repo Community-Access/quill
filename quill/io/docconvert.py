@@ -136,6 +136,10 @@ TIER_LOCAL_OCR = "local-ocr"
 #: The same on-device tier, read by Windows OCR rather than Tesseract.
 TIER_WINDOWS_OCR = "windows-ocr"
 TIER_CLOUD_OCR = "cloud-ocr"
+#: The paid, consented tier after the free ones: Scribe for Documents rebuilt
+#: the document (headings, tables, picture descriptions) and QUILL read its
+#: Word result (quill/ui/main_frame_scribe.py, PRD 8.1.1).
+TIER_SCRIBE = "scribe"
 
 
 def supported_import_extensions() -> frozenset[str]:
@@ -580,6 +584,7 @@ __all__ = [
     "TIER_MARKITDOWN",
     "TIER_OWN_READER",
     "TIER_PDF_TEXT",
+    "TIER_SCRIBE",
     "TIER_WINDOWS_OCR",
     "WEAK_OCR_CONFIDENCE",
     "ConversionOutcome",

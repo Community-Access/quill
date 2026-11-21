@@ -4442,5 +4442,107 @@
     "title": "GitHub: Open the GitHub Reference at the Cursor",
     "body": "Opens what is written where your cursor is: #42 or GH-42 in this file's repository, owner/name#42 in another, or a commit hash, each in the GitHub Workbench with its list narrowed to it; or @person, whose profile opens in your browser. A bare #42 needs the document to be in a GitHub repository. Refused in Safe Mode.",
     "user_guide_section": "from-the-line-you-are-on"
+  },
+  {
+    "id": "scribe.convert_file",
+    "title": "Scribe for Documents: Convert a File",
+    "body": "Send one or more files to Scribe for Documents, Pneuma Solutions' service, which rebuilds scanned and badly made documents into accessible HTML, Word, tagged PDF, EPUB, Kindle, DAISY, MP3 audio and braille. The convert dialog says exactly what is sent and where before anything leaves your computer; nothing is sent until you press Send and Convert. You sign in with your own Scribe account and pay Scribe for your own pages.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.convert_this",
+    "title": "Scribe for Documents: Convert This Document",
+    "body": "Send the document you are editing to Scribe for Documents, saved first, for any format Scribe makes. The convert dialog asks before anything is sent.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.convert_link",
+    "title": "Scribe for Documents: Convert from a Link",
+    "body": "Have Scribe for Documents fetch a file from a web address that points straight at it, such as a PDF link. Web pages and links behind a sign-in are not supported.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.my_documents",
+    "title": "My Scribe Documents",
+    "body": "Every document in your Scribe account, including those made on the web or iPhone: download formats, open, rename, move to Trash, recover, delete forever and ask for human review. Refresh reads the list again.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.file_documents",
+    "title": "My Scribe Documents",
+    "body": "Every document in your Scribe account. The same window as Tools, Scribe for Documents, My Scribe Documents.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.conversions",
+    "title": "Scribe Conversions",
+    "body": "The Scribe for Documents queue: one document at a time for every QUILL app on this computer. Enter opens a result, Delete removes a row, and the Applications key lists every command: Open Result, Open Folder, Cancel Waiting, Retry, Buy Pages, Send Next File, Enter Password, Sign In, Ask for Human Review, Copy Details and Remove from List. Escape closes it.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.window",
+    "title": "Scribe Conversions",
+    "body": "The Scribe for Documents queue, from the Window menu. Escape closes it and returns to where you were.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.status",
+    "title": "Scribe Status",
+    "body": "Says the current Scribe for Documents job once, without opening anything: its stage, percent and about how long is left.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.repeat",
+    "title": "Repeat Last Scribe Message",
+    "body": "Says the last Scribe for Documents sentence again.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.sign_in",
+    "title": "Sign In to Scribe for Documents",
+    "body": "Opens Scribe's own sign-in page in your browser and waits; QUILL never sees what you type there. One sign-in covers every QUILL app on this computer. Copy Sign-in Link helps when the browser does not open.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.sign_out",
+    "title": "Sign Out of Scribe for Documents",
+    "body": "Ends the sign-in for every QUILL app on this computer. Conversions already sent still finish in your Scribe account.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.account",
+    "title": "Open My Scribe Account in Browser",
+    "body": "Opens your Scribe account in the browser, already signed in: settings, retention, purchases and account deletion.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.options",
+    "title": "Scribe for Documents Options",
+    "body": "Default formats, the download folder, whether results open when ready, whether QUILL offers Scribe for a PDF with little or no text, and when stages are spoken. Shared by every QUILL app.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.about",
+    "title": "About Scribe for Documents",
+    "body": "What Scribe for Documents is, what it costs and the privacy notes.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.import",
+    "title": "Import with Scribe for Documents",
+    "body": "The Scribe for Documents tier of Import / Convert Document: after the free tiers, send the file to Scribe, which rebuilds headings, tables and picture descriptions. The Word result opens as a new unsaved tab named with (Scribe).",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.export",
+    "title": "Export with Scribe for Documents",
+    "body": "Send the current document to Scribe for Documents for formats QUILL does not make itself: tagged PDF, Kindle, DAISY with audio, MP3 and large print. QUILL's own EPUB, Word, BRF and DAISY exports stay as they are.",
+    "user_guide_section": "working-with-different-document-types"
+  },
+  {
+    "id": "scribe.braille",
+    "title": "Translate with Scribe for Documents",
+    "body": "Send the current document to Scribe for Documents for braille (BRF) with Scribe's braille table and page settings. The result opens in QUILL's braille view.",
+    "user_guide_section": "working-with-different-document-types"
   }
 ]

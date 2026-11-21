@@ -39,6 +39,7 @@ __all__ = [
     "import_wildcard",
     "opened_sentence",
     "scanned_import_question",
+    "scribe_name",
 ]
 
 #: The command's name, the Open box's title and the caption of its questions.
@@ -76,6 +77,11 @@ def converted_name(stem: str) -> str:
     return f"{stem} (converted)"
 
 
+def scribe_name(stem: str) -> str:
+    """A Scribe result opened by Import: ``"report (Scribe)"`` (PRD 8.1.1)."""
+    return f"{stem} (Scribe)"
+
+
 def scanned_import_question(file_name: str, *, app_name: str = "QUILL") -> str:
     """The Tier 1 -> 2 question: no readable text, so read it with OCR?
 
@@ -109,11 +115,17 @@ def opened_sentence(file_name: str, outcome: Any) -> str:
         TIER_LOCAL_OCR,
         TIER_OWN_READER,
         TIER_PDF_TEXT,
+        TIER_SCRIBE,
         TIER_WINDOWS_OCR,
     )
 
     tier = getattr(outcome, "tier", "")
     pages = _pages(outcome)
+    if tier == TIER_SCRIBE:
+        return (
+            f"Opened {file_name} from Scribe for Documents, which rebuilt it; with your "
+            "consent it was uploaded and stays in your Scribe account."
+        )
     if tier == TIER_CLOUD_OCR:
         return (
             f"Opened {file_name} from Datalab cloud OCR.{pages} "
