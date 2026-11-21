@@ -384,6 +384,16 @@ def release_evidence(run: Any) -> str:
     return found.sentence
 
 
+def prompt_files(run: Any) -> str:
+    """Prompt Files...: find the prompt files and read each as structure; reads only."""
+    from quill.core.github.prompt_files import describe, find_prompt_files, read_prompt_file
+
+    found = find_prompt_files(run.api, run.repo)
+    for path in found.paths[:3]:
+        describe(read_prompt_file(run.api, run.repo, path, found.ref))
+    return found.sentence
+
+
 def environment_sheet_and_deployments(run: Any) -> str:
     """An environment's sheet (counts, custom rules, branch policies) and its Deployments..."""
     from quill.core.github.environments import fetch_environments
@@ -402,6 +412,71 @@ def environment_sheet_and_deployments(run: Any) -> str:
         f"variables, {len(values.get('custom_rules') or ())} custom rules; "
         f"{len(found)} recent deployments"
     )
+
+
+def pull_for_issue(run: Any) -> str:
+    """Start Pull Request for This Issue..., then Related... on the issue: the PR closes it."""
+    from quill.core.github.collab_links import pull_for_issue as start
+    from quill.core.github.collab_links import related
+
+    number = _new_issue(run, "pull for issue")
+    branch = f"quill-live-pull-for-{number}"
+    try:
+        pr, said = start(run.api, run.repo, number, f"{TAG} pull for issue", branch)
+        pull = run.rest("GET", f"/repos/{run.repo}/pulls/{pr}")
+        _expect(f"Closes #{number}" in str(pull.get("body")), "the body does not close the issue")
+        chain = related(run.api, run.repo, "issue", number)
+        _expect(any(link.number == pr for link in chain.links), chain.sentence)
+        run.rest("PATCH", f"/repos/{run.repo}/pulls/{pr}", {"state": "closed"})
+    finally:
+        if run.exists(f"/repos/{run.repo}/branches/{branch}") is not None:
+            run.rest("DELETE", f"/repos/{run.repo}/git/refs/heads/{branch}")
+        _delete_issue(run, run.repo, number)
+    return f"{said} Related listed it."
+
+
+def issue_from_discussion(run: Any) -> str:
+    """Create Issue from Discussion... on the newest discussion, without the comment back."""
+    from quill.core.github.collab_links import discussion_issue_body
+    from quill.core.github.collab_links import issue_from_discussion as make
+    from quill.core.github.discussions import list_discussions
+
+    found, _complete, _warning = list_discussions(_token(run), run.repo, limit=1)
+    if not found:
+        raise NotHere("the test repository has no discussions")
+    row = found[0]
+    body = discussion_issue_body(row.url, "", "QUILL live test")
+    number, said = make(run.api, run.repo, int(row.key), f"{TAG} from discussion", body)
+    try:
+        issue = _issue_state(run, run.repo, number)
+        _expect(row.url in str(issue.get("body")), "the issue does not link back")
+    finally:
+        _delete_issue(run, run.repo, number)
+    return said
+
+
+def publish_wiki(run: Any) -> str:
+    """Edit Wiki Pages... and Publish Wiki Changes...: a page added, published, then removed."""
+    from pathlib import Path
+
+    from quill.core.git_binaries import find_git
+    from quill.core.github import wiki_pages as wp
+    from quill.stability.safe_subprocess import run_subprocess_safely as runner
+
+    git = find_git()
+    if git is None:
+        raise NotHere("git is not installed")
+    with tempfile.TemporaryDirectory() as tmp:
+        folder = wp.wiki_folder(Path(tmp), run.repo)
+        try:
+            wp.fetch_copy(git, run.repo, folder, token=_token(run), runner=runner)
+        except wp.WikiPagesError as exc:
+            raise NotHere(f"the test repository's wiki: {exc}") from exc
+        page = wp.new_page(folder, f"QUILL live {int(time.time())}", TAG + "\n")
+        said = wp.publish(git, run.repo, folder, TAG, token=_token(run), runner=runner)
+        page.unlink()
+        wp.publish(git, run.repo, folder, f"{TAG}: remove", token=_token(run), runner=runner)
+    return said
 
 
 def undo_and_redo_over_a_fresh_read(run: Any) -> str:
@@ -950,7 +1025,8 @@ def watches(run: Any) -> str:
     from quill.core.github.watches import WatchStore, check_watch
 
     store = WatchStore.load(run.login)
-    watch = store.add("issue", run.repo, number=int(run.ids["issue"]))
+    # "comment" is the kind for an issue ("issue" is not one, and add() refuses it).
+    watch = store.add("comment", run.repo, number=int(run.ids["issue"]))
     checked, said = check_watch(run.api, watch)
     store.replace(checked)
     store.replace(dataclasses.replace(checked, paused=True))
@@ -959,6 +1035,34 @@ def watches(run: Any) -> str:
     _expect(store.remove(watch.id), "not removed")
     store.save()
     return f"watched, checked ({len(said)} changes), paused, removed"
+
+
+def watch_readiness(run: Any) -> str:
+    """Watch Readiness on the test pull request: the first check learns, the second is quiet."""
+    from quill.core.github.watches import READY, WatchStore, check_watch
+
+    store = WatchStore.load(run.login)
+    watch = store.add(READY, run.repo, number=int(run.ids["pull"]))
+    try:
+        first, said = check_watch(run.api, watch)
+        _expect(not said and first.last_result.startswith("started watching"), first.last_result)
+        second, said = check_watch(run.api, first)
+        _expect(not said, f"said {said} with nothing changed")
+    finally:
+        store.remove(watch.id)
+        store.save()
+    return f"{first.last_result}; then {second.last_result}"
+
+
+def why_cant_merge_named(run: Any) -> str:
+    """Why Can't I Merge? with the rules named: reads the branch's rules, never writes."""
+    from quill.core.github.merge_readiness import load_readiness
+    from quill.core.github.merge_rules import name_blockers
+
+    ready = load_readiness(run.api, run.repo, int(run.ids["pull"]))
+    found = name_blockers(run.api, run.repo, ready)
+    unread = f" Unread: {', '.join(found.unread)}." if found.unread else ""
+    return f"{ready.sentence} Named: {len(found.blockers)} rules.{unread}"
 
 
 def sets(run: Any) -> str:
@@ -1361,6 +1465,11 @@ VERBS: dict[str, Scenario | str] = {
     "mark_read": "needs Jeff: would mark one of your real notifications read",
     "merge": merge_and_delete_branch,
     "merge_selected": merge_selected,
+    "pull_for_issue": pull_for_issue,
+    "issue_from_discussion": issue_from_discussion,
+    "publish_wiki": publish_wiki,
+    "wiki_pages": "with publish_wiki: the wiki copied here and its pages listed",
+    "new_wiki_page": "with publish_wiki: a page made here, published, then removed",
     "revert_pull": revert_merged,
     "workflow_state": workflow_state,
     "new_tag": tags_made_and_deleted,
@@ -1433,6 +1542,7 @@ VERBS: dict[str, Scenario | str] = {
     "create_team": "not here: would change a real organization",
     "pause_watch": watches,
     "remove_watch": "with pause_watch: watched, paused, removed",
+    "watch_readiness": watch_readiness,
     "api_console": api_console,
     "across_edit_set": sets,
     "across_set_filter": "with across_edit_set",
@@ -1718,6 +1828,28 @@ def security_reads(run: Any) -> str:
     return " ".join(said)
 
 
+def draft_release_lifecycle(run: Any) -> str:
+    """A draft: made, opened on its sheet (GitHub cannot read a draft by tag), renamed, deleted."""
+    from quill.core.github.row_admin import delete_release
+    from quill.core.github.sheet_engine import load, save
+    from quill.core.github.sheets_releases import RELEASE
+    from quill.core.workbench.properties import FieldChange
+
+    tag = f"v0.0.0-quill-draft-{int(time.time()) % 100000}"
+    body = {"tag_name": tag, "name": f"{TAG} draft", "body": TAG, "draft": True}
+    run.rest("POST", f"/repos/{run.repo}/releases", body=body)
+    ident = {"repo": run.repo, "tag": tag}
+    try:
+        loaded = load(run.api, RELEASE, ident)
+        _expect(loaded.values.get("draft") is True, "the draft did not open on its sheet")
+        change = FieldChange("name", "Title", f"{TAG} draft", f"{TAG} draft (renamed)")
+        outcome = save(run.api, RELEASE, ident, [change], loaded=loaded.values)
+        _expect(not outcome.failed, f"the rename failed: {outcome.failed}")
+    finally:
+        gone = delete_release(run.api, run.repo, tag)
+    return f"{tag}: opened as a draft, renamed and read back. {gone}"
+
+
 def discussion_places(run: Any) -> str:
     """Pinned (spotlight), Categories by section, and each poll as a table: reads only."""
     from quill.core.github.discussion_categories import category_rows
@@ -1772,10 +1904,29 @@ FEATURES: dict[str, Scenario | str] = {
     "Viewed files in a pull request review (PRD 22.1)": review_viewed_files,
     "Open Patch in Editor: the whole change as one diff": open_patch,
     "Why Can't I Merge?, for the exact commit": why_cant_merge,
+    "Why Can't I Merge? names the ruleset, check or CODEOWNERS line (GX09)": why_cant_merge_named,
+    "Watch Readiness says when a pull request can merge, or stops (GX09)": (
+        "needs Jeff: Watch Readiness on a pull request with a required check, then let the "
+        "check pass and fail; each change is said once"
+    ),
+    "Check Download... against the release file's digest (GX10)": (
+        "needs Jeff: download a file of the test release in the browser, Check Download... "
+        "on its row says it matches; change one byte of the copy and it says it does not"
+    ),
     "Release Evidence: commit, checks, deployments, immutable, attestations (GX10)": (
         release_evidence
     ),
     "An environment's sheet and its Deployments... (GX10)": environment_sheet_and_deployments,
+    "Related...: what links to an issue, pull request or discussion (GX12)": (
+        "with pull_for_issue: the new pull request is listed as closing the issue"
+    ),
+    "Prompt Files...: GitHub Models prompt files read as structure": prompt_files,
+    "Copilot Plan, Seats and Usage Report on an organization": (
+        "needs Jeff: an organization with Copilot Business"
+    ),
+    "Draft Description, Reviewer Brief, Task Breakdown and Release Notes with AI (GX15)": (
+        "needs Jeff: an AI connection in QUILL, run from the Workbench by hand"
+    ),
     "Merge Selected... with a branch that requires a merge queue": (
         "not here: a merge queue needs an organization repository's ruleset"
     ),
@@ -1802,6 +1953,35 @@ FEATURES: dict[str, Scenario | str] = {
         "remove a repository with Repositories Allowed..., then back to private"
     ),
     "Dependency Review on a pull request, and Security Overview (GX11)": security_reads,
+    # complete.md 1.3, "Verify ... object lifecycles": each family's offline proof is
+    # tests/unit/core/github_workbench/test_lifecycle_<family>.py; these are the live halves.
+    "A draft release: opened, renamed and deleted with no tag claimed": draft_release_lifecycle,
+    "Projects: every field type set and cleared, items archived, restored and removed": (
+        "needs Jeff: a throwaway Project with a text, number, date, single select and "
+        "iteration field; set and clear each on one item, archive, restore and remove it, "
+        "and post, edit and delete a status update"
+    ),
+    "Branches: rename, default branch, a ruleset and classic protection, put back": (
+        "needs Jeff: a throwaway branch on the test repository; rename it, make it the "
+        "default and back, change a ruleset's enforcement and approvals, and configure "
+        "protection twice to hear that who may push and linear history are kept"
+    ),
+    "Actions refusals said in words: an expired log, a deleted run, a workflow off": (
+        "needs Jeff: an old run whose logs have expired, and a second account with read "
+        "access, to hear the 404/410 and 403 sentences"
+    ),
+    "Security Alert sheet: dismiss or resolve each kind with its own reason, then reopen": (
+        "needs Jeff: one open Dependabot, code scanning and secret scanning alert on the "
+        "test repository; close each from its sheet with one reason, then reopen it"
+    ),
+    "Organization sheet, members, invitations and blocks, and your emails and socials": (
+        "needs Jeff: an organization he owns and a throwaway invitee; invite and cancel, "
+        "block and unblock, add and delete an email address and a social account"
+    ),
+    "Team lifecycle: create, rename, members, repositories, parent and delete": (
+        "needs Jeff: an organization he owns; a throwaway team made, renamed, given a member "
+        "and a repository, put under a parent, then deleted with its child"
+    ),
     "Speech and braille for each list, sheet and result": (
         "needs Jeff: the screen-reader checks in docs/qa/screen-reader-checks-2026-10.md"
     ),

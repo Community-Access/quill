@@ -1,11 +1,12 @@
 # QUILL Lite: free AI help, in an editor that talks to you
 
-**GitHub workbench update (November 2026):** QUILL Lite now opens QUILL's
-shared GitHub Items viewer from **File > GitHub Workbench...** (**Alt+F**, then **G**). Review a pull
-request through an expandable outline of changed files, conversations, and
-checks. **Ctrl+R** replies to a selected thread and **Shift+F10** reveals
-actions for the selected item. The [GitHub tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html)
-explains every step for a screen reader.
+**GitHub Workbench update (November 2026):** **File > GitHub Workbench...**
+(**Alt+F**, then **G**) opens the GitHub Workbench, the one window for
+everything GitHub, shared with QUILL: your Inbox, every repository's issues,
+pull requests, Actions and settings, and **Alt+Enter** on anything to change
+it, with **Ctrl+Z** to take it back. The
+[GitHub Guide](github-guide/lite-github-guide.html) explains every step for a
+screen reader.
 
 ## November 2026 update: payment form authoring
 
@@ -581,12 +582,12 @@ Folder, and Ctrl+3 asks an AI to work on the whole project. You read every
 change before it is written, allow every command before it runs, hear the
 test results in one sentence, and Undo Last Agent Turn puts every file back.
 
-GitHub comes along too. Expand a pull request into its changed files, its
-conversations and its checks; arrow to a thread, Tab into it, and press
-**Ctrl+R** to reply or **Ctrl+Shift+R** to resolve it. **Explore** gathers saved
-searches, My Work, repositories, notifications and workflow job logs in one
-window. The [guided tutorial](https://www.quillforall.org/docs/08-github-inside-quill.html)
-walks through every key.
+GitHub comes along too, in the GitHub Workbench. Expand a pull request into
+its changed files, its conversations and its checks; arrow to a thread, Tab
+into it, and press **Ctrl+R** to reply or **Ctrl+Shift+R** to resolve it. Your
+Inbox, notifications, searches, repositories and workflow logs are places in
+one tree. The [GitHub Guide](github-guide/lite-github-guide.html) walks
+through every key.
 
 ### Finding the right word
 

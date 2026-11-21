@@ -245,6 +245,146 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="quill-cast-a-new-download-folder-takes-the-waiting-downloads-with-it-2026-11-20">QUILL
+Cast: a new download folder takes the waiting downloads with it
+(2026-11-20)</h3>
+<p>Chris Nova changed their download folder and found that the episodes
+they had already asked to download still went to the old one. Each
+download’s place was fixed the moment it was queued, so a new folder
+only reached episodes queued afterwards. Now, when you change the
+download folder in QUILL Cast’s Preferences or QUILL’s Podcast Settings,
+every download still waiting moves to the new folder, and Cast says how
+many: “2 downloads waiting will now save to D:\other files\Quill Cast
+Downloads.” A download that has already started, or was paused part way,
+finishes in the old folder, so nothing already downloaded is lost, and
+Cast says that too. Episodes already on disk stay where they are and
+keep playing.</p>
+<h3 id="ai-nothing-goes-to-an-ai-you-did-not-choose-2026-11-20">AI:
+nothing goes to an AI you did not choose (2026-11-20)</h3>
+<ul>
+<li><strong>AI set to Off is honoured.</strong> Ask Quill’s chat setup
+can no longer send text to a cloud AI while the AI connection is Off.
+Only the model on this computer is used.</li>
+<li><strong>Signing out of Ollama on this computer</strong> now means no
+AI is in use, as QUILL says. It used to switch you to OpenAI, so with an
+OpenAI key saved your next request went to the cloud.</li>
+<li><strong>Switching AI reaches every feature at once.</strong> Improve
+Reading Order, the watch folder, Train Writing Style, chapter inference
+and Studio’s chapter titles used the AI you had before the switch until
+you restarted.</li>
+<li><strong>Ask About an Image</strong> names the company that will
+receive the picture, for whichever AI you use, and asks the
+first-picture question first. No, the default, sends nothing. Under
+Auto, it names the AI Auto will use.</li>
+<li><strong>Offline means offline.</strong> Generate Captions (Offline),
+Transcribe Audio (Offline) and offline dictation in QUILL and QUILL
+Studio never use a cloud transcriber. If you chose one in the Speech
+Hub, they use the speech engine on this computer instead.</li>
+<li><strong>Review Dictation</strong> names who will receive your words
+under Auto, in the same words the picture question uses. If no AI is
+ready, it says so and asks nothing.</li>
+<li><strong>An agent engine that is not set up</strong> no longer falls
+back to another company with only a status line. QUILL asks first and
+names the company, with No as the default. Falling back to Ollama on
+this computer is said, not asked.</li>
+<li><strong>Signing out of your own key</strong> also clears the copy in
+QUILL’s older key store, so the advanced AI commands stop sending to
+that provider.</li>
+<li><strong>A saved key goes only to its own company.</strong> After the
+AI connection moved to another provider, the older saved key could be
+sent with it. Now it is used only for the provider it was saved
+for.</li>
+</ul>
+<h3
+id="wordpress-custom-fields-shows-the-fields-you-came-for-2026-11-20">WordPress:
+Custom Fields shows the fields you came for (2026-11-20)</h3>
+<ul>
+<li><strong>Another plugin’s fields are hidden until you ask for
+them.</strong> Some plugins add their fields to every post: on the test
+site, The Events Calendar’s 34 event, venue and organizer fields buried
+an ordinary post’s SEO title. Custom Fields now hides them and says how
+many and whose; <strong>Show all fields</strong> (Alt+S) opens the
+window again with every one, keeping what you typed. WordPress’s own
+fields, QUILL’s, Yoast SEO’s and any field QUILL cannot place are always
+shown. In the Workbench, those fields move to a page of their own,
+Fields Plugins Add to Every Item.</li>
+</ul>
+<h3
+id="github-guide-every-chapter-is-about-the-workbench-with-walk-throughs-a-quill-lite-chapter-and-an-appendix-2026-11-20">GitHub
+Guide: every chapter is about the Workbench, with walk-throughs, a QUILL
+Lite chapter and an appendix (2026-11-20)</h3>
+<p>The GitHub Guide now reads like the WordPress and Forms guide, and
+matches what shipped.</p>
+<ul>
+<li><strong>Every chapter is about the GitHub Workbench.</strong>
+Chapters 1 to 11 still taught GitHub Items and Explore GitHub, which the
+Workbench replaced: their buttons, their keys and their views. They now
+give the place in the tree, the row on the menu or context menu, and its
+key.</li>
+<li><strong>Chapter 2 is a tour of the Workbench:</strong> the tree and
+the Go keys, lists, the filter, Properties, the context menu, how QUILL
+asks before it changes GitHub, Ctrl+Z and Change History, the status bar
+and the help keys.</li>
+<li><strong>Every chapter says why you are there, what you will do and
+what you will have at the end,</strong> and most end with a walk-through
+on your practice repository and the guided lesson that goes with
+it.</li>
+<li><strong>Chapter 10</strong> has the sentences QUILL says when
+something fails, in their real words, including Workbench levels, Dry
+Run, Act As, Enterprise Server and the permission GitHub names when it
+refuses.</li>
+<li><strong>Chapter 14, GitHub in QUILL Lite,</strong> lists what
+differs between the two editors. <strong>Appendix A</strong> says what
+GitHub needs for each part of the Workbench: your role, your sign-in’s
+permissions and the features a repository or organization must
+have.</li>
+<li><strong>Tutorials 8 and 11</strong> teach the Workbench too.</li>
+<li><strong>One book in both editors.</strong> QUILL Lite’s copy of the
+guide is now written from QUILL’s by
+<code>scripts/sync_lite_github_guide.py</code>, and a test fails when it
+falls behind. The two had drifted apart.</li>
+<li>The contents page links every section of every chapter, and Ctrl+F1
+in the Workbench lists all fourteen chapters.</li>
+</ul>
+<h3
+id="github-help-the-github-prd-and-the-release-notes-describe-the-workbench-2026-11-20">GitHub
+help, the GitHub PRD and the release notes describe the Workbench
+(2026-11-20)</h3>
+<ul>
+<li><strong>F1 on the editor’s GitHub commands</strong> describes the
+GitHub Workbench. 44 help topics still taught the GitHub Items and
+Explore GitHub windows, their buttons and their Alt keys. Each now says
+which Workbench place or window the command opens, its keys there, what
+it asks and what it says.</li>
+<li><strong>The Workbench’s own help</strong> no longer names GitHub
+Items, and says what three commands really do: Open GitHub Address
+(Ctrl+L) opens a repository or a compare link, not an issue by number; a
+snoozed notification is a note on this computer and stays in the list;
+and a change others will see is saved at once, with no option to ask
+first.</li>
+<li><strong>The GitHub PRD</strong> starts with where it stands on
+2026-11-20: what shipped, by area, what was taken out (features only
+GitHub Enterprise Cloud has), and what is left. Its features list and
+phases now match what was built.</li>
+<li><strong>The release notes, the announcements and What’s New</strong>
+in both editors describe the Workbench rather than GitHub Items, with
+corrected routes: QUILL Lite’s is File &gt; GitHub Workbench…, batches
+are Alt+Enter on several rows or Plain-Language Batch, and Ask Copilot
+to Review is on the pull request’s row.</li>
+</ul>
+<h3 id="a-github-lesson-on-protecting-a-branch-2026-11-20">A GitHub
+lesson on protecting a branch (2026-11-20)</h3>
+<ul>
+<li><strong>Help &gt; Tutorials has a lesson on branch rules.</strong>
+“Protect a branch”, in the GitHub track, walks you through protecting
+main on your practice repository: Configure Branch Protection from
+Settings &gt; Branch Protection in the Workbench, one required review,
+reading the rules on the branch’s Protection page and in Settings &gt;
+Rulesets, then taking the rule off again. Each step says what to press
+and what you should hear. That makes all eleven of the GitHub lessons
+the plan asked for.</li>
+</ul>
+<h3
 id="more-settings-that-stick-studio-media-player-transcribe-beacon-weather-radio-and-quills-dialogs-2026-11-20">More
 settings that stick: Studio, Media Player, Transcribe, Beacon, Weather,
 Radio and QUILL’s dialogs (2026-11-20)</h3>
@@ -339,6 +479,28 @@ QUILL PRD and the agent instructions say Python 3.14 and wxPython
 4.3.2.</li>
 </ul>
 <h3
+id="wordpress-workbench-gravity-forms-qafs-spam-checks-and-pmpro-tried-live-2026-11-20">WordPress
+Workbench: Gravity Forms, QAF’s spam checks and PMPro tried live
+(2026-11-20)</h3>
+<ul>
+<li><strong>Test This Form works on a form with a phone or time
+field.</strong> Its test values put “555-0100” in a US phone field,
+which Gravity Forms refuses, and left a Time field empty. It now sends
+“(555) 555-0100” to a US phone field and a time such as “10:30 am”.</li>
+<li><strong>Discount Codes lists codes on Paid Memberships Pro
+3.9.</strong> The node looked for a PMPro feature that PMPro 3.9.2 does
+not have, so it only ever said to use wp-admin. It now lists up to 20
+codes through PMPro’s own search, which cannot show more, and says when
+there may be more in wp-admin.</li>
+<li><strong>Tried on the test site:</strong> every Gravity Forms field
+type QUILL builds, changing an entry’s answers, Spam and Not Spam,
+notes, notifications and confirmations, Resend Notifications, copying a
+form and its entries to QUILL Accessible Forms and back, and the Watch;
+QUILL Accessible Forms’ spam checks with real submissions, and the move
+from BITS Accessible Forms; Members of This Level on a site of 260
+people; and reading a menu as a document.</li>
+</ul>
+<h3
 id="crash-and-support-reports-what-is-sent-is-what-was-checked-2026-11-20">Crash
 and support reports: what is sent is what was checked (2026-11-20)</h3>
 <ul>
@@ -403,6 +565,56 @@ posts are kept.</li>
 <li><strong>Discussion counts links as WordPress does.</strong> The
 Discussion explanation counted one ordinary link twice, so it said a
 one-link comment would be held under the two-link rule.</li>
+</ul>
+<h3
+id="github-workbench-repository-settings-create-repository-transfer-pages-and-packages-2026-11-20">GitHub
+Workbench: repository settings, Create Repository, Transfer, Pages and
+Packages (2026-11-20)</h3>
+<ul>
+<li><strong>Create Repository…</strong>, in the editor and the
+Workbench, asks for every option GitHub takes: owner, name, description,
+website, private or public, and either a template (with all its branches
+or only the default) or a README, a .gitignore template and a licence.
+When GitHub would refuse the combination, the dialog stays open and its
+Problem box says why.</li>
+<li><strong>Transfer Repository…</strong> also asks for a new name and,
+for an organization, which teams get access. The typed confirmation says
+where the repository will land.</li>
+<li>The <strong>Merging</strong> page sets the default title and message
+of squash and merge commits as one choice each, in the words of GitHub’s
+settings page, so changing only the message is no longer refused.</li>
+<li>The <strong>Pages</strong> page shows the site’s status and latest
+build, and sets how it is built, the branch and folder, the custom
+domain and Enforce HTTPS.</li>
+<li><strong>Repository &gt; Packages</strong> lists the packages
+published from the repository. <strong>Delete Package Version…</strong>
+asks you to type the package’s name.</li>
+<li>The Features page shows the Sponsor button’s links. GitHub’s API
+cannot turn the button on or off, and its help says so.</li>
+</ul>
+<h3
+id="github-workbench-the-rule-that-blocks-a-merge-by-name-watch-readiness-check-download-2026-11-20">GitHub
+Workbench: the rule that blocks a merge, by name; Watch Readiness; Check
+Download… (2026-11-20)</h3>
+<ul>
+<li><strong>Why Can’t I Merge? and Merge Selected… name the blocking
+rule.</strong> They say which required check failed, has not finished or
+has not reported, and which ruleset or branch protection wants it; how
+many approving reviews a rule wants against how many there are; which
+CODEOWNERS line (number and pattern) still needs an owner’s approval,
+with a changed file it covers; and which rule sends the branch through a
+merge queue. What could not be read is said at the end. GitHub’s own
+answer is never changed.</li>
+<li><strong>Watch Readiness.</strong> Watch a pull request and QUILL
+says once when it becomes able to merge and once when it stops, naming
+the blocking rules. Also in Add Watch.</li>
+<li><strong>Check Download…</strong> on a release file’s row compares
+the copy you downloaded with GitHub’s SHA-256 digest and says match, no
+match (download it again), or that GitHub has no digest for that
+file.</li>
+<li>Attestation signatures are still checked with
+<code>gh attestation verify</code>: verifying them inside QUILL needs
+Sigstore, which QUILL does not ship.</li>
 </ul>
 <h3
 id="hosted-ai-service-accounting-you-can-trust-and-one-sign-in-per-code-2026-11-20">Hosted
@@ -528,6 +740,148 @@ adds the account gh is already signed in to.</li>
 the server, and everything for that account goes to that server only.
 When the server’s GitHub is too old for something, QUILL says so and
 names its version.</li>
+</ul>
+<h3
+id="github-workbench-the-wiki-discussion-to-issue-to-pull-request-copilot-seats-prompt-files-and-ai-drafts-2026-11-20">GitHub
+Workbench: the wiki, discussion to issue to pull request, Copilot seats,
+prompt files and AI drafts (2026-11-20)</h3>
+<ul>
+<li><strong>The wiki.</strong> Edit Wiki Pages… copies a repository’s
+wiki to your computer, or brings your copy up to date, and lists its
+pages with Home first. Enter opens a page in the editor. New Wiki Page…
+makes one, and Publish Wiki Changes… names the pages and the account,
+asks for a message and sends them. Nothing is ever forced: if someone
+else changed the wiki first, QUILL puts your changes on top of theirs,
+and if that conflicts it undoes the attempt and says so.</li>
+<li><strong>From a discussion to a pull request.</strong> Create Issue
+from Discussion… opens an issue that quotes and links the discussion.
+Start Pull Request for This Issue… makes a linked branch and a draft
+pull request that closes the issue. Related… lists everything that links
+to an issue, pull request or discussion, with its repository.</li>
+<li><strong>Copilot for an organization.</strong> Copilot Plan, Copilot
+Seats, A Member’s Copilot Seat…, giving and taking seats from people and
+teams (owners only, and it asks first), the usage report, agent access
+and content exclusions. On a repository, Copilot Agent Configuration and
+Copilot Review Settings. Nothing here needs GitHub Enterprise
+Cloud.</li>
+<li><strong>Prompt files.</strong> Prompt Files… lists a repository’s
+GitHub Models prompts and reads each one as its model, settings,
+messages, test rows and evaluators, with any problems. Open in Editor
+edits one.</li>
+<li><strong>Open in github.dev</strong> on a file or a pull request,
+GitHub’s free editor in the browser.</li>
+<li><strong>AI drafts you check first.</strong> Draft Description and
+Reviewer Brief on a pull request, Draft Task Breakdown on an issue, and
+Draft Release Notes on the rows you choose. Each draft opens in the
+editor with the sources it used and anything it left out. They use your
+own AI connection, and are greyed with a reason when there is none.</li>
+<li><strong>Where review is stuck.</strong> The repository health
+snapshot now says how many ready pull requests are waiting for a review
+and how long the oldest has waited. It never names who was asked.</li>
+</ul>
+<h3
+id="github-workbench-every-objects-lifecycle-checked-and-what-was-wrong-fixed-2026-11-20">GitHub
+Workbench: every object’s lifecycle checked, and what was wrong fixed
+(2026-11-20)</h3>
+<p>Projects, branches, releases, Actions, security alerts,
+organizations, teams and your own account were each taken through being
+made, read, changed and removed, with tests. What that found:</p>
+<ul>
+<li><strong>Branch protection kept.</strong> Protect Branch… used to
+reset every setting it did not name, because GitHub replaces protection
+whole: who may push, linear history, force pushes, deletion and the
+reviewers’ own settings were lost. They are now read first and sent back
+as they were.</li>
+<li><strong>Draft releases.</strong> A draft could not be opened on its
+sheet or deleted, because GitHub cannot find a draft by its tag. Both
+work now, and deleting a draft says that it had no tag to delete.</li>
+<li><strong>Project fields.</strong> Text, number and date fields read
+back as they were saved, including a 0 or an empty value; a number reads
+3, not 3.0, and a word typed in a number field is refused in plain
+words. An item on a finished iteration says which. Delete a Field…
+offers only the fields people made, never Title or Assignees. A Project
+or item that is gone, or hidden from you, says so rather than showing an
+empty sheet.</li>
+<li><strong>Project items.</strong> Archive an Item…, Restore an
+Archived Item… and Remove an Item… on a Project’s row. Status update
+dates are checked before anything is sent.</li>
+<li><strong>Refusals in words.</strong> A refused Projects or Actions
+request says why in one sentence: the sign-in lacks the project scope, a
+log has passed the repository’s retention period, a run was deleted, a
+workflow cannot be turned off in its present state. A failed field on
+any sheet gives GitHub’s reason without the support code.</li>
+<li><strong>Security alerts.</strong> The Reason box offers only the
+reasons that kind of alert takes, spelled as GitHub spells them, and an
+alert is never set to fixed or auto-dismissed from the sheet, which only
+GitHub can do.</li>
+<li><strong>Teams.</strong> Lists say visible rather than GitHub’s
+“closed”. An organization owner can change a team they are not on.
+Members and repositories past the first 30 are listed. The Danger Zone
+now says deleting a team deletes the teams inside it.</li>
+<li><strong>People.</strong> Adding someone to an organization or team
+says they were invited, since they are not in it until they accept.</li>
+<li><strong>Also.</strong> An artifact, variable or secret row opens its
+own sheet; a cache past the first 30 opens; and the Assets window has
+Properties… to rename a file or change its label.</li>
+</ul>
+<p>The live halves are rows in the live-run table; the ones that need an
+organization or a second account wait for the test organization.</p>
+<h3
+id="github-workbench-issue-fields-edited-in-properties-and-you-and-the-object-2026-11-19">GitHub
+Workbench: issue fields edited in Properties, and You and the object
+(2026-11-19)</h3>
+<ul>
+<li><strong>Issue fields are edited on the sheet.</strong> The
+Properties sheet’s Issue Fields page now edits a date, a number, a
+single choice and text, each with its own kind of control. Saving sends
+the same request Issue Fields… on the row sends, sets only the fields
+you changed, and reads the issue again to check GitHub kept them;
+emptying a field clears it. Several issues at once show Mixed where they
+differ. Fields with several choices, and types QUILL does not know, stay
+read only. Without triage access the page says why each field is
+locked.</li>
+<li><strong>Menu rows for your relationships.</strong> Subscribe or
+Unsubscribe… on an issue, a pull request, a discussion or a commit;
+Block or Unblock… on a person; Fork… on a repository; Block from
+Organization… on an organization and on a member; Leave Organization…
+(asks first); and Your Invitation, which says whether an organization
+invited you and, since GitHub’s API cannot decline one, where to decline
+it on GitHub.</li>
+<li><strong>A repository’s You page</strong> adds Star lists (check the
+lists it is on), Forked by you (ticking it forks the repository, checked
+afterwards), In Favorites and Pinned in the Workbench (kept on this
+computer, the same as the menu rows), and whether you sponsor the owner.
+<strong>Sponsor the Owner…</strong> opens the owner’s Sponsor tiers;
+nothing is charged until you choose a tier and type their name.</li>
+<li><strong>React to a Comment…</strong> on an issue, a pull request
+(including review comments) and a discussion adds a reaction, or takes
+back one you gave.</li>
+</ul>
+<h3
+id="github-workbench-help-that-knows-where-you-are-2026-11-19">GitHub
+Workbench: help that knows where you are (2026-11-19)</h3>
+<ul>
+<li><strong>Alt+Enter on a GitHub reference</strong> in a document, in
+both editors, opens its Properties sheet in the Workbench:
+<code>#42</code>, <code>owner/name#42</code>, <code>@person</code>, a
+commit hash or a GitHub address. Anywhere else Alt+Enter does what it
+did.</li>
+<li><strong>Examples from your own work.</strong> F1 in the Workbench
+ends with an example built from the repository and row you have open.
+Nothing is read or sent for it.</li>
+<li><strong>Short rows for braille.</strong> Workbench Options, Lists:
+each row is one short line, number and title first, with no column names
+and nothing cut off.</li>
+<li><strong>Key cards and a tour.</strong> A print key card and a
+braille-ready one, the GitHub guide as one book for each editor, and
+Help &gt; Take the Tour (Alt+Shift+T), a spoken step per pane.</li>
+<li><strong>QUILLBert and QUILLBee tips.</strong> The third time
+something is done the slow way, a tip waits in the details pane, once.
+Workbench Options can turn tips off or give plain help without the
+names.</li>
+<li><strong>Ask How…</strong> (Alt+Shift+A) asks your chosen AI, using
+only the GitHub help. A command it names can be run from the
+answer.</li>
 </ul>
 <h3
 id="github-workbench-access-templates-more-tutorials-team-review-requests-and-the-command-key-in-the-workbench-2026-11-20">GitHub
@@ -741,6 +1095,32 @@ everywhere.</li>
 webhooks makes the organization’s copy first and only then deletes each
 repository’s own. Environments, deploy keys and autolinks have no
 organization form on GitHub, and QUILL says so.</li>
+</ul>
+<h3
+id="github-workbench-every-list-filters-and-nothing-from-the-old-windows-is-lost-2026-11-20">GitHub
+Workbench: every list filters, and nothing from the old windows is lost
+(2026-11-20)</h3>
+<ul>
+<li><strong>Filters on every list.</strong> Typing a filter such as
+<code>protected:true</code>, <code>ahead:&gt;=3</code>,
+<code>name:release-*</code>, <code>draft:false</code> or
+<code>-repo:acme/app</code> now narrows branches, tags, releases,
+workflow runs, people and the other lists, not only issues and pull
+requests. The rows already loaded are filtered, and the status line says
+so: “Filtered here: 2 of 3 loaded. Load All to be sure.” A word the list
+does not understand is named once instead of silently matching
+nothing.</li>
+<li><strong>Three repository commands moved in from the retired Explore
+GitHub window:</strong> Sync Fork with Upstream…, Create Repository from
+This Template…, and Delete Repository…, which asks you to type the
+repository’s full name before anything is deleted.</li>
+<li><strong>Clearer list names.</strong> Explore lists read as words:
+“Organization Custom Properties” and “My Email Addresses”, not “custom
+propertys” and “email addresss”.</li>
+<li>The GitHub PRD’s appendices, which say where every old view, button
+and command now lives and what each object’s Properties sheet and
+filters are, are now generated from the code and checked by a test, so
+they cannot fall out of date.</li>
 </ul>
 <h3
 id="github-workbench-rulesets-branch-protection-members-teams-and-access-reviews-2026-11-19">GitHub

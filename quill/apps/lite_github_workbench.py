@@ -132,8 +132,15 @@ class GitHubWorkbenchLiteMixin:
             gist_source=getattr(self, "_github_gist_source", None),
             guide_product="quilllite",
             open_document=self._github_open_document,
+            ai_ask=self._github_ai_ask,
             then=then,
         )
+
+    def _github_ai_ask(self, prompt: str, on_answer: Any) -> bool:
+        """Ask How's request through QUILL Lite's Choose Your AI (GH-R-118), as QUILL's."""
+        from quill.ui.github_workbench_ask_how import ask_through_editor
+
+        return ask_through_editor(self, prompt, on_answer)
 
     def _github_open_document(self, path: Any) -> None:
         """Open a file the Workbench wrote (Read as Document) in a QUILL Lite window."""

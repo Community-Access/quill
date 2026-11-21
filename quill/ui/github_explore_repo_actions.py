@@ -227,19 +227,26 @@ class GitHubExploreRepoActionsMixin:
     def _from_template(self, template: str) -> None:
         from quill.ui.github_repo_admin_dialogs import CreateRepositoryDialog
 
-        result = CreateRepositoryDialog(self.dialog).show()
+        result = CreateRepositoryDialog(self.dialog, template=template).show()
         if result is None:
             return
+        new = result.new
+        if new is not None and not new.template:
+            self._announce("The template was cleared; use Create Repository to start a new one.")
+            return
+        source = new.template if new is not None else template
+        branches = new.include_all_branches if new is not None else False
 
         def work() -> str:
             full_name, url = self._actions().create_from_template(
-                template,
+                source,
                 result.name,
                 owner=result.org,
                 description=result.description,
                 private=result.private,
+                include_all_branches=branches,
             )
-            return f"Created {full_name} from the template {template}: {url}"
+            return f"Created {full_name} from the template {source}: {url}"
 
         self._run_wave4(work)
 

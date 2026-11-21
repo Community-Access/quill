@@ -1,6 +1,6 @@
 # QUILL Tutorials
 
-Welcome. There are 81 short lessons here, about 459 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
+Welcome. There are 82 short lessons here, about 465 minutes in all, and you can take them in any order. Each one is a few small steps, and each step tells you what to press and what you should hear.
 
 This page is the lessons written out, so you can read them anywhere. If you would rather be walked through, open **Help > Tutorials...** in QUILL. It does a step for you when you ask, and moves on by itself once it hears you have done one.
 
@@ -86,7 +86,7 @@ The keys here are the ones QUILL comes with. If you have changed a key, the less
   - Fill It In Yourself (5 minutes)
   - Save it as large print or braille-ready text (4 minutes)
   - Publish it and read the responses (7 minutes)
-- **GitHub, on a practice repository**: Make a private repository to practise on, then file and close an issue, try Dry Run, review and merge a pull request, read a failed run, triage your inbox, build and use an issue form, plan a milestone and a project, give someone access, use the API Console, and delete the repository when you finish.
+- **GitHub, on a practice repository**: Make a private repository to practise on, then file and close an issue, try Dry Run, review and merge a pull request, read a failed run, triage your inbox, build and use an issue form, plan a milestone and a project, give someone access, protect a branch, use the API Console, and delete the repository when you finish.
   - Make a repository to practise on (5 minutes)
   - Label, comment on and close an issue (6 minutes)
   - Try a command without sending it (4 minutes)
@@ -98,6 +98,7 @@ The keys here are the ones QUILL comes with. If you have changed a key, the less
   - Plan a milestone (6 minutes)
   - Organize a project board (8 minutes)
   - Give someone access (6 minutes)
+  - Protect a branch (6 minutes)
   - Use the API Console (6 minutes)
   - Delete the practice repository (2 minutes)
 - **Coding, in the Developer profile**: Work on a folder of code with an AI: ask for a change, review every edit, allow the commands it runs, hear the test results, and undo a whole turn.
@@ -2172,7 +2173,7 @@ Your form is live, and you can hear every answer it brings in. The first time yo
 
 ## GitHub, on a practice repository
 
-Make a private repository to practise on, then file and close an issue, try Dry Run, review and merge a pull request, read a failed run, triage your inbox, build and use an issue form, plan a milestone and a project, give someone access, use the API Console, and delete the repository when you finish.
+Make a private repository to practise on, then file and close an issue, try Dry Run, review and merge a pull request, read a failed run, triage your inbox, build and use an issue form, plan a milestone and a project, give someone access, protect a branch, use the API Console, and delete the repository when you finish.
 
 ### Make a repository to practise on
 
@@ -2342,11 +2343,11 @@ Work through what is waiting for you: read it, put it off for a day, and know wh
    - Keys: Ctrl+Q
    - You should hear: Marked read.
 
-5. **Put one off until tomorrow.** Open the context menu on a notification and choose Snooze for One Day. It leaves the list until tomorrow. Only this computer knows; GitHub is not told.
+5. **Put one off until tomorrow.** Open the context menu on a notification and choose Snooze for One Day. This computer notes that you put it off until tomorrow; GitHub is not told. The row stays in the list.
    - Keys: Shift+F10
    - You should hear: Snoozed here for one day. GitHub was not changed.
 
-6. **Bring it back.** Changed your mind? Unsnooze Locally, on the same menu, brings the notification back into the list now.
+6. **Bring it back.** Changed your mind? Unsnooze Locally, on the same menu, takes the snooze off again.
    - Keys: Shift+F10
    - You should hear: Unsnoozed here. GitHub was not changed.
 
@@ -2541,6 +2542,53 @@ See who has access, make an access template, and preview giving it to a person, 
    - You should hear: Dry Run is off.
 
 On a real repository, the same preview's Yes sends each change and says how many worked. Change History has every one.
+
+Next: Protect a branch.
+
+### Protect a branch
+
+Make a rule that main takes changes only through a reviewed pull request, read the rules a branch has, and take the rule off again.
+
+*9 steps, about 6 minutes.*
+
+1. **Open the GitHub Workbench.** The Workbench is the window for everything on GitHub. Open it from the editor's GitHub menu, signed in with the account you want to practise in.
+   - You should hear: GitHub Workbench, and its tree.
+
+2. **Go to the practice repository.** Choose Practice on GitHub from the Help menu, then Open It. The tree moves to quill-practice in your account.
+   - Keys: Ctrl+Alt+P
+   - You should hear: quill-practice is ready to practise on.
+
+3. **Go to Settings.** Settings holds the repository's own rules. You can change them because the practice repository is yours.
+   - Keys: Ctrl+Shift+9
+   - You should hear: Settings.
+
+4. **Open Branch Protection.** Arrow down to Branch Protection and press Enter. Its list starts with Configure Branch Protection; press Enter on that.
+   - Keys: Down, Enter
+   - You should hear: Configure Branch Protection, Branch, main.
+
+5. **Choose the branch and the rule.** Focus starts on Branch, already main. Tab past the Remove check box to Required approving reviews, and press Up to make it 1. Leave the rest.
+   - Keys: Tab, Up
+   - You should hear: Required approving reviews, 1.
+
+6. **Apply it.** Tab to Apply and press Enter. QUILL asks first: Protect main in your-name/quill-practice? Say Yes.
+   - Keys: Tab, Enter
+   - You should hear: The status bar says Protected main in your-name/quill-practice.
+   - Worth knowing: On a free plan GitHub protects branches only in public repositories, so it may refuse here and say so. Nothing has changed; read on to know the steps.
+
+7. **Read the rules on main.** Arrow to Branches, under Code, then to main, and press Alt+Enter. Ctrl+Tab to the Protection page: Rules that apply says each rule in words.
+   - Keys: Alt+Enter
+   - You should hear: Branch main, on the General page.
+
+8. **Look at Rulesets.** Close the properties with Escape, press Ctrl+Shift+9 for Settings, and arrow down to Rulesets. It lists any rulesets, each as a sentence. Alt+Enter on one opens its sheet; its Summary page reads every rule.
+   - Keys: Escape, Ctrl+Shift+9, Down
+   - You should hear: Rulesets, and how many it has.
+   - Worth knowing: The practice repository has none, so the list is empty.
+
+9. **Take the rule off.** Arrow up to Branch Protection and press Enter on Configure Branch Protection again. Tab to Remove all protection from this branch instead, press Space, then Apply, and say Yes.
+   - Keys: Up, Enter, Tab, Space
+   - You should hear: The status bar says Removed protection from main in your-name/quill-practice.
+
+You can now protect a branch and read the rules on it. In the editor, Configure Branch Protection is under Tools > Git and GitHub > GitHub.
 
 Next: Use the API Console.
 

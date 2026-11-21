@@ -46,6 +46,7 @@ class AskImageDialog(wx.Dialog):
         announce: Callable[[str], None] | None = None,
         initial_path: str = "",
         choose_file: Callable[[], str] | None = None,
+        destination: str = "the AI you chose",
     ) -> None:
         super().__init__(parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self._announce = announce or (lambda _message: None)
@@ -55,10 +56,12 @@ class AskImageDialog(wx.Dialog):
         about = wx.StaticText(self, label="&What this does:")
         about_text = wx.TextCtrl(
             self,
+            # Who receives the picture, from the connection in use (audit gap 4):
+            # "Google, billed to your own key", "QUILL's free AI service".
             value=(
-                "The picture is sent to OpenAI on your ChatGPT subscription, with your "
-                "question if you type one, and the description comes back in a window "
-                "you can read, copy, or insert into your document. Nothing else is sent."
+                f"The picture, and your question if you type one, go to {destination}. "
+                "The description comes back in a window where you can read it, copy "
+                "it, or insert it into your document. Nothing else is sent."
             ),
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
             size=dip_size(self, -1, 70),

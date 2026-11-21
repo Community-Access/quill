@@ -27,11 +27,19 @@ class _Backend:
 
 
 class _Controller:
+    """Answers Yes to the fall-back question (2026-11 audit, gap 6), and keeps it."""
+
     def __init__(self) -> None:
         self.messages: list[str] = []
 
     def _set_status(self, message: str) -> None:
         self.messages.append(message)
+
+    def _show_message_box(self, message: str, _caption: str, _style: int) -> int:
+        import wx
+
+        self.messages.append(message)
+        return wx.YES
 
 
 @pytest.fixture(autouse=True)

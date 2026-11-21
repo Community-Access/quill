@@ -10,6 +10,13 @@ asked about, set to merge itself, or queued without opening its review.
 * **Auto-Merge...** turns it on, asking the method, or off when it is on.
 * **Merge Queue...** adds the pull request to its branch's queue, or takes it
   out when it is in.
+* **Watch Readiness** adds a watch (:mod:`quill.core.github.watches`) that
+  says once when the pull request becomes able to merge, and once when it
+  stops, through the same round and the same voice as every other watch.
+
+Why Can't I Merge? names each blocking rule: the ruleset or branch protection,
+the required check, the CODEOWNERS line whose owners have not approved
+(:mod:`quill.core.github.merge_rules`).
 
 Merge itself (:mod:`~quill.ui.github_workbench_items`) asks the same question
 first and merges only the commit it read.
@@ -28,10 +35,12 @@ MERGE_VERBS: dict[str, frozenset[str]] = {
     "why_cant_merge": frozenset({"item"}),
     "auto_merge": frozenset({"item"}),
     "merge_queue": frozenset({"item"}),
+    "watch_readiness": frozenset({"item"}),
 }
 
 MERGE_REASONS: dict[str, str] = {
     "why_cant_merge": "Why Can't I Merge? is for an open pull request.",
+    "watch_readiness": "Watch Readiness is for an open pull request, while you are signed in.",
     "auto_merge": "Auto-merge is for an open pull request, while you are signed in.",
     "merge_queue": "The merge queue is for an open pull request, while you are signed in.",
 }
@@ -61,17 +70,47 @@ class GitHubWorkbenchMergeMixin:
 
     _fits_merge_queue = _fits_auto_merge
 
-    def _readiness_then(self, ref: Any, row: object, then: Callable[[Any], None]) -> None:
+    def _readiness_then(
+        self, ref: Any, row: object, then: Callable[[Any], None], *, named: bool = False
+    ) -> None:
         from quill.core.github.merge_readiness import load_readiness
 
         assert isinstance(row, GitHubItem)
         api, repository, number = self.github_api(), ref.instance, row.number
         self._background(
-            f"check #{number} can merge", lambda: load_readiness(api, repository, number), then
+            f"check #{number} can merge",
+            lambda: load_readiness(api, repository, number, named=named),
+            then,
         )
 
     def _do_why_cant_merge(self, ref: Any, row: object) -> None:
-        self._readiness_then(ref, row, lambda ready: self._say(ready.sentence))
+        # Named: each blocking ruleset, protection or CODEOWNERS line is said by name.
+        self._readiness_then(ref, row, lambda ready: self._say(ready.sentence), named=True)
+
+    def _fits_watch_readiness(self, row: object) -> bool:
+        return self.signed_in and self._open_pull(row)
+
+    def _do_watch_readiness(self, ref: Any, row: object) -> None:
+        from quill.core.github.watches import READY
+        from quill.ui.github_workbench_watches import watch_store
+
+        assert isinstance(row, GitHubItem)
+        repository, number = str(ref.instance), row.number
+        store = watch_store(self.items)
+        mine = [
+            w
+            for w in store.watches
+            if (w.kind, w.repository, w.number) == (READY, repository, number)
+        ]
+        if mine:
+            self._say(f"Already watching: {mine[0].describe()}. Go to Watches to change it.")
+            return
+        watch = store.add(READY, repository, number=number)
+        store.save()
+        self._say(
+            f"Watching: {watch.describe()}. QUILL says once when it becomes able to merge, "
+            "and once when it stops."
+        )
 
     def _do_auto_merge(self, ref: Any, row: object) -> None:
         self._readiness_then(ref, row, lambda ready: self._auto_merge(ref.instance, ready))

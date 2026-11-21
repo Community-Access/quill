@@ -111,7 +111,9 @@ def read_acf(
         found = raw.get(ACF_PROPERTY) if isinstance(raw, dict) else None
         # ACF answers an item with no saved fields as an empty list, not {}.
         values = dict(found) if isinstance(found, dict) else {}
-    return PluginFields("Advanced Custom Fields", cf.build_form(schema, values, {}), values)
+    return PluginFields(
+        "Advanced Custom Fields", cf.build_form(schema, values, {}, show_all=True), values
+    )
 
 
 # -- Properties sheets ------------------------------------------------------------------

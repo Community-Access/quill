@@ -173,6 +173,7 @@ def make_default_backend() -> AIBackend:
     # Honor an explicitly configured provider first (AI-13). The presence of the
     # connection file marks a deliberate user choice; an unconfigured install has
     # no file and falls through to the bundled local backend.
+    switched_off = False
     try:
         from quill.core.assistant_ai import (
             assistant_connection_path,
@@ -181,7 +182,10 @@ def make_default_backend() -> AIBackend:
 
         if assistant_connection_path().exists():
             settings = load_assistant_connection_settings()
-            if settings.provider.strip().lower() != "off":
+            # Off is a choice too: the cloud chat setup below is skipped and
+            # only the on-device model is left (2026-11 audit, gap 2).
+            switched_off = settings.provider.strip().lower() == "off"
+            if not switched_off:
                 from quill.core.ai.provider_backend import ProviderChatBackend
 
                 backend = ProviderChatBackend(settings)
@@ -204,7 +208,7 @@ def make_default_backend() -> AIBackend:
             or getattr(_s, "ai_chat_default_model", "")
             or ""
         )
-        if _provider and _model:
+        if _provider and _model and not switched_off:
             from quill.core.ai.provider_backend import SimpleChatBackend
 
             _backend = SimpleChatBackend(_provider, _model)

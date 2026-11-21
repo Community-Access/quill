@@ -97,10 +97,24 @@ class ChatGptAiMixin(WordToolsMixin):
         if not self._ai_capable("pictures"):
             return  # nothing sent; the switch was offered (codex.md 10A.8)
         service = self._ai_service()
+        from quill.core.ai.picture_consent import receiver
+        from quill.ui import hosted_ai_picture_consent
         from quill.ui.dialog_contract import show_modal_dialog
         from quill.ui.hosted_ai_image import TITLE, AskImageDialog
 
-        dialog = AskImageDialog(self._ai_parent(), announce=self._announce)
+        # The connection the picture will really go to -- Auto's pick, never "auto"
+        # -- named in the window, and its first-picture consent asked (audit gap 4).
+        connection = str(getattr(service, "connection_in_use", "") or "")
+        if connection == "auto":
+            connection = str(service.auto_connection(("text", "pictures")) or "")
+        if not hosted_ai_picture_consent.ask_picture_consent(self, connection):
+            return  # No, the default, sends nothing
+        provider = str(getattr(service, "own_key_provider", "") or "openai")
+        dialog = AskImageDialog(
+            self._ai_parent(),
+            announce=self._announce,
+            destination=receiver(connection, provider),
+        )
         try:
             if show_modal_dialog(dialog, TITLE) != wx.ID_OK:
                 return

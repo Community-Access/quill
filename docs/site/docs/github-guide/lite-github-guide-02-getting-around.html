@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Chapter 2: Getting around</title>
+  <title>Chapter 2: A tour of the GitHub Workbench</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -242,425 +242,546 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
-<h1 id="chapter-2-getting-around">Chapter 2: Getting around</h1>
+<h1 id="chapter-2-a-tour-of-the-github-workbench">Chapter 2: A tour of
+the GitHub Workbench</h1>
 <h2 id="what-this-chapter-covers">What this chapter covers</h2>
-<p>This chapter is about moving, not doing. It starts with GitHub
-Workbench Mode and the GitHub menu, then walks through the GitHub Items
-window and the Explore GitHub window control by control, explains the
-three keys that do most of the moving, and covers context menus,
-searching, favorites, coming back where you left off, pasting a link,
-and GitHub’s hourly allowance. Every later chapter builds on it.</p>
+<p>Most of this book happens in the GitHub Workbench, so it is worth ten
+minutes to learn how the window moves. Every later chapter assumes you
+know what is here.</p>
+<p>In this chapter you meet the GitHub menu that opens the Workbench
+from the editor, then the window itself: its tree, its lists, the
+filter, Properties, the context menu, how QUILL asks before it changes
+anything, <code>Ctrl+Z</code> and Change History, the status bar, and
+the help keys. It ends with a walk-through of your first five
+minutes.</p>
+<p>By the end you will know where everything lives, how to get anywhere
+in one or two keys, and how to ask the window what you can do wherever
+you are.</p>
 <h2 id="github-workbench-mode-and-the-github-menu">GitHub Workbench Mode
 and the GitHub menu</h2>
-<p>Normally the GitHub commands sit a few levels down, in the File and
-Tools menus, where they keep out of the way of writing. When you are
-spending an afternoon on issues and pull requests, you want them one key
-away instead. That is what GitHub Workbench Mode is for.</p>
+<p>Normally the editor’s GitHub commands sit a few levels down, in the
+File and Tools menus, where they keep out of the way of writing. When
+you are spending an afternoon on issues and pull requests, you want them
+one key away. That is what GitHub Workbench Mode is for.</p>
 <p>Turn it on with <strong>View &gt; GitHub Workbench Mode</strong>:
 <code>Alt+V</code>, then <code>K</code>. It is a check item, so the View
 menu tells you whether it is on. QUILL says “Workbench mode on. GitHub
-menu added.” and a <strong>GitHub</strong> menu joins the menu bar right
-after Tools. Press <code>Alt+G</code> to open it.</p>
+menu added.” and a <strong>GitHub</strong> menu joins the menu bar after
+Tools. Press <code>Alt+G</code> to open it.</p>
 <p>While the mode is on, the GitHub rows leave File and Tools and live
-in the GitHub menu instead, so nothing is listed twice. Turn the mode
-off and they go back. A row’s key, if you have given it one, goes with
-it: keys belong to commands, not to menus, so a key you set works in
-both modes.</p>
-<p>The mode belongs to the window you turned it on in. Other windows
-keep their own menus, and a new window starts with the mode off. Nothing
-else changes: every other menu is where it was, and a document you have
-open keeps working.</p>
+in the GitHub menu, so nothing is listed twice. Turn the mode off and
+they go back. A key you gave a row goes with it, because keys belong to
+commands, not menus. The mode belongs to the window you turned it on in;
+a new window starts with it off.</p>
 <h3 id="the-workbench-cell-on-the-status-bar">The Workbench cell on the
 status bar</h3>
-<p>While the mode is on, the status bar has one more cell,
+<p>While the mode is on, the editor’s status bar has one more cell,
 <strong>Workbench</strong>. It reads “Workbench:” and the repository the
-GitHub menu works on, such as “Workbench: community-access/quill”, which
-is the repository the document you have open belongs to. When the
-document isn’t in a GitHub repository, it just reads “Workbench”. Turn
-the mode off and the cell goes away.</p>
-<p>Reach it like any other cell: press <code>F6</code> to move to the
-status bar, then the arrow keys to get to it. <code>F1</code> on it says
-what it is. QUILL never reads it out by itself, because “Workbench mode
-on” has already told you the same thing; it’s there for when you want to
-check.</p>
+GitHub menu works on, such as “Workbench: community-access/quill”: the
+repository the document you have open belongs to. When the document is
+not in a GitHub repository, it reads “Workbench”. Press <code>F6</code>
+to reach the status bar, then the arrow keys. <code>F1</code> on the
+cell says what it is. QUILL never reads it out by itself.</p>
 <h3 id="what-the-github-menu-holds">What the GitHub menu holds</h3>
 <p>From the top:</p>
 <ul>
 <li><strong>Repository:</strong> and its name, when the document you
-have open lives in a GitHub repository. It is a readout rather than a
-command, so your screen reader says it is unavailable. When there is no
-repository, the row is left out.</li>
-<li><strong>Leave Workbench Mode</strong> (<code>V</code>), the way out,
-where you already are.</li>
-<li><strong>Open GitHub Workbench</strong> (<code>W</code>): the GitHub
-Workbench window, where you left it, or on Inbox or Start Here if that
-is what you chose in Workbench Options.</li>
+have open lives in a GitHub repository. It is a readout, not a command,
+so your screen reader says it is unavailable.</li>
+<li><strong>Leave Workbench Mode</strong> (<code>V</code>), the way
+out.</li>
+<li><strong>Open GitHub Workbench</strong> (<code>W</code>): the
+Workbench window.</li>
 <li><strong>Inbox</strong> (<code>I</code>): the Workbench, on what
 needs you. Chapter 3 covers it.</li>
 <li><strong>This Repository’s Issues</strong> (<code>S</code>),
 <strong>This Repository’s Pull Requests</strong> (<code>P</code>) and
 <strong>Actions Runs</strong> (<code>A</code>): the Workbench, on that
-part of the repository the document you have open belongs to.</li>
+part of the document’s repository.</li>
 <li><strong>From This Line</strong> (<code>R</code>): what GitHub knows
-about the line you are on, or the lines you have selected: a link to
-them, who changed them, the pull request that brought them, a new issue
-quoting them, and more. Chapter 7 covers it. In QUILL Lite its eight
-rows are in the menu itself, between separators.</li>
-<li><strong>Clone Repository…</strong> (<code>C</code>) and, in QUILL,
-<strong>Open GitHub Address…</strong> (<code>D</code>), which takes a
-link, <code>owner/name</code> or <code>owner/name#42</code>.</li>
+about the line you are on: a link to it, who changed it, the pull
+request that brought it, a new issue quoting it, and more. Chapter 7
+covers it. In QUILL Lite its rows are in the menu itself, with the same
+letters.</li>
+<li><strong>Open GitHub Address…</strong> (<code>D</code>), in QUILL
+only: a pasted link, <code>owner/name</code> or
+<code>owner/name#42</code>, opened at the right place.</li>
+<li><strong>Clone Repository…</strong> (<code>C</code>).</li>
 <li>In QUILL only: <strong>Commit to GitHub…</strong> (<code>M</code>),
 <strong>Sync Folder with GitHub…</strong> (<code>Y</code>) and the
 <strong>Local Git</strong> submenu (<code>L</code>), because they are
-about the copy of the repository on your computer rather than about
-GitHub.</li>
+about the copy on your computer rather than about GitHub.</li>
 <li><strong>Manage GitHub Accounts…</strong> (<code>G</code>) and
-<strong>Open GitHub Guide</strong> (<code>H</code>), last. Help keeps
-its own Open GitHub Guide row too.</li>
+<strong>Open GitHub Guide</strong> (<code>H</code>), last.</li>
 </ul>
-<p>That is the whole menu. Everything else moved into the Workbench,
-where it has a place in the tree or a row in its own menus: My Work and
-Notifications are under Needs My Attention, Releases is under each
-repository, Explore GitHub’s searches are under Search, and the
-repository settings and Codespaces are on the Workbench’s Repository
-menu. The old commands still work from the Command Palette, and a key
-you gave one still works too; each opens the Workbench at the matching
-place.</p>
-<p>QUILL Lite’s GitHub menu is the same menu with QUILL’s own rows left
-out, so the letters are the same in both apps. From This Line’s rows are
-the one difference in shape: a submenu in QUILL, straight in the menu in
-QUILL Lite, with the same letters either way.</p>
+<p>Everything else is in the Workbench. The editor’s older GitHub
+commands, such as My Work, Notifications, Releases and Explore GitHub,
+still work from the Command Palette, and a key you gave one still works;
+each opens the Workbench at the matching place.</p>
 <p>To leave, choose <strong>GitHub &gt; Leave Workbench Mode</strong>
 (<code>Alt+G</code>, then <code>V</code>), or uncheck <strong>View &gt;
-GitHub Workbench Mode</strong>. QUILL says “Workbench mode off.” Neither
-has a key of its own: the mode is something you switch a few times a day
-at most, and no key was free in both apps.</p>
-<p>In QUILL Lite, the mode works in the empty window too, the one that
-is left when you close every document. With the mode on there, that
-window is a GitHub launcher with nothing to write in.</p>
-<h2 id="the-github-items-window-top-to-bottom">The GitHub Items window,
-top to bottom</h2>
-<p>GitHub Items is one window with a lot in it. Here is everything in
-the order Tab reaches it, with its access key where it has one. You do
-not need to learn them all. The list, Details and Shift+F10 carry most
-of the work.</p>
-<p>The repository row:</p>
+GitHub Workbench Mode</strong>. QUILL says “Workbench mode off.”</p>
+<p><strong>In QUILL Lite</strong>, the mode works in the empty window
+too, the one left when you close every document. With the mode on there,
+that window is a GitHub launcher with nothing to write in.</p>
+<h2 id="opening-the-workbench">Opening the Workbench</h2>
+<p>Chapter 1 has every way in. The Workbench is a window of its own, not
+a dialog: the editor stays usable while it is open, and
+<code>Alt+Tab</code> moves between them. Inside the Workbench,
+<strong>Window &gt; Switch to Editor</strong>
+(<code>Ctrl+Shift+E</code>) brings back the editor that opened it.
+<code>Alt+F4</code> closes the Workbench; Escape never does.</p>
+<h2 id="the-panes">The panes</h2>
+<p>The window has five parts, in this order:</p>
+<ol type="1">
+<li><strong>The tree</strong>, on the left, says where you are.</li>
+<li><strong>The filter box</strong> narrows the list.</li>
+<li><strong>The list</strong> shows what is in the place you chose.</li>
+<li><strong>The details</strong> say more about the row you are on.</li>
+<li><strong>The status bar</strong> says who you are signed in as, the
+repository, how many rows there are, the filter, and whether the list is
+up to date.</li>
+</ol>
+<p><code>F6</code> moves to the next part, and <code>Shift+F6</code> to
+the one before. <strong>View &gt; Where Am I</strong>
+(<code>Alt+1</code>) says the place and the filter in effect, without
+moving you.</p>
+<h2 id="finding-your-way-round-the-tree">Finding your way round the
+tree</h2>
+<p>The tree works like any tree view. Up and Down Arrow move, Right
+Arrow opens a branch and Left Arrow closes it. When you arrive on a
+place, its list loads by itself. <code>Alt+Up</code> goes to the place
+above the one you are on.</p>
+<p>From the top, the tree holds:</p>
 <ul>
-<li><strong>Repository (owner/repo):</strong> the repository to load.
-Enter loads it. You can type <code>owner/repo</code>, paste a github.com
-address, or paste a <code>git@github.com:</code> remote.</li>
-<li><strong>Load</strong>, the same as Enter in the field.</li>
-<li><strong>Pinned…</strong>, your own short list of repositories. Reach
-it with Tab: <code>Alt+P</code> is taken by comment navigation in this
-window.</li>
-<li><strong>Favorites…</strong> (<code>Alt+V</code>), the items you have
-starred with <code>Ctrl+D</code>.</li>
-<li><strong>Explore…</strong> (<code>Alt+E</code>) opens Explore
-GitHub.</li>
-<li><strong>Projects…</strong> (<code>Alt+J</code>) opens the
-repository’s Projects boards.</li>
-<li><strong>View Upstream</strong> (<code>Alt+U</code>) loads the
-repository a fork was made from. It is available only when the loaded
-repository is a fork, and QUILL says so when it loads one.</li>
-<li><strong>Files…</strong> (<code>Alt+F</code>) opens Repository
-Files.</li>
-<li><strong>Milestones…</strong>, which has no access key.</li>
+<li><strong>Start Here</strong>: what the window is, and the five keys
+to learn first.</li>
+<li><strong>Needs My Attention</strong>: your Inbox, notifications,
+invitations, review requests and your own open work. Chapter 3.</li>
+<li><strong>Repositories</strong>: the current repository first, then
+Pinned, Favorites, your own, Starred, Watched and your organizations.
+Every repository has the same places under it, in the same order:
+Issues, Pull Requests, Discussions, Actions, Code, Releases, Projects,
+Security, Settings, Insights and more.</li>
+<li><strong>Search</strong>, with your saved searches under it, then
+<strong>People</strong>, <strong>Gists</strong>,
+<strong>Projects</strong>, <strong>Watches</strong> and <strong>Across
+Repositories</strong>.</li>
+<li><strong>Help and Learning</strong>: tasks, the guide, words, keys,
+tutorials and tips.</li>
 </ul>
-<p>The search row:</p>
+<p>Once you have opened a place, its name in the tree says how many rows
+it had, such as “Issues (12)”, or “Issues (30 or more)” when GitHub had
+more pages. The count is added after you move away, so you hear it the
+next time you arrive.</p>
+<h3 id="the-go-keys">The Go keys</h3>
+<p>You rarely need to walk the tree. These keys go straight to a
+place:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Goes to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Ctrl+1</code></td>
+<td>Inbox (<code>Alt+Home</code> too)</td>
+</tr>
+<tr>
+<td><code>Ctrl+2</code></td>
+<td>The current repository</td>
+</tr>
+<tr>
+<td><code>Ctrl+3</code></td>
+<td>Search</td>
+</tr>
+<tr>
+<td><code>Ctrl+4</code></td>
+<td>People</td>
+</tr>
+<tr>
+<td><code>Ctrl+5</code></td>
+<td>Gists</td>
+</tr>
+<tr>
+<td><code>Ctrl+6</code></td>
+<td>Projects</td>
+</tr>
+<tr>
+<td><code>Ctrl+7</code></td>
+<td>Watches</td>
+</tr>
+<tr>
+<td><code>Ctrl+8</code></td>
+<td>Saved Searches</td>
+</tr>
+<tr>
+<td><code>Ctrl+9</code></td>
+<td>Start Here</td>
+</tr>
+<tr>
+<td><code>Ctrl+0</code></td>
+<td>Across Repositories</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+1</code> to <code>Ctrl+Shift+0</code></td>
+<td>The current repository’s Issues, Pull Requests, Discussions, Actions
+runs, Files, Releases, Projects, Security, Settings and Insights</td>
+</tr>
+</tbody>
+</table>
+<p><code>Ctrl+L</code> (<strong>File &gt; Open GitHub Address…</strong>)
+takes <code>owner/name</code>, or a link to anything in a repository,
+and gives that repository a place of its own in the tree, with you on
+it. A compare link opens the comparison. <code>Ctrl+G</code>
+(<strong>File &gt; Go to Number…</strong>) goes to an issue or pull
+request in the current repository by its number.</p>
+<p>Elsewhere in QUILL, <code>Ctrl+3</code>, <code>Ctrl+4</code> and
+<code>Ctrl+8</code> are AI keys. The Workbench has no AI menu, so here
+they keep their place in the row of digits. Switch back to the editor
+and they are AI keys again.</p>
+<h2 id="reading-a-list">Reading a list</h2>
+<p>Each row reads as one line, the way the columns show it: “42, Fix the
+crash on start, open”. <strong>Tools &gt; Workbench Options…</strong>
+(<code>Ctrl+Shift+O</code>) chooses between Quick lists, a few columns
+that are fast to arrow through, and Full lists, with every column. On
+the Lists page, <strong>Say column names before values</strong> puts
+each column’s name in front of its value.</p>
 <ul>
-<li><strong>Search (GitHub syntax):</strong> (<code>Alt+H</code>, or
-<code>Ctrl+F</code> from anywhere in the window) asks GitHub.</li>
-<li><strong>Search</strong>, the button for the same thing.</li>
-<li><strong>Open Link…</strong> takes a pasted GitHub link.</li>
-<li><strong>Quick filter:</strong> (<code>Alt+Q</code>, or
-<code>Ctrl+Shift+F</code>) narrows the rows you already have, on your
-computer.</li>
+<li><strong>View &gt; Columns…</strong> (<code>Ctrl+Shift+U</code>)
+chooses which columns the list shows, and their order.</li>
+<li><strong>View &gt; Sort By</strong> orders the list. On lists other
+than Issues, <strong>By Column…</strong> sorts on any column, and the
+list remembers it.</li>
+<li><strong>View &gt; Group By</strong> puts the list’s groups in the
+tree, one place per label, milestone, assignee, author, type, state,
+repository or review state, so you can walk one group at a time.</li>
+<li><strong>View &gt; Show</strong> and <strong>View &gt; Open or
+Closed</strong> choose issues, pull requests or both, open, closed or
+all.</li>
 </ul>
-<p>The filter row:</p>
+<p>GitHub sends a list a page at a time. <strong>View &gt; Load
+More</strong> (<code>Alt+PageDown</code>) asks for the next page, and
+<strong>Load All</strong> (<code>Ctrl+Shift+PageDown</code>) asks for
+every page. <code>F5</code> loads the place again; when nothing has
+changed, GitHub says so in a few bytes and the rows stay as they were,
+which costs nothing from your hourly allowance. <code>Ctrl+F5</code>
+asks for everything afresh.</p>
+<p>When you come back to a list, you are on the row you left, even after
+a refresh. <strong>Go &gt; Next Unread</strong> (<code>Ctrl+.</code>)
+and <strong>Previous Unread</strong> (<code>Ctrl+Shift+.</code>) move
+between unread rows.</p>
+<h2 id="enter-shiftenter-and-backspace">Enter, Shift+Enter and
+Backspace</h2>
+<p>Three keys do most of the moving, the same way everywhere:</p>
 <ul>
-<li><strong>View:</strong> (<code>Alt+I</code>) chooses what the list
-shows.</li>
-<li><strong>Show:</strong> (<code>Alt+S</code>): Both, Issues or PRs
-(pull requests).</li>
-<li><strong>State:</strong> (<code>Alt+T</code>): Open, Closed or
-All.</li>
-<li><strong>Sort:</strong> (<code>Alt+O</code>): by number, title, last
-update or comment count, either way round.</li>
-<li><strong>List mode:</strong> (<code>Alt+L</code>): Quick (compact) or
-Full (field names).</li>
-<li><strong>Columns…</strong> (<code>Alt+M</code>) chooses which columns
-the list reads.</li>
-<li><strong>Back</strong> and <strong>Forward</strong> step through the
+<li><strong>Enter does the obvious thing.</strong> On an issue it reads
+it, on a pull request it opens the review, on a run it shows the jobs,
+on a repository it opens the repository’s place in the tree, on a folder
+it opens the folder.</li>
+<li><code>Shift+Enter</code> <strong>opens the selected row on
+GitHub</strong>, in your browser. <code>Ctrl+Enter</code> opens a file
+in the editor.</li>
+<li><strong>Backspace comes back out</strong>, to the place you were
+before. <strong>View &gt; Back</strong> (<code>Alt+Left</code>) and
+<strong>Forward</strong> (<code>Alt+Right</code>) step through the
 places you have been.</li>
 </ul>
-<p>Show, State and Sort work in the Issues &amp; PRs view only.</p>
-<p>Then the heart of the window:</p>
+<h2 id="the-filter">The filter</h2>
+<p><code>Ctrl+E</code> moves to the filter box
+(<code>Ctrl+Shift+F</code> does too). Type, and press Enter.</p>
 <ul>
-<li><strong>The list.</strong> One row per item. You can select more
-than one row, for the Batch menu.</li>
-<li><strong>Details</strong>, a read-only text field holding the whole
-of the selected row.</li>
-<li><strong>The status line</strong>, which says what just
-happened.</li>
+<li><strong>Plain words</strong> narrow the rows already loaded, on your
+computer.</li>
+<li><strong>GitHub’s own words</strong>, such as
+<code>is:open author:@me label:bug</code>, ask GitHub, so the list holds
+everything that matches, not only what was loaded.</li>
 </ul>
-<p>And the button row: <strong>Refresh</strong>, <strong>View
-More</strong>, <strong>Open in Browser</strong>, <strong>Go To
-#…</strong>, <strong>Diff…</strong> (<code>Alt+D</code>),
-<strong>Review…</strong> (<code>Alt+R</code>),
-<strong>Summarize</strong> (<code>Alt+Z</code>),
-<strong>Compare…</strong> (<code>Alt+C</code>), <strong>Batch…</strong>
-(<code>Alt+B</code>), <strong>Actions…</strong> (<code>Alt+A</code>) and
-<strong>Close</strong>. Diff, Review, Summarize and Batch are for the
-Issues &amp; PRs view, and Compare for the Branches view.</p>
-<h3 id="the-views">The views</h3>
-<p><strong>View:</strong> has seven choices:</p>
+<p><strong>Edit &gt; Filter Builder…</strong> (<code>Ctrl+Alt+F</code>)
+builds a filter one condition at a time: choose what to filter on, how,
+and a value from the repository, such as one of its labels, and it
+writes GitHub’s words into the filter box for you. <strong>View &gt;
+Quick Filters</strong> has the common ones as check items: Assigned to
+Me, Opened by Me, Review Requested from Me, No Assignee, Checks Failing,
+Updated This Week and more. They combine with each other and with what
+you typed.</p>
+<p>Escape in the filter box clears it. <strong>View &gt; Say
+Filter</strong> (<code>Alt+7</code>) says the filter in effect in words.
+Chapter 13 has more on filtering.</p>
+<h2 id="properties">Properties</h2>
+<p><code>Alt+Enter</code> (<strong>Item &gt; Properties…</strong>) shows
+everything about the selected row on one sheet, in pages, the way
+Windows shows a file’s properties. On a sheet you can change what GitHub
+lets you change, such as an issue’s labels, a repository’s settings or a
+team’s members, and save it all at once. Select several rows first and
+the sheet changes all of them together. Chapter 13 covers Properties in
+full.</p>
+<h2 id="the-context-menu-and-the-item-menu">The context menu and the
+Item menu</h2>
+<p>The Applications key, or <code>Shift+F10</code>, opens the selected
+row’s context menu. It holds everything you can do with that row, with
+the obvious thing first and Properties last; a long menu puts the rest
+under <strong>More</strong>. The <strong>Item</strong> and
+<strong>Repository</strong> menus on the menu bar hold the commands you
+use most, each with its key.</p>
+<p><strong>Help &gt; What Can I Do Here?</strong>
+(<code>Shift+F1</code>) is the quickest way to find out what you can do.
+It lists every command for the selected row, with its key, and says why
+anything greyed is greyed.</p>
+<p><code>Delete</code> always does the safe thing for the kind of row,
+and asks first whenever it cannot be undone: it marks a notification
+done, closes an issue, or deletes a branch, a label or a run after
+asking. It never deletes the repository’s default branch. Enter never
+deletes anything.</p>
+<h2 id="how-quill-asks-before-it-changes-github">How QUILL asks before
+it changes GitHub</h2>
+<p>How much QUILL asks depends on how much a change matters:</p>
 <ul>
-<li><strong>Issues &amp; PRs</strong>: issues and pull requests
-together, newest first.</li>
-<li><strong>Branches</strong>: each branch, whether it is protected, and
-its last commit.</li>
-<li><strong>Commits</strong>: the latest commits, or a branch’s commits
-after you open one.</li>
-<li><strong>Tags</strong>: each tag and the commit it points at.</li>
-<li><strong>Releases</strong>: each release, its download count, and
-whether it is a draft or a pre-release.</li>
-<li><strong>Workflows</strong>: the repository’s GitHub Actions
-workflows.</li>
-<li><strong>Workflow Runs</strong>: recent runs, with their status and
-result.</li>
+<li><strong>Organizing</strong>, such as adding a label or an assignee:
+saved at once, and <code>Ctrl+Z</code> takes it back.</li>
+<li><strong>Visible to others</strong>, such as a comment: saved at
+once.</li>
+<li><strong>Access and settings</strong>, such as giving someone a role
+or changing branch protection: a preview in words first, and nothing is
+sent until you say yes.</li>
+<li><strong>Destructive or hard to reverse</strong>, such as a merge, or
+deleting a branch or a repository: a preview, and then you type its name
+or number to confirm.</li>
 </ul>
-<p>The list loads 30 rows at a time. <strong>View More</strong> loads
-the next 30.</p>
-<h3 id="quick-and-full-rows">Quick and Full rows</h3>
-<p>In <strong>Quick</strong> mode a row is the bare values, the way the
-columns show them: “208, ISSUE, OPEN, Fix the thing”. In
-<strong>Full</strong> mode each value has its name in front, “number:
-208, type: ISSUE, state: OPEN, title: Fix the thing”, so a row explains
-itself and QUILL also says it as you arrive on it. Press <code>M</code>
-in the list to switch. Every new window starts in Quick mode.</p>
-<p><strong>Columns…</strong> opens a menu of the current view’s columns
-as check items. Uncheck the ones you do not want to hear. One always
-stays, and QUILL says “At least one column must stay visible.” if you
-try to remove the last.</p>
-<h2 id="enter-ctrlo-and-backspace">Enter, Ctrl+O and Backspace</h2>
-<p>Three keys do most of the moving in the list. They behave the same
-way everywhere, so once you know them you can guess.</p>
-<ul>
-<li><strong>Enter goes in.</strong> On a branch it opens that branch’s
-commits. On a release it opens the release’s files, with their download
-counts. On a workflow it offers to run it. On anything that has nowhere
-further to go in QUILL, such as an issue, Enter opens it in your
-browser.</li>
-<li><code>Ctrl+O</code> <strong>opens the selected row on
-GitHub</strong>, in your browser, whatever it is.</li>
-<li><strong>Backspace comes back out.</strong> From a branch’s commits
-it returns to Branches, and from a release’s files to Releases (“Back to
-releases.”).</li>
-</ul>
-<p>Two things that Enter does not do on an issue or a pull request,
-because they have their own keys: to <strong>read</strong> one, Tab to
-Details; to <strong>review</strong> a pull request, press
-<code>Alt+R</code> for <strong>Review…</strong>.</p>
-<p><strong>Back</strong> and <strong>Forward</strong> step through the
-places you have been in this window, up to the last hundred: a
-repository, a view, a search. <code>Ctrl+G</code> (<strong>Go To
-#…</strong>) asks for an issue or pull request number and selects it, in
-the Issues &amp; PRs view.</p>
-<p><code>Ctrl+R</code> reloads the current view. So does a plain
-<code>R</code> while the list has focus, which means R does not jump to
-a row starting with R here.</p>
-<h2 id="context-menus-and-the-actions-button">Context menus and the
-Actions button</h2>
-<p>Shift+F10, the Applications key or a right-click on a row opens its
-context menu. It holds everything that applies to that row and only
-that, so it is the quickest way to find out what you can do. Commands
-that change GitHub appear only when you are signed in. With no row
-selected, the menu has the commands for the whole view, such as
-<strong>Refresh</strong> and, when you are signed in, <strong>New
-Issue…</strong>.</p>
-<p>Every row’s menu ends with the same few: <strong>Open on
-GitHub</strong>, <strong>Copy Link</strong>, <strong>Copy
-Details</strong>, <strong>Add to or Remove from Favorites</strong>,
-<strong>Browse Repository Files…</strong> and
-<strong>Milestones…</strong>, then <strong>GitHub API Rate
-Limit</strong> last of all.</p>
-<p><strong>Actions…</strong> (<code>Alt+A</code>) holds the commands
-that write, for the current view and selection. Signed out, it says
-“Write actions need a signed-in GitHub account; this session is
-read-only.” If nothing applies, it says “No write actions available
-here. Select a row first.”</p>
-<p>Shift+F10 works the same way in Details, in the review outline, in
-Explore’s results and in most of the smaller windows.</p>
-<h2 id="searching-and-filtering">Searching and filtering</h2>
-<p>There are two boxes, and the difference matters.</p>
-<ul>
-<li><strong>Search</strong> asks GitHub. Press <code>Ctrl+F</code>, type
-anything GitHub’s own search understands, and press Enter:
-<code>label:bug is:open crash</code>, <code>author:alice is:pr</code>,
-or <code>created:&gt;2026-01-01 no:assignee</code>. The results replace
-the list, limited to the loaded repository. Empty the box and press
-Enter to get the normal list back; you hear “Search cleared; showing the
-normal list.”</li>
-<li><strong>Quick filter</strong> asks nobody. Press
-<code>Ctrl+Shift+F</code> and type. The list narrows to rows containing
-what you typed, as you type, with nothing sent over the network. It does
-not move your focus and does not announce a count after every letter,
-which would talk over your screen reader’s own typing echo. Escape in
-the box clears it.</li>
-</ul>
-<p>Searching across every repository, and searching code, commits or
-repositories, happens in Explore. Chapter 7 covers it.</p>
-<h2 id="pinned-repositories-and-favorites">Pinned repositories and
-favorites</h2>
-<p><strong>Pinned…</strong> is your short list of the repositories you
-really work in. It opens a menu: one row per pinned repository, which
-loads it, then <strong>Pin</strong> or <strong>Unpin</strong> for the
-repository you have loaded.</p>
-<p>A favorite is one item rather than a repository: an issue, a pull
-request, a branch or a release. Press <code>Ctrl+D</code> on its row and
-you hear “Favorited” and its name. <strong>Favorites…</strong>
-(<code>Alt+V</code>) lists every favorite across every repository, and
-choosing one opens it in your browser.</p>
-<p>Pins, favorites and your column choices stay on this computer. They
-are not synced to GitHub and not kept per account.</p>
+<p>On top of that, each account has a Workbench level, Read Only,
+Organize or Full, which Chapter 1 explains. Changes run without freezing
+the window, and each one ends with a sentence about what GitHub
+confirmed. <code>F9</code> says the last one again, and
+<code>Shift+F9</code> explains it: what it means, and what you might do
+next.</p>
+<h3 id="trying-a-command-without-sending-it">Trying a command without
+sending it</h3>
+<p><strong>Tools &gt; Dry Run</strong> (<code>Ctrl+Alt+D</code>) is a
+switch for the whole Workbench. While it is on, every command asks its
+questions and shows its preview as usual, then stops at the moment it
+would change GitHub and says what it would have sent. Everything that
+only reads keeps working. The status bar’s Account cell says “Dry Run:
+nothing is sent” while it is on. Chapter 12 has more.</p>
+<h2 id="taking-a-change-back">Taking a change back</h2>
+<p><strong>Edit &gt; Undo GitHub Change</strong> (<code>Ctrl+Z</code>)
+reverses your last change on GitHub, where GitHub allows it. It reads
+the item again first, and stops and says so if someone else has changed
+it since. <strong>Redo GitHub Change</strong> (<code>Ctrl+Y</code>)
+makes it again. In a text box, <code>Ctrl+Z</code> undoes your typing
+instead.</p>
+<p><strong>Account &gt; Change History…</strong>
+(<code>Ctrl+Shift+H</code>) lists every change the Workbench made on
+GitHub, newest first, with before and after, and Undo on each one where
+GitHub allows it. A merge, a deleted branch or a sent comment cannot be
+undone this way; the chapters for each say what can.</p>
+<h2 id="the-status-bar">The status bar</h2>
+<p>The status bar has five cells: <strong>Account</strong> (signed in or
+not, and Dry Run), <strong>Repository</strong>, <strong>Items</strong>
+(how many rows are shown and selected), <strong>Filter</strong> and
+<strong>Loading</strong> (loading, or when the list was last brought up
+to date). Press <code>F6</code> until you reach it, then the arrow keys.
+Enter on a cell does its job: Repository goes to the repository’s place,
+Items to the list, Filter to the filter box.</p>
+<p>You do not need to visit it. <strong>View</strong> has a key for each
+thing it says, and more:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Says</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Alt+1</code></td>
+<td>Where you are, and the filter</td>
+</tr>
+<tr>
+<td><code>Alt+2</code></td>
+<td>How many rows are selected</td>
+</tr>
+<tr>
+<td><code>Alt+3</code></td>
+<td>The selected item’s state</td>
+</tr>
+<tr>
+<td><code>Alt+4</code></td>
+<td>How many rows the place holds</td>
+</tr>
+<tr>
+<td><code>Alt+5</code></td>
+<td>What you can do here</td>
+</tr>
+<tr>
+<td><code>Alt+6</code></td>
+<td>How much of GitHub’s hourly allowance is left</td>
+</tr>
+<tr>
+<td><code>Alt+7</code></td>
+<td>The filter, in words</td>
+</tr>
+<tr>
+<td><code>Alt+8</code></td>
+<td>What is loading, or when it loaded</td>
+</tr>
+<tr>
+<td><code>Alt+9</code></td>
+<td>The account, and whether you are signed in</td>
+</tr>
+</tbody>
+</table>
 <h2 id="what-quill-says-and-what-it-leaves-to-your-screen-reader">What
 QUILL says, and what it leaves to your screen reader</h2>
-<p>Your screen reader already says the name of a window when it opens,
-the control that has focus, and the row you arrive on in a list. QUILL
-does not repeat any of that. It speaks only what your screen reader
-cannot know:</p>
-<ul>
-<li><strong>When a load finishes</strong>: the repository, how many
-rows, and a short line of the keys that work in this view. A load can
-take a second or two, and this is how you know it is done. Focus moves
-to the list, on the first row.</li>
-<li><strong>The result of a command</strong>: “Reply posted”,
-“Favorited”, “Cancelled; nothing was sent to GitHub.”, or GitHub’s
-reason for refusing.</li>
-<li><strong>Something that changed somewhere you are not</strong>, such
-as a comment arriving in Details while you are in the list.</li>
-</ul>
-<p>It deliberately stays quiet while you type in the Quick filter, while
-a page of results is fetching, and when a notification is marked read as
-you open it.</p>
-<p>Everything QUILL says is also written to the status line, so you can
-read it again with your screen reader’s review keys, and it is brailled
-as well as spoken.</p>
-<h2 id="coming-back-where-you-left-off">Coming back where you left
-off</h2>
-<p>When you close GitHub Items, QUILL remembers where you were: the
-repository, the view, Show, State and Sort, your search and Quick
-filter, the branch you had opened, and the selected row. The next time
-you open it, you are back there, and you hear “Restored the last
-selected GitHub item.”</p>
-<p>If that item is no longer in the first page of results, perhaps
-because newer issues have pushed it down, you hear “The previous item is
-outside the loaded results. Use View more or search to find it.”</p>
-<p>This is kept for each GitHub account separately. It stores where you
-were, never a token, and it never sends anything to GitHub.</p>
+<p>Your screen reader already says the window’s name, the control that
+has focus, the row you arrive on and the place you select in the tree.
+QUILL does not repeat any of that. It speaks only what your screen
+reader cannot know: the result of a command, a load that finished
+somewhere you are not looking, or GitHub’s reason for refusing.
+Everything it says is brailled as well as spoken.</p>
+<p>Results follow the same setting as the editor’s copy and paste,
+<strong>When a command does something, give me</strong> (QUILL Guide,
+chapter 11). A bare “Saved.” follows the setting: a sound, the words,
+both or neither. A result that names or counts something, such as
+“Created bug”, is always spoken, because no sound can carry a name.
+Anything that did not work starts “Could not”, plays the error sound
+when sounds are on, and is always spoken.</p>
 <h2 id="open-github-reference-paste-any-link">Open GitHub Reference:
 paste any link</h2>
 <p>Someone sends you a link to an issue, a pull request, a line of a
-file or a failed run. You do not need to work out where it lives. Paste
-it, and QUILL opens the right window at the right place.</p>
+file or a failed run. You do not need to work out where it lives.</p>
 <p>In QUILL, choose <strong>File &gt; Open from Remote &gt; Open GitHub
-Reference…</strong>. In both apps, the <strong>Open Link…</strong>
-button in GitHub Items does the same from inside the window. Paste a
-link, or type <code>owner/repo</code>, and press Enter.</p>
+Reference…</strong>, or <strong>GitHub &gt; Open GitHub
+Address…</strong> in workbench mode. Paste a link, or type
+<code>owner/name</code> or <code>owner/name#42</code>, and press
+Enter.</p>
 <ul>
-<li>A repository link loads that repository.</li>
-<li>An issue link selects that issue, and a pull request link opens its
-review.</li>
-<li>A branch, commit, release, workflow or workflow run link switches to
-the matching view and selects it.</li>
+<li>A repository link opens the Workbench on that repository.</li>
+<li>An issue, pull request, discussion, release, branch, tag or commit
+link opens the Workbench at the matching list in that repository:
+Issues, Pull Requests, Discussions, Releases, Branches, Tags or Commits.
+Press <code>Ctrl+G</code> and type the number, or use the filter, to
+reach the one you asked for. Any other link into a repository, such as a
+run, opens the repository’s own place.</li>
 <li>A link to a file opens the file in the editor, at the linked lines
 when the link names them.</li>
-<li>A discussion link opens the thread in Explore, when you are signed
-in.</li>
+<li>A link QUILL has no place for asks whether to open it in your
+browser, and says QUILL will not attach your GitHub sign-in to that
+request.</li>
 </ul>
-<p>If the item is not in what has loaded, QUILL says so: “Could not find
-the linked” item “in the loaded results. Use View more or open the link
-in GitHub.”</p>
-<p>A link QUILL has no window for, such as a comparison, asks whether to
-open it in your browser instead, and says that QUILL will not attach
-your GitHub token to that request.</p>
-<p>QUILL refuses a link that carries a password or a token in it, and
-says “Remove credentials from the URL (web address) before opening it.”
-Paste the plain address.</p>
-<p><strong>In QUILL Lite</strong>, a file link opens the file’s text as
-a new untitled document, because QUILL Lite cannot save back to GitHub.
-Save As keeps a copy on your computer.</p>
-<h2 id="getting-around-explore-github">Getting around Explore
-GitHub</h2>
-<p><strong>Explore…</strong> (<code>Alt+E</code>) in GitHub Items opens
-Explore GitHub. In workbench mode, <strong>GitHub &gt; Explore
-GitHub…</strong> opens it from the menu bar, and
-<strong>Inbox…</strong>, <strong>My Work…</strong> and
-<strong>Notifications…</strong> open it straight on those views. In
-QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub &gt;
-Notifications…</strong> opens it at your notifications when the mode is
-off.</p>
-<p>Explore is simpler than GitHub Items: a view, the boxes that view
-needs, a list and a details field. In Tab order:</p>
-<ul>
-<li><strong>View:</strong> (<code>Alt+V</code>) chooses what to show.
-Choosing a view loads it straight away.</li>
-<li><strong>Repository:</strong> (<code>Alt+R</code>), for the views
-about one repository.</li>
-<li>A line describing the view, when it needs explaining.</li>
-<li><strong>Person:</strong> (<code>Alt+P</code>), for the views about
-one person.</li>
-<li><strong>Global search:</strong> (<code>Alt+G</code>), for the search
-views. GitHub’s qualifiers, such as <code>repo:</code> and
-<code>is:open</code>, work here.</li>
-<li><strong>Saved Searches…</strong> (<code>Alt+S</code>) and
-<strong>Save Search</strong>.</li>
-<li><strong>Load</strong> (<code>Alt+L</code>). Enter in any of the
-boxes above does the same.</li>
-<li><strong>Queue Options…</strong> (<code>Alt+O</code>), for the
-attention queue.</li>
-<li><strong>Results</strong>, the list.</li>
-<li>In the notifications view only, four triage controls. Chapter 3
-covers them.</li>
-<li><strong>Selected result</strong>, the details of the row.</li>
-<li>The status line, then <strong>Open on GitHub</strong>, <strong>Use
-Repository</strong> and <strong>Close</strong>.</li>
-</ul>
-<p>When you are signed in, Explore opens on your attention queue and
-loads it straight away. Signed out, it opens on <strong>Global issue and
-PR search</strong>.</p>
-<p>In the Results list, Enter does the natural thing for the row: a
-notification opens, a discussion opens as a thread, a repository goes
-back to GitHub Items (you hear “Selected repository” and its name “in
-the workbench.”), and anything else opens in your browser. <strong>Use
-Repository</strong> sends the selected row’s repository to GitHub Items
-and closes Explore.</p>
+<p>QUILL refuses a link that carries a password or a token in it. Paste
+the plain address.</p>
+<p>Inside the Workbench, <code>Ctrl+L</code> does the repository part of
+this, as <strong>The Go keys</strong> above says.</p>
+<p><strong>In QUILL Lite</strong>, open the Workbench and use
+<code>Ctrl+L</code>. A file link opens the file’s text as a new untitled
+document.</p>
 <h2 id="rate-limits-and-the-readout">Rate limits and the readout</h2>
 <p>GitHub lets each account make a certain number of requests an hour,
-and fewer as a guest. You rarely need to think about it, but when you
-do, press <code>Ctrl+Shift+L</code> in GitHub Items or Explore. QUILL
-reads GitHub’s own count and says it in a sentence for each allowance,
-such as “GitHub API (application programming interface): 4,212 of 5,000
-left, resets at 3:15 PM.” Search and code search have allowances of
-their own, and the readout includes those too. <strong>GitHub API Rate
-Limit</strong>, at the end of every context menu, does the same.</p>
-<p>If GitHub asks QUILL to slow down, which it does when many requests
-arrive close together, QUILL stops sending until the wait is over, and
-says so once: “GitHub asked QUILL to wait 60 seconds.” Every request in
-that time stops before it reaches the network, so you do not hear the
-same refusal ten times.</p>
-<p>When the hourly allowance runs out, you hear “GitHub API rate limit
-reached. Retry after” and the number of seconds.</p>
-<h2 id="quiet-refreshes">Quiet refreshes</h2>
-<p>QUILL remembers what GitHub last sent for many of the reads it
-repeats, and asks GitHub whether anything has changed since. If nothing
-has, GitHub says so in a few bytes, and that answer does not count
-against your allowance.</p>
-<p>When you reload an Explore view and nothing has changed, you hear “No
-changes since the last load;” and the number of results, instead of the
-whole count again. Your notifications work the same way, with one more
-rule: GitHub tells apps how often they may check the inbox, and QUILL
-keeps to it. Chapter 3 explains what you hear if you refresh sooner.</p>
+and fewer as a guest. You rarely need to think about it. When you do,
+press <code>Ctrl+Shift+L</code> (<strong>Account &gt; GitHub API Rate
+Limit</strong>) or <code>Alt+6</code>. QUILL reads GitHub’s own count
+and says it in a sentence, such as “GitHub API: 4,212 of 5,000 left,
+resets at 3:15 PM.” Search and code search have allowances of their own,
+and the readout includes those too.</p>
+<p>If GitHub asks QUILL to slow down, QUILL stops sending until the wait
+is over and says so once: “GitHub asked QUILL to wait 60 seconds.” When
+the hourly allowance runs out, you hear “GitHub API rate limit reached.
+Retry after” and the number of seconds.</p>
+<p>QUILL remembers what GitHub last sent for the reads it repeats, and
+asks whether anything changed since. If nothing has, that answer does
+not count against your allowance. Nothing is kept on disk for this; it
+lasts until you close QUILL.</p>
+<h2 id="f1-and-help-for-every-place">F1, and help for every place</h2>
+<p>The help keys work everywhere in the window:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>F1</code></td>
+<td>What this place and the control you are on are for</td>
+</tr>
+<tr>
+<td><code>Shift+F1</code></td>
+<td>What you can do here, with each key, and why anything is greyed</td>
+</tr>
+<tr>
+<td><code>Alt+F1</code></td>
+<td>What the GitHub word for the selected row means</td>
+</tr>
+<tr>
+<td><code>Ctrl+F1</code></td>
+<td>This guide, at the chapter for where you are</td>
+</tr>
+<tr>
+<td><code>Ctrl+Shift+F1</code></td>
+<td>Search all of help: places, commands, words and tasks</td>
+</tr>
+<tr>
+<td><code>Alt+Shift+F1</code></td>
+<td>Every key in the window</td>
+</tr>
+<tr>
+<td><code>Ctrl+Alt+K</code></td>
+<td>Key Describer: press keys to hear what each does, without doing it;
+Escape stops</td>
+</tr>
+<tr>
+<td><code>F11</code></td>
+<td>Say or Type a Command: type what you want, such as “show the pull
+requests”</td>
+</tr>
+<tr>
+<td><code>F9</code> and <code>Shift+F9</code></td>
+<td>The last result again, and what it means</td>
+</tr>
+</tbody>
+</table>
+<p>The last place in the tree, <strong>Help and Learning</strong>, is
+help you can walk like any list: tasks in plain words with <strong>Walk
+Me Through It</strong>, this guide’s chapters, the GitHub words, every
+key, the tutorials and QUILLBert’s tips. Chapter 12 covers it.</p>
+<h2 id="a-walk-through-your-first-five-minutes">A walk-through: your
+first five minutes</h2>
+<p>You need to be signed in for this, and it changes nothing on
+GitHub.</p>
+<ol type="1">
+<li>Open the Workbench. You land on Inbox, and the list loads.</li>
+<li>Press <code>Alt+4</code>. You hear how many rows Inbox holds.</li>
+<li>Press <code>Ctrl+2</code> for the current repository, or
+<code>Ctrl+L</code>, type <code>community-access/quill</code> and press
+Enter.</li>
+<li>Press <code>Ctrl+Shift+2</code> for its pull requests. Press
+<code>F6</code> until you are in the list, and arrow down.</li>
+<li>Press <code>Ctrl+E</code>, type
+<code>is:open review:required</code>, and press Enter. The list holds
+only open pull requests that still need a review. Press
+<code>Alt+7</code> to hear the filter in words.</li>
+<li>Press <code>Shift+F1</code> on a pull request to hear what you can
+do with it. Press Escape.</li>
+<li>Press <code>Alt+Enter</code>. The pull request’s Properties sheet
+opens on its first page. Press <code>Ctrl+Tab</code> to move through the
+pages, then Escape to close it without changing anything.</li>
+<li>Press <code>Backspace</code>. You are back where you were before the
+repository.</li>
+<li>Press <code>Ctrl+F1</code>. This guide opens at the chapter for the
+place you are on.</li>
+</ol>
+<h2 id="practising-on-a-repository-of-your-own">Practising on a
+repository of your own</h2>
+<p><strong>Help &gt; Practice on GitHub…</strong>
+(<code>Ctrl+Alt+P</code>) makes <code>quill-practice</code>, a private
+repository in your own account, with issues, labels, a pull request and
+a run that fails on purpose. Every write in this book can be tried
+there, where nothing matters. Chapter 12 has the details, and
+<strong>Help &gt; Tutorials</strong> (<code>Ctrl+F2</code>) has lessons
+that use it, starting with “Make a repository to practise on”.</p>
 <hr />
 <ul>
 <li>Previous: <a

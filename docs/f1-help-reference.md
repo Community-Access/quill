@@ -2336,7 +2336,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## GitHub Workbench
 
-Control coverage: 402 audited sites (402 helped).
+Control coverage: 408 audited sites (408 helped).
 
 ### Every window, and what it is for
 
@@ -2724,6 +2724,8 @@ Control coverage: 402 audited sites (402 helped).
 
 **repository: Releases.** Releases: published versions and their files. Enter lists the files.
 
+**repository: Packages.** Packages: what this repository publishes, such as container images and npm packages. Show Versions lists each one's versions; Delete Package Version asks you to type the package's name.
+
 **repository: Labels.** Labels: tags for issues and pull requests. Enter finds the issues.
 
 **repository: Milestones.** Milestones: goals with a date. Enter lists the issues and pull requests in one.
@@ -2956,7 +2958,7 @@ Control coverage: 402 audited sites (402 helped).
 
 **File > New....** Choose what to create, wherever you are.
 
-**File > Open GitHub Address....** Type or paste owner/name, #42, owner/name#42 or any GitHub link to go there.
+**File > Open GitHub Address....** Open a repository by owner/name or link; a compare link opens the comparison.
 
 **File > Go to Number....** Go to an issue or pull request in this repository by its number.
 
@@ -3250,6 +3252,10 @@ Control coverage: 402 audited sites (402 helped).
 
 **Help > Search Help....** Type a few words to find a help topic, a command or a GitHub word.
 
+**Help > Take the Tour.** A spoken tour of the window: each pane, and one thing to do there. F6 moves on, Escape stops.
+
+**Help > Ask How....** Ask in your own words how to do something here. The answer comes only from this help, through the AI you chose. A command it names runs only when you choose it.
+
 **Help > Tutorials.** The GitHub lessons, each on the practice repository, with what you have done.
 
 **Help > Practice on GitHub....** Make, open or delete quill-practice, a private repository with issues, a pull request and a failing run to learn on.
@@ -3330,6 +3336,18 @@ Control coverage: 402 audited sites (402 helped).
 
 **Unlink a Pull Request.** Take a pull request off the ones that close this issue.
 
+**Subscribe or Unsubscribe.** Hear of all its activity, or only when you take part or are mentioned.
+
+**React to a Comment.** Add a reaction to one of its comments, or take back one you gave.
+
+**Related.** The issues, pull requests and discussions linked to it, and how each is linked.
+
+**Start Pull Request for This Issue.** A linked branch and a draft pull request that closes the issue; asks first.
+
+**Draft Task Breakdown with AI.** Small ordered tasks drafted by AI from the issue; opens as a draft.
+
+**Draft Release Notes with AI.** Release notes drafted by AI from the selected issues and pull requests only.
+
 **Properties.** Everything about this item on one sheet. Alt+Enter opens it from anywhere.
 
 **Review.** Read the review threads and checks, and review it.
@@ -3338,7 +3356,9 @@ Control coverage: 402 audited sites (402 helped).
 
 **Merge.** Merge it, with the methods the repository allows.
 
-**Why Can't I Merge?.** Whether it can merge, or each reason it cannot, for the commit it is at.
+**Why Can't I Merge?.** Whether it can merge, or each rule that blocks it, for the commit it is at.
+
+**Watch Readiness.** Say when it can merge, or stops.
 
 **Merge Selected.** Merge the selected pull requests one at a time, each checked on its own, after a preview of which will merge and which will not.
 
@@ -3373,6 +3393,12 @@ Control coverage: 402 audited sites (402 helped).
 **Dependency Review.** What this pull request changes in the dependencies: each one added or removed, its licence, and its known vulnerabilities.
 
 **Dependabot Commands.** On a Dependabot pull request: rebase, recreate, merge, ignore a version, and more.
+
+**Open in github.dev.** GitHub's free web editor, at exactly this; nothing is created.
+
+**Draft Description with AI.** A description drafted by AI from the changed files; opens as a draft.
+
+**Draft Reviewer Brief with AI.** What a reviewer should check, drafted by AI from the changed files.
 
 **Jobs and Logs.** The run's jobs, steps and logs.
 
@@ -3458,7 +3484,7 @@ Control coverage: 402 audited sites (402 helped).
 
 **Reactions on a Commit Comment.** Who reacted to a comment on this commit, and how.
 
-**React to a Commit Comment.** Add a reaction to a comment on this commit.
+**React to a Commit Comment.** Add a reaction to a comment on this commit. GitHub's API reacts to a commit's comments, never to the commit itself.
 
 **Remove My Reaction from a Commit Comment.** Take back a reaction you gave a comment on this commit.
 
@@ -3474,11 +3500,11 @@ Control coverage: 402 audited sites (402 helped).
 
 **Mark Done.** Clear it from your notifications.
 
-**Snooze for One Day.** Hide it here until tomorrow.
+**Snooze for One Day.** Note on this computer that you put it off until tomorrow; GitHub is not told.
 
 **Unsubscribe from Thread.** Stop notifications for it.
 
-**Unsnooze Locally.** Show a snoozed notification again.
+**Unsnooze Locally.** Take the snooze off again.
 
 **Why?.** Why this happened on its own, and what decides it.
 
@@ -3495,6 +3521,8 @@ Control coverage: 402 audited sites (402 helped).
 **Pin.** Keep it under Repositories > Pinned.
 
 **Star Lists.** Choose which of your star lists it is on.
+
+**Sponsor the Owner.** Open the owner's Sponsor tiers.
 
 **Rename or Delete Star List.** In Star Lists: rename the list this row is on, change who sees it, or delete it.
 
@@ -3519,6 +3547,12 @@ Control coverage: 402 audited sites (402 helped).
 **Ruleset History.** Each change to one of this repository's rulesets, and who made it.
 
 **Secret Scanning History.** When GitHub last scanned this repository for secrets, and how.
+
+**Sync Fork with Upstream.** Bring this fork's default branch up to date with the repository it was forked from.
+
+**Create Repository from This Template.** A new repository with this template repository's files. Only a template repository can be used; its General page says whether it is one.
+
+**Delete Repository.** Delete this repository and everything in it: code, issues, pull requests, wiki and releases. It cannot be undone; you type its full name to confirm.
 
 **Require Sign-off on Web Commits.** Whether commits made on GitHub's site must carry a sign-off.
 
@@ -3554,9 +3588,19 @@ Control coverage: 402 audited sites (402 helped).
 
 **Allow a Blocked Secret.** When push protection stopped your push, let that one secret through: give the placeholder id git push printed and say why.
 
+**Copilot Agent Configuration.** How Copilot's cloud agent is set up in this repository.
+
+**Copilot Review Settings.** Whether Copilot reviews pull requests here on its own, and how.
+
+**Fork.** Make your own copy of this repository, in your account or an organization's.
+
+**Prompt Files.** A repository's GitHub Models prompt files, each read as model, messages and tests.
+
 **Open.** Select the person's node in the tree.
 
 **Follow or Unfollow.** Follow them, or stop.
+
+**Block or Unblock.** Block them from following you and from your repositories, or lift the block.
 
 **Find Issues with Label.** Issues and pull requests with it.
 
@@ -3595,6 +3639,10 @@ Control coverage: 402 audited sites (402 helped).
 **Edit a Comment.** Change a comment you may edit.
 
 **Delete a Comment.** Delete a comment you may delete.
+
+**React to a Comment.** Add a reaction to one of its comments or replies, or take back one you gave.
+
+**Create Issue from Discussion.** An issue that links back to the discussion; asks first.
 
 **Dismiss or Reopen Alert.** Dismiss with a reason.
 
@@ -3666,6 +3714,12 @@ Control coverage: 402 audited sites (402 helped).
 
 **Move an Item.** Put an item in another place in the Project's own order.
 
+**Archive an Item.** Hide an item from the Project's views; its field values are kept.
+
+**Restore an Archived Item.** Bring an archived item back into the Project's views, with its field values.
+
+**Remove an Item.** Take an item out of the Project. The issue or pull request stays; a draft is deleted.
+
 **Edit a Status Update.** Change a status update's status or text.
 
 **Delete a Status Update.** Delete one of this Project's status updates.
@@ -3723,6 +3777,32 @@ Control coverage: 402 audited sites (402 helped).
 **Unfollow Organization.** Stop seeing this organization in your feed.
 
 **Security Overview.** Open Dependabot, code scanning and secret scanning alerts in every repository, counted by severity, worst first.
+
+**Copilot Plan.** The organization's Copilot seats, who may have one, and its settings.
+
+**Copilot Seats.** Who has a Copilot seat here, through which team, and when each last used it.
+
+**A Member's Copilot Seat.** Whether one member has a Copilot seat here, and when they last used it.
+
+**Give Copilot Seats.** Give people Copilot seats in the organization; each is billed to it.
+
+**Take Copilot Seats Away.** Take people's Copilot seats away; each ends at the close of the billing cycle.
+
+**Give Teams Copilot.** Give every member of some teams a Copilot seat; each is billed to the organization.
+
+**Take Copilot from Teams.** End the Copilot seats that came through some teams.
+
+**Copilot Usage Report.** GitHub's latest 28-day Copilot usage report for the organization, as download links.
+
+**Copilot Agent Access.** Which of the organization's repositories Copilot's cloud agent may work in.
+
+**Copilot Content Exclusions.** Files Copilot is kept away from in the organization's repositories.
+
+**Block from Organization.** Stop an account from taking part in this organization's repositories.
+
+**Leave Organization.** Stop being a member of this organization.
+
+**Your Invitation.** Whether this organization has invited you, and how to answer.
 
 **Open.** Open the settings dialog for this; it asks before saving.
 
@@ -3829,6 +3909,8 @@ Control coverage: 402 audited sites (402 helped).
 **Download.** Download the file in your browser.
 
 **Attestations.** The file's digest and GitHub's attestations for it, such as build provenance.
+
+**Check Download.** Whether the copy you downloaded matches GitHub's SHA-256 digest for the file.
 
 **Delete Asset.** Remove the file from the release.
 
@@ -3940,6 +4022,14 @@ Control coverage: 402 audited sites (402 helped).
 
 **Teams It Adds To.** The teams this invitation puts the person in when they accept.
 
+**Block from Organization.** Stop this member's account from taking part in the organization's repositories.
+
+**Edit Wiki Pages.** Copy the wiki here or bring the copy up to date, list its pages, open one.
+
+**New Wiki Page.** Make a page here, then open it.
+
+**Publish Wiki Changes.** Commit the pages changed here and push them to GitHub; asks first.
+
 **Clone Wiki.** Copy its pages to a folder, to edit them.
 
 **Cancel Sponsorship.** Stop it; asks first.
@@ -3956,7 +4046,7 @@ Control coverage: 402 audited sites (402 helped).
 
 **General: Open the Workbench on.** Where the window opens when no menu row asks for a place: Inbox (Start Here until you have signed in), Start Here, or wherever you were last time.
 
-**General: List shows.** Quick lists show a few columns, fast to arrow through; Full lists show every column GitHub Items knows for that view.
+**General: List shows.** Quick lists show a few columns, fast to arrow through; Full lists show every column the Workbench has for that list.
 
 **General: Sort issues and pull requests by.** The order a list of issues and pull requests opens in. Newest first is the usual choice.
 
@@ -3971,6 +4061,12 @@ Control coverage: 402 audited sites (402 helped).
 **Notifications and Inbox: Include read notifications.** Show notifications you have already read, as well as unread ones, in Notifications.
 
 **Lists: Say column names before values.** Put each column's name before its value in a list row, as in Number 42, Title Crash on start. Off keeps rows short.
+
+**Lists: Short rows for braille.** Each list row as one short line for a braille display: the number and title first, no column names, and short words (cl for closed, PR for pull request, 3c for three comments, 9 Nov for a date). Details still says everything.
+
+**General: Offer a tip when it would help.** Now and then, after you do something a longer way, the details pane offers one tip on a shorter way, once per tip. Off keeps tips in Help and Learning, Tips, only.
+
+**General: Plain help, without QUILLBert and QUILLBee.** Help and tips without the two characters' names: the same words, said plainly, as Tip and Help.
 
 **Privacy: Load the repository Health Snapshot.** Insights, Health Snapshot reads extra data from GitHub about a repository's activity. It loads only when this is checked.
 
@@ -4360,9 +4456,17 @@ Control coverage: 402 audited sites (402 helped).
 - `cancel_button`: Close without changing anything. Escape does the same.
 #### CreateRepositoryDialog (`quill/ui/github_repo_admin_dialogs.py`)
 
+- `self._problem_ctrl`: Why GitHub would refuse what is chosen, and what to change.
+- `self._org_ctrl`: An organization to create it in. Leave it empty to create it on your account.
 - `self._name_ctrl`: The new repository's name, such as my-project.
 - `self._description_ctrl`: A short sentence about what the repository is for. You can leave it empty.
-- `self._org_ctrl`: An organization to create it in. Leave it empty to create it on your account.
+- `self._homepage_ctrl`: An address shown beside the description, such as the project's site.
+- `self._visibility_choice`: Private: only people you add. Public: everyone.
+- `self._template_ctrl`: A template repository to copy, as owner/name. Leave it empty to start a new one.
+- `self._gitignore_combo`: Files Git should ignore, from GitHub's templates, such as Python or Node. Type any template name GitHub lists, or leave it empty.
+- `self._license_choice`: The licence GitHub adds as a LICENSE file, or none. Not with a template.
+- `self._branches_check`: Copy every branch of the template, not only its default branch.
+- `self._readme_check`: Start with a first commit holding a README, so it can be cloned at once.
 - `ok_btn`: Do it on GitHub. This is the button that makes the change.
 - `cancel_button`: Close without changing anything. Escape does the same.
 #### BranchProtectionDialog (`quill/ui/github_repo_admin_dialogs.py`)

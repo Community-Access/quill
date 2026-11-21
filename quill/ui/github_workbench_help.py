@@ -48,6 +48,24 @@ class GitHubWorkbenchHelpMixin(GitHubWorkbenchWhyMixin):
     def help_purpose(self) -> str:
         return catalogue.SURFACE_PURPOSES["GitHub Workbench"]
 
+    def help_example(self) -> str:
+        """F1's example from the person's own data (D14, GH-R-109); "" when too little is known."""
+        from quill.core.github.help_examples import Situation, example_for
+
+        frame = self.frame
+        row = frame.selected_row() if frame is not None else None
+        kind = ""
+        if row is not None and frame.current is not None:
+            kind = str(self.row_type(frame.node(frame.current), row))  # type: ignore[attr-defined]
+        return example_for(
+            Situation(
+                repository=self.current_repository_name(),  # type: ignore[attr-defined]
+                login=self.account_name(),  # type: ignore[attr-defined]
+                row_kind=kind,
+                row=_row_name(row),
+            )
+        )
+
     def catalogue_node_help(self, template: str, key: str) -> str:
         return catalogue.node_help_for(template, key)
 
@@ -90,8 +108,20 @@ class GitHubWorkbenchHelpMixin(GitHubWorkbenchWhyMixin):
                 keys[row.command_id] = (label, bound.get(row.command_id, row.key))
         if view in ("tutorials", "tips"):
             return self._learning_rows(view)
+        from quill.core.github.workbench_prefs import load_prefs
+        from quill.core.github.workbench_tips import BEE, voice
+
+        # Words are QUILLBee's to explain (D16), or plain help when chosen.
+        plain = load_prefs().plain_help
         return [
-            ExploreRow(topic.title, topic.body, "", "", "help_topic", topic.target)
+            ExploreRow(
+                topic.title,
+                voice(BEE, topic.body, plain=plain) if view == "words" else topic.body,
+                "",
+                "",
+                "help_topic",
+                topic.target,
+            )
             for topic in catalogue.help_rows(view, keys)
         ]
 
@@ -100,9 +130,11 @@ class GitHubWorkbenchHelpMixin(GitHubWorkbenchWhyMixin):
         from quill.core.github import workbench_learning as learning
 
         if view == "tips":
+            from quill.core.github.workbench_prefs import load_prefs
+
             return [
                 ExploreRow(tip, detail, "", "", "help_topic", "")
-                for tip, detail in learning.tip_rows()
+                for tip, detail in learning.tip_rows(plain=load_prefs().plain_help)
             ]
         lessons = _lessons()
         store = self._tutorial_progress()
@@ -271,3 +303,17 @@ def _lessons() -> tuple[Any, ...]:
     from quill.core.tutorials.github_lessons import github_lessons
 
     return github_lessons()
+
+
+def _row_name(row: object) -> str:
+    """A row as the list names it: "#42 Crash on start", "main", "abc1234"."""
+    if row is None:
+        return ""
+    number, title = getattr(row, "number", None), getattr(row, "title", "")
+    if isinstance(number, int) and number and title:
+        return f"#{number} {title}"
+    for name in ("label", "name", "short_sha", "tag"):
+        value = getattr(row, name, "")
+        if isinstance(value, str) and value:
+            return value
+    return ""

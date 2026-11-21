@@ -3,8 +3,9 @@
 The list itself is an Explore view (``my_packages``, from
 :mod:`quill.core.github.packages`). This mixin adds what a package's row can
 do: **Delete Package Version...** lists the versions with their tags, newest
-first, and deletes the one chosen after asking; **Delete Package...** deletes
-the whole package after you type its name.
+first, and deletes the one chosen after you type the package's name;
+**Delete Package...** deletes the whole package the same way. Repository >
+Packages lists a repository's own, with the same commands.
 """
 
 from __future__ import annotations
@@ -146,6 +147,7 @@ class GitHubWorkbenchPackagesMixin:
 
     def _pick_version(self, kind: str, name: str, versions: list[Any], org: str = "") -> None:
         from quill.core.github.packages import delete_version
+        from quill.ui.github_repo_admin_dialogs import TypedConfirmDialog
 
         if not versions:
             self._say(f"{name} has no versions to delete.")
@@ -158,11 +160,19 @@ class GitHubWorkbenchPackagesMixin:
         if picked < 0:
             return
         version = versions[picked]
-        if not self._confirm(
-            "Delete Package Version",
-            f"Delete version {version.label} of the {kind} package {name}? Anything that "
-            "installs this exact version will fail. GitHub can restore it for 30 days.",
-        ):
+        # A version's own name is often a 71-character digest, so the package's name is typed.
+        if not TypedConfirmDialog(
+            self.frame.frame,
+            title="Delete Package Version",
+            message=(
+                f"Delete version {version.label} of the {kind} package {name}. Anything that "
+                "installs this exact version will fail. GitHub can restore it for 30 days. "
+                "Type the package's name to confirm."
+            ),
+            expected=name,
+            confirm_label="Delete",
+        ).show():
+            self._say("Cancelled; the version was not deleted.")
             return
         api = self.github_api()
         self._background(

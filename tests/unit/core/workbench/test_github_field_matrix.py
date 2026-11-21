@@ -98,6 +98,7 @@ LOADED: dict[str, dict[str, Value]] = {
 SAMPLES: dict[tuple[str, str], tuple[Value, Value]] = {
     ("label", "colour"): ("ededed", "00ff00"),
     ("issue_type", "colour"): ("gray", "blue"),
+    ("repository", "pages_source"): ("main /", "main /docs"),
 }
 
 #: Pickers whose API value is not a node id string (a team's parent is its numeric id).

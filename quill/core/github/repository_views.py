@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import Any
 from urllib.parse import parse_qsl, urlsplit
 
@@ -165,6 +166,46 @@ def fetch_deployments(
     return result
 
 
+def _review_bottleneck(repo_object: Any, *, limit: int, warnings: list[str]) -> str:
+    """Say where review is the bottleneck (GX14), as counts and an age, never names.
+
+    A ready pull request with a review still requested is waiting on review. The
+    sentence gives how many and how long the oldest has waited; who was asked is
+    left out on purpose, so the snapshot cannot be read as a ranking of people.
+    """
+    label = "Pull requests waiting for a review"
+    try:
+        pulls = _rows(
+            repo_object.get_pulls(state="open", sort="created", direction="asc"),
+            limit,
+            source=label,
+            warnings=warnings,
+        )
+    except Exception as exc:  # noqa: BLE001 - a missing metric is not zero
+        warnings.append(f"{label} unavailable: {exc}")
+        return "unavailable"
+    now = datetime.now(UTC)
+    ages: list[int] = []
+    for pull in pulls:
+        if getattr(pull, "draft", False):
+            continue
+        asked = list(getattr(pull, "requested_reviewers", None) or ())
+        asked += list(getattr(pull, "requested_teams", None) or ())
+        if not asked:
+            continue
+        created = getattr(pull, "created_at", None)
+        if isinstance(created, datetime):
+            stamp = created if created.tzinfo else created.replace(tzinfo=UTC)
+            ages.append(max(0, (now - stamp).days))
+        else:
+            ages.append(0)
+    if not ages:
+        return "none"
+    oldest = max(ages)
+    days = "1 day" if oldest == 1 else f"{oldest} days"
+    return f"{len(ages)}; the oldest has waited {days} (people are not named)"
+
+
 def fetch_repository_metrics(
     repo_object: Any,
     repository: str,
@@ -191,6 +232,8 @@ def fetch_repository_metrics(
     except Exception as exc:  # noqa: BLE001 - don't show a missing metric as zero
         warnings.append(f"Open pull request count unavailable: {exc}")
         open_prs = "unavailable"
+
+    waiting = _review_bottleneck(repo_object, limit=limit, warnings=warnings)
 
     try:
         failed_runs = _reported_count(
@@ -238,6 +281,7 @@ def fetch_repository_metrics(
         f"Repository health snapshot: {repository}",
         f"Open issues and pull requests: {open_issues_and_prs}",
         f"Open pull requests: {open_prs}",
+        f"Waiting for a review: {waiting}",
         f"Failed workflow runs: {failed_runs}",
         f"Security alerts: {security_text}",
         f"Deployments: {deployments}",

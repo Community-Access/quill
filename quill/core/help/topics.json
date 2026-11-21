@@ -998,7 +998,7 @@
   {
     "id": "file.github_manage_accounts",
     "title": "Manage GitHub Accounts...",
-    "body": "Add, remove, or switch the GitHub accounts QUILL uses to open and save files in repositories.",
+    "body": "Signs you in to GitHub, adds a second account, switches between accounts and removes one. Sign In with GitHub uses a code you enter on GitHub's own page, so QUILL never sees your password; Use GitHub CLI Sign-In adds the account gh is signed in to; Add Token (Advanced) takes a token, and is the way to add an account on a GitHub Enterprise Server. In the GitHub Workbench it is Account, Manage GitHub Accounts (Ctrl+Shift+K).",
     "user_guide_section": "managing-your-github-account"
   },
   {
@@ -1108,13 +1108,13 @@
   },
   {
     "id": "file.open_github_items",
-    "title": "GitHub Items",
-    "body": "A keyboard-first, read-only view of one repository's issues, pull requests, branches, commits, tags, releases and workflow runs, pre-filled with the repository the current file belongs to. You can ask QUILL's AI to summarise a long thread. Like every GitHub command it needs a signed-in account and is refused in Safe Mode."
+    "title": "GitHub Workbench",
+    "body": "Opens the GitHub Workbench, one window for everything GitHub: a tree of places on the left (Inbox, each repository's issues, pull requests, Actions and settings, Search, People), the list of what is there, and the details of the row you are on. F6 moves between them, Enter does the obvious thing, Shift+F1 says what you can do with the selected row, and Alt+Enter shows it on one sheet. Signed in, it opens on your Inbox; signed out, on Start Here. The repository the current file belongs to becomes the current repository, and Ctrl+2 goes to it. The menu row keeps its old name, GitHub Items. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "file.open_github_reference",
     "title": "Open GitHub Reference...",
-    "body": "Paste any GitHub link, or type owner/repo, and QUILL opens it in its own accessible view: a file opens in the editor, and a repository, issue, pull request, discussion, commit, branch, release or workflow run opens in the GitHub Items viewer at that item. A link QUILL has no view for opens in your browser instead, and QUILL says so.",
+    "body": "Paste any GitHub link, or type owner/name, and QUILL opens it. A file opens in the editor, at the linked lines when the link names them. A repository opens the GitHub Workbench on that repository; an issue, pull request, discussion, release, branch, tag or commit opens the matching list there, where Ctrl+G and the number reach the one you asked for. A link QUILL has no place for asks whether to open it in your browser, without your GitHub sign-in. A link with a password or token in it is refused.",
     "user_guide_section": "opening-and-saving-github-files"
   },
   {
@@ -1793,37 +1793,37 @@
   {
     "id": "github.browse_organization",
     "title": "GitHub: Browse Organization Repositories",
-    "body": "Lists the organisations your account belongs to, then the repositories in the one you choose that you are allowed to see, then opens the repository you pick in GitHub Items. An account in no organisations is told so. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+    "body": "Opens the GitHub Workbench at Repositories, Organizations: the organizations your account belongs to. Open one with Right Arrow for its repositories, people, teams and settings; Enter on a repository goes to its place in the tree. An account in no organization has an empty list that says so. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.change_default_branch",
     "title": "GitHub: Change Default Branch",
-    "body": "Lists the repository's branches and makes the one you choose its default -- the branch people get when they clone it and the one pull requests target by default. If the repository has no branches yet, it says so. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+    "body": "Opens the GitHub Workbench on the repository's Properties sheet, at its General page, where you change Default branch: the branch people get when they clone and the one pull requests target. You need admin access to the repository. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.change_repository_visibility",
     "title": "GitHub: Change Repository Visibility",
-    "body": "Looks up whether the repository is private or public and offers to switch it to the other. You must type the owner and name to confirm. Making a repository public exposes its entire history, not just its current contents, and the confirmation says so. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+    "body": "Opens the GitHub Workbench on the repository's Properties sheet, at its Danger Zone page, where Visibility and Archived can be changed. Making a private repository public shows a preview that says what everyone will then see, and you type the repository's name to confirm. You need admin access. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.commit_multiple_files",
     "title": "GitHub: Commit Multiple Files",
-    "body": "Commits several local files to GitHub as one commit: pick the files, choose the branch, write one message, review the list, and QUILL reports the commit it made. One thing to know before you use it -- every file lands at the top of the repository under its own filename, so the folder structure they had locally is not preserved. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+    "body": "Commits several local files to GitHub as one commit: pick the files, choose the branch, write one message, review the list, and QUILL reports the commit it made. One thing to know before you use it: every file lands at the top of the repository under its own filename, so the folder structure they had locally is not preserved. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
   },
   {
     "id": "github.configure_branch_protection",
     "title": "GitHub: Configure Branch Protection",
-    "body": "Sets the rules a branch enforces: how many approving reviews a pull request needs, which status checks must pass, and whether administrators are held to the same rules. The same dialog can remove all protection from a branch, which is confirmed before it happens. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+    "body": "Opens the GitHub Workbench on the repository's Properties sheet, at its Branches and Rules page: classic branch protection and the repository's rulesets, with every setting GitHub offers. A change shows a preview in words before it is sent, and removing protection asks first. You need admin access. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.create_codespace",
     "title": "GitHub: Create Codespace",
-    "body": "Creates a codespace -- a development machine GitHub runs for you -- for a repository and optional branch. Unlike every other GitHub command here, this one can cost money: codespaces use compute and storage time on your account, and the confirmation says so before anything is created. Needs the GitHub command-line tool. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+    "body": "Creates a codespace, a development machine GitHub runs for you, for a repository and optional branch. Unlike every other GitHub command here, this one can cost money: codespaces use compute and storage time on your account, and the confirmation says so before anything is created. Needs the GitHub command-line tool. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
   },
   {
     "id": "github.create_release",
     "title": "GitHub: Create Release",
-    "body": "Publishes a release: a tag, an optional title, and notes -- which QUILL can generate for you from the pull requests merged since the last release, or which you can write yourself. You can save it as a draft instead of publishing, and QUILL reports the address of what it created. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+    "body": "Publishes a release: a tag, an optional title, and notes, which QUILL can generate for you from the pull requests merged since the last release, or which you can write yourself. You can save it as a draft instead of publishing, and QUILL reports the address of what it created. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
   },
   {
     "id": "github.create_repository",
@@ -1833,12 +1833,12 @@
   {
     "id": "github.delete_branch",
     "title": "GitHub: Delete Branch",
-    "body": "Deletes a branch, chosen from a list that deliberately excludes the default branch. You must type the branch name to confirm, and QUILL warns that it cannot undo this for you. A repository with only its default branch reports that there is nothing deletable. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+    "body": "Opens the GitHub Workbench at the repository's Branches. Select a branch and press Delete, or choose Delete Branch on its context menu; you type the branch name to confirm. The default branch is never deleted, and GitHub cannot bring a deleted branch back from QUILL. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.dispatch_workflow",
     "title": "GitHub: Dispatch Workflow",
-    "body": "Starts a GitHub Actions workflow by hand. Give it the workflow's file name -- ci.yml, not the title shown on the website -- and the branch or tag to run against. The workflow has to allow manual runs, and QUILL only reports that it started one: watch its progress in GitHub Items. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+    "body": "Starts a GitHub Actions workflow by hand. It asks for the repository, the workflow's file name (ci.yml, not the title shown on the website) and the branch or tag to run on, and says Dispatched when GitHub accepts it. The workflow has to allow manual runs. Watch it in the GitHub Workbench's Actions runs (Ctrl+Shift+4 there). In the Workbench, Run Workflow on Branch (Ctrl+Shift+R) starts the same command. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
   },
   {
     "id": "github.fork_repository",
@@ -1848,40 +1848,40 @@
   {
     "id": "github.list_codespaces",
     "title": "GitHub: Codespaces",
-    "body": "Lists your codespaces with the repository each belongs to and whether it is running, and offers to stop or delete the one you choose -- deleting asks first and cannot be undone from QUILL. This command needs the GitHub command-line tool installed, which Download Optional Components can fetch for you. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+    "body": "Lists your codespaces with the repository each belongs to and whether it is running, and offers to stop or delete the one you choose; deleting asks first and cannot be undone from QUILL. This command needs the GitHub command-line tool installed, which Download Optional Components can fetch for you. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
   },
   {
     "id": "github.rename_repository",
     "title": "GitHub: Rename Repository",
-    "body": "Renames a repository. Because this is hard to undo, you must type the current owner and name exactly to confirm -- clicking Yes is not enough. GitHub redirects the old address afterwards, but anything that has the old name written into it needs updating by hand. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+    "body": "Opens the GitHub Workbench on the repository's Properties sheet, at its General page, where you change Name. GitHub redirects the old address afterwards, but anything that has the old name written into it needs changing by hand. You need admin access. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.view_notifications",
     "title": "GitHub: Notifications",
-    "body": "Opens your GitHub notifications inbox in Explore GitHub. QUILL says the unread count once when it loads, and each row says why you got it in words, such as review requested or you were mentioned. Enter marks a row read and opens it in QUILL: a pull request in Review, an issue in the GitHub Items viewer, anything else in your browser. Mark Done (or Delete) and Unsubscribe take the row out of the list and leave you on the next one. Mark All Read asks first, and Include read notifications shows the ones you have already read. QUILL waits as long as GitHub asks between checks. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), runs without freezing the window, and is refused in Safe Mode.",
+    "body": "Opens the GitHub Workbench at Needs My Attention, Notifications: GitHub's own list, unread first, each row saying why you got it in words, such as review requested or you were mentioned. Ctrl+Q marks one read, Delete marks it done, Unsubscribe from Thread is on its context menu, and Ctrl+Shift+Q marks the whole list read, asking first when there are more than twenty. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode.",
     "user_guide_section": "github-notifications"
   },
   {
     "id": "github.view_security_alerts",
     "title": "GitHub: Security Alerts",
-    "body": "Lists a repository's open security alerts with their severity, the package affected and a summary; choosing one opens that alert in your browser. It needs an account with permission to see the repository's alerts, and says so plainly when the repository has none open. Every GitHub command asks once for your consent, needs a signed-in account (it offers to sign you in), fills the repository box in from the file you are editing, runs without freezing the window, and is refused in Safe Mode."
+    "body": "Opens the GitHub Workbench at the repository's Security, Alerts: its open Dependabot, code scanning and secret scanning alerts, each with its severity and what it is about. Enter opens one; Dismiss or Reopen Alert is on its context menu. A secret's value is never shown. You need access to the repository's alerts, and a list you cannot read says so rather than showing none. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.notifications_triage",
-    "title": "GitHub Notifications Triage",
-    "body": "In Explore GitHub's notifications view, Mark Done (Alt+D, or Delete in the list) takes a notification off your GitHub inbox, Unsubscribe (Alt+U) stops the thread notifying you until you comment or are mentioned, and Mark All Read (Alt+A) marks everything read up to the moment the list loaded, after asking. Done and Unsubscribe leave the cursor on the next row. Include read notifications (Alt+I) shows read ones too. QUILL Lite reaches the same view from GitHub Items, Explore.",
+    "title": "Clearing Your GitHub Notifications",
+    "body": "In the GitHub Workbench's Notifications, Ctrl+Q marks the selected notification read, Delete marks it done, which takes it out of your inbox, and Unsubscribe from Thread on its context menu stops that thread notifying you. Ctrl+Shift+Q marks every notification in the list read, asking first when there are more than twenty. Snooze for One Day only notes on this computer that you put it off; GitHub is not told, and the row stays in the list. Ctrl+. and Ctrl+Shift+. move between unread rows. QUILL Lite has the same.",
     "user_guide_section": "github-notifications"
   },
   {
     "id": "github.what_failed",
     "title": "What Failed in a Workflow Run",
-    "body": "One read-only text for a failed workflow run: each failed job, then its failed steps, then annotations with file and line, then the last 40 log lines of each failed step, with timestamps and colour codes removed. Open it from a Workflow Runs row (the Actions button, the context menu, or Ctrl+Shift+W in that view) or with What Failed (Alt+F) in Jobs and Logs. Arrow through it like a document; Copy All copies it.",
+    "body": "One read-only text for a failed workflow run: each failed job, then its failed steps, then annotations with file and line, then the last 40 log lines of each failed step, with timestamps and colour codes removed. Open it with Ctrl+Shift+W on a run in the GitHub Workbench's Actions runs, from the run's context menu, or with What Failed (Alt+F) in Jobs and Logs. Arrow through it like a document; Copy All copies it.",
     "user_guide_section": "what-failed-in-a-workflow-run"
   },
   {
     "id": "github.workflow_run_actions",
     "title": "Workflow Run Actions",
-    "body": "On a Workflow Runs row: Re-run Failed Jobs Only, Cancel Run, Delete Run (which says exactly which run, branch and result it will delete), Approve Run from a Fork, Review Pending Deployments and Combined Check Status, which says something like 3 of 4 checks pass. In Jobs and Logs, Re-request Check (Alt+C) runs the selected job's check again. Every write asks first and reports only what GitHub confirmed.",
+    "body": "On a run in the GitHub Workbench's Actions runs: Enter shows its Jobs and Logs, Ctrl+Shift+F5 re-runs only the failed jobs, and the context menu has Re-run Workflow, Re-run One Job, Cancel Run, Delete Run, Approve Run from a Fork, Review Pending Deployments, Combined Check Status (such as 3 of 4 checks pass), Download Logs and Earlier Attempts. In Jobs and Logs, Re-request Check (Alt+C) runs the selected job's check again. A change asks first when it cannot be undone, and reports only what GitHub confirmed.",
     "user_guide_section": "workflow-run-actions"
   },
   {
@@ -1893,43 +1893,43 @@
   {
     "id": "github.auto_merge_and_queue",
     "title": "Auto-Merge and the Merge Queue",
-    "body": "In pull request Review, the Auto-Merge and Queue button (Alt+A) and the pull request's context menu turn auto-merge on with the merge method you choose, turn it off, add the pull request to the merge queue or take it out, and give the combined check status, counting only the required checks once the merge policy is known. Each asks first and says what GitHub confirmed, or why GitHub refused.",
+    "body": "On a pull request in the GitHub Workbench, Auto-Merge turns auto-merge on with the merge method you choose, or off, and Add to or Remove from Merge Queue puts it in its branch's queue or takes it out; the repository's Merge Queue place lists the queue in order. In a pull request's review, Auto-Merge and Queue (Alt+A) offers the same and the combined check status, counting only the required checks once the merge policy is known. Each asks first and says what GitHub confirmed, or why it refused.",
     "user_guide_section": "auto-merge-and-the-merge-queue"
   },
   {
     "id": "github.repository_files",
     "title": "GitHub Repository Files",
-    "body": "In the GitHub Items viewer, Files (Alt+F, or Browse Repository Files on the list's context menu) shows the repository as a tree at any branch, tag or commit. Type or pick one in Branch, tag or commit (Alt+B) and press Enter. Right arrow or Enter opens a folder and Left closes it. Enter on a file, or View File (Alt+V), shows its text read-only in Contents. Open in Editor (Alt+E) opens it for editing: in QUILL through the same path as opening a GitHub file link, and in QUILL Lite as a new untitled document. README (Alt+R) shows the README of the selected folder or of the repository.",
+    "body": "In the GitHub Workbench, a repository's Code, Files (Ctrl+Shift+5) lists the default branch a folder at a time; Enter opens a folder or opens a file in the editor. For any branch, tag or commit, choose Files, History and Blame from Repository Actions (Ctrl+Shift+G): type or pick one in Branch, tag or commit (Alt+B) and press Enter. Right Arrow opens a folder and Left closes it. View File (Alt+V) shows a file's text read-only, Open in Editor (Alt+E) opens it to edit, in QUILL Lite as a new untitled document, and README (Alt+R) shows the folder's README.",
     "user_guide_section": "repository-files"
   },
   {
     "id": "github.blame_and_history",
     "title": "Blame and File History",
-    "body": "In Repository Files, History (Alt+H) lists the commits that changed the selected file or folder, newest first. Blame (Alt+L) lists the file in runs of lines, each read as Lines 10 to 14, then the author, date, short SHA and commit title. Alt+N and Alt+P move to the next and previous run from anywhere in the window, and Enter opens that commit on GitHub. Blame needs a signed-in account.",
+    "body": "In Files, History and Blame (from Repository Actions, Ctrl+Shift+G, in the GitHub Workbench), History (Alt+H) lists the commits that changed the selected file or folder, newest first. Blame (Alt+L) lists the file in runs of lines, each read as Lines 10 to 14, then the author, date, short SHA and commit title. Alt+N and Alt+P move to the next and previous run, and Enter opens that commit on GitHub. Blame needs a signed-in account.",
     "user_guide_section": "blame-and-file-history"
   },
   {
     "id": "github.milestones",
     "title": "GitHub Milestones",
-    "body": "Milestones in the GitHub Items viewer lists a repository's milestones, each read as one line such as Release 2.0: 61 percent done, 5 open, 8 closed, due 12 December. Show (Alt+S) picks open, closed or all. New (Alt+N) and Edit (Alt+E) take a title, a description and a due date typed as year-month-day; Close Milestone or Reopen Milestone (Alt+L) asks first. QUILL reports a change only once GitHub confirms it.",
+    "body": "A repository's Milestones place in the GitHub Workbench lists its milestones, each read as one line such as Release 2.0: 61 percent done, 5 open, 8 closed, due 12 December. Enter lists its issues, Alt+Enter changes it on its sheet, and Delete Milestone asks first. Milestones, from Repository Actions (Ctrl+Shift+G), is a window of its own: Show (Alt+S) picks open, closed or all; New (Alt+N) and Edit (Alt+E) take a title, a description and a due date typed as year-month-day; Close Milestone or Reopen Milestone (Alt+L) asks first. QUILL reports a change only once GitHub confirms it.",
     "user_guide_section": "github-milestones"
   },
   {
     "id": "github.batch_milestone_assignees",
-    "title": "Batch Milestone and Assignees",
-    "body": "In the GitHub Items viewer's Issues and PRs view, select several rows and open Batch (Alt+B). Beside Close, Reopen and Add Label are Set Milestone, which lists the open milestones and a choice to clear it, and Add Assignees, which takes usernames separated by commas. QUILL names the exact issues and asks first, then says how many GitHub confirmed and names anyone GitHub did not assign.",
+    "title": "Changing Many Issues at Once",
+    "body": "In the GitHub Workbench, select several issues or pull requests and press Alt+Enter: one sheet changes all of them, its labels, assignees, milestone and state, and Save sends each change and says how many GitHub confirmed. Or choose Tools, Plain-Language Batch (Ctrl+Shift+S) and say the change in words, such as close every issue labelled duplicate older than 90 days; you check the exact items it found before anything is sent. Ctrl+Z undoes one change at a time.",
     "user_guide_section": "batch-operations"
   },
   {
     "id": "github.discussion_threads",
     "title": "GitHub Discussion Threads",
-    "body": "In Explore GitHub's Discussions view, Enter on a discussion (or Open Discussion Thread on the context menu) opens it as a thread: the discussion, then each comment followed by its replies. It says Answered by and the name when there is an answer, and reads a poll as text, one option to a line with its votes and percent. Reply (Alt+R) answers the discussion or the selected comment. Mark as Answer (Alt+M) marks the selected comment as the answer, or unmarks it, after asking. New Discussion on the context menu starts one in a category you choose.",
+    "body": "A repository's Discussions (Ctrl+Shift+3) in the GitHub Workbench lists them, each saying its category and whether it is answered. Enter opens one as a thread: the discussion, then each comment followed by its replies, with Answered by and the name when there is an answer, and a poll read one option to a line with its votes. Reply (Alt+R) answers the discussion or the selected comment, and Mark as Answer (Alt+M) marks or unmarks the selected comment, after asking. Ctrl+N in Discussions starts a new one.",
     "user_guide_section": "discussion-threads"
   },
   {
     "id": "github.security_alert_triage",
     "title": "Security Alert Triage",
-    "body": "In Explore GitHub's Repository security alerts view, Dismiss Alert on the context menu asks why, offering GitHub's own reasons for that kind of alert: Dependabot, code scanning or secret scanning. Then it takes an optional comment and asks you to confirm. The Dismissed and resolved security alerts view lists closed alerts, and Reopen Alert there opens one again after asking. QUILL reports the change only when GitHub's reply shows it.",
+    "body": "In the GitHub Workbench, a repository's Security, Alerts lists its open alerts. Dismiss or Reopen Alert on an alert's context menu asks why, offering GitHub's own reasons for that kind of alert (Dependabot, code scanning or secret scanning), takes an optional comment, and asks you to confirm. Security, Dismissed and Resolved Alerts lists closed ones, and the same command reopens one there after asking. QUILL reports the change only when GitHub's reply shows it.",
     "user_guide_section": "security-alert-triage"
   },
   {
@@ -1947,13 +1947,13 @@
   {
     "id": "github.timeline",
     "title": "Issue and Pull Request Timeline",
-    "body": "One read-only history of an issue or pull request, one line per event with its date and who did it, newest last: labels, assignments, review requests and reviews, commits, force-pushes, cross-references, closing, reopening and merging. Open it with Timeline (Alt+T) in Review, or View Timeline in the GitHub Items context menu. The last line says whether it is the whole history. Copy All (Alt+A) copies it.",
+    "body": "One read-only history of an issue or pull request, one line per event with its date and who did it, newest last: labels, assignments, review requests and reviews, commits, force-pushes, cross-references, closing, reopening and merging. Open it with View Timeline on the row's context menu in the GitHub Workbench, or Timeline (Alt+T) in a pull request's review. The last line says whether it is the whole history. Copy All (Alt+A) copies it.",
     "user_guide_section": "reading-the-timeline"
   },
   {
     "id": "github.reactions",
     "title": "Reactions",
-    "body": "Add or remove a reaction on an issue, a pull request, an issue comment or a review comment, chosen by name from GitHub's eight: thumbs up, thumbs down, laugh, hooray, confused, heart, rocket and eyes. The list says which are already yours; choosing one of yours removes it. Comment details read the counts in words, such as 3 thumbs up, 1 heart.",
+    "body": "React, on an issue or pull request in the GitHub Workbench, or on a comment in a review, adds or removes a reaction chosen by name from GitHub's eight: thumbs up, thumbs down, laugh, hooray, confused, heart, rocket and eyes. The list says which are already yours; choosing one of yours removes it. Details read the counts in words, such as 3 thumbs up, 1 heart.",
     "user_guide_section": "reacting-to-issues-and-comments"
   },
   {
@@ -1965,103 +1965,103 @@
   {
     "id": "github.search_code_commits_repositories",
     "title": "Searching Code, Commits and Repositories",
-    "body": "In Explore GitHub, choose Code search, Commit search or Repository search in View (Alt+V), type in Global search (Alt+G) and press Enter. GitHub qualifiers such as repo: and language: work. A code result reads as the path, the line of the excerpt the match is on, and the words that matched; Tab to the details for the whole excerpt. Code search needs a signed-in account. When there are more matches than the list shows, the status line says how many.",
+    "body": "In the GitHub Workbench, Search (Ctrl+3) has a place for each kind: issues and pull requests, code, commits, repositories, people and topics. Choose one, press Ctrl+E for the filter box, type, and press Enter. GitHub qualifiers such as repo: and language: work. A code result reads as the path and the line the match is on; the details have the whole excerpt. Code search needs a signed-in account. Ctrl+N in a search keeps it under Saved Searches.",
     "user_guide_section": "searching-code-commits-and-repositories"
   },
   {
     "id": "github.insights",
     "title": "Insights and the Community Profile",
-    "body": "Explore's Insights view starts with one sentence, such as 1,234 views (210 unique) and 56 clones (12 unique) in the last 14 days, 12 contributors, then lists each figure on its own line: daily views and clones, referring sites, popular pages and each contributor's commits. Traffic needs push access; when GitHub refuses it QUILL says so and still lists the contributors. The Community profile checklist view says GitHub's health percentage and which of README, license, contributing guide, code of conduct, issue templates and pull request template are present or missing.",
+    "body": "A repository's Insights (Ctrl+Shift+0) in the GitHub Workbench say its traffic in a sentence, such as 1,234 views (210 unique) and 56 clones (12 unique) in the last 14 days, then each figure on its own line: daily views and clones, referring sites, popular pages, contributors and commit activity. Traffic needs push access; when GitHub refuses it QUILL says so. The community profile says GitHub's health percentage and which recommended files are present or missing.",
     "user_guide_section": "insights-and-the-community-profile"
   },
   {
     "id": "github.repository_actions",
-    "title": "Repository Actions in Explore",
-    "body": "On a repository row in Explore, or a repository typed in a repository view, the context menu's Repository Actions submenu has Sync Fork with Upstream (QUILL says Already up to date or Merged 3 commits), Set Topics, Watch Level, Archive and Unarchive, Create Repository from This Template, and Delete Repository, which asks you to type the repository's full name first. The Actions caches view lists caches and Delete Cache removes one; the Secret and variable names view lists names only, never values. A person's row has Follow and Unfollow. Each write asks first and says what GitHub confirmed.",
-    "user_guide_section": "repository-actions-in-explore"
+    "title": "Repository Actions in the GitHub Workbench",
+    "body": "Repository, Repository Actions (Ctrl+Shift+G) in the GitHub Workbench lists everything else you can do with the repository: star, watch, fork, clone, Codespaces, Files, History and Blame, Milestones, Projects and its administration, as a list you run from. Its name, topics, watch level, archiving and visibility are on its Properties sheet (Alt+Enter). A row that runs a command only QUILL has is greyed in QUILL Lite and says why.",
+    "user_guide_section": "repository-actions-in-the-workbench"
   },
   {
     "id": "github.manage_release",
     "title": "Managing a Release",
-    "body": "In the GitHub Items viewer's Releases view, Edit Release opens the release's name, notes, Draft (Alt+D) and Pre-release (Alt+P); clearing Draft publishes it after QUILL asks. Upload Asset sends a file you choose, saying 25, 50 and 75 percent on the way and then the file GitHub stored. Delete Asset, on a release's file list, asks first. QUILL says only what GitHub confirmed.",
+    "body": "On a release in the GitHub Workbench's Releases (Ctrl+Shift+6), Edit Release opens its name, notes, Draft (Alt+D) and Pre-release (Alt+P); unchecking Draft publishes it after QUILL asks. Upload Asset sends a file you choose and says Uploaded, its name and size. Enter lists the release's files, where Delete Asset asks first. Delete Release asks whether to keep the tag. QUILL says only what GitHub confirmed.",
     "user_guide_section": "managing-a-release"
   },
   {
     "id": "github.issue_housekeeping",
     "title": "Issue Housekeeping",
-    "body": "On an issue or pull request in the GitHub Items viewer, the context menu's Housekeeping submenu has Lock Conversation (with a reason) and Unlock Conversation. On an issue it also has Transfer Issue, which asks first and says the new address; Pin Issue and Unpin Issue; Set Issue Type, for repositories whose organization has types; and Reorder Sub-issues, where Move Up (Alt+U) and Move Down (Alt+D) change the order on GitHub and QUILL says where the sub-issue landed.",
+    "body": "On an issue in the GitHub Workbench, the context menu (under More when it is long) has Edit Title, Lock or Unlock Conversation (the sheet's Conversation page, with Locked as a check box), Pin or Unpin Issue, Transfer Issue (to another repository with the same owner, after asking), Set Issue Type, and Reorder Sub-issues, where Move Up (Alt+U) and Move Down (Alt+D) change the order on GitHub and QUILL says where the sub-issue landed.",
     "user_guide_section": "issue-housekeeping"
   },
   {
     "id": "github.rate_limit",
     "title": "GitHub API Rate Limit",
-    "body": "Ctrl+Shift+L in the GitHub Items viewer or Explore, or GitHub API Rate Limit in either context menu, says how much of GitHub's hourly allowance is left and when it resets, such as GitHub API: 4,212 of 5,000 left, resets at 3:40 PM, with GraphQL and search too. QUILL sends GitHub what it already has when it reads again, so an unchanged refresh costs nothing and Explore says No changes since the last load. It checks notifications less often when the allowance runs low, and when GitHub asks it to wait it says so once, such as GitHub asked QUILL to wait 60 seconds.",
+    "body": "Ctrl+Shift+L in the GitHub Workbench (Account, GitHub API Rate Limit), or Alt+6, says how much of GitHub's hourly allowance is left and when it resets, such as GitHub API: 4,212 of 5,000 left, resets at 3:40 PM, with GraphQL and search too. QUILL sends GitHub what it already has when it reads again, so an unchanged refresh costs nothing from the allowance. When GitHub asks it to wait it says so once, such as GitHub asked QUILL to wait 60 seconds.",
     "user_guide_section": "rate-limits-and-quiet-refreshes"
   },
   {
     "id": "github.copilot_review",
-    "title": "Request Copilot Review",
-    "body": "In the review window, the pull request's context menu (Shift+F10 on the outline) has Request Copilot Review, which asks Copilot code review to review the pull request. QUILL says Copilot review requested only when GitHub lists Copilot among the reviewers. When GitHub leaves Copilot off, which is how it answers an account or repository without Copilot code review, QUILL says so plainly. Copilot's review arrives as comments after a refresh.",
+    "title": "Ask Copilot to Review",
+    "body": "Ask Copilot to Review, on a pull request's context menu in the GitHub Workbench, asks Copilot code review to review it. QUILL says Copilot review requested only when GitHub lists Copilot among the reviewers. When GitHub leaves Copilot off, which is how it answers an account or repository without Copilot code review, QUILL says so plainly. Copilot's review arrives as comments after a refresh.",
     "user_guide_section": "copilot-review-and-the-coding-agent"
   },
   {
     "id": "github.assign_to_copilot",
     "title": "Assign to Copilot",
-    "body": "On an issue in the GitHub Items viewer, the context menu's Assign to Copilot hands the issue to Copilot's coding agent, which works on it and opens a pull request for you to review. QUILL first asks GitHub whether the agent can be assigned in this repository and, when it cannot, says why and changes nothing. Otherwise it asks before assigning, keeps anyone already assigned, and says the issue is assigned only when GitHub lists Copilot. It needs a signed-in account.",
+    "body": "Assign to Copilot (Ctrl+Shift+A), on an issue in the GitHub Workbench, hands the issue to Copilot's coding agent, which works on it and opens a pull request for you to review. QUILL first asks GitHub whether the agent can be assigned in this repository and, when it cannot, says why and changes nothing. Otherwise it asks before assigning, keeps anyone already assigned, and says the issue is assigned only when GitHub lists Copilot. It needs a signed-in account.",
     "user_guide_section": "copilot-review-and-the-coding-agent"
   },
   {
     "id": "github.commit_comments",
     "title": "Commit Comments",
-    "body": "On a commit row in the GitHub Items viewer, the context menu's Commit Comments lists the commit's comments, each read as author, date and text; Tab reads the whole comment. Type in New comment (Alt+N) and press Post Comment (Alt+P) to add one on the whole commit, or name a file (Alt+F) and a line (Alt+L) to put it on one line of that file. QUILL says posted only when GitHub returns the comment.",
+    "body": "On a commit or a tag in the GitHub Workbench, Commit Comments on the context menu lists the commit's comments, oldest first, each read as author, date and first line; Selected comment (Alt+M) has the whole of it. Type in New comment (Alt+N) and press Post Comment (Alt+P) to add one on the whole commit, or name a file (Alt+F) and a line (Alt+L) to put it on one line. QUILL says posted only when GitHub returns the comment. Code, Commit Comments lists every commit comment in the repository.",
     "user_guide_section": "commit-comments"
   },
   {
     "id": "github.gists",
     "title": "Writing and Editing Gists",
-    "body": "In Explore's My gists view, the context menu has New Gist, which starts from the document you are editing or its selection, and on a gist Edit Gist, Star Gist, Unstar Gist and Delete Gist. The gist window has Description (Alt+D), Public gist (Alt+B) for a new gist, Files (Alt+F), File text (Alt+T), Add File (Alt+A), Rename File (Alt+N) and Delete File (Alt+L). Deleting a file or a gist asks first, nothing is sent until Create Gist or Save Gist, and QUILL says what GitHub confirmed. A secret gist is unlisted, not private.",
-    "user_guide_section": "gists-in-explore"
+    "body": "My Gists (Ctrl+5) in the GitHub Workbench lists your gists. Ctrl+N there starts a new one from the editor's selection, or the whole document; Enter edits a gist; Star or Unstar, Comments, History, Forks and Fork Gist are on its context menu; and Delete asks first. The gist window has Description (Alt+D), Public gist (Alt+B) for a new gist, Files (Alt+F), File text (Alt+T), Add File (Alt+A), Rename File (Alt+N) and Delete File (Alt+L). Nothing is sent until Create Gist or Save Gist. A secret gist is unlisted, not private.",
+    "user_guide_section": "gists-in-the-workbench"
   },
   {
     "id": "github.attention_queue_summaries",
-    "title": "Pull Request Summaries in the Attention Queue",
-    "body": "Each pull request in Explore's attention queue says where it stands in one sentence, such as Approved, 2 checks failing, 1 open thread, after its name; in the details the reason it is in your queue comes first. QUILL reads every sentence in one request per refresh, covering the twenty newest pull requests. It never calls a pull request ready on missing or partial data, and a pull request GitHub did not answer for says Summary unavailable.",
+    "title": "Pull Request Summaries in the Inbox",
+    "body": "Each pull request in the GitHub Workbench's Inbox says where it stands in one sentence, such as Approved, 2 checks failing, 1 open thread, after its name; in the details the reason it is yours comes first. QUILL reads every sentence in one request per refresh. It never calls a pull request ready on missing or partial data, and one GitHub did not answer for says Summary unavailable.",
     "user_guide_section": "pull-request-summaries-in-the-attention-queue"
   },
   {
     "id": "github.workbench_inbox",
     "title": "GitHub: Inbox",
-    "body": "Opens Explore GitHub on your attention queue: the issues and pull requests waiting on you, in the order they need you. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."
+    "body": "Opens the GitHub Workbench at Needs My Attention, Inbox: one list of what needs you, from notifications, review requests, assignments and mentions. In the Workbench, Ctrl+1 goes there. It is on the GitHub menu, which is there while View, GitHub Workbench Mode is on. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.workbench_my_work",
     "title": "GitHub: My Work",
-    "body": "Opens Explore GitHub on My Work: what you opened, are assigned and were asked to review. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."
+    "body": "Opens the GitHub Workbench at Needs My Attention: the Inbox, then Review Requests, Assigned to Me, Mentions, My Open Pull Requests and My Open Issues, your work split by why it is yours. The row has left the GitHub menu; the Command Palette and any key you gave it still reach it. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.workbench_issues",
-    "title": "GitHub: Issues and Pull Requests",
-    "body": "Opens GitHub Items on the issues and pull requests of the repository you are working in, or asks which one. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."
+    "title": "GitHub: This Repository's Issues",
+    "body": "Opens the GitHub Workbench on the Issues of the repository the current file belongs to. In the Workbench, Ctrl+Shift+1 goes there. It is on the GitHub menu, which is there while View, GitHub Workbench Mode is on. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.workbench_pulls",
     "title": "GitHub: This Repository's Pull Requests",
-    "body": "Opens the GitHub Workbench on the pull requests of the repository you are working in, or asks which one. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as the rest of the Workbench."
+    "body": "Opens the GitHub Workbench on the Pull Requests of the repository the current file belongs to. In the Workbench, Ctrl+Shift+2 goes there. It is on the GitHub menu, which is there while View, GitHub Workbench Mode is on. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.workbench_actions_runs",
     "title": "GitHub: Actions Runs",
-    "body": "Opens GitHub Items on the repository's recent workflow runs, with their status and result. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."
+    "body": "Opens the GitHub Workbench on the Actions runs of the repository the current file belongs to, with each run's status and result. In the Workbench, Ctrl+Shift+4 goes there, and Ctrl+Shift+W on a failed run says what failed. It is on the GitHub menu, which is there while View, GitHub Workbench Mode is on. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.workbench_releases",
     "title": "GitHub: Releases",
-    "body": "Opens GitHub Items on the repository's releases, with their downloads and whether each is a draft or a pre-release. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."
+    "body": "Opens the GitHub Workbench on the Releases of the repository the current file belongs to, with their downloads and whether each is a draft or a pre-release. In the Workbench, Ctrl+Shift+6 goes there. The row has left the GitHub menu; the Command Palette and any key you gave it still reach it. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.workbench_explore",
-    "title": "GitHub: Explore GitHub",
-    "body": "Opens Explore GitHub on its usual first view: your attention queue when you are signed in, search when you are not. It sits in the GitHub menu, which is there while View > GitHub Workbench Mode is on, and opens through the same consent, sign-in and Safe Mode checks as GitHub Items."
+    "title": "GitHub: Search",
+    "body": "Opens the GitHub Workbench at Search, which has a place for issues and pull requests, code, commits, repositories, people and topics. In the Workbench, Ctrl+3 goes there. This was Explore GitHub, which the Workbench replaced; the Command Palette and any key you gave it still reach it. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
   },
   {
     "id": "github.clone_repository",
@@ -4137,7 +4137,7 @@
   {
     "id": "view.github_workbench_mode",
     "title": "GitHub Workbench Mode",
-    "body": "A check item, per window. On, it adds a GitHub menu right after Tools and moves the GitHub rows of File > Open from Remote and Tools > Git and GitHub into it; off, it puts them back. A key you give a moved row works in both modes. Turning it on or off says one sentence. It is not remembered when QUILL restarts.",
+    "body": "A check item, per window. On, it adds a GitHub menu right after Tools, with the doors into the GitHub Workbench (Open GitHub Workbench, Inbox, This Repository's Issues and Pull Requests, Actions Runs), and moves the GitHub rows of File, Open from Remote and Tools, Git and GitHub into it; off, it puts them back. A key you give a moved row works in both modes. Turning it on or off says one sentence. It is not remembered when QUILL restarts.",
     "user_guide_section": "github-workbench-mode"
   },
   {
@@ -4440,7 +4440,7 @@
   {
     "id": "github.open_reference_at_cursor",
     "title": "GitHub: Open the GitHub Reference at the Cursor",
-    "body": "Opens what is written where your cursor is: #42 or GH-42 in this file's repository, owner/name#42 in another, or a commit hash, each in the GitHub Workbench with its list narrowed to it; or @person, whose profile opens in your browser. A bare #42 needs the document to be in a GitHub repository. Refused in Safe Mode.",
+    "body": "Opens the Properties sheet of what is written where your cursor is, in the GitHub Workbench: #42 or GH-42 in this file's repository, owner/name#42 in another, a commit hash, @person, or a GitHub address of an issue, pull request, discussion or commit. Alt+Enter does the same with the cursor on a reference; anywhere else Alt+Enter does what it always did. A bare #42 needs the document to be in a GitHub repository. Refused in Safe Mode.",
     "user_guide_section": "from-the-line-you-are-on"
   },
   {

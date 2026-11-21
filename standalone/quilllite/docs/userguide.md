@@ -280,7 +280,7 @@ drift from what is actually bound.
 
 A book of its own, shipped with QUILL Lite and shared with QUILL, on doing
 GitHub work with a screen reader. **File > GitHub Workbench...** (**Alt+F**,
-then **G**) opens the windows it describes.
+then **G**) opens the GitHub Workbench it describes.
 
 ### [The GitHub Guide for QUILL and QUILL Lite](github-guide/lite-github-guide.html)
 
@@ -288,22 +288,26 @@ Its contents page, with what each chapter covers and how to read it.
 
 ### [Chapter 1: Getting started](github-guide/lite-github-guide-01-getting-started.html)
 
-What the workbench is, opening it, the one question QUILL Lite asks before it
-connects, accounts, and Safe Mode, with a two-minute tour.
+What the Workbench is, opening it, the one question QUILL Lite asks before it
+connects, signing in, more than one account, how much the Workbench may
+change, and Safe Mode, with a two-minute tour.
 
-### [Chapter 2: Getting around](github-guide/lite-github-guide-02-getting-around.html)
+### [Chapter 2: A tour of the GitHub Workbench](github-guide/lite-github-guide-02-getting-around.html)
 
-GitHub Items and Explore GitHub control by control, the keys that do most of
-the moving, searching, pasting a link, and GitHub's hourly allowance.
+The GitHub menu, then the Workbench window: its tree and Go keys, lists, the
+filter, Properties, the context menu, how it asks before it changes anything,
+taking a change back, the status bar and the help keys.
 
 ### [Chapter 3: Your inbox and your work](github-guide/lite-github-guide-03-inbox-and-your-work.html)
 
-Notifications, My Work, the attention queue and activity.
+Needs My Attention: notifications, invitations, inbox rules, the Inbox and
+your own open work.
 
 ### [Chapter 4: Issues](github-guide/lite-github-guide-04-issues.html)
 
-Reading issues and comments, reactions, the timeline, new issues, labels,
-milestones, batch changes, housekeeping and Projects.
+Finding, reading and commenting on issues, new issues and issue forms,
+labels, milestones, types and fields, many at once, relationships and
+Projects.
 
 ### [Chapter 5: Pull requests and review](github-guide/lite-github-guide-05-pull-requests-and-review.html)
 
@@ -312,30 +316,31 @@ suggestions, sending a review, and merging.
 
 ### [Chapter 6: Actions and checks](github-guide/lite-github-guide-06-actions-and-checks.html)
 
-Workflow runs, What Failed, jobs and logs, rerunning, checks, deployments,
-artifacts, caches and secret names.
+Workflow runs, What Failed, jobs and logs, rerunning, checks, workflows,
+deployments, artifacts, caches and runners.
 
 ### [Chapter 7: Code and repositories](github-guide/lite-github-guide-07-code-and-repositories.html)
 
-Files at any branch, blame and history, branches, releases, search, forks,
-insights, and looking after a repository.
+Files at any branch, blame and history, branches, releases, search,
+configuration, insights, and looking after a repository.
 
 ### [Chapter 8: Discussions and security](github-guide/lite-github-guide-08-discussions-and-security.html)
 
-Discussion threads, answers and polls, and security alerts.
+Discussion threads, answers and polls, security alerts, advisories and
+secrets.
 
 ### [Chapter 9: Codespaces and the GitHub CLI](github-guide/lite-github-guide-09-codespaces-and-the-cli.html)
 
-Opening Codespaces, and QUILL's commands that use the GitHub CLI.
+Your codespaces in the Workbench, and the GitHub CLI.
 
 ### [Chapter 10: Troubleshooting, privacy and help](github-guide/lite-github-guide-10-troubleshooting.html)
 
-Every common refusal and what to do, what goes over the network, and how to
-reach a person.
+What QUILL Lite says when something fails and what to do, what goes over the
+network, and how to reach a person.
 
 ### [Chapter 11: Keyboard reference](github-guide/lite-github-guide-11-keyboard-reference.html)
 
-Every key the workbench answers to, one window at a time.
+Every key the Workbench and its windows answer to.
 
 ### [Chapter 12: The GitHub Workbench, place by place](github-guide/lite-github-guide-12-the-workbench.html)
 
@@ -345,3 +350,12 @@ The one window for GitHub, a place at a time, with its keys and its help.
 
 Alt+Enter on anything for its Properties, changing many things at once,
 undoing a change, filtering a list on anything, and who has access.
+
+### [Chapter 14: GitHub in QUILL Lite](github-guide/lite-github-guide-14-quill-lite.html)
+
+What is the same in QUILL Lite, and the few things that differ.
+
+### [Appendix A: What GitHub needs for each part of the Workbench](github-guide/lite-github-guide-appendix-a-features.html)
+
+Your role, your sign-in's permissions, and the features a repository or
+organization must have, part by part.

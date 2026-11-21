@@ -366,3 +366,46 @@ def test_the_route_is_covered_and_the_node_has_help_and_a_reason_for_no_chord() 
     assert change.label == "Change Options..." and KEYLESS[change.command_id]
     members = [a for a in WORDPRESS_ACTIONS.rows_for("pmpro") if a.label.startswith("Members")]
     assert members and ADMIN_KEYLESS[members[0].command_id] and members[0].help
+
+
+class SearchApi(CodesApi):
+    """PMPro 3.9.2 as it is live: no discount-codes ability, only its quick search (20 at most)."""
+
+    def __init__(self, count: int) -> None:
+        super().__init__(count)
+        self.searched: list[dict[str, Any]] = []
+        self.looked_up: list[str] = []
+
+    def iter_collection(self, route: str, params: Any = None, **_kw: Any):
+        yield {"name": "pmpro/search-query", "meta": {"annotations": {"readonly": True}}}
+
+    def request(self, method: str, route: str, *, params: Any = None, **_kw: Any) -> _Response:
+        assert method == "GET" and route.endswith("pmpro/search-query/run")
+        self.searched.append(dict(params))
+        found = self.codes[: int(params["input[limit]"])]
+        items = [{"title": c["code"], "entity_type": "discount_codes"} for c in found]
+        return _Response({"results": [{"scope": "discount_codes", "items": items}]})
+
+    def get(self, route: str, **params: Any) -> Any:
+        assert route == "pmpro/v1/discount_code"
+        self.looked_up.append(params["code"])
+        return next(c for c in self.codes if c["code"] == params["code"])
+
+
+def test_pmpro_search_lists_twenty_codes_and_says_the_rest_are_in_wp_admin() -> None:
+    from quill.core.wordpress.workbench_pmpro_rest import load_discount_codes
+
+    # Live, PMPro 3.9.2 (2026-11-20): the discount-codes ability does not exist, so the
+    # node only ever said "wp-admin"; its quick search lists 20 at most, with no paging.
+    api = SearchApi(37)
+    rows = load_discount_codes(_ctx(api, "wp-abilities/v1", "pmpro/v1"))
+    codes = [r.cell("code") for r in rows if r.kind == "pmpro"]
+    assert codes == [f"C{i}" for i in range(1, 21)] and api.looked_up == codes
+    assert api.searched[0]["input[query]"] == "%"
+    assert api.searched[0]["input[scope]"] == "discount_codes"
+    note = rows[-1]
+    assert note.kind == "discount_note" and "more discount codes than these 20" in note.detail
+    few = load_discount_codes(_ctx(SearchApi(3), "wp-abilities/v1", "pmpro/v1"))
+    assert [r.kind for r in few] == ["pmpro"] * 3  # all of them: no note
+    none = load_discount_codes(_ctx(SearchApi(0), "wp-abilities/v1", "pmpro/v1"))
+    assert [r.kind for r in none] == ["discount_note"]

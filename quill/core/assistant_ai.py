@@ -713,16 +713,18 @@ def load_assistant_api_key() -> str:
     silently succeeding with a different key there would mask the
     wrong-Windows-user diagnosis L-5 exists to surface.
     """
-    stored = stored_assistant_api_key()
-    if stored:
-        return stored
-    if assistant_secret_unlock_failed():
-        return ""
+    from quill.core.ai.legacy_key_owner import belongs_to
+
     try:
         provider = load_assistant_connection_settings().provider
     except Exception:  # noqa: BLE001 - unreadable settings means "no active provider"
         return ""
-    return environment_api_key(provider)
+    stored = stored_assistant_api_key()
+    if stored and belongs_to(provider):  # never another company's key (audit gap 13)
+        return stored
+    if assistant_secret_unlock_failed():
+        return ""
+    return stored_provider_api_key(provider) or environment_api_key(provider)
 
 
 def save_assistant_api_key(api_key: str) -> None:
@@ -756,8 +758,11 @@ def clear_assistant_api_key() -> bool:
     assistant keys private.
     """
 
+    from quill.core.ai.legacy_key_owner import record_owner
+
     had_credential = bool(_load_api_key_from_credential_manager())
     _delete_api_key_from_credential_manager()
+    record_owner("")
 
     path = assistant_secret_path()
     had_file = path.exists()
@@ -890,8 +895,14 @@ def save_provider_api_key(provider: str, api_key: str) -> bool:
 
 
 def clear_provider_api_key(provider: str) -> None:
-    """Forget the stored key for a single provider."""
+    """Forget the stored key for a single provider, and its copy in the older
+    single-key store, so nothing keeps sending after "Signed out" (audit gap 8)."""
+    from quill.core.ai.legacy_key_owner import belongs_to
+
+    mirrored = belongs_to(provider)  # asked before the key it is compared with goes
     _cs_delete(provider_credential_target(provider))
+    if mirrored:
+        clear_assistant_api_key()
 
 
 def provider_models_path() -> Path:
@@ -944,6 +955,9 @@ def set_active_provider(settings: AssistantConnectionSettings, api_key: str) -> 
         save_provider_model(provider, settings.model)
     save_assistant_connection_settings(settings)
     save_assistant_api_key(api_key)
+    from quill.core.ai.legacy_key_owner import record_owner
+
+    record_owner(provider if api_key.strip() else "")
 
 
 def assistant_secret_unlock_failed() -> bool:

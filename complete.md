@@ -15,8 +15,8 @@
 For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claude.log`. The commands and gates are in `CLAUDE.md`.
 
 - **Screen-reader testing** is done by Jeff's testers and is not tracked here.
-- **Where it stands (2026-11-20):** merged since 2026-11-19: #1943 to #1962, #1964 to #1966, #1968, #1969, #1972, #1976, #1977 and #1979 to #1983. Built and waiting to merge: #1963, #1967, #1970, #1971, #1973, #1974 and #1975. Rule (Jeff): nothing Enterprise Cloud only; organization-only checks run in a test organization.
-- **Next (Jeff, 2026-11-20):** the known defects in Part 0 come first, worst harm first, then the documentation pass (1.4). Screen-reader testing is a given on everything. A tester's defect report always comes first.
+- **Where it stands (2026-11-20):** merged since 2026-11-19: #1943 to #1962, #1964 to #1966, #1968, #1969, #1972, #1976, #1977 and #1979 to #1983. Merged in the 2026-11-20 merge train: #1963, #1967, #1970, #1971, #1973, #1974 and #1975. Rule (Jeff): nothing Enterprise Cloud only; organization-only checks run in a test organization.
+- **Next (Jeff, 2026-11-20):** the known defects in Part 0 come first, worst harm first. Screen-reader testing is a given on everything. A tester's defect report always comes first.
 - **Live testing runs alongside.** On 2026-11-19 Jeff said live testing waits until all code is done. On 2026-11-20 he changed that: the known defects are fixed while live testing goes on, and documentation and live testing run side by side once the code is in. The WordPress live run (#1976) followed that. The test site is reached over SSH (`ssh lp.csedesigns.com`, wp-cli through `~/app/wordpress-test/wpcli.sh`, which needs more PHP memory). Gravity Forms 3.2.3.1 is licensed there with its REST API v2 on.
 - **How to work here:**
   - Squash-merge with `gh api -X PUT repos/Community-Access/quill/pulls/N/merge -f merge_method=squash`.
@@ -28,7 +28,7 @@ For whoever continues, person or AI. Jeff's log of every step is `D:\quill\claud
 
 1. **A tester's defect report**, whenever one arrives.
 2. **The known defects (Part 0)**, in the order given there.
-3. **Documentation (1.4)**, and merging the GitHub Workbench pull requests waiting in Part 1.
+3. **Merging the GitHub Workbench pull requests** waiting in Part 1, and documenting what they add in the GitHub Guide.
 4. **Live testing**, alongside: 1.5, 2.4 and 2.5, the test site and the GitHub test repository.
 5. **Other work (Part 3):** the Copilot runtime build and the family UX pilots' follow-ups.
 6. **The wider code review (Part 0, H to L)**, last. (Earshot parity was taken off the list by Jeff, 2026-11-19.)
@@ -61,18 +61,6 @@ Each is done only with evidence: a test or a live run.
 
 #### Features and verification
 
-Built and waiting to merge (delete each row when its pull request merges):
-
-- [ ] Appendix A/B "nothing dropped" mapping and Appendix C object/sheet/filter mapping (#1971). It found that 128 of 290 Appendix C filter words are not built yet, and that Choose Categories, Save Current Filter and Find Possible Duplicates have no Workbench home.
-- [ ] Edit issue fields directly on the Properties sheet's Issue Fields page (#1974).
-- [ ] Verify project fields/views, branches/rulesets/protection, releases/assets, Actions, security, account/organization objects and team lifecycle (#1967).
-- [ ] Wiki, cross-linked discussion → issue → pull request workflows, Copilot seats and settings, and GitHub Models prompt files (#1973). This is most of GX12.
-- [ ] Repository General/features, complete creation/template options, transfer, Pages and packages (#1963); watch levels, stars and star lists (#1974).
-- [ ] GX09: the rule that blocks a merge, by name, and Watch Readiness (#1970).
-- [ ] GX10: a downloaded release file checked against its digest (#1970). Verifying attestation signatures inside QUILL is in the Backlog.
-
-Not started:
-
 - [ ] First-class by-name collections for the PRD 22.11 kinds still "not yet" in `quill/core/github/across_scope_matrix.py`: workflows, templates, Dependabot and CODEOWNERS, people, settings and packages.
 - [ ] GX14 workspace/service handoffs; GX15 optional grounded assistance.
 
@@ -82,16 +70,10 @@ Not started:
 
 #### Requirement audit: what is still open
 
-The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. On main (2026-11-20) it counts 86 of 100 GH-R ids met, 8 partly met and 6 not met; every Must is at least partly met. The six not met are all in #1975.
+The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. After the 2026-11-20 merge train and the Protect a branch lesson it counts 97 of 100 GH-R ids met and 3 partly met (GH-R-119, 150 and 151); none is not met.
 
-- [ ] **The rest of PRD 16.7** (#1974): Subscribe and Block, star lists, Fork and Pin and Favorite on the You page, sponsoring a repository's owner, blocking from an organization, leaving an organization and answering an invitation, reactions on comments, and commits.
 - [ ] **GH-R-150 and 151:** more kinds under Across Repositories (see the by-name collections row above).
-- [ ] **Shoulds and Mays in #1975:** Alt+Enter on a GitHub reference in a document (036), own-data examples (109), a short braille row (114), key cards and the spoken tour (115), QUILLBert and QUILLBee tips (116) and Ask How (118).
-- [ ] **GH-R-105:** the branch rule tutorial, the eleventh lesson of D8. The ruleset and branch protection editing it needs is in (#1961). Not started.
-
-### 1.4 Then: documentation as good as WordPress's
-
-When 1.3 is done, the GitHub Workbench's documentation is brought up to the WordPress standard: the GitHub Guide's chapters in both editors, F1 help, the GitHub PRD, the release notes and the live-run rows, all rendered and checked. Until then, batches are written up in both changelogs only, by Jeff's choice.
+- [x] **GH-R-105:** the branch rule tutorial, the eleventh lesson of D8: Protect a Branch, on the practice repository, with Configure Branch Protection in Settings > Branch Protection, the branch's Protection page and Settings > Rulesets (`quill/core/tutorials/github_lesson_branch_rule.py`). Done 2026-11-20.
 
 ### 1.5 Waiting on Jeff and the testers
 
@@ -142,14 +124,12 @@ Scheduled Actions and the extensions marketplace are wp-admin only. Subscription
 
 ### 2.4 Built but not yet tried live
 
-What is left here has tests over recorded or fake answers but has not been checked on a real site yet. The shop orders, shipping classes, variations, Shop Analytics, Yoast's fields, PMPro members and levels, Redirection, Gravity Forms building and submissions, ACF and Site Types passed live on 2026-11-20 (159 pass, 0 fail). The checklist is `docs/qa/wordpress-regression-testing.md` (the Workbench section and the Live run section), and wordpress.md section 19 keeps the list.
+What is left here has tests over recorded or fake answers but has not been checked on a real site yet. The shop orders, shipping classes, variations, Shop Analytics, Yoast's fields, PMPro members and levels, Redirection, Gravity Forms building and submissions, ACF and Site Types passed live on 2026-11-20 (159 pass, 0 fail). A second pass the same day added every Gravity Forms field type, entry edits, messages and conversion both ways (144 to 150), QAF's spam checks with real submissions (151), the move from BAF to QAF (152), PMPro's discount codes past PMPro's 20 (153) and Members of This Level at 260 people (154), and test 86 with a menu it makes. The checklist is `docs/qa/wordpress-regression-testing.md` (the Workbench section and the Live run section), and wordpress.md section 19 keeps the list.
 
 - [ ] The whole Workbench, W1 to W8 and packages 1 to 14. It is now the default, so this comes before the next release.
 - [ ] A WooCommerce refund, only against a gateway's test mode: the test site has no gateway in test mode yet (only Cash on Delivery).
-- [ ] PMPro Members of This Level on a big site (it asks about each person; the test site has 10), and the paged discount-code list past one page.
 - [ ] Yoast: Open in wp-admin landing on the Yoast panel (needs a browser).
-- [ ] QAF's spam settings with a live submission. (QAF 1.0.0 now runs on the test site, BAF is inactive, and the Forms tests 63 to 66 pass against it.)
-- [ ] Gravity Forms feeds and results: they need a feed add-on and the Quiz, Poll or Survey add-on on the test site (building, conversion, notifications, confirmations and test submissions pass live).
+- [ ] Gravity Forms feeds and results (tests 140 and the Results half of 141): Jeff installs, from Forms > Add-Ons on the test site, the Gravity Forms Webhooks Add-On (a feed add-on with no outside account) and the Gravity Forms Quiz, Polls and Survey Add-Ons. Everything else in Gravity Forms passed live on 2026-11-20 (tests 104 to 108, 123 to 126, 139, 141 and 144 to 150).
 - [ ] PMPro with a role whose PMPro capabilities were changed (quill-members, Membership Manager, needs an application password). PMPro 3.9.2's level route drops the billing and expiry periods and refuses DELETE; QUILL now says so.
 - [ ] Copy to Site and Compare Sites between two real sites, and Promote to Network on a real multisite.
 - [ ] The Practice Site from an installed build, not only from source.
@@ -157,8 +137,6 @@ What is left here has tests over recorded or fake answers but has not been check
 
 ### 2.5 Open rows from the WordPress delivery checklist
 
-- [ ] **QAF name migration, live:** QAF is deployed and BAF inactive on the test site; check that BAF's old forms, entries and pages came across (the run only uses forms QAF made).
-- [ ] **QAF spam, live:** the five spam guarantees are proven in QAF's PHPUnit suite; what is left is a live submission on the test site, where QAF 1.0.0 now runs.
 - [ ] **PMPro, live:** WordPress 6.9+ with PMPro 3.9+ and a role with customized PMPro capabilities (the card and billing field stripping is done).
 - [ ] **Payments, live:** QAF's and PMPro's PHP suites, Stripe test mode, a PayPal sandbox and a reachable webhook endpoint on the test site: webhook authenticity/replay/order, duplicate submission and accessible checkout acceptance.
 - [ ] **Practice Site from an installed build:** start/connect/reset/stop/restart with the bundled Node and payloads on a clean installation (the source run passes).

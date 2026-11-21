@@ -1170,7 +1170,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "github.workbench_releases": "",
     "github.workbench_explore": "",
     "github.clone_repository": "",
-    **github_line_bindings(),  # From This Line (workbench_menu.line_key_bindings)
+    **github_line_bindings(),  # From This Line; Alt+Enter on a reference: line_key_bindings
     # Local git (Tools > Local Git). No default chords -- the single-letter
     # leader-chord space is fully claimed (see the github.* block above);
     # these are reachable via the menu and the Command Palette, and freely
