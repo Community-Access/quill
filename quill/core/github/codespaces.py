@@ -79,7 +79,9 @@ PAYER_UNKNOWN = "you, unless the repository's organization pays for Codespaces"
 def _payer(data: Any) -> str:
     """Who GitHub bills, from a ``billable_owner`` in *data*, as words to say."""
     owner = data.get("billable_owner") if isinstance(data, Mapping) else None
-    login = str(owner.get("login") or "") if isinstance(owner, Mapping) else ""
+    if not isinstance(owner, Mapping):
+        return PAYER_UNKNOWN
+    login = str(owner.get("login") or "")
     if not login:
         return PAYER_UNKNOWN
     if str(owner.get("type") or "").casefold() == "organization":
