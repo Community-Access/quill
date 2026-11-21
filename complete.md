@@ -70,10 +70,10 @@ Each is done only with evidence: a test or a live run.
 
 #### Requirement audit: what is still open
 
-The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. After the 2026-11-20 merge train it counts 92 of 100 GH-R ids met and 8 partly met; none is not met.
+The record is `docs/qa/github-workbench-requirement-audit-2026-11.md`. After the 2026-11-20 merge train and the Protect a branch lesson it counts 97 of 100 GH-R ids met and 3 partly met (GH-R-119, 150 and 151); none is not met.
 
 - [ ] **GH-R-150 and 151:** more kinds under Across Repositories (see the by-name collections row above).
-- [ ] **GH-R-105:** the branch rule tutorial, the eleventh lesson of D8. The ruleset and branch protection editing it needs is in (#1961). Not started.
+- [x] **GH-R-105:** the branch rule tutorial, the eleventh lesson of D8: Protect a Branch, on the practice repository, with Configure Branch Protection in Settings > Branch Protection, the branch's Protection page and Settings > Rulesets (`quill/core/tutorials/github_lesson_branch_rule.py`). Done 2026-11-20.
 
 ### 1.5 Waiting on Jeff and the testers
 

@@ -7,7 +7,7 @@ from quill.core.tutorials.github_lessons import github_lessons
 from quill.core.tutorials.github_lessons_more import more_github_lessons
 from quill.core.workbench.menus import all_rows
 
-#: D8's eleven, by slug; the branch rule waits for a way to make one in the Workbench.
+#: D8's eleven, by slug.
 D8 = {
     "your first look around": "github-practice-start",
     "triage an inbox": "github-triage-inbox",
@@ -19,12 +19,27 @@ D8 = {
     "give someone access": "github-give-access",
     "build an issue form": "github-build-form",
     "use the API Console": "github-api-console",
+    "write a branch rule": "github-branch-rule",
 }
 
 
-def test_every_d8_lesson_but_the_branch_rule_is_there() -> None:
+def test_every_d8_lesson_is_there() -> None:
     slugs = {lesson.slug for lesson in github_lessons()}
+    assert len(D8) == 11
     assert set(D8.values()) <= slugs
+
+
+def test_the_branch_rule_lesson_uses_the_real_command_and_clears_its_rule() -> None:
+    from quill.ui.github_workbench_loaders import ADMIN_ACTIONS
+
+    lesson = next(t for t in github_lessons() if t.slug == "github-branch-rule")
+    rows = {command for command, _label, _help in ADMIN_ACTIONS["branch_protection"]}
+    assert "github.configure_branch_protection" in rows
+    assert "github.workbench.go_settings" in {step.command for step in lesson.steps}
+    words = " ".join(step.body for step in lesson.steps)
+    assert "Configure Branch Protection" in words and "Required approving reviews" in words
+    assert "Remove all protection from this branch instead" in lesson.steps[-1].body
+    assert lesson.then == ("github-api-console",)
 
 
 def test_the_track_is_one_chain_ending_with_the_clean_up() -> None:
