@@ -516,5 +516,5 @@ live. Switch them too, or take them down.
 ---
 
 - Previous: [Chapter 17: Forms](quill-guide-17-forms.html)
-- Next: [A last word](quill-guide-a-last-word.html)
+- Next: [Chapter 19: Scribe for Documents](quill-guide-19-scribe-for-documents.html)
 - [Contents](../userguide.html)

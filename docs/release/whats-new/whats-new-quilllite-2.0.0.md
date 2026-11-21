@@ -10,10 +10,10 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 ## WordPress
 
 - **Write and publish from QUILL Lite.** File > WordPress > Connect a Site: approve QUILL in your browser. Then New Post, or Open by Web Address.
-- **Ctrl+S only saves on this computer.** Publish checks the page first, and nothing someone else changed is overwritten. Pictures ask for alternative text.
+- **Ctrl+S only saves on this computer.** Publish checks the page first, and nothing someone else changed is overwritten.
 - **Blocks read as plain text.** Check This Page checks a page the way a visitor meets it.
 - **Looking after the site:** comments, categories and tags, people, menus and the Media Library.
-- **The WordPress Workbench** runs the whole site, with a preview before every change and Ctrl+Z. It moves content with WXR files and Copy to Site, and knows six plugins.
+- **The WordPress Workbench** runs the whole site, with a preview before every change and Ctrl+Z.
 - **Ctrl+Alt+Shift+Grave, then a letter:** O Open, P Publish, D Save Draft, M Media Library, H the Workbench.
 
 ### Forms
@@ -24,7 +24,7 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 ## Say it, or find it
 
 - **Say or Type a Command (F11):** say what you want in your own words. Free and offline; Jev or your own AI helps if you say yes.
-- **The Developer profile:** open a project folder and Ctrl+3 asks an AI to work on it. You review every change and allow every command first, and Undo Last Agent Turn puts every file back.
+- **The Developer profile:** open a project folder and Ctrl+3 asks an AI to work on it. You review every change and allow every command first.
 - **The Command Palette (Ctrl+Shift+P)** is in Tools and in every profile, and reaches every command and menu item.
 
 ## GitHub
@@ -43,6 +43,7 @@ QUILL Lite 2.0 is about words, websites and never missing what happened. Your se
 - **Insert > Table (Ctrl+Alt+T)** in any document; the arrows read a table cell by cell.
 - **Find in Open Documents (Ctrl+Alt+Shift+F8)**, Search in Files and Replace Across Files.
 - **Spell check skips** web addresses, file names and code.
+- **Scribe for Documents** (off until you turn it on) sends a scanned document to Pneuma Solutions for Word, DAISY, MP3 or braille. Chapter 17.
 
 ## Knowing what happened
 

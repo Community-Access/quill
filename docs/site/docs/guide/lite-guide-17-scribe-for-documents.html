@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chapter 17: Scribe for Documents</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="chapter-17-scribe-for-documents">Chapter 17: Scribe for
+Documents</h1>
+<p>Some documents are hard to read with a screen reader. A scanned
+letter is only a picture of text. A badly made PDF reads its columns in
+the wrong order, and its tables come out as a jumble of words. QUILL
+Lite can read a lot of this on your own computer. When it cannot, Scribe
+for Documents can.</p>
+<p>Scribe for Documents is a service from Pneuma Solutions. You send it
+a document, and it sends back an accessible one: Word, accessible HTML,
+tagged PDF, EPUB, Kindle, DAISY with audio, MP3 audio or braille. It
+rebuilds the headings, the reading order and the tables, and it can
+describe the pictures. QUILL Lite’s Scribe commands are Powered by
+Scribe for Documents.</p>
+<p>Nothing leaves your computer until you say so, every time. Before
+each upload QUILL Lite shows you what will be sent, and where, and waits
+for you to press <strong>Send and Convert</strong>.</p>
+<p>QUILL has the same Scribe commands, and a few more. They share one
+sign-in, one list of conversions and one Options window, so you can use
+both. This chapter covers QUILL Lite. QUILL’s guide has the same
+material, plus QUILL’s braille view, watch folder and streaming tab.</p>
+<h2 id="turning-scribe-for-documents-on">Turning Scribe for Documents
+on</h2>
+<p>Scribe for Documents is <strong>off</strong> when you install QUILL
+Lite, because it sends documents to another company. Nobody should
+choose that for you. While it is off, it has no menu, no commands and no
+connection of any kind.</p>
+<p>There are two ways to turn it on:</p>
+<ul>
+<li><strong>Tools &gt; Customize Features</strong>
+(<strong>Ctrl+Alt+F10</strong>). Check <strong>Scribe for Documents
+(sends the documents you choose to Pneuma Solutions)</strong>, and press
+<strong>Save</strong>. The row’s description says what it does before
+you check it.</li>
+<li><strong>When a document needs it.</strong> If you import a scanned
+PDF with <strong>File &gt; Import / Convert Document (OCR)…</strong>,
+the question offers <strong>Turn on Scribe for Documents and
+convert</strong>. Choose it, and QUILL Lite turns the area on and opens
+the Convert dialog. Afterwards you hear “Scribe for Documents is on. It
+is in the File menu.”</li>
+</ul>
+<p>Of the profiles, only <strong>Everything</strong> turns it on. If you
+reach a Scribe command while the area is off, you hear “Scribe for
+Documents is off. Turn it on in Tools, Customize Features.”</p>
+<h2 id="where-everything-is">Where everything is</h2>
+<table>
+<thead>
+<tr>
+<th>Menu</th>
+<th>What is there</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>File &gt; Scribe for Documents</strong></td>
+<td>Convert a File…, Convert This Document…, Export with Scribe for
+Documents…, Convert from a Link…, My Scribe Documents, Conversions,
+Scribe Status, Repeat Last Scribe Message, Sign In…, Sign Out, Open My
+Scribe Account in Browser, Options…, About Scribe for Documents</td>
+</tr>
+<tr>
+<td><strong>Window</strong></td>
+<td>Scribe Conversions</td>
+</tr>
+<tr>
+<td><strong>File &gt; Import / Convert Document (OCR)…</strong></td>
+<td>Offers Scribe when a PDF has little or no text</td>
+</tr>
+</tbody>
+</table>
+<p>From the keyboard, <strong>File &gt; Scribe for Documents</strong> is
+<strong>Alt+F</strong>, then <strong>B</strong>. <strong>Window &gt;
+Scribe Conversions</strong> is <strong>Alt+W</strong>, then
+<strong>V</strong>.</p>
+<p>Every command is also in the Command Palette
+(<strong>Ctrl+Shift+P</strong>): type “Scribe”. None has a key of its
+own. You can give any of them one in <strong>Tools &gt; Keyboard
+Manager</strong> (<strong>Ctrl+Alt+Shift+Space</strong>).</p>
+<h2 id="what-it-is-and-when-to-use-it">What it is, and when to use
+it</h2>
+<p>Scribe runs on Pneuma Solutions’ computers, not yours. So it can do
+work that is too heavy for a laptop: it reads scanned pages, rebuilds
+tables, writes picture descriptions with AI, and records an audio book
+with a natural voice.</p>
+<p>QUILL Lite already reads Word files, PDFs with real text, and scanned
+pages with free OCR on your computer, with nothing uploaded. Try that
+first. Use Scribe when:</p>
+<ul>
+<li>the free OCR gives you a mess, or loses the tables and
+headings;</li>
+<li>the reading order or headings of a PDF are wrong;</li>
+<li>you need a format QUILL Lite cannot make: tagged PDF, Kindle, DAISY
+with audio, MP3, braille with Scribe’s tables, or large print Word.</li>
+</ul>
+<p>Scribe costs pages, and the document goes to the United States. The
+free way costs nothing and keeps everything on your computer.</p>
+<h2 id="your-account-and-pages">Your account and pages</h2>
+<p>You use your own Scribe account, and pay Scribe for your own pages.
+QUILL Lite never takes payment, and never sees your Scribe password.
+These are Pneuma’s prices, which Scribe sets:</p>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>What you get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A new account</td>
+<td>100 free pages, to use within 30 days</td>
+</tr>
+<tr>
+<td>A page pack</td>
+<td>From $10 for 200 pages. Packs never run out of date</td>
+</tr>
+<tr>
+<td>A subscription</td>
+<td>$99 a year for 10,000 pages</td>
+</tr>
+<tr>
+<td>Human review</td>
+<td>Scribe’s people fix a document by hand. It costs extra</td>
+</tr>
+<tr>
+<td>No pages left</td>
+<td>Scribe still makes a free preview of the first two pages</td>
+</tr>
+</tbody>
+</table>
+<p>Pages are charged once for each document, when it is first converted.
+<strong>Another format of the same document uses no pages.</strong></p>
+<p>If your organization pays for Scribe, your pages may come from its
+shared credits. QUILL Lite says so, for example “1,240 pages left, using
+credits from Northside College.”</p>
+<h3 id="signing-in">Signing in</h3>
+<ol type="1">
+<li>Choose <strong>File &gt; Scribe for Documents &gt; Sign
+In…</strong>. Any command that needs you signed in starts this for
+you.</li>
+<li>Your browser opens, and you hear “Your browser is open at Scribe for
+Documents. Sign in there, then come back to QUILL Lite.”</li>
+<li>Sign in, or make an account, in the browser.</li>
+<li>Come back. The window says, for example, “Signed in to Scribe for
+Documents as Sam Lee. 100 pages left.” Press
+<strong>Continue</strong>.</li>
+</ol>
+<p>If the browser did not open, press <strong>Copy Sign-in Link</strong>
+and paste the link into any browser. <strong>Try Again</strong> starts
+over after “Sign-in timed out. Try again?”. One sign-in covers QUILL
+Lite and QUILL. <strong>Sign Out</strong> forgets it for both, and asks
+first if conversions are waiting.</p>
+<h2 id="what-you-can-send-and-get-back">What you can send and get
+back</h2>
+<p>Scribe takes 23 kinds of file, up to 500 MB each: PDF (locked ones
+too); JPEG, GIF, PNG, TIFF, BMP, DCX, PCX, JPEG 2000 and DjVu pictures;
+DOC, DOCX, RTF, ODT and TXT; XLS, XLSX and ODS; PPT, PPTX and ODP; and
+EPUB and MOBI. It does not take web pages. A link must point straight at
+a file.</p>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Good for</th>
+<th>What QUILL Lite does with it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accessible HTML</td>
+<td>Reading with real headings</td>
+<td>Opens it in a new QUILL Lite window</td>
+</tr>
+<tr>
+<td>Word</td>
+<td>Reading and editing. Can be large print</td>
+<td>Opens it in a new QUILL Lite window</td>
+</tr>
+<tr>
+<td>Tagged PDF</td>
+<td>A PDF screen readers can read. Can be large print</td>
+<td>Saves it, and says where</td>
+</tr>
+<tr>
+<td>EPUB</td>
+<td>Ebook readers</td>
+<td>Saves it, and says where</td>
+</tr>
+<tr>
+<td>Kindle (MOBI)</td>
+<td>Older Kindle devices and apps</td>
+<td>Saves it, and says where</td>
+</tr>
+<tr>
+<td>DAISY (text and audio)</td>
+<td>Talking-book players, and Quill Media Player with chapters</td>
+<td>Opens it in Quill Media Player</td>
+</tr>
+<tr>
+<td>MP3 audio</td>
+<td>Any audio player</td>
+<td>Opens it in Quill Media Player</td>
+</tr>
+<tr>
+<td>Braille (BRF)</td>
+<td>Braille displays and embossers</td>
+<td>Opens it as text in a new QUILL Lite window</td>
+</tr>
+<tr>
+<td>Web page for offline reading</td>
+<td>Reading without the internet, as a zip</td>
+<td>Saves it, and says where</td>
+</tr>
+</tbody>
+</table>
+<p>Results go in <strong>Documents\Scribe for Documents</strong>, in a
+folder for each document. QUILL Lite never writes over a file: it adds
+“(2)” instead.</p>
+<h2 id="the-scribe-commands">The Scribe commands</h2>
+<ul>
+<li><strong>Convert a File…</strong> opens a file picker that shows only
+what Scribe takes. You can choose several files.</li>
+<li><strong>Convert This Document…</strong> sends the document you are
+working on. If it has changes, QUILL Lite saves it first. A Markdown or
+HTML document goes as Word, or as plain text when Pandoc is not
+installed.</li>
+<li><strong>Export with Scribe for Documents…</strong> does the same,
+with Tagged PDF checked the first time. It is how QUILL Lite reaches
+every Scribe format, although its own export is HTML.</li>
+<li><strong>Convert from a Link…</strong> asks for the address of a
+file. Scribe fetches it.</li>
+<li><strong>My Scribe Documents</strong> lists your documents on Scribe,
+and the Trash.</li>
+<li><strong>Conversions</strong>, and <strong>Window &gt; Scribe
+Conversions</strong>, open the list of jobs.</li>
+<li><strong>Scribe Status</strong> says what the running job is doing,
+for example “Notes.pdf, adding image descriptions, 40 percent, about 2
+minutes.”</li>
+<li><strong>Repeat Last Scribe Message</strong> says the last Scribe
+message again.</li>
+<li><strong>Sign In…</strong>, <strong>Sign Out</strong> and
+<strong>Open My Scribe Account in Browser</strong>. Your account page is
+where you change how long documents are kept, buy pages, and delete your
+account.</li>
+<li><strong>Options…</strong> and <strong>About Scribe for
+Documents</strong>.</li>
+</ul>
+<h3 id="when-a-pdf-looks-scanned">When a PDF looks scanned</h3>
+<p><strong>File &gt; Import / Convert Document (OCR)…</strong> asks when
+a PDF has little or no text. With Scribe on, the choices are <strong>Run
+free OCR on this computer (nothing is uploaded)</strong>,
+<strong>Convert with Scribe for Documents (rebuilds headings, tables and
+picture descriptions; uses about 12 pages of your Scribe
+credit)</strong>, and <strong>Open the text there is</strong>. With
+Scribe off, the middle one reads <strong>Turn on Scribe for Documents
+and convert</strong>. The Scribe choice converts to Word, which opens in
+a new window.</p>
+<h2 id="the-convert-dialog">The Convert dialog</h2>
+<p>Every command opens one dialog, <strong>Convert with Scribe for
+Documents</strong>. In Tab order:</p>
+<ol type="1">
+<li><strong>What will be sent</strong>, a read-only text box with focus.
+It says which file goes where, how long it is kept, that pictures may be
+described by AI and that Pneuma does not train AI on documents. Before
+your first upload it adds the privacy notes. It ends: “Convert only
+documents you own, have permission for, or that are out of copyright.”
+Enter here is the same as <strong>Send and Convert</strong>.</li>
+<li><strong>What you want back</strong>, nine check boxes. They start as
+you chose last time.</li>
+<li><strong>Settings shown</strong>, a line naming the groups of
+settings below.</li>
+<li><strong>Language and voice</strong>: Language (or Detect
+automatically), Dialect, Voice, <strong>Play Sample</strong> (Escape
+stops it), Gender of the voice when the language is detected, and Speed,
+from 0.5 to 4 times.</li>
+<li><strong>Braille</strong>, when Braille (BRF) is checked: Braille
+table, Cells per line (20 to 42), Split into pages, and Lines per page
+(20 to 30).</li>
+<li><strong>Print</strong>, when Word or Tagged PDF is checked: Large
+print.</li>
+<li><strong>Pictures and maths</strong>: Describe the pictures,
+Mathematics as MathML (beta), and Email me when it is finished (Scribe’s
+own email).</li>
+<li><strong>Also save as my Scribe account defaults</strong>, off every
+time.</li>
+<li><strong>Password for</strong> the file, only when a PDF needs one,
+with <strong>Show password</strong>.</li>
+<li><strong>Pages</strong>, for example “This uses about 34 of your 100
+pages.”, and <strong>Buy Pages</strong>.</li>
+<li><strong>Send and Convert</strong>, or <strong>Convert</strong> for a
+document already in your account, and <strong>Cancel</strong>.</li>
+</ol>
+<p><strong>Describe the pictures and AI help.</strong> While the AI help
+area is off, the box starts unchecked and says “(off because AI is
+turned off in QUILL Lite)”. You may still check it: the descriptions are
+Scribe’s own work, not QUILL Lite’s AI help.</p>
+<p>For a document already in your account, the language, pictures, maths
+and large print were fixed at upload. They are listed in a read-only
+line, <strong>Fixed when Notes was uploaded</strong>, instead.</p>
+<h2 id="scribe-conversions">Scribe Conversions</h2>
+<p><strong>Window &gt; Scribe Conversions</strong> lists every Scribe
+job on this computer, from QUILL Lite and QUILL. It stays open beside
+your document, and jobs carry on when you close it or close QUILL
+Lite.</p>
+<ul>
+<li><strong>Conversions</strong> has three columns: File, Formats and
+Stage.</li>
+<li><strong>Details</strong> has the percent, time left, Scribe’s latest
+message, the files made and the folder.</li>
+<li>The buttons: <strong>Open Result</strong>, <strong>Next
+Steps…</strong>, <strong>Open Folder</strong>, <strong>Cancel
+Waiting</strong>, <strong>Retry</strong>, <strong>Buy Pages</strong>,
+<strong>Enter Password…</strong>, <strong>Sign In…</strong>, <strong>Ask
+for Human Review…</strong>, <strong>Copy Details</strong>,
+<strong>Remove from List</strong> and <strong>Close</strong>.</li>
+</ul>
+<p>In the list, Enter opens the result, Delete removes the row, and the
+Applications key lists every command. Escape closes the window.</p>
+<h3 id="what-you-hear">What you hear</h3>
+<table>
+<thead>
+<tr>
+<th>When</th>
+<th>What you hear</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A file is sent</td>
+<td>“Scribe for Documents: sending Notes.pdf, for Word.”</td>
+</tr>
+<tr>
+<td>Each change of stage</td>
+<td>“Notes.pdf, uploading.”, then for example “Notes.pdf, adding image
+descriptions.”</td>
+</tr>
+<tr>
+<td>Each quarter of the way</td>
+<td>“Notes.pdf, 50 percent.”</td>
+</tr>
+<tr>
+<td>It is finished</td>
+<td>“Scribe for Documents made Notes.docx in Documents\Scribe for
+Documents\Notes. Word is open in QUILL Lite.”</td>
+</tr>
+<tr>
+<td>It failed</td>
+<td>“Scribe for Documents could not convert Notes.pdf:” and Scribe’s
+reason</td>
+</tr>
+</tbody>
+</table>
+<p>Several files chosen together go one after another, without asking
+again. At the end you hear one sentence saying what was made and what
+was not. When Scribe asks for a pause, you hear “Scribe for Documents
+asked QUILL Lite to slow down; trying again in a minute.”</p>
+<h3 id="next-steps-in-quill-lite">Next Steps in QUILL Lite</h3>
+<p><strong>Next Steps…</strong> lists what you can do with what was
+made:</p>
+<ul>
+<li><strong>Send to Media Player</strong>, for MP3 audio or DAISY.</li>
+<li><strong>Open in QUILL Lite</strong>, for Word, Accessible HTML or
+braille.</li>
+</ul>
+<p>QUILL has more here, such as Read Aloud and its braille view. QUILL
+Lite has no braille view, so a braille file opens as text.</p>
+<h2 id="my-scribe-documents">My Scribe Documents</h2>
+<p><strong>File &gt; Scribe for Documents &gt; My Scribe
+Documents</strong> lists every document in your Scribe account, with
+<strong>Show: Documents / Trash</strong> at the top.</p>
+<ul>
+<li><strong>Download Formats…</strong> (Enter) makes or downloads a
+format. Another format of a document already there uses no pages.</li>
+<li><strong>Open in QUILL Lite</strong> opens a file you already
+downloaded.</li>
+<li><strong>Rename…</strong>, <strong>Move to Trash</strong> (Delete),
+<strong>Recover</strong> and <strong>Delete Forever…</strong>. Delete
+Forever asks first, with Cancel as the default, and cannot be undone.
+Scribe empties the Trash after 7 days.</li>
+<li><strong>Ask for Human Review…</strong>, <strong>Copy
+Details</strong> and <strong>Refresh</strong>.</li>
+</ul>
+<h2 id="scribe-for-documents-options">Scribe for Documents Options</h2>
+<p><strong>File &gt; Scribe for Documents &gt; Options…</strong> is the
+one Options window for QUILL Lite and QUILL. A change here is a change
+in both. It has your account and pages, Sign In or Sign Out,
+<strong>Default formats</strong>, the <strong>Download folder</strong>,
+<strong>Open each result when it is ready</strong> (Open it, Ask me
+first or Don’t open), <strong>Offer Scribe when a PDF has little or no
+text</strong>, <strong>Speak each stage</strong> (Only while a QUILL app
+is in front, Always or Never), and the About text with buttons for
+Scribe’s terms, privacy policy and manual. Press <strong>OK</strong> to
+save.</p>
+<h2 id="two-walkthroughs">Two walkthroughs</h2>
+<h3 id="a-scanned-pdf-to-word">A scanned PDF to Word</h3>
+<ol type="1">
+<li>Choose <strong>File &gt; Import / Convert Document (OCR)…</strong>
+and choose the PDF.</li>
+<li>QUILL Lite finds little text. Choose <strong>Convert with Scribe for
+Documents</strong>, or <strong>Turn on Scribe for Documents and
+convert</strong> if it is off, and press OK.</li>
+<li>Sign in if you are asked, and press <strong>Continue</strong>.</li>
+<li>Read <strong>What will be sent</strong>. Check that
+<strong>Word</strong> is checked.</li>
+<li>Press <strong>Send and Convert</strong>. You hear “Scribe for
+Documents: sending Letter.pdf, for Word.”, then each stage.</li>
+<li>You hear “Scribe for Documents made Letter.docx in Documents\Scribe
+for Documents\Letter. Word is open in QUILL Lite.” It is in a new
+window.</li>
+</ol>
+<h3 id="another-format-no-pages-used">Another format, no pages used</h3>
+<ol type="1">
+<li>Choose <strong>File &gt; Scribe for Documents &gt; My Scribe
+Documents</strong>.</li>
+<li>Arrow to the document and press Enter.</li>
+<li>The dialog says “No file is sent.” The formats you do not have yet
+say “, no pages used”. Check <strong>MP3 audio</strong>, and press
+<strong>Convert</strong>.</li>
+<li>You hear “Scribe for Documents is making MP3 audio from Notes.”, and
+then the result. The MP3 opens in Quill Media Player.</li>
+</ol>
+<p>QUILL’s guide has four more walkthroughs, including a
+password-protected PDF: press <strong>Send and Convert</strong>, type
+the password in <strong>Password for</strong> the file, and press it
+again. If it was wrong, the job waits in Scribe Conversions; use
+<strong>Enter Password…</strong> there.</p>
+<h2 id="keys-and-commands">Keys and commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Menu</th>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Convert a File…</td>
+<td>File &gt; Scribe for Documents</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>Sends one or more files</td>
+</tr>
+<tr>
+<td>Convert This Document…</td>
+<td>File &gt; Scribe for Documents</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>Sends the document you are working on</td>
+</tr>
+<tr>
+<td>Export with Scribe for Documents…</td>
+<td>File &gt; Scribe for Documents</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>The same, Tagged PDF first</td>
+</tr>
+<tr>
+<td>Convert from a Link…</td>
+<td>File &gt; Scribe for Documents</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>Scribe fetches a file</td>
+</tr>
+<tr>
+<td>My Scribe Documents</td>
+<td>File &gt; Scribe for Documents</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>Your documents and the Trash</td>
+</tr>
+<tr>
+<td>Conversions</td>
+<td>File &gt; Scribe for Documents</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>Opens Scribe Conversions</td>
+</tr>
+<tr>
+<td>Scribe Conversions</td>
+<td>Window</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>Opens Scribe Conversions</td>
+</tr>
+<tr>
+<td>Scribe Status</td>
+<td>File &gt; Scribe for Documents</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>Says what the job is doing</td>
+</tr>
+<tr>
+<td>Repeat Last Scribe Message</td>
+<td>File &gt; Scribe for Documents</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>Says the last message again</td>
+</tr>
+<tr>
+<td>Sign In…</td>
+<td>File &gt; Scribe for Documents</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>Signs in in your browser</td>
+</tr>
+<tr>
+<td>Sign Out</td>
+<td>File &gt; Scribe for Documents</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>Signs out QUILL Lite and QUILL</td>
+</tr>
+<tr>
+<td>Open My Scribe Account in Browser</td>
+<td>File &gt; Scribe for Documents</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>Your account on the website</td>
+</tr>
+<tr>
+<td>Options…</td>
+<td>File &gt; Scribe for Documents</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>Scribe for Documents Options</td>
+</tr>
+<tr>
+<td>About Scribe for Documents</td>
+<td>File &gt; Scribe for Documents</td>
+<td>None; assign one in the Keyboard Manager</td>
+<td>What Scribe is, and the privacy notes</td>
+</tr>
+</tbody>
+</table>
+<h2 id="privacy-copyright-and-safe-mode">Privacy, copyright and Safe
+Mode</h2>
+<ul>
+<li><strong>Where it goes.</strong> Pneuma Solutions processes the
+document in the United States: on AWS in Ohio, with Microsoft Azure
+(East US) for speech and text recognition, Mathpix for mathematics, and
+Google Gemini through OpenRouter for picture descriptions. Pneuma never
+uses documents to train AI.</li>
+<li><strong>How long it is kept.</strong> Under your Scribe retention
+setting: 30 days unless you changed it, 1 to 30 days by choice, or as
+long as you like with a subscription. An organization sets 1 to 30 days.
+Change it with <strong>Open My Scribe Account in Browser</strong>.</li>
+<li><strong>Picture descriptions.</strong> Pneuma is reviewing its
+picture-description provider, and makes no promise yet about how long
+that provider keeps data.</li>
+<li><strong>Deleting.</strong> My Scribe Documents, <strong>Move to
+Trash</strong>, then <strong>Delete Forever</strong> in the Trash.</li>
+<li><strong>On your computer.</strong> A PDF password is used once and
+never saved. QUILL Lite keeps your sign-in in Windows’ secure store.
+Your results are saved in your own folders and never shared with anyone
+else who uses this computer.</li>
+<li><strong>Copyright.</strong> Convert only documents you own, have
+permission for, or that are out of copyright.</li>
+<li><strong>Safe Mode</strong> turns every Scribe command off. You hear
+“Scribe for Documents is disabled in Safe Mode. Restart QUILL Lite
+without –safe-mode to use network features.”</li>
+</ul>
+<h2 id="when-something-goes-wrong">When something goes wrong</h2>
+<p>You hear one sentence that names Scribe for Documents and the file. A
+code, such as QUILL-SCRIBE-PAGES, is in <strong>Copy Details</strong>,
+never spoken.</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>What you hear, in short</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL-SCRIBE-SIGNIN</td>
+<td>“Your Scribe for Documents sign-in has ended.”</td>
+<td><strong>Sign In…</strong> on the job in Scribe Conversions</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-SIGNIN-LOCAL</td>
+<td>QUILL could not open a port, or your browser</td>
+<td>Allow QUILL Lite in your security software, or use <strong>Copy
+Sign-in Link</strong></td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-PAGES</td>
+<td>Scribe’s message, then “Use Buy Pages in Scribe Conversions, then
+Retry.”</td>
+<td><strong>Buy Pages</strong>, then <strong>Retry</strong></td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-PASSWORD</td>
+<td>“Notes.pdf needs its password. Open Scribe Conversions to enter
+it.”</td>
+<td><strong>Enter Password…</strong>; three tries, then
+<strong>Retry</strong></td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-BUSY</td>
+<td>“Scribe for Documents asked QUILL Lite to slow down; trying again in
+a minute.”</td>
+<td>Nothing: it tries again</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-NOTDOC</td>
+<td>Scribe does not take this kind of file, or web pages</td>
+<td>Save it as Word or PDF first</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-TOOBIG</td>
+<td>The file is over 500 MB</td>
+<td>Split it, or make it smaller</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-GONE</td>
+<td>“No longer in your Scribe account”</td>
+<td><strong>Remove from List</strong>, and convert the file again</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-OFFLINE</td>
+<td>“Reconnecting to Scribe for Documents; your conversion is still
+running there.”</td>
+<td>Nothing: it carries on when the connection is back</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-SAVE</td>
+<td>The folder is not writable or could not be created</td>
+<td>Choose another <strong>Download folder</strong> in Options, then
+<strong>Retry</strong></td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-OFF</td>
+<td>Scribe is disabled in Safe Mode</td>
+<td>Restart QUILL Lite normally</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-FAILED</td>
+<td>Scribe’s reason, or “Something went wrong. Please try again.”</td>
+<td><strong>Retry</strong>; then <strong>Copy Details</strong> for
+support</td>
+</tr>
+</tbody>
+</table>
+<p>QUILL’s guide explains each one in full.</p>
+<hr />
+<ul>
+<li>Previous: <a href="lite-guide-16-taking-payments.html">Chapter 16:
+Taking payments with your forms</a></li>
+<li>Next: <a href="lite-guide-licences-and-notices.html">Licences and
+notices</a></li>
+<li><a href="../quilllite-userguide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

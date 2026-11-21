@@ -134,6 +134,7 @@ _AREA_IN_PROSE: dict[str, str] = {
     "forms": "Forms",
     "forms_payments": "Form Payments",
     "coding": "coding",
+    "scribe": "Scribe for Documents",
 }
 
 

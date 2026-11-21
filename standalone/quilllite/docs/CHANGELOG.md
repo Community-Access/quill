@@ -2,6 +2,40 @@
 
 ## 2.0.0
 
+### Scribe for Documents, off until you turn it on (2026-11-21)
+
+QUILL Lite can now send a document you choose to Pneuma Solutions' Scribe
+for Documents, which rebuilds scans and badly made files into accessible
+Word, HTML, tagged PDF, EPUB, Kindle, DAISY with audio, MP3 audio and
+braille. Powered by Scribe for Documents. Chapter 17 of the guide has the
+whole story.
+
+- **A new area, off when you install.** Tools > Customize Features
+  (Ctrl+Alt+F10) has **Scribe for Documents (sends the documents you choose
+  to Pneuma Solutions)**. Only the Everything profile turns it on. The
+  profiles now count 26 areas: Recommended 19, Everything 25, Developer 20,
+  WordPad 6 and Notepad 3.
+- **File > Scribe for Documents** (Alt+F, then B) has Convert a File,
+  Convert This Document, Export with Scribe for Documents, Convert from a
+  Link, My Scribe Documents, Conversions, Scribe Status, Repeat Last Scribe
+  Message, Sign In, Sign Out, Open My Scribe Account in Browser, Options and
+  About. **Window > Scribe Conversions** (Alt+W, then V) lists every job.
+  None has a key; give one in the Keyboard Manager if you like.
+- **Offered when it is needed.** When File > Import / Convert Document (OCR)
+  finds a PDF with little or no text, the question offers Scribe after the
+  free OCR, or **Turn on Scribe for Documents and convert** while the area is
+  off.
+- **Nothing is sent without your say.** The Convert dialog says what will
+  be sent, where it is processed and how long it is kept, and nothing goes
+  until you press Send and Convert. Safe Mode turns it all off.
+- **Your own Scribe account.** You sign in on Scribe's page in your browser
+  and pay Scribe for your own pages; QUILL Lite never takes payment. A
+  second format of a document already in your account uses no pages.
+- **Shared with QUILL.** One sign-in, one list of conversions and one
+  Options window for both editors. Results open where they are used: Word,
+  HTML and braille in a new QUILL Lite window, MP3 and DAISY in Quill Media
+  Player. Next Steps offers Send to Media Player and Open in QUILL Lite.
+
 ### GitHub Guide: every chapter is about the Workbench, with walk-throughs, a QUILL Lite chapter and an appendix (2026-11-20)
 
 The GitHub Guide now reads like the WordPress and Forms guide, and matches

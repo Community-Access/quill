@@ -514,5 +514,5 @@ live. Switch them too, or take them down.
 ---
 
 - Previous: [Chapter 15: Forms](lite-guide-15-forms.html)
-- Next: [Licences and notices](lite-guide-licences-and-notices.html)
+- Next: [Chapter 17: Scribe for Documents](lite-guide-17-scribe-for-documents.html)
 - [Contents](../userguide.html)
