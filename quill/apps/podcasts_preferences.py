@@ -349,6 +349,8 @@ class CastPreferencesMixin:
         from quill.platform.windows import cast_startup
 
         minimized_at_startup_before = cast_startup.start_minimized_at_startup()
+        download_root = getattr(self, "_podcast_download_root", lambda: None)
+        old_root = download_root()
         window = CastPreferencesWindow(
             self.frame,  # type: ignore[attr-defined]
             library=library,
@@ -422,6 +424,13 @@ class CastPreferencesMixin:
                     from quill.core.action_feedback import speed_still_playing
 
                     speed_said = speed_still_playing(held)
+        folder_said = ""
+        if "download_root" in default_changes:
+            from quill.core.podcasts.download_folder_change import follow_new_folder
+
+            folder_said = follow_new_folder(
+                getattr(self, "_podcast_download_queue", None), old_root, download_root()
+            )
         menu_bar = self.frame.GetMenuBar()  # type: ignore[attr-defined]
         if menu_bar is not None and hasattr(self, "_resume_menu_item_id"):
             menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)  # type: ignore[attr-defined]
@@ -436,7 +445,9 @@ class CastPreferencesMixin:
 
             pending = bool(app_changes or written)
             self._announce(  # type: ignore[attr-defined]
-                changes_result(count, pending=pending, extra=(speed_said, startup_said, said))
+                changes_result(
+                    count, pending=pending, extra=(speed_said, folder_said, startup_said, said)
+                )
             )
             if app_changes:
                 from quill.ui.podcasts.preferences_tasks import save_preferences
