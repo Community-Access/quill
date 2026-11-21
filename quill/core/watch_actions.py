@@ -663,6 +663,9 @@ def default_registry(
     from .watch_audiobook import BuildAudiobookAction
 
     registry.register(BuildAudiobookAction())
+    from .watch_scribe import ScribeConvertAction
+
+    registry.register(ScribeConvertAction())  # PRD 8.1.6; QUILL wires on_wake
     return registry
 
 

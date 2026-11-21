@@ -99,6 +99,13 @@ class PreferencesMixin:
                 self.open_ai_preferences,
                 "future.ai",
             ),
+            (  # one set for the whole family, in its own file (PRD 7.7, 2026-11-21)
+                "Scribe for Documents",
+                "Sign in, default formats, the download folder and what is spoken. One "
+                "set for every QUILL app on this computer; it saves when you close it.",
+                self.scribe_options,
+                None,
+            ),
             (
                 "Watch Folder Automation",
                 "Automate actions when files appear in a folder you watch.",
@@ -134,15 +141,8 @@ class PreferencesMixin:
                 _desc,
                 lambda _m=_pref_m: self.open_quillin_preferences(_m),
             ))
-        # All platforms use a left-hand category list (wx.Listbook, Edge /
-        # Windows Settings style). macOS deliberately does NOT use wx.Toolbook:
-        # on Cocoa the Toolbook selector is a native wxToolBar that requires a
-        # valid bitmap per tool, and AddPage() below passes no image, so wx
-        # null-derefs in wxToolBarTool::UpdateImages() -> wxBitmap::UseAlpha()
-        # and segfaults the instant Preferences opens (Cmd+,). Listbook needs no
-        # bitmaps, so it keeps a single accessible, screen-reader-tested code
-        # path on every platform. Do not restore the Toolbook without giving
-        # every page a real wx.ImageList, or the macOS crash returns.
+        # A wx.Listbook on every platform: a Cocoa wx.Toolbook needs a bitmap per
+        # page and segfaults without one (UpdateImages -> UseAlpha). Keep it so.
         # The handler chosen by the user; run after the hub closes so only one
         # modal is on screen at a time.
         chosen: dict[str, Callable[[], None] | None] = {"handler": None}

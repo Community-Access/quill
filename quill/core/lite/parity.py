@@ -35,6 +35,7 @@ from __future__ import annotations
 from quill.core.forms.menu import LAYER_KEYS as FORMS_LAYER_KEYS
 from quill.core.forms.menu import lite_handler as forms_lite_handler
 from quill.core.github.workbench_menu import ALL_ROWS as GITHUB_ROWS
+from quill.core.lite.commands_scribe import SCRIBE_EQUIVALENTS
 from quill.core.wordpress.menu import LAYER_KEYS, lite_handler
 
 __all__ = [
@@ -536,6 +537,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     **{forms_lite_handler(command_id): command_id for command_id in FORMS_LAYER_KEYS.values()},
     # Every GitHub menu row (workbench_menu.py) names both sides, From This Line's too.
     **{row.lite_handler: row.command_id for row in GITHUB_ROWS if row.lite_handler},
+    **SCRIBE_EQUIVALENTS,  # Scribe for Documents, shared code (quill/ui/scribe_entry.py)
 }
 
 #: Handlers with no QUILL command id because the *control* answers the key.

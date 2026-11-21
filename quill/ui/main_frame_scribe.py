@@ -18,23 +18,36 @@ this mixin is QUILL's host adapter and its entry points:
 * The scanned-PDF and Import questions offer Scribe when "Offer Scribe when
   a PDF has little or no text" is on and Scribe is available.
 
+* **File > Replace with Finished Document**, in the streaming tab
+  (:mod:`quill.ui.main_frame_scribe_stream`, 8.1.3).
+* **Next Steps** in Scribe Conversions (8.1.7): Read Aloud with QUILL's
+  voices, the GLOW accessibility check, the braille view, Summarize with the
+  person's own AI, and the Media Player -- each a separate, chosen command.
+
+The commands themselves are shared with QUILL Lite
+(:class:`quill.ui.scribe_entry.ScribeEntryPoints`); this module is only where
+they sit in QUILL and how QUILL opens a result.
+
 The rows are placed by :meth:`_place_scribe_rows`, one call at the end of the
 menu build, so the at-budget menu modules gain one line. Commands register
-themselves (``self.commands.try_register``) as the Forms rows do. Keys are
-deliberately none: every command is a once-in-a-while command reached from
-its menu and the Command Palette (rule 9); Scribe Status and Repeat Last
-Scribe Message are the two the PRD wants keyed, left for Jeff to choose.
+themselves (``self.commands.try_register``) with whatever the person bound in
+the Keymap Editor (``_binding_for``), so every row is assignable and in the
+Command Palette. No row has a default key: each is a once-in-a-while command
+reached from its menu and the palette (rule 9), and the written reasons for
+Scribe Status, Repeat Last Scribe Message and Replace with Finished Document
+are in the family gate's ``UNBOUND_WITH_REASON``.
 """
 
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
 from typing import Any
 
 from quill.core.scribe import PRODUCT_NAME
 from quill.core.scribe import queue as q
-from quill.core.scribe.inputs import ACCEPTED_EXTENSIONS
+from quill.ui.main_frame_scribe_stream import ScribeStreamMixin
+from quill.ui.scribe_entry import SENDABLE, ScribeEntryPoints
+from quill.ui.scribe_entry import send_to_player as _send_to_player
 
 #: (command id, title, handler, place). Places: tools (the submenu), file,
 #: import, export, braille, window.
@@ -52,15 +65,17 @@ ROWS: tuple[tuple[str, str, str, str], ...] = (
     ("scribe.options", "O&ptions...", "scribe_options", "tools"),
     ("scribe.about", "A&bout Scribe for Documents", "scribe_about", "tools"),
     ("scribe.file_documents", "My Scribe Doc&uments", "scribe_my_documents", "file"),
+    (
+        "scribe.replace_finished",
+        "Replace with Finished Doc&ument",
+        "scribe_replace_finished",
+        "file",
+    ),
     ("scribe.import", "Convert with &Scribe for Documents...", "scribe_import_file", "import"),
     ("scribe.export", "With &Scribe for Documents...", "scribe_export", "export"),
     ("scribe.braille", "Translate with &Scribe for Documents...", "scribe_braille", "braille"),
     ("scribe.window", "Scribe &Conversions", "scribe_conversions", "window"),
 )
-
-#: Files Scribe takes as they are: the 23 types Pneuma confirmed (3.1). Anything
-#: else -- Markdown, and HTML, which Scribe refuses -- QUILL saves as DOCX first.
-SENDABLE = ACCEPTED_EXTENSIONS
 
 
 def _submenu_named(menu: Any, name: str) -> Any:
@@ -122,7 +137,7 @@ class QuillScribeHost:
 
     def scribe_open_result(self, job: q.Job, format_id: str, path: Path) -> str:
         """Section 9: open the output in the tool where it is used."""
-        from quill.core.scribe.results import daisy_entry, default_action, opened_phrase
+        from quill.core.scribe.results import default_action, opened_phrase
 
         action = default_action(format_id)
         if job.open_as == "import" and format_id in {"docx", "html", "epub"}:
@@ -131,16 +146,63 @@ class QuillScribeHost:
         if action in {"editor", "braille"}:
             self._mf.open_file(path)
             return opened_phrase(format_id, "QUILL")
-        if action == "player":
-            from quill.core.app_launcher import launch_app
-
-            target = daisy_entry(path) if format_id == "daisy" else path
-            if target is not None and launch_app("player", extra_args=(str(target),)):
-                return opened_phrase(format_id, "Media Player")
+        if action == "player" and _send_to_player(format_id, path):
+            return opened_phrase(format_id, "Media Player")
         return ""
 
+    # -- the streaming tab (main_frame_scribe_stream, 8.1.3) -----------------
 
-class ScribeMixin:
+    def scribe_stream_started(self, job: q.Job) -> None:
+        self._mf._scribe_open_stream_tab(job)
+
+    def scribe_stream_finished(self, job: q.Job) -> str:
+        return str(self._mf._scribe_stream_finished_phrase(job))
+
+    # -- Next Steps (8.1.7): each a separate command the person chooses ------
+
+    def scribe_next_steps(self, job: q.Job, ready: dict[str, Path]) -> list[tuple[str, Any]]:
+        """QUILL's own commands on what was made, named by format when there
+        are several (accessibility review, 2026-11-21)."""
+        from quill.core.scribe.model import format_label
+
+        editable = [f for f in ("docx", "html", "epub") if f in ready]
+        steps: list[tuple[str, Any]] = []
+
+        def named(label: str, format_id: str) -> str:
+            return f"{label} ({format_label(format_id)})" if len(editable) > 1 else label
+
+        for format_id in editable:
+            path = ready[format_id]
+            for label, command in (
+                ("Read Aloud with QUILL's Voices", "toggle_read_aloud"),
+                ("Check Accessibility (GLOW Audit)", "glow_audit_document"),
+                ("Summarize with Your AI...", "open_ai_summarize_selection"),
+            ):
+                steps.append((named(label, format_id), self._then(path, command)))
+        if "brf" in ready:
+            steps.append(("Open in the Braille View", self._then(ready["brf"], "")))
+        for format_id in ("mp3", "daisy"):
+            if format_id in ready:
+                label = f"Send to Media Player ({format_label(format_id)})"
+                steps.append((label, lambda f=format_id: _send_to_player(f, ready[f])))
+        return steps
+
+    def _then(self, path: Path, command: str) -> Any:
+        """Open *path* in QUILL (or go to its tab), then run QUILL's *command*.
+        Nothing is said about the opening: the reader says the tab, and the
+        command speaks for itself (review 2026-11-21)."""
+
+        def run() -> None:
+            import wx
+
+            self._mf.open_file(path)
+            if command:
+                wx.CallAfter(getattr(self._mf, command))
+
+        return run
+
+
+class ScribeMixin(ScribeStreamMixin, ScribeEntryPoints):
     """QUILL's Scribe for Documents entry points."""
 
     def _scribe(self) -> Any:
@@ -183,6 +245,7 @@ class ScribeMixin:
             self._scribe_ids = ids
             # Once, after startup's own messages: pick up jobs left running (7.4).
             wx.CallLater(5000, self._scribe_start)
+            self._scribe_wire_watch()
 
         def menu(title: str) -> Any:
             index = menu_bar.FindMenu(title)
@@ -208,11 +271,12 @@ class ScribeMixin:
             target = places.get(place)
             if target is None:
                 continue
+            binding = getattr(self, "_binding_for", lambda _c: None)(command_id)
             self.commands.try_register(  # type: ignore[attr-defined]
                 command_id,
                 f"{PRODUCT_NAME}: {title.replace('&', '').removesuffix('...')}",
                 (lambda h=handler: getattr(self, h)()),
-                None,
+                binding,  # a key the person gave it in the Keymap Editor
             )
             label = self._menu_label(title, command_id)  # type: ignore[attr-defined]
             at = positions.get(place)
@@ -231,195 +295,48 @@ class ScribeMixin:
             mapping.update(self._scribe_ids)
         return mapping
 
-    # -------------------------------------------------------------- commands
+    # ------------------------------------------- the shared commands' hooks
 
-    def scribe_convert_file(self) -> None:
-        self._scribe_pick_and_convert(multiple=True, app_formats=None, open_as="")
+    def _scribe_frame(self) -> Any:
+        return self.frame  # type: ignore[attr-defined]
 
-    def scribe_import_file(self, path: Path | None = None) -> None:
-        """Import / Convert's Scribe tier: Word, opened as a new tab (8.1.1)."""
-        if path is None:
-            self._scribe_pick_and_convert(multiple=False, app_formats=["docx"], open_as="import")
-            return
-        self._scribe().convert_files([path], app_formats=["docx"], open_as="import")
+    def _scribe_modal(self, dialog: Any, title: str) -> int:
+        return int(self._show_modal_dialog(dialog, title))  # type: ignore[attr-defined]
 
-    def _scribe_pick_and_convert(self, *, multiple: bool, app_formats: Any, open_as: str) -> None:
-        import wx
+    def _scribe_say(self, text: str) -> None:
+        self._announce(text)  # type: ignore[attr-defined]
 
-        from quill.core.scribe.inputs import input_wildcard
-
-        controller = self._scribe()
-        if not controller.check_available():
-            return
-        style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | (wx.FD_MULTIPLE if multiple else 0)
-        dialog = wx.FileDialog(
-            self.frame,  # type: ignore[attr-defined]
-            f"Convert with {PRODUCT_NAME}",
-            wildcard=input_wildcard(),  # only what Scribe takes (3.1)
-            style=style,
-        )
-        try:
-            if self._show_modal_dialog(dialog, f"Convert with {PRODUCT_NAME}") != wx.ID_OK:  # type: ignore[attr-defined]
-                return
-            paths = [Path(p) for p in dialog.GetPaths()] if multiple else [Path(dialog.GetPath())]
-        finally:
-            dialog.Destroy()
-        controller.convert_files(paths, app_formats=app_formats, open_as=open_as)
-
-    def _scribe_current_file(self) -> Path | None:
-        """The current document as a file Scribe takes: saved first (8.1.4)."""
+    def _scribe_document(self) -> tuple[Path | None, bool, str] | None:
         document = getattr(self, "document", None)
         if document is None:
-            self._announce("Open or create a document first.")  # type: ignore[attr-defined]
             return None
-        if getattr(document, "modified", False) or document.path is None:
-            self.save_file()  # type: ignore[attr-defined]
-            if document.path is None or document.modified:
-                self._announce("Nothing was sent: the document needs saving first.")  # type: ignore[attr-defined]
-                return None
-        path = Path(document.path)
-        if path.suffix.lower() in SENDABLE:
-            return path
-        return self._scribe_as_docx(path)
+        path = Path(document.path) if document.path else None
+        return path, bool(getattr(document, "modified", False)), str(document.text)
 
-    def _scribe_as_docx(self, path: Path) -> Path | None:
-        """A Markdown or other text document, as DOCX through Pandoc when it is
-        installed, otherwise as plain text, which Scribe certainly takes."""
-        folder = Path(tempfile.mkdtemp(prefix="quill-scribe-"))
-        try:
-            from quill.core.external_tools import get_external_tool_status
-            from quill.io.pandoc import convert_file_with_pandoc
+    def _scribe_save_document(self) -> None:
+        self.save_file()  # type: ignore[attr-defined]
 
-            if get_external_tool_status("pandoc").installed:
-                target = folder / f"{path.stem}.docx"
-                # Scribe refuses web pages (3.1), so an HTML document goes as Word.
-                web = path.suffix.lower() in {".html", ".htm", ".xhtml"}
-                source_format = "html" if web else "gfm+hard_line_breaks"
-                convert_file_with_pandoc(path, target, from_format=source_format, to_format="docx")
-                return target
-        except Exception:  # noqa: BLE001 - fall back to the text
-            pass
-        target = folder / f"{path.stem}.txt"
-        target.write_text(self.document.text, encoding="utf-8")  # type: ignore[attr-defined]
-        return target
+    def _scribe_show_about(self, title: str, text: str) -> None:
+        self._html_info(title, text)  # type: ignore[attr-defined]
 
-    def scribe_convert_this(self) -> None:
-        self._scribe_send_current(app_formats=None, open_as="")
-
-    def scribe_export(self) -> None:
-        """File > Export > With Scribe for Documents...: every Scribe format."""
-        self._scribe_send_current(app_formats=["pdf"], open_as="")
-
-    def scribe_braille(self) -> None:
-        """Braille > Translate with Scribe for Documents...: BRF, in the braille view."""
-        self._scribe_send_current(app_formats=["brf"], open_as="braille")
-
-    def _scribe_send_current(self, *, app_formats: Any, open_as: str) -> None:
-        controller = self._scribe()
-        if not controller.check_available():
-            return
-        path = self._scribe_current_file()
-        if path is None:
-            return
-        title = Path(self.document.path).stem if self.document.path else path.stem  # type: ignore[attr-defined]
-        controller.convert_files([path], app_formats=app_formats, open_as=open_as, title=title)
-
-    def scribe_convert_link(self) -> None:
+    def _scribe_wire_watch(self) -> None:
+        """Give the watch folder's Scribe action this app's runner (8.1.6): it
+        wakes the family queue and asks whether the person is signed in."""
         import wx
 
-        controller = self._scribe()
-        if not controller.check_available():
+        service = getattr(self, "_watch_service", None)
+        registry = getattr(service, "registry", None)
+        action = registry.get("scribe_convert") if registry is not None else None
+        if action is None:
             return
-        dialog = wx.TextEntryDialog(
-            self.frame,  # type: ignore[attr-defined]
-            "The address of a file (a PDF or a document, not a web page or a page behind a "
-            "sign-in):",
-            "Convert from a Link",
-        )
-        try:
-            if self._show_modal_dialog(dialog, "Convert from a Link") != wx.ID_OK:  # type: ignore[attr-defined]
-                return
-            url = dialog.GetValue().strip()
-        finally:
-            dialog.Destroy()
-        if not url.lower().startswith(("https://", "http://")):
-            self._announce("That is not a web address. Nothing was sent.")  # type: ignore[attr-defined]
-            return
-        controller.convert_url(url)
-
-    def scribe_my_documents(self) -> None:
-        self._scribe().my_documents()
-
-    def scribe_conversions(self) -> None:
-        self._scribe().open_conversions()
-
-    def scribe_status(self) -> None:
-        self._scribe().status()
-
-    def scribe_repeat(self) -> None:
-        self._scribe().repeat_last()
-
-    def scribe_sign_in(self) -> None:
-        controller = self._scribe()
-        if not controller.unavailable() and controller.session.is_signed_in():
-            self._announce(f"You are already signed in to {PRODUCT_NAME}.")  # type: ignore[attr-defined]
-            return
-        controller.sign_in()
-
-    def scribe_sign_out(self) -> None:
-        controller = self._scribe()
-        if controller.check_available():
-            controller.sign_out()
-
-    def scribe_account(self) -> None:
-        self._scribe().open_account_in_browser()
-
-    def scribe_options(self) -> None:
-        self._scribe().show_options()
-
-    def scribe_about(self) -> None:
-        self._html_info(f"About {PRODUCT_NAME}", self._scribe().about())  # type: ignore[attr-defined]
-
-    # ---------------------------------------------------- the scanned offer
-
-    def _scribe_scanned_choice(self, path: Path, page_count: int) -> str | None:
-        """The scanned-PDF question with Scribe in it (8.1.2), or ``None`` when
-        Scribe is not offered and the plain OCR question should be asked.
-
-        Returns ``"ocr"``, ``"scribe"``, ``"open"`` or ``"cancel"``.
-        """
-        import wx
-
-        from quill.core.scribe.inputs import is_accepted
-
-        if not is_accepted(path):  # Scribe is offered only for what it takes (3.1)
-            return None
-        controller = self._scribe()
-        if controller.unavailable() or not controller.options().offer_low_text_pdf:
-            return None
-        pages = f"about {page_count} pages" if page_count else "pages"
-        choices = [
-            "Run free OCR on this computer (nothing is uploaded)",
-            f"Convert with {PRODUCT_NAME} (rebuilds headings, tables and picture "
-            f"descriptions; uses {pages} of your Scribe credit)",
-            "Open the text there is",
-        ]
-        dialog = wx.SingleChoiceDialog(
-            self.frame,  # type: ignore[attr-defined]
-            f"{path.name} has little or no readable text. It looks scanned. What should QUILL do?",
-            "Scanned Document",
-            choices,
-        )
-        try:
-            if self._show_modal_dialog(dialog, "Scanned Document") != wx.ID_OK:  # type: ignore[attr-defined]
-                return "cancel"
-            return ("ocr", "scribe", "open")[max(0, dialog.GetSelection())]
-        finally:
-            dialog.Destroy()
+        controller = self._scribe()  # made here, on the UI thread
+        action.app_name = controller.app_name
+        action.on_wake = lambda: wx.CallAfter(controller.wake)
+        action.signed_in = lambda: bool(controller.session.is_signed_in())
 
     def _scribe_start(self) -> None:
         """At startup: pick up Scribe jobs another app or an earlier run left."""
         self._scribe().start_if_jobs_waiting()
 
 
-__all__ = ["ROWS", "ScribeMixin"]
+__all__ = ["ROWS", "SENDABLE", "QuillScribeHost", "ScribeMixin"]

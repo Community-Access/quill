@@ -234,6 +234,19 @@ AREAS: tuple[AppArea, ...] = (
         "answer. It is free, with a monthly allowance. Off until you turn it "
         "on.",
     ),
+    # Like AI help, the description is the consent notice (PRD 8.2): somebody on
+    # this row hears what is sent and to whom before anything is switched on.
+    AppArea(
+        "scribe",
+        "Scribe for Documents (sends the documents you choose to Pneuma Solutions)",
+        "File > Scribe for Documents: send a document you choose to Pneuma "
+        "Solutions' Scribe for Documents service, which rebuilds scans and badly "
+        "made files into accessible Word, HTML, tagged PDF, EPUB, DAISY, MP3 audio "
+        "and braille. A document goes over the internet only when you press Send "
+        "and Convert, after QUILL Lite has shown what will be sent and where. You "
+        "sign in with your own Scribe account and pay Scribe for your own pages; "
+        "QUILL Lite never takes payment. Off until you turn it on.",
+    ),
     AppArea(
         "dictation",
         "Dictation",
@@ -294,6 +307,9 @@ DEFAULT_OFF: frozenset[str] = frozenset({
     "forms_payments",
     "go_to_anything",
     "hosted_ai",
+    # Sends documents to a third party, as AI help sends text: nobody chooses
+    # that on another's behalf (PRD 8.2, and Datalab OCR is off in QUILL too).
+    "scribe",
 })
 
 #: Areas added to :data:`DEFAULT_OFF` after people already had a seeded store,
@@ -302,6 +318,7 @@ DEFAULT_OFF: frozenset[str] = frozenset({
 _LATER_DEFAULT_OFF: tuple[tuple[str, frozenset[str]], ...] = (
     ("_seeded_coding", frozenset({"coding"})),
     ("_seeded_forms_payments", frozenset({"forms_payments"})),
+    ("_seeded_scribe", frozenset({"scribe"})),
 )
 
 #: Named starting points, so somebody can ask for "the small one" without
@@ -327,14 +344,16 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "recommended",
         "Recommended",
-        "What a new install is: nineteen of the 25 areas on. Four of the six "
+        "What a new install is: nineteen of the 26 areas on. Five of the seven "
         "left off are the ones that would be wrong on by default rather than "
         "merely unused -- autocorrect rewriting a configuration file's quotes, "
         "backups quietly filling a folder, a second 'go to' front door "
-        "before anyone asked for one, and AI help, which would send what you "
-        "write to a server before you had agreed to it. The fifth is coding, "
-        "which belongs to the Developer profile, and the sixth Form Payments, "
-        "which stays off until a form is meant to take money. Everything else is "
+        "before anyone asked for one, AI help, which would send what you "
+        "write to a server before you had agreed to it, and Scribe for "
+        "Documents, which would send your documents to Pneuma Solutions. The "
+        "sixth is coding, which belongs to the Developer profile, and the "
+        "seventh Form Payments, which stays off until a form is meant to take "
+        "money. Everything else is "
         "here, including rich text, spell check, the line tools and the "
         "clipboard. Choose this to get back to the shipped answer after "
         "experimenting.",
@@ -343,7 +362,7 @@ PROFILES: tuple[AppProfile, ...] = (
     AppProfile(
         "everything",
         "Everything",
-        "24 of the 25 areas on: every writing area, including the five a new "
+        "25 of the 26 areas on: every writing area, including the six a new "
         "install leaves off. Coding stays off; that is the Developer profile. "
         # Not "and capitalise your sentences": the area description three
         # hundred lines up was corrected for saying so and this one was
@@ -352,12 +371,13 @@ PROFILES: tuple[AppProfile, ...] = (
         "Autocorrect will straighten your quotes and turn two hyphens into a "
         "dash, every save keeps a dated copy, and Go To Anything joins the command "
         "palette and the two lists as a fourth way to jump. It also switches on "
-        "AI help, which sends the passage you ask about to QUILL's servers -- "
-        "the one area here that does something outside this computer, so choose "
-        "this only if that is what you meant. Form Payments comes on too, so a "
-        "form can take a payment through your own WordPress site. Choose it if you "
-        "would rather turn "
-        "things off as they annoy you than find them one at a time.",
+        "AI help, which sends the passage you ask about to QUILL's servers, and "
+        "Scribe for Documents, which sends a document you choose to convert to "
+        "Pneuma Solutions -- the two areas here that send your writing outside "
+        "this computer, so choose this only if that is what you meant. Form "
+        "Payments comes on too, so a form can take a payment through your own "
+        "WordPress site. Choose it if you would rather turn things off as they "
+        "annoy you than find them one at a time.",
         # Every *writing* area: coding is the Developer profile's (code.md 6.4).
         frozenset({"coding"}),
     ),
@@ -369,7 +389,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "AI makes. Open a folder as a project and Ctrl+3 works on the whole "
         "project instead of one document. Nothing the agent proposes is written "
         "until you accept it, no command runs until you allow it, and Undo Last "
-        "Turn puts every file back. Twenty of the 25 areas: Recommended's "
+        "Turn puts every file back. Twenty of the 26 areas: Recommended's "
         "nineteen and Coding, which no other profile has.",
         frozenset(DEFAULT_OFF - {"coding"}),
     ),
@@ -381,7 +401,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "spacing -- and none of the writing tools behind them. No line "
         "operations, no clipboard history, no bookmarks, no abbreviations. "
         "Ctrl+N makes a rich text document, which is the half of this name a "
-        "list of menus cannot say. Six of the 25 areas, plus a spell checker "
+        "list of menus cannot say. Six of the 26 areas, plus a spell checker "
         "WordPad never had, and the command palette, which every profile "
         "keeps because it is how a command is found.",
         frozenset({
@@ -406,6 +426,8 @@ PROFILES: tuple[AppProfile, ...] = (
             "hosted_ai",
             # Neither program had a way to publish to a website.
             "wordpress",
+            # Nor sent a document anywhere to be rebuilt (PRD 8.2).
+            "scribe",
             # Neither program ever made a form, or took a payment through one.
             "forms",
             "forms_payments",
@@ -421,7 +443,7 @@ PROFILES: tuple[AppProfile, ...] = (
         "notepad",
         "Notepad",
         "The smallest QUILL Lite gets, and the one most people are replacing "
-        "something with. Three of the 25 areas: printing, text size and the "
+        "something with. Three of the 26 areas: printing, text size and the "
         "command palette, which every profile keeps because it is how a "
         "command is found. No "
         "Format menu, no headings, no bookmarks, no line tools, no clipboard "
@@ -447,6 +469,8 @@ PROFILES: tuple[AppProfile, ...] = (
             "hosted_ai",
             # Neither program had a way to publish to a website.
             "wordpress",
+            # Nor sent a document anywhere to be rebuilt (PRD 8.2).
+            "scribe",
             # Neither program ever made a form, or took a payment through one.
             "forms",
             "forms_payments",

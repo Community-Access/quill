@@ -20,6 +20,8 @@ from quill.core.watch_profiles import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
+from quill.ui.scribe_watch_profile import ACTION_ID as SCRIBE
+from quill.ui.scribe_watch_profile import ScribeProfileControls
 from quill.ui.spin_value import spin_value
 from quill.ui.spoken_name import set_spoken_name
 
@@ -327,17 +329,27 @@ class WatchProfileDialogMixin:
             ai_row.Add(ai_choice, 1, wx.EXPAND)
             root.Add(ai_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
-            consent_detail = self._watch_ai_consent_detail()
+            # The details first, in a field Tab reaches, then the box that agrees
+            # to them: a StaticText after the box was never read (review 2026-11-21).
+            root.Add(wx.StaticText(dialog, label="AI consent details:"), 0, wx.LEFT | wx.RIGHT, 8)
+            consent_text = wx.TextCtrl(
+                dialog,
+                value=self._watch_ai_consent_detail(),
+                style=wx.TE_MULTILINE | wx.TE_READONLY,
+            )
+            consent_text.SetName("AI consent details")
+            root.Add(consent_text, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
             consent = wx.CheckBox(
                 dialog,
                 label="I consent to send this folder's files to the AI model",
             )
             consent.SetValue(bool(base.action_options.get("consent", False)))
             consent.SetName("AI consent for this profile")
-            root.Add(consent, 0, wx.LEFT | wx.RIGHT, 8)
-            consent_text = wx.StaticText(dialog, label=consent_detail)
-            consent_text.SetName("AI consent details")
-            root.Add(consent_text, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            root.Add(consent, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+            # Convert with Scribe for Documents (PRD 8.1.6): formats and its own consent.
+            scribe_controls = ScribeProfileControls(
+                wx, dialog, root, dict(base.action_options) if base.action_id == SCRIBE else {}
+            )
 
             post_choices = ["Leave file in place", "Move to folder", "Delete file"]
             post_values = [POST_LEAVE, POST_MOVE, POST_DELETE]
@@ -415,6 +427,8 @@ class WatchProfileDialogMixin:
                     ai_index = ai_choice.GetSelection()
                     options["mode"] = ai_modes[ai_index if ai_index >= 0 else 0]
                     options["consent"] = bool(consent.GetValue())
+                elif action_id == SCRIBE:
+                    options.update(scribe_controls.collect())
                 return options
 
             def _build_profile() -> WatchProfile:
@@ -473,12 +487,23 @@ class WatchProfileDialogMixin:
             post_dest_browse.Bind(wx.EVT_BUTTON, lambda _event: _pick_folder(post_dest_input))
             preview_button.Bind(wx.EVT_BUTTON, _on_preview)
 
+            def _on_ok(event: object) -> None:
+                # Settled here, with the person present, so the watch job never
+                # needs a dialog later (review 2026-11-21).
+                problem = scribe_controls.problem() if _selected_action_id() == SCRIBE else None
+                if problem is None:
+                    event.Skip()
+                    return
+                self._show_message_box(problem[0], title, wx.ICON_INFORMATION | wx.OK)
+                problem[1].SetFocus()
+
             ok_cancel = dialog.CreateButtonSizer(wx.OK | wx.CANCEL)
             root.Add(dialog, 1, wx.EXPAND | wx.ALL, 8)
             if ok_cancel is not None:
                 root.Add(ok_cancel, 0, wx.EXPAND | wx.ALL, 8)
             dialog.SetSizerAndFit(root)
             apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+            dialog.Bind(wx.EVT_BUTTON, _on_ok, id=wx.ID_OK)
 
             if self._show_modal_dialog(dialog, title) != wx.ID_OK:
                 return None

@@ -124,6 +124,30 @@ KEYLESS_WITH_REASON: dict[str, str] = {
             "cmd_github_open_reference_at_cursor",
         )
     },
+    # Scribe for Documents (PRD 8.2, commands_scribe.py): as in QUILL, where none
+    # has a default key either.
+    **{
+        handler: "As in QUILL (rule 2), where no Scribe for Documents command has a default "
+        "key: each is once in a while (rule 9), reached from File > Scribe for Documents "
+        "(Alt+F, B) and the Command Palette, and any can be given a key in Keyboard Manager."
+        for handler in (
+            "cmd_scribe_convert_file",
+            "cmd_scribe_convert_this",
+            "cmd_scribe_export",
+            "cmd_scribe_convert_link",
+            "cmd_scribe_my_documents",
+            "cmd_scribe_conversions",
+            "cmd_scribe_status",
+            "cmd_scribe_repeat",
+            "cmd_scribe_sign_in",
+            "cmd_scribe_sign_out",
+            "cmd_scribe_account",
+            "cmd_scribe_options",
+            "cmd_scribe_about",
+        )
+    },
+    "cmd_scribe_window": "As in QUILL (rule 2), where Window > Scribe Conversions has no "
+    "default key: Alt+W, V reaches it, and so does File > Scribe for Documents > Conversions.",
     "cmd_open_studio": "Rule 7: launching another app does not take an editor chord. "
     "Lite already uses QUILL's positional QuillVille keys for editing commands. "
     "Alt+T, Q reaches Studio when the shared release gate permits it; the user can "

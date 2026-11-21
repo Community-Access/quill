@@ -28,6 +28,7 @@ from quill.core.scribe import queue as q
 from quill.core.scribe import sentences as say
 from quill.core.scribe.errors import ScribeError
 from quill.core.scribe.options import ScribeOptions, load_options, save_options
+from quill.ui.scribe_controller_events import ScribeEventsMixin
 from quill.ui.scribe_job_commands import ScribeJobCommands
 
 logger = logging.getLogger(__name__)
@@ -60,7 +61,7 @@ def controller_for(host: Any) -> ScribeController:
     return found
 
 
-class ScribeController(ScribeJobCommands):
+class ScribeController(ScribeJobCommands, ScribeEventsMixin):
     def __init__(self, host: ScribeHost) -> None:
         self.host = host
         self.app_name = host.app_name
@@ -425,111 +426,22 @@ class ScribeController(ScribeJobCommands):
                     **common,
                 )
             )
+        # Read while it converts (8.1.3): one file with HTML, in an app that can.
+        stream = bool(getattr(choice, "stream", False)) and len(jobs) == 1
+        stream = stream and "html" in jobs[0].formats
+        if stream:
+            jobs[0].open_as = "stream"
         self.queue.add(jobs)  # several files: one after another (the approved exception)
         if choice.password and jobs:
             self.ensure_service()
             if self._service is not None:
                 self._service._passwords[jobs[0].id] = choice.password  # noqa: SLF001
         self.wake()
+        if stream:
+            self.host.scribe_stream_started(jobs[0])
         if self._window is not None:
             self._window.refresh()
         return jobs
-
-    # --------------------------------------------------- what the runner says
-
-    def add_chunk_listener(self, job_id: str, listener: Callable[[str], None]) -> None:
-        """Streamed HTML for *job_id* (the read-while-it-converts tab, 8.1.3)."""
-        self._chunk_listeners[job_id] = listener
-
-    def _on_event(self, kind: str, job: q.Job | None) -> None:
-        """On the UI thread: refresh the window, then say what 7.4a allows."""
-        if kind == "chunk" and job is not None:
-            listener = self._chunk_listeners.get(job.id)
-            if listener is not None:
-                listener(job.message)
-            return
-        if self._window is not None:
-            self._window.refresh(job.id if job is not None else "")
-        if not self.holding or job is None:
-            return
-        in_front = self.host.scribe_in_front()
-        if kind == "started":
-            self._say(say.start_sentence(job))
-        elif kind == "changed":
-            self._say_quietly(self._speaker.on_change(job, app_in_front=in_front))
-        elif kind == "done":
-            self._finished(job)
-            self._batch_finished(job)
-        elif kind == "error":
-            if job.error_code == "QUILL-SCRIBE-PAGES":
-                self._say(say.error_sentence(job, say.pages_sentence(job.message)))
-            elif job.error_code in ("QUILL-SCRIBE-NOTDOC", "QUILL-SCRIBE-TOOBIG"):
-                self._say(job.message)  # already names Scribe and the file
-            else:
-                self._say(say.error_sentence(job, job.message))
-            self._batch_finished(job)
-        elif kind == "needs_you":
-            marker = (job.id, job.state)
-            if marker not in self._said_needs_you:
-                self._said_needs_you.add(marker)
-                self._say(say.needs_you_sentence(job, app_name=self.app_name))
-        elif kind == "busy" and self._speaker.once(job, "busy"):
-            self._say(say.busy_sentence(self.app_name))
-        elif kind == "offline" and self._speaker.once(job, "offline"):
-            self._say(say.offline_sentence(job, app_name=self.app_name))
-        elif kind == "online":
-            self._speaker.forget(job.id, "offline")  # recovery is silent
-        elif kind == "closed_while":
-            titles = [t for t in job.title.split("|") if t]
-            if titles:
-                root = self.options().download_folder or str(
-                    __import__("quill.core.scribe.library", fromlist=["x"]).default_download_root()
-                )
-                self._say(say.closed_while_sentence(titles, app_name=self.app_name, folder=root))
-
-    def _batch_finished(self, job: q.Job) -> None:
-        """After the last file of a batch: what was made and what was not (7.4)."""
-        if not job.batch:
-            return
-        try:
-            jobs = self.queue.batch_jobs(job.batch)
-        except (OSError, TimeoutError):
-            return
-        if len(jobs) > 1 and all(j.state in q.FINISHED for j in jobs):
-            if self._speaker.once(q.Job(id=job.batch), "batch"):
-                self._say(say.batch_sentence(jobs))
-
-    def _say_quietly(self, text: str) -> None:
-        if text:
-            self._say(text)
-
-    def _finished(self, job: q.Job) -> None:
-        """The one result sentence; open the result only where 7.4a allows."""
-        options = self.options()
-        opened = ""
-        mine = job.app == self.app_name
-        if mine and options.open_results == "yes" and self.host.scribe_in_front():
-            opened = self.open_job_result(job, speak=False)
-        self._say(
-            say.result_sentence(
-                job, app_name=self.app_name, opened=opened, offer=options.open_results == "offer"
-            )
-        )
-
-    def open_job_result(self, job: q.Job, *, speak: bool = True) -> str:
-        """Open Result: the first output, in the tool where it is used (section 9)."""
-        from quill.core.scribe.model import valid_formats
-
-        for format_id in valid_formats(list(job.outputs)):
-            path = Path(job.outputs[format_id])
-            if path.exists():
-                said = self.host.scribe_open_result(job, format_id, path)
-                if speak and said:
-                    self._say(said + ".")
-                return said
-        if speak:
-            self._say(f"{job.display_name} has no result to open yet.")
-        return ""
 
     # --------------------------------------------------------- the commands
 

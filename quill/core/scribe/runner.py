@@ -465,6 +465,8 @@ class QueueService:
             self._check_cancel(job)
             event = channel.next_event(1.0)
             if event is not None and event.kind == "conversion_complete":
+                if event.format == "html_stream":
+                    self._listener("stream_done", _chunk_job(job, event))
                 return
             if event is not None and event.kind == "chunk":
                 self._listener("chunk", _chunk_job(job, event))
@@ -492,6 +494,8 @@ class QueueService:
             self._listener("changed", job)
             return event.format == format_id and event.stage == "complete"
         if event.kind == "conversion_complete":
+            if event.format == "html_stream":  # the free preview: the stream tab ends
+                self._listener("stream_done", _chunk_job(job, event))
             return event.format == format_id
         if event.kind == "chunk":
             self._listener("chunk", _chunk_job(job, event))
