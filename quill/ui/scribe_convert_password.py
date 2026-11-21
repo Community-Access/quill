@@ -12,7 +12,7 @@ from typing import Any
 
 import wx
 
-from quill.ui.dialog_contract import bind_close_button, show_modal_dialog
+from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_modal_dialog
 
 MAX_TRIES = 3
 
@@ -59,6 +59,7 @@ class ScribePasswordDialog(wx.Dialog):
         buttons.Realize()
         sizer.Add(buttons, 0, wx.EXPAND | wx.ALL, 6)
         self.SetSizerAndFit(sizer)
+        apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         bind_close_button(self, cancel, modeless=False)
         self.show.Bind(wx.EVT_CHECKBOX, self._swap)
         self.Bind(wx.EVT_WINDOW_DESTROY, self._on_destroy)

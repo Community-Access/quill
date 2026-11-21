@@ -95,7 +95,8 @@ class Library:
     def record(self, document_id: str, title: str, format_id: str, file_path: Path) -> None:
         with self._lock:
             data = self._load()
-            entry = data.get(document_id) if isinstance(data.get(document_id), dict) else {}
+            raw = data.get(document_id)
+            entry: dict[str, Any] = raw if isinstance(raw, dict) else {}
             files = [f for f in entry.get("files", []) if isinstance(f, dict)]
             files = [f for f in files if f.get("path") != str(file_path)]
             files.append({"format": format_id, "path": str(file_path), "at": time.time()})

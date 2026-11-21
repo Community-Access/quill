@@ -118,7 +118,8 @@ class LoopbackListener:
 
         self._server = self._bind(_Handler)
         host, port = self._server.server_address[:2]
-        shown = f"[{host}]" if ":" in str(host) else str(host)
+        name = host.decode() if isinstance(host, bytes) else str(host)
+        shown = f"[{name}]" if ":" in name else name
         self.redirect_uri = f"http://{shown}:{port}{CALLBACK_PATH}"
 
     @staticmethod

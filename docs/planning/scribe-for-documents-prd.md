@@ -1,6 +1,6 @@
 # Scribe for Documents in the QUILL family
 
-Product requirements, draft for Jeff's review. 2026-11-20. Phase 1 is being built on branch feat/scribe-documents; the CHANGELOG entry of 2026-11-20 says what is built.
+Product requirements. Written 2026-11-20, updated 2026-11-21 with Pneuma's answers and the app's approval. Phase 1 (the shared foundation and QUILL) is built and switched on; phases 2 and 3 are not started. Section 2 says what is built and what is not.
 
 This replaces the June draft in `docs/planning/scribe.md`. That draft was written before the API existed and covered only three endpoints. The API that opened today does much more, and this PRD asks for all of it.
 
@@ -21,8 +21,15 @@ The goal is that wherever someone in the QUILL family meets an inaccessible docu
     - `http://[::1]/scribe/callback`
   - Any port is allowed on loopback. QUILL listens on whatever port is free.
 - **Exception approved (Mike Calvo, 2026-11-21).** Several files the person chose may be sent strictly one after another: wait for `conversion_complete` or an error before the next upload, back off on `rate_limited`, and pass every status to the person (7.4).
-- **Pneuma's answers (2026-11-21).** Mike Calvo answered every question in `email.md`, checked by Matt Campbell against the server code. The answers are folded into this document and summarised in section 16.
-- **Nothing is built yet.** The nearest working precedents are Datalab cloud OCR (`quill/core/datalab_ocr.py`, PRD 5.93) for consented cloud conversion, and the Auphonic connection in Converter for an upload, wait, download job with history.
+- **Pneuma's answers (2026-11-21).** Mike Calvo answered every question in our email of 2026-11-20, checked by Matt Campbell against the server code. The answers are folded into this document and summarised in section 16.
+- **Built (phase 1, PR #1994, 2026-11-21).** Switched on with the issued client ID; tested against a fake Scribe server (`tests/unit/core/scribe/fake_scribe.py`), not yet live.
+  - The shared foundation in `quill/core/scribe/`: the REST client, the Phoenix channel, PKCE sign-in, the family queue with its runner lock and shared rate count, the 23 input types and the size check, consent, options, the library, and the QUILL-SCRIBE-* errors.
+  - The shared windows in `quill/ui/scribe_*.py`: Sign In, Enter Password, Convert with Scribe for Documents, Scribe Conversions, My Scribe Documents (with Trash) and Options.
+  - QUILL: Tools > Scribe for Documents; File > Import > Convert with Scribe for Documents; File > Export > With Scribe for Documents; Tools > Braille > Translate with Scribe for Documents; Window > Scribe Conversions; the offer beside OCR when a PDF has little or no text.
+- **Built differently from this document** (to settle before phase 2):
+  - Options are their own dialog and their own file, `scribe/options.json` in the shared data folder, one set for the whole family, rather than a page in each app's Preferences (7.7). So the settings vocabulary and documentation gates have nothing to check for them.
+  - Scribe Status and Repeat Last Scribe Message have no keys yet (12).
+- **Not built yet.** The chained actions after conversion (8.1.7), QUILL's streaming read tab and watch-folder action (8.1), QUILL Lite (8.2), the Media Player (8.3), Converter, Studio, Cast, Beacon and Social (8.4 to 8.8), and the Explorer Send To item (8.10). Live testing against scribeit.io comes once the code is merged.
 
 ## 3. What Scribe provides (all of it, from the API client source)
 
@@ -522,14 +529,14 @@ All messages use the running app's own name (QUILL, QUILL Lite, Converter), neve
 
 ## 15. Phases
 
-1. **Foundation and QUILL.** Client, channel, sign-in, the convert dialog, the queue and progress, My Scribe Documents, options; QUILL's Import tier, low-text PDF offer, Export with Scribe, braille. The client ID arrived on 2026-11-21 and is in the build; tested against the fake server, live testing still to do.
-2. **Lite and Media Player.** Lite's area and commands (with QUILL already having them); Player's Listen command and DAISY audio reading.
+1. **Foundation and QUILL. Built (PR #1994).** Client, channel, sign-in, the convert dialog, the queue and progress, My Scribe Documents, options; QUILL's Import tier, low-text PDF offer, Export with Scribe, braille. The client ID arrived on 2026-11-21 and is in the build; tested against the fake server, live testing still to do. Left from this phase: the chained actions, the streaming tab and the watch-folder action.
+2. **Lite and Media Player. Next.** Lite's area and commands (with QUILL already having them); Player's Listen command and DAISY audio reading.
 3. **Converter, Studio, Beacon, Cast, Social.** Their entry points; the watch-folder action; the streaming read tab; the Explorer Send To item.
 4. **Batch.** The exception is approved (2026-11-21): several chosen files and the watch folder run one after another, from phase 1 on.
 
 ## 16. Pneuma's answers (2026-11-21)
 
-Mike Calvo answered `email.md` on 2026-11-21; Matt Campbell checked the answers against the server code.
+Mike Calvo answered our questions on 2026-11-21; Matt Campbell checked the answers against the server code.
 
 1. **Inputs:** 23 types, no HTML (3.1).
 2. **Limits:** 500 MB per upload; no page cap beyond credits (3.1).

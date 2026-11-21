@@ -24,7 +24,7 @@ import time
 from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol, cast
 from urllib.parse import urlencode, urlsplit, urlunsplit
 
 from quill.core.scribe.errors import (
@@ -66,13 +66,14 @@ def create_connection(url: str) -> Socket:
             "Scribe for Documents needs a part that is missing from this copy of QUILL."
         ) from error
     secure = url.startswith("wss://")
-    socket: Socket = connect(
+    connection = connect(
         url,
         ssl=verified_ssl_context() if secure else None,
         open_timeout=20,
         max_size=None,
         user_agent_header="QUILL (Scribe for Documents)",
     )
+    socket = cast("Socket", connection)  # recv() has more overloads than Socket names
     return socket
 
 
@@ -251,8 +252,9 @@ class DocumentChannel:
             if topic != self.topic:
                 continue
             if event == "phx_reply" and frame_ref == ref:
-                reply = payload if isinstance(payload, dict) else {}
-                response = reply.get("response") if isinstance(reply.get("response"), dict) else {}
+                reply: dict[str, Any] = payload if isinstance(payload, dict) else {}
+                raw = reply.get("response")
+                response: dict[str, Any] = raw if isinstance(raw, dict) else {}
                 if reply.get("status") == "ok":
                     return response
                 raise error_from_server(

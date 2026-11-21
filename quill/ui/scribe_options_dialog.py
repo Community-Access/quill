@@ -23,7 +23,7 @@ from quill.core.scribe.consent import ABOUT_TEXT
 from quill.core.scribe.library import default_download_root
 from quill.core.scribe.model import FORMATS
 from quill.core.scribe.options import OPEN_CHOICES, SPEAK_CHOICES, ScribeOptions
-from quill.ui.dialog_contract import bind_close_button
+from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 
 
 class ScribeOptionsDialog(wx.Dialog):
@@ -148,6 +148,7 @@ class ScribeOptionsDialog(wx.Dialog):
         buttons.Realize()
         sizer.Add(buttons, 0, wx.EXPAND | wx.ALL, 6)
         self.SetSizerAndFit(sizer)
+        apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
 
         bind_close_button(self, cancel, modeless=False)
         browse.Bind(wx.EVT_BUTTON, self._browse)

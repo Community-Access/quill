@@ -96,8 +96,10 @@ class _Wrapped:
 
     def __init__(self, raw: Any) -> None:
         self._raw = raw
-        self.status = int(getattr(raw, "status", None) or getattr(raw, "code", 0) or 0)
-        self.headers = {str(k).lower(): str(v) for k, v in (raw.headers or {}).items()}
+        self.status: int = int(getattr(raw, "status", None) or getattr(raw, "code", 0) or 0)
+        self.headers: Mapping[str, str] = {
+            str(k).lower(): str(v) for k, v in (raw.headers or {}).items()
+        }
 
     def read(self, size: int = -1) -> bytes:
         data: bytes = self._raw.read(size) if size >= 0 else self._raw.read()

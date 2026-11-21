@@ -19,7 +19,7 @@ import wx
 
 from quill.core.scribe.errors import ScribeError
 from quill.core.scribe.model import DocumentSummary, formats_phrase
-from quill.ui.dialog_contract import bind_close_button, show_modal_dialog
+from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_modal_dialog
 
 EMPTY = {
     0: "No documents in your Scribe account.",
@@ -105,6 +105,7 @@ class ScribeDocumentsDialog(wx.Dialog):
         sizer.Add(row, 0, wx.EXPAND)
         self.SetSizer(sizer)
         self.SetSize(self.FromDIP(wx.Size(760, 520)))
+        apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
 
         bind_close_button(self, close, modeless=False)
         self.show.Bind(wx.EVT_CHOICE, lambda _e: self.load())

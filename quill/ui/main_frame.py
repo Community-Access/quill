@@ -687,7 +687,7 @@ class MainFrame(
     MediaPlayerMixin,
     GlowFileMixin,
     DocConvertMixin,
-    ScribeMixin,  # Scribe for Documents (PRD 8.1), placed after DocConvert's hooks
+    ScribeMixin,  # Scribe for Documents, PRD 8.1, placed after DocConvert's hooks
     PdfOpenOcrMixin,
     DictationHotkeysMixin,
     # QUILL's own free AI: the shared hosted-AI commands, five, none implemented here.

@@ -21,7 +21,7 @@ import wx
 
 from quill.core.scribe import PRODUCT_NAME
 from quill.core.scribe.errors import ScribeError, ScribeSignInLocalError
-from quill.ui.dialog_contract import bind_close_button
+from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 
 WAITING = "Your browser is open at Scribe for Documents. Sign in there, then come back to {app}."
 TIMED_OUT = "Sign-in timed out. Try again?"
@@ -82,7 +82,8 @@ class ScribeSignInDialog(wx.Dialog):
         self.Bind(wx.EVT_ACTIVATE, self._on_activate)
         self._signed_in_sentence = ""
         self._heard_in_background = False
-        self.SetEscapeId(wx.ID_ANY)  # Cancel while waiting, Continue once signed in
+        # Escape is wx.ID_ANY: Cancel while waiting, Continue once signed in.
+        apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL, escape_id=wx.ID_ANY)
         self._start()
 
     # ---------------------------------------------------------------- flow

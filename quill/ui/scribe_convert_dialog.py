@@ -40,7 +40,7 @@ import wx.lib.scrolledpanel as scrolled
 
 from quill.core.scribe.consent import consent_text, pages_text
 from quill.core.scribe.model import FORMATS, ScribeSettings, settings_summary
-from quill.ui.dialog_contract import bind_close_button
+from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 
 
 @dataclass
@@ -245,6 +245,7 @@ class ScribeConvertDialog(wx.Dialog):
         buttons.Add(cancel, 0, wx.ALL, 6)
         outer.Add(buttons, 0, wx.EXPAND)
         self.SetSizer(outer)
+        apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         size = self.FromDIP(wx.Size(620, 640))
         display = wx.Display(wx.Display.GetFromWindow(parent) if parent else 0).GetClientArea()
         self.SetSize(wx.Size(min(size.width, display.width), min(size.height, display.height)))
