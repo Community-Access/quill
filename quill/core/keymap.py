@@ -32,6 +32,7 @@ from quill.core.keymap_query import (
     find_keymap_conflicts,
 )
 from quill.core.paths import app_data_dir
+from quill.core.scribe.keys import default_bindings as scribe_key_bindings
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.wordpress.keys import default_bindings as wordpress_key_bindings
 
@@ -840,10 +841,6 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "file.open_from_clipboard": "Ctrl+Alt+Shift+Enter",  # Ctrl+V pastes (rule 1); rule 5
     "file.open_url": "",  # no key in either editor; rule 8 reason in the family gate
     "file.import_convert": "",  # as open_url: no key in either; the reason is in the family gate
-    # Scribe for Documents (PRD 12): no default chord; the reasons are in the family gate.
-    "scribe.status": "",
-    "scribe.repeat": "",
-    "scribe.replace_finished": "",
     # The Say commands (ui/say_commands.py, shared; lite/commands_say.py says why these
     # four, measured 2026-11-06). Plain, not the leader: QUILL Lite reaches them plainly (rule 6).
     "edit.say_clipboard": "Alt+Shift+Home",  # twice spells it, three times shows it
@@ -1345,6 +1342,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # The WordPress keys (wordpress.md 19): Ctrl+Alt+Shift+Grave, then one letter, the
     # same in QUILL Lite, from wordpress/menu.py LAYER_KEYS and forms/menu.py's F.
     **wordpress_key_bindings(),
+    **scribe_key_bindings(),  # Scribe for Documents: no chords (scribe/keys.py, rule 9)
 }
 
 

@@ -308,3 +308,20 @@ def test_a_watch_retry_reports_the_job_scribe_has_rather_than_uploading_again(
     again = action.run(item, {})  # the watch queue retries a failed item
     assert first.status == again.status == "failed"
     assert len(queue.jobs()) == 1  # sent once, never paid for twice
+
+
+def test_every_quill_scribe_row_is_in_the_keymap_with_no_chord() -> None:
+    """Assignable in the Keymap Editor, and what Lite's parity table maps onto."""
+    from quill.core.keymap import DEFAULT_KEYMAP
+    from quill.core.scribe.keys import COMMAND_IDS
+    from quill.ui.main_frame_scribe import ROWS
+
+    assert {row[0] for row in ROWS} == set(COMMAND_IDS)
+    assert all(DEFAULT_KEYMAP[command_id] == "" for command_id in COMMAND_IDS)
+
+
+def test_replace_with_finished_document_sits_in_the_scribe_submenu() -> None:
+    from quill.ui.main_frame_scribe import ROWS
+
+    place = {row[0]: row[3] for row in ROWS}
+    assert place["scribe.replace_finished"] == "tools"  # File has no letter left

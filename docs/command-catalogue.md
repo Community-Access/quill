@@ -162,29 +162,44 @@ Each command has a name, its key when it has one, what it does, and some of the 
 
 These are never done from a sentence, because they send, delete, sign in, change settings or leave the app. Each is still on its menu and its key.
 
+- About Scribe for Documents: Tools, Scribe for Documents, About Scribe for Documents.
 - AI Hub: AI, AI Hub.
 - Check for Updates: Help, Check for Updates.
 - Check What QUILL Says: Command Palette.
 - Compare Braille Surfaces: Help, Troubleshooting.
+- Convert a File with Scribe: Tools, Scribe for Documents, Convert a File.
+- Convert from a Link with Scribe: Tools, Scribe for Documents, Convert from a Link.
+- Convert This Document with Scribe: Tools, Scribe for Documents, Convert This Document.
 - Copy a Diagnostic Summary: Help, Troubleshooting.
 - Copy to the Next Tray Slot: Edit, Copy Tray.
 - Dark Mode: View, Dark Mode.
 - Exit: File, Exit.
+- Export with Scribe: File, Export, With Scribe for Documents.
+- Import with Scribe: File, Import, Convert with Scribe for Documents.
 - Language Servers: Navigate, Code, Language Servers.
+- My Scribe Documents: Tools, Scribe for Documents, My Scribe Documents.
+- My Scribe Documents (File): File, My Scribe Documents.
 - Open a Web Address: File, Open a Web Address.
+- Open My Scribe Account: Tools, Scribe for Documents, Open My Scribe Account in Browser.
 - Preferences Hub: Tools, Preferences Hub.
 - Repeat Last Scribe Message: Tools, Scribe for Documents, Repeat Last Scribe Message.
 - Replace All: Edit, Replace.
-- Replace with Finished Document: File, Replace with Finished Document.
+- Replace with Finished Document: Tools, Scribe for Documents, Replace with Finished Document.
 - Report the Editor Surface: Help, Troubleshooting.
 - Restore a Backup: File, Restore a Backup.
 - Save to GitHub: the GitHub menu.
 - Save to Remote: File, Save to Remote.
 - Say or Type a Command: F11.
+- Scribe Conversions: Tools, Scribe for Documents, Conversions.
+- Scribe Conversions Window: Window, Scribe Conversions.
+- Scribe Options: Tools, Scribe for Documents, Options.
 - Scribe Status: Tools, Scribe for Documents, Scribe Status.
 - Send to Tray: View, Send to Tray.
 - Settings: Tools, Settings.
+- Sign In to Scribe: Tools, Scribe for Documents, Sign In.
+- Sign Out of Scribe: Tools, Scribe for Documents, Sign Out.
 - Speech and Braille Self-Test: Help, Troubleshooting.
+- Translate with Scribe: Tools, Braille, Translate with Scribe for Documents.
 - Where Am I, in Detail: Navigate, Where Am I.
 
 ## QUILL Lite
@@ -327,17 +342,29 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 These are never done from a sentence, because they send, delete, sign in, change settings or leave the app. Each is still on its menu and its key.
 
+- About Scribe for Documents: Tools, Scribe for Documents, About Scribe for Documents.
 - AI Hub: AI, AI Hub.
 - Check for Updates: Help, Check for Updates.
+- Convert a File with Scribe: Tools, Scribe for Documents, Convert a File.
+- Convert from a Link with Scribe: Tools, Scribe for Documents, Convert from a Link.
+- Convert This Document with Scribe: Tools, Scribe for Documents, Convert This Document.
 - Copy to the Next Tray Slot: Edit, Copy Tray.
 - Dark Mode: View, Dark Mode.
 - Exit: File, Exit.
+- Export with Scribe: File, Export, With Scribe for Documents.
 - Language Servers: Navigate, Code, Language Servers.
+- My Scribe Documents: Tools, Scribe for Documents, My Scribe Documents.
 - Open a Web Address: File, Open a Web Address.
+- Open My Scribe Account: Tools, Scribe for Documents, Open My Scribe Account in Browser.
 - Repeat Last Scribe Message: Tools, Scribe for Documents, Repeat Last Scribe Message.
 - Say or Type a Command: F11.
+- Scribe Conversions: Tools, Scribe for Documents, Conversions.
+- Scribe Conversions Window: Window, Scribe Conversions.
+- Scribe Options: Tools, Scribe for Documents, Options.
 - Scribe Status: Tools, Scribe for Documents, Scribe Status.
 - Settings: Tools, Settings.
+- Sign In to Scribe: Tools, Scribe for Documents, Sign In.
+- Sign Out of Scribe: Tools, Scribe for Documents, Sign Out.
 
 ## Quill Radio
 

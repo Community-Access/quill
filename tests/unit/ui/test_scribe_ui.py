@@ -473,6 +473,7 @@ def test_the_rows_land_in_their_menus(isolated: Path) -> None:
         assert [i.GetItemLabelText() for i in window.GetMenuItems()][1] == "Scribe Conversions"
         submenu = tools.GetMenuItems()[-1]
         assert submenu.GetItemLabelText() == "Scribe for Documents"
-        assert submenu.GetSubMenu().GetMenuItemCount() == 12
+        # The twelve commands and Replace with Finished Document (File has no letter left).
+        assert submenu.GetSubMenu().GetMenuItemCount() == 13
     finally:
         made.frame.Destroy()

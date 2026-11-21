@@ -116,6 +116,10 @@ NOT_EDITOR_COMMANDS: dict[str, str] = {
     "verbosity.": "The verbosity commands are settings surfaces; the *announcement* "
     "commands a listener presses (repeat, self-test) are in app.* and are "
     "deliberately user-bound below.",
+    "scribe.": "Scribe for Documents is a document service beside the editor, with its own "
+    "windows (Convert, Scribe Conversions, My Scribe Documents): once-in-a-while commands, "
+    "reached from Tools > Scribe for Documents and the Command Palette, assignable in the "
+    "Keymap Editor (rules 7 and 9). Status, Repeat and Replace have their own rows below.",
     "file.github_": "GitHub file operations reached from the File menu: still repository work "
     "rather than text work (rule 7).",
     "file.open_github": "As file.github_: opening from a repository is a connection dialog, not "
@@ -197,9 +201,9 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "scribe.repeat": "The user binds it, in the Keymap Editor, for the reason "
     "app.repeat_last_announcement is user-bound: guessing a 'say that again' key puts it "
     "under something a reader uses. Its menu row and the Command Palette reach it (rule 9).",
-    "scribe.replace_finished": "Reached another way: File > Replace with Finished Document, "
-    "which does something only in a tab reading a Scribe conversion, once per conversion "
-    "(rule 9). The Keymap Editor can give it a key.",
+    "scribe.replace_finished": "Reached another way: Tools > Scribe for Documents > Replace "
+    "with Finished Document, which does something only in a tab reading a Scribe "
+    "conversion, once per conversion (rule 9). The Keymap Editor can give it a key.",
     "edit.save_clipboard_to_file": "Reached another way: Edit > Clipboard > Save Clipboard "
     "to File..., in both editors. No chord was free in both (measured 2026-11-06), and it "
     "asks for a file name next, so a chord would save little (rule 9).",

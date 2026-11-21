@@ -7,6 +7,7 @@ is ("It's in File, Exit").
 
 from __future__ import annotations
 
+from quill.core.command_catalogue.editor_scribe import SCRIBE_ROWS
 from quill.core.command_catalogue.spec import CommandSpec, Risk
 
 __all__ = ["NEVER_ROWS"]
@@ -53,32 +54,7 @@ NEVER_ROWS: tuple[CommandSpec, ...] = (
         group="File",
         where="File, Open a Web Address",
     ),
-    # Scribe for Documents (PRD 12): rows so the palette finds them by these words;
-    # a sentence never sends a document or swaps one in.
-    CommandSpec(
-        "scribe.status",
-        "Scribe Status",
-        aliases=("scribe status", "conversion status", "how is my conversion"),
-        risk=_N,
-        group="Tools",
-        where="Tools, Scribe for Documents, Scribe Status",
-    ),
-    CommandSpec(
-        "scribe.repeat",
-        "Repeat Last Scribe Message",
-        aliases=("repeat scribe", "say the scribe message again"),
-        risk=_N,
-        group="Tools",
-        where="Tools, Scribe for Documents, Repeat Last Scribe Message",
-    ),
-    CommandSpec(
-        "scribe.replace_finished",
-        "Replace with Finished Document",
-        aliases=("finished document", "replace streaming tab"),
-        risk=_N,
-        group="File",
-        where="File, Replace with Finished Document",
-    ),
+    *SCRIBE_ROWS,  # Scribe for Documents (editor_scribe.py)
     CommandSpec(
         "app.preferences",
         "Settings",

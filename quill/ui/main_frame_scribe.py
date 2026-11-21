@@ -18,7 +18,7 @@ this mixin is QUILL's host adapter and its entry points:
 * The scanned-PDF and Import questions offer Scribe when "Offer Scribe when
   a PDF has little or no text" is on and Scribe is available.
 
-* **File > Replace with Finished Document**, in the streaming tab
+* **Tools > Scribe for Documents > Replace with Finished Document**, in the streaming tab
   (:mod:`quill.ui.main_frame_scribe_stream`, 8.1.3).
 * **Next Steps** in Scribe Conversions (8.1.7): Read Aloud with QUILL's
   voices, the GLOW accessibility check, the braille view, Summarize with the
@@ -59,18 +59,20 @@ ROWS: tuple[tuple[str, str, str, str], ...] = (
     ("scribe.conversions", "&Conversions", "scribe_conversions", "tools"),
     ("scribe.status", "Scribe &Status", "scribe_status", "tools"),
     ("scribe.repeat", "&Repeat Last Scribe Message", "scribe_repeat", "tools"),
+    # Not in File: with WordPress and Forms on, File has no letter left (all 36
+    # are taken), and a row with no Alt letter has no route (menu accelerators gate).
+    (
+        "scribe.replace_finished",
+        "Replace &with Finished Document",
+        "scribe_replace_finished",
+        "tools",
+    ),
     ("scribe.sign_in", "Sign &In...", "scribe_sign_in", "tools"),
     ("scribe.sign_out", "Sign &Out", "scribe_sign_out", "tools"),
     ("scribe.account", "Open My Scribe &Account in Browser", "scribe_account", "tools"),
     ("scribe.options", "O&ptions...", "scribe_options", "tools"),
     ("scribe.about", "A&bout Scribe for Documents", "scribe_about", "tools"),
     ("scribe.file_documents", "My Scribe Doc&uments", "scribe_my_documents", "file"),
-    (
-        "scribe.replace_finished",
-        "Replace &with Finished Document",  # U is My Scribe Documents
-        "scribe_replace_finished",
-        "file",
-    ),
     ("scribe.import", "Convert with &Scribe for Documents...", "scribe_import_file", "import"),
     ("scribe.export", "With &Scribe for Documents...", "scribe_export", "export"),
     ("scribe.braille", "Translate with &Scribe for Documents...", "scribe_braille", "braille"),

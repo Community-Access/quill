@@ -145,8 +145,9 @@ what shipped.
 - **Read while it converts.** Check "Read while it converts" in the Convert
   dialog, and a read-only tab, "Notes (Scribe, converting)", fills with the
   text a whole paragraph at a time, without moving your place or speaking. It
-  becomes "(Scribe, complete)" or "(Scribe, incomplete)". File, Replace with
-  Finished Document swaps in the finished one and keeps your place.
+  becomes "(Scribe, complete)" or "(Scribe, incomplete)". Tools, Scribe for
+  Documents, Replace with Finished Document swaps in the finished one and
+  keeps your place.
 - **The watch folder can use Scribe.** A profile's new action, Convert with
   Scribe for Documents, sends each arriving document, one after another, once
   you agree to it in that profile. Only the 23 types Scribe takes are sent,

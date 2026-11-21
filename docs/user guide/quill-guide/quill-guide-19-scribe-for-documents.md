@@ -24,8 +24,8 @@ has a full chapter on Scribe in QUILL Lite.
 
 | Menu | What is there |
 |---|---|
-| **Tools > Scribe for Documents** | Convert a File, Convert This Document, Convert from a Link, My Scribe Documents, Conversions, Scribe Status, Repeat Last Scribe Message, Sign In, Sign Out, Open My Scribe Account in Browser, Options, About Scribe for Documents |
-| **File** | My Scribe Documents, and Replace with Finished Document for a tab that is reading a conversion |
+| **Tools > Scribe for Documents** | Convert a File, Convert This Document, Convert from a Link, My Scribe Documents, Conversions, Scribe Status, Repeat Last Scribe Message, Replace with Finished Document (for a tab that is reading a conversion), Sign In, Sign Out, Open My Scribe Account in Browser, Options, About Scribe for Documents |
+| **File** | My Scribe Documents |
 | **File > Import** | Convert with Scribe for Documents... |
 | **File > Export** | With Scribe for Documents... |
 | **Tools > Braille** | Translate with Scribe for Documents... |
@@ -663,14 +663,14 @@ start reading at once.
 - When the text is all there, the tab is named "Notes (Scribe, complete)".
   If the conversion fails partway, it is named "Notes (Scribe, incomplete)"
   and keeps what arrived.
-- The result sentence says it: "Notes is complete in its tab; File, Replace
-  with Finished Document swaps in the finished one".
+- The result sentence says it: "Notes is complete in its tab; Replace with
+  Finished Document, in Tools, swaps in the finished one".
 
 ### Replace with Finished Document
 
 The streamed text is a quick first look. The finished Word or HTML can have
-more, such as a title and picture descriptions. **File > Replace with
-Finished Document** swaps the finished document into the tab, and keeps
+more, such as a title and picture descriptions. **Tools > Scribe for
+Documents > Replace with Finished Document** swaps the finished document into the tab, and keeps
 your place at the same paragraph. You hear "Replaced with the finished
 document." The tab is then named "Notes (Scribe)", and you can edit and
 save it like any new document.
@@ -859,7 +859,7 @@ a key in the Keymap Editor, in More Preferences.
 | Open My Scribe Account in Browser | Tools > Scribe for Documents | None; assign one in the Keymap Editor | Your account on the Scribe website |
 | Options | Tools > Scribe for Documents | None; assign one in the Keymap Editor | Scribe for Documents Options |
 | About Scribe for Documents | Tools > Scribe for Documents | None; assign one in the Keymap Editor | What Scribe is, and the privacy notes |
-| Replace with Finished Document | File | None; assign one in the Keymap Editor | Swaps the finished document into a reading tab |
+| Replace with Finished Document | Tools > Scribe for Documents | None; assign one in the Keymap Editor | Swaps the finished document into a reading tab |
 | Convert with Scribe for Documents | File > Import | None; assign one in the Keymap Editor | Converts one file into a new tab |
 | With Scribe for Documents | File > Export | None; assign one in the Keymap Editor | Exports the document as any Scribe format |
 | Translate with Scribe for Documents | Tools > Braille | None; assign one in the Keymap Editor | Braille, opened in the braille view |

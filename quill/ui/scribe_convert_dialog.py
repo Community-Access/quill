@@ -170,7 +170,8 @@ class ScribeConvertDialog(wx.Dialog):
             self.stream.SetHelpText(
                 f"Opens a read-only tab in {app} that fills with the text as Scribe makes it, "
                 "a whole paragraph at a time, without moving your place or speaking. One file "
-                "at a time. File, Replace with Finished Document swaps in the finished one."
+                "at a time. Replace with Finished Document, in Tools, Scribe for Documents, "
+                "swaps in the finished one."
             )
             self.stream.Bind(wx.EVT_CHECKBOX, lambda _e: self._stream_changed())
             sizer.Add(self.stream, 0, wx.ALL, 6)

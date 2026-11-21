@@ -16,10 +16,11 @@ converting)", and fills it from Scribe's free ``html_stream`` preview.
   then "(Scribe, complete)" or "(Scribe, incomplete)". The rename is not
   spoken: the job's one result sentence says the tab is complete (7.4a), and
   an error sentence is the one message when it fails partway.
-* **File > Replace with Finished Document** swaps in the finished Word or HTML
-  and keeps the reading place at the same block, matched by its words rather
-  than its index, because the finished document may add a title or picture
-  descriptions. It is the person's own command, so it says one short sentence.
+* **Tools > Scribe for Documents > Replace with Finished Document** swaps in
+  the finished Word or HTML and keeps the reading place at the same block,
+  matched by its words rather than its index, because the finished document
+  may add a title or picture descriptions. It is the person's own command, so
+  it says one short sentence.
 
 Chunks reach only the app running the job (the runner-lock holder). When
 another QUILL app runs it, the tab still follows the job's state from the
@@ -181,14 +182,14 @@ class ScribeStreamMixin:
             return ""
         self._scribe_stream_event("done", job)
         return (
-            f"{stream.stem} is complete in its tab; File, Replace with Finished Document "
+            f"{stream.stem} is complete in its tab; Replace with Finished Document, in Tools, "
             "swaps in the finished one"
         )
 
     # -- Replace with Finished Document --------------------------------------
 
     def scribe_replace_finished(self) -> None:
-        """File > Replace with Finished Document, in a streaming tab (8.1.3)."""
+        """Tools > Scribe for Documents > Replace with Finished Document (8.1.3)."""
         document = getattr(self, "document", None)
         job_id = str(getattr(document, "source_metadata", {}).get("scribe_job", "") or "")
         stream = self._scribe_stream_table().get(job_id) if job_id else None

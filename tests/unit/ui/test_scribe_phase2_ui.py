@@ -19,6 +19,7 @@ import pytest
 
 from quill.core.scribe import queue as q
 from tests.unit.ui.test_scribe_ui import Host, controller, isolated  # noqa: F401
+from tests.wx_session import patch_call_after
 
 pytestmark = pytest.mark.usefixtures("wx_session_app")
 
@@ -114,8 +115,6 @@ class _Frame:
 def test_quill_next_steps_are_named_by_format_when_there_are_several(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import wx
-
     from quill.ui.main_frame_scribe import QuillScribeHost
 
     frame = _Frame()
@@ -125,7 +124,7 @@ def test_quill_next_steps_are_named_by_format_when_there_are_several(
     assert "Read Aloud with QUILL's Voices (Word)" in steps
     assert "Check Accessibility (GLOW Audit) (Accessible HTML)" in steps
     assert "Open in the Braille View" in steps and "Send to Media Player (MP3 audio)" in steps
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *a: fn(*a))
+    patch_call_after(monkeypatch)
     steps["Read Aloud with QUILL's Voices (Word)"]()
     assert frame.calls == [("open", "N.docx"), ("read_all", ())]
     single = dict(host.scribe_next_steps(q.Job(), {"docx": ready["docx"]}))

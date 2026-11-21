@@ -62,9 +62,11 @@ class ScribeEntryPoints:
         raise NotImplementedError
 
     def _scribe_show_about(self, title: str, text: str) -> None:
+        import wx
+
         from quill.ui.dialog_contract import show_message_box
 
-        show_message_box(text, title, parent=self._scribe_frame())
+        show_message_box(text, title, wx.OK | wx.ICON_INFORMATION, self._scribe_frame())
 
     # -- convert a file ----------------------------------------------------
 

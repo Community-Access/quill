@@ -27,7 +27,7 @@ The goal is that wherever someone in the QUILL family meets an inaccessible docu
   - The shared windows in `quill/ui/scribe_*.py`: Sign In, Enter Password, Convert with Scribe for Documents, Scribe Conversions, My Scribe Documents (with Trash) and Options.
   - QUILL: Tools > Scribe for Documents; File > Import > Convert with Scribe for Documents; File > Export > With Scribe for Documents; Tools > Braille > Translate with Scribe for Documents; Window > Scribe Conversions; the offer beside OCR when a PDF has little or no text.
 - **Built (phase 2, the rest of QUILL and QUILL Lite, 2026-11-21; builds on #1994).**
-  - QUILL: Next Steps in Scribe Conversions (8.1.7: Read Aloud with QUILL's voices, the GLOW accessibility check, Summarize with the person's own AI, the braille view, Send to Media Player); the streaming read tab with File > Replace with Finished Document (8.1.3); the watch-folder action "Convert with Scribe for Documents" (8.1.6); a Scribe for Documents page in More Preferences.
+  - QUILL: Next Steps in Scribe Conversions (8.1.7: Read Aloud with QUILL's voices, the GLOW accessibility check, Summarize with the person's own AI, the braille view, Send to Media Player); the streaming read tab with Replace with Finished Document (8.1.3); the watch-folder action "Convert with Scribe for Documents" (8.1.6); a Scribe for Documents page in More Preferences.
   - QUILL Lite (8.2): the `scribe` feature area (off by default, on only in Everything; offered on first need from the scanned-import question), File > Scribe for Documents and Window > Scribe Conversions, through the shared entry points (`quill/ui/scribe_entry.py`) that QUILL uses too.
   - A user guide chapter in each editor (QUILL chapter 19, Lite chapter 17) and F1 topics for every command and window.
 - **Built differently from this document** (decided):
@@ -35,6 +35,7 @@ The goal is that wherever someone in the QUILL family meets an inaccessible docu
   - No Scribe command has a default key (12), Scribe Status and Repeat Last Scribe Message included, nor Replace with Finished Document (8.1.3); every one is in the Command Palette and can be given a key in the Keymap Editor. The reasons are in the family gate.
   - QUILL Lite's rows are one File > Scribe for Documents submenu (Alt+F, B), not separate File rows (8.2): Lite's File menu has three letters left.
   - A watch-folder profile sends each file with the person's Scribe account defaults, read when it is sent, plus any Options settings; the profile names its formats (8.1.6). Next Steps in Lite are Send to Media Player and Open in QUILL Lite.
+  - Replace with Finished Document is in Tools > Scribe for Documents, not File (8.1.3): with WordPress and Forms on, QUILL's File menu has no access letter left.
   - Saving a Beacon place (8.1.7) waits for Beacon's part (8.7).
 - **Not built yet.** Save a Beacon place (8.1.7, with 8.7), the Media Player (8.3), Converter, Studio, Cast, Beacon and Social (8.4 to 8.8), and the Explorer Send To item (8.10). Live testing against scribeit.io comes once the code is merged.
 
@@ -333,7 +334,7 @@ Every field is in the settings vocabulary gate and the settings documentation ga
    - With the HTML format chosen, QUILL can open a read-only tab that fills from `html_stream` chunks as they arrive.
    - **Adding text.** Only complete blocks are added (whole paragraphs, headings and list items), never raw chunks, so a half-built line never changes under the caret or the braille line. New text is added at the end without moving the caret, and is never announced (FUX-06).
    - **The tab's name** says whether more is coming: "<stem> (Scribe, converting)", then "(Scribe, complete)" or "(Scribe, incomplete)". Scribe Status works inside it.
-   - **When it is finished.** File > Replace with Finished Document (keyed) swaps in the finished document and keeps the reading position at the same block. Its completion is part of the one result sentence (7.4a), not a second message.
+   - **When it is finished.** Replace with Finished Document (keyed) swaps in the finished document and keeps the reading position at the same block. Its completion is part of the one result sentence (7.4a), not a second message.
    - **If it fails partway,** the partial text stays, the tab is renamed "(Scribe, incomplete)", and one message is said.
 4. **File > Export > With Scribe for Documents...**
    - Sends the current document (saved first as DOCX, the richest input QUILL writes and one Scribe certainly takes) for any output format.
