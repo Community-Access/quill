@@ -2,6 +2,10 @@
 
 ## 1.0.0
 
+### QUILL Cast: a new download folder takes the waiting downloads with it (2026-11-20)
+
+Chris Nova changed their download folder and found that the episodes they had already asked to download still went to the old one. Each download's place was fixed the moment it was queued, so a new folder only reached episodes queued afterwards. Now, when you change the download folder in QUILL Cast's Preferences or QUILL's Podcast Settings, every download still waiting moves to the new folder, and Cast says how many: "2 downloads waiting will now save to D:\other files\Quill Cast Downloads." A download that has already started, or was paused part way, finishes in the old folder, so nothing already downloaded is lost, and Cast says that too. Episodes already on disk stay where they are and keep playing.
+
 ### AI: nothing goes to an AI you did not choose (2026-11-20)
 
 - **AI set to Off is honoured.** Ask Quill's chat setup can no longer send

@@ -381,6 +381,16 @@ class PodcastDownloadQueue:
         with self._lock:
             return [self._items[item_id] for item_id in self._order if item_id in self._items]
 
+    def move_waiting(self, move: Callable[[DownloadItem], Path | None]) -> int:
+        """Re-point each queued or paused download to *move*'s path (None leaves
+        it), under the lock so none starts half-moved. Returns how many moved."""
+        moved = 0
+        with self._lock:
+            for item in self._items.values():
+                if item.status in ("queued", "paused") and (target := move(item)):
+                    item.destination, moved = target, moved + 1
+        return moved
+
     def pause_all(self) -> None:
         """Stop starting new transfers; anything already mid-transfer keeps
         running to completion (podcasts.md §4, control 1)."""
