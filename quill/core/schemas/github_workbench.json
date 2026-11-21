@@ -24,7 +24,10 @@
     "poll_interrupt_speech": {"type": "boolean"},
     "include_read_notifications": {"type": "boolean"},
     "speak_column_names": {"type": "boolean"},
+    "braille_rows": {"type": "boolean"},
     "first_time_help": {"type": "boolean"},
+    "tips_when_useful": {"type": "boolean"},
+    "plain_help": {"type": "boolean"},
     "health_snapshot_opt_in": {"type": "boolean"}
   }
 }

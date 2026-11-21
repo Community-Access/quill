@@ -27,7 +27,14 @@ from dataclasses import replace
 from quill.core.error_codes import CodedError
 from quill.core.workbench.properties import FieldChange, FieldKind, SheetSpec, Value
 
-__all__ = ["EmptyValueError", "NEVER_EMPTY", "NotANumberError", "as_sent", "emptied_refusal"]
+__all__ = [
+    "EmptyValueError",
+    "NEVER_EMPTY",
+    "NotANumberError",
+    "OWN_NUMBERS",
+    "as_sent",
+    "emptied_refusal",
+]
 
 #: Fields GitHub needs a value in, by (sheet kind, field), with a sentence where
 #: the plain one ("Title cannot be empty on GitHub, ...") would not say why.
@@ -54,6 +61,9 @@ NEVER_EMPTY: dict[tuple[str, str], str] = {
     ("repository", "retention_days"): "",
     ("organization", "org_retention_days"): "",
     ("team", "review_count"): "",
+    ("repository", "pages_source"): (
+        "GitHub Pages always builds from a branch and folder, so it was left as it is."
+    ),
 }
 
 
@@ -67,6 +77,12 @@ class NotANumberError(CodedError):
     """A number field holds text that is not a whole number; the message says which."""
 
     code = "QUILL-GITHUB-SHEET-NOT-A-NUMBER"
+
+
+#: Sheets whose number fields are not whole numbers and are cleared when emptied: a
+#: Project's number field holds 2.5, and emptying it clears the value rather than
+#: setting 0. Their own encoder checks and sends the number (sheets_projects._number).
+OWN_NUMBERS = frozenset({"project_item"})
 
 
 def _number(label: str, value: Value) -> Value:
@@ -104,7 +120,7 @@ def as_sent(sheet: SheetSpec, changed: Sequence[FieldChange]) -> list[FieldChang
         refused = emptied_refusal(sheet.kind, change)
         if refused:
             raise EmptyValueError(refused)
-        if kinds.get(change.key) is FieldKind.NUMBER:
+        if kinds.get(change.key) is FieldKind.NUMBER and sheet.kind not in OWN_NUMBERS:
             change = replace(change, after=_number(change.label, change.after))
         found.append(change)
     return found

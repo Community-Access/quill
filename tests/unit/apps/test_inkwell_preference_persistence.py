@@ -40,7 +40,7 @@ def test_preference_effect_is_immediate_while_storage_is_blocked(frame, monkeypa
     release = threading.Event()
     returned = threading.Event()
 
-    def blocked_save(_data_dir, _settings):
+    def blocked_save(_data_dir, _settings, **_kwargs):
         entered.set()
         assert release.wait(5)
 
@@ -70,7 +70,7 @@ def test_repeated_changes_coalesce_to_a_detached_latest_snapshot(frame, monkeypa
     release = threading.Event()
     saved = []
 
-    def blocked_save(_data_dir, settings):
+    def blocked_save(_data_dir, settings, **_kwargs):
         if not saved:
             entered.set()
             assert release.wait(5)
@@ -104,7 +104,7 @@ def test_failed_preference_write_is_announced_and_keeps_live_value(frame, monkey
 
     callbacks = []
 
-    def fail_save(_data_dir, _settings):
+    def fail_save(_data_dir, _settings, **_kwargs):
         raise OSError("settings file unavailable")
 
     monkeypatch.setattr(inkwell, "save_settings", fail_save)

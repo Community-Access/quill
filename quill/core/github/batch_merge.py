@@ -199,7 +199,7 @@ def _one(
 ) -> BatchResult:
     repo, number = item.target.repository, item.target.number
     try:
-        now = _readiness.load_readiness(api, repo, number)
+        now = _readiness.load_readiness(api, repo, number, named=True)
     except Exception as exc:  # noqa: BLE001 - one failure never stops the rest
         return BatchResult(name, FAILED, f"QUILL could not check it again: {_said(exc)}")
     if item.head and now.head and now.head != item.head:

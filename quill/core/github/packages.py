@@ -39,6 +39,7 @@ __all__ = [
     "delete_package",
     "delete_version",
     "fetch_packages",
+    "fetch_repository_packages",
     "fetch_versions",
     "package_row",
     "restore_package",
@@ -250,3 +251,26 @@ def versions_text(name: str, versions: list[PackageVersion]) -> str:
     count = len(versions)
     heading = f"{name} has {count:,} version{'' if count == 1 else 's'}, newest first."
     return "\n".join([heading, "", *(version.label + "." for version in versions)])
+
+
+def fetch_repository_packages(api: GitHubApi, repo: str, *, limit: int = 100) -> list[ExploreRow]:
+    """Repository > Packages: the packages published from *repo*.
+
+    GitHub lists packages by owner only, each naming the repository it came
+    from, so this reads the owner's (an organization's, yours, or another
+    person's that you may see) and keeps the ones from *repo*. Each row acts
+    like the same row under the owner's own Packages.
+    """
+    owner = repo.partition("/")[0]
+    try:
+        who = api.rest("GET", f"/users/{quote(owner, safe='')}").data
+    except GitHubRestError as exc:
+        raise _refused(exc, f"find who owns {repo}", "read:packages") from exc
+    is_org = isinstance(who, Mapping) and who.get("type") == "Organization"
+    if is_org:
+        rows = fetch_packages(api, org=owner)
+    else:
+        me = api.rest("GET", "/user").data
+        mine = isinstance(me, Mapping) and str(me.get("login") or "").lower() == owner.lower()
+        rows = fetch_packages(api) if mine else fetch_packages(api, person=owner)
+    return [row for row in rows if row.repo.lower() == repo.lower()][:limit]

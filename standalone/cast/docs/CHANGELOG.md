@@ -4,6 +4,13 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+### The newest choice is the one saved (2026-11-20)
+
+A listening record still waiting to be saved could be written after a choice
+Cast saves straight away, such as Resume on Launch, and put the old choice
+back after a restart. Cast's settings are now written in the order you made
+the changes, and Retry in Activity never brings back an older save.
+
 ### Quill Cast says what really happened, once (2026-11-19)
 
 Part of the family UX pilot (FUX-04). A speed change is reported after it is

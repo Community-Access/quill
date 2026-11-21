@@ -19,4 +19,14 @@ FAMILY_ENTRIES: dict[str, str] = {
     # The Command Key's own small file (command-key.json): whether the one-time
     # hint has been said, and the answer to the Jev consent question.
     "ui/command_key_hosts.py::_save_state": "marker",
+    # Beacon's own settings, atomic since the family settings audit
+    # (2026-11-20): accessibility, the external player, routing rules and
+    # sync. Small, self-describing; an unreadable file reads as defaults.
+    "apps/beacon/a11y.py::save": "marker",
+    "apps/beacon/external_player.py::save_settings": "marker",
+    "apps/beacon/routing.py::save_rules": "content",
+    "apps/beacon/sync_ui.py::save_config": "marker",
+    # Sync conflicts waiting for review: the user's notes, additive.
+    "apps/beacon/sync_ui.py::_persist_conflicts": "content",
+    "apps/beacon/sync_ui.py::resolve_conflict": "content",
 }

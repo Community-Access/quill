@@ -1897,6 +1897,9 @@ class MainFrame(
         wx = self._wx
         if self._maybe_describe_key(event):
             return
+        # Alt+Enter on a GitHub reference opens its sheet; elsewhere it goes on (GH-R-036).
+        if self._github_alt_enter(event):
+            return
         if (
             event.ControlDown()
             and not event.AltDown()

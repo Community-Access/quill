@@ -2,6 +2,64 @@
 
 ## 2.0.0
 
+### GitHub Guide: every chapter is about the Workbench, with walk-throughs, a QUILL Lite chapter and an appendix (2026-11-20)
+
+The GitHub Guide now reads like the WordPress and Forms guide, and matches
+what shipped.
+
+- **Every chapter is about the GitHub Workbench.** Chapters 1 to 11 still
+  taught GitHub Items and Explore GitHub, which the Workbench replaced: their
+  buttons, their keys and their views. They now give the place in the tree,
+  the row on the menu or context menu, and its key.
+- **Chapter 2 is a tour of the Workbench:** the tree and the Go keys, lists,
+  the filter, Properties, the context menu, how QUILL asks before it changes
+  GitHub, Ctrl+Z and Change History, the status bar and the help keys.
+- **Every chapter says why you are there, what you will do and what you will
+  have at the end,** and most end with a walk-through on your practice
+  repository and the guided lesson that goes with it.
+- **Chapter 10** has the sentences QUILL says when something fails, in their
+  real words, including Workbench levels, Dry Run, Act As, Enterprise Server
+  and the permission GitHub names when it refuses.
+- **Chapter 14, GitHub in QUILL Lite,** lists what differs between the two
+  editors. **Appendix A** says what GitHub needs for each part of the
+  Workbench: your role, your sign-in's permissions and the features a
+  repository or organization must have.
+- **Tutorials 8 and 11** teach the Workbench too.
+- **One book in both editors.** QUILL Lite's copy of the guide is now written
+  from QUILL's by `scripts/sync_lite_github_guide.py`, and a test fails when
+  it falls behind. The two had drifted apart.
+- The contents page links every section of every chapter, and Ctrl+F1 in the
+  Workbench lists all fourteen chapters.
+
+### GitHub help, the GitHub PRD and the release notes describe the Workbench (2026-11-20)
+
+- **F1 on the editor's GitHub commands** describes the GitHub Workbench. 44
+  help topics still taught the GitHub Items and Explore GitHub windows, their
+  buttons and their Alt keys. Each now says which Workbench place or window
+  the command opens, its keys there, what it asks and what it says.
+- **The Workbench's own help** no longer names GitHub Items, and says what
+  three commands really do: Open GitHub Address (Ctrl+L) opens a repository
+  or a compare link, not an issue by number; a snoozed notification is a note
+  on this computer and stays in the list; and a change others will see is
+  saved at once, with no option to ask first.
+- **The GitHub PRD** starts with where it stands on 2026-11-20: what shipped,
+  by area, what was taken out (features only GitHub Enterprise Cloud has),
+  and what is left. Its features list and phases now match what was built.
+- **The release notes, the announcements and What's New** in both editors
+  describe the Workbench rather than GitHub Items, with corrected routes:
+  QUILL Lite's is File > GitHub Workbench..., batches are Alt+Enter on several
+  rows or Plain-Language Batch, and Ask Copilot to Review is on the pull
+  request's row.
+
+### Back Up and Restore Settings keep this computer's settings (2026-11-20)
+
+The startup folder is no longer put in a backup; like recent files, it
+belongs to this computer. Restoring a backup keeps this computer's recent
+files, session, window size and startup folder. A backup made by QUILL or
+another app in the family is refused, with a plain explanation, and nothing
+is changed. Retry in Activity no longer writes an older settings save over a
+newer one.
+
 ### The setting you chose last is the one that is saved (2026-11-20)
 
 Turning a View setting on and straight back off, such as Word Wrap, could save

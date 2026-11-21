@@ -66,6 +66,8 @@ class PortabilityReport:
     unknown: tuple[str, ...] = ()
     #: How many settings actually crossed over.
     carried: int = 0
+    #: The app a refused file belongs to, when it is another app's backup.
+    foreign_app: str = ""
 
     def summary(self) -> str:
         """One sentence naming every number that is not zero.
@@ -132,8 +134,15 @@ def portable_import(
     *,
     known: frozenset[str] | set[str],
     local_fields: frozenset[str] | set[str] = frozenset(),
+    app: str = "",
 ) -> tuple[dict[str, Any], PortabilityReport]:
     """``(values, report)`` -- the settings in *raw* this build can use.
+
+    With *app*, an envelope written by a different app is refused: nothing is
+    applied and ``report.foreign_app`` names the app it came from. Two apps
+    sharing a field name is not proof the value means the same in both, and a
+    restore that quietly takes another app's choices is not one anybody asked
+    for (plan.md, settings review). A bare mapping has no app to check.
 
     Accepts the wrapped envelope or a bare mapping, so a file written before
     there was an envelope still imports. Never raises: a file that is not a
@@ -143,6 +152,9 @@ def portable_import(
     """
     payload: Any = raw
     if isinstance(payload, dict) and isinstance(payload.get("settings"), dict):
+        source_app = payload.get("app")
+        if app and isinstance(source_app, str) and source_app and source_app != app:
+            return {}, PortabilityReport(foreign_app=source_app)
         payload = payload["settings"]
     if not isinstance(payload, dict):
         return {}, PortabilityReport(added_since=tuple(sorted(known)))

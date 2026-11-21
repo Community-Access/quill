@@ -145,7 +145,16 @@ def _capital(text: str) -> str:
 
 
 def install(host: Any, *, speak: bool = True) -> Callable[[], None]:
-    """Start reporting this process's guarded writes to *host*. Returns the stop."""
+    """Start reporting this process's guarded writes to *host*. Returns the stop.
+
+    *host* is a window that owns QUILL's settings (``MainFrame``, every
+    ``AppShellFrame``), so it is also registered with
+    :mod:`quill.core.live_settings`: a dialog's change then lands on the
+    window's own copy rather than on one it never sees and would save over.
+    """
+    from quill.core import live_settings
+
+    live_settings.register(host)
     reporter = PersistenceReporter(host, speak=speak)
     host._persistence_reporter = reporter
     return persistence_outcome.subscribe(reporter)

@@ -76,7 +76,19 @@ GLOSSARY: dict[str, str] = {
     ),
     "Wiki": (
         "A repository's own pages of documentation, kept by GitHub as a git repository "
-        "of their own, owner/name.wiki."
+        "of their own, owner/name.wiki. Edit Wiki Pages... on the Wiki row edits them; "
+        "Publish Wiki Changes... sends them."
+    ),
+    "Prompt file": (
+        "A .prompt.yml file GitHub Models reads: a model, messages and test data. Prompt "
+        "Files... on a repository reads each as its parts."
+    ),
+    "Copilot seat": (
+        "One person's Copilot Business, paid for by an organization. Copilot Seats on an "
+        "organization lists them."
+    ),
+    "github.dev": (
+        "GitHub's free editor in the browser. Open in github.dev on a file or a pull request."
     ),
     "Sponsorship": (
         "Money you pay someone through GitHub Sponsors for their open-source work, each "
@@ -187,8 +199,17 @@ GLOSSARY: dict[str, str] = {
     ),
     "Watch rule": (
         "A rule kept on this computer that tells you when something happens on GitHub: "
-        "a run finishes, a review arrives, a release or a comment. Under Watches. Not "
+        "a run finishes, a review arrives, a release or a comment, or a pull request "
+        "becomes able to merge or stops (Watch Readiness on its row). Under Watches. Not "
         "the same as watching a repository on GitHub, which sends notifications."
+    ),
+    "CODEOWNERS": (
+        "A file that names who owns which paths. When a rule wants a code owner's review, "
+        "Why Can't I Merge? names the line whose owners have not approved."
+    ),
+    "Digest": (
+        "A fingerprint of a file's bytes (SHA-256). Check Download... on a release file "
+        "compares your copy's with GitHub's, so you know it is the same file."
     ),
 }
 
@@ -364,17 +385,19 @@ KEY_FAMILIES: tuple[tuple[str, str], ...] = (
 #: (chapter number, title) of the GitHub Guide, in order.
 GUIDE_CHAPTERS: tuple[tuple[str, str], ...] = (
     ("01", "Getting started"),
-    ("02", "Getting around"),
-    ("03", "Inbox and your work"),
+    ("02", "A tour of the GitHub Workbench"),
+    ("03", "Your inbox and your work"),
     ("04", "Issues"),
     ("05", "Pull requests and review"),
     ("06", "Actions and checks"),
     ("07", "Code and repositories"),
     ("08", "Discussions and security"),
-    ("09", "Codespaces and the command line"),
-    ("10", "Troubleshooting"),
+    ("09", "Codespaces and the GitHub CLI"),
+    ("10", "Troubleshooting, privacy and help"),
     ("11", "Keyboard reference"),
     ("12", "The GitHub Workbench, place by place"),
+    ("13", "Properties, filters and permissions"),
+    ("14", "GitHub in QUILL Lite"),
 )
 
 _CHAPTER_FOR: dict[str, str] = {

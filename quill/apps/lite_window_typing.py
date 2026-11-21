@@ -170,6 +170,11 @@ class DocumentTypingMixin(DocumentAbbreviationsMixin, DocumentTypingAssistMixin)
         prediction_key = getattr(self, "_word_prediction_key_down", None)
         if prediction_key is not None and prediction_key(event):
             return
+        # Alt+Enter on a GitHub reference opens its sheet; elsewhere it goes on
+        # (GH-R-036; the same shared call as QUILL's, lite_github_line.py).
+        github_alt_enter = getattr(self, "_github_alt_enter", None)
+        if github_alt_enter is not None and github_alt_enter(event):
+            return
         code = event.GetKeyCode()
         # A side effect, not a branch: the key goes on to the control, which
         # does the deleting. All this adds is that it is audible.

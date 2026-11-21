@@ -129,6 +129,7 @@ class GitHubWorkbenchProjectAdminMixin:
 
     def _do_project_field_delete(self, _ref: Any, row: object) -> None:
         from quill.core.github.project_admin import delete_field
+        from quill.core.github.project_models import OWN_FIELD_TYPES
         from quill.core.github.projects import fetch_project
 
         project = self._project(row)
@@ -137,25 +138,8 @@ class GitHubWorkbenchProjectAdminMixin:
         token = self._token()
 
         def choose(board: Any) -> None:
-            # Only fields a person made can go; Title, Status and the like belong to GitHub.
-            fields = [
-                f
-                for f in board.fields
-                if f.kind
-                not in (
-                    "TITLE",
-                    "ASSIGNEES",
-                    "LABELS",
-                    "REPOSITORY",
-                    "MILESTONE",
-                    "LINKED_PULL_REQUESTS",
-                    "REVIEWERS",
-                    "PARENT_ISSUE",
-                    "SUB_ISSUES_PROGRESS",
-                    "TRACKS",
-                    "TRACKED_BY",
-                )
-            ]
+            # Only fields a person made can go; Title, Assignees and the like are GitHub's.
+            fields = [f for f in board.fields if f.data_type in OWN_FIELD_TYPES]
             if not fields:
                 self._say(f"{_title(project)} has no fields of its own to delete.")
                 return

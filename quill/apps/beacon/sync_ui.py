@@ -118,8 +118,11 @@ class SyncController:
             return SyncConfig()
 
     def save_config(self, cfg: SyncConfig) -> None:
+        from quill.core import storage
+
         self.config = cfg
-        self.config_path.write_text(json.dumps(cfg.to_dict(), indent=2), encoding="utf-8")
+        # Atomically: a write that dies part-way through leaves the previous file.
+        storage.write_json_atomic(self.config_path, cfg.to_dict())
 
     # -- vault ---------------------------------------------------------------
 
@@ -412,7 +415,9 @@ class SyncController:
             })
             seen.add(key)
             idx += 1
-        self.conflicts_path.write_text(json.dumps(existing, indent=2), encoding="utf-8")
+        from quill.core import storage
+
+        storage.write_json_atomic(self.conflicts_path, existing)  # atomically, like the config
 
     def _read_conflicts(self) -> list[dict]:
         if not self.conflicts_path.exists():
@@ -450,7 +455,9 @@ class SyncController:
             return {"error": f"could not apply: {ex}"}
         target["resolved"] = True
         target["resolution"] = choice
-        self.conflicts_path.write_text(json.dumps(conflicts, indent=2), encoding="utf-8")
+        from quill.core import storage
+
+        storage.write_json_atomic(self.conflicts_path, conflicts)  # atomically
         return {"ok": True, "resolution": choice}
 
     def list_backups(self) -> list[dict]:

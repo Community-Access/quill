@@ -5134,6 +5134,21 @@ pass are committed and pushed on `feat/spam-hold-providers-challenges`
 (72bce84), with 601 PHPUnit tests passing. The QUILL tutorial books were
 checked on main and all six are current.
 
+### 2026-11-20: Gravity Forms, QAF's spam and the BAF move, and PMPro at size, live
+
+Tests 144 to 154 joined the live run (`docs/qa/wordpress-regression-testing.md`).
+Gravity Forms now has every field type and property, Test This Form, entry
+edits, messages and Resend, conversion to QAF and back with entries, and the
+Watch tried live. QAF's spam checks held, asked and released real
+submissions from the form's page; BAF's form, entries and old block and
+shortcode came across to QAF. Three defects were found and fixed: Test This
+Form sent "555-0100" to a US phone field, which Gravity Forms refuses, and
+nothing to a Time field; and the Discount Codes node looked for a PMPro
+ability PMPro 3.9.2 does not have, so it only ever pointed at wp-admin. It
+now lists up to 20 codes through PMPro's quick search, which cannot page,
+and says the rest are in wp-admin. Members of This Level read 260 people in
+about five minutes (1.1 s a person).
+
 ## 19. Remaining tasks
 
 **wp-admin parity (9.18), Jeff 2026-11-04, "we should have all of this":**
@@ -5145,7 +5160,7 @@ checked on main and all six are current.
 - [ ] Packages 8 to 13, what remains: the WooCommerce, Events Calendar, Yoast SEO and QAF commands (with the 2026-11-14 additions) tried signed in on the live test site and with NVDA and JAWS, Yoast's bulk editor routes especially; a refund tried only against a payment gateway's test mode.
 - [ ] Add Menu Item (every kind, Search and View All, under and after an item, Ctrl+N's choice) and Add New Pages Automatically (command and the Properties check box) tried on the live test site and with NVDA and JAWS.
 - [ ] Replace File (in place where a plugin route exists, repoint with Ctrl+Z, Enable Media Replace, the redirect offer), Export Site as WXR (each scope, and the file imported into a real WordPress) and Import WXR as Drafts (author matching, files downloaded and skipped, Ctrl+Z) tried on the live test site and with NVDA and JAWS.
-- [ ] Earlier Versions on post rows, Check for Updates on WordPress.org, Check Every Link, editing a Gravity Forms response's answers, the plugin rows of wp-admin for This Place (each admin address opened), Offer to Ask the Site and Arrange Items tried on the live test site and with NVDA and JAWS.
+- [ ] Earlier Versions on post rows, Check for Updates on WordPress.org, Check Every Link, the plugin rows of wp-admin for This Place (each admin address opened), Offer to Ask the Site and Arrange Items tried on the live test site and with NVDA and JAWS.
 - [ ] **Waiting on Jeff:** finish the Redirection plugin's setup on the test site (Tools > Redirection in wp-admin). Its database was never set up, so it has no groups and refuses to make one ("Invalid group or parameters"), and live check 95 now reports this as needing Jeff. New Redirect in the Workbench offers to make the Redirections group on a site with none, and says to finish the setup when the plugin refuses. Gravity Forms is also not installed there, so checks 104 to 108 and 124 to 126 are skipped.
 - [ ] Jeff's review of `how.md` and its ranked review notes; what he accepts becomes work here, and `how.md` is retired once its content lives in the manual and this record.
 - [ ] The 2026-11-14 leftovers tried on the live test site and with NVDA and JAWS: the masked OOPSpam key and post password, the Gravity Forms filter sent to the site with All and Any, a member's Access page on a PMPro site, Across Sites plugins with WordPress.org's words, the practice questions on Promote to Network, Revoke Everywhere, Install on Sites Missing It and Put Back, and Save Draft on a published post.
@@ -5158,11 +5173,12 @@ checked on main and all six are current.
   Your First Week; the new Watches; Plain-Language Batch's ages, Trash and
   questions; By Name's shortcode conversion and pattern commands; the new
   Across Sites kinds; the four platform importers; the static archive.
-- **Waiting on QAF:** three routes QUILL now calls that QAF does not offer
-  yet: `qaf/v1/visitor-words` (Visitor Words for Forms), `POST
-  qaf/v1/entries` (Copy Old Entries into QAF) and `qaf/v1/spam/blocklist`
-  (blocked senders across sites). Each says plainly when the site lacks it
-  and sends nothing.
+- **Waiting on QAF:** two routes QUILL now calls that QAF does not offer
+  yet: `qaf/v1/visitor-words` (Visitor Words for Forms) and
+  `qaf/v1/spam/blocklist` (blocked senders across sites). Each says plainly
+  when the site lacks it and sends nothing. (`POST qaf/v1/entries`, for Copy
+  Old Entries into QAF, is in QAF 1.0.0: live test 148 copied an entry
+  through it on 2026-11-20.)
 - **Waiting on a plugin:** role editing is built against `members/v1/roles`;
   neither Members nor User Role Editor documents a REST API, so this needs a
   role plugin that offers one, or the route changed to match one that does.

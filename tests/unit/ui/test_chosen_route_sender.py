@@ -39,6 +39,11 @@ class _Service:
             return ""
         return self.connection
 
+    def capability_record(self, connection: str) -> Any:
+        from quill.core.ai.connection_caps import record_for
+
+        return record_for(connection, own_key_provider=self.own_key_provider)
+
     def _failure_sentence(self, error: BaseException, _connection: str) -> str:
         return f"failed: {error}"
 
@@ -119,6 +124,22 @@ def test_a_picture_asks_the_first_picture_question(monkeypatch: pytest.MonkeyPat
         _sender(service).picture(Path("door.png"), "Describe it.")
     assert asked == ["own_key"]
     assert service.asked == [("text", "pictures")]
+
+
+def test_a_connection_the_registry_says_cannot_do_it_is_sent_nothing() -> None:
+    from dataclasses import replace
+
+    from quill.core.ai.chosen_route import ChosenRouteError
+
+    class _Unready(_Service):
+        def capability_record(self, connection: str) -> Any:
+            return replace(super().capability_record(connection), available=False)
+
+        def client(self) -> Any:
+            raise AssertionError("nothing may be sent")
+
+    with pytest.raises(ChosenRouteError):
+        _sender(_Unready("free"))("Fix this.")
 
 
 def test_ask_quill_describes_and_opens_choose_your_ai() -> None:

@@ -364,13 +364,14 @@ Lite, because there is too much to say in a chapter.
 
 ### [The GitHub Guide for QUILL and QUILL Lite](./github-guide/github-guide.html)
 
-Doing GitHub work with a screen reader: notifications, issues, pull request
-review line by line, what failed in a workflow run, repository files, blame,
-releases, discussions, security alerts and Codespaces, with a keyboard
-reference for every window. Chapter 3's GitHub section is a short map of it.
+Doing GitHub work with a screen reader, in the GitHub Workbench: your inbox,
+issues, pull request review line by line, what failed in a workflow run,
+code and releases, discussions and security, repositories, teams and who has
+access, with a keyboard reference for every window. Chapter 3's GitHub
+section is a short map of it.
 
 - [Chapter 1: Getting started](./github-guide/github-guide-01-getting-started.html)
-- [Chapter 2: Getting around](./github-guide/github-guide-02-getting-around.html)
+- [Chapter 2: A tour of the GitHub Workbench](./github-guide/github-guide-02-getting-around.html)
 - [Chapter 3: Your inbox and your work](./github-guide/github-guide-03-inbox-and-your-work.html)
 - [Chapter 4: Issues](./github-guide/github-guide-04-issues.html)
 - [Chapter 5: Pull requests and review](./github-guide/github-guide-05-pull-requests-and-review.html)
@@ -382,6 +383,8 @@ reference for every window. Chapter 3's GitHub section is a short map of it.
 - [Chapter 11: Keyboard reference](./github-guide/github-guide-11-keyboard-reference.html)
 - [Chapter 12: The GitHub Workbench, place by place](./github-guide/github-guide-12-the-workbench.html)
 - [Chapter 13: Properties, filters and permissions](./github-guide/github-guide-13-properties-filters-permissions.html)
+- [Chapter 14: GitHub in QUILL Lite](./github-guide/github-guide-14-quill-lite.html)
+- [Appendix A: What GitHub needs for each part of the Workbench](./github-guide/github-guide-appendix-a-features.html)
 
 Help > Open GitHub Guide opens it from inside QUILL.
 

@@ -115,7 +115,8 @@ Read this before deciding whether you can run live UI code.
 
 - **Local development happens on Windows.** The working tree lives on `S:\QUILL`,
   the shell is PowerShell (`pwsh`), and **wxPython is installed and importable**
-  (wx 4.2.5 msw / wxWidgets 3.2.9, including `wx.richtext`). When you are working
+  (wxPython 4.3.2 msw / wxWidgets 3.3, on Python 3.14, including `wx.richtext`;
+  `pyproject.toml` pins both). When you are working
   locally you **can** create a `wx.App`, instantiate real controls, and run live
   GUI tests with `python -m pytest`. Do **not** assume a headless or Linux
   environment and do **not** refuse to verify GUI behavior locally — actually

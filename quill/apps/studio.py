@@ -60,6 +60,7 @@ from quill.core.audio_studio.sleep_timer import (
 )
 from quill.core.net import configure_ssl_trust
 from quill.core.paths import app_data_dir
+from quill.core.reported_save import saved  # a failed save is said in Activity, with Retry
 from quill.core.settings import save_settings
 from quill.stability.wx_dispatch import call_later_safely, guard_timer_callback
 from quill.ui import app_sounds as _app_sounds
@@ -163,13 +164,13 @@ def _load_app_prefs() -> dict[str, object]:
     return prefs
 
 
-def _save_app_prefs(prefs: dict[str, object]) -> None:
-    from quill.core.storage import write_json_atomic
+def _save_app_prefs(prefs: dict[str, object]) -> bool:
+    from quill.core import storage  # False: it failed, and Activity said so with Retry
+    from quill.core.reported_save import save_reported
 
-    try:
-        write_json_atomic(app_data_dir() / _PREFS_FILENAME, prefs)
-    except Exception:  # noqa: BLE001 - best-effort; losing a pref beats crashing
-        pass
+    path = app_data_dir() / _PREFS_FILENAME
+    write = lambda: storage.write_json_atomic(path, prefs)  # noqa: E731 - Retry writes it again
+    return save_reported("QUILL Studio's preferences", path, write)
 
 
 def _sapi5_voice_short_name(voice_id: str) -> str:
@@ -521,18 +522,12 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             self._arm_end_of_chapter_watch()
 
     def _on_book_volume(self, path: str, percent: int) -> None:
-        try:
-            _set_book_volume(self._book_prefs_store, path, percent)
-            save_prefs(app_data_dir(), self._book_prefs_store)
-        except Exception:  # noqa: BLE001 - prefs save is best-effort
-            pass
+        _set_book_volume(self._book_prefs_store, path, percent)
+        saved(lambda: save_prefs(app_data_dir(), self._book_prefs_store))
 
     def _on_book_mute(self, path: str, muted: bool) -> None:
-        try:
-            _set_book_muted(self._book_prefs_store, path, muted)
-            save_prefs(app_data_dir(), self._book_prefs_store)
-        except Exception:  # noqa: BLE001 - prefs save is best-effort
-            pass
+        _set_book_muted(self._book_prefs_store, path, muted)
+        saved(lambda: save_prefs(app_data_dir(), self._book_prefs_store))
 
     def _next_playable_queue_entry(self, path: str):
         """The next queue entry after the one at ``path`` whose file still
@@ -644,10 +639,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         is one-shot, so it must not stay 'enabled' with nothing armed (the state
         that made the dialog lie about being active across launches)."""
         self._sleep_setting.enabled = False
-        try:
-            save_sleep_setting(app_data_dir(), self._sleep_setting)
-        except Exception:  # noqa: BLE001 - setting save is best-effort
-            pass
+        saved(lambda: save_sleep_setting(app_data_dir(), self._sleep_setting))
 
     def _arm_end_of_chapter_watch(self) -> None:
         """Start (or restart) the 1s poll that stops at the next chapter end.
@@ -712,10 +704,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             self._sleep_setting = dlg.value()
         finally:
             dlg.Destroy()
-        try:
-            save_sleep_setting(app_data_dir(), self._sleep_setting)
-        except Exception:  # noqa: BLE001 - setting save is best-effort
-            pass
+        saved(lambda: save_sleep_setting(app_data_dir(), self._sleep_setting))
         if self._sleep_setting.enabled and self._sleep_setting.end_of_chapter:
             # End-of-chapter mode: the delay watcher stands down; the chapter
             # poll does the stop (starting now if a book is playing, else when
@@ -746,10 +735,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             dlg.Destroy()
 
     def _save_play_queue(self) -> None:
-        try:
-            save_queue(app_data_dir(), self._play_queue)
-        except Exception:  # noqa: BLE001 - queue save is best-effort
-            pass
+        saved(lambda: save_queue(app_data_dir(), self._play_queue))
 
     def _on_mute_toggle(self) -> None:
         if self._active_player is not None:
@@ -767,10 +753,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             self._persist_library()
 
     def _persist_library(self) -> None:
-        try:
-            save_library(app_data_dir(), self._library_state)
-        except Exception:  # noqa: BLE001 - a library save failure is non-fatal
-            pass
+        saved(lambda: save_library(app_data_dir(), self._library_state))
         self._reload_library_tree()
 
     def _on_tree_activate(self, _event: wx.TreeEvent) -> None:
@@ -1942,7 +1925,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
                     self.settings.read_aloud_kokoro_speed = ra_result.kokoro_speed
                 elif eng == "phonon":
                     self.settings.read_aloud_phonon_speed = ra_result.phonon_speed
-                save_settings(self.settings)
+                saved(lambda: save_settings(self.settings))  # in use now either way
                 engine_label = dict(offline_engine_options + online_engine_options).get(eng, eng)
                 self._announce(f"Voice configured: {engine_label}")
                 if ra_result.action == "export":
@@ -1955,8 +1938,8 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
                 getattr(self.settings, "speech_provider", "") or ""
             ):
                 self.settings.speech_provider = chosen_provider_id
-                save_settings(self.settings)
-                self._announce("Speech recognition engine saved.")
+                if saved(lambda: save_settings(self.settings)):
+                    self._announce("Speech recognition engine saved.")
 
     def open_pronunciation_dictionaries(self) -> None:
         """Voices > Pronunciation Dictionaries: the same manager QUILL has.

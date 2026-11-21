@@ -151,25 +151,35 @@ def load_settings(data_dir: Path) -> TranscribeSettings:
 
 def save_settings(data_dir: Path, settings: TranscribeSettings) -> None:
     """Persist, stamped with the schema version. A file from a newer build is
-    never written over: that would drop every field this build does not know."""
-    from quill.core.storage import write_json_atomic
+    never written over: that would drop every field this build does not know.
+
+    A failed write is reported (Activity, with a Retry that writes the settings
+    as they are then) and re-raised; it used to reach nobody (the family
+    settings audit, 2026-11-20)."""
+    from quill.core import storage
+    from quill.core.persistence_outcome import guarded_write
 
     if settings.read_only:
         return
-    write_json_atomic(
-        settings_path(data_dir),
-        {
-            "schema_version": SCHEMA_VERSION,
-            "setup_done": settings.setup_done,
-            "dictation_hotkey": settings.dictation_hotkey,
-            "command_hotkey": settings.command_hotkey,
-            **{name: getattr(settings, name) for name in OPTIONAL_KEY_FIELDS},
-            "start_in_tray": settings.start_in_tray,
-            "close_to_tray": settings.close_to_tray,
-            "inkwell_checked": settings.inkwell_checked,
-            "dictation": dict(settings.dictation),
-            **{name: getattr(settings, name) for name in _AI_FIELDS},
-        },
+    path = settings_path(data_dir)
+    guarded_write(
+        "QUILL Transcribe's settings",
+        path,
+        lambda: storage.write_json_atomic(
+            path,
+            {
+                "schema_version": SCHEMA_VERSION,
+                "setup_done": settings.setup_done,
+                "dictation_hotkey": settings.dictation_hotkey,
+                "command_hotkey": settings.command_hotkey,
+                **{name: getattr(settings, name) for name in OPTIONAL_KEY_FIELDS},
+                "start_in_tray": settings.start_in_tray,
+                "close_to_tray": settings.close_to_tray,
+                "inkwell_checked": settings.inkwell_checked,
+                "dictation": dict(settings.dictation),
+                **{name: getattr(settings, name) for name in _AI_FIELDS},
+            },
+        ),
     )
 
 

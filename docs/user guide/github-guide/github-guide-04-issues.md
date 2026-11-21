@@ -2,60 +2,92 @@
 
 ## What this chapter covers
 
-This chapter is about issues: reading one and its comments, replying,
-reacting, reading its history, writing a new one from a template, and keeping
-issues in order with labels, milestones, assignees and batch changes, and
-handing an issue to Copilot's coding agent. It also
-covers the housekeeping commands, Projects boards and dependencies, and
-starting work on an issue in a folder of its own. Pull requests are issues
-too, so most of this applies to them as well.
+Issues are how a project keeps its list of work: bugs, ideas, questions and
+tasks. Most days on GitHub start with one. On the website an issue is a long
+page of comments, labels in coloured boxes and a sidebar of settings. In the
+Workbench it is a row in a list, its details in a pane beside it, and a
+Properties sheet with everything you can change.
+
+In this chapter you read an issue and its comments, comment and react, read
+its history, write a new issue from a template or a form, label it, put it in
+a milestone, assign it, close it with a reason, and break it into sub-issues.
+You also change many issues at once, keep issue fields and Projects up to
+date, and start work on an issue in a branch and folder of its own.
+
+By the end you will be able to take an issue from filed to closed without
+leaving the keyboard. Pull requests are issues too, so most of this works on
+them as well; Chapter 5 covers what is theirs alone.
+
+Reading works signed out, on public repositories. Everything that changes an
+issue needs a signed-in account, and the access GitHub gives you on that
+repository: commenting needs only a sign-in, labels, assignees and milestones
+need triage, and locking needs write.
+
+**In QUILL Lite**, everything here works the same, except two commands that
+need the editor's own connections: **Summarize Discussion** needs QUILL's AI
+connection, and **Start in Local Worktree...** needs QUILL's local Git. In
+QUILL Lite both are greyed, and `Shift+F1` says why.
+
+## Finding an issue
+
+A repository's issues are in its **Issues** place in the tree. `Ctrl+Shift+1`
+goes there from anywhere in the repository. **Issues and Pull Requests**,
+two places further down, lists both together, newest first.
+
+- `Ctrl+G` (**File > Go to Number...**) goes to an issue or pull request in
+  this repository by its number.
+- `Ctrl+L` (**File > Open GitHub Address...**) takes `owner/name#42`, or a
+  link pasted from anywhere, and goes there.
+- `Ctrl+E` moves to the filter box. Plain words narrow the list you are
+  looking at; GitHub's own words, such as `is:open label:bug`, ask GitHub.
+- **View > Open or Closed** chooses open, closed or all, and **View > Quick
+  Filters** has the common ones, such as Assigned to Me, No Label and Updated
+  This Week. Chapter 13 has filtering, sorting and grouping in full.
 
 ## Reading an issue
 
-Load a repository, keep **View:** on **Issues & PRs**, and arrow to the issue.
-Press Tab to reach **Details**. It reads like a document:
+Arrow to the issue and press **Enter**. Focus moves to the details pane,
+which reads like a document:
 
-- the number, whether it is an issue or a PR, and the title;
+- the number, whether it is an issue or a pull request, and the title;
 - its state, author, when it was opened and last updated, and its link;
 - its labels and assignees, when it has any, and how many comments;
+- its type and issue fields, when the repository uses them;
 - then a line of dashes, and the description.
 
-For a pull request, Details also says whether it is a draft, whether it is
-merged, its review state, which branch merges into which, and how many lines
-and files it changes.
+`Shift+Tab` goes back to the list.
 
-The comments load on their own a moment after you select the issue. You hear
-how many, such as "4 comments loaded. Alt+N to jump to the first." They follow
-the description in Details, each starting "Comment 1 of 4", then the author
-and the date.
+Shortcodes such as `:tada:` are read by their names, "party popper", so you
+do not hear colons spelled out.
 
-### Moving between comments
+### Reading the comments
 
-`Alt+N` moves to the next comment and `Alt+P` to the previous one, from
-anywhere in the window. QUILL moves focus into Details, selects the comment
-and says "Comment 2 of 4". At either end you hear "Already at first comment."
-or "Already at last comment." This is the quickest way through a long
-thread: press `Alt+N`, read, press `Alt+N` again.
+The details pane holds the description, and says how many comments there
+are. To read the whole conversation, choose **Read as Document...**
+(`Ctrl+Shift+I`). It asks how you want it:
 
-Reactions on a comment are in words at the end of it, such as "Reactions: 3
-thumbs up, 1 heart".
+- **Open in Editor** opens the thread as one document, a heading per post
+  with its author and date, so your screen reader's heading keys move from
+  post to post. You hear "Opened #12 in the editor, 5 posts."
+- **Save as Markdown...** or **Save as HTML...** saves it to keep.
 
 ### A summary of the discussion
 
-**Summarize** (`Alt+Z`) asks QUILL's AI to boil the issue and its comments
-down to a few sentences: what it is about, where it stands, the open
-questions and the next step. The summary goes at the top of Details and is
-read out. It uses the AI connection you chose in QUILL and asks the same
-questions about sending text that every AI feature asks. If no AI is set up,
-it offers to set one up.
-
-**In QUILL Lite**, Summarize says "AI summaries are unavailable here."
+**Summarize Discussion**, on the issue's context menu, asks QUILL's AI to boil
+the issue and its comments down to a few sentences: what it is about, where
+it stands, the open questions and the next step. The summary goes at the top
+of the details pane, with the issue's link under it, and focus moves there.
+You hear "Summary ready for #12." It uses the AI connection you chose in
+QUILL, and asks the same questions about sending text that every AI feature
+asks. With no AI set up, you hear "AI is not set up, so there is no
+summary."
 
 ## Commenting
 
-You need to be signed in to comment. Select an issue or pull request and choose **Comment...** from its context
-menu or the **Item** menu. The comment window opens with the cursor in
-**Comment:**. Write in Markdown; Enter starts a new line, and Ctrl+Enter posts.
+Select the issue and choose **Comment...** (`Ctrl+Shift+M`). It is on the
+context menu and the **Item** menu too. The comment window opens with the
+cursor in **Comment:**. Write in Markdown; Enter starts a new line, and
+`Ctrl+Enter` posts.
 
 The buttons under the comment put things at the cursor:
 
@@ -70,99 +102,110 @@ The buttons under the comment put things at the cursor:
 - **Insert Saved Reply...** (`Alt+S`) lists the saved replies you keep on
   GitHub, under Settings, Saved replies.
 - **Attach Files...** (`Alt+F`) explains why it cannot: GitHub lets no other
-  program attach a file. Put the file in a release or a gist and paste its link,
-  or attach it on github.com.
+  program attach a file. Put the file in a release or a gist and paste its
+  link, or attach it on github.com.
 - **Preview** (`Alt+P`) reads the comment into the **Preview:** box as GitHub
   will show it, one line each, saying what every line is: "Heading 2: Plan",
   "Not done: Run it", "Quote: ...", a code block and how long it is, and what
   each image and link stands for. Its last lines name who the comment will
   notify and which issues it refers to.
 
-**Check before posting** (`Alt+H`) is on to begin with. When you post, it looks
-for things that trip a reader: an image with no description, a link that says
-"click here", a heading that skips a level, a long run of capital letters, and
-a comment that is only an emoji. If it finds any, it lists them and asks
-whether to post anyway; No takes you back to the comment. Turn it off for a
-comment you know is fine.
+**Check before posting** (`Alt+H`) is checked to begin with. When you post, it
+looks for things that trip a reader: an image with no description, a link
+that says "click here", a heading that skips a level, a long run of capital
+letters, and a comment that is only an emoji. If it finds any, it lists them
+and asks whether to post anyway; No takes you back to the comment. Clear the
+check box for a comment you know is fine.
 
-**Post** sends the comment; Cancel or Escape sends nothing. GitHub's refusal is
-said in words if your account cannot comment.
+**Post** sends the comment, and you hear "Comment posted on #12." Escape sends
+nothing. If your account cannot comment, GitHub's refusal is said in words.
 
-The current Workbench posts new issue comments. Editing or deleting an
-existing comment is not in its current issue actions; use GitHub.com for those
-changes. For pull-request review comments, see Chapter 5.
+To change or delete a comment you already posted on an issue, use the issue's
+page on GitHub (`Shift+Enter`). Chapter 5 covers a pull request's review
+comments, and Chapter 8 a discussion's.
 
 ## Reactions
 
-Shift+F10 on the issue has **React...**, which reacts to the issue itself.
-After `Alt+N`, it also has **React to This Comment...**. A list of GitHub's
-eight reactions opens: thumbs up, thumbs down, laugh, hooray, confused, heart,
-rocket and eyes. One you have already given reads, for example, "heart, yours:
-choose to remove it", so the same list adds and takes away. You hear "Added
-heart." or "Removed heart."
+**React...** on the issue opens its Properties sheet at the **You** page, on
+**Your reactions**: a check box for each of GitHub's eight reactions, thumbs
+up, thumbs down, laugh, hooray, confused, heart, rocket and eyes, checked when
+you have given it. Check or clear one and save.
+
+**React to a Comment...** reacts to one of the issue's comments instead. It
+asks which comment, then which reaction; choosing one you already gave takes
+it back. You hear "Added a heart to ann's comment." or "Took back your heart
+from ann's comment."
+
+**Subscribe or Unsubscribe...** chooses how much you hear about the issue:
+**All activity**, or **Only when you take part or are mentioned**. You hear,
+for example, "Subscribed to #12: you hear of all its activity." The same is
+the **Subscribed** check box on the You page.
 
 ## The timeline
 
 Comments are only part of an issue's story. Labels are added, people are
 assigned, the issue is closed and reopened, and pull requests mention it.
-Shift+F10 on the issue has **View Timeline...**, which opens the whole
-history in one text field, **History, oldest first:** (`Alt+H`), one event to
-a line. **Copy All** (`Alt+A`) copies it. When it loads, you hear "Timeline
-loaded," and the number of events. A very long history is read up to five
-hundred events, and QUILL says when it stopped early: "Only part of the
-history was read."
+**View Timeline...** on the context menu opens the whole history in one text
+box, **History, oldest first:** (`Alt+H`), one event to a line. **Copy All**
+(`Alt+A`) copies it. A very long history is read up to five hundred events,
+and QUILL says when it stopped early: "Only part of the history was read."
 
-A comment that is spam, abuse, off topic, outdated, a duplicate or resolved
-can be folded away for everyone without deleting it, as GitHub's own "Hide"
-does. Put the cursor on its line, the one that says "commented", and press
-**Hide or Show Comment...** (`Alt+C`). Choose the reason, or **Show it again**
-for one that was hidden. You hear "Hid the comment as off topic." You need
-triage access to the repository.
+Two more buttons act on the comment whose line the cursor is on, the line
+that says "commented":
 
-To keep one comment at the top of the conversation, such as the answer or the
-current plan, put the cursor on its line and press **Pin or Unpin Comment...**
-(`Alt+P`). Choose **Pin it to the top** or **Unpin it**. GitHub shows a pinned
-comment first, for everyone.
+- **Hide or Show Comment...** (`Alt+C`) folds a comment away for everyone
+  without deleting it, as GitHub's own Hide does, for spam, abuse, off topic,
+  outdated, a duplicate or resolved. Choose the reason, or **Show it again**
+  for one that was hidden. You hear "Hid the comment as off topic." You need
+  triage access.
+- **Pin or Unpin Comment...** (`Alt+P`) keeps one comment at the top of the
+  conversation, such as the answer or the current plan. Choose **Pin it to the
+  top** or **Unpin it**. GitHub shows a pinned comment first, for everyone.
 
 ## Writing a new issue
 
-Open a repository's **Issues** or **Issues and Pull Requests** node. Choose
-**Item > New Here...** (Ctrl+N). The Workbench reads the repository's issue
-templates before it opens the entry fields.
+Go to a repository's **Issues** or **Issues and Pull Requests**, and press
+`Ctrl+N` (**File > New Here...**). The Workbench reads the repository's issue
+templates first.
 
-### Templates
+### Templates and issue forms
 
-If the repository has readable Markdown issue templates, QUILL asks which to
-start from: **Blank issue**, then each fillable template with its description.
-The template's title and body fill the entry fields, and its labels and
-assignees are carried into the issue.
+If the repository has templates, QUILL asks which to start from: **Blank
+issue**, then each template with its description.
 
-GitHub's issue forms, the YAML ones that show as a form with boxes on the
-website, are on the same list, and QUILL fills them as a real form: one
-labelled control per field, with "(required)" in the name of every field
-that must be answered. Create Issue says what is still missing rather than
-sending an incomplete issue, and the body GitHub receives reads the same as
-one filed from the website. A form or template QUILL cannot fill, such as
-one too large to load, is left off the list, and QUILL says so once; it is
-still there on GitHub. Chapter 12 has the details.
+- **A Markdown template** fills the New Issue window with its title, body,
+  labels and assignees, ready for you to change.
+- **An issue form**, the kind written in YAML that shows on the website as a
+  form with boxes, opens as a real form: one labelled control per field, with
+  "(required)" in the name of every field that must be answered. Create Issue
+  says what is still missing rather than sending an incomplete issue, and the
+  issue GitHub receives reads the same as one filed from the website.
 
-### Title, body and preview
+A form or template QUILL cannot fill, such as one too large to load, is left
+off the list, and QUILL says so once; it is still there on GitHub. Chapter 12
+has more on templates and forms, including building your own.
 
-QUILL asks for the title and body in turn. A template can supply either as a
-starting value, which you can edit. A blank issue starts with neither.
+### The New Issue window
 
-Before it sends anything, QUILL shows a preview with the repository, title,
-template, labels, assignees and body. For a long body the preview shortens
-what it displays and says so; the full body is sent if you confirm.
+The window has **Title:**, **Body:**, **Labels (comma-separated):** and
+**Assignees (GitHub usernames):**. Labels and assignees are optional, and
+must already exist in the repository.
 
-Choose **Create Issue** to send it or cancel to leave the repository
-unchanged. When GitHub confirms it, the Workbench says the new issue number
-and refreshes the list.
+What you type is saved on this computer as you go, so closing the window by
+mistake loses nothing: the next New Issue in that repository says "Recovered
+a local draft", and **Discard Saved Draft** throws it away. A draft is never
+sent by itself.
+
+**Create Issue** is the only button that sends anything, and it shows a
+preview first: the repository, title, template, labels, assignees and body.
+For a long body the preview is shortened and says so; the full body is sent.
+Yes sends it, and you hear "Created issue #43." The list loads again with the
+new issue in it.
 
 ### Many issues at once
 
-When the issues already exist somewhere else, you do not have to type them one
-by one:
+When the issues already exist somewhere else, you do not have to type them
+one by one:
 
 - **New Issue from Selection...**, in the editor's GitHub menu under From This
   Line, starts one issue quoting the lines you selected, under a link to them.
@@ -179,99 +222,130 @@ refuse and why. See [Bringing issues in](github-guide-12-the-workbench.html#brin
 
 ## Labels, milestones and assignees
 
+**Labels...**, **Assignees...** and **Milestone...**, on the issue's context
+menu, open its Properties sheet (`Alt+Enter`) at the **Organize** page, with
+focus on that field:
+
+- **Labels** is a list of every label in the repository, each a check box,
+  checked when the issue has it. **New Label...** beside it makes one.
+- **Assignees** is the same for the people who may be assigned, up to ten.
+- **Milestone** is a choice of the repository's milestones, or none. **New
+  Milestone...** beside it makes one, and chooses it.
+
+Change what you like and press OK, or `Ctrl+S` to save and keep the sheet
+open. QUILL sends only what you changed, reads the issue back, and says what
+GitHub kept. `Ctrl+Z` in the list undoes it. Chapter 13 has the sheet in
+full.
+
 ### Labels
 
-Labels from a Markdown template are included when the issue is created. A
-blank issue starts without labels. After creation, select the issue and use
-**Labels...** or **Assignees...** from its context menu to change them.
+A repository's **Labels** place lists its labels, each with its description.
 
-To manage labels, open the repository's **Labels** node. Select a label to
-edit or delete it. To create a label while editing an issue, open the issue's
-**Properties**, go to **Labels**, and choose **New Label...**.
+- **Enter**, or **Find Issues with Label**, lists the issues and pull requests
+  with that label.
+- **Edit Label...** changes its name, colour or description.
+- **Delete Label...**, or the Delete key, deletes it after asking. It comes
+  off every issue that had it.
+
+To make a label, use **New Label...** beside Labels on any issue's sheet.
 
 ### Milestones
 
-Open the repository's **Milestones** node. Each one reads in words: "Release
-2.0: 62 percent done, 5 open, 8 closed, due 12 December".
+A repository's **Milestones** place lists its milestones. Each reads in
+words: "Release 2.0: 62 percent done, 5 open, 8 closed, due 12 December".
 
-To create a milestone while editing an issue, open its **Properties**, go to
-**Milestone**, and choose **New Milestone...**.
+- **Enter**, or **Find Issues in Milestone**, lists its issues and pull
+  requests.
+- `Alt+Enter` opens its sheet, where the title, description and due date
+  (typed as year-month-day, such as 2026-12-12) can be changed.
+- **Delete Milestone...** deletes it after asking. Its issues and pull
+  requests stay, with no milestone. Closing it keeps the milestone and its
+  history, and is usually what you want.
+
+**Repository > Repository Actions...** (`Ctrl+Shift+G`) also has
+**Milestones...**, a window of its own:
 
 - **Show:** (`Alt+S`) chooses Open, Closed or All.
 - **Milestones** (`Alt+M`) is the list, and **Details** (`Alt+D`) the selected
   one in full.
 - **New...** (`Alt+N`) and **Edit...** (`Alt+E`) ask for a **Title:**, a
-  **Description:**, and a **Due date (year-month-day):** such as 2026-12-12,
-  which you can leave empty.
+  **Description:**, and a **Due date (year-month-day):**, which you can leave
+  empty.
 - **Close Milestone...** (`Alt+L`) closes the selected milestone after asking.
   On a closed one it reads **Reopen Milestone...**.
-
-In the Workbench, a milestone's context menu also has **Delete
-Milestone...**, which deletes it after asking. Its issues and pull requests
-stay, with no milestone. Closing keeps the milestone and its history, and is
-usually what you want.
 - **Open on GitHub** (`Alt+O`) and **Refresh** (`Alt+R`).
 
 Every change is reported from what GitHub sends back.
 
-### Assignees
-
-Markdown templates may provide assignees for a new issue. To change them,
-select an issue and choose **Assignees...** from its context menu.
-
 ### Handing an issue to Copilot
 
-Signed in, an issue's context menu in the Workbench (`Shift+F10` or the
-Applications key) has **Assign #3 to Copilot...**, with the issue's number. It
-hands the issue to Copilot's coding agent, which works on it in the background
-and opens a pull request for you to review.
+**Assign to Copilot...** (`Ctrl+Shift+A`) hands the issue to Copilot's coding
+agent, which works on it in the background and opens a pull request for you
+to review.
 
 QUILL first asks GitHub whether Copilot can be assigned in this repository. If
-it cannot, you hear why: the coding agent needs a Copilot plan that includes it,
-and it has to be turned on for the repository, which an organization owner may
-have to allow. Nothing is changed. If it can, QUILL asks before handing the
-issue over and names anyone already assigned, who stay assigned. You hear
-"Issue #3 assigned to Copilot." only when GitHub's answer lists Copilot as an
-assignee. A closed issue, or one Copilot already has, gets a sentence saying so
-instead.
+it cannot, you hear why: the coding agent needs a Copilot plan that includes
+it, and it has to be turned on for the repository, which an organization owner
+may have to allow. Nothing is changed. If it can, QUILL asks before handing
+the issue over and names anyone already assigned, who stay assigned. You hear
+that it is assigned only when GitHub's answer lists Copilot as an assignee. A
+closed issue, or one Copilot already has, gets a sentence saying so instead.
 
-The item is only on issues. To have Copilot look at a pull request, use
-**Request Copilot Review** in the review window (Chapter 5).
+The command is only on issues. To have Copilot look at a pull request, choose
+**Ask Copilot to Review** on the pull request (Chapter 5).
+
+## Closing and reopening
+
+**Close or Reopen...** on an open issue asks why, as GitHub does:
+**Completed**, **Not planned**, or **Duplicate of another issue...**, which
+then asks for the other issue's number. You hear "Closed #7 as completed.",
+"Closed #7 as not planned." or "Closed #7 as a duplicate of #3, Original
+title." A duplicate is recorded on GitHub against the issue you named.
+
+The Delete key on an issue does the same: it closes, after asking, and never
+deletes. On a closed issue the same command reopens it. A pull request keeps
+the plain question, because GitHub gives it no reason.
+
+**Not a Duplicate...** takes back "duplicate of" when an issue was closed
+against the wrong one. QUILL asks which issue it was marked a duplicate of,
+then says "#7 is no longer marked a duplicate of #3, Original title." The
+issue stays closed; Close or Reopen... reopens it.
 
 ## Changing many issues at once
 
-The list lets you select more than one row. Use the usual Windows keys for a
-list: hold Shift with the arrows to select a run, or hold Ctrl and press Space
-to add or remove one row at a time. Then press **Batch...** (`Alt+B`):
+Select several issues: hold Shift with the arrows to select a run, hold Ctrl
+and press Space to add or take away one row, or press `Ctrl+A` for them all.
+Then press `Alt+Enter`. One Properties sheet opens for all of them, titled
+"Properties of 5 issues". A field that differs says Mixed and is left alone
+unless you change it, and a label on some of them reads "bug, on 3 of 5".
 
-- **Close** the selected items.
-- **Reopen** them.
-- **Add label to** them. QUILL asks for the label.
-- **Set milestone on** them, from a list of open milestones, or
-  "No milestone (clear it)".
-- **Add assignees to** them, as GitHub usernames separated by commas.
+You hear a preview first, such as "Change 14 issues: add bug, remove triage.",
+then a result for each issue: Done, Skipped because it was already so, or
+Failed and why. **Retry Failed** (`F8`) runs the failed ones again.
 
-Each menu row says how many items it will change, such as "Close 3 selected".
-The confirmation names every item and says "This changes the items on GitHub
-for everyone watching them." When it is done you hear how many GitHub
-confirmed, such as "Batch change applied to 3 of 3 item(s).", and the name of
-anyone GitHub would not assign.
+To say the change in words instead, choose **Tools > Plain-Language Batch...**
+(`Ctrl+Shift+S`) and type it, such as "close every issue labelled duplicate
+older than 90 days" or "add label triage to every issue with no label". QUILL
+finds the issues without any AI, shows them as a checked list for you to
+check, and then runs the same preview and results.
 
-Batch works in the Issues & PRs view, and needs you to be signed in.
+Chapter 13 has both in full.
 
 ## Housekeeping
 
-Shift+F10 on an issue has a submenu called **Housekeeping for** and its
-number. Signed in, it holds:
+These are on the issue's context menu, under **More** when the menu is long:
 
-- **Lock Conversation...**, with a reason: No reason given, Off-topic, Too
-  heated, Resolved or Spam. Only collaborators can comment on a locked issue.
-  **Unlock Conversation** opens it again.
-- **Transfer Issue...** moves the issue to another repository you can write to.
-  QUILL asks for the repository as `owner/name`, then warns that labels and
-  milestones are not carried across.
-- **Pin Issue** and **Unpin Issue**: a repository can pin a few issues to the
-  top of its issue list.
+- **Edit Title...** opens the sheet at the title.
+- **Lock or Unlock Conversation...** opens the sheet at the **Conversation**
+  page, where **Locked** is a check box. Only people with write access can
+  comment on a locked issue. Locking needs write access.
+- **Pin or Unpin Issue** pins the issue to the top of the repository's issue
+  list, or takes it off. A repository can pin up to three.
+- **Transfer Issue...** moves the issue to another repository with the same
+  owner. QUILL asks for the repository as `owner/name`, then warns that labels
+  and milestones that do not exist there are dropped, and that assignees who
+  cannot be assigned there are removed. You hear "Moved #7 to" the repository
+  and its new address.
 - **Set Issue Type...** chooses the issue's type, such as Bug or Feature, from
   the types the organization has set up. A repository with none says so.
 - **Reorder Sub-issues...** opens a list of the issue's sub-issues in order,
@@ -280,19 +354,17 @@ number. Signed in, it holds:
   5.", read back from GitHub. Enter opens the selected sub-issue in your
   browser.
 
-On a pull request, the submenu holds only Lock and Unlock, because the others
-are for issues.
-
 ## Issue fields
 
 An organization can give every issue extra values of its own, such as
-Priority, Points or Due date; on your own account you can make them for your
-own repositories (the Workbench's **People > My Issue Fields**, and an
-organization's **Issue Fields**). Choose **Issue Fields...** on an issue's
-context menu to see each one with this issue's value: "Priority (single
-choice, field 1): High", or "Due (date, field 2): not set". A field you may
-not see, or one of a kind QUILL does not know yet, says so rather than looking
-empty.
+Priority, Points or Due date. On your own account you can make them for your
+own repositories, under **People > My Issue Fields**; an organization's are
+under its **Issue Fields**. Chapter 12 has both lists.
+
+**Issue Fields...**, on an issue's context menu, lists each field with this
+issue's value: "Priority (single choice, field 1): High", or "Due (date,
+field 2): not set". A field you may not see, or one of a kind QUILL does not
+know yet, says so rather than looking empty.
 
 Choose a field to change it. A single choice offers its choices and **Clear
 it**. Any other field with a value asks **Change it...** or **Clear it**
@@ -301,7 +373,7 @@ the way its kind needs: a number, a date as year-month-day (2026-12-31), or
 text. Only that field is sent, so a value someone else set on another field is
 kept. You hear "Points is now 5 on #4."
 
-### Issue types and fields in the Workbench's lists
+### Issue types and fields in the lists
 
 Each value keeps its type: a date reads as a date (2026-12-31), a number as a
 number (3, or 2.5), a single choice as the choice's name, several choices as
@@ -320,60 +392,54 @@ their names, and text as text.
   **Hide** on an issue offer its type and each field value, which write those
   qualifiers for you. A field whose name has a space is not offered there.
   **View > Group By > Type** groups the list by issue type.
-- **Properties.** An issue's Properties sheet (`Alt+Enter`) has an **Issue
-  Fields** page after Organize: first how many fields the owner defines, then
-  one read-only field each, of its own kind. **Issue Fields...** on the row
-  changes them.
 
-The states never sound alike, so a missing permission never looks like an
+- **Properties.** An issue's Properties sheet (`Alt+Enter`) has an **Issue
+  Fields** page after Organize: first how many fields the owner defines and
+  which are not set or set to nothing, then one field each, of its own kind.
+  A date (typed as 2026-12-31), a number, a single choice (a list, with
+  "(none)" to clear it) and text are changed right there; leaving one empty
+  clears it. Saving sends the same request **Issue Fields...** on the row
+  sends, then reads the issue again and says only what GitHub kept. Several
+  choices, and field types QUILL does not know yet, stay read only. Select
+  several issues and press `Alt+Enter` to set a field on all of them: a field
+  whose values differ shows Mixed, and each issue is changed and checked on
+  its own, with a result for each. Changing a field needs triage access.
+
+The states never sound alike, so a missing permission never sounds like an
 empty field:
 
 | State | In a cell | In details and Properties |
-|---|---|---|
+| --- | --- | --- |
 | A value | Priority: High | High |
 | Set to nothing | Priority: empty | set to nothing |
 | Not set | Priority: not set | not set |
 | Hidden from you | hidden from you | hidden from you |
-| A kind QUILL does not edit yet | Odd: shimmer (read only) | shimmer (read only) |
+| A kind QUILL does not change yet | Odd: shimmer (read only) | shimmer (read only) |
 | The read failed | unreadable, and why | could not be read, and why |
 
 ## Deleting an issue
 
-Closing an issue keeps it, its comments and its history; that is almost always
-what you want. A repository's admins can also delete an issue for good, such
-as one made by mistake or full of spam: choose **Delete Issue...**. QUILL
-explains that GitHub cannot bring it back, and asks you to type the issue's
-number; anything else deletes nothing. A pull request cannot be deleted this
-way.
+Closing an issue keeps it, its comments and its history, and that is almost
+always what you want. A repository's admins can also delete an issue for
+good, such as one made by mistake or full of spam: choose **Delete
+Issue...**. QUILL explains that GitHub cannot bring it back, and asks you to
+type the issue's number; anything else deletes nothing. A pull request cannot
+be deleted this way.
 
-## Closing, branches and task lists
-
-In the GitHub Workbench, Shift+F10 on an issue has these too.
-
-**Close or Reopen...** on an open issue asks why, as GitHub does: **Completed**,
-**Not planned**, or **Duplicate of another issue...**, which then asks for the
-other issue's number. You hear "Closed #7 as not planned." or "Closed #7 as a
-duplicate of #3, Original title." A duplicate is recorded on GitHub against
-the issue you named. On a closed issue the same command reopens it, and a pull
-request keeps the plain question, because GitHub gives it no reason.
-
-**Not a Duplicate...** takes back "duplicate of" when an issue was closed
-against the wrong one. QUILL asks which issue it was marked a duplicate of,
-then says "#7 is no longer marked a duplicate of #3, Original title." The
-issue stays closed; Close or Reopen... reopens it.
+## Branches and task lists
 
 **Create Branch for This Issue...** makes a branch for the work, from the
 default branch, and links it to the issue, so GitHub lists it under the
 issue's Development. QUILL suggests a name the way GitHub does, such as
 `7-fix-the-parser`; change it if you like. A name git would refuse, or a
-branch that already exists, is refused before anything is sent. Afterwards you
-hear how to start: `git fetch`, then `git switch` and the name. The issue's
-properties (Alt+Enter) list its **Linked branches** on the Relationships page,
-beside the pull requests that will close it.
+branch that already exists, is refused before anything is sent. Afterwards
+you hear how to start: `git fetch`, then `git switch` and the name. The
+issue's Properties sheet lists its **Linked branches** on the Relationships
+page, beside the pull requests that will close it.
 
 **Unlink Branch...** lists the branches linked to the issue and takes the one
 you choose off its Development, after asking. The branch itself stays, with
-its commits; only the link goes. The **Linked branches** list on the issue's
+its commits; only the link goes. The **Linked branches** list on the
 Relationships page does the same from the sheet: select a branch and press
 Remove (or Delete) to unlink it, or Add (or Insert) to make a new one, and
 the list changes as soon as GitHub has answered. A Read Only account, or QUILL
@@ -392,6 +458,34 @@ box, `- [ ]` or `- [x]`.
 Both read the description again just before saving. If somebody changed it on
 GitHub while you were choosing, nothing is saved and you are told to try
 again, so nobody's edit is lost.
+
+## From an issue to a pull request
+
+**Start Pull Request for This Issue...** on an open issue does the first steps
+of the work at once. It asks for a branch name, starting with the one GitHub
+would suggest (`42-fix-the-parser`), then says what it will do and asks
+first:
+
+1. Make the branch from the default branch, linked to the issue as its
+   Development. A branch of that name that already exists is used as it is.
+2. Add one empty commit, "Start work on #42", when the branch has no commit of
+   its own, because GitHub will not open a pull request with nothing to
+   compare.
+3. Open a draft pull request whose text begins `Closes #42`, so merging it
+   closes the issue. A repository without draft pull requests gets an
+   ordinary one, and the sentence afterwards says so.
+
+To work on it, fetch the branch and switch to it, or use Start in Local
+Worktree, below.
+
+**Related...** on an issue lists the pull requests that close it, what
+mentioned it, and what its text links to (Chapter 8).
+
+**Draft Task Breakdown with AI...** sends the issue's title and text to the AI
+connection you chose in QUILL, and opens what comes back in the editor as a
+draft of small, ordered tasks. The draft is headed as one, cites the issue's
+link, and says when part of the text had to be left out. Nothing is posted:
+copy what you keep into a comment or into sub-issues yourself.
 
 ## Relationships: parents, sub-issues and what blocks what
 
@@ -421,23 +515,27 @@ Enter opens the selected issue in your browser.
 - **Add Related...** (`Alt+T`) links an issue that belongs with this one,
   such as an earlier attempt, without saying either must wait.
 - **Remove** (`Alt+R`) takes away the selected sub-issue, blocked-by or
-  related link, after asking. Both issues stay; only the link goes, and you can add
-  it again. A parent row and a "Blocking" row are the other end of another
-  issue's link, so you change them from that issue.
+  related link, after asking. Both issues stay; only the link goes, and you
+  can add it again. A parent row and a "Blocking" row are the other end of
+  another issue's link, so you change them from that issue.
 
 After each change QUILL reads the relationships back from GitHub and says
-what happened, such as "#41 is now blocked by #38." **Reorder
-Sub-issues...** is still there for changing their order.
+what happened, such as "#41 is now blocked by #38." **Reorder Sub-issues...**
+changes their order.
 
 ## Projects
 
 GitHub Projects are boards that track issues and pull requests across one or
 more repositories, with fields of their own such as Status, Priority or
-Iteration. Open the Workbench's **Projects** place or **Repository >
-Projects** node to see the projects available to your account. Open a
-board to read and change its items and their fields.
+Iteration. `Ctrl+6` goes to **Projects**, the ones your account can see, and
+a repository's own are under its **Projects** place (`Ctrl+Shift+7`).
 
-A project's own row has these commands too, on its context menu:
+**Projects...** on an issue opens its sheet at the **Projects** page: each
+open Project it could be in, a check box, checked when it is. Clearing one
+takes the issue out of that Project, with its field values. **New
+Project...** beside the list makes one.
+
+A Project's own row has these commands on its context menu:
 
 - **Add Draft Issue...**: a quick note on the board, with a title and an
   optional body, before it is a real issue.
@@ -463,14 +561,20 @@ A project's own row has these commands too, on its context menu:
   requests stay. QUILL asks you to type the project's title, exactly, so a
   slip of the Enter key cannot delete it.
 
+Under **More** are the board's views, fields, drafts, items, status updates,
+workflows and sharing, each with a command of its own; Chapter 12 lists them.
+
+**Repository > Repository Actions...** (`Ctrl+Shift+G`) has **Projects...**,
+a window for reading and changing a board's items and their fields, with
+**Next Unblocked** for the next item nothing is waiting on.
+
 All of these need your GitHub sign-in to include the **project** scope.
 
 ## Starting an issue in its own folder
 
-This one is QUILL's alone. When you start work on an issue, you usually want a
-new branch, kept apart from whatever else you have going. Shift+F10 on an
-issue or pull request has **Start issue #N in Local Worktree...** (or
-**Start pull request #N in Local Worktree...**). It uses Git's worktrees: a
+When you start work on an issue, you usually want a new branch, kept apart
+from whatever else you have going. **Start in Local Worktree...**
+(`Ctrl+Shift+T`) on an issue or pull request does that with Git's worktrees: a
 second folder for the same repository, on a branch of its own.
 
 1. QUILL uses the Git folder of the document you have open, or asks you to
@@ -484,7 +588,43 @@ second folder for the same repository, on a branch of its own.
 5. You choose where the new folder goes. QUILL suggests one beside the
    existing checkout.
 
-**In QUILL Lite**, this command is not on the menu.
+**In QUILL Lite**, this command is greyed, because it needs QUILL's local Git.
+
+## A walk-through: one issue, from open to closed
+
+This uses the practice repository. If you do not have it yet, choose **Help >
+Practice on GitHub...** (`Ctrl+Alt+P`) in the Workbench; it makes a private
+repository called `quill-practice` with three issues to work on.
+
+1. In the Workbench, go to `quill-practice`, then press `Ctrl+Shift+1`. You
+   hear "Issues", and the list holds the three practice issues.
+2. Arrow to the issue about the greeting's typo and press `Enter`. You are in
+   the details pane, reading its description. Press `Shift+Tab` to go back to
+   the list.
+3. Press `Shift+F10` and choose **Labels...**. The Properties sheet opens on
+   the Organize page, at Labels. Check **practice: bug** with Space, and press
+   Enter. You hear what GitHub kept.
+4. Press `Ctrl+Shift+M`. The comment window opens. Type "I will fix this
+   today." and press `Ctrl+Enter`. You hear "Comment posted on" and the
+   issue's number.
+5. Press `Delete`. QUILL asks why you are closing it. Choose **Completed**.
+   You hear "Closed", the number, "as completed."
+6. Changed your mind? Arrow to the issue again, which **View > Open or
+   Closed > All** shows, and choose **Close or Reopen...**. It asks, then
+   reopens it.
+
+That is the whole life of most issues: a label, a word, and closing it.
+
+## Learn it with a guided lesson
+
+**Help > Tutorials** (`Ctrl+F2` in the Workbench) has these lessons on the
+practice repository, each saying what to press and what you should hear:
+
+- **Label, comment on and close an issue**: the walk-through above.
+- **Build an issue form**: a form in the repository's Templates.
+- **File an issue with a form**: filling the form you built.
+- **Plan a milestone**: make one, put an issue in it, and give it a due date.
+- **Organize a project board**: a Project with the practice issues on it.
 
 ---
 

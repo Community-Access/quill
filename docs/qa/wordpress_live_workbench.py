@@ -565,14 +565,40 @@ def _read_menu(ctx: Any) -> str:
 
     api = ctx.api(H.ADMIN)
     menus = api.get("wp/v2/menus", context="edit") or []
-    if not menus:
-        raise H.NotRun("no menu on the site")
+    made = ""
+    if not menus:  # the seed has none: make one with two pages and a link, deleted after
+        menus = [_test_menu(ctx, api)]
+        made = "made for the run; "
     menu = menus[0]
     scope = ReadScope("menu", int(menu["id"]), str(menu.get("name", "")))
     pages, notes = document_pages(api, scope, site=H.SITE_NAME)
     text = site_document(H.SITE_NAME, pages, scope=scope.words, notes=notes)
     said = H.cell(" ".join(notes), 120)
-    return f"menu {scope.name}: {len(pages)} pages read; {said}; {len(text)} characters"
+    if made:
+        H.expect(len(pages) == 2, f"{len(pages)} pages read from the menu made with two")
+        H.expect("Meet the Team" in text and "About Us" in text, "a page of the menu is missing")
+    return f"menu {scope.name}: {made}{len(pages)} pages read; {said}; {len(text)} characters"
+
+
+def _test_menu(ctx: Any, api: Any) -> dict[str, Any]:
+    """A classic menu: About Us, Meet the Team under it, and a link off the site."""
+    menu = api.post("wp/v2/menus", {"name": ctx.title("menu")})
+    menu_id = int(menu["id"])
+    ctx.later(f"delete menu {menu_id}", lambda: api.delete(f"wp/v2/menus/{menu_id}", force=True))
+    pages = {p["slug"]: p for p in api.get("wp/v2/pages", slug="about,team", _fields="id,slug")}
+    H.expect({"about", "team"} <= set(pages), f"pages found: {sorted(pages)}")
+    about = api.post(
+        "wp/v2/menu-items",
+        {"title": "About Us", "type": "post_type", "object": "page",
+         "object_id": pages["about"]["id"], "menus": menu_id, "status": "publish"},
+    )  # fmt: skip
+    for body in (
+        {"title": "Meet the Team", "type": "post_type", "object": "page",
+         "object_id": pages["team"]["id"], "parent": about["id"]},
+        {"title": "WordPress.org", "type": "custom", "url": "https://wordpress.org/"},
+    ):  # fmt: skip
+        api.post("wp/v2/menu-items", {**body, "menus": menu_id, "status": "publish"})
+    return menu
 
 
 def _editorial_times(ctx: Any) -> str:

@@ -645,6 +645,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Tags (`repository:tags`) | repository, code | Tags: names for particular commits, usually versions. |
 | Upstream (`repository:upstream`) | repository, code | Upstream: the repository this one was forked from. Forks only. |
 | Releases (`repository:releases`) | repository, repository | Releases: published versions and their files. Enter lists the files. |
+| Packages (`repository:repo_packages`) | repository, repository | Packages: what this repository publishes, such as container images and npm packages. Show Versions lists each one's versions; Delete Package Version asks you to type the package's name. |
 | Labels (`repository:labels`) | repository, repository | Labels: tags for issues and pull requests. Enter finds the issues. |
 | Milestones (`repository:milestones`) | repository, repository | Milestones: goals with a date. Enter lists the issues and pull requests in one. |
 | Templates (`repository:templates`) | repository, repository | Templates: issue forms, Markdown templates, the chooser, pull request templates, discussion forms and community files, including those inherited from the owner's .github repository. Enter builds or edits one; Ctrl+N starts a new one. |
@@ -767,7 +768,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | --- | --- | --- |
 | New Here... | Ctrl+N | Something new where you are: an issue in Issues, a saved search in Saved Searches. |
 | New... | Ctrl+Shift+N | Choose what to create, wherever you are. |
-| Open GitHub Address... | Ctrl+L | Type or paste owner/name, #42, owner/name#42 or any GitHub link to go there. |
+| Open GitHub Address... | Ctrl+L | Open a repository by owner/name or link; a compare link opens the comparison. |
 | Go to Number... | Ctrl+G | Go to an issue or pull request in this repository by its number. |
 | Open on GitHub | Shift+Enter | Open the selected row, or the node, in your browser. |
 | Open in Editor | Ctrl+Enter | Open the selected file in the editor that opened this window. |
@@ -962,6 +963,8 @@ Everything below is generated from the tables the window is built from. The GitH
 | What Is This? | Alt+F1 | The GitHub word for this row, explained. |
 | GitHub Workbench Guide | Ctrl+F1 | The guide, opened at the chapter for where you are. |
 | Search Help... | Ctrl+Shift+F1 | Type a few words to find a help topic, a command or a GitHub word. |
+| Take the Tour | Alt+Shift+T | A spoken tour of the window: each pane, and one thing to do there. F6 moves on, Escape stops. |
+| Ask How... | Alt+Shift+A | Ask in your own words how to do something here. The answer comes only from this help, through the AI you chose. A command it names runs only when you choose it. |
 | Tutorials | Ctrl+F2 | The GitHub lessons, each on the practice repository, with what you have done. |
 | Practice on GitHub... | Ctrl+Alt+P | Make, open or delete quill-practice, a private repository with issues, a pull request and a failing run to learn on. |
 | GitHub Service Status... | Ctrl+Alt+F1 | Whether GitHub says it is working, which parts are not, and any incident. Reads www.githubstatus.com, only when you ask. |
@@ -982,43 +985,43 @@ Keys the window answers that are not menu rows:
 
 ### Context menus, by row type
 
-- **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Relationships..., Issue Fields..., Delete Issue..., Add to or Remove from Favorites, Link a Pull Request That Closes It..., Unlink a Pull Request...; Properties...
-- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Merge Selected...; More: Auto-Merge..., Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites, Re-request Review..., Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn Off Agent Merge..., Dependency Review, Dependabot Commands...; Properties...
+- **issue**: Open, Comment..., Close or Reopen..., Labels..., Assignees..., Copy Link; More: Open on GitHub, Milestone..., Projects..., Edit Title..., React..., View Timeline..., Read as Document..., Summarize Discussion, Start in Local Worktree..., Assign to Copilot..., Lock or Unlock Conversation..., Pin or Unpin Issue, Transfer Issue..., Check or Uncheck a Task..., Convert Tasks to Sub-issues..., Create Branch for This Issue..., Unlink Branch..., Not a Duplicate..., Set Issue Type..., Reorder Sub-issues..., Relationships..., Issue Fields..., Delete Issue..., Add to or Remove from Favorites, Link a Pull Request That Closes It..., Unlink a Pull Request..., Subscribe or Unsubscribe..., React to a Comment..., Related..., Start Pull Request for This Issue..., Draft Task Breakdown with AI..., Draft Release Notes with AI...; Properties...
+- **pull_request**: Review..., File Differences..., Comment..., Merge..., Why Can't I Merge?, Watch Readiness; More: Merge Selected..., Auto-Merge..., Reviews..., Open in a Codespace, Add to or Remove from Merge Queue..., Open Patch in Editor, Revert Pull Request..., Resolve Conflicts in a Worktree..., Copy Link, Open on GitHub, Start in Local Worktree..., Open in Codespaces..., Commit Comments..., View Timeline..., Read as Document..., Summarize Discussion, React..., Labels..., Assignees..., Milestone..., Projects..., Edit Title..., Add to or Remove from Favorites, Re-request Review..., Ask Copilot to Review, Agent Merge, Turn On Agent Merge, Turn Off Agent Merge..., Dependency Review, Subscribe or Unsubscribe..., React to a Comment..., Dependabot Commands..., Related..., Open in github.dev, Draft Description with AI..., Draft Reviewer Brief with AI..., Draft Release Notes with AI...; Properties...
 - **run**: Jobs and Logs, What Failed..., Re-run Failed Jobs Only, Re-run Workflow, Cancel Run..., Re-run One Job...; More: Force Cancel..., Download Logs..., Delete Logs..., Approvals, Earlier Attempts..., View Artifacts..., Open on GitHub, Combined Check Status, Review Pending Deployments..., Approve Run from a Fork..., Delete Run..., Copy Link, Read a Step's Log...; Properties...
 - **workflow**: Runs, Run Workflow on Branch..., Turn Workflow On or Off..., Open on GitHub, Copy Link, Edit Workflow...; Properties...
 - **release**: Assets, Edit Release..., Draft Release Notes..., Upload Asset..., React..., Release Evidence...; More: Delete Release..., Compare With Previous, Compare With Default, Copy Link, Open on GitHub, GitHub's Release Notes...; Properties...
 - **branch**: Commits, Compare With Default, Compare Branches..., Merge Into..., Download Source..., Compare With Previous; More: Open in Codespaces..., Copy Name, Delete Branch...; Properties...
-- **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link; More: Open on GitHub, Check Run Details..., Re-run a Check Suite..., Branches at This Commit, Reactions on a Commit Comment..., React to a Commit Comment..., Remove My Reaction from a Commit Comment...; Properties...
+- **commit**: Open, Commit Comments..., Set Status..., Compare With Previous, Compare With Default, Copy Link; More: Open on GitHub, Check Run Details..., Re-run a Check Suite..., Branches at This Commit, Reactions on a Commit Comment..., React to a Commit Comment..., Remove My Reaction from a Commit Comment..., Subscribe or Unsubscribe...; Properties...
 - **tag**: Open, Delete Tag..., Read Tag Message, Download Source..., Commit Comments..., Compare With Previous; More: Compare With Default, Copy Link, Open on GitHub; Properties...
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub; More: Unsnooze Locally, Why?; Properties...
-- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Send Repository Dispatch..., Pin; More: Star Lists..., Add to or Remove from Favorites, Open on GitHub, Open in Codespaces..., Rename or Delete Star List..., Fork Workflow Settings, Fork Workflows from Private Repositories..., Languages, License, Star History, Mark Its Notifications Read, Set a Custom Property..., Compare Dependencies..., SBOM Report, Ruleset History..., Secret Scanning History, Require Sign-off on Web Commits..., Sponsor Links, Dependency Manifests, Start an Agent Task..., Agent Tasks, An Agent Task's Progress..., Automations, New Automation..., Run an Automation..., Rename an Automation..., Delete an Automation..., An Automation's History..., An Automation's Tasks..., Automation Tools and Triggers, Agent Secrets from the Organization, Agent Variables from the Organization, Allow a Blocked Secret...; Properties...
-- **person**: Open, Follow or Unfollow, Open on GitHub; Properties...
+- **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Send Repository Dispatch..., Pin; More: Star Lists..., Add to or Remove from Favorites, Sponsor the Owner..., Open on GitHub, Open in Codespaces..., Rename or Delete Star List..., Fork Workflow Settings, Fork Workflows from Private Repositories..., Languages, License, Star History, Mark Its Notifications Read, Set a Custom Property..., Compare Dependencies..., SBOM Report, Ruleset History..., Secret Scanning History, Sync Fork with Upstream..., Create Repository from This Template..., Delete Repository..., Require Sign-off on Web Commits..., Sponsor Links, Dependency Manifests, Start an Agent Task..., Agent Tasks, An Agent Task's Progress..., Automations, New Automation..., Run an Automation..., Rename an Automation..., Delete an Automation..., An Automation's History..., An Automation's Tasks..., Automation Tools and Triggers, Agent Secrets from the Organization, Agent Variables from the Organization, Allow a Blocked Secret..., Copilot Agent Configuration, Copilot Review Settings, Fork..., Prompt Files...; Properties...
+- **person**: Open, Follow or Unfollow, Open on GitHub, Block or Unblock...; Properties...
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Comments..., History..., Forks..., Fork Gist; More: Copy Link, Open on GitHub, Delete Gist...; Properties...
-- **discussion**: Open Discussion Thread, Read as Document..., Copy Link, Open on GitHub, Close Discussion..., Reopen Discussion; More: Delete Discussion..., Upvote, Remove Upvote, Vote..., Edit a Comment..., Delete a Comment...; Properties...
+- **discussion**: Open Discussion Thread, Read as Document..., Copy Link, Open on GitHub, Close Discussion..., Reopen Discussion; More: Delete Discussion..., Upvote, Remove Upvote, Vote..., Edit a Comment..., Delete a Comment..., Subscribe or Unsubscribe..., React to a Comment..., Related..., Create Issue from Discussion...; Properties...
 - **security_alert**: Open, Dismiss or Reopen Alert..., Copilot Autofix..., Show Every Place, Open on GitHub, Where It Was Found; Properties...
 - **cache**: Show Details, Delete Cache...; Properties...
 - **saved_search**: Run, Pin as Node, Unpin Node, Remove Saved Search; Properties...
 - **result**: Open, Copy Link, Open on GitHub; Properties...
-- **file**: Open in Editor, Copy Link, Open on GitHub, Who Owns This?; Properties...
+- **file**: Open in Editor, Copy Link, Open on GitHub, Who Owns This?, Open in github.dev; Properties...
 - **folder**: Open Folder, Open on GitHub, Who Owns This?; Properties...
 - **milestone**: Find Issues in Milestone, Delete Milestone..., Copy Link, Open on GitHub; Properties...
 - **template**: Open Template..., Convert Form or Template..., Copy to Repositories..., Copy Link, Open on GitHub; Properties...
-- **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link, New View..., Items in a View..., Rename a View..., Delete a View..., Rename a Field..., Add an Issue Field..., Edit a Draft..., Make a Draft an Issue..., Move an Item..., Edit a Status Update..., Delete a Status Update..., Delete a Workflow..., Share the Project..., Link a Team..., Unlink a Team...; Properties...
+- **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link, New View..., Items in a View..., Rename a View..., Delete a View..., Rename a Field..., Add an Issue Field..., Edit a Draft..., Make a Draft an Issue..., Move an Item..., Archive an Item..., Restore an Archived Item..., Remove an Item..., Edit a Status Update..., Delete a Status Update..., Delete a Workflow..., Share the Project..., Link a Team..., Unlink a Team...; Properties...
 - **team**: Members and Access..., Copy Link, Open on GitHub, Delete Team..., Pending Invitations; Properties...
-- **organization**: Open, Roles..., Rulesets..., Open on GitHub, Fork Workflow Settings, Fork Workflows from Private Repositories...; More: Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, Members Without Two-Factor, My Activity Here, Require Sign-off on Web Commits..., Follow Organization, Unfollow Organization, Security Overview; Properties...
+- **organization**: Open, Roles..., Rulesets..., Open on GitHub, Fork Workflow Settings, Fork Workflows from Private Repositories...; More: Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, Members Without Two-Factor, My Activity Here, Require Sign-off on Web Commits..., Follow Organization, Unfollow Organization, Security Overview, Copilot Plan, Copilot Seats, A Member's Copilot Seat..., Give Copilot Seats..., Take Copilot Seats Away..., Give Teams Copilot..., Take Copilot from Teams..., Copilot Usage Report, Copilot Agent Access, Copilot Content Exclusions, Block from Organization..., Leave Organization..., Your Invitation; Properties...
 - **favorite**: Open, Copy Link, Open on GitHub, Add to or Remove from Favorites; Properties...
 - **admin_action**: Open; Properties...
 - **watch**: Edit Watch..., Pause or Resume Watch, Check Watches Now, Remove Watch, Why?, Open on GitHub; Properties...
 - **help_topic**: Open, Take Me There, Walk Me Through It, Do It; Properties...
-- **node**: Refresh, Open on GitHub, Help for This View, Why?, New Organization Runner..., Just-in-Time Runner...; More: Just-in-Time Runner..., Is a Runner Version Retiring?..., Is a Runner Version Retiring?..., Email Visibility..., Interaction Limits, Limit Interactions..., Lift Interaction Limits, Set Up a Sponsors Profile..., New Sponsor Tier..., Patreon Sponsorships..., My Agent Tasks, My Automations; Properties...
+- **node**: Refresh, Open on GitHub, Help for This View, Why?, New Organization Runner..., Just-in-Time Runner...; More: Just-in-Time Runner..., Is a Runner Version Retiring?..., Is a Runner Version Retiring?..., Email Visibility..., Interaction Limits, Limit Interactions..., Lift Interaction Limits, Set Up a Sponsors Profile..., New Sponsor Tier..., Patreon Sponsorships..., My Agent Tasks, My Automations, Prompt Files...; Properties...
 - **across_item**: Open in Its Repository, Next Repository, Previous Repository, View More from This Repository, Read Issue Type and Fields, Every Release or Latest Only; More: Open on GitHub, Copy Link; Properties...
 - **across_status**: Open, Next Repository, Previous Repository, View More from This Repository, Open on GitHub; Properties...
 - **repository_set**: Use This Set, Edit Repositories..., Set Filter..., New Set..., Rename Set..., Delete Set...; Properties...
 - **by_name**: Variants and Missing From, Make Them the Same..., Add to Missing..., Find Uses, Rename Everywhere..., Merge Into...; More: Close Everywhere..., Move Open Work To..., Promote to Organization..., Release Train..., Set Secret Everywhere..., Turn On or Off Everywhere..., Delete Everywhere...; Properties...
 - **fleet**: Open Repository, Open on GitHub, Copy Link; Properties...
-- **release_asset**: Download, Copy Link, Attestations..., Delete Asset...; Properties...
+- **release_asset**: Download, Copy Link, Attestations..., Check Download..., Delete Asset...; Properties...
 - **deployment**: Open, Delete Deployment..., Copy Link, Open on GitHub; Properties...
 - **discussion_section**: Open Section, Open on GitHub; Properties...
 - **discussion_category**: Find Discussions in Category, Copy Link, Open on GitHub; Properties...
@@ -1032,8 +1035,8 @@ Keys the window answers that are not menu rows:
 - **webhook**: Show Details, Ping, Send Test Push, Turn On or Off..., Recent Deliveries..., Change Address or Secret...; More: Delete Webhook..., Open on GitHub; Properties...
 - **deploy_key**: Show Details, Delete Deploy Key..., Open on GitHub; Properties...
 - **autolink**: Show Details, Delete Autolink..., Open on GitHub; Properties...
-- **resource**: Show Details, Change..., Repositories Allowed..., Delete..., Open on GitHub, Copy Link; More: Removal Commands..., Add Runner Label..., Remove Runner Label..., Runners in This Group, Hosted Runners in This Group, Add a Runner to This Group..., Remove a Runner from This Group..., Teams It Adds To; Properties...
-- **wiki**: Open on GitHub, Clone Wiki..., Copy Link; Properties...
+- **resource**: Show Details, Change..., Repositories Allowed..., Delete..., Open on GitHub, Copy Link; More: Removal Commands..., Add Runner Label..., Remove Runner Label..., Runners in This Group, Hosted Runners in This Group, Add a Runner to This Group..., Remove a Runner from This Group..., Teams It Adds To, Block from Organization...; Properties...
+- **wiki**: Open on GitHub, Edit Wiki Pages..., New Wiki Page..., Publish Wiki Changes..., Clone Wiki..., Copy Link; Properties...
 - **sponsorship**: Show Details, Cancel Sponsorship..., Open on GitHub, Sponsorship Preferences...; Properties...
 - **sponsor_tier**: Show Details, Sponsor at This Tier..., Open on GitHub, Publish Tier, Retire Tier...; Properties...
 
@@ -1042,7 +1045,7 @@ Keys the window answers that are not menu rows:
 | Setting | Page | Label | What it does |
 | --- | --- | --- | --- |
 | `open_on` | General | Open the Workbench on | Where the window opens when no menu row asks for a place: Inbox (Start Here until you have signed in), Start Here, or wherever you were last time. |
-| `list_mode` | General | List shows | Quick lists show a few columns, fast to arrow through; Full lists show every column GitHub Items knows for that view. |
+| `list_mode` | General | List shows | Quick lists show a few columns, fast to arrow through; Full lists show every column the Workbench has for that list. |
 | `default_sort` | General | Sort issues and pull requests by | The order a list of issues and pull requests opens in. Newest first is the usual choice. |
 | `default_state` | General | Show issues that are | Open, closed or all, when a list opens. The filter box can always say is:open or is:closed for one list. |
 | `poll_interval_minutes` | Notifications and Inbox | Check for new notifications every (minutes) | How often GitHub is checked for new notifications, from 5 minutes to a day. GitHub may ask for longer, and then it gets longer. |
@@ -1050,6 +1053,9 @@ Keys the window answers that are not menu rows:
 | `poll_interrupt_speech` | Notifications and Inbox | New notifications interrupt speech | Say a new notification at once, cutting across what is being said. Off means it waits its turn. |
 | `include_read_notifications` | Notifications and Inbox | Include read notifications | Show notifications you have already read, as well as unread ones, in Notifications. |
 | `speak_column_names` | Lists | Say column names before values | Put each column's name before its value in a list row, as in Number 42, Title Crash on start. Off keeps rows short. |
+| `braille_rows` | Lists | Short rows for braille | Each list row as one short line for a braille display: the number and title first, no column names, and short words (cl for closed, PR for pull request, 3c for three comments, 9 Nov for a date). Details still says everything. |
+| `tips_when_useful` | General | Offer a tip when it would help | Now and then, after you do something a longer way, the details pane offers one tip on a shorter way, once per tip. Off keeps tips in Help and Learning, Tips, only. |
+| `plain_help` | General | Plain help, without QUILLBert and QUILLBee | Help and tips without the two characters' names: the same words, said plainly, as Tip and Help. |
 | `health_snapshot_opt_in` | Privacy | Load the repository Health Snapshot | Insights, Health Snapshot reads extra data from GitHub about a repository's activity. It loads only when this is checked. |
 | `first_time_help` | Privacy | Show First time here? help | The first few times you visit a place, its details start with a short paragraph on what it is for. |
 
@@ -1063,13 +1069,16 @@ Keys the window answers that are not menu rows:
 - **Autolink**: A prefix, such as BUG-, that GitHub turns into a link to another system.
 - **Branch**: A line of work: a name that follows the newest commit of one set of changes. Under Code, Branches.
 - **Branch protection**: Rules that decide who may change a branch and what a change needs.
+- **CODEOWNERS**: A file that names who owns which paths. When a rule wants a code owner's review, Why Can't I Merge? names the line whose owners have not approved.
 - **Cache**: Files Actions keeps between runs to make them faster. Under Actions, Caches.
 - **Check**: A test or other run that reports passing or failing on a commit.
 - **Codespace**: A computer in the cloud with the repository ready to work on. It can cost money.
 - **Collaborator**: Somebody given access to one repository.
 - **Commit**: A saved change, with a message saying why. Under Code, Commits.
+- **Copilot seat**: One person's Copilot Business, paid for by an organization. Copilot Seats on an organization lists them.
 - **Deploy key**: An SSH key that reaches one repository only, for a server to clone, pull or push.
 - **Deployment**: Code sent to an environment, such as a website.
+- **Digest**: A fingerprint of a file's bytes (SHA-256). Check Download... on a release file compares your copy's with GitHub's, so you know it is the same file.
 - **Discussion**: A conversation in a repository that is not an issue.
 - **Discussion category**: A kind of discussion, such as Q&A or Ideas. Under Discussions, Categories, by section where GitHub gives sections; Enter lists its discussions.
 - **Draft**: A pull request that is not ready for review yet.
@@ -1097,6 +1106,7 @@ Keys the window answers that are not menu rows:
 - **Pin**: A repository kept on this computer under Repositories, Pinned.
 - **Poll**: A question in a discussion with options to vote for. Its details show it as a table: option, votes, percentage and your vote. Vote... casts yours.
 - **Project**: A board or table for planning issues and pull requests.
+- **Prompt file**: A .prompt.yml file GitHub Models reads: a model, messages and test data. Prompt Files... on a repository reads each as its parts.
 - **Pull request**: A proposed change: commits on one branch that somebody asks to merge into another, with a review. Under a repository's Pull Requests.
 - **Rate limit**: How many requests GitHub allows an account each hour. Account, GitHub API Rate Limit, Ctrl+Shift+L.
 - **Rebase**: Replaying commits on top of another branch, so the history reads as one straight line.
@@ -1125,11 +1135,12 @@ Keys the window answers that are not menu rows:
 - **Upstream**: The repository a fork was copied from. Under Code, Upstream, on a fork.
 - **Variable**: A value workflows use that is not secret.
 - **Watch**: Asking GitHub to tell you about a repository's activity.
-- **Watch rule**: A rule kept on this computer that tells you when something happens on GitHub: a run finishes, a review arrives, a release or a comment. Under Watches. Not the same as watching a repository on GitHub, which sends notifications.
+- **Watch rule**: A rule kept on this computer that tells you when something happens on GitHub: a run finishes, a review arrives, a release or a comment, or a pull request becomes able to merge or stops (Watch Readiness on its row). Under Watches. Not the same as watching a repository on GitHub, which sends notifications.
 - **Webhook**: An address GitHub sends a message to when something happens in a repository, such as a push. Continuous integration and chat bots use them.
-- **Wiki**: A repository's own pages of documentation, kept by GitHub as a git repository of their own, owner/name.wiki.
+- **Wiki**: A repository's own pages of documentation, kept by GitHub as a git repository of their own, owner/name.wiki. Edit Wiki Pages... on the Wiki row edits them; Publish Wiki Changes... sends them.
 - **Workflow**: One automation, defined in a file in the repository. Under Actions, Workflows.
 - **Workflow dispatch**: Starting a workflow by hand, on a branch you choose.
+- **github.dev**: GitHub's free editor in the browser. Open in github.dev on a file or a pull request.
 
 <!-- END GENERATED -->
 
@@ -1144,7 +1155,7 @@ Generated from `quill/core/github/api_coverage.json` against the snapshot of Git
 - **Not needed**: plumbing a person never meets as such.
 - **Left to GitHub**: the Workbench does not do it, and the row says why.
 
-In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
+In all: 868 yes, 0 planned, 285 not needed and 854 left to GitHub.
 
 **Wikis** have no API: GitHub serves each one as a Git repository (`owner/name.wiki.git`). Reading and editing them is planned under Repository > Wiki.
 
@@ -1580,7 +1591,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | Add user access restrictions | `POST /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
 | Set user access restrictions | `PUT /repos/{owner}/{repo}/branches/{branch}/protection/restrictions/users` | Not needed | Changes one part of branch protection; the Workbench reads and sets the whole setting at once (GET/PUT /branches/{branch}/protection). |
 | Rename a branch | `POST /repos/{owner}/{repo}/branches/{branch}/rename` | Yes | Properties (Alt+Enter) on Branch: Name |
-| Sync a fork branch with the upstream repository | `POST /repos/{owner}/{repo}/merge-upstream` | Yes | Navigator: Repository > owner/name > Code > Upstream |
+| Sync a fork branch with the upstream repository | `POST /repos/{owner}/{repo}/merge-upstream` | Yes | context menu > Sync Fork with Upstream... |
 | Merge a branch | `POST /repos/{owner}/{repo}/merges` | Yes | context menu > Merge Into... |
 
 #### Campaigns
@@ -1802,7 +1813,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 
 #### Copilot
 
-44 operations: 44 left to github.
+44 operations: 12 yes, 32 left to github.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -1817,38 +1828,38 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | Set the coding agent policy for an enterprise | `PUT /enterprises/{enterprise}/copilot/policies/coding_agent` | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
 | Remove organizations from the enterprise coding agent policy | `DELETE /enterprises/{enterprise}/copilot/policies/coding_agent/organizations` | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
 | Add organizations to the enterprise coding agent policy | `POST /enterprises/{enterprise}/copilot/policies/coding_agent/organizations` | Left to GitHub | Enterprise account administration (GitHub Enterprise Cloud); enterprise owners use the enterprise's own settings. Organizations > org > Enterprise (Open on GitHub). |
-| Get Copilot seat information and settings for an organization | `GET /orgs/{org}/copilot/billing` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| List all Copilot seat assignments for an organization | `GET /orgs/{org}/copilot/billing/seats` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Remove teams from the Copilot subscription for an organization | `DELETE /orgs/{org}/copilot/billing/selected_teams` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Add teams to the Copilot subscription for an organization | `POST /orgs/{org}/copilot/billing/selected_teams` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Remove users from the Copilot subscription for an organization | `DELETE /orgs/{org}/copilot/billing/selected_users` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Add users to the Copilot subscription for an organization | `POST /orgs/{org}/copilot/billing/selected_users` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
+| Get Copilot seat information and settings for an organization | `GET /orgs/{org}/copilot/billing` | Yes | context menu > Copilot Plan |
+| List all Copilot seat assignments for an organization | `GET /orgs/{org}/copilot/billing/seats` | Yes | context menu > Copilot Seats |
+| Remove teams from the Copilot subscription for an organization | `DELETE /orgs/{org}/copilot/billing/selected_teams` | Yes | context menu > Take Copilot from Teams... |
+| Add teams to the Copilot subscription for an organization | `POST /orgs/{org}/copilot/billing/selected_teams` | Yes | context menu > Give Teams Copilot... |
+| Remove users from the Copilot subscription for an organization | `DELETE /orgs/{org}/copilot/billing/selected_users` | Yes | context menu > Take Copilot Seats Away... |
+| Add users to the Copilot subscription for an organization | `POST /orgs/{org}/copilot/billing/selected_users` | Yes | context menu > Give Copilot Seats... |
 | Get the Copilot code review runner configuration for an organization | `GET /orgs/{org}/copilot/code-review/runner` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 | Set the Copilot code review runner configuration for an organization | `PUT /orgs/{org}/copilot/code-review/runner` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 | Get Copilot code review settings for an organization | `GET /orgs/{org}/copilot/code-review/settings` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 | Update Copilot code review settings for an organization | `PATCH /orgs/{org}/copilot/code-review/settings` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
-| Get Copilot cloud agent permissions for an organization | `GET /orgs/{org}/copilot/coding-agent/permissions` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
+| Get Copilot cloud agent permissions for an organization | `GET /orgs/{org}/copilot/coding-agent/permissions` | Yes | context menu > Copilot Agent Access |
 | Set Copilot cloud agent permissions for an organization | `PUT /orgs/{org}/copilot/coding-agent/permissions` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | List repositories enabled for Copilot cloud agent in an organization | `GET /orgs/{org}/copilot/coding-agent/permissions/repositories` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Set selected repositories for Copilot cloud agent in an organization | `PUT /orgs/{org}/copilot/coding-agent/permissions/repositories` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Disable a repository for Copilot cloud agent in an organization | `DELETE /orgs/{org}/copilot/coding-agent/permissions/repositories/{repository_id}` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Enable a repository for Copilot cloud agent in an organization | `PUT /orgs/{org}/copilot/coding-agent/permissions/repositories/{repository_id}` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Get Copilot content exclusion rules for an organization | `GET /orgs/{org}/copilot/content_exclusion` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
+| Get Copilot content exclusion rules for an organization | `GET /orgs/{org}/copilot/content_exclusion` | Yes | context menu > Copilot Content Exclusions |
 | Set Copilot content exclusion rules for an organization | `PUT /orgs/{org}/copilot/content_exclusion` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Get Copilot organization usage metrics for a specific day | `GET /orgs/{org}/copilot/metrics/reports/organization-1-day` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Get Copilot organization usage metrics | `GET /orgs/{org}/copilot/metrics/reports/organization-28-day/latest` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
+| Get Copilot organization usage metrics | `GET /orgs/{org}/copilot/metrics/reports/organization-28-day/latest` | Yes | context menu > Copilot Usage Report |
 | Get Copilot organization repository report for a specific day | `GET /orgs/{org}/copilot/metrics/reports/repos-1-day` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Get Copilot organization user-teams report for a specific day | `GET /orgs/{org}/copilot/metrics/reports/user-teams-1-day` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Get Copilot organization users usage metrics for a specific day | `GET /orgs/{org}/copilot/metrics/reports/users-1-day` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Get Copilot organization users usage metrics | `GET /orgs/{org}/copilot/metrics/reports/users-28-day/latest` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Get the Copilot code review policy for an organization | `GET /orgs/{org}/copilot/policies/code-review` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 | Set the Copilot code review policy for an organization | `PUT /orgs/{org}/copilot/policies/code-review` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
-| Get Copilot seat assignment details for a user | `GET /orgs/{org}/members/{username}/copilot` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
+| Get Copilot seat assignment details for a user | `GET /orgs/{org}/members/{username}/copilot` | Yes | context menu > A Member's Copilot Seat... |
 | Delete Copilot customizations for a team | `DELETE /orgs/{org}/teams/{team_slug}/copilot/customizations` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Get Copilot customizations for a team | `GET /orgs/{org}/teams/{team_slug}/copilot/customizations` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
 | Set Copilot customizations for a team | `PUT /orgs/{org}/teams/{team_slug}/copilot/customizations` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Get Copilot cloud agent configuration for a repository | `GET /repos/{owner}/{repo}/copilot/cloud-agent/configuration` | Left to GitHub | Copilot Business seat, policy and usage administration is for companies that buy Copilot seats, managed on GitHub's site. |
-| Get Copilot code review settings for a repository | `GET /repos/{owner}/{repo}/copilot/code-review/settings` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
+| Get Copilot cloud agent configuration for a repository | `GET /repos/{owner}/{repo}/copilot/cloud-agent/configuration` | Yes | context menu > Copilot Agent Configuration |
+| Get Copilot code review settings for a repository | `GET /repos/{owner}/{repo}/copilot/code-review/settings` | Yes | context menu > Copilot Review Settings |
 | Update Copilot code review settings for a repository | `PATCH /repos/{owner}/{repo}/copilot/code-review/settings` | Left to GitHub | Company administration or a paid feature (Copilot Business policies, AI scanning, security products, verified domains, billing minutes, deleting a whole organization), done on GitHub's site. |
 
 #### Copilot Spaces
@@ -2016,7 +2027,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 
 #### Git database
 
-13 operations: 10 yes, 3 not needed.
+13 operations: 11 yes, 2 not needed.
 
 | Operation | Call | Can QUILL do it? | Where, or why |
 | --- | --- | --- | --- |
@@ -2032,7 +2043,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | Create a tag object | `POST /repos/{owner}/{repo}/git/tags` | Yes | Navigator: Repository > owner/name > Code > Tags |
 | Get a tag | `GET /repos/{owner}/{repo}/git/tags/{tag_sha}` | Yes | context menu > Read Tag Message |
 | Create a tree | `POST /repos/{owner}/{repo}/git/trees` | Yes | editor GitHub menu > Commit Multiple Files... |
-| Get a tree | `GET /repos/{owner}/{repo}/git/trees/{tree_sha}` | Not needed | Git objects (blobs, trees, commits) are plumbing beneath commands that write files. Plumbing under Commit Multiple Files. |
+| Get a tree | `GET /repos/{owner}/{repo}/git/trees/{tree_sha}` | Yes | context menu > Prompt Files... |
 
 #### Gitignore
 
@@ -2395,7 +2406,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | Delete a GitHub Pages site | `DELETE /repos/{owner}/{repo}/pages` | Yes | context menu > Turn Off Pages... |
 | Get a GitHub Pages site | `GET /repos/{owner}/{repo}/pages` | Yes | Navigator: Repository > owner/name > GitHub Pages |
 | Create a GitHub Pages site | `POST /repos/{owner}/{repo}/pages` | Yes | Navigator: Repository > owner/name > GitHub Pages |
-| Update information about a GitHub Pages site | `PUT /repos/{owner}/{repo}/pages` | Yes | Navigator: Repository > owner/name > GitHub Pages |
+| Update information about a GitHub Pages site | `PUT /repos/{owner}/{repo}/pages` | Yes | Properties (Alt+Enter) on Repository: Branch and folder |
 | List GitHub Pages builds | `GET /repos/{owner}/{repo}/pages/builds` | Yes | Navigator: Repository > owner/name > GitHub Pages |
 | Request a GitHub Pages build | `POST /repos/{owner}/{repo}/pages/builds` | Yes | context menu > Rebuild |
 | Get latest Pages build | `GET /repos/{owner}/{repo}/pages/builds/latest` | Yes | context menu > Check Site |
@@ -2555,7 +2566,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | --- | --- | --- | --- |
 | List organization repositories | `GET /orgs/{org}/repos` | Yes | Navigator: Organization > organization > Repositories |
 | Create an organization repository | `POST /orgs/{org}/repos` | Yes | editor GitHub menu > Create Repository... |
-| Delete a repository | `DELETE /repos/{owner}/{repo}` | Yes | Repository > Repository Actions... (Ctrl+Shift+G) |
+| Delete a repository | `DELETE /repos/{owner}/{repo}` | Yes | context menu > Delete Repository... |
 | Get a repository | `GET /repos/{owner}/{repo}` | Yes | Navigator: Repository > owner/name |
 | Update a repository | `PATCH /repos/{owner}/{repo}` | Yes | editor GitHub menu > Rename Repository... |
 | List repository activities | `GET /repos/{owner}/{repo}/activity` | Yes | Navigator: Repository > owner/name > Activity > Push Activity |
@@ -2622,7 +2633,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | Check if vulnerability alerts are enabled for a repository | `GET /repos/{owner}/{repo}/vulnerability-alerts` | Yes | Properties (Alt+Enter) on Repository |
 | Enable vulnerability alerts | `PUT /repos/{owner}/{repo}/vulnerability-alerts` | Yes | Properties (Alt+Enter) on Repository: Dependabot alerts |
 | Download a repository archive (zip) | `GET /repos/{owner}/{repo}/zipball/{ref}` | Yes | context menu > Download Source... |
-| Create a repository using a template | `POST /repos/{template_owner}/{template_repo}/generate` | Yes | Repository > Repository Actions... (Ctrl+Shift+G) |
+| Create a repository using a template | `POST /repos/{template_owner}/{template_repo}/generate` | Yes | context menu > Create Repository from This Template... |
 | List public repositories | `GET /repositories` | Left to GitHub | Lists every repository, user, organization, gist or event on GitHub; a person works with their own and those they follow, which the Workbench lists. |
 | List repositories for the authenticated user | `GET /user/repos` | Yes | Navigator: Repositories > My Repositories |
 | Create a repository for the authenticated user | `POST /user/repos` | Yes | editor GitHub menu > Create Repository... |
@@ -3058,7 +3069,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | --- | --- | --- |
 | `addProjectV2DraftIssue` | Yes | context menu > Add Draft Issue... |
 | `addProjectV2ItemById` | Yes | Properties (Alt+Enter) on Issue: Projects |
-| `archiveProjectV2Item` | Yes | Properties (Alt+Enter) on Project |
+| `archiveProjectV2Item` | Yes | context menu > Archive an Item... |
 | `clearProjectV2ItemFieldValue` | Yes | Properties (Alt+Enter) on Project |
 | `convertProjectV2DraftIssueItemToIssue` | Yes | context menu > Make a Draft an Issue... |
 | `copyProjectV2` | Yes | context menu > Copy Project... |
@@ -3076,7 +3087,7 @@ In all: 855 yes, 0 planned, 286 not needed and 866 left to GitHub.
 | `linkProjectV2ToRepository` | Yes | context menu > Link to Repository... |
 | `linkProjectV2ToTeam` | Yes | context menu > Link a Team... |
 | `markProjectV2AsTemplate` | Yes | context menu > Template... |
-| `unarchiveProjectV2Item` | Yes | Properties (Alt+Enter) on Project |
+| `unarchiveProjectV2Item` | Yes | context menu > Restore an Archived Item... |
 | `unlinkProjectV2FromRepository` | Yes | context menu > Unlink from Repository... |
 | `unlinkProjectV2FromTeam` | Yes | context menu > Unlink a Team... |
 | `unmarkProjectV2AsTemplate` | Yes | context menu > Template... |

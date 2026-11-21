@@ -46,16 +46,37 @@ def at_launch(host: Any, app_id: str, history: Any) -> None:
         return
     changed = family.adopt(app_data_dir(), app_id, history)
     if changed:
-        _save(app_id, history)
+        _save(app_id, history, _radio_save(host, app_id))
         host._announce(f"Using your shared choice for {family.words_for(changed)}.")
+
+
+def _radio_save(host: Any, app_id: str) -> Callable[[], None] | None:
+    """Radio's own ordered writer, so an adopted choice never races it."""
+    save = getattr(host, "_save_radio_history", None) if app_id == "radio" else None
+    return save if callable(save) else None
+
+
+def shared_values(history: Any) -> dict[str, object]:
+    """The shared choices as they are now -- taken before Preferences applies."""
+    return {name: getattr(history, name) for name in family.SHARED if hasattr(history, name)}
+
+
+def preference_changes(history: Any, before: dict[str, object]) -> dict[str, object]:
+    """What :func:`after_preferences` needs: the opt-in, plus each shared choice
+    that changed. Passing only the opt-in is how Radio's changed choices were
+    never published (plan.md, shared desktop settings review)."""
+    changes: dict[str, object] = {"share_family_prefs": history.share_family_prefs}
+    for name, was in before.items():
+        if getattr(history, name) != was:
+            changes[name] = getattr(history, name)
+    return changes
 
 
 def after_preferences(host: Any, app_id: str, history: Any, changes: dict[str, object]) -> None:
     """After Preferences saved: join or leave, or publish what changed."""
     adopted = apply_preferences(app_id, history, changes)
     if adopted:
-        radio_save = getattr(host, "_save_radio_history", None) if app_id == "radio" else None
-        _save(app_id, history, radio_save if callable(radio_save) else None)
+        _save(app_id, history, _radio_save(host, app_id))
         host._announce(f"Now using your shared choice for {family.words_for(adopted)}.")
 
 

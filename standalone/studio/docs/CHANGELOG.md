@@ -12,6 +12,17 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
 
+### A setting that cannot be saved is said (2026-11-20)
+
+- A full disk or a locked file no longer passes silently. Book volume and
+  mute, the sleep timer, the play queue, the library, listening history,
+  Preferences, streaming and demonstration settings, screenshot AI and the
+  capture keys now report a failed save once in Activity, with Retry and
+  Open Folder. Retry saves what is current, and Studio no longer says
+  "Preferences saved" or "Capture hotkeys saved" when the save failed.
+- The chapter workbench's nudge step takes effect at once and is no
+  longer put back by Studio's next settings save.
+
 ### AI menu (2026-11-03)
 
 - **One AI menu, the same in every app** (2026-11-03). The AI menu now reads in four groups, in the same order in every QuillVille app: the ways to ask; what this app's AI does; Which AI Am I Using and Choose Your AI; and **Accounts and Usage**, a submenu holding Use My Own AI Key, Use My ChatGPT Subscription, Usage and the Privacy Agreement (and, where the app has them, Connect or Sign Out and Web Searches Left). Every command keeps its key wherever it now sits.

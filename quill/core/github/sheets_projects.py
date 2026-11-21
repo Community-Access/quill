@@ -23,7 +23,8 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core.github.permissions import WriteTier
-from quill.core.github.sheet_engine import Ident, Read, SheetDef, Write
+from quill.core.github.project_models import GitHubProjectsError
+from quill.core.github.sheet_engine import Ident, Read, SheetDef, SheetSaveError, Write
 from quill.core.github.sheet_fields import dig, ed, page, ro
 from quill.core.workbench.properties import FieldKind, FieldSpec, SheetSpec, Value
 
@@ -68,8 +69,19 @@ def _content_words(node: Mapping[str, Any]) -> str:
     return f"#{number} {title}" if number else title
 
 
+_GONE = "GitHub found no such {what}, or will not show it to this account."
+
+
+def _node(data: Mapping[str, Any], what: str) -> Mapping[str, Any]:
+    """The answer's node; a null one (deleted, or hidden from you) is said, never shown empty."""
+    found = dig(data, "node")
+    if not isinstance(found, Mapping) or not found:
+        raise GitHubProjectsError(_GONE.format(what=what))
+    return found
+
+
 def _project(data: Mapping[str, Any]) -> dict[str, Value]:
-    found = dig(data, "node") or {}
+    found = _node(data, "Project")
     return {
         "node_id": str(found.get("id") or ""),
         "title": str(found.get("title") or ""),
@@ -164,8 +176,10 @@ PROJECT = SheetDef(
                     "views",
                     "Views",
                     _K.TABLE,
-                    "Each saved view: its layout and filter. Read only: GitHub has no "
-                    "API to change a view, so change it on GitHub.",
+                    "Each saved view: its layout and filter. Read only here: New View..., "
+                    "Rename a View... and Delete a View... on the Project's row make, "
+                    "rename and delete one, but GitHub has no API to change a view's "
+                    "layout, filter, sorting or grouping, so change those on GitHub.",
                 ),
             ),
             page(
@@ -182,7 +196,8 @@ PROJECT = SheetDef(
                     "Built-in workflows",
                     _K.TABLE,
                     "Each built-in workflow and whether it is on. Read only: GitHub has "
-                    "no API to turn one on or off, so change it on GitHub.",
+                    "no API to turn one on or off or change what it does, so change it on "
+                    "GitHub. Delete a Workflow... on the Project's row deletes one.",
                 ),
             ),
             page("status", "Status Updates", ro("status_updates", "Status updates", _K.TABLE)),
@@ -221,7 +236,7 @@ PROJECT_FIELDS_QUERY = (
     "... on ProjectV2Field{id name dataType} "
     "... on ProjectV2SingleSelectField{id name dataType options{id name}} "
     "... on ProjectV2IterationField{id name dataType configuration{iterations{id title "
-    "startDate duration}}}}}}}}"
+    "startDate duration} completedIterations{id title startDate duration}}}}}}}}"
 )
 
 
@@ -254,10 +269,14 @@ def parse_fields(data: Mapping[str, Any]) -> list[ProjectField]:
                 if isinstance(o, Mapping)
             )
         elif kind == "ITERATION":
+            # Current and coming iterations first, then finished ones, so an item
+            # still on a finished iteration says which.
+            every = [
+                *(dig(node, "configuration", "iterations") or ()),
+                *(dig(node, "configuration", "completedIterations") or ()),
+            ]
             options = tuple(
-                (_iteration_words(o), str(o.get("id")))
-                for o in dig(node, "configuration", "iterations") or ()
-                if isinstance(o, Mapping)
+                (_iteration_words(o), str(o.get("id"))) for o in every if isinstance(o, Mapping)
             )
         if node.get("id"):
             found.append(ProjectField(str(node["id"]), str(node.get("name") or ""), kind, options))
@@ -289,6 +308,7 @@ _CLEAR = (
 )
 _ITEM_QUERY = (
     "query($id:ID!){node(id:$id){... on ProjectV2Item{id isArchived type "
+    "project{viewerCanUpdate} "
     "content{... on Issue{number title url} ... on PullRequest{number title url} "
     "... on DraftIssue{title}} fieldValues(first:50){nodes{"
     "... on ProjectV2ItemFieldTextValue{text field{... on ProjectV2FieldCommon{id}}} "
@@ -306,30 +326,50 @@ def _field_key(field: ProjectField) -> str:
 
 def _item_extract(fields: Sequence[ProjectField]) -> Any:
     def extract(data: Mapping[str, Any]) -> dict[str, Value]:
-        item = dig(data, "node") or {}
+        item = _node(data, "Project item")
         content = item.get("content") if isinstance(item.get("content"), Mapping) else {}
         found: dict[str, Value] = {
             "content": _content_words({"content": content}),
             "kind": str(item.get("type") or "").lower().replace("_", " "),
             "archived": bool(item.get("isArchived")),
         }
+        can = dig(item, "project", "viewerCanUpdate")
+        if isinstance(can, bool):
+            found["viewerCanUpdate"] = can
         by_id = {f.id: f for f in fields}
         for value in _nodes(item, "fieldValues"):
             field = by_id.get(str(dig(value, "field", "id") or ""))
             if field is None:
                 continue
-            raw = (
-                value.get("text")
-                or value.get("number")
-                or value.get("date")
-                or value.get("optionId")
-                or value.get("iterationId")
+            raw = next(
+                (
+                    value[key]
+                    for key in ("text", "number", "date", "optionId", "iterationId")
+                    if value.get(key) is not None
+                ),
+                None,
             )
             names = {option_id: name for name, option_id in field.options}
-            found[_field_key(field)] = names.get(str(raw), "" if raw is None else str(raw))
+            found[_field_key(field)] = names.get(str(raw), _words(raw))
         return found
 
     return extract
+
+
+def _words(raw: object) -> str:
+    """A value as typed: 3 for GitHub's 3.0, so a saved number reads back as it was sent."""
+    if raw is None:
+        return ""
+    if isinstance(raw, float) and raw.is_integer():
+        return str(int(raw))
+    return str(raw)
+
+
+def _number(field: ProjectField, value: Value) -> float:
+    try:
+        return float(str(value).strip())
+    except ValueError:
+        raise SheetSaveError(f"{field.name} needs a number, such as 3 or 2.5.") from None
 
 
 def _field_write(field: ProjectField) -> Write:
@@ -338,8 +378,8 @@ def _field_write(field: ProjectField) -> Write:
 
     def encode(value: Value, _choices: Mapping[str, object], ident: Ident) -> dict[str, object]:
         sent: object = options.get(str(value), value)
-        if field.kind == "NUMBER":
-            sent = float(str(value or 0))
+        if field.kind == "NUMBER" and value not in (None, ""):
+            sent = _number(field, value)
         variables: dict[str, object] = {
             "project": ident.get("project_id", ""),
             "item": ident.get("item_id", ""),

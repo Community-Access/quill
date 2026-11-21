@@ -295,12 +295,15 @@ def create(api: GitHubApi, spec: ResourceSpec, target: str, answers: Mapping[str
     path = spec.made(target, named)
     body = _body(api, spec, target, spec.create, answers)
     try:
-        api.rest(spec.create_method, path, body=body)
+        made = api.rest(spec.create_method, path, body=body).data
     except GitHubRestError as exc:
         raise _refused(exc, f"add the {spec.noun}") from exc
     first = said_name or next(
         (answers.get(one.key, "") for one in spec.create if one.kind != "secret"), ""
     )
+    if isinstance(made, Mapping) and made.get("state") == "pending":
+        # Adding someone to an organization or team invites them; they are not in it yet.
+        return f"Invited {first}. GitHub sends them an invitation to accept."
     return f"Added the {spec.noun} {first}.".replace("  ", " ").replace(" .", ".")
 
 

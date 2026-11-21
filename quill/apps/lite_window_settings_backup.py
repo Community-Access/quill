@@ -27,12 +27,13 @@ rather than a merge of two that nobody can.
 
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 
 import wx
 
-from quill.core.lite.settings import export_portable, import_portable
+from quill.core.lite.settings import LOCAL_SETTINGS, export_portable, import_portable
 
 __all__ = ["DocumentSettingsBackupMixin"]
 
@@ -42,6 +43,19 @@ __all__ = ["DocumentSettingsBackupMixin"]
 WILDCARD = "Quill settings files (*.qsf)|*.qsf|All files (*.*)|*.*"
 
 _SUFFIX = ".qsf"
+
+#: How a refused backup's app is named. An app not listed is named as written.
+_FAMILY_NAMES = {
+    "quill": "QUILL",
+    "cast": "QUILL Cast",
+    "inkwell": "Quill Inkwell",
+    "weather": "Quill Weather",
+    "radio": "Quill Radio",
+}
+
+
+def _app_name(app: str) -> str:
+    return _FAMILY_NAMES.get(app, app)
 
 
 class DocumentSettingsBackupMixin:
@@ -100,6 +114,16 @@ class DocumentSettingsBackupMixin:
             self.control.SetFocus()
             return
         settings, report = import_portable(raw)
+        if report.foreign_app:
+            # Refused, not imported (plan.md, settings review): another app's
+            # choices under the same names are not a QUILL Lite configuration.
+            self._announce(
+                f"{source.name} is a settings backup from {_app_name(report.foreign_app)}, "
+                "another app in the QUILL family, not from QUILL Lite. QUILL Lite restores "
+                "only its own backups. Nothing was changed."
+            )
+            self.control.SetFocus()
+            return
         if not report.carried:
             # A file with nothing this build recognises is almost always the
             # wrong file. Changing every setting to its default on the strength
@@ -109,6 +133,10 @@ class DocumentSettingsBackupMixin:
             )
             self.control.SetFocus()
             return
+        # This computer's own recent files, session, window and startup folder
+        # stay: the file never carries them, so a restore must not reset them.
+        for name in LOCAL_SETTINGS:
+            setattr(settings, name, copy.deepcopy(getattr(self.app.settings, name)))
         self.app.settings = settings
         self.app._queue_settings_save()
         self.app.reapply_settings()

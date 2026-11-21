@@ -2,15 +2,36 @@
 
 ## What this chapter covers
 
-Every key the workbench answers to, one window at a time. Keys marked as
-access keys are the underlined letters of a control, pressed with Alt; they
-work while that window has focus. Keys that open the windows themselves are in
-Chapter 1. QUILL's GitHub menu commands have no keys out of the box, and you
-can give them some in the Keymap Editor.
+You know what you want to do and want the key for it. This chapter lists
+every key the GitHub Workbench and the windows it opens answer to, one window
+at a time, so you can look one up without reading a whole chapter.
 
-Throughout, Shift+F10 or the Applications key opens the context menu of
-whatever has focus, and Escape closes the window you are in. The Workbench
-itself is the exception: Escape never closes it, and `Alt+F4` does.
+It starts with the GitHub menu in the editors, then the Workbench's own keys
+grouped by what they do, then each smaller window. By the end you will have
+the few keys worth learning first, and know where to find the rest.
+
+Keys marked as access keys are the underlined letters of a control, pressed
+with Alt; they work while that window has focus. The GitHub menu's rows have
+no keys out of the box, and you can give them some in the Keymap Editor.
+
+Throughout, `Shift+F10` or the Applications key opens the context menu of
+whatever has focus, and Escape closes the smaller window you are in. The
+Workbench itself is the exception: Escape never closes it, and `Alt+F4` does.
+
+### The ten to learn first
+
+| Key | What it does |
+| --- | --- |
+| `F6` | Move between the tree, the filter, the list, the details and the status bar |
+| Enter | Do the obvious thing with the selected row |
+| `Backspace` | Go back to where you were |
+| `Alt+Enter` | Everything about the selected row, on one sheet |
+| `Shift+F1` | What you can do here, with each key |
+| `F1` | What this place and control are for |
+| `Ctrl+E` | Filter the list |
+| `Ctrl+1` | Inbox |
+| `Ctrl+L` | Go to any repository, issue or link |
+| `F9` | Say the last result again |
 
 ## The GitHub menu, in workbench mode
 
@@ -54,7 +75,7 @@ workbench mode is off; in QUILL Lite its rows are in the GitHub menu itself.
 | `N` | New Issue from Selection... |
 | `F` | Issues Mentioning This File |
 | `T` | Comment on This Line in the Open Pull Request... |
-| `R` | Open the GitHub Reference at the Cursor |
+| `R` | Open the GitHub Reference at the Cursor (or `Alt+Enter` with the cursor on a reference) |
 
 ### Clone Repository
 
@@ -69,9 +90,9 @@ workbench mode is off; in QUILL Lite its rows are in the GitHub menu itself.
 ## The GitHub Workbench window
 
 These are the Workbench's own keys. Chapter 12 explains the places they take
-you to. Every one of them can be changed in the Keymap Editor, and the menus
-always show the key that is really bound. The old GitHub Items and Explore
-GitHub windows are retired; everything they did is here.
+you to. Every one of them can be changed in the Keymap Editor, and the menus,
+`Shift+F1`, `Alt+Shift+F1` and the Key Describer always say the key that is
+really bound. This chapter shows the keys the Workbench starts with.
 
 ### Going places
 
@@ -84,16 +105,16 @@ GitHub windows are retired; everything they did is here.
 | `Ctrl+4` | People |
 | `Ctrl+5` | Gists |
 | `Ctrl+6` | Projects |
-| `Ctrl+7` | Watches, not built yet |
+| `Ctrl+7` | Watches |
 | `Ctrl+8` | Saved Searches |
 | `Ctrl+9` | Start Here |
 | `Ctrl+0` | Across Repositories |
 | `Ctrl+Shift+1` to `Ctrl+Shift+0` | The current repository's Issues, Pull Requests, Discussions, Actions Runs, Files, Releases, Projects, Security, Settings and Insights |
 | `Alt+Up` | The place above this one |
-| `Alt+Left`, `Alt+Right` | Back and Forward |
+| `Alt+Left`, `Alt+Right` | Back and Forward (`Backspace` goes back too) |
 | `Ctrl+L` | Open GitHub Address: `owner/name`, `#42`, `owner/name#42` or any GitHub link |
 | `Ctrl+G` | Go to an issue or pull request by number |
-| `Ctrl+Period`, `Ctrl+Shift+Period` | Next or previous unread notification |
+| `Ctrl+Period`, `Ctrl+Shift+Period` | Next or previous unread row |
 | `Ctrl+Shift+E` | Back to the editor that opened the Workbench |
 
 `Ctrl+3`, `Ctrl+4` and `Ctrl+8` are AI keys in the editors. The Workbench has
@@ -105,27 +126,33 @@ no AI menu, so here they belong to the Go row.
 | --- | --- |
 | Enter | The obvious thing: read an issue, review a pull request, a run's jobs, a branch's commits, a release's files |
 | `Alt+Enter` | Properties: everything about it, on one sheet |
+| `Shift+F10` or the Applications key | The row's context menu |
 | `Shift+Enter` | Open it on GitHub, in your browser |
 | `Ctrl+Enter` | Open a file in the editor |
 | `Ctrl+N` | New here: issue, pull request, gist, saved search, pin, or the repositories for Across Repositories |
 | `Ctrl+Shift+N` | New, asking what to make |
 | `Ctrl+Shift+M` | Comment |
+| `Ctrl+Shift+I` | Read as Document: an issue, pull request or discussion as one document |
 | `Ctrl+Shift+D` | A pull request's changed files |
 | `Ctrl+Shift+Enter` | Merge a pull request |
 | `Ctrl+Shift+B` | Compare a branch with another |
+| `Ctrl+B` | Compare the selected branch, tag, release or commit with the default branch |
+| `Alt+Shift+B` | Compare a tag or release with the one before it, or a commit with its parent |
 | `Ctrl+Shift+A` | Assign an issue to Copilot |
+| `Ctrl+Shift+T` | Start an issue or pull request in a local worktree (QUILL only) |
 | `Ctrl+Shift+W` | What failed in a run |
 | `Ctrl+Shift+F5` | Re-run a run's failed jobs only |
+| `Ctrl+Cancel` (the Ctrl+Break key) | Cancel the selected run, after asking (in the list) |
 | `Ctrl+Shift+R` | Run a workflow on a branch |
 | `Ctrl+Shift+G` | Repository Actions |
 | `Ctrl+Alt+B` | Export Software Bill of Materials |
 | `Ctrl+Alt+T` | Transfer Repository |
 | `Ctrl+Alt+W` | Clone Wiki |
 | `Ctrl+Q`, `Ctrl+Shift+Q` | Mark a notification read; mark the whole list read |
-| `Ctrl+Alt+N` | Inbox Rules... |
+| `Ctrl+Alt+N` | Inbox Rules |
 | `Ctrl+D` | Add to Favorites, or take it out |
 | `Ctrl+C`, `Ctrl+Shift+C` | Copy the row; copy its address |
-| Delete | The safe removal for the row, asking first when it cannot be undone |
+| Delete | The safe removal for the row, asking first when it cannot be undone (in the list) |
 | `Ctrl+Z`, `Ctrl+Y` | Undo or redo your last change on GitHub, in the tree and the list |
 
 ### Lists
@@ -136,7 +163,7 @@ no AI menu, so here they belong to the Go row.
 | `Ctrl+Alt+F` | Filter Builder |
 | `Ctrl+Shift+U` | Choose columns |
 | `Ctrl+A` | Select every row |
-| `F5` | Refresh |
+| `F5`, `Ctrl+R` | Refresh |
 | `Ctrl+F5` | Refresh, reading everything from GitHub again |
 | `Alt+Page Down` | Load more |
 | `Ctrl+Shift+Page Down` | Load all |
@@ -145,18 +172,29 @@ no AI menu, so here they belong to the Go row.
 | `Ctrl+Alt+L` | New Issues from Lines |
 | Escape | Clear the filter box, then go back |
 
+Sort By, Group By, Quick Filters and Show are on the View menu (`Alt+V`).
+Their rows have letters, not keys.
+
 ### Account and tools
 
 | Key | What it does |
 | --- | --- |
+| `Ctrl+Shift+K` | Manage GitHub Accounts |
+| `Ctrl+Shift+L` | GitHub's remaining hourly allowance |
 | `Ctrl+Shift+P` | GitHub Permissions |
 | `Ctrl+Shift+H` | Change History |
 | `Ctrl+Alt+S` | Set Your Status |
-| `Ctrl+Shift+K` | Manage GitHub Accounts |
-| `Ctrl+Shift+L` | GitHub's remaining hourly allowance |
 | `Ctrl+Shift+O` | Workbench Options |
 | `Ctrl+Alt+D` | Dry Run on or off |
+| `Ctrl+Shift+S` | Plain-Language Batch |
+| `Ctrl+Shift+J` | GitHub API Console |
 | `Alt+F4` | Close the Workbench |
+
+**Account > Roles and Access** (My Access Here, View As Role, Compare Roles,
+Why Can't They?, Access Review, Bulk Access Changes, Access Templates, Apply
+Access Template, Compare Accounts, Act As Another Account, Workbench Level for
+This Account, and Least Privilege Advice) has no keys out of the box; its rows
+have letters. Chapter 13 covers them.
 
 ### Hearing where you are, and help
 
@@ -169,8 +207,15 @@ no AI menu, so here they belong to the Go row.
 | `Alt+F1` | What the GitHub word for the row means |
 | `Ctrl+F1` | This guide, at the right chapter |
 | `Ctrl+Shift+F1` | Search all of help |
-| `Ctrl+Alt+P` | Practice on GitHub |
 | `Alt+Shift+F1` | Every key in the window |
+| `Ctrl+F2` | Tutorials: the GitHub lessons |
+| `Ctrl+Alt+P` | Practice on GitHub |
+| `Ctrl+Alt+F1` | GitHub Service Status |
+| `F11` | Say or Type a Command, in this window |
+| `Ctrl+Alt+Shift+F1` | What Can I Say Here: what `F11` can do in this window |
+| `Ctrl+Alt+K` | Key Describer: keys say what they do instead of doing it, until `Escape` |
+| `Alt+Shift+T` | Take the Tour: a spoken tour of the window, a pane at a time |
+| `Alt+Shift+A` | Ask How: a question in your own words, answered from this help by the AI you chose |
 
 ### New Pull Request
 
@@ -215,7 +260,7 @@ Create Issue, and Escape closes without sending.
 | --- | --- |
 | `Alt+W` | Request Reviewers... |
 | `Alt+M` | Mark Ready, on a draft |
-| `Alt+D` | Convert to Draft |
+| `Alt+D` | Convert to Draft, on a pull request that is not a draft |
 | `Alt+B` | Update Branch... |
 | `Alt+A` | Auto-Merge and Queue... |
 
@@ -227,6 +272,7 @@ request's context menu (`Shift+F10` on the outline) and has none either.
 | Key | Control |
 | --- | --- |
 | `Alt+M` | Review message |
+| `Alt+W` | Comment Window..., to write the message in a larger window |
 | Escape | Save Draft and Close |
 
 Review action and Submit Review have no access key; reach them with Tab.
@@ -235,11 +281,12 @@ Review action and Submit Review have no access key; reach them with Tab.
 
 | Key | What it does |
 | --- | --- |
-| `Alt+M` | Line marks: words or symbols |
+| `Alt+M` | Line marks: words, short words, diff symbols, or diff symbols with changed lines |
+| `Alt+N` / `Alt+P`, in the patch lines | Next / previous change, "Change 2 of 5" (`F8` / `Shift+F8` too) |
 | `Alt+H` | Changed Lines Only |
 | `Alt+W` | Hide Whitespace Changes |
 | `Alt+T` | Choose Commit |
-| `Alt+P` | Patch lines |
+| `Alt+P`, from anywhere else | Move to the patch lines |
 | Shift with the arrows | Select a run of patch lines |
 | Enter | Comment on the line, or on the selected lines |
 | `Alt+L` | Comment on This Line... |
@@ -255,6 +302,7 @@ Review action and Submit Review have no access key; reach them with Tab.
 | `Alt+C` | Comment |
 | `Alt+A` | Add to Review, the default |
 | `Alt+P` | Post Now |
+| `Alt+W` | Comment Window..., to write the comment in a larger window |
 
 ## Repository Files
 
@@ -369,8 +417,24 @@ Review action and Submit Review have no access key; reach them with Tab.
 | Timeline | `Alt+H` | History, oldest first |
 | Timeline | `Alt+A` | Copy All |
 | Timeline | `Alt+C` | Hide or Show Comment |
+| Timeline | `Alt+P` | Pin or Unpin Comment |
 | Reorder Sub-issues | `Alt+U` | Move Up |
 | Reorder Sub-issues | `Alt+D` | Move Down |
+| Relationships | `Alt+S` | Add Sub-issue... |
+| Relationships | `Alt+B` | Add Blocked By... |
+| Relationships | `Alt+T` | Add Related... |
+| Relationships | `Alt+R` | Remove |
+| Roles in | `Alt+O` | Roles |
+| Roles in | `Alt+W` | Who holds it |
+| Roles in | `Alt+P` | Give to Person... |
+| Roles in | `Alt+T` | Give to Team... |
+| Roles in | `Alt+A` | Take Away... |
+| Rulesets in | `Alt+U` | Rulesets |
+| Rulesets in | `Alt+D` | Details |
+| Rulesets in | `Alt+E` | Enforcement... |
+| Rulesets in | `Alt+H` | History |
+| Rulesets in | `Alt+I` | Rule Insights... |
+| Rulesets in | `Alt+L` | Delete... |
 | Edit Release | `Alt+N` | Release name |
 | Edit Release | `Alt+O` | Release notes |
 | Edit Release | `Alt+D` | Draft (not published yet) |
@@ -406,11 +470,12 @@ Review action and Submit Review have no access key; reach them with Tab.
 
 | Key | Control |
 | --- | --- |
+| `Alt+P` | Open Pull Request |
 | `Alt+G` | Open on GitHub |
 | `Ctrl+Tab` | Switch between the Commits and Changed Files tabs |
 
 ---
 
 - Previous: [Chapter 10: Troubleshooting, privacy and help](lite-github-guide-10-troubleshooting.html)
-- [Contents](lite-github-guide.html)
 - Next: [Chapter 12: The GitHub Workbench, place by place](lite-github-guide-12-the-workbench.html)
+- [Contents](lite-github-guide.html)

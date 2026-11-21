@@ -72,10 +72,20 @@ def schedule(app: Any, wx: Any, *, safe_mode: bool = False) -> Any:
 
         wx.CallAfter(open_start_lineup, app)
     wx.CallAfter(maybe_run_first_run, app)
+    # Shared family choices newer than Radio's own, adopted and said, as Cast
+    # does at its launch (qc.md X-05; plan.md, shared desktop settings review).
+    from quill.ui.family_sharing import at_launch
+
+    wx.CallAfter(at_launch, app, "radio", app._radio_history)
     # The previous session's closing failure, said once, with its Retry (F-06).
     from quill.apps.radio_shutdown import radio_launch_notice
 
     wx.CallAfter(radio_launch_notice, app)
+    # A settings file with numbers Radio could not use (Infinity, NaN), kept
+    # beside itself when it was read: said once, naming the copy.
+    from quill.core.settings_recovery import announce_later
+
+    announce_later("Quill Radio", app._announce, wx.CallAfter)
     # 6. **Reminders**, armed here for the same reason the feed check is: the
     #    timer has to exist before anything can set one, and its first look is
     #    what makes a reminder missed while the app was closed still speak.

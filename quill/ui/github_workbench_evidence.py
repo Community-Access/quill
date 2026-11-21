@@ -5,6 +5,9 @@
   went to which environments, and each file's attestations.
 * **Attestations...** on a release's file: its digest and GitHub's
   attestations for it.
+* **Check Download...** on a release's file: the downloaded copy, chosen in an
+  Open box that starts in Downloads, hashed with SHA-256 and compared with
+  GitHub's digest for the file (:mod:`quill.core.github.asset_digest`).
 * **Deployments...** on an environment: its newest deployments, each with its
   latest state. Approving or rejecting one that waits is Review Pending
   Deployments... on the run that is waiting.
@@ -26,12 +29,14 @@ __all__ = ["EVIDENCE_REASONS", "EVIDENCE_VERBS", "GitHubWorkbenchEvidenceMixin"]
 EVIDENCE_VERBS: dict[str, frozenset[str]] = {
     "release_evidence": frozenset({"release"}),
     "asset_attestations": frozenset({"release_asset"}),
+    "check_download": frozenset({"release_asset"}),
     "environment_deployments": frozenset({"environment"}),
 }
 
 EVIDENCE_REASONS: dict[str, str] = {
     "release_evidence": "Release Evidence... is for a release in a repository.",
     "asset_attestations": "Attestations... is for a file of a release in a repository.",
+    "check_download": "Check Download... is for a file of a release in a repository.",
     "environment_deployments": "Deployments... is for an environment, while you are signed in.",
 }
 
@@ -62,6 +67,47 @@ class GitHubWorkbenchEvidenceMixin:
     def _fits_asset_attestations(self, row: object) -> bool:
         ident = self._release_ident(row, getattr(self.frame, "current", None), "release_asset")
         return bool(ident.get("tag"))
+
+    _fits_check_download = _fits_asset_attestations
+
+    def _pick_checked_download(self, name: str) -> Any:
+        """The downloaded file to check, chosen in an Open box that starts in Downloads."""
+        from pathlib import Path
+
+        from quill.ui.dialog_contract import show_modal_dialog
+
+        wx, title = self.frame._wx, "Check Download"
+        folder = Path.home() / "Downloads"
+        with wx.FileDialog(
+            self.frame.frame,
+            title,
+            defaultDir=str(folder if folder.is_dir() else Path.home()),
+            defaultFile=name,
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+        ) as box:
+            if show_modal_dialog(box, title) != wx.ID_OK:
+                return None
+            return Path(box.GetPath())
+
+    def _do_check_download(self, ref: Any, row: object) -> None:
+        from quill.core.github.asset_digest import asset_digest, check_file
+
+        ident, api = self._release_ident(row, ref, "release_asset"), self.github_api()
+        repo, tag, name = ident.get("repo", ""), ident.get("tag", ""), ident.get("name", "")
+        path = self._pick_checked_download(name)
+        if path is None:
+            return
+
+        def show(found: Any) -> None:
+            self._say(found.sentence)
+            if found.matched is not None:
+                self._show_text(f"Check Download: {name}", "\n".join(found.lines()))
+
+        self._background(
+            f"check {path.name} against {name}",
+            lambda: check_file(path, name, asset_digest(api, repo, tag, name)),
+            show,
+        )
 
     def _fits_environment_deployments(self, row: object) -> bool:
         return self.signed_in and isinstance(row, ExploreRow) and row.kind == "environment"

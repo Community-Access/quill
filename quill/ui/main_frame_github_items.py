@@ -19,6 +19,7 @@ is the glue that enforces the same gates every other GitHub entry point uses:
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from quill.core.github.references import (
     GitHubReference,
@@ -160,7 +161,7 @@ class GitHubItemsMixin:
         initial_repo = repository or self._github_items_initial_repo()
         from quill.ui.github_workbench_commands import open_in_workbench_window
 
-        open_in_workbench_window(
+        window = open_in_workbench_window(
             self.frame,
             provider,
             repository=initial_repo,
@@ -173,10 +174,14 @@ class GitHubItemsMixin:
             open_file_url=self.open_github_file_url,
             gist_source=self._github_gist_source,
             ai_summarizer=self._github_ai_summarizer,
+            ai_ask=self._github_ai_ask,
             start_worktree=self.start_github_issue_worktree,
             resolve_conflicts=self.resolve_github_pull_conflicts,
             open_document=lambda path: self.open_file(path),
         )
+        # GX15: the grounded drafts (github_workbench_drafts.py) use the same
+        # connection and consent as Summarize, asked for only when one is run.
+        window.provider.ai_drafter = self._github_ai_drafter
 
     def open_github_items_viewer_for(
         self,
@@ -212,6 +217,12 @@ class GitHubItemsMixin:
         path = getattr(getattr(self, "document", None), "path", None)
         return (Path(path).name if path else "notes.md"), text
 
+    def _github_ai_ask(self, prompt: str, on_answer: Any) -> bool:
+        """Ask How's request through QUILL's Choose Your AI (GH-R-118), as QUILL Lite's."""
+        from quill.ui.github_workbench_ask_how import ask_through_editor
+
+        return ask_through_editor(self, prompt, on_answer)
+
     def _github_ai_summarizer(self):
         """Resolve QUILL's AI connection for a thread summary, on demand.
 
@@ -241,6 +252,20 @@ class GitHubItemsMixin:
         # the discussion-summary prompt (2026-11 audit, gap 10).
         summarize.whole_prompt = whole_prompt  # type: ignore[attr-defined]
         return summarize
+
+    def _github_ai_drafter(self):
+        """Like :meth:`_github_ai_summarizer`, for a bounded, source-cited draft prompt."""
+        result = self._ai_require_connection()
+        if result is None:
+            return None
+        connection, api_key = result
+
+        def draft(prompt: str) -> str:
+            from quill.core.github.thread_summary import generate_draft
+
+            return generate_draft(connection, api_key, prompt)
+
+        return draft
 
     def _github_items_initial_repo(self) -> str:
         """The current document's ``owner/repo``, from either origin source.

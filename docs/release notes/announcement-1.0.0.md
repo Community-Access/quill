@@ -230,16 +230,17 @@ results come back as one sentence. One command, Undo Last Agent Turn, puts back
 everything a turn changed, and coach mode lets the agent teach instead of type,
 for anyone learning. Nothing moves your focus, and nothing chatters.
 
-GitHub pull requests have a keyboard-first review outline. Expand a PR into
-changed files, their conversations, and checks. Arrow to a thread, Tab into its
-full text, press **Ctrl+R** to reply, or press **Shift+F10** for actions that
-fit the selected item. **Ctrl+Shift+R** resolves a thread or opens it again,
-and a comment lands on the exact changed line when GitHub can say which one.
-**Explore** brings saved searches, My Work, activity, repositories, people,
-Pages, labels, notifications and workflow job logs into one list-and-detail
-window. QUILL Lite opens the same GitHub workbench from **Tools > GitHub
-Workbench...**. The [GitHub tutorial](../tutorials/08-github-inside-quill.md)
-walks through every control and its screen reader behavior.
+GitHub is one window, the **GitHub Workbench**: a tree of places, a list and
+details, the way Outlook works. Your Inbox gathers what needs you. A pull
+request opens as an outline you walk with the arrow keys, with its
+one-sentence summary, changed files, conversations and checks. **Alt+Enter**
+on anything opens its Properties, where you change what GitHub lets you
+change, one item or many, and **Ctrl+Z** takes it back. Each account has a
+level, Read Only, Organize or Full, **Dry Run** tries a command without
+sending it, and a practice repository with ten lessons is one command away.
+QUILL Lite opens the same Workbench from **File > GitHub Workbench...**. The
+[GitHub Guide](../user%20guide/github-guide/github-guide.md) walks through it
+in 14 chapters.
 
 Most GitHub questions start on a line of a file, so **GitHub > From This
 Line** answers them there: copy a link to the line that keeps pointing at the

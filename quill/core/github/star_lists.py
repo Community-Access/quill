@@ -28,6 +28,7 @@ from quill.core.github.explore_models import ExploreRow
 from quill.core.github.workbench_api import GitHubApi
 
 __all__ = [
+    "FOR_ITEM_MUTATION",
     "StarList",
     "StarListError",
     "create_list",
@@ -108,6 +109,10 @@ mutation($itemId: ID!, $listIds: [ID!]!) {
   updateUserListsForItem(input: {itemId: $itemId, listIds: $listIds}) { clientMutationId }
 }
 """
+
+
+#: Which lists a repository is on, the whole set at once: Star Lists... and the You page send it.
+FOR_ITEM_MUTATION = _FOR_ITEM.strip()
 
 
 def _nodes(value: object) -> list[Mapping[str, Any]]:

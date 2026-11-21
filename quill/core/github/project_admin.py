@@ -11,6 +11,7 @@ strict-typed.
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
+from datetime import date
 from typing import Any
 
 from quill.core.github.project_models import GitHubProjectsError
@@ -181,12 +182,26 @@ def post_status_update(
     """Post a status update ("On track", with a note and optional dates, YYYY-MM-DD)."""
     if status not in {code for code, _w in STATUS_CHOICES}:
         raise GitHubProjectsError("Choose On track, At risk, Off track, Complete or Inactive.")
+    for typed, what in ((start_date, "start"), (target_date, "target")):
+        _check_date(typed, what)
     input_data: dict[str, object] = {"projectId": project_id, "status": status, "body": body}
     if start_date:
         input_data["startDate"] = start_date
     if target_date:
         input_data["targetDate"] = target_date
     _mutate(token, "createProjectV2StatusUpdate", input_data, "statusUpdate { id }", request)
+
+
+def _check_date(typed: str, what: str) -> None:
+    """Refuse a date GitHub would refuse, before anything is sent."""
+    if not typed:
+        return
+    try:
+        valid = len(typed) == 10 and bool(date.fromisoformat(typed))
+    except ValueError:
+        valid = False
+    if not valid:
+        raise GitHubProjectsError(f"Type the {what} date as year-month-day, like 2026-12-01.")
 
 
 def link_repository(

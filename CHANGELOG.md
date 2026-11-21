@@ -2,6 +2,10 @@
 
 ## 1.0.0
 
+### QUILL Cast: a new download folder takes the waiting downloads with it (2026-11-20)
+
+Chris Nova changed their download folder and found that the episodes they had already asked to download still went to the old one. Each download's place was fixed the moment it was queued, so a new folder only reached episodes queued afterwards. Now, when you change the download folder in QUILL Cast's Preferences or QUILL's Podcast Settings, every download still waiting moves to the new folder, and Cast says how many: "2 downloads waiting will now save to D:\other files\Quill Cast Downloads." A download that has already started, or was paused part way, finishes in the old folder, so nothing already downloaded is lost, and Cast says that too. Episodes already on disk stay where they are and keep playing.
+
 ### AI: one choice for every AI command (2026-11-20)
 
 - **Every AI command now uses the AI you choose in Choose Your AI**
@@ -61,6 +65,163 @@
   to another provider, the older saved key could be sent with it. Now it is
   used only for the provider it was saved for.
 
+### WordPress: Custom Fields shows the fields you came for (2026-11-20)
+
+- **Another plugin's fields are hidden until you ask for them.** Some plugins
+  add their fields to every post: on the test site, The Events Calendar's 34
+  event, venue and organizer fields buried an ordinary post's SEO title.
+  Custom Fields now hides them and says how many and whose; **Show all
+  fields** (Alt+S) opens the window again with every one, keeping what you
+  typed. WordPress's own fields, QUILL's, Yoast SEO's and any field QUILL
+  cannot place are always shown. In the Workbench, those fields move to a
+  page of their own, Fields Plugins Add to Every Item.
+
+### GitHub Guide: every chapter is about the Workbench, with walk-throughs, a QUILL Lite chapter and an appendix (2026-11-20)
+
+The GitHub Guide now reads like the WordPress and Forms guide, and matches
+what shipped.
+
+- **Every chapter is about the GitHub Workbench.** Chapters 1 to 11 still
+  taught GitHub Items and Explore GitHub, which the Workbench replaced: their
+  buttons, their keys and their views. They now give the place in the tree,
+  the row on the menu or context menu, and its key.
+- **Chapter 2 is a tour of the Workbench:** the tree and the Go keys, lists,
+  the filter, Properties, the context menu, how QUILL asks before it changes
+  GitHub, Ctrl+Z and Change History, the status bar and the help keys.
+- **Every chapter says why you are there, what you will do and what you will
+  have at the end,** and most end with a walk-through on your practice
+  repository and the guided lesson that goes with it.
+- **Chapter 10** has the sentences QUILL says when something fails, in their
+  real words, including Workbench levels, Dry Run, Act As, Enterprise Server
+  and the permission GitHub names when it refuses.
+- **Chapter 14, GitHub in QUILL Lite,** lists what differs between the two
+  editors. **Appendix A** says what GitHub needs for each part of the
+  Workbench: your role, your sign-in's permissions and the features a
+  repository or organization must have.
+- **Tutorials 8 and 11** teach the Workbench too.
+- **One book in both editors.** QUILL Lite's copy of the guide is now written
+  from QUILL's by `scripts/sync_lite_github_guide.py`, and a test fails when
+  it falls behind. The two had drifted apart.
+- The contents page links every section of every chapter, and Ctrl+F1 in the
+  Workbench lists all fourteen chapters.
+
+### GitHub help, the GitHub PRD and the release notes describe the Workbench (2026-11-20)
+
+- **F1 on the editor's GitHub commands** describes the GitHub Workbench. 44
+  help topics still taught the GitHub Items and Explore GitHub windows, their
+  buttons and their Alt keys. Each now says which Workbench place or window
+  the command opens, its keys there, what it asks and what it says.
+- **The Workbench's own help** no longer names GitHub Items, and says what
+  three commands really do: Open GitHub Address (Ctrl+L) opens a repository
+  or a compare link, not an issue by number; a snoozed notification is a note
+  on this computer and stays in the list; and a change others will see is
+  saved at once, with no option to ask first.
+- **The GitHub PRD** starts with where it stands on 2026-11-20: what shipped,
+  by area, what was taken out (features only GitHub Enterprise Cloud has),
+  and what is left. Its features list and phases now match what was built.
+- **The release notes, the announcements and What's New** in both editors
+  describe the Workbench rather than GitHub Items, with corrected routes:
+  QUILL Lite's is File > GitHub Workbench..., batches are Alt+Enter on several
+  rows or Plain-Language Batch, and Ask Copilot to Review is on the pull
+  request's row.
+
+### More settings that stick: Studio, Media Player, Transcribe, Beacon, Weather, Radio and QUILL's dialogs (2026-11-20)
+
+- **QUILL Studio, Quill Media Player and QUILL Transcribe tell you when a
+  setting cannot be saved.** A full disk or a locked file used to be ignored:
+  book volume, the sleep timer, the play queue, the library, Preferences,
+  streaming, capture keys, the output device, Transcribe's keys and Dictation
+  Settings all carried on as if saved, and were gone at the next start. Now
+  Activity says so once, with Retry and Open Folder, Retry saves what is
+  current, and nothing says "saved" when it was not.
+- **Beacon's settings survive a full disk or a crash while saving.** Its
+  accessibility, external player, routing and sync settings are now written
+  the safe way, so a save that fails part-way leaves your previous settings
+  in place instead of an empty file.
+- **Weather Center's Settings no longer undo a tray choice.** If you changed
+  Close to Tray or Start in Tray from the tray while Weather Center was open,
+  saving Weather Center's Settings put the old choice back. The newest choice
+  now wins.
+- **Changes in QUILL's AI Hub, Assistant, image prompts and chapter
+  workbench take effect at once, and stay.** These saved a separate copy of
+  QUILL's settings that the main window never saw, so the change waited for a
+  restart, and the window's next save could put the old value back.
+- **A settings file containing Infinity or NaN no longer stops Quill Radio
+  starting.** Radio keeps every choice it can use, uses defaults for the
+  rest, copies the file beside itself, and says once where the copy is.
+
+### Settings that stick, in every app (2026-11-20)
+
+- **The newest choice is the one saved, everywhere.** QUILL Lite's fix is now
+  shared by the other apps. In Quill Inkwell, QUILL Cast, Quill Radio and
+  QUILL, an older settings save that was still running could finish after a
+  newer one and put your old choice back after a restart. Each settings file
+  is now written in the order the changes were made.
+- **Retry in Activity no longer brings back an old choice.** If a save
+  failed, a later save worked, and you then pressed Retry on the old failure,
+  the older settings were written again. Retry now leaves the newer save
+  alone.
+- **Quill Converter tells you when it cannot save your choices.** A locked or
+  read-only settings file used to be ignored, and your choices were gone at
+  the next start. Now Activity reports it with Retry and Open Folder, and
+  Converter never says it saved them.
+- **Damaged settings no longer stop Quill Inkwell or Quill Weather starting.**
+  A settings file with a value the app cannot use (an unreadable version
+  number, or a number too large to use) is copied beside itself. The app
+  starts with defaults for the values it could not read, and says once where
+  the copy is.
+- **Back Up and Restore Settings in QUILL Lite.** The startup folder stays on
+  this computer, like recent files. Restoring keeps this computer's recent
+  files, session, window size and startup folder. A backup made by QUILL or
+  another app in the family is refused, with a plain explanation, and
+  nothing is changed.
+- **Quill Radio shares your choices like QUILL Cast.** With sharing on,
+  changing *Announce dialog transitions* in Radio's Preferences now reaches
+  your other Quill apps. Radio also picks up a newer shared choice when it
+  starts, and says so.
+
+### Plans: one list of open work, and the planning documents put right (2026-11-20)
+
+- **complete.md** says who owns what: it is the list of open work,
+  `status.md` is the live count, and the requirement audit holds each GitHub
+  requirement's status. Rows built since 2026-11-19 are gone, and rows waiting
+  on an open pull request name it.
+- **Part 0** lists the defects the code review in plan.md found, worst harm
+  first: settings that do not stick and the Practice Site payload,
+  then the wider review.
+- **A Backlog**, not this release (Jeff): every macOS feature, including a
+  runnable Mac Radio app and the launcher and Mac Radio defects; verifying
+  attestation signatures inside QUILL; and a date range for Shop Analytics'
+  Customers report, which is also in the WordPress Workbench PRD's Backlog.
+- **The GitHub requirement audit** counts 86 met, 8 partly met and 6 not
+  met, matching its own rows. View As Role, Compare Roles and Why Can't They?
+  (GH-R-069) are met since #1965.
+- **Planning documents** now say what they are. The July roadmap is marked
+  historical and points to where the Audio Studio checklist moved. The old
+  Studio screenshot audit is marked superseded. The Beacon and Media Player
+  PRDs say what is built. intellisense.md says ripgrep is bundled but not yet
+  used by the project index. code.md says the Claude tool fix and the Claude
+  engine were built on 2026-11-04. The QUILL PRD and the agent instructions
+  say Python 3.14 and wxPython 4.3.2.
+
+### WordPress Workbench: Gravity Forms, QAF's spam checks and PMPro tried live (2026-11-20)
+
+- **Test This Form works on a form with a phone or time field.** Its test
+  values put "555-0100" in a US phone field, which Gravity Forms refuses, and
+  left a Time field empty. It now sends "(555) 555-0100" to a US phone field
+  and a time such as "10:30 am".
+- **Discount Codes lists codes on Paid Memberships Pro 3.9.** The node looked
+  for a PMPro feature that PMPro 3.9.2 does not have, so it only ever said to
+  use wp-admin. It now lists up to 20 codes through PMPro's own search, which
+  cannot show more, and says when there may be more in wp-admin.
+- **Tried on the test site:** every Gravity Forms field type QUILL builds,
+  changing an entry's answers, Spam and Not Spam, notes, notifications and
+  confirmations, Resend Notifications, copying a form and its entries to QUILL
+  Accessible Forms and back, and the Watch; QUILL Accessible Forms' spam
+  checks with real submissions, and the move from BITS Accessible Forms;
+  Members of This Level on a site of 260 people; and reading a menu as a
+  document.
+
 ### Crash and support reports: what is sent is what was checked (2026-11-20)
 
 - **A crash email's subject is redacted like its body.** A password or key
@@ -112,6 +273,45 @@
 - **Discussion counts links as WordPress does.** The Discussion explanation
   counted one ordinary link twice, so it said a one-link comment would be
   held under the two-link rule.
+
+### GitHub Workbench: repository settings, Create Repository, Transfer, Pages and Packages (2026-11-20)
+
+- **Create Repository...**, in the editor and the Workbench, asks for every
+  option GitHub takes: owner, name, description, website, private or public,
+  and either a template (with all its branches or only the default) or a
+  README, a .gitignore template and a licence. When GitHub would refuse the
+  combination, the dialog stays open and its Problem box says why.
+- **Transfer Repository...** also asks for a new name and, for an
+  organization, which teams get access. The typed confirmation says where the
+  repository will land.
+- The **Merging** page sets the default title and message of squash and merge
+  commits as one choice each, in the words of GitHub's settings page, so
+  changing only the message is no longer refused.
+- The **Pages** page shows the site's status and latest build, and sets how it
+  is built, the branch and folder, the custom domain and Enforce HTTPS.
+- **Repository > Packages** lists the packages published from the
+  repository. **Delete Package Version...** asks you to type the package's
+  name.
+- The Features page shows the Sponsor button's links. GitHub's API cannot turn
+  the button on or off, and its help says so.
+
+### GitHub Workbench: the rule that blocks a merge, by name; Watch Readiness; Check Download... (2026-11-20)
+
+- **Why Can't I Merge? and Merge Selected... name the blocking rule.** They
+  say which required check failed, has not finished or has not reported, and
+  which ruleset or branch protection wants it; how many approving reviews a
+  rule wants against how many there are; which CODEOWNERS line (number and
+  pattern) still needs an owner's approval, with a changed file it covers; and
+  which rule sends the branch through a merge queue. What could not be read is
+  said at the end. GitHub's own answer is never changed.
+- **Watch Readiness.** Watch a pull request and QUILL says once when it
+  becomes able to merge and once when it stops, naming the blocking rules.
+  Also in Add Watch.
+- **Check Download...** on a release file's row compares the copy you
+  downloaded with GitHub's SHA-256 digest and says match, no match (download it
+  again), or that GitHub has no digest for that file.
+- Attestation signatures are still checked with `gh attestation verify`:
+  verifying them inside QUILL needs Sigstore, which QUILL does not ship.
 
 ### Hosted AI service: accounting you can trust, and one sign-in per code (2026-11-20)
 
@@ -211,6 +411,125 @@ by a review of it. Nothing changes in QUILL or QUILL Lite.
   server's GitHub is too old for something, QUILL says so and names its
   version.
 
+### GitHub Workbench: the wiki, discussion to issue to pull request, Copilot seats, prompt files and AI drafts (2026-11-20)
+
+- **The wiki.** Edit Wiki Pages... copies a repository's wiki to your
+  computer, or brings your copy up to date, and lists its pages with Home
+  first. Enter opens a page in the editor. New Wiki Page... makes one, and
+  Publish Wiki Changes... names the pages and the account, asks for a message
+  and sends them. Nothing is ever forced: if someone else changed the wiki
+  first, QUILL puts your changes on top of theirs, and if that conflicts it
+  undoes the attempt and says so.
+- **From a discussion to a pull request.** Create Issue from Discussion...
+  opens an issue that quotes and links the discussion. Start Pull Request for
+  This Issue... makes a linked branch and a draft pull request that closes the
+  issue. Related... lists everything that links to an issue, pull request or
+  discussion, with its repository.
+- **Copilot for an organization.** Copilot Plan, Copilot Seats, A Member's
+  Copilot Seat..., giving and taking seats from people and teams (owners only,
+  and it asks first), the usage report, agent access and content exclusions.
+  On a repository, Copilot Agent Configuration and Copilot Review Settings.
+  Nothing here needs GitHub Enterprise Cloud.
+- **Prompt files.** Prompt Files... lists a repository's GitHub Models
+  prompts and reads each one as its model, settings, messages, test rows and
+  evaluators, with any problems. Open in Editor edits one.
+- **Open in github.dev** on a file or a pull request, GitHub's free editor in
+  the browser.
+- **AI drafts you check first.** Draft Description and Reviewer Brief on a
+  pull request, Draft Task Breakdown on an issue, and Draft Release Notes on
+  the rows you choose. Each draft opens in the editor with the sources it used
+  and anything it left out. They use your own AI connection, and are greyed
+  with a reason when there is none.
+- **Where review is stuck.** The repository health snapshot now says how many
+  ready pull requests are waiting for a review and how long the oldest has
+  waited. It never names who was asked.
+
+### GitHub Workbench: every object's lifecycle checked, and what was wrong fixed (2026-11-20)
+
+Projects, branches, releases, Actions, security alerts, organizations, teams
+and your own account were each taken through being made, read, changed and
+removed, with tests. What that found:
+
+- **Branch protection kept.** Protect Branch... used to reset every setting
+  it did not name, because GitHub replaces protection whole: who may push,
+  linear history, force pushes, deletion and the reviewers' own settings were
+  lost. They are now read first and sent back as they were.
+- **Draft releases.** A draft could not be opened on its sheet or deleted,
+  because GitHub cannot find a draft by its tag. Both work now, and deleting a
+  draft says that it had no tag to delete.
+- **Project fields.** Text, number and date fields read back as they were
+  saved, including a 0 or an empty value; a number reads 3, not 3.0, and a
+  word typed in a number field is refused in plain words. An item on a
+  finished iteration says which. Delete a Field... offers only the fields
+  people made, never Title or Assignees. A Project or item that is gone, or
+  hidden from you, says so rather than showing an empty sheet.
+- **Project items.** Archive an Item..., Restore an Archived Item... and
+  Remove an Item... on a Project's row. Status update dates are checked
+  before anything is sent.
+- **Refusals in words.** A refused Projects or Actions request says why in one
+  sentence: the sign-in lacks the project scope, a log has passed the
+  repository's retention period, a run was deleted, a workflow cannot be
+  turned off in its present state. A failed field on any sheet gives GitHub's
+  reason without the support code.
+- **Security alerts.** The Reason box offers only the reasons that kind of
+  alert takes, spelled as GitHub spells them, and an alert is never set to
+  fixed or auto-dismissed from the sheet, which only GitHub can do.
+- **Teams.** Lists say visible rather than GitHub's "closed". An organization
+  owner can change a team they are not on. Members and repositories past the
+  first 30 are listed. The Danger Zone now says deleting a team deletes the
+  teams inside it.
+- **People.** Adding someone to an organization or team says they were
+  invited, since they are not in it until they accept.
+- **Also.** An artifact, variable or secret row opens its own sheet; a cache
+  past the first 30 opens; and the Assets window has Properties... to rename a
+  file or change its label.
+
+The live halves are rows in the live-run table; the ones that need an
+organization or a second account wait for the test organization.
+
+### GitHub Workbench: issue fields edited in Properties, and You and the object (2026-11-19)
+
+- **Issue fields are edited on the sheet.** The Properties sheet's Issue
+  Fields page now edits a date, a number, a single choice and text, each with
+  its own kind of control. Saving sends the same request Issue Fields... on
+  the row sends, sets only the fields you changed, and reads the issue again
+  to check GitHub kept them; emptying a field clears it. Several issues at
+  once show Mixed where they differ. Fields with several choices, and types
+  QUILL does not know, stay read only. Without triage access the page says
+  why each field is locked.
+- **Menu rows for your relationships.** Subscribe or Unsubscribe... on an
+  issue, a pull request, a discussion or a commit; Block or Unblock... on a
+  person; Fork... on a repository; Block from Organization... on an
+  organization and on a member; Leave Organization... (asks first); and Your
+  Invitation, which says whether an organization invited you and, since
+  GitHub's API cannot decline one, where to decline it on GitHub.
+- **A repository's You page** adds Star lists (check the lists it is on),
+  Forked by you (ticking it forks the repository, checked afterwards), In
+  Favorites and Pinned in the Workbench (kept on this computer, the same as
+  the menu rows), and whether you sponsor the owner. **Sponsor the Owner...**
+  opens the owner's Sponsor tiers; nothing is charged until you choose a tier
+  and type their name.
+- **React to a Comment...** on an issue, a pull request (including review
+  comments) and a discussion adds a reaction, or takes back one you gave.
+
+### GitHub Workbench: help that knows where you are (2026-11-19)
+
+- **Alt+Enter on a GitHub reference** in a document, in both editors, opens
+  its Properties sheet in the Workbench: `#42`, `owner/name#42`, `@person`, a
+  commit hash or a GitHub address. Anywhere else Alt+Enter does what it did.
+- **Examples from your own work.** F1 in the Workbench ends with an example
+  built from the repository and row you have open. Nothing is read or sent
+  for it.
+- **Short rows for braille.** Workbench Options, Lists: each row is one short
+  line, number and title first, with no column names and nothing cut off.
+- **Key cards and a tour.** A print key card and a braille-ready one, the
+  GitHub guide as one book for each editor, and Help > Take the Tour
+  (Alt+Shift+T), a spoken step per pane.
+- **QUILLBert and QUILLBee tips.** The third time something is done the slow
+  way, a tip waits in the details pane, once. Workbench Options can turn tips
+  off or give plain help without the names.
+- **Ask How...** (Alt+Shift+A) asks your chosen AI, using only the GitHub
+  help. A command it names can be run from the answer.
 ### GitHub Workbench: access templates, more tutorials, team review requests, and the Command Key in the Workbench (2026-11-20)
 
 - **Access templates.** Account > Roles and Access > Access Templates... keeps
@@ -381,6 +700,26 @@ these features, and `--only` to run just some of them.
   organization's copy first and only then deletes each repository's own.
   Environments, deploy keys and autolinks have no organization form on
   GitHub, and QUILL says so.
+### GitHub Workbench: every list filters, and nothing from the old windows is lost (2026-11-20)
+
+- **Filters on every list.** Typing a filter such as `protected:true`,
+  `ahead:>=3`, `name:release-*`, `draft:false` or `-repo:acme/app` now narrows
+  branches, tags, releases, workflow runs, people and the other lists, not
+  only issues and pull requests. The rows already loaded are filtered, and the
+  status line says so: "Filtered here: 2 of 3 loaded. Load All to be sure." A
+  word the list does not understand is named once instead of silently
+  matching nothing.
+- **Three repository commands moved in from the retired Explore GitHub
+  window:** Sync Fork with Upstream..., Create Repository from This
+  Template..., and Delete Repository..., which asks you to type the
+  repository's full name before anything is deleted.
+- **Clearer list names.** Explore lists read as words: "Organization Custom
+  Properties" and "My Email Addresses", not "custom propertys" and "email
+  addresss".
+- The GitHub PRD's appendices, which say where every old view, button and
+  command now lives and what each object's Properties sheet and filters are,
+  are now generated from the code and checked by a test, so they cannot fall
+  out of date.
 
 ### GitHub Workbench: rulesets, branch protection, members, teams and access reviews (2026-11-19)
 
@@ -1098,7 +1437,6 @@ Checked and already fixed: menu letters in Insert, View, Tools and Edit (every
 WordPress row has a key of its own, shown in the label), and the filter and
 reload keys catching chords that menu rows own.
 
-
 Most people meet WordPress because they write something: a blog, or the news
 for their organization's site. That is where this story starts. You connect a
 site, write a post in the editor you already use, and publish it when you are
@@ -1748,7 +2086,6 @@ From EdSharp's recent history, checked against QUILL:
   about ninth grade, as EdSharp does, and each tutorial's estimated time
   against what it promises. What is over today is listed (9 chapters, 14
   tutorials); nothing new may be, and nothing listed may get harder.
-
 
 ### WordPress: five ways the Workbench could lose your work, closed (2026-11-18)
 
@@ -2934,7 +3271,6 @@ be lived in.
 - Escape in an open Show or Source list on the Problems pane closes the list
   and leaves you in the pane.
 
-
 ### Language servers: VS Code's smarts, inside QUILL (2026-11-08)
 
 - QUILL now carries the language servers VS Code uses: VS Code's own for HTML,
@@ -3063,7 +3399,6 @@ be lived in.
   have installed run only for the one in front. QUILL Lite does the same
   across its windows.
 
-
 ### The Problems pane checks on save, and after a pause if you like (2026-11-08)
 
 - While the Problems pane is on, saving checks the file again.
@@ -3071,7 +3406,6 @@ be lived in.
   moment after you stop typing. It's off by default and remembered.
 - These checks say nothing but the new count, such as "2 problems", and only
   when the count has changed. QUILL Lite has the same pane and the same box.
-
 
 ### Word Prediction knows your project (2026-11-08)
 
@@ -3093,7 +3427,6 @@ be lived in.
 - The list is ready within a tenth of a second on a 1 MB file. QUILL Lite has
   the same list.
 
-
 ### Word Prediction in every profile, and in QUILL Lite (2026-11-08)
 
 - **Edit > Word Prediction...** (Ctrl+.) works in every profile. The two
@@ -3103,7 +3436,6 @@ be lived in.
   switch it off.
 - The list moved into one shared module, so QUILL Lite runs the same list on
   the same key. Nothing about how it sounds or what Escape does changed.
-
 
 ### The Problems pane (2026-11-08)
 
@@ -3164,7 +3496,6 @@ be lived in.
   and Forms manual now go to their pages on the website, because a relative
   link out of an EPUB finds nothing.
 - The download page lists the GitHub Guide beside the user guide.
-
 
 ### GitHub Workbench: review threads, Explore and job logs (2026-11-07)
 
@@ -9866,7 +10197,6 @@ whether last session is reopened at all. One shared core
 (`quill/core/session_restore.py`), one shared window, and QUILL Lite has both on
 the same key.
 
-
 ### QUILL and QUILL Lite became one family (2026-09-18)
 
 A twenty-nine item program, closed. The two editors now agree about their keys,
@@ -9961,7 +10291,6 @@ cells promoted into the fifteen-minute pass), the four new windows in
 `docs/release/screen-reader-test-plan.md` for everything in this entry that is
 announced rather than shown.
 
-
 ### Ctrl+F6 walks documents, and Word Count stopped opening a window (2026-09-17)
 
 **`Ctrl+F6` and `Ctrl+Shift+F6` move between documents.** That is Windows' own
@@ -9997,7 +10326,6 @@ is wanted makes it unpredictable, and a navigation key you cannot predict is
 one you press and then have to listen to find out where you are. A region that
 is not showing stays out of the ring, which is the same rule from the other
 side.
-
 
 ### Ctrl+Space means sentence, and four surfaces got a key (2026-09-17)
 
@@ -10052,7 +10380,6 @@ the core's own Insert Equation, so the extension was shadowing the command it
 duplicates. Both of those lost their hotkey entirely rather than moving,
 because a Quillin may add a verb and never re-ship one the core has. Explore
 Equation Structure is genuinely new and took the free leader position.
-
 
 ### Extend Selection Mode moves the way Windows does (2026-09-17)
 
@@ -10125,7 +10452,6 @@ editors already know --- no setting can express "except in code", and asking
 somebody to switch it off per file is asking them to do the classification the
 app has already done.
 
-
 ### Selections say one thing, in one shape (2026-09-17)
 
 **Every selection is announced as its scope and its word count** --- "Selected
@@ -10156,7 +10482,6 @@ reach for --- were the ones it could not put back.
 `unselect_all` and `say_selected` moved out of `main_frame.py` into the
 selection mixin where their subject lives; the module ratcheted **down** again,
 19430 to 19415.
-
 
 ### Five line tools got a key (2026-09-17)
 

@@ -67,10 +67,10 @@
             "tips_enabled": "bool"
           }
         },
-        "function:quill.core.podcasts.history:save_history": "sha256:860cfb3a07eb8650"
+        "function:quill.core.podcasts.history:save_history": "sha256:11569cd7e59cd52f"
       },
       "classification": "additive, compatible",
-      "note": ""
+      "note": "#1986: save_history now writes through ordered_save (snapshot tickets); the same keys, moved into _write. No shape change."
     },
     "cast.library": {
       "current": 2,
@@ -1598,7 +1598,7 @@
             "read_only": "bool"
           }
         },
-        "function:quill.core.transcribe.settings:save_settings": "sha256:85d2deedd73931a3",
+        "function:quill.core.transcribe.settings:save_settings": "sha256:a56ec0b467983505",
         "constant:quill.core.transcribe.settings:SCHEMA_VERSION": "1"
       },
       "classification": "additive, compatible",

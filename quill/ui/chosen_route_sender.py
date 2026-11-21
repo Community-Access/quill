@@ -62,12 +62,18 @@ class ChosenRouteSender:
         return self._bridge.call(work, default=default)
 
     def connection(self, requires: tuple[str, ...] = _TEXT) -> str:
-        """The connection this request may use, or raise with the reason why none.
+        """The connection this request may use, or raise with the reason why none."""
+        return str(self._route(requires)[0])
 
-        A picture also needs the connection's first-picture consent (10B.4):
-        No, the default, sends nothing.
+    def _route(self, requires: tuple[str, ...]) -> tuple[str, Any]:
+        """The connection this request may use and its capability record, or raise.
+
+        Both are read on the UI thread, where the shared route decided. A picture
+        also needs the connection's first-picture consent (10B.4): No, the
+        default, sends nothing.
         """
         said: list[str] = []
+        record: list[Any] = []
 
         def decide() -> str:
             # AI help switched on, and the free AI's agreement when that is the
@@ -82,19 +88,21 @@ class ChosenRouteSender:
                 if not ask_picture_consent(self._frame, chosen):
                     said.append("Nothing was sent.")
                     return ""
+            if chosen:
+                record.append(self._service().capability_record(chosen))
             return chosen
 
         connection = str(self._on_ui(decide, "") or "")
-        if not connection:
+        if not connection or not record:
             raise ChosenRouteError(said[0] if said else "Nothing was sent.")
-        return connection
+        return connection, record[0]
 
     def picture(self, path: Any, prompt: str) -> str:
         """Ask the chosen AI about the picture at *path*; the answer, or raise."""
-        connection = self.connection(_PICTURES)
+        connection, record = self._route(_PICTURES)
         service = self._service()
         try:
-            return picture_on(service, connection, path, prompt)
+            return picture_on(service, connection, record, path, prompt)
         except ChosenRouteError:
             raise
         except Exception as error:  # noqa: BLE001 - the route's own sentence
@@ -109,20 +117,32 @@ class ChosenRouteSender:
         self._frame._ai_open_choose()
 
     def __call__(self, prompt: str, system_prompt: str = "") -> str:
-        connection = self.connection()
+        connection, record = self._route(_TEXT)
         service = self._service()
         try:
-            return send_on(service, connection, prompt, system_prompt)
+            return send_on(service, connection, record, prompt, system_prompt)
         except ChosenRouteError:
             raise
         except Exception as error:  # noqa: BLE001 - the route's own sentence
             raise ChosenRouteError(service._failure_sentence(error, connection)) from error
 
 
-def send_on(service: Any, connection: str, prompt: str, system_prompt: str = "") -> str:
-    """Send *prompt* on *connection* through *service*; the answer, or raise."""
-    from quill.core.ai.connection_caps import CHATGPT, COPILOT, OWN_KEY
+def send_on(
+    service: Any, connection: str, record: Any, prompt: str, system_prompt: str = ""
+) -> str:
+    """Send *prompt* on *connection* (whose capability *record* is checked first)."""
+    from quill.core.ai.connection_caps import (
+        CHATGPT,
+        COPILOT,
+        OWN_KEY,
+        CapabilityMissing,
+        require,
+    )
 
+    try:
+        require(record, *_TEXT)
+    except CapabilityMissing as missing:  # nothing was sent: the registry's own sentence
+        raise ChosenRouteError(str(missing.args[0])) from missing
     whole = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
     if connection == OWN_KEY:
         from quill.core.ai.own_key_providers import host_for, needs_key
@@ -150,7 +170,8 @@ def send_on(service: Any, connection: str, prompt: str, system_prompt: str = "")
     if connection == COPILOT:
         work = service._copilot_converse_work(whole, None, [], threading.Event())
         return str(work()[0])
-    reply = service.client().converse(whole, None, [])
+    client = service.client()
+    reply = client.converse(whole, None, [])
     return str(reply[0])
 
 
@@ -216,10 +237,14 @@ def migrate_older_choice(settings: Any, save: Any) -> str:
     return MOVED_SENTENCE + kept + " Press Ctrl+8 to hear which AI is in use."
 
 
-def picture_on(service: Any, connection: str, path: Any, prompt: str) -> str:
-    """Ask *connection* about the picture at *path* through *service*."""
-    from quill.core.ai.connection_caps import CHATGPT, COPILOT
+def picture_on(service: Any, connection: str, record: Any, path: Any, prompt: str) -> str:
+    """Ask *connection* (whose capability *record* is checked first) about *path*."""
+    from quill.core.ai.connection_caps import CHATGPT, COPILOT, CapabilityMissing, require
 
+    try:
+        require(record, *_PICTURES)
+    except CapabilityMissing as missing:  # nothing was sent: the registry's own sentence
+        raise ChosenRouteError(str(missing.args[0])) from missing
     if connection == CHATGPT:
         from quill.core.ai.chatgpt_ai_help import describe_image_with_chatgpt
 

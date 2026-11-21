@@ -35,6 +35,7 @@ from quill.core.demo_recording import (
 )
 from quill.core.demo_recording_session import preferences_from_plan
 from quill.core.paths import app_data_dir
+from quill.core.reported_save import save_reported
 from quill.core.storage import read_json, write_json_atomic
 from quill.stability.task_manager import UiLifetimeToken
 from quill.ui.post_menu_speech import SettledSpeechMixin
@@ -311,10 +312,10 @@ class StudioDemoMixin(
             dialog.Destroy()
         if plan is None:
             return
-        try:
-            write_json_atomic(app_data_dir() / _PREFS_FILE, preferences_from_plan(plan))
-        except OSError:
-            pass  # Settings not remembered is not a reason to refuse recording.
+        # Unsaved settings never refuse recording; Activity says so, with Retry.
+        path, prefs = app_data_dir() / _PREFS_FILE, preferences_from_plan(plan)
+        write = lambda: write_json_atomic(path, prefs)  # noqa: E731 - Retry writes it again
+        save_reported("QUILL Studio's demonstration settings", path, write)
         self._begin_demonstration(plan, ffmpeg, caps)
 
     # -- the 5-second test ----------------------------------------------------------

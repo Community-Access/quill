@@ -273,7 +273,7 @@ class WorkflowJobsDialog(WorkflowJobFollowMixin):
             try:
                 content = fetch_job_log(self._provider.token, self._repo, job.id)
             except GitHubJobLogError as exc:
-                wx.CallAfter(self._log_loaded, token, None, str(exc))
+                wx.CallAfter(self._log_loaded, token, None, str(exc.args[0]))
                 return
             wx.CallAfter(self._log_loaded, token, content, "")
 

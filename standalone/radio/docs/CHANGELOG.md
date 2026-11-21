@@ -8,6 +8,23 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased] - 2026-11-07
 
+### Infinity or NaN in the settings file no longer stops Radio (2026-11-20)
+
+A hand-edited or damaged settings file with `Infinity` or `NaN` in a number
+(the volume, OptiLab, a source list's version) stopped Quill Radio opening.
+Radio now keeps every choice it can use, uses defaults for the rest, copies
+the file beside itself before anything can save over it, and says once
+where the copy is.
+
+### Shared choices, and settings that stick after closing (2026-11-20)
+
+With *Share these choices with my other Quill apps* on, changing *Announce
+dialog transitions* in Preferences now reaches your other Quill apps; before,
+only turning sharing on or off did. Radio also picks up a newer shared choice
+when it starts, saves it and says so, as QUILL Cast does. A setting saved
+just as Radio's window closed can no longer be undone by an older save still
+being written.
+
 ### Recordings are kept safe through crashes, reconnects and Stop (2026-11-20)
 
 - **Crash recovery never replaces a recording.** When Quill Radio starts after a

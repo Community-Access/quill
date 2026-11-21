@@ -245,35 +245,62 @@
 <h1 id="chapter-8-discussions-and-security">Chapter 8: Discussions and
 security</h1>
 <h2 id="what-this-chapter-covers">What this chapter covers</h2>
-<p>Two kinds of conversation that are not issues. Discussions are a
-repository’s forum: questions, ideas and announcements, with threaded
-replies, answers and polls. Security alerts are GitHub telling a
-repository about a vulnerable package, a weakness in the code, or a
-secret committed by mistake. This chapter covers reading and taking part
-in both, a repository’s security policy and advisories, reporting a
-vulnerability privately, letting a blocked secret through, reviewing a
-pull request’s dependencies, an organization’s security overview,
-setting secrets safely, searching GitHub’s Advisory Database, and saving
-a software bill of materials for a security review.</p>
+<p>You are here for one of two kinds of conversation that are not
+issues. Discussions are a repository’s forum: questions, ideas and
+announcements, with threaded replies, answers and polls. Security alerts
+are GitHub telling a repository about a vulnerable package, a weakness
+in the code, or a secret committed by mistake.</p>
+<p>You will read and take part in discussions, vote in a poll, mark an
+answer and start a discussion of your own. Then you will find and triage
+security alerts, let a blocked secret through, review what a pull
+request does to your dependencies, read an organization’s security
+overview, report a vulnerability privately, work on an advisory, set
+secrets safely, search GitHub’s Advisory Database, and save a software
+bill of materials.</p>
+<p>By the end you will know where each lives in the Workbench, what each
+asks before it sends anything, and why QUILL says “could not read”
+rather than “none” when GitHub will not show you something.</p>
+<p>Discussions and security alerts need a signed-in account. Published
+advisories and the Advisory Database can be read signed out.</p>
 <h2 id="discussions">Discussions</h2>
 <h3 id="finding-them">Finding them</h3>
-<p>In Explore, choose <strong>Repository Discussions</strong> in
-<strong>View:</strong> (<code>Alt+V</code>), with the repository in
-<strong>Repository:</strong> (<code>Alt+R</code>). You need to be signed
-in. Each row reads the number, the title and the category, and whether
-it is answered: “#12 How do I turn off the sounds? (Q&amp;A; Answered by
-alice)”.</p>
-<p>A discussion link pasted into <strong>Open Link…</strong> in GitHub
-Items opens here too.</p>
+<p><strong>Discussions</strong> under a repository
+(<code>Ctrl+Shift+3</code>) lists them. Each row reads the number, the
+title and the category, and whether it is answered: “#12 How do I turn
+off the sounds? (Q&amp;A; Answered by alice)”. A discussion link pasted
+into <strong>Open GitHub Address…</strong> (<code>Ctrl+L</code>) opens
+here too.</p>
+<p>Under Discussions are two more places:</p>
+<ul>
+<li><strong>Pinned (spotlight)</strong> lists the discussions pinned at
+the top of the repository’s Discussions page, first to last in GitHub’s
+order: “1. #12 How do I turn off the sounds? (Q&amp;A; Answered by
+alice)”. The details begin “Pinned 1 of 3, by alice.” Enter opens the
+thread, and Vote… and Properties work as in the main list. If nothing is
+pinned, the list is empty and the status bar says so. GitHub’s API reads
+pinned discussions but cannot pin, unpin or reorder one, so this place
+is read only, and each pinned discussion’s details say so. To pin one,
+use <strong>Open on GitHub</strong> (<code>Shift+Enter</code>) and pin
+it on GitHub’s own page.</li>
+<li><strong>Categories</strong> lists the repository’s discussion
+categories. Where GitHub gives sections, each section is a row,
+“Section: Q&amp;A (3 categories)”, and Enter opens it: its categories
+follow a first row, <strong>All sections</strong>, which comes back.
+GitHub’s API does not yet say which section a category is in, so today
+the place lists every category in GitHub’s order, and the status bar
+says why once. Each category reads its name, and “, question and answer”
+when a reply can be marked the answer. Enter on one goes to Discussions
+with the list narrowed to that category’s name.</li>
+</ul>
 <h3 id="reading-a-thread">Reading a thread</h3>
 <p>Press Enter on a discussion, or choose <strong>Open Discussion
-Thread…</strong> from its context menu. The window <strong>Discussion
+Thread</strong> from its context menu. The window <strong>Discussion
 #12:</strong> and the repository has:</p>
 <ul>
 <li><strong>Thread</strong> (<code>Alt+T</code>), a list. The first row
 is the discussion itself, then each comment followed by its replies:
 “Comment by bob, the answer, 2 replies:” and its first line, then “Reply
-by alice:” and so on. The answer, if there is one, says so.</li>
+by alice:” and so on.</li>
 <li><strong>Text</strong> (<code>Alt+X</code>), the selected row in
 full. Enter in the list takes you there.</li>
 <li><strong>Reply…</strong> (<code>Alt+R</code>), <strong>Mark as
@@ -284,9 +311,10 @@ Answer…</strong> (<code>Alt+M</code>), <strong>Open on GitHub</strong>
 <p>When it loads, the status line says who answered it, or “Not answered
 yet.”, and how many comments and replies there are. A category that does
 not take answers says “This category does not take answers.”</p>
-<p>A discussion with a poll reads it one option to a line, after the
-question and the total: “Poll: Which sound pack?, 25 votes in all”, then
-“Classic: 15 votes, 60 percent”.</p>
+<p>To keep the whole thread, <strong>Read as Document…</strong>
+(<code>Ctrl+Shift+I</code>) on the discussion’s row opens it as one
+document, a heading per post, in the editor, or saves it as Markdown or
+HTML.</p>
 <h3 id="replying">Replying</h3>
 <p><strong>Reply…</strong> (<code>Alt+R</code>) replies to the selected
 comment, or to the discussion itself when the first row is selected. It
@@ -295,34 +323,45 @@ with Insert Mention (bob first), Insert Reference, Insert Emoji, Insert
 Saved Reply, Preview and the check before posting. You hear “Posted your
 reply”. A closed discussion takes no replies, so the button is
 unavailable.</p>
+<p>To change or remove a comment you may edit, use <strong>Edit a
+Comment…</strong> or <strong>Delete a Comment…</strong> on the
+discussion’s row. Each asks which comment; Delete asks again before it
+deletes.</p>
 <h3 id="marking-the-answer">Marking the answer</h3>
 <p>In a question-and-answer category, the person who asked, or a
-maintainer, can mark one comment as the answer. Select the comment and
-press <strong>Mark as Answer…</strong> (<code>Alt+M</code>). QUILL asks
-first: “Mark bob’s comment as the answer to this discussion?” On the
-comment that is already the answer, the button reads <strong>Unmark
-Answer…</strong>, still on <code>Alt+M</code>. A reply cannot be the
-answer, only a top-level comment.</p>
+maintainer, can mark one comment as the answer. Select the comment in
+the thread and press <strong>Mark as Answer…</strong>
+(<code>Alt+M</code>). QUILL asks first: “Mark bob’s comment as the
+answer to this discussion?” On the comment that is already the answer,
+the button reads <strong>Unmark Answer…</strong>, still on
+<code>Alt+M</code>. Only a top-level comment can be the answer, never a
+reply.</p>
 <h3 id="starting-a-discussion">Starting a discussion</h3>
-<p>In the <strong>Repository Discussions</strong> view, signed in,
-choose <strong>New Discussion…</strong> from the context menu.</p>
+<p>In Discussions, press <code>Ctrl+N</code>. QUILL reads the
+repository’s categories and asks which; a category that takes answers
+says “, takes answers”.</p>
 <ul>
-<li><strong>Category:</strong> (<code>Alt+C</code>). Categories that
-take answers say “, takes answers”.</li>
-<li><strong>Title:</strong> (<code>Alt+T</code>) and
-<strong>Body:</strong> (<code>Alt+B</code>).</li>
-<li><strong>Start Discussion</strong>, or <strong>Cancel</strong>.</li>
+<li>When the category has its own discussion form, the form opens as a
+real form, a labelled control for each question, the same way an issue
+form does (Chapter 4).</li>
+<li>Otherwise the <strong>New Discussion</strong> window asks for
+<strong>Title:</strong> (<code>Alt+T</code>) and <strong>Body:</strong>
+(<code>Alt+B</code>).</li>
 </ul>
-<p>You hear “Started the discussion” with its title and category.</p>
+<p><strong>Start Discussion</strong> shows what will be sent and asks
+once more. You hear “Started discussion #14 in Q&amp;A.” If the
+category’s form asks for labels, the question says that starting a
+discussion this way does not add them.</p>
 <h3 id="polls-as-a-table-and-vote">Polls as a table, and Vote…</h3>
-<p>In the GitHub Workbench, <strong>Repository &gt; Discussions</strong>
-lists the discussions. When one has a poll, its details end with the
-poll as a table: a line with the question, the total and whether you may
-vote, “Poll: Which sound pack?, 25 votes in all. You may vote: Vote…”,
-then “Option, votes, percent, your vote:” and a row for each option,
-“Classic, 15 votes, 60 percent, your vote: no”. The discussion’s
-<strong>Properties…</strong> has the same table on its
-<strong>Poll</strong> page, under the question.</p>
+<p>When a discussion has a poll, its details end with the poll as a
+table: a line with the question, the total and whether you may vote,
+“Poll: Which sound pack?, 25 votes in all. You may vote: Vote…”, then
+“Option, votes, percent, your vote:” and a row for each option,
+“Classic, 15 votes, 60 percent, your vote: no”. In the thread window the
+poll reads one option to a line instead: “Classic: 15 votes, 60
+percent”. The discussion’s <strong>Properties…</strong>
+(<code>Alt+Enter</code>) has the same table on its <strong>Poll</strong>
+page, under the question.</p>
 <p><strong>Vote…</strong> on the discussion’s context menu, or
 <strong>Add…</strong> or <strong>Change…</strong> under the Poll page’s
 table, lists the options with their votes. Choose one and you hear the
@@ -330,40 +369,52 @@ outcome once, with the new count: “Voted for Classic. It has 16 votes
 now, of 26 in all.” GitHub keeps a poll vote once it is cast: if you
 have voted, Vote… says which option you chose, and
 <strong>Remove</strong> under the table says a vote cannot be taken
-back. An account set to Read Only in the Workbench (<strong>Workbench
-Options</strong>, Accounts) cannot vote: Vote… says so and sends
-nothing.</p>
-<h3 id="pinned-discussions-the-spotlight">Pinned discussions: the
-spotlight</h3>
-<p><strong>Repository &gt; Discussions &gt; Pinned (spotlight)</strong>
-lists the discussions pinned at the top of the repository’s Discussions
-page, first to last in GitHub’s order: “1. #12 How do I turn off the
-sounds? (Q&amp;A; Answered by alice)”. The details begin “Pinned 1 of 3,
-by alice.” Enter opens the thread, and Vote… and Properties work as in
-the main list. If nothing is pinned, the list is empty and the status
-bar says so.</p>
-<p>GitHub’s API reads pinned discussions but cannot pin, unpin or
-reorder one, so this place is read only, and each pinned discussion’s
-details say so. To pin one, use <strong>Open on GitHub</strong> and pin
-it on GitHub’s own page.</p>
-<h3 id="categories-and-their-sections">Categories and their
-sections</h3>
-<p><strong>Repository &gt; Discussions &gt; Categories</strong> lists
-the repository’s discussion categories. Where GitHub gives sections,
-each section is a row, “Section: Q&amp;A (3 categories)”, and Enter
-opens it: its categories follow a first row, <strong>All
-sections</strong>, which comes back. GitHub’s API does not yet say which
-section a category is in, so today the place lists every category in
-GitHub’s order, and the status bar says why once. Each category reads
-its name, and “, question and answer” when a reply can be marked the
-answer; Enter on one goes to Discussions with the list narrowed to that
-category’s name.</p>
+back. An account whose Workbench level is Read Only (<strong>Account
+&gt; Roles and Access &gt; Workbench Level for This Account…</strong>)
+cannot vote: Vote… says so and sends nothing.</p>
+<h3 id="upvoting-closing-and-deleting">Upvoting, closing and
+deleting</h3>
+<p>A discussion’s context menu also has:</p>
+<ul>
+<li><strong>Upvote</strong> and <strong>Remove Upvote</strong>. An
+upvote helps a discussion rise in the list.</li>
+<li><strong>Close Discussion…</strong>, which asks whether it is
+resolved, outdated or a duplicate, and <strong>Reopen
+Discussion</strong>. You hear “Closed the discussion.” or “Reopened the
+discussion.”</li>
+<li><strong>Delete Discussion…</strong>, which deletes it with every
+comment in it after asking, because it cannot be undone. It needs admin
+access to the repository.</li>
+</ul>
+<h3 id="from-a-discussion-to-an-issue">From a discussion to an
+issue</h3>
+<p>When a discussion turns into work, <strong>Create Issue from
+Discussion…</strong> on its row opens an issue for it. It reads the
+discussion first, then asks for the issue’s title, the discussion’s to
+start with, and its text, which begins with a link back to the
+discussion and quotes it; change either as you like. Last it asks how,
+naming the repository and your account: open the issue and comment on
+the discussion with the issue’s link, or open the issue only. Nothing is
+sent until you answer.</p>
+<p>GitHub has no way, in its API, to turn an issue into a discussion or
+a discussion into an issue; its web page does that, through <strong>Open
+on GitHub</strong>.</p>
+<h3 id="what-links-to-what-related">What links to what: Related…</h3>
+<p><strong>Related…</strong> on a discussion, an issue or a pull request
+lists the items linked to it, each with its repository, its state and
+how it is linked: the pull requests that close an issue, the issues a
+pull request closes, what mentioned it, and the issues, pull requests
+and discussions its own text and comments link to. Enter opens the
+selected one on GitHub, and Copy Link copies its address. GitHub keeps
+no record of what links to a discussion, so a discussion’s list is only
+what the discussion and its replies link to, and the list says so. When
+GitHub would not say what something is, the list says that part is
+unread, never that there is none.</p>
 <h2 id="security-alerts">Security alerts</h2>
 <h3 id="finding-them-1">Finding them</h3>
-<p>In Explore, choose <strong>Repository security alerts</strong> in
-<strong>View:</strong>, with the repository in
-<strong>Repository:</strong>. The view brings three kinds of alert
-together:</p>
+<p><strong>Security</strong> under a repository
+(<code>Ctrl+Shift+8</code>) has the repository’s security places.
+<strong>Alerts</strong> brings three kinds of alert together:</p>
 <ul>
 <li><strong>Dependabot</strong>: a package the repository uses has a
 known vulnerability.</li>
@@ -373,19 +424,23 @@ the code.</li>
 password or key was committed.</li>
 </ul>
 <p>Each row reads the kind, the severity, the package or file, and a
-summary: “Dependabot: high: lodash — Prototype pollution”.</p>
+summary: “Dependabot: high: lodash, Prototype pollution”.</p>
 <p>Reading alerts needs a signed-in account that can see the
 repository’s security alerts. If yours cannot read one kind, or the
 repository has that kind turned off, QUILL says that kind is unavailable
 rather than showing it as having no alerts. A secret’s value is never
-loaded into the view.</p>
+asked for, so it is never in the list, the details, or a file you export
+with <strong>Export List…</strong> (<code>Ctrl+Shift+X</code>).</p>
 <p>In QUILL, <strong>Tools &gt; Git and GitHub &gt; GitHub &gt; Security
-Alerts…</strong> lists a repository’s open Dependabot alerts on their
-own.</p>
+Alerts…</strong> opens the Workbench at this place.</p>
+<p>An alert’s context menu has <strong>Open</strong>, <strong>Dismiss or
+Reopen Alert…</strong>, <strong>Copilot Autofix…</strong>, <strong>Show
+Every Place</strong>, <strong>Open on GitHub</strong> and, on a secret
+scanning alert, <strong>Where It Was Found</strong>.</p>
 <h3 id="dismissing-an-alert">Dismissing an alert</h3>
 <p>Not every alert needs a fix. The package might be used only in tests,
-or the finding might be wrong. On an alert’s row, <strong>Dismiss
-Alert…</strong> on the context menu asks three things:</p>
+or the finding might be wrong. <strong>Dismiss or Reopen Alert…</strong>
+on an open alert asks three things:</p>
 <ol type="1">
 <li><strong>Why</strong>, from GitHub’s own reasons for that kind of
 alert:
@@ -400,15 +455,21 @@ in tests”.</li>
 </ul></li>
 <li><strong>A comment</strong>, which you can leave empty. GitHub takes
 up to 280 characters.</li>
-<li><strong>Are you sure</strong>: the confirmation names the alert and
-the reason, and says everyone with access will see it as dismissed.</li>
+<li><strong>Are you sure</strong>: the question names the alert and the
+reason, and says everyone with access will see it as dismissed.</li>
 </ol>
 <p>Cancel at any step and nothing is sent. QUILL reports the dismissal
 only when GitHub sends the alert back in its new state.</p>
+<p>An alert’s Properties sheet (<code>Alt+Enter</code>) closes it the
+same way. Each kind closes in its own words: a Dependabot or code
+scanning alert is dismissed, a secret is resolved, and the sheet offers
+only that kind’s reasons. A choice that does not fit the kind is refused
+before anything is sent. GitHub marks an alert fixed itself, so the
+sheet does not offer that.</p>
 <h3 id="reopening-an-alert">Reopening an alert</h3>
-<p>Dismissed and fixed alerts have their own view, <strong>Dismissed and
-resolved security alerts</strong>. There, <strong>Reopen Alert…</strong>
-on the context menu asks first, then reopens the alert.</p>
+<p>Dismissed and fixed alerts have their own place, <strong>Security
+&gt; Dismissed and Resolved Alerts</strong>. There, <strong>Dismiss or
+Reopen Alert…</strong> asks first, then reopens the alert.</p>
 <h3 id="copilot-autofix">Copilot Autofix</h3>
 <p>On a code scanning alert, <strong>Copilot Autofix…</strong> says
 whether Copilot has a suggested fix. When it has none, QUILL offers to
@@ -416,6 +477,12 @@ ask for one; when the fix is ready, it offers to commit it to a branch
 you name, with a commit message you may leave empty, so it can go
 through a pull request like any other change. <strong>Show Every
 Place</strong> lists each file and line the alert was found in.</p>
+<h3 id="code-scanning-analyses">Code scanning analyses</h3>
+<p><strong>Security &gt; Code Scanning Analyses</strong> lists the
+analyses GitHub has for the repository, and <strong>CodeQL
+Databases</strong> the databases CodeQL built. <code>Ctrl+N</code> in
+Code Scanning Analyses is <strong>Upload SARIF File…</strong>: results
+from a scanning tool you ran yourself, for the branch you name.</p>
 <h3 id="letting-a-blocked-secret-through">Letting a blocked secret
 through</h3>
 <p>When push protection is on, GitHub refuses a push that contains
@@ -431,6 +498,9 @@ repository’s history. Then you hear how long the allowance lasts, such
 as “GitHub will let the GitHub personal access token through until
 2026-11-19 at 18:00 UTC. Push again now; GitHub keeps an alert for
 it.”</p>
+<p><strong>Secret Scanning History</strong>, on a repository’s context
+menu, says when GitHub last scanned the repository for secrets, and
+how.</p>
 <h3 id="requests-to-dismiss-or-bypass">Requests to dismiss or
 bypass</h3>
 <p>Some organizations want a security manager to approve each dismissal
@@ -448,9 +518,11 @@ The first line is the summary: “Added 3, removed 1. 1 added dependency
 has known vulnerabilities.” Each change follows, the vulnerable ones
 first: “Added: lodash 4.17.20 (npm, package.json), licence MIT.
 Vulnerable: high, GHSA-p6mc-m468-83gw, Prototype Pollution in lodash.” A
-repository whose dependency graph is off says so in words.
-<strong>Compare Dependencies…</strong> on a repository does the same
-between any two branches, tags or commits you type.</p>
+repository whose dependency graph is off says so in words.</p>
+<p><strong>Compare Dependencies…</strong> on a repository does the same
+between any two branches, tags or commits you type, and
+<strong>Dependency Manifests</strong> lists the files GitHub reads the
+dependencies from.</p>
 <h2 id="an-organizations-security-overview">An organization’s security
 overview</h2>
 <p>On an organization’s context menu, <strong>Security Overview</strong>
@@ -458,7 +530,7 @@ counts the open alerts in every repository you can see there, worst
 first: “acme/web: 3 Dependabot (1 critical, 2 high); 1 code scanning
 (high); 2 secret scanning.” A totals line follows. If GitHub will not
 show you one kind, that kind is named and the reason given, never
-counted as none: missing permission is not the same as no risk.</p>
+counted as none: a missing permission is not the same as no risk.</p>
 <p>GitHub sends 100 alerts of a kind at a time, so the overview reads
 every page of each list, however many there are. A small window shows
 that it is reading, with Cancel (or <code>Escape</code>) to stop before
@@ -467,31 +539,37 @@ last line says how much it read: “Read every page: 351 alerts in 6
 pages.” If you stop it, the Workbench says how many it had read and
 shows nothing, because part of a count would read as the whole of
 it.</p>
+<p>The organization’s place also has the alerts themselves, every
+repository’s in one list: <strong>Dependabot Alerts</strong>,
+<strong>Code Scanning Alerts</strong>, <strong>Secret Scanning
+Alerts</strong> and <strong>Security Advisories</strong>. Open a
+repository’s own Alerts to dismiss or resolve one. <strong>Security
+Managers</strong> lists the teams that may manage security for every
+repository there.</p>
 <h2 id="security-policy-and-reporting">Security policy and
 reporting</h2>
 <p>Found a security hole in someone’s project? Do not open a public
-issue: tell the maintainers privately first. <strong>Repository &gt;
-Security &gt; Policy</strong> in the GitHub Workbench says how. Its
-first row is the repository’s security policy, “Security policy:
-SECURITY.md. Enter opens it.”, found in the root, <code>.github</code>
-or <code>docs</code>, or says the repository has none. The second says
-whether private vulnerability reporting is on. When it is, anyone signed
-in can report there, below.</p>
+issue: tell the maintainers privately first. <strong>Security &gt;
+Policy</strong> under the repository says how. Its first row is the
+repository’s security policy, “Security policy: SECURITY.md. Enter opens
+it.”, found in the root, <code>.github</code> or <code>docs</code>, or
+says the repository has none. The second says whether private
+vulnerability reporting is on. When it is, anyone signed in can report,
+as below.</p>
 <h2 id="security-advisories">Security advisories</h2>
 <p>A security advisory is a project’s notice of a vulnerability: which
 package and versions, how serious, and where it is fixed. Each has a
 GHSA (GitHub Security Advisory) id, and often a CVE (Common
 Vulnerabilities and Exposures) number too.</p>
-<p><strong>Repository &gt; Security &gt; Advisories</strong> lists a
-repository’s advisories, one sentence each: “GHSA-q4hm-2345-wxyz: high
-severity, draft: Path traversal in the importer.” Published advisories
-are listed for everyone; drafts and private reports only for the
-repository’s administrators and security managers, and anyone else hears
-that rather than an empty list. The details pane says which packages and
-versions are affected, which version fixes it, who is credited, and the
-full description.</p>
-<p><strong>New Here</strong> in Advisories (<code>Ctrl+N</code>) asks
-which you want:</p>
+<p><strong>Security &gt; Advisories</strong> lists a repository’s
+advisories, one sentence each: “GHSA-q4hm-2345-wxyz: high severity,
+draft: Path traversal in the importer.” Published advisories are listed
+for everyone; drafts and private reports only for the repository’s
+administrators and security managers, and anyone else hears that rather
+than an empty list. The details say which packages and versions are
+affected, which version fixes it, who is credited, and the full
+description.</p>
+<p><code>Ctrl+N</code> in Advisories asks which you want:</p>
 <ul>
 <li><strong>Report a vulnerability privately to the
 maintainers</strong>, for anyone, when private reporting is on. QUILL
@@ -508,34 +586,39 @@ published.</li>
 <li><strong>Publish or Close Advisory…</strong> publishes it, closes it,
 or makes it a draft again. A report someone sent privately reads
 “private report to review”; on it, the same command offers
-<strong>Accept it</strong>, which makes it a draft advisory that you and
-the reporter work on, or <strong>Close it</strong>. Publishing makes it
+<strong>Accept it</strong>, which makes it a draft advisory you and the
+reporter work on, or <strong>Close it</strong>. Publishing makes it
 public for good, puts it in GitHub’s Advisory Database and alerts the
 projects that depend on the package, so QUILL asks you to type its GHSA
 id first.</li>
 <li><strong>Request CVE…</strong> asks GitHub for a CVE number for a
 draft. GitHub reviews each request, so the number comes later.</li>
-</ul>
-<p>On a draft, <strong>Advisory Comments</strong>, <strong>Comment on
-Advisory…</strong> and <strong>Edit an Advisory Comment…</strong> are
-its private discussion, and <strong>Make a Private Fork for the
+<li><strong>Advisory Comments</strong>, <strong>Comment on
+Advisory…</strong> and <strong>Edit an Advisory Comment…</strong> are a
+draft’s private discussion, and <strong>Make a Private Fork for the
 Fix</strong> makes the temporary private fork GitHub offers for working
-on it.</p>
+on it.</li>
+</ul>
 <h2 id="secrets">Secrets</h2>
 <p>A secret is a value a workflow, Dependabot, a codespace or the
 Copilot agent uses but nobody reads again, such as a deploy token. They
-are lists in the tree: a repository’s <strong>Settings</strong>, an
-organization’s own node, and an environment’s <strong>Secrets…</strong>
-on its row. Each row says the secret’s name and when it changed: “Secret
-DEPLOY_TOKEN, changed 2026-11-02. Its value is never shown.”</p>
+are lists in the tree: under a repository’s <strong>Settings</strong>,
+<strong>Actions Secrets</strong>, <strong>Dependabot Secrets</strong>,
+<strong>Codespaces Secrets</strong> and <strong>Copilot Agent
+Secrets</strong>; the same four under an organization’s place; and an
+environment’s <strong>Secrets…</strong> on its row. <strong>Settings
+&gt; Organization Secrets Here</strong> lists the organization’s secrets
+this repository may use. Each row says the secret’s name and when it
+changed: “Secret DEPLOY_TOKEN, changed 2026-11-02. Its value is never
+shown.”</p>
 <p>A secret’s value only ever goes one way, to GitHub:</p>
 <ul>
-<li><strong>New Here</strong> (<code>Ctrl+N</code>) asks for its name,
-then its value in a password box. QUILL seals the value on this computer
-with that repository’s, environment’s or organization’s own public key
-(a libsodium sealed box, as GitHub requires) and sends only the sealed
-form. The value is never read back, said, shown, logged or kept: once
-the call ends, it is gone.</li>
+<li><code>Ctrl+N</code> asks for its name, then its value in a password
+box. QUILL seals the value on this computer with that repository’s,
+environment’s or organization’s own public key (a libsodium sealed box,
+as GitHub requires) and sends only the sealed form. The value is never
+read back, said, shown, logged or kept: once the call ends, it is
+gone.</li>
 <li><strong>Change…</strong> on a secret’s row sends a new value the
 same way. For an organization’s secret you may leave the value empty to
 keep it, and choose which of the organization’s repositories may use it:
@@ -551,6 +634,8 @@ opens empty; Copy as Text says “hidden”, the preview before it is sent
 says “(hidden)”, the box is emptied once GitHub has it, and Change
 History records only that it was set.</li>
 </ul>
+<p>To set one secret in many repositories at once, use <strong>Secrets
+by Name</strong> under Across Repositories (Chapter 12).</p>
 <h2 id="searching-the-advisory-database">Searching the Advisory
 Database</h2>
 <p><strong>Search &gt; Security Advisories</strong> searches GitHub’s
@@ -563,17 +648,47 @@ repository depends on, with versions and licences. Security reviews,
 procurement and some contracts ask for one. GitHub builds it from the
 repository’s dependency graph, in SPDX (Software Package Data Exchange),
 the standard format those tools read.</p>
-<p>In the GitHub Workbench, select a repository and choose
-<strong>Repository &gt; Export Software Bill of Materials…</strong>
-(<code>Ctrl+Alt+B</code>), or the same row on <strong>Repository
-Actions</strong> (<code>Ctrl+Shift+G</code>). A Save dialog offers a
-name such as <code>owner-name.spdx.json</code>. When it is saved you
-hear “Saved owner-name.spdx.json: 212 packages, in SPDX format.” The
-file is JSON (JavaScript Object Notation), so QUILL opens it like any
-other text file.</p>
+<p>Select a repository and choose <strong>Repository &gt; Export
+Software Bill of Materials…</strong> (<code>Ctrl+Alt+B</code>), or the
+same row in <strong>Repository Actions…</strong>
+(<code>Ctrl+Shift+G</code>). A Save window offers a name such as
+<code>owner-name.spdx.json</code>. When it is saved you hear “Saved
+owner-name.spdx.json: 212 packages, in SPDX format.” The file is JSON
+(JavaScript Object Notation), so QUILL opens it like any other text
+file. <strong>SBOM Report</strong>, on a repository’s context menu,
+reads the same list in a window instead of saving it.</p>
 <p>A repository whose dependency graph is turned off has nothing to
 export, and QUILL says where to turn it on: the repository’s settings,
 under Code security. Nothing is saved in that case.</p>
+<h2 id="a-walk-through-your-first-discussion">A walk-through: your first
+discussion</h2>
+<p>This uses the practice repository, which you make with <strong>Help
+&gt; Practice on GitHub…</strong> (<code>Ctrl+Alt+P</code>). Discussions
+are off in a new repository, so the first step turns them on.</p>
+<ol type="1">
+<li>Select the practice repository in the tree and press
+<code>Alt+Enter</code>. Its Properties open. Move to the
+<strong>Features</strong> page, check <strong>Discussions</strong>, and
+save. You hear that the change was saved.</li>
+<li>Press <code>Ctrl+Shift+3</code>. You arrive in Discussions, and the
+details say it is empty and what would fill it.</li>
+<li>Press <code>Ctrl+N</code>. Choose <strong>General</strong> from the
+categories. In the New Discussion window, type a title in
+<strong>Title:</strong>, a line in <strong>Body:</strong>, and press
+<strong>Start Discussion</strong>. Answer Yes to the question. You hear
+“Started discussion” with its number and category, and it is in the
+list.</li>
+<li>Press Enter on it. The thread window opens on the discussion itself.
+Press <code>Alt+R</code>, type a reply, and post it. You hear “Posted
+your reply”. Press Escape to close the thread.</li>
+<li>Press <code>Shift+F10</code> and choose <strong>Close
+Discussion…</strong>, then <strong>Resolved</strong>. You hear “Closed
+the discussion.”</li>
+<li>Press <code>Ctrl+Shift+8</code>, then arrow to
+<strong>Alerts</strong>. A new repository has none, or has a kind turned
+off; either way the list says which, rather than claiming there are no
+alerts.</li>
+</ol>
 <hr />
 <ul>
 <li>Previous: <a

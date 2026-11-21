@@ -273,7 +273,20 @@ it.
 site's plugins and theme keep for a page, such as an SEO title or an event
 date. Fields that hold a list or a group, such as speakers or an address,
 come next in their own window, where you can add, change, remove and
-reorder the items. **File > WordPress > Plugin Fields...** changes the fields of The
+reorder the items.
+
+Some plugins add their fields to every page and post. The Events Calendar,
+for example, adds more than thirty event, venue and organizer fields to an
+ordinary post. So that the fields you came for are easy to find, Custom
+Fields hides the fields a plugin adds to everything, and its opening
+sentence says how many it hid and whose they are. Check **Show all fields**
+(Alt+S), the first box in the window, and choose OK: the window opens again
+with every field, and anything you already typed is kept. WordPress's
+own fields, QUILL's own, Yoast SEO's title, description and focus
+keyphrase, and any field that does not belong to a plugin QUILL knows are
+always shown. A hidden field is never changed or removed.
+
+**File > WordPress > Plugin Fields...** changes the fields of The
 Events Calendar, WooCommerce, Yoast SEO and Rank Math, where your site has
 them.
 
