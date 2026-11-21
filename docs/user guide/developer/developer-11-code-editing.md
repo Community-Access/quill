@@ -144,7 +144,7 @@ With **GitHub Remote Access** on (it needs Developer Tools):
 
 - **File > Open from Remote** has Open Remote GitHub Repository..., Open
   Remote GitHub File URL..., Commit to GitHub..., Manage GitHub Accounts... and
-  Open GitHub Items..., the accessible viewer for issues, pull requests,
+  GitHub Workbench..., which opens the GitHub Workbench: issues, pull requests,
   branches and workflows. Pull request diffs read as a file list with QUILL's
   spoken compare.
 - **Tools > Git and GitHub > GitHub** has the repository commands: create,
@@ -155,7 +155,7 @@ With **GitHub Remote Access** on (it needs Developer Tools):
   use the GitHub CLI, `gh`. Creating a Codespace may cost money, and QUILL
   says so and asks first.
 
-The **GitHub Items...** viewer accepts an `owner/repo`, a GitHub repository
+The **GitHub Workbench...** row accepts an `owner/repo`, a GitHub repository
 address, or a `git@github.com:` remote. If the current document is in a clone
 with a GitHub origin, QUILL fills in the repository. **Issues & PRs** is the
 combined inbox for the loaded repository; Search queries GitHub with its own

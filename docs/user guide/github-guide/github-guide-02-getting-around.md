@@ -145,7 +145,8 @@ You rarely need to walk the tree. These keys go straight to a place:
 
 `Ctrl+L` (**File > Open GitHub Address...**) takes `owner/name`, or a link to
 anything in a repository, and gives that repository a place of its own in the
-tree, with you on it. A compare link opens the comparison. `Ctrl+G` (**File >
+tree, with you on it. A compare link opens the comparison, and `#42` opens
+issue or pull request 42 in the repository you are in. `Ctrl+G` (**File >
 Go to Number...**) goes to an issue or pull request in the current repository
 by its number.
 

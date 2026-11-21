@@ -438,22 +438,18 @@ context menu too.</p>
 <p>Some workflows are set up to be started by hand. Choose <strong>Run
 Workflow on Branch…</strong> (<code>Ctrl+Shift+R</code>) from the
 Repository menu, or from a workflow’s context menu in
-<strong>Workflows</strong>. QUILL asks three things: the repository, as
-<code>owner/name</code>, filled in with the repository of the document
-you are editing; the workflow’s file name, such as <code>ci.yml</code>;
-and the branch or tag, starting with <code>main</code>. Then it asks
-“Dispatch” the workflow “on” the branch “in” the repository, and the
-editor’s status bar says “Dispatched” and the workflow and branch.</p>
-<p>It does not yet take the workflow or the repository from the row you
-selected, so type them as the workflow’s file name says. QUILL asks only
-for the branch, not for a workflow’s other inputs; a workflow that needs
-those before it can start has to be run from GitHub’s own page.</p>
-<p><strong>Run Workflow on Branch…</strong> is the editor’s
-<strong>Dispatch Workflow…</strong>, which is also in the Workbench’s
-<strong>Repository Actions…</strong> (<code>Ctrl+Shift+G</code>), and in
-QUILL’s <strong>Tools &gt; Git and GitHub &gt; GitHub</strong> submenu.
-<strong>In QUILL Lite</strong>, which has no such command, the row is
-greyed and says the editor that opened the window does not have it.</p>
+<strong>Workflows</strong>. It runs the workflow you selected, in that
+repository. QUILL asks for the branch or tag, starting with
+<code>main</code>, then asks “Run the workflow CI on main in
+owner/name?”, and you hear that GitHub accepted it and that its run
+appears in Runs shortly. QUILL asks only for the branch, not for a
+workflow’s other inputs; a workflow that needs those before it can start
+has to be run from GitHub’s own page.</p>
+<p>It works the same in QUILL and QUILL Lite. QUILL’s editor also has
+<strong>Dispatch Workflow…</strong>, in the Workbench’s
+<strong>Repository Actions…</strong> (<code>Ctrl+Shift+G</code>) and in
+<strong>Tools &gt; Git and GitHub &gt; GitHub</strong>, which asks for
+the repository and the workflow’s file name as well.</p>
 <h3 id="starting-workflows-from-outside">Starting workflows from
 outside</h3>
 <p>A workflow can start on <code>repository_dispatch</code>, an event

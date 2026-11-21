@@ -2,6 +2,31 @@
 
 ## 1.0.0
 
+### GitHub Workbench: what writing its guide found, fixed (2026-11-21)
+
+- **Codespaces ask before they cost money.** Start, New Codespace (Ctrl+N)
+  and Open in a Codespace now ask first and say who GitHub bills: you, or the
+  organization that pays for the repository's codespaces. No is the default.
+- **Run Workflow on Branch runs the workflow you selected**, in its own
+  repository. It asks only for the branch. It used to ask for the repository
+  and the workflow's file name again.
+- **Inbox's Failed checks lists your own pull requests**, not every failing
+  pull request you can see.
+- **Include read notifications works.** Notifications then lists read ones
+  too.
+- **Snooze for One Day hides the notification** until the next day. Include
+  read notifications shows it again, marked, so you can unsnooze it.
+- **Refreshing Notifications too soon** shows the last list and says how many
+  seconds GitHub asks you to wait, instead of asking GitHub again.
+- **Comments appear in the details pane**, under the description of an issue
+  or pull request.
+- **The artifacts window's Close button has no access key.** Escape closes
+  it, as in the other Workbench windows.
+- **File > Open from Remote > GitHub Workbench...** is the row's name now. It
+  said GitHub Items....
+- **Open GitHub Address (Ctrl+L) takes #42**, and opens that issue or pull
+  request in the repository you are in.
+
 ### QUILL Cast: a new download folder takes the waiting downloads with it (2026-11-20)
 
 Chris Nova changed their download folder and found that the episodes they had already asked to download still went to the old one. Each download's place was fixed the moment it was queued, so a new folder only reached episodes queued afterwards. Now, when you change the download folder in QUILL Cast's Preferences or QUILL's Podcast Settings, every download still waiting moves to the new folder, and Cast says how many: "2 downloads waiting will now save to D:\other files\Quill Cast Downloads." A download that has already started, or was paused part way, finishes in the old folder, so nothing already downloaded is lost, and Cast says that too. Episodes already on disk stay where they are and keep playing.

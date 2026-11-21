@@ -372,9 +372,8 @@ claiming it is done.</li>
 <h3 id="in-quill">In QUILL</h3>
 <p>There are three ways in.</p>
 <ul>
-<li><strong>File &gt; Open from Remote &gt; GitHub Items…</strong> opens
-the Workbench. The row keeps its old name; the window it opens is the
-GitHub Workbench. The same submenu has <strong>Clone
+<li><strong>File &gt; Open from Remote &gt; GitHub Workbench…</strong>
+opens the Workbench. The same submenu has <strong>Clone
 Repository…</strong>, <strong>Open GitHub Reference…</strong> for a
 pasted GitHub link, and <strong>Manage GitHub Accounts…</strong>.</li>
 <li><strong>The GitHub menu.</strong> Turn on <strong>View &gt; GitHub
@@ -850,9 +849,10 @@ runs, Files, Releases, Projects, Security, Settings and Insights</td>
 <p><code>Ctrl+L</code> (<strong>File &gt; Open GitHub Address…</strong>)
 takes <code>owner/name</code>, or a link to anything in a repository,
 and gives that repository a place of its own in the tree, with you on
-it. A compare link opens the comparison. <code>Ctrl+G</code>
-(<strong>File &gt; Go to Number…</strong>) goes to an issue or pull
-request in the current repository by its number.</p>
+it. A compare link opens the comparison, and <code>#42</code> opens
+issue or pull request 42 in the repository you are in.
+<code>Ctrl+G</code> (<strong>File &gt; Go to Number…</strong>) goes to
+an issue or pull request in the current repository by its number.</p>
 <p>Elsewhere in QUILL, <code>Ctrl+3</code>, <code>Ctrl+4</code> and
 <code>Ctrl+8</code> are AI keys. The Workbench has no AI menu, so here
 they keep their place in the row of digits. Switch back to the editor
@@ -1368,8 +1368,14 @@ changed.”</td>
 </tbody>
 </table>
 <p>After Mark Read, Mark Done or Unsubscribe the list loads again.</p>
-<p>The Workbench does not hide a snoozed notification yet: it stays in
-the list, so Snooze is a note to yourself for now.</p>
+<p>A snoozed notification leaves the list until the next day, and the
+status bar says how many are hidden. Turn on <strong>Include read
+notifications</strong> in Workbench Options to see them again, each
+starting “Snoozed here until”, so you can Unsnooze one. That option also
+shows notifications you have already read, as well as unread ones.</p>
+<p>GitHub asks apps to wait between checks of your notifications. A
+refresh sooner than that shows the list from the last check and says how
+many seconds to wait.</p>
 <p><code>Ctrl+.</code> moves to the next unread row in the list, and
 <code>Ctrl+Shift+.</code> to the one before, so you can skip what you
 have already read.</p>
@@ -1466,8 +1472,8 @@ recently updated first:</p>
 <li><strong>Review requested</strong>, from you or from a team you are
 on</li>
 <li><strong>Mentioned</strong></li>
-<li><strong>Failed checks</strong>: open pull requests whose checks
-failed</li>
+<li><strong>Failed checks</strong>: your own open pull requests whose
+checks failed</li>
 </ul>
 <p>Each row’s details start with where it came from, so you know whether
 it is there because you were assigned or because you were mentioned. An
@@ -1595,8 +1601,9 @@ further down, lists both together, newest first.</p>
 <li><code>Ctrl+G</code> (<strong>File &gt; Go to Number…</strong>) goes
 to an issue or pull request in this repository by its number.</li>
 <li><code>Ctrl+L</code> (<strong>File &gt; Open GitHub
-Address…</strong>) takes <code>owner/name#42</code>, or a link pasted
-from anywhere, and goes there.</li>
+Address…</strong>) takes <code>#42</code> for this repository,
+<code>owner/name#42</code>, or a link pasted from anywhere, and goes
+there.</li>
 <li><code>Ctrl+E</code> moves to the filter box. Plain words narrow the
 list you are looking at; GitHub’s own words, such as
 <code>is:open label:bug</code>, ask GitHub.</li>
@@ -1622,9 +1629,13 @@ comments;</li>
 <p>Shortcodes such as <code>:tada:</code> are read by their names,
 “party popper”, so you do not hear colons spelled out.</p>
 <h3 id="reading-the-comments">Reading the comments</h3>
-<p>The details pane holds the description, and says how many comments
-there are. To read the whole conversation, choose <strong>Read as
-Document…</strong> (<code>Ctrl+Shift+I</code>). It asks how you want
+<p>The details pane holds the description, then the comments, oldest
+first, each starting “Comment 1 of 3”, its author and its date. QUILL
+reads them the first time you select the issue; until they arrive the
+pane ends “Reading the comments…”. If you are in the pane when they
+land, you hear “3 comments read; they follow the description.” To read
+the whole conversation with a heading for each post, choose <strong>Read
+as Document…</strong> (<code>Ctrl+Shift+I</code>). It asks how you want
 it:</p>
 <ul>
 <li><strong>Open in Editor</strong> opens the thread as one document, a
@@ -3202,22 +3213,18 @@ context menu too.</p>
 <p>Some workflows are set up to be started by hand. Choose <strong>Run
 Workflow on Branch…</strong> (<code>Ctrl+Shift+R</code>) from the
 Repository menu, or from a workflow’s context menu in
-<strong>Workflows</strong>. QUILL asks three things: the repository, as
-<code>owner/name</code>, filled in with the repository of the document
-you are editing; the workflow’s file name, such as <code>ci.yml</code>;
-and the branch or tag, starting with <code>main</code>. Then it asks
-“Dispatch” the workflow “on” the branch “in” the repository, and the
-editor’s status bar says “Dispatched” and the workflow and branch.</p>
-<p>It does not yet take the workflow or the repository from the row you
-selected, so type them as the workflow’s file name says. QUILL asks only
-for the branch, not for a workflow’s other inputs; a workflow that needs
-those before it can start has to be run from GitHub’s own page.</p>
-<p><strong>Run Workflow on Branch…</strong> is the editor’s
-<strong>Dispatch Workflow…</strong>, which is also in the Workbench’s
-<strong>Repository Actions…</strong> (<code>Ctrl+Shift+G</code>), and in
-QUILL’s <strong>Tools &gt; Git and GitHub &gt; GitHub</strong> submenu.
-<strong>In QUILL Lite</strong>, which has no such command, the row is
-greyed and says the editor that opened the window does not have it.</p>
+<strong>Workflows</strong>. It runs the workflow you selected, in that
+repository. QUILL asks for the branch or tag, starting with
+<code>main</code>, then asks “Run the workflow CI on main in
+owner/name?”, and you hear that GitHub accepted it and that its run
+appears in Runs shortly. QUILL asks only for the branch, not for a
+workflow’s other inputs; a workflow that needs those before it can start
+has to be run from GitHub’s own page.</p>
+<p>It works the same in QUILL and QUILL Lite. QUILL’s editor also has
+<strong>Dispatch Workflow…</strong>, in the Workbench’s
+<strong>Repository Actions…</strong> (<code>Ctrl+Shift+G</code>) and in
+<strong>Tools &gt; Git and GitHub &gt; GitHub</strong>, which asks for
+the repository and the workflow’s file name as well.</p>
 <h3 id="starting-workflows-from-outside">Starting workflows from
 outside</h3>
 <p>A workflow can start on <code>repository_dispatch</code>, an event
@@ -4960,9 +4967,12 @@ its machine, and when it was last used. Its context menu has:</p>
 <ul>
 <li><strong>Show Details</strong>: the same, with its address on
 GitHub.</li>
-<li><strong>Start</strong> and <strong>Stop</strong>. You hear
-“Starting” and its name, or “Stopping” and its name, and that its files
-are kept. A stopped codespace does not charge for computing time.</li>
+<li><strong>Start</strong> and <strong>Stop</strong>. Start asks first,
+and says who GitHub bills: you, or the organization that pays for the
+repository’s codespaces. No is the default, so Enter starts nothing. You
+hear “Starting” and its name, or “Stopping” and its name, and that its
+files are kept. A stopped codespace does not charge for computing
+time.</li>
 <li><strong>Change Machine…</strong> lists the machines GitHub offers
 for it and uses the one you choose from its next start. When there is no
 other, QUILL says so.</li>
@@ -4982,20 +4992,26 @@ not pushed or exported are lost.</li>
 <code>Ctrl+N</code>. QUILL asks which branch, starting with
 <code>main</code>, then reads what a codespace for that repository can
 use and asks which machine, and which dev container when the repository
-has more than one. You hear “Making the codespace” and its name, and
-that it takes a minute or two to start.</li>
+has more than one. Then it asks whether to make it, and says who GitHub
+bills. You hear “Making the codespace” and its name, and that it takes a
+minute or two to start.</li>
 <li><strong>On an open pull request</strong>, <strong>Open in a
-Codespace</strong> makes one on the pull request’s branch at once. Use
-it to try a change for real before you review it.</li>
+Codespace</strong> asks the same question, then makes one on the pull
+request’s branch. Use it to try a change for real before you review
+it.</li>
 <li><strong>Open in Codespaces…</strong>, on the context menu of a
 repository, branch or pull request, asks first, reminds you that
 starting a codespace can cost money, and then opens GitHub’s own
 Codespaces page in your browser. It makes nothing itself and does not
 send your token. You make your choices on GitHub’s page.</li>
 </ul>
-<p><strong>Ctrl+N</strong> and <strong>Open in a Codespace</strong> make
-and start a codespace straight away, with no further question: choosing
-them is the decision. <strong>Stop</strong> it when you are done.</p>
+<p><strong>Start</strong>, <strong>Ctrl+N</strong> and <strong>Open in a
+Codespace</strong> each ask before GitHub starts charging, for example
+“Make a codespace for pull request #42? It costs money for every hour it
+runs, and for its storage until you delete it. GitHub bills the
+organization acme.” No is the default button. When GitHub does not say
+who pays, QUILL says it is you unless the repository’s organization pays
+for Codespaces. <strong>Stop</strong> it when you are done.</p>
 <p>If a repository’s dev container asks for permissions you have not
 accepted, QUILL says so and makes nothing. Open the repository’s
 Codespaces on GitHub once to accept them, then try again.</p>
@@ -9264,7 +9280,7 @@ Tools &gt; Customize Features has no switch for it.</li>
 <tbody>
 <tr>
 <td>The Workbench</td>
-<td>File &gt; Open from Remote &gt; GitHub Items…</td>
+<td>File &gt; Open from Remote &gt; GitHub Workbench…</td>
 <td>File &gt; GitHub Workbench… (<code>Alt+F</code>, then
 <code>G</code>)</td>
 </tr>

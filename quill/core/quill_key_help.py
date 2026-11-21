@@ -330,7 +330,7 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
     "file.open_github_file_url": "Open Remote GitHub File URL",
     "file.github_save_back": "Save To GitHub",
     "file.github_manage_accounts": "Manage GitHub Accounts",
-    "file.open_github_items": "Open GitHub Issues And Pull Requests",
+    "file.open_github_items": "Open GitHub Workbench",
     "tools.speech_dictate": "Dictate Into Document",
     "tools.speech_batch_export": "Batch Speech Export",
     "tools.find_recording_chapters": "Find Chapters in a Recording",

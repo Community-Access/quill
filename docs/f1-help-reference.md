@@ -2958,7 +2958,7 @@ Control coverage: 408 audited sites (408 helped).
 
 **File > New....** Choose what to create, wherever you are.
 
-**File > Open GitHub Address....** Open a repository by owner/name or link; a compare link opens the comparison.
+**File > Open GitHub Address....** Open a repository by owner/name or link; a compare link opens the comparison, and #42 opens that issue or pull request in this repository.
 
 **File > Go to Number....** Go to an issue or pull request in this repository by its number.
 

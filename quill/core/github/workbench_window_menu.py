@@ -79,7 +79,8 @@ _FILE = MenuSpec(
             "open_address",
             "&Open GitHub Address...",
             "Ctrl+L",
-            "Open a repository by owner/name or link; a compare link opens the comparison.",
+            "Open a repository by owner/name or link; a compare link opens the comparison, "
+            "and #42 opens that issue or pull request in this repository.",
         ),
         _row(
             "go_to_number",

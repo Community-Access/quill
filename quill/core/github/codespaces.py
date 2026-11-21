@@ -21,9 +21,11 @@ from quill.core.github.rest_transport import GitHubRestError
 from quill.core.github.workbench_api import GitHubApi
 
 __all__ = [
+    "PAYER_UNKNOWN",
     "Choice",
     "CodespaceError",
     "NewChoices",
+    "billing_owner",
     "codespace_row",
     "create",
     "delete",
@@ -69,6 +71,33 @@ def _refused(exc: GitHubRestError, doing: str) -> CodespaceError:
     if exc.status in (400, 422):
         return CodespaceError(f"GitHub could not {doing}: {exc}")
     return CodespaceError(f"Could not {doing}: {exc}")
+
+
+PAYER_UNKNOWN = "you, unless the repository's organization pays for Codespaces"
+
+
+def _payer(data: Any) -> str:
+    """Who GitHub bills, from a ``billable_owner`` in *data*, as words to say."""
+    owner = data.get("billable_owner") if isinstance(data, Mapping) else None
+    login = str(owner.get("login") or "") if isinstance(owner, Mapping) else ""
+    if not login:
+        return PAYER_UNKNOWN
+    if str(owner.get("type") or "").casefold() == "organization":
+        return f"the organization {login}"
+    return f"you ({login})"
+
+
+def billing_owner(api: GitHubApi, *, repo: str = "", name: str = "") -> str:
+    """Who pays for codespace *name*, or for a new one in *repo*: you, or an organization.
+
+    Never raises: when GitHub will not say, the answer is :data:`PAYER_UNKNOWN`, so
+    the question before a paid action can still be asked honestly.
+    """
+    path = _one(name) if name else f"/repos/{repo}/codespaces/new"
+    try:
+        return _payer(api.rest("GET", path).data)
+    except GitHubRestError:
+        return PAYER_UNKNOWN
 
 
 def codespace_row(raw: Mapping[str, Any]) -> ExploreRow:
@@ -137,6 +166,7 @@ class NewChoices:
     default_container: str
     location: str
     allowed: bool
+    payer: str = PAYER_UNKNOWN
 
 
 def new_choices(api: GitHubApi, repo: str, ref: str) -> NewChoices:
@@ -167,7 +197,8 @@ def new_choices(api: GitHubApi, repo: str, ref: str) -> NewChoices:
             allowed = bool(check.get("accepted", True)) if isinstance(check, Mapping) else True
         except GitHubRestError:
             allowed = True  # the check is advice; creating says if it is refused
-    return NewChoices(tuple(_machines(made)), choices, container, location, allowed)
+    payer = _payer(defaults)
+    return NewChoices(tuple(_machines(made)), choices, container, location, allowed, payer)
 
 
 def create(api: GitHubApi, repo: str, ref: str, machine: str = "", container: str = "") -> str:

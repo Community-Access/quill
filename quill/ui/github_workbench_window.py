@@ -43,7 +43,6 @@ from quill.core.workbench.filters import Query, render
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import Need, NodeSpec, Scope
 from quill.ui.github_items_view import (
-    item_detail,
     model_detail,
     model_url,
     parse_repo_reference,
@@ -341,11 +340,12 @@ class GitHubWorkbenchProvider(
 
     def detail(self, row: object) -> str:
         from quill.core.github.emoji_names import name_shortcodes
+        from quill.ui.github_workbench_item_comments import detail_with_comments
 
         if isinstance(row, ExploreRow):
             return name_shortcodes(row.detail)
-        if isinstance(row, GitHubItem):
-            return name_shortcodes(item_detail(row, [])[0])
+        if isinstance(row, GitHubItem):  # its comments too, read once (W6)
+            return name_shortcodes(detail_with_comments(self, row))
         return model_detail(row)
 
     def row_type(self, node: NodeSpec, row: object) -> str:

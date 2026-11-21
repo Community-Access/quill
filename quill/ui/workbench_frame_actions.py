@@ -176,11 +176,17 @@ class WorkbenchActionsMixin:
     def open_address(self) -> None:
         wx = self._wx
         with wx.TextEntryDialog(
-            self.frame, "Repository (owner/name) or GitHub link:", "Open GitHub Address"
+            self.frame,
+            "Repository (owner/name), GitHub link, or an issue number such as #42 here:",
+            "Open GitHub Address",
         ) as dialog:
             if show_modal_dialog(dialog, "Open GitHub Address") != wx.ID_OK:
                 return
             text = dialog.GetValue()
+        # "#42": the provider opens that number in the repository it is in.
+        open_number = getattr(self.provider, "open_number", None)
+        if callable(open_number) and open_number(text):
+            return
         ref = self.provider.add_instance("repository", text)
         if ref is None:
             self._say("That is not a repository name or GitHub link.")

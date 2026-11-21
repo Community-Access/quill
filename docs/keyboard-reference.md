@@ -25,7 +25,7 @@ Editor commands with default bindings: 596.
 | (unbound by default) | Manage Remote Sites... | `file.manage_remote_sites` |
 | (unbound by default) | Open from Remote... | `file.open_from_remote` |
 | (unbound by default) | Open Remote GitHub File URL... | `file.open_github_file_url` |
-| (unbound by default) | Open GitHub Items... | `file.open_github_items` |
+| (unbound by default) | Open GitHub Workbench... | `file.open_github_items` |
 | (unbound by default) | Open Remote GitHub Repository... | `file.open_github_repository` |
 | (unbound by default) | Open from URL... | `file.open_url` |
 | (unbound by default) | Save to Remote | `file.save_to_remote` |

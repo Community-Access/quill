@@ -189,23 +189,17 @@ check for" and the job "to run again." The review window's Checks branch has
 
 Some workflows are set up to be started by hand. Choose **Run Workflow on
 Branch...** (`Ctrl+Shift+R`) from the Repository menu, or from a workflow's
-context menu in **Workflows**. QUILL asks three things: the repository, as
-`owner/name`, filled in with the repository of the document you are editing;
-the workflow's file name, such as `ci.yml`; and the branch or tag, starting
-with `main`. Then it asks "Dispatch" the workflow "on" the branch "in" the
-repository, and the editor's status bar says "Dispatched" and the workflow
-and branch.
+context menu in **Workflows**. It runs the workflow you selected, in that
+repository. QUILL asks for the branch or tag, starting with `main`, then asks
+"Run the workflow CI on main in owner/name?", and you hear that GitHub
+accepted it and that its run appears in Runs shortly. QUILL asks only for the
+branch, not for a workflow's other inputs; a workflow that needs those before
+it can start has to be run from GitHub's own page.
 
-It does not yet take the workflow or the repository from the row you
-selected, so type them as the workflow's file name says. QUILL asks only for
-the branch, not for a workflow's other inputs; a workflow that needs those
-before it can start has to be run from GitHub's own page.
-
-**Run Workflow on Branch...** is the editor's **Dispatch Workflow...**, which
-is also in the Workbench's **Repository Actions...** (`Ctrl+Shift+G`), and in
-QUILL's **Tools > Git and GitHub > GitHub** submenu. **In QUILL Lite**, which has no
-such command, the row is greyed and says the editor that opened the window
-does not have it.
+It works the same in QUILL and QUILL Lite. QUILL's editor also has
+**Dispatch Workflow...**, in the Workbench's **Repository Actions...**
+(`Ctrl+Shift+G`) and in **Tools > Git and GitHub > GitHub**, which asks for the
+repository and the workflow's file name as well.
 
 ### Starting workflows from outside
 

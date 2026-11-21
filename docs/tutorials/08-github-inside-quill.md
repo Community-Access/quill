@@ -78,8 +78,8 @@ Repository...** (`Alt+F`, then `Y`).
 
 ## 2. The GitHub Workbench
 
-**File > Open from Remote > GitHub Items...** opens the GitHub Workbench. The
-row keeps its old name; the window is the Workbench. Many of its ideas come
+**File > Open from Remote > GitHub Workbench...** opens the GitHub Workbench.
+Many of its ideas come
 from [GHManage](https://github.com/kellylford/GHManage), Kelly Ford's free
 GitHub browser for screen reader users, and we are grateful for it.
 
