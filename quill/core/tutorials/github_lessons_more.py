@@ -96,14 +96,14 @@ def _triage() -> Tutorial:
             _context(
                 "Put one off until tomorrow",
                 "Open the context menu on a notification and choose Snooze for One Day. "
-                "It leaves the list until tomorrow. Only this computer knows; GitHub is "
-                "not told.",
+                "This computer notes that you put it off until tomorrow; GitHub is not "
+                "told. The row stays in the list.",
                 hear="Snoozed here for one day. GitHub was not changed.",
             ),
             _context(
                 "Bring it back",
-                "Changed your mind? Unsnooze Locally, on the same menu, brings the notification "
-                "back into the list now.",
+                "Changed your mind? Unsnooze Locally, on the same menu, takes the snooze off "
+                "again.",
                 hear="Unsnoozed here. GitHub was not changed.",
             ),
         ),

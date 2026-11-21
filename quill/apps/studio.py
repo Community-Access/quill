@@ -105,13 +105,13 @@ class _ProviderAskShim:
     """Adapter so the Chapter Workbench's ``ask(prompt)`` call site needs none
     of the vendored Assistant/agent machinery -- just the cloud-provider chat
     backend. ``ask`` is a blocking call; run it off the UI thread (the Workbench
-    already does, via ``run_background``)."""
+    already does, via ``run_background``). Built at each ask: a switch holds (gap 1)."""
 
-    def __init__(self, backend: object) -> None:
+    def __init__(self, backend: Callable[[], object]) -> None:
         self._backend = backend
 
     def ask(self, prompt: str) -> str:
-        return self._backend.respond(prompt)  # type: ignore[attr-defined]
+        return self._backend().respond(prompt)  # type: ignore[attr-defined]
 
 
 #: Formats the Chapter Workbench can open (mirrors book_file's readers).
@@ -1598,8 +1598,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         if shim is None:
             from quill.core.ai.provider_backend import ProviderChatBackend
 
-            backend = ProviderChatBackend()
-            shim = _ProviderAskShim(backend)
+            shim = _ProviderAskShim(ProviderChatBackend)
             self._assistant = shim
         return shim
 
@@ -1661,9 +1660,10 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         chosen = str(getattr(self.settings, "speech_provider", "") or "")
         if chosen:
             provider = registry.get(chosen)  # type: ignore[attr-defined]
-            try:
+            try:  # offline means offline: a cloud transcriber is never used here
                 if provider is not None and provider.is_available():
-                    return provider
+                    if not getattr(provider, "requires_network", False):
+                        return provider
             except Exception:  # noqa: BLE001 - fall back to the bundled engine
                 pass
         return registry.get(DEFAULT_PROVIDER_ID)  # type: ignore[attr-defined]

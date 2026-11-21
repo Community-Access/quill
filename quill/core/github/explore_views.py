@@ -35,6 +35,7 @@ VIEWS: tuple[tuple[str, str], ...] = (
     ("person_packages", "Person's packages"),
     ("my_codespaces", "My codespaces"),
     ("repo_codespaces", "Repository codespaces"),
+    ("repo_packages", "Repository packages"),
     ("repo_environments", "Repository environments"),
     ("repo_overview", "Repository overview"),
     ("repo_activity", "Repository activity"),
@@ -75,6 +76,7 @@ VIEWS: tuple[tuple[str, str], ...] = (
 
 REPO_VIEWS = frozenset({
     "repo_codespaces",
+    "repo_packages",
     "repo_environments",
     "repo_overview",
     "repo_activity",
@@ -125,6 +127,7 @@ AUTH_VIEWS = frozenset({
     "person_packages",
     "my_codespaces",
     "repo_codespaces",
+    "repo_packages",
     "my_work",
     "activity",
     "repositories",
@@ -174,14 +177,11 @@ def _resource_views() -> tuple[tuple[tuple[str, str], ...], frozenset[str]]:
     """The resource engine's lists (resource_specs.py), and which need a repository."""
     from quill.core.github.resource_specs import RESOURCE_SPECS
 
-    owner = {
-        "repository": "Repository",
-        "organization": "Organization",
-        "user": "My",
-        "person": "Person's",
-    }
+    # The list's own label, after whose it is ("Organization Custom Properties"):
+    # built from the noun, it read "custom propertys" and "email addresss".
+    owner = {"repository": "Repository ", "organization": "Organization ", "person": "Person's "}
     views = tuple(
-        (f"res_{spec.key}", f"{owner[spec.scope]} {spec.noun}s") for spec in RESOURCE_SPECS
+        (f"res_{spec.key}", f"{owner.get(spec.scope, '')}{spec.label}") for spec in RESOURCE_SPECS
     )
     repo = frozenset(f"res_{spec.key}" for spec in RESOURCE_SPECS if spec.scope == "repository")
     return views, repo

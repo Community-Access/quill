@@ -10,6 +10,7 @@ import zlib
 from urllib.parse import urlsplit
 
 from quill.core.error_codes import CodedError
+from quill.core.github.actions_refusals import actions_refusal
 from quill.core.net import verified_ssl_context
 
 
@@ -107,7 +108,13 @@ def fetch_job_log(token: str | None, repo: str, job_id: int, *, max_bytes: int =
         except urllib.error.HTTPError as exc:
             if exc.code not in (301, 302, 303, 307, 308):
                 raise GitHubJobLogError(
-                    f"GitHub returned HTTP {exc.code} for the job log."
+                    actions_refusal(
+                        "read the job's log",
+                        exc,
+                        needs="read access to this repository's Actions",
+                        gone="GitHub keeps logs only for the repository's retention period, "
+                        "and they may have been deleted, or the job has not started",
+                    )
                 ) from exc
             location = exc.headers.get("Location", "") if exc.headers else ""
             try:

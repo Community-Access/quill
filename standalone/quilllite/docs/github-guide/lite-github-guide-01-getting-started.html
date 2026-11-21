@@ -244,140 +244,137 @@
 <main id="main-content" tabindex="-1">
 <h1 id="chapter-1-getting-started">Chapter 1: Getting started</h1>
 <h2 id="what-this-chapter-covers">What this chapter covers</h2>
-<p>This chapter gets you from nothing to a repository on the screen. It
-explains what the GitHub workbench is, how to open it in QUILL and in
-QUILL Lite, the one question QUILL asks before it connects, how to sign
-in, how to keep more than one account, and what Safe Mode does. It ends
-with a two-minute tour.</p>
-<h2 id="what-the-github-workbench-is">What the GitHub workbench is</h2>
-<p>The GitHub workbench is a set of windows for doing GitHub work from
-the keyboard: reading and triaging issues, reviewing pull requests line
-by line, finding out why a workflow failed, browsing a repository’s
-files, and answering your notifications. You do not need Git, the GitHub
-website or any other program installed. QUILL talks to GitHub
-directly.</p>
-<p>The same windows ship in QUILL and in QUILL Lite. Everything in this
-book works the same way in both unless a note says otherwise. Where the
-two differ, you will find a short paragraph that starts <strong>In QUILL
-Lite</strong>.</p>
-<p>There are four main windows, and you will meet them in this
-order:</p>
+<p>You are here because you want to do GitHub work from the keyboard,
+without fighting the website: read issues, review pull requests, find
+out why a build failed, and answer what needs you. QUILL does all of
+that in one window, the GitHub Workbench.</p>
+<p>In this chapter you open the Workbench in QUILL or QUILL Lite, answer
+the one question QUILL asks before it connects, sign in, and add a
+second account if you have one. You also choose how much the Workbench
+may change for each account, and learn what Safe Mode does.</p>
+<p>By the end you will be signed in, with the Workbench open on your
+Inbox, and you will know how to get back to it from the editor.</p>
+<h2 id="what-the-github-workbench-is">What the GitHub Workbench is</h2>
+<p>The GitHub Workbench is one window for everything GitHub: what needs
+you, your repositories, searches, people, gists and projects. It works
+like Windows Explorer or Outlook:</p>
 <ul>
-<li><strong>GitHub Items</strong> is where you start. It holds one
-repository: its issues and pull requests, branches, commits, tags,
-releases, workflows and workflow runs.</li>
-<li><strong>Review pull request</strong> opens from GitHub Items. It is
-an outline of one pull request, with its changed files, its review
-conversations and its checks.</li>
-<li><strong>Explore GitHub</strong> opens from GitHub Items too. It
-reaches across all of GitHub: your notifications, the work waiting for
-you, search, people, and views of a repository that do not fit in GitHub
-Items.</li>
-<li><strong>Repository Files</strong> is a tree of a repository’s
-folders and files at any branch, tag or commit.</li>
+<li><strong>The tree</strong>, on the left, says where you are: Inbox, a
+repository’s Issues, its Actions runs, Search, People.</li>
+<li><strong>The list</strong> shows what is in the place you chose: one
+row per issue, pull request, run or person.</li>
+<li><strong>The details</strong> say more about the row you are on.</li>
 </ul>
-<p>Smaller windows open from these for one job each, such as the diff of
-a pull request, the log of a failed job, or a discussion thread.</p>
+<p>You do not need Git, the GitHub website or any other program. QUILL
+talks to GitHub directly. A few jobs open a window of their own in front
+of the Workbench, such as a pull request review, the log of a failed
+job, or a discussion thread. They block only the Workbench, never the
+editor.</p>
+<p>The same Workbench ships in QUILL and in QUILL Lite, and so does this
+book. Where the two differ, a short paragraph starting <strong>In QUILL
+Lite</strong> says how, and <a
+href="lite-github-guide-14-quill-lite.html">Chapter 14</a> puts every
+difference in one place.</p>
 <h2 id="three-promises">Three promises</h2>
 <ul>
 <li><strong>Reading never changes anything.</strong> Moving through a
-list, expanding a pull request or opening a thread sends nothing to
-GitHub and marks nothing read. The one exception is said plainly where
-it happens: pressing Enter on a notification marks it read, because that
-is what opening it on GitHub does.</li>
-<li><strong>Every change asks first.</strong> Anything that changes
-GitHub is a command you choose on purpose, and it asks before it sends.
-The confirmations default to No, so a stray Enter cancels. The riskiest
-few, such as merging or deleting a repository, make you type a name or
-number instead of pressing Yes.</li>
-<li><strong>QUILL says what GitHub did, not what it hoped.</strong>
-After a change, the sentence you hear is built from GitHub’s reply. If
-GitHub accepted a request but has not finished it yet, QUILL says that
-instead of claiming it is done.</li>
+list, opening a place, reading a pull request or a log sends nothing to
+GitHub and marks nothing read. Where opening something does mark it
+read, the chapter says so.</li>
+<li><strong>The bigger the change, the more QUILL asks.</strong> Small
+organizing changes, such as adding a label, are saved at once, and
+<code>Ctrl+Z</code> takes them back. Changes other people will see are
+saved at once too. Changes to access and settings show a preview in
+words first. Anything destructive or hard to reverse, such as a merge or
+deleting a branch, shows a preview and then has you type its name or
+number.</li>
+<li><strong>QUILL says what GitHub did, not what it hoped.</strong> The
+sentence you hear after a change is built from GitHub’s reply. If GitHub
+accepted a request but has not finished it, QUILL says that instead of
+claiming it is done.</li>
 </ul>
-<h2 id="opening-the-workbench">Opening the workbench</h2>
+<h2 id="opening-the-workbench">Opening the Workbench</h2>
 <h3 id="in-quill">In QUILL</h3>
-<p>QUILL keeps its GitHub commands in two places:</p>
+<p>There are three ways in.</p>
 <ul>
 <li><strong>File &gt; Open from Remote &gt; GitHub Items…</strong> opens
-GitHub Items. The same submenu has <strong>Clone Repository…</strong>
-for copying a repository to your computer, <strong>Open GitHub
-Reference…</strong> for pasting any GitHub link, and <strong>Manage
-GitHub Accounts…</strong> for signing in.</li>
-<li><strong>Tools &gt; Git and GitHub &gt; GitHub</strong> has the
-commands that work on a whole repository, such as creating, forking and
-renaming one, plus <strong>Notifications…</strong>, <strong>Security
-Alerts…</strong> and Codespaces.</li>
+the Workbench. The row keeps its old name; the window it opens is the
+GitHub Workbench. The same submenu has <strong>Clone
+Repository…</strong>, <strong>Open GitHub Reference…</strong> for a
+pasted GitHub link, and <strong>Manage GitHub Accounts…</strong>.</li>
+<li><strong>The GitHub menu.</strong> Turn on <strong>View &gt; GitHub
+Workbench Mode</strong> (<code>Alt+V</code>, then <code>K</code>) and a
+<strong>GitHub</strong> menu joins the menu bar after Tools.
+<code>Alt+G</code> opens it. <strong>Open GitHub Workbench</strong>
+(<code>W</code>) opens the window, and <strong>Inbox</strong>
+(<code>I</code>), <strong>This Repository’s Issues</strong>
+(<code>S</code>), <strong>This Repository’s Pull Requests</strong>
+(<code>P</code>) and <strong>Actions Runs</strong> (<code>A</code>) open
+it at that place. Chapter 2 walks through the menu.</li>
+<li><strong>Tools &gt; Git and GitHub &gt; GitHub.</strong> Its rows,
+such as <strong>Notifications…</strong>, <strong>Security
+Alerts…</strong> or <strong>Configure Branch Protection…</strong>, open
+the Workbench at the matching place.</li>
 </ul>
-<p>If you do a lot of GitHub work, turn on <strong>View &gt; GitHub
-Workbench Mode</strong> (<code>Alt+V</code>, then <code>K</code>). A
-<strong>GitHub</strong> menu joins the menu bar right after Tools, with
-the doors into the GitHub Workbench, such as <strong>Inbox</strong> and
-<strong>This Repository’s Pull Requests</strong>, and the editor’s own
-GitHub commands. <code>Alt+G</code> opens it. Chapter 2 walks through
-it.</p>
-<p>None of these has a key out of the box, so that they do not take keys
-a writer needs. Press <code>Ctrl+Shift+P</code> for the Command Palette
-and type “GitHub” to find any of them by name, or give one a key of your
-own in the Keymap Editor.</p>
+<p>If the Workbench is already open, any of these brings it forward
+instead of opening a second one. None of them has a key out of the box,
+so they do not take keys a writer needs. Press <code>Ctrl+Shift+P</code>
+for the Command Palette and type “GitHub” to find any of them by name,
+or give one a key in the Keymap Editor.</p>
 <p>The GitHub commands belong to the feature called GitHub Remote
-Access. It is on in most profiles, because reading issues and reviewing
-pull requests is not coding. The Local Git commands, which are, still
-belong to the Developer profile. If the GitHub rows are missing from the
-File and Tools menus, GitHub Remote Access is off. Turn it on in
-<strong>Profiles and Features…</strong>, in the <strong>Customize and
-Support</strong> submenu of the Tools menu, or press
-<code>Alt+Shift+P</code> and choose a profile that has it.</p>
+Access. It is on in most profiles. If the GitHub rows are missing from
+the File and Tools menus, turn it on in <strong>Tools &gt; Customize and
+Support &gt; Profiles and Features…</strong>, or press
+<code>Alt+Shift+P</code> and choose a profile that has it. The Local Git
+commands belong to the Developer profile.</p>
 <h3 id="in-quill-lite">In QUILL Lite</h3>
-<p>In QUILL Lite, choose <strong>File &gt; GitHub Workbench…</strong>:
-press <code>Alt+F</code>, then <code>G</code>. It opens GitHub Items.
-Everything else in this book is reached from there. <strong>File &gt;
-Clone Repository…</strong> (<code>Alt+F</code>, then <code>Y</code>)
-copies a repository to your computer; chapter 7 explains it. QUILL Lite
-has no Tools &gt; Git and GitHub menu, so the commands this book
-describes as being on QUILL’s menus are QUILL’s alone. QUILL Lite has
-<strong>View &gt; GitHub Workbench Mode</strong> too, with its own,
-shorter GitHub menu.</p>
+<p>Choose <strong>File &gt; GitHub Workbench…</strong>: press
+<code>Alt+F</code>, then <code>G</code>. <strong>File &gt; Clone
+Repository…</strong> (<code>Alt+F</code>, then <code>Y</code>) copies a
+repository to your computer, and <strong>File &gt; Manage GitHub
+Accounts…</strong> (<code>Alt+F</code>, then <code>H</code>) signs you
+in. QUILL Lite has <strong>View &gt; GitHub Workbench Mode</strong> too,
+with a shorter GitHub menu: the same rows, less the ones about the copy
+on your computer.</p>
 <h3 id="where-you-land">Where you land</h3>
-<p>GitHub Items opens with focus in the <strong>Repository
-(owner/repo):</strong> field. If the document you have open lives in a
-Git folder whose remote points at GitHub, that repository is already
-filled in, and you can press Enter to load it. Otherwise type a
-repository as <code>owner/repo</code>, for example
-<code>community-access/quill</code>, or paste its GitHub address, and
-press Enter.</p>
-<p>When you reopen GitHub Items later, it comes back where you left it:
-the same repository, view, filters and selected row. Chapter 2 says more
-about this.</p>
+<p>Until you have signed in, the Workbench opens on <strong>Start
+Here</strong>, which says what the window is and the five keys to learn
+first. Once you are signed in, it opens on <strong>Inbox</strong>:
+everything waiting on you. You can choose Start Here, or wherever you
+were last time, in <strong>Tools &gt; Workbench Options…</strong>
+(<code>Ctrl+Shift+O</code>), on the General page.</p>
+<p>If the document you have open lives in a folder whose Git remote
+points at GitHub, that repository becomes the Workbench’s current
+repository, and <code>Ctrl+2</code> goes straight to it. The window
+remembers, for each account, its size, the branches of the tree you had
+open, and the repositories you visited.</p>
 <h2 id="the-first-time-permission-to-connect">The first time: permission
 to connect</h2>
 <p>The first time you use any GitHub command, a window titled
 <strong>GitHub Access</strong> asks whether QUILL may connect to GitHub.
-It explains that nothing is downloaded until you choose it. Press
+Nothing is downloaded until you choose it. Press
 <strong>Continue</strong> to go on, or <strong>Cancel</strong> to stop.
-You are asked once. QUILL remembers your answer, and from then on the
-GitHub windows open straight away.</p>
+You are asked once, and QUILL remembers your answer.</p>
 <h2 id="signing-in">Signing in</h2>
 <p>You do not need an account to read public repositories. Without one,
-the workbench is a read-only guest: you can read issues, pull requests,
-files, workflow runs and logs of any public repository, and the commands
-that would change something tell you they need a signed-in account.
-GitHub also allows a guest far fewer requests an hour, so a busy session
-runs out sooner.</p>
-<p>Signing in adds private repositories, your notifications and your own
-work, and every command that changes GitHub. The easy way is
+the Workbench is a guest: you can read the issues, pull requests, files,
+runs and logs of any public repository, and anything that would change
+GitHub says it needs a signed-in account. GitHub also allows a guest far
+fewer requests an hour, so a busy session runs out sooner.</p>
+<p>Signing in adds private repositories, your Inbox and notifications,
+your own work, and every command that changes GitHub. The easy way is
 <strong>Sign In with GitHub</strong>: QUILL gets a short code from
-GitHub, you type it on GitHub’s own page, and you approve QUILL there.
-There is nothing to dig out of GitHub’s settings, and QUILL never sees
-your GitHub password.</p>
+GitHub, you enter it on GitHub’s own page, and you approve QUILL there.
+QUILL never sees your GitHub password.</p>
 <h3 id="signing-in-with-github">Signing in with GitHub</h3>
 <ol type="1">
-<li>In QUILL, choose <strong>File &gt; Open from Remote &gt; Manage
-GitHub Accounts…</strong>. In QUILL Lite it’s <strong>File &gt; Manage
-GitHub Accounts…</strong>: press <code>Alt+F</code>, then
-<code>H</code>.</li>
+<li>Open <strong>Manage GitHub Accounts…</strong>. In QUILL it is in
+<strong>File &gt; Open from Remote</strong>; in QUILL Lite, press
+<code>Alt+F</code>, then <code>H</code>; in the Workbench, choose
+<strong>Account &gt; Manage GitHub Accounts…</strong>
+(<code>Ctrl+Shift+K</code>).</li>
 <li>Choose <strong>Sign In with GitHub…</strong>, the first button.
-Until you have an account it’s also the default button, so Enter does
+Until you have an account it is also the default button, so Enter does
 it.</li>
 <li>A small window titled <strong>Sign In with GitHub</strong> opens. A
 moment later QUILL has a code from GitHub, something like WDJB-MJHT. It
@@ -394,83 +391,73 @@ GitHub whose account it is, and you hear “Added and switched to GitHub
 account” and your username.</li>
 </ol>
 <p>If you closed the browser tab, or it opened behind something, press
-<strong>Open the Page Again</strong>; it’s the default button, so Enter
-works. If the browser doesn’t open at all, the <strong>What to
+<strong>Open the Page Again</strong>; it is the default button, so Enter
+works. If the browser does not open at all, the <strong>What to
 do</strong> field gives you the address to type. <strong>Cancel</strong>
-stops the sign-in straight away and saves nothing.</p>
+stops the sign-in and saves nothing.</p>
 <p>A code lasts about fifteen minutes. If it runs out, or you choose
-Cancel on GitHub’s page instead of Authorize, the <strong>What to
-do</strong> field says so in one sentence and nothing is saved. Close
-the window and choose <strong>Sign In with GitHub…</strong> again for a
-fresh code.</p>
+Cancel on GitHub’s page, the <strong>What to do</strong> field says so
+in one sentence and nothing is saved. Choose <strong>Sign In with
+GitHub…</strong> again for a fresh code.</p>
 <p>To add a second account this way, sign in to that account in your
 browser first. GitHub approves whichever account the browser is signed
 in to.</p>
-<p>What QUILL asks GitHub to allow, and why:</p>
+<h3 id="what-quill-asks-github-to-allow">What QUILL asks GitHub to
+allow</h3>
+<p>One sign-in covers every command in the Workbench. QUILL asks for
+these, and <strong>Account &gt; GitHub Permissions…</strong>
+(<code>Ctrl+Shift+P</code>) in the Workbench lists the same, with what
+each one unlocks and whether you have it:</p>
 <ul>
 <li><code>repo</code>: private repositories, and everything that writes:
 issues, comments, reviews, merges, releases, discussions, workflow runs
-and saving files. It covers your notifications inbox too.</li>
-<li><code>workflow</code>: saving changes to workflow files, the ones
-under .github/workflows. GitHub refuses those without it.</li>
+and saving files. It covers your notifications too.</li>
+<li><code>workflow</code>: saving changes to files under
+.github/workflows.</li>
 <li><code>gist</code>: your gists.</li>
-<li><code>read:org</code>: the organizations you belong to, for browsing
-their repositories and creating or forking into them.</li>
-<li><code>project</code>: Projects boards.</li>
-<li><code>security_events</code>: code-scanning and Dependabot
+<li><code>read:org</code>: the organizations you belong to.</li>
+<li><code>project</code>: Projects.</li>
+<li><code>security_events</code>: code scanning and Dependabot
 alerts.</li>
-<li><code>user</code>: <strong>Set Your Status</strong>, and following
-and unfollowing people.</li>
-<li><code>read:packages</code> and <code>delete:packages</code>:
-<strong>My Packages</strong>, and deleting a package or one of its
-versions, which asks first.</li>
+<li><code>user</code>: your status, following people, and your billing
+figures.</li>
+<li><code>read:packages</code> and <code>delete:packages</code>: your
+packages, and deleting one, which asks first.</li>
 <li><code>admin:public_key</code>, <code>admin:gpg_key</code> and
-<code>admin:ssh_signing_key</code>: <strong>My Keys</strong>, your SSH,
-GPG and signing keys.</li>
-<li><code>admin:org_hook</code>: an organization’s
-<strong>Webhooks</strong>, for its owners.</li>
-<li><code>delete_repo</code>: <strong>Delete Repository</strong>. It
-still makes you type the repository’s full name before it deletes
-anything.</li>
+<code>admin:ssh_signing_key</code>: your SSH, GPG and signing keys.</li>
+<li><code>admin:org_hook</code>: an organization’s webhooks, for its
+owners.</li>
+<li><code>delete_repo</code>: deleting a repository. It still makes you
+type the full name before it deletes anything.</li>
 </ul>
-<p>One sign-in covers every command in the Workbench, so you never need
-anything else for any of them.</p>
 <p>If your organization uses single sign-on, GitHub may ask you to sign
 in through the organization while you approve QUILL. If your
 organization restricts which apps can see its repositories, see Chapter
 10.</p>
-<p>Manage GitHub Accounts also has an <strong>Add Token
-(Advanced)…</strong> button. You don’t need it to sign in. It’s there
-for a few special cases, such as an organization that blocks sign-in
-apps, and Chapter 10 explains it under “Advanced: using a token”.</p>
-<p>Some QUILL commands on the Tools menu need an account before they can
-do anything. If you choose one while signed out, QUILL asks “This action
-needs a signed-in GitHub account. Sign in now?” and opens Sign In with
-GitHub.</p>
+<p>Manage GitHub Accounts also has <strong>Add Token
+(Advanced)…</strong>. You do not need it to sign in. It is for a few
+special cases, such as an organization that blocks sign-in apps, or a
+GitHub Enterprise Server, and Chapter 10 explains it under “Advanced:
+using a token”.</p>
 <h3 id="where-your-sign-in-is-kept">Where your sign-in is kept</h3>
 <p>When you sign in, GitHub gives QUILL a long code that stands for your
-approval, and QUILL keeps it in your operating system’s own secure
-store: Windows Credential Manager on Windows, or the Keychain on a Mac.
-A portable copy keeps it in its own encrypted file instead. It is never
-written into a settings file or a log. QUILL sends it to GitHub’s own
-servers and nowhere else. When GitHub hands a download to another
-address, such as a log or an artifact, QUILL fetches that without the
-token.</p>
-<p>The workbench’s sign-in is separate from My GitHub Copilot’s, even
+approval. QUILL keeps it in your operating system’s secure store:
+Windows Credential Manager, or the Keychain on a Mac. A portable copy
+keeps it in its own encrypted file. It is never written into a settings
+file or a log, and it is sent to GitHub’s own servers and nowhere else.
+When GitHub hands a download to another address, such as a log or an
+artifact, QUILL fetches that without it.</p>
+<p>The Workbench’s sign-in is separate from My GitHub Copilot’s, even
 though both go through GitHub’s page under the same name. Signing out of
 one leaves the other alone.</p>
 <h3 id="in-quill-lite-1">In QUILL Lite</h3>
-<p>QUILL Lite signs in the same way, from <strong>File &gt; Manage
-GitHub Accounts…</strong> (<code>Alt+F</code>, then <code>H</code>), and
-the two editors share your accounts: one you add in either is there in
-both. Signed in, QUILL Lite reviews, replies, merges and triages your
-notifications just as QUILL does.</p>
-<p>If you open the workbench before you’ve signed in, QUILL Lite says
-“You are not signed in to GitHub” and offers three buttons.
-<strong>Manage GitHub Accounts…</strong> is the default: sign in there,
-and once GitHub confirms your account the workbench opens signed in.
-<strong>Continue as Guest</strong> opens it anyway, to read public
-repositories. <strong>Cancel</strong> opens nothing.</p>
+<p>QUILL Lite signs in the same way, and the two editors share your
+accounts: an account you add in either is there in both. If you open the
+Workbench before you have signed in, QUILL Lite says “You are not signed
+in to GitHub” and offers three buttons. <strong>Manage GitHub
+Accounts…</strong> is the default: sign in there, and the Workbench
+opens signed in. <strong>Continue as Guest</strong> opens it to read
+public repositories. <strong>Cancel</strong> opens nothing.</p>
 <h2 id="more-than-one-account">More than one account</h2>
 <p>If you have a personal account and a work account, keep both.
 <strong>Manage GitHub Accounts…</strong> shows the active account at the
@@ -480,27 +467,35 @@ every account you have added. From there:</p>
 <li><strong>Use Selected Account</strong> makes the chosen account the
 active one. You hear “Switched to GitHub account” and its name.</li>
 <li><strong>Remove Selected Account</strong> deletes that account’s
-token from this computer. It does not ask first, and it does not cancel
-the token on GitHub. To do that, open your GitHub settings, then
+sign-in from this computer. It does not cancel the approval on GitHub.
+To do that, open your GitHub settings, then
 <strong>Applications</strong>, then <strong>Authorized OAuth
 Apps</strong>, and revoke QUILL there.</li>
 <li><strong>Sign In with GitHub…</strong> adds another account.
 <strong>Add Token (Advanced)…</strong> is the advanced road, in Chapter
 10.</li>
-<li><strong>Use GitHub CLI Sign-In…</strong> adds an account you have
-already signed in to with GitHub’s command-line tool, <code>gh</code>,
-without signing in again. QUILL asks which server (github.com unless you
-change it), asks <code>gh</code> for its sign-in for that server with
-<code>gh auth token</code>, checks with GitHub whose it is, and asks
-“Add your-name on github.com to QUILL with that sign-in?” before it
-keeps anything. QUILL then keeps its own copy in your secure store, like
-any other account: signing out of <code>gh</code> later does not sign
-QUILL out, and removing the account in QUILL does not touch
-<code>gh</code>. QUILL never reads <code>gh</code>’s own files. If
-<code>gh</code> is not installed or not signed in to that server, QUILL
-says so and nothing changes.</li>
+<li><strong>Use GitHub CLI Sign-In…</strong> adds the account GitHub’s
+command-line tool, <code>gh</code>, is already signed in to, without
+signing in again. QUILL asks which server (github.com unless you change
+it), asks <code>gh</code> for its sign-in, checks with GitHub whose it
+is, and asks “Add your-name on github.com to QUILL with that sign-in?”
+before it keeps anything. QUILL then keeps its own copy: signing out of
+<code>gh</code> later does not sign QUILL out, and removing the account
+in QUILL does not touch <code>gh</code>. If <code>gh</code> is not
+installed or not signed in to that server, QUILL says so and nothing
+changes.</li>
 <li><strong>Done</strong> closes the window. Escape does too.</li>
 </ul>
+<p>Each account keeps its own place. The Workbench remembers where you
+were, your pinned repositories, your saved searches, your repository
+sets and your local drafts separately for each account, so switching
+never mixes them up.</p>
+<p>Two of your accounts can also work together. <strong>Account &gt;
+Roles and Access &gt; Compare Accounts…</strong> shows what each can do
+on a repository, side by side, and <strong>Act As Another
+Account…</strong> sends one action as another of your accounts, such as
+approving your own pull request with your second account. Chapter 13
+covers both.</p>
 <h3 id="a-github-enterprise-server">A GitHub Enterprise Server</h3>
 <p>An account can be on your company’s own GitHub Enterprise Server as
 well as on github.com. Add it with <strong>Add Token
@@ -508,67 +503,89 @@ well as on github.com. Add it with <strong>Add Token
 the server’s name, such as github.example.com, in <strong>GitHub
 server</strong>. Or, if <code>gh</code> is signed in to that server, use
 <strong>Use GitHub CLI Sign-In…</strong> and type the server’s name.
-(Sign In with GitHub is for github.com only.) The account shows as
+Sign In with GitHub is for github.com only. The account shows as
 “your-name (github.example.com)”, and the same name on github.com is a
-separate account with its own Workbench level.</p>
-<p>QUILL sends that account’s token to its own server and to nowhere
-else, and never sends a github.com token to the server. An older
-Enterprise Server lacks some things github.com has; when it answers “not
-found”, QUILL says “This server’s GitHub does not have” that, and names
-the server and its version.</p>
-<p>Each account keeps its own place. GitHub Items remembers the last
-repository and row separately for each account, and so do your local
-drafts and the attention queue’s settings, so switching accounts never
-mixes them up.</p>
+separate account.</p>
+<p>QUILL sends that account’s token to its own server and nowhere else,
+and never sends a github.com token to the server. An older Enterprise
+Server lacks some things github.com has. When it does, QUILL says “This
+server’s GitHub does not have” that thing, and names the server and its
+version.</p>
+<h2 id="how-much-the-workbench-may-change">How much the Workbench may
+change</h2>
+<p>Each account has a <strong>Workbench level</strong>, which limits
+what the Workbench may change with it, whatever GitHub itself would
+allow. Set it in the Workbench with <strong>Account &gt; Roles and
+Access &gt; Workbench Level for This Account…</strong>.</p>
+<ul>
+<li><strong>Read Only:</strong> nothing is sent. Every command that
+would change GitHub says why it cannot.</li>
+<li><strong>Organize:</strong> organizing changes, such as labels,
+assignees and comments, and changes other people will see. Nothing about
+access, settings or deleting.</li>
+<li><strong>Full:</strong> everything GitHub lets the account do. This
+is where every account starts.</li>
+</ul>
+<p>Read Only is a good choice for an account you only want to read with,
+such as an administrator account you keep for emergencies. The level is
+checked once, on every change, before anything is sent. Chapter 13 says
+more, and <strong>Least Privilege Advice…</strong> on the same submenu
+suggests the smallest level and permissions that cover what you actually
+do.</p>
 <h2 id="the-github-cli-and-your-account">The GitHub CLI and your
 account</h2>
-<p>A few things, Codespaces in particular, run through GitHub’s own
-command-line tool, called <code>gh</code>. It signs in on its own,
-separately from QUILL. Before it runs a Codespaces command, QUILL asks
-<code>gh</code> which account it is using and compares that with the
-account QUILL is using. If they differ, it stops and says so, naming
-both, so you never create a codespace on the wrong account by accident.
+<p>A few things, Codespaces in particular, run through <code>gh</code>.
+It signs in on its own, separately from QUILL. Before it runs a
+Codespaces command, QUILL asks <code>gh</code> which account it is using
+and compares it with QUILL’s. If they differ, QUILL stops and names
+both, so you never make a codespace on the wrong account by accident.
 Chapter 9 covers this.</p>
 <h2 id="safe-mode">Safe Mode</h2>
-<p>When QUILL or QUILL Lite starts in Safe Mode, the GitHub windows stay
-closed. Opening GitHub Items says “GitHub item browsing is disabled in
-Safe Mode. Restart QUILL normally to browse a repository.” The
-repository commands on QUILL’s Tools menu and the GitHub CLI
-(command-line interface) commands are switched off the same way. Start
-normally to use them again.</p>
+<p>When QUILL or QUILL Lite starts in Safe Mode, the Workbench stays
+closed. Opening it says “GitHub item browsing is disabled in Safe Mode.
+Restart QUILL normally to browse a repository.” The repository commands
+on QUILL’s Tools menu and the GitHub CLI commands are off too, and every
+account counts as Read Only. Start normally to use them again.</p>
 <h2 id="a-two-minute-tour">A two-minute tour</h2>
 <p>This tour reads a public repository, so you can do it before you sign
 in.</p>
 <ol type="1">
-<li>Open GitHub Items: in QUILL, <strong>File &gt; Open from Remote &gt;
-GitHub Items…</strong>; in QUILL Lite, <code>Alt+F</code>, then
-<code>G</code>. In workbench mode, in either app, it is <strong>GitHub
-&gt; Repository Items…</strong>: <code>Alt+G</code>, then
-<code>T</code>.</li>
+<li>Open the Workbench: in QUILL, <strong>File &gt; Open from Remote
+&gt; GitHub Items…</strong>; in QUILL Lite, <code>Alt+F</code>, then
+<code>G</code>.</li>
 <li>If this is the first time, press <strong>Continue</strong> in the
-GitHub Access window.</li>
-<li>Type a repository you know, such as
-<code>community-access/quill</code>, and press Enter. You hear the
-repository’s name, how many items loaded, and a short list of the keys
-that work here. Focus moves to the list, on the first row.</li>
-<li>Arrow down the list. Each row is an issue or a pull request: its
-number, whether it is an issue or a PR (pull request), its state and its
-title.</li>
-<li>Press Tab to reach <strong>Details</strong>. Read it like any text
-field. It holds the whole issue, then its comments as they load.</li>
-<li>Press <code>Alt+N</code>. You move to the first comment and hear
-“Comment 1 of” and the count. Press it again for the next one, and
-<code>Alt+P</code> to go back.</li>
-<li>Press Shift+Tab to return to the list.</li>
-<li>Press Shift+F10 on a row to hear what you can do with it.</li>
-<li>Press Escape to close the menu, and Escape again to close GitHub
-Items.</li>
+GitHub Access window. You land on Start Here, with its details in the
+details pane.</li>
+<li>Press <code>Ctrl+L</code>, type a repository you know, such as
+<code>community-access/quill</code>, and press Enter. It gets a place of
+its own in the tree, and you are on it.</li>
+<li>Press <code>Ctrl+Shift+1</code> for its Issues. The list loads.
+Press <code>F6</code> to move to the list, then arrow down. Each row is
+an issue: its number, title and state.</li>
+<li>Press <code>F6</code> again to reach the details. Read them like any
+text field, then press <code>Shift+F6</code> to go back to the
+list.</li>
+<li>Press <code>Shift+F1</code>. You hear everything you can do with the
+selected issue, with each key, and why anything greyed is greyed. Press
+Escape.</li>
+<li>Press <code>Alt+1</code>. QUILL says where you are and the filter in
+effect, without moving you.</li>
+<li>Press <code>Alt+F4</code> to close the Workbench. The editor is
+where you left it.</li>
 </ol>
-<p>Next time you open it, you are back on the same row.</p>
+<p>Next time you open it, it comes back to the places you visited.</p>
+<h2 id="learn-it-with-a-guided-lesson">Learn it with a guided
+lesson</h2>
+<p><strong>Help &gt; Tutorials</strong> (<code>Ctrl+F2</code> in the
+Workbench) has the GitHub lessons, in both editors. “Make a repository
+to practise on” makes <code>quill-practice</code>, a private repository
+of your own with issues, a pull request and a failing run to learn on,
+and walks you round it. Each step says what to press and what you should
+hear. Chapter 12 says more about the practice repository.</p>
 <hr />
 <ul>
 <li>Next: <a href="lite-github-guide-02-getting-around.html">Chapter 2:
-Getting around</a></li>
+A tour of the GitHub Workbench</a></li>
 <li><a href="lite-github-guide.html">Contents</a></li>
 </ul>
 </main>

@@ -258,26 +258,74 @@ def test_comment_on_line_waits_for_sign_in() -> None:
     assert window.said == [] and window.provider_object.comments == []
 
 
-def test_the_reference_at_the_cursor_opens_in_the_workbench(monkeypatch, tmp_path: Path) -> None:
+def test_the_reference_at_the_cursor_opens_its_sheet(monkeypatch, tmp_path: Path) -> None:
+    """GH-R-036: the reference's Properties sheet, through the Workbench's door."""
     monkeypatch.setattr("quill.core.github.local_repo.detect_github_repo", lambda _p: "o/r")
     window = Window()
     gel.open_reference_at_cursor(window.host())
     reference, then = window.references[0]
-    assert (reference.repository, reference.number, then) == ("o/r", 12, "filter:#12")
+    assert reference.repository == "o/r"
+    assert then == "properties:" + json.dumps(["item", {"repo": "o/r", "number": "12"}])
 
 
-def test_a_person_opens_in_the_browser_and_no_reference_is_said(monkeypatch) -> None:
+def test_a_person_opens_their_sheet_and_no_reference_is_said(monkeypatch) -> None:
     monkeypatch.setattr("quill.core.github.local_repo.detect_github_repo", lambda _p: "o/r")
-    opened: list[str] = []
-    monkeypatch.setattr(gel.webbrowser, "open", lambda url, new=0: opened.append(url) or True)
     window = Window()
     window.offset = len(window.text)
     gel.open_reference_at_cursor(window.host())
-    assert opened == ["https://github.com/ada"]
+    assert window.workbench == [("", "properties:" + json.dumps(["person", {"login": "ada"}]))]
     window = Window()
     window.text, window.offset = "nothing here", 3
     gel.open_reference_at_cursor(window.host())
     assert window.said == ["No GitHub reference at the cursor."]
+
+
+def test_an_address_names_its_kind(monkeypatch) -> None:
+    monkeypatch.setattr("quill.core.github.local_repo.detect_github_repo", lambda _p: "")
+    window = Window(path="")
+    window.text = "See https://github.com/a/b/pull/7/files please"
+    window.offset = 10
+    gel.open_reference_at_cursor(window.host())
+    _reference, then = window.references[0]
+    assert then == "properties:" + json.dumps(["pull_request", {"repo": "a/b", "number": "7"}])
+
+
+class _Key:
+    def __init__(self, code: int, *, alt: bool = True, ctrl: bool = False, shift: bool = False):
+        self.code, self.alt, self.ctrl, self.shift = code, alt, ctrl, shift
+
+    def GetKeyCode(self) -> int:  # noqa: N802 - wx's name
+        return self.code
+
+    def AltDown(self) -> bool:  # noqa: N802 - wx's name
+        return self.alt
+
+    def ControlDown(self) -> bool:  # noqa: N802 - wx's name
+        return self.ctrl
+
+    def ShiftDown(self) -> bool:  # noqa: N802 - wx's name
+        return self.shift
+
+
+def test_alt_enter_opens_the_sheet_only_on_a_reference(monkeypatch) -> None:
+    """Decision 23: on a reference Alt+Enter opens it; anywhere else it goes on."""
+    wx = pytest.importorskip("wx")
+    monkeypatch.setattr("quill.core.github.local_repo.detect_github_repo", lambda _p: "o/r")
+    window = Window()
+    text_and_offset = lambda: (window.text, window.offset)  # noqa: E731
+    assert gel.alt_enter_on_reference(_Key(wx.WXK_RETURN), text_and_offset, window.host)
+    assert len(window.references) == 1
+    window.offset = 13  # "for", between the two references
+    assert not gel.alt_enter_on_reference(_Key(wx.WXK_RETURN), text_and_offset, window.host)
+    window.offset = 7
+    assert not gel.alt_enter_on_reference(
+        _Key(wx.WXK_RETURN, shift=True), text_and_offset, window.host
+    )
+    assert not gel.alt_enter_on_reference(
+        _Key(wx.WXK_RETURN, alt=False), text_and_offset, window.host
+    )
+    assert not gel.alt_enter_on_reference(_Key(ord("A")), text_and_offset, window.host)
+    assert len(window.references) == 1 and window.said == []
 
 
 def test_a_bare_number_outside_a_repository_says_how_to_write_it(monkeypatch) -> None:

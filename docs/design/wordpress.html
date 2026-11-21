@@ -9417,6 +9417,22 @@ builder’s next pass are committed and pushed on
 <code>feat/spam-hold-providers-challenges</code> (72bce84), with 601
 PHPUnit tests passing. The QUILL tutorial books were checked on main and
 all six are current.</p>
+<h3
+id="2026-11-20-gravity-forms-qafs-spam-and-the-baf-move-and-pmpro-at-size-live">2026-11-20:
+Gravity Forms, QAF’s spam and the BAF move, and PMPro at size, live</h3>
+<p>Tests 144 to 154 joined the live run
+(<code>docs/qa/wordpress-regression-testing.md</code>). Gravity Forms
+now has every field type and property, Test This Form, entry edits,
+messages and Resend, conversion to QAF and back with entries, and the
+Watch tried live. QAF’s spam checks held, asked and released real
+submissions from the form’s page; BAF’s form, entries and old block and
+shortcode came across to QAF. Three defects were found and fixed: Test
+This Form sent “555-0100” to a US phone field, which Gravity Forms
+refuses, and nothing to a Time field; and the Discount Codes node looked
+for a PMPro ability PMPro 3.9.2 does not have, so it only ever pointed
+at wp-admin. It now lists up to 20 codes through PMPro’s quick search,
+which cannot page, and says the rest are in wp-admin. Members of This
+Level read 260 people in about five minutes (1.1 s a person).</p>
 <h2 id="19-remaining-tasks">19. Remaining tasks</h2>
 <p><strong>wp-admin parity (9.18), Jeff 2026-11-04, “we should have all
 of this”:</strong></p>
@@ -9457,10 +9473,10 @@ into a real WordPress) and Import WXR as Drafts (author matching, files
 downloaded and skipped, Ctrl+Z) tried on the live test site and with
 NVDA and JAWS.</label></li>
 <li><label><input type="checkbox" />Earlier Versions on post rows, Check
-for Updates on WordPress.org, Check Every Link, editing a Gravity Forms
-response’s answers, the plugin rows of wp-admin for This Place (each
-admin address opened), Offer to Ask the Site and Arrange Items tried on
-the live test site and with NVDA and JAWS.</label></li>
+for Updates on WordPress.org, Check Every Link, the plugin rows of
+wp-admin for This Place (each admin address opened), Offer to Ask the
+Site and Arrange Items tried on the live test site and with NVDA and
+JAWS.</label></li>
 <li><label><input type="checkbox" /><strong>Waiting on Jeff:</strong>
 finish the Redirection plugin’s setup on the test site (Tools &gt;
 Redirection in wp-admin). Its database was never set up, so it has no
@@ -9492,11 +9508,12 @@ material while running) and Your First Week; the new Watches;
 Plain-Language Batch’s ages, Trash and questions; By Name’s shortcode
 conversion and pattern commands; the new Across Sites kinds; the four
 platform importers; the static archive.</li>
-<li><strong>Waiting on QAF:</strong> three routes QUILL now calls that
-QAF does not offer yet: <code>qaf/v1/visitor-words</code> (Visitor Words
-for Forms), <code>POST qaf/v1/entries</code> (Copy Old Entries into QAF)
-and <code>qaf/v1/spam/blocklist</code> (blocked senders across sites).
-Each says plainly when the site lacks it and sends nothing.</li>
+<li><strong>Waiting on QAF:</strong> two routes QUILL now calls that QAF
+does not offer yet: <code>qaf/v1/visitor-words</code> (Visitor Words for
+Forms) and <code>qaf/v1/spam/blocklist</code> (blocked senders across
+sites). Each says plainly when the site lacks it and sends nothing.
+(<code>POST qaf/v1/entries</code>, for Copy Old Entries into QAF, is in
+QAF 1.0.0: live test 148 copied an entry through it on 2026-11-20.)</li>
 <li><strong>Waiting on a plugin:</strong> role editing is built against
 <code>members/v1/roles</code>; neither Members nor User Role Editor
 documents a REST API, so this needs a role plugin that offers one, or

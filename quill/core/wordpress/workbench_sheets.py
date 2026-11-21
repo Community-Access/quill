@@ -26,6 +26,7 @@ import json
 from collections.abc import Mapping
 from typing import Any
 
+from quill.core.wordpress.custom_field_owners import OTHERS_PAGE, labelled_keys
 from quill.core.wordpress.menu_item_add import MENU_SHEET
 from quill.core.wordpress.site import friendly_date, human_size, raw_text, rendered
 from quill.core.wordpress.workbench_moderation import SHEET_HELP as HELP
@@ -132,11 +133,12 @@ def _item_sheet(row: WbRow, taxonomies: Mapping[str, str], meta: Mapping[str, An
                 _f("menu_order", "Order", _N),
             )
         )
-    meta_fields = tuple(
-        _schema_field(f"meta.{key}", key, spec) for key, spec in sorted(meta.items())
-    )
-    if meta_fields:
-        pages.append(PageSpec("meta", "Meta", meta_fields))
+    # Another plugin's fields go on their own page after the rest (9.15, custom_field_owners).
+    shown, others = labelled_keys(sorted(meta))
+    for key, title, keys in (("meta", "Meta", shown), ("meta_other", OTHERS_PAGE, others)):
+        if keys:
+            fields = tuple(_schema_field(f"meta.{k}", name, meta[k]) for k, name in keys)
+            pages.append(PageSpec(key, title, fields))
     return SheetSpec("item", "Item", tuple(pages))
 
 

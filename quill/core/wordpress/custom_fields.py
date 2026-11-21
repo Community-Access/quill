@@ -50,6 +50,8 @@ class CustomFields:
     structured: list[shapes.StructuredField] = field(default_factory=list)
     #: How many registered fields QUILL cannot edit safely, left as they are.
     left_alone: int = 0
+    #: Other plugins' fields not shown, by plugin (custom_field_owners); empty with show_all.
+    hidden: dict[str, int] = field(default_factory=dict)
 
 
 #: The objects that carry registered meta, besides a post's own kind.
@@ -137,12 +139,27 @@ def field_for(key: str, spec: Mapping[str, Any], current: Any, *, help_text: str
 
 
 def build_form(
-    schema: Mapping[str, Any], values: Mapping[str, Any], kept: Mapping[str, Any]
+    schema: Mapping[str, Any],
+    values: Mapping[str, Any],
+    kept: Mapping[str, Any],
+    *,
+    show_all: bool = False,
 ) -> CustomFields:
-    """The fields to show: the site's value, or the one kept with the copy if changed."""
+    """The fields to show: the site's value, or the one kept with the copy if changed.
+
+    Another plugin's fields are counted in ``hidden`` and left out unless
+    *show_all* (:mod:`~quill.core.wordpress.custom_field_owners`); they are
+    never sent unless shown and changed.
+    """
+    from quill.core.wordpress.custom_field_owners import plugin_of
+
     out = CustomFields()
     for key, spec in schema.items():
         if key in _PLUMBING or not isinstance(spec, dict):
+            continue
+        owner = "" if show_all else plugin_of(key)
+        if owner:
+            out.hidden[owner] = out.hidden.get(owner, 0) + 1
             continue
         shape = shapes.shape_of(spec)
         if shape in ("list", "group") and shapes.editable(spec):
@@ -170,6 +187,36 @@ def build_form(
     for f, label in zip(out.fields, assign_access_keys([f.label for f in out.fields]), strict=True):
         f.label = label
     return out
+
+
+#: The check box that shows another plugin's fields; never a meta key (it has no
+#: underscore-free WordPress name and is taken out before :func:`changes`).
+SHOW_ALL_KEY = "quill:show_all_fields"
+
+
+def with_show_all(form: CustomFields) -> list[Field]:
+    """The form's fields, led by the Show All Fields check box when some are hidden.
+
+    Access keys are given again across the whole list, the check box first,
+    so no two share a letter (GATE-14).
+    """
+    if not form.hidden:
+        return list(form.fields)
+    total = sum(form.hidden.values())
+    # A check box acts only on OK, so its help says so (accessibility review, 2026-11-20);
+    # whose fields they are is in the window's opening sentence, not repeated here.
+    toggle = Field(
+        SHOW_ALL_KEY,
+        f"&Show all fields, including {total} hidden",
+        "check",
+        "Check this and choose OK to reopen this window with every field shown. "
+        "Anything you typed is kept.",
+        False,
+    )
+    fields = [toggle, *form.fields]
+    for f, label in zip(fields, assign_access_keys([f.label for f in fields]), strict=True):
+        f.label = label
+    return fields
 
 
 class FieldValueError(CodedError):

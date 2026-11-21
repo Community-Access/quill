@@ -5,14 +5,10 @@ Phases 1 and 2 (GitHub PRD section 11): the window's tree is the whole of
 load in it through the provider calls GitHub Items makes, and Explore GitHub's
 views through Explore's own client (:mod:`quill.ui.github_workbench_explore`),
 so there is no new network call. Enter on a repository or person row selects
-its node. The few nodes with no loader here yet (Files, Milestones, Projects,
-the admin pages) are shown, say what they will hold, and point at the window
-that still has them, so nothing seems to vanish.
+its node; a node with no loader says what it will hold, so nothing vanishes.
 
-Reached only behind the developer flag
-(:mod:`quill.core.github.workbench_flag`), through
-:func:`quill.ui.github_workbench_commands.open_in_workbench_window`, which
-both editors call: QUILL Lite is never ahead.
+Reached through :func:`quill.ui.github_workbench_commands.open_in_workbench_window`
+(behind :mod:`quill.core.github.workbench_flag`), which both editors call.
 """
 
 from __future__ import annotations
@@ -51,7 +47,6 @@ from quill.ui.github_items_view import (
     model_detail,
     model_url,
     parse_repo_reference,
-    row_cells,
     sort_items,
     workbench_columns,
 )
@@ -146,8 +141,9 @@ class GitHubWorkbenchProvider(
         start_worktree: Callable[[object, str, int, str, bool], None] | None = None,
         open_document: Callable[[Path], None] | None = None,
         resolve_conflicts: Callable[[object, str, int, str, str], None] | None = None,
+        ai_ask: Callable[[str, Callable[[str], None]], bool] | None = None,
     ) -> None:
-        self.items = items
+        self.items, self.ai_ask = items, ai_ask
         self._open_document = open_document
         self.ai_summarizer = ai_summarizer
         self.start_worktree = start_worktree
@@ -334,16 +330,14 @@ class GitHubWorkbenchProvider(
         return workbench_columns(node.loader.removeprefix("items:"))
 
     def columns(self, node: NodeSpec) -> tuple[str, ...]:
-        return self.visible_columns(node.loader, self.all_columns(node))
+        return self.shaped_columns(self.visible_columns(node.loader, self.all_columns(node)))
 
     def remote_words(self, node: NodeSpec) -> bool:
         """A search node sends the whole filter to GitHub; every other list filters here."""
         return node.scope is Scope.QUERY
 
     def cells(self, row: object, columns: tuple[str, ...]) -> list[str]:
-        if isinstance(row, ExploreRow):
-            return [row.label]
-        return row_cells(row, columns, full=False)
+        return self.shaped_cells(row, columns)  # short rows for braille, or the columns
 
     def detail(self, row: object) -> str:
         from quill.core.github.emoji_names import name_shortcodes
@@ -429,11 +423,10 @@ class GitHubWorkbenchProvider(
     def after_open(self, then: str) -> None:
         """What a door asked for once the window is open.
 
-        ``sheet:<page>`` opens the repository's Properties at a page;
-        ``filter:<text>`` narrows the list just opened (``#42``);
-        ``search:<query>`` opens Search > Issues and Pull Requests on a query;
-        ``issue:<json [title, body]>`` starts a new issue with that draft
-        (GitHub PRD 22.3, from the editor); anything else is an editor command.
+        ``sheet:<page>``: the repository's Properties at a page; ``filter:<text>``
+        narrows the list (``#42``); ``properties:<json>`` opens a reference's sheet
+        (GH-R-036); ``search:<query>`` opens Search > Issues and Pull Requests;
+        ``issue:<json [title, body]>`` starts a new issue (PRD 22.3); else an editor command.
         """
         repository = self.current_repository_name()
         if self.frame is None:
@@ -443,6 +436,10 @@ class GitHubWorkbenchProvider(
             self.frame.filter.ChangeValue(then.partition(":")[2])
             self.frame.apply_filter()
             self.frame.list.SetFocus()
+        elif then.startswith("properties:"):
+            from quill.ui.github_workbench_reference_sheet import open_reference_sheet
+
+            open_reference_sheet(self, then.partition(":")[2])
         elif then.startswith("search:"):
             self._go_filtered("", "search_issues", "", then.partition(":")[2])
         elif then.startswith("issue:"):
@@ -474,14 +471,14 @@ class GitHubWorkbenchProvider(
 
     def close(self) -> None:
         self.stop_watch_timer()
+        self.save_tip_moments()  # tips offered and the tour, kept only when the window closes
         try:
             self.items.close()
         except Exception:  # noqa: BLE001 - closing is best-effort cleanup
             pass
 
 
-#: Nodes that name a place still to come, and what they will hold. Empty since
-#: Watches arrived (2026-11-13).
+#: Nodes that name a place still to come, and what they hold (none since 2026-11-13).
 _PLACEHOLDERS: dict[str, str] = {}
 
 _DRILLS = {
@@ -539,6 +536,7 @@ def open_github_workbench(
     start_worktree: Callable[[object, str, int, str, bool], None] | None = None,
     open_document: Callable[[Path], None] | None = None,
     resolve_conflicts: Callable[[object, str, int, str, str], None] | None = None,
+    ai_ask: Callable[[str, Callable[[str], None]], bool] | None = None,
 ) -> WorkbenchFrame:
     """Open the one GitHub Workbench (or bring it forward), at *node* or *view*.
 
@@ -553,7 +551,8 @@ def open_github_workbench(
     guide F1 opens ("quill" or "quilllite"). *ai_summarizer* gives Summarize
     Discussion and the diff window the editor's AI connection, and
     *start_worktree* starts work on an issue in a local worktree; without them
-    those rows are greyed and say why. *open_document* opens a local file in
+    those rows are greyed and say why; *ai_ask* sends Ask How's one request through the
+    editor's Choose Your AI (GH-R-118). *open_document* opens a local file in
     the editor (Read as Document's Open in Editor); without it, the thread can
     only be saved.
     """
@@ -586,6 +585,7 @@ def open_github_workbench(
         start_worktree=start_worktree,
         open_document=open_document,
         resolve_conflicts=resolve_conflicts,
+        ai_ask=ai_ask,
     )
     provider.adopt_remembered_instances()
     frame = WorkbenchFrame(

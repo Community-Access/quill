@@ -26,6 +26,11 @@ def log_unspoken(frame: Any, message: str, reason: str) -> None:
         active = bool(frame.IsActive()) if frame is not None else True
     except Exception:  # noqa: BLE001 - a dead frame is simply "not in front"
         active = False
-    text = message if len(message) <= _LIMIT else message[: _LIMIT - 3] + "..."
+    # An announcement can carry a key or a password (a pasted AI key, a WordPress
+    # application password said back), and the log goes into support bundles.
+    from quill.stability.redaction import redact_outbound_line
+
+    clean = redact_outbound_line(message)
+    text = clean if len(clean) <= _LIMIT else clean[: _LIMIT - 3] + "..."
     where = "" if active else ", while QUILL was not the window in front"
     _log.info("Not spoken (%s%s): %s", reason, where, text)

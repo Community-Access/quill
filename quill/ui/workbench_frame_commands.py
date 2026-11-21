@@ -341,6 +341,8 @@ class WorkbenchCommandsMixin:
             self.walk_moved_on(walk)
         elif verb in actions:
             actions[verb]()
+            if verb in ("next_pane", "previous_pane"):
+                self.walk_moved_on(walk)  # a walk step can be "press F6" (the tour's are)
         elif self.current is not None and self.provider.run(
             command_id, self.current, self.selected_row()
         ):

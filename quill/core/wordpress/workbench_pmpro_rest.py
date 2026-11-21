@@ -13,7 +13,10 @@ are used here for three things:
   preview (:func:`read_discount_code`, :func:`discount_preview`,
   :func:`create_discount_code`). ``pmpro/v1`` has no route that lists every
   code: the list is read, page by page, through the discount-codes ability
-  where the site offers it; otherwise its one row says the site lists them
+  where the site offers it. PMPro 3.9.2 has no such ability (live,
+  2026-11-20), only its quick search, which answers at most 20 codes and
+  cannot page: those are listed, with a row saying any more are in wp-admin.
+  A site with neither has one row saying the site lists them
   only in wp-admin, and Enter opens Memberships > Discount Codes there.
 
 The site checks the caller's PMPro capability on every call. Nothing here
@@ -38,6 +41,7 @@ if TYPE_CHECKING:
 __all__ = [
     "DISCOUNT_ABILITY",
     "PMPRO_NAMESPACE",
+    "SEARCH_ABILITY",
     "AccessAnswer",
     "DiscountSpec",
     "create_discount_code",
@@ -52,6 +56,10 @@ __all__ = [
 
 PMPRO_NAMESPACE = "pmpro/v1"
 DISCOUNT_ABILITY = "pmpro/discount-codes-query"
+#: What PMPro 3.9.2 really offers (live, 2026-11-20): no discount-codes ability, but its
+#: quick search, which takes scope "discount_codes" and answers at most 20, with no paging.
+SEARCH_ABILITY = "pmpro/search-query"
+_SEARCH_MOST = 20
 _ACCESS = "pmpro/v1/has_membership_access"
 _LEVELS_FOR_USER = "pmpro/v1/get_membership_levels_for_user"
 _DISCOUNT = "pmpro/v1/discount_code"
@@ -219,11 +227,21 @@ def create_discount_code(api: WordPressApi, spec: DiscountSpec) -> dict[str, Any
     return dict(raw) if isinstance(raw, Mapping) else {"code": spec.code}
 
 
-def _note(ctx: SiteContext) -> WbRow:
-    """The row of a site with no discount-codes ability: the list is only in wp-admin."""
+def _note(ctx: SiteContext, shown: int = 0) -> WbRow:
+    """The row of a site with no discount-codes ability: the list is only in wp-admin.
+
+    With *shown*, the codes above it came from PMPro's search, which stops at
+    :data:`_SEARCH_MOST`, so the row says the rest are in wp-admin.
+    """
     screen = ADMIN_SCREENS["pmpro_discount_codes"]
     link = admin_link(ctx.url, "pmpro_discount_codes")
     why = f"{ctx.name} lists its discount codes only in wp-admin. {screen.why}"
+    if shown:
+        why = (
+            f"{ctx.name} may have more discount codes than these {shown}: Paid Memberships "
+            f"Pro's search answers at most {_SEARCH_MOST}, and every code is listed only in "
+            "wp-admin."
+        )
     where = f" Enter opens {screen.name} in your browser." if link else ""
     cells = {"code": "Every code", "uses": "In wp-admin"}
     return WbRow(
@@ -258,6 +276,37 @@ def _all_codes(ctx: SiteContext, ability: Any) -> list[WbRow]:
     return rows
 
 
+def _searched_codes(ctx: SiteContext, ability: Any) -> list[WbRow]:
+    """Up to 20 codes through PMPro's quick search, each read in full by its code.
+
+    The search gives only each code's name and wp-admin address; ``%`` matches
+    every code (live, PMPro 3.9.2). When it answers its most, a note row says
+    the rest are in wp-admin rather than letting the list look complete.
+    """
+    from quill.core.wordpress.abilities import run_ability
+
+    given = {"query": "%", "scope": "discount_codes", "limit": _SEARCH_MOST}
+    answer = run_ability(ctx.api, ability, given)
+    names: list[str] = []
+    groups = answer.get("results", []) if isinstance(answer, Mapping) else []
+    for group in groups if isinstance(groups, list) else []:
+        items = group.get("items", []) if isinstance(group, Mapping) else []
+        for item in items if isinstance(items, list) else []:
+            name = plain_text(str(item.get("title") or "")) if isinstance(item, Mapping) else ""
+            if name and name not in names:
+                names.append(name)
+    rows = []
+    for name in names:
+        try:
+            raw = read_discount_code(ctx.api, name)
+        except WordPressApiError:
+            raw = {"code": name}
+        rows.append(discount_row(ctx.name, raw, ctx.url))
+    if len(names) >= _SEARCH_MOST:
+        rows.append(_note(ctx, shown=len(names)))
+    return rows
+
+
 def load_discount_codes(ctx: SiteContext) -> list[WbRow]:
     """Every code when the site offers the ability; otherwise the row that says why not."""
     from quill.core.wordpress.abilities import NAMESPACE, list_abilities
@@ -270,6 +319,11 @@ def load_discount_codes(ctx: SiteContext) -> list[WbRow]:
         ability = found.get(DISCOUNT_ABILITY)
         if ability is not None and ability.readonly:
             return _all_codes(ctx, ability)
+        search = found.get(SEARCH_ABILITY)
+        if search is not None and search.readonly:
+            rows = _searched_codes(ctx, search)
+            if rows:
+                return rows
     if ctx.info is not None and not ctx.info.supports(PMPRO_NAMESPACE):
         return [
             WbRow(

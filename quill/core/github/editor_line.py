@@ -18,8 +18,10 @@ the line in front of you without opening the Workbench:
 - **Comment on This Line in the Open Pull Request**: the pull request whose
   branch is checked out here (:func:`open_pulls_query`, :func:`line_anchor`).
 - **References in any document** (``#42``, ``owner/name#42``, ``@person``, a
-  commit hash) are recognised by :func:`references_in` and
-  :func:`reference_at`, so Alt+Enter on one can open its Properties.
+  commit hash, or a GitHub address of an issue, pull request, discussion or
+  commit) are recognised by :func:`references_in` and :func:`reference_at`,
+  and :func:`sheet_request` names the Properties sheet Alt+Enter on one opens
+  (GH-R-036, decision 23).
 
 Everything that reads the working copy goes through an injected ``runner``
 (``safe_subprocess`` in the app, a fake in tests), exactly as
@@ -60,6 +62,7 @@ __all__ = [
     "reference_at",
     "reference_url",
     "references_in",
+    "sheet_request",
 ]
 
 _TIMEOUT = 15.0
@@ -293,6 +296,10 @@ def line_anchor(site: LineSite) -> LineCommentAnchor:
 _REFERENCE = re.compile(
     r"(?<![\w/#@.-])"
     r"(?:"
+    r"https?://(?:www\.)?github\.com/(?P<urepo>[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9._-]{1,100})"
+    r"/(?P<ukind>issues|pull|discussions|commit)/(?P<uid>[0-9a-f]{7,40}|[1-9][0-9]{0,9})"
+    r"(?:[/#?][^\s<>()\[\]]*)?"
+    r"|"
     r"(?P<repo>[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9._-]{1,100})#(?P<rnum>[1-9][0-9]{0,9})"
     r"|(?:GH-|#)(?P<num>[1-9][0-9]{0,9})"
     r"|@(?P<login>[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38})(?![\w/-])"
@@ -314,10 +321,16 @@ class ShortReference:
     number: int = 0
     login: str = ""
     sha: str = ""
+    #: "issue", "pull_request" or "discussion" when an address said which;
+    #: ``""`` for ``#42``, which GitHub answers for either.
+    item_kind: str = ""
 
     def describe(self) -> str:
         if self.kind == "item":
-            return f"{self.repository}#{self.number}" if self.repository else f"#{self.number}"
+            name = {"pull_request": "pull request ", "discussion": "discussion "}
+            prefix = name.get(self.item_kind, "")
+            where = f"{self.repository}#{self.number}" if self.repository else f"#{self.number}"
+            return prefix + where
         if self.kind == "person":
             return f"@{self.login}"
         return f"commit {self.sha[:7]}"
@@ -332,7 +345,9 @@ def references_in(text: str, repository: str = "") -> list[ShortReference]:
     found: list[ShortReference] = []
     for match in _REFERENCE.finditer(text):
         start, end = match.span()
-        if match.group("repo"):
+        if match.group("urepo"):
+            found.append(_from_address(match, start, end))
+        elif match.group("repo"):
             found.append(
                 ShortReference(
                     "item",
@@ -360,6 +375,21 @@ def references_in(text: str, repository: str = "") -> list[ShortReference]:
     return found
 
 
+_ADDRESS_KINDS = {"issues": "issue", "pull": "pull_request", "discussions": "discussion"}
+
+
+def _from_address(match: re.Match[str], start: int, end: int) -> ShortReference:
+    """A reference written as a GitHub address: an issue, pull, discussion or commit."""
+    repository, ident = match.group("urepo"), match.group("uid")
+    if match.group("ukind") == "commit":
+        return ShortReference("commit", match.group(0), start, end, repository, sha=ident)
+    item_kind = _ADDRESS_KINDS[match.group("ukind")]
+    number = int(ident) if ident.isdigit() else 0
+    return ShortReference(
+        "item", match.group(0), start, end, repository, number=number, item_kind=item_kind
+    )
+
+
 def reference_at(text: str, offset: int, repository: str = "") -> ShortReference | None:
     """The reference that *offset* is on (or just after), or ``None``."""
     for reference in references_in(text, repository):
@@ -378,3 +408,23 @@ def reference_url(reference: ShortReference) -> str:
         # GitHub sends /issues/N on to /pull/N when N is a pull request.
         return f"https://github.com/{reference.repository}/issues/{reference.number}"
     return f"https://github.com/{reference.repository}/commit/{reference.sha}"
+
+
+def sheet_request(reference: ShortReference) -> tuple[str, dict[str, str]] | None:
+    """The Properties sheet a reference opens: its kind and ident, or ``None``.
+
+    ``None`` when the reference needs a repository it does not have (``#42``
+    in a document outside a GitHub repository). An item written ``#42`` is
+    kind ``"item"``: GitHub alone knows whether 42 is an issue or a pull
+    request, so the Workbench asks before choosing the sheet.
+    """
+    if reference.kind == "person":
+        return "person", {"login": reference.login}
+    if not reference.repository:
+        return None
+    if reference.kind == "commit":
+        return "commit", {"repo": reference.repository, "sha": reference.sha}
+    if not reference.number:
+        return None
+    ident = {"repo": reference.repository, "number": str(reference.number)}
+    return reference.item_kind or "item", ident

@@ -353,7 +353,12 @@ _BY_NAME: Mapping[str, Mapping[str, Support]] = {
         "list": _yes("load_across", "Security Alerts is a category list (GX16)."),
         "make_same": _later("dismissing an alert everywhere", "Dismiss Alert batch"),
     },
-    "packages_pages": {"list": _later("packages and Pages by name", "Packages node")},
+    "packages_pages": {
+        "list": _no(
+            "Not yet: packages and Pages by name across a set. Each repository's Packages "
+            "and GitHub Pages nodes, and its sheet's Pages page, do it one repository at a time."
+        )
+    },
 }
 
 _W = "command:github.workbench."

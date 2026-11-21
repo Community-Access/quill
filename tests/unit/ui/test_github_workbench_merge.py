@@ -56,7 +56,7 @@ def ready(monkeypatch: pytest.MonkeyPatch) -> list[mr.Readiness]:
             review="REVIEW_REQUIRED",
         )
     ]
-    monkeypatch.setattr(mr, "load_readiness", lambda api, repo, number: holder[0])
+    monkeypatch.setattr(mr, "load_readiness", lambda api, repo, number, **_named: holder[0])
     return holder
 
 

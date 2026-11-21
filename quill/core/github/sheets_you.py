@@ -39,12 +39,16 @@ __all__ = [
     "profile_pin_read",
     "pull_request_pin_field",
     "sponsoring_field",
+    "sponsoring_values",
     "you_page_keys",
 ]
 
 #: Each kind's You page, in order: (editable relationships, read-only ones).
 YOU_PAGES: dict[str, tuple[tuple[str, ...], tuple[str, ...]]] = {
-    "repository": (("starred", "watch"), ("custom_watch", "profile_pinned", "your_access")),
+    "repository": (
+        ("starred", "watch", "star_lists", "forked"),
+        ("custom_watch", "profile_pinned", "sponsoring", "your_access"),
+    ),
     "gist": (("starred",), ("profile_pinned",)),
     "person": (("following", "blocked"), ("follows_you", "sponsoring", "sponsor", "report")),
     "organization": (("following", "public_member"), ("your_org_role", "sponsoring")),
@@ -118,7 +122,7 @@ def sponsoring_field() -> FieldSpec:
     return ro("sponsoring", "Sponsoring", FieldKind.CHECK, SPONSOR_WHY)
 
 
-def _sponsoring(data: Mapping[str, Any]) -> dict[str, Value]:
+def sponsoring_values(data: Mapping[str, Any]) -> dict[str, Value]:
     owner = dig(data, "repositoryOwner") or dig(data, "organization") or {}
     return {"sponsoring": bool(owner.get("viewerIsSponsoring"))}
 
@@ -126,7 +130,7 @@ def _sponsoring(data: Mapping[str, Any]) -> dict[str, Value]:
 PERSON_SPONSOR_READ = Read(
     graphql=_SPONSORABLE,
     variables=lambda ident: {"login": ident.get("login", "")},
-    extract=_sponsoring,
+    extract=sponsoring_values,
     optional=True,
 )
 
@@ -141,7 +145,7 @@ def _org_you(data: Mapping[str, Any]) -> dict[str, Value]:
     return {
         "node_id": str(org.get("id") or ""),
         "following": bool(org.get("viewerIsFollowing")),
-        **_sponsoring(data),
+        **sponsoring_values(data),
     }
 
 

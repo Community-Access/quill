@@ -8,6 +8,14 @@ auto-merge and the merge queue -- and :class:`Readiness` says the answer in
 words: either that it can merge, or each reason it cannot, each with what to
 do about it.
 
+With ``named=True`` (Why Can't I Merge?, Merge Selected... and Watch
+Readiness) a pull request that cannot merge also has its blocking rules named
+by :func:`quill.core.github.merge_rules.name_blockers`: which ruleset or
+branch protection wants which check, how many approving reviews, which
+CODEOWNERS line's owners have not approved, and which rule makes the branch
+merge only through a queue. Naming never changes GitHub's answer; it only
+says it more exactly.
+
 The answer is for **one commit**, the head GitHub reported, and says which.
 :func:`merge_at` merges only that commit (REST ``sha``): if somebody pushes in
 between, GitHub refuses with 409 and nothing is merged, so what was checked is
@@ -20,13 +28,20 @@ wx-free and strict-typed.
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from quill.core.error_codes import CodedError
 from quill.core.github.workbench_api import GitHubApi
 
-__all__ = ["Check", "MergeReadinessError", "Readiness", "load_readiness", "merge_at"]
+__all__ = [
+    "Check",
+    "MergeReadinessError",
+    "NamedRules",
+    "Readiness",
+    "load_readiness",
+    "merge_at",
+]
 
 
 class MergeReadinessError(CodedError):
@@ -88,6 +103,22 @@ def _check(node: Mapping[str, Any]) -> Check:
 
 
 @dataclass(frozen=True)
+class NamedRules:
+    """The rules that block a pull request, by name (:mod:`quill.core.github.merge_rules`)."""
+
+    blockers: tuple[str, ...] = ()
+    """One sentence per blocking rule, each naming the ruleset or protection it is from."""
+    checks: frozenset[str] = frozenset()
+    """The required checks a blocker already names, so they are not said twice."""
+    reviews: bool = False
+    """Whether a blocker names the reviews it is waiting for."""
+    queue_rule: str = ""
+    """The rule that makes the base branch merge only through its queue, in words."""
+    unread: tuple[str, ...] = ()
+    """What QUILL could not read, so a rule there may be unnamed."""
+
+
+@dataclass(frozen=True)
 class Readiness:
     number: int
     head: str
@@ -106,6 +137,8 @@ class Readiness:
     methods: tuple[str, ...] = ()
     """The REST merge methods the repository allows (``squash``, ``merge``, ``rebase``);
     empty when GitHub did not say, and then all three are offered."""
+    rules: NamedRules | None = None
+    """The blocking rules by name, when they were asked for (``named=True``)."""
 
     @property
     def short_head(self) -> str:
@@ -134,17 +167,25 @@ class Readiness:
                 f"It is behind {self.base}, and the branch's rules want it up to date. "
                 "Update the branch first."
             )
+        named = self.rules or NamedRules()
         if self.review == "CHANGES_REQUESTED":
             found.append("A reviewer requested changes. Their review has to be answered first.")
-        elif self.review == "REVIEW_REQUIRED":
+        elif self.review == "REVIEW_REQUIRED" and not named.reviews:
             found.append("It needs an approving review.")
-        failed, pending = self._required("failed"), self._required("pending")
+        failed = [name for name in self._required("failed") if name not in named.checks]
+        pending = [name for name in self._required("pending") if name not in named.checks]
         if failed:
             found.append(_listed("Required check", failed, "failed") + ". Re-run or fix it.")
         if pending:
             found.append(_listed("Required check", pending, "has not finished") + ".")
+        found.extend(named.blockers)
         if self.merge_state == "BLOCKED" and not found and not self.queue_required:
-            found.append(f"A rule on {self.base} blocks it. Check Merge Policy names the rules.")
+            found.append(
+                f"A rule on {self.base} blocks it. Check Merge Policy names the rules."
+                if self.rules is None
+                else f"A rule on {self.base} blocks it, and GitHub's list of the branch's "
+                "rules does not say which. The pull request's page on GitHub does."
+            )
         if self.merge_state == "UNKNOWN" and not found:
             found.append("GitHub is still working out whether it can merge. Ask again shortly.")
         return tuple(found)
@@ -162,9 +203,10 @@ class Readiness:
     def sentence(self) -> str:
         at = f"as of commit {self.short_head}" if self.head else "as GitHub has it now"
         if self.can_merge and self.queue_required:
+            by = f", by {self.rules.queue_rule}" if self.rules and self.rules.queue_rule else ""
             said = (
                 f"#{self.number} can join the merge queue for {self.base}, {at}; "
-                f"{self.base} merges only through its queue."
+                f"{self.base} merges only through its queue{by}."
             )
         elif self.can_merge:
             said = f"#{self.number} can merge into {self.base}, {at}."
@@ -174,6 +216,11 @@ class Readiness:
                 said += " " + _listed("Check", others, "failed") + f", but {not_required} required."
         else:
             said = f"#{self.number} cannot merge yet, {at}. " + " ".join(self.reasons)
+            if self.rules and self.rules.unread:
+                said += (
+                    f" QUILL could not read {_and(list(self.rules.unread))}, "
+                    "so a rule there may not be named."
+                )
         if self.auto_merge:
             said += f" Auto-merge is on, to {self.auto_merge.casefold()} it when it can."
         if self.queue_position is not None:
@@ -181,14 +228,38 @@ class Readiness:
         return said
 
 
+def _and(names: list[str]) -> str:
+    return names[0] if len(names) == 1 else f"{', '.join(names[:-1])} and {names[-1]}"
+
+
 def _listed(noun: str, names: list[str], verb: str) -> str:
     if len(names) == 1:
         return f"{noun} {names[0]} {verb}"
     verb_many = {"has not finished": "have not finished"}.get(verb, verb)
-    return f"{noun}s {', '.join(names[:-1])} and {names[-1]} {verb_many}"
+    return f"{noun}s {_and(names)} {verb_many}"
 
 
-def load_readiness(api: GitHubApi, repository: str, number: int) -> Readiness:
+def load_readiness(
+    api: GitHubApi, repository: str, number: int, *, named: bool = False
+) -> Readiness:
+    """GitHub's answer for #*number* now; with *named*, its blocking rules by name too.
+
+    Rules are read only when they can add something: the pull request is open
+    and cannot merge, or merges only through a queue.
+    """
+    ready = _load(api, repository, number)
+    if not named or ready.state != "OPEN" or (ready.can_merge and not ready.queue_required):
+        return ready
+    from quill.core.github.merge_rules import name_blockers
+
+    try:
+        rules = name_blockers(api, repository, ready)
+    except Exception:  # noqa: BLE001 - naming is extra; GitHub's own answer still stands
+        rules = NamedRules(unread=(f"the rules on {ready.base}",))
+    return replace(ready, rules=rules)
+
+
+def _load(api: GitHubApi, repository: str, number: int) -> Readiness:
     owner, _slash, name = repository.partition("/")
     data = api.graphql(_QUERY, {"o": owner, "n": name, "i": int(number)})
     pull = ((data or {}).get("repository") or {}).get("pullRequest")
