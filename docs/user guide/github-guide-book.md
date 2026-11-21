@@ -6676,6 +6676,9 @@ made the practice repository yet, press `Ctrl+Alt+P` first and say yes.
   round it.
 - **Try a command without sending it:** turns Dry Run on, tries closing an
   issue, and turns it off again.
+- **Protect a branch:** protects main on the practice repository from
+  Settings > Branch Protection, reads the rule on the branch's Protection
+  page and in Settings > Rulesets, and takes it off again.
 - **Use the API Console:** a read with the GitHub API Console.
 
 # Chapter 13: Properties, filters and permissions

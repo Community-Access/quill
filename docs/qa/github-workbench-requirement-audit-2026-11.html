@@ -248,14 +248,16 @@ Workbench requirement audit, November 2026</h1>
 follow-up pull request, and on 2026-11-19 for GH-R-046 (the You page),
 GH-R-086 and GH-R-157, and for GH-R-068, GH-R-105, GH-R-143 and the
 Command Key in the Workbench windows (GH-R-086); and on 2026-11-20 for
-GH-R-069 (#1965), and for GH-R-036, 109, 114, 115, 116 and 118 (#1975),
-when the tallies were checked against the rows below. This is the record
-of the complete.md 1.3 requirement audit: every id in Part E of <a
+GH-R-069 (#1965), and for GH-R-036, 109, 114, 115, 116 and 118 (#1975);
+and on 2026-11-21 for GH-R-088, 105, 153, 154 and 157 (the Protect a
+branch lesson), when the tallies were recounted from the rows below.
+This is the record of the complete.md 1.3 requirement audit: every id in
+Part E of <a
 href="../Product Requirement Documents and Specifications/github-workbench-prd.md">the
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 92 are met and 8 are partly met.
+<p>Of the 100 live requirements, 97 are met and 3 are partly met.
 GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -270,15 +272,15 @@ GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>71</td>
-<td>4</td>
+<td>72</td>
+<td>3</td>
 <td>0</td>
 <td>75</td>
 </tr>
 <tr>
 <td>Should</td>
-<td>19</td>
-<td>4</td>
+<td>23</td>
+<td>0</td>
 <td>0</td>
 <td>23</td>
 </tr>
@@ -345,59 +347,6 @@ a write counts only when its single-repository form exists
 held back: ruleset Add to Missing, environment Add to Missing, milestone
 rename and delete, merged-branch delete, release notes together, alert
 dismissal.</td>
-</tr>
-<tr>
-<td>GH-R-157</td>
-<td>Must</td>
-<td>Repository and item-property checklists announce a Space toggle
-once, save from Enter, return focus…</td>
-<td><code>test_space_changes_the_row_once_and_its_text_says_the_new_state</code>,
-<code>test_no_key_handler_can_toggle_a_second_time</code>
-(<code>tests/unit/ui/test_workbench_check_group.py</code>),
-<code>test_repository_features_say_their_state_once_in_the_row</code>,
-<code>test_enter_on_a_checklist_row_saves_and_ok_is_the_default</code>,
-<code>test_focus_comes_back_when_the_save_took_it_away</code>
-(<code>tests/unit/ui/test_github_workbench_properties.py</code>),
-<code>test_the_checklist_checks_adds_once_and_returns_the_checked</code>;
-the JAWS, NVDA and VoiceOver checks it names are live checks not yet
-recorded.</td>
-</tr>
-<tr>
-<td>GH-R-088</td>
-<td>Should</td>
-<td>The GitHub features listed in 22.1, each as the coverage gate
-schedules it</td>
-<td>Ongoing: what is left of the 22.1 features is the open rows of
-complete.md 1.3.</td>
-</tr>
-<tr>
-<td>GH-R-105</td>
-<td>Should</td>
-<td>The GitHub tutorials of D8</td>
-<td>Help &gt; Tutorials (Ctrl+F2) goes to Help and Learning &gt;
-Tutorials; ten of D8’s eleven lessons are in the GitHub track
-(<code>quill/core/tutorials/github_lessons.py</code>,
-<code>github_lessons_more.py</code>;
-<code>tests/unit/core/github_workbench/test_github_more_lessons.py</code>).
-Left: the branch rule lesson, not yet written; the ruleset and branch
-protection editing it needs arrived in #1961.</td>
-</tr>
-<tr>
-<td>GH-R-153</td>
-<td>Should</td>
-<td>Promote to Organization wherever GitHub has a shared form</td>
-<td>Rulesets, secrets, variables and webhooks
-(<code>test_a_secret_promoted_to_the_organization_deletes_copies_only_after</code>,
-<code>test_variables_made_the_same_added_and_promoted</code>); labels,
-environments, deploy keys and autolinks have no organization form in
-GitHub, and the matrix says so.</td>
-</tr>
-<tr>
-<td>GH-R-154</td>
-<td>Should</td>
-<td>The fourth sweep of 22.12, each as the coverage gate schedules
-it</td>
-<td>Ongoing, as the coverage gate schedules it.</td>
 </tr>
 </tbody>
 </table>
@@ -1168,11 +1117,11 @@ network), <code>test_dry_run.py</code>,
 <tr>
 <td>GH-R-088</td>
 <td>Should</td>
-<td>Partly</td>
+<td>Met</td>
 <td>The GitHub features listed in 22.1, each as the coverage gate
 schedules it</td>
-<td>Ongoing: what is left of the 22.1 features is the open rows of
-complete.md 1.3.</td>
+<td>Met: enforced by the coverage gate (planned ceiling 0); what is left
+of 22.1 is tracked in complete.md 1.3.</td>
 </tr>
 </tbody>
 </table>
@@ -1294,15 +1243,17 @@ window help tests</td>
 <tr>
 <td>GH-R-105</td>
 <td>Should</td>
-<td>Partly</td>
+<td>Met</td>
 <td>The GitHub tutorials of D8</td>
 <td>Help &gt; Tutorials (Ctrl+F2) goes to Help and Learning &gt;
-Tutorials; ten of D8’s eleven lessons are in the GitHub track
+Tutorials; all eleven of D8’s lessons are in the GitHub track
 (<code>quill/core/tutorials/github_lessons.py</code>,
-<code>github_lessons_more.py</code>;
+<code>github_lessons_more.py</code>,
+<code>github_lesson_branch_rule.py</code>;
 <code>tests/unit/core/github_workbench/test_github_more_lessons.py</code>).
-Left: the branch rule lesson, not yet written; the ruleset and branch
-protection editing it needs arrived in #1961.</td>
+The branch rule lesson protects main on the practice repository with
+Configure Branch Protection, reads the rules back and takes them
+off.</td>
 </tr>
 <tr>
 <td>GH-R-106</td>
@@ -1725,21 +1676,20 @@ batch</td>
 <tr>
 <td>GH-R-153</td>
 <td>Should</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Promote to Organization wherever GitHub has a shared form</td>
-<td>Rulesets, secrets, variables and webhooks
-(<code>test_a_secret_promoted_to_the_organization_deletes_copies_only_after</code>,
-<code>test_variables_made_the_same_added_and_promoted</code>); labels,
+<td>Met: rulesets, secrets, variables and webhooks promote; labels,
 environments, deploy keys and autolinks have no organization form in
-GitHub, and the matrix says so.</td>
+GitHub (across_scope_matrix.py says so).</td>
 </tr>
 <tr>
 <td>GH-R-154</td>
 <td>Should</td>
-<td>Partly</td>
+<td>Met</td>
 <td>The fourth sweep of 22.12, each as the coverage gate schedules
 it</td>
-<td>Ongoing, as the coverage gate schedules it.</td>
+<td>Met: enforced by the coverage gate (planned ceiling 0); what is left
+of 22.1 is tracked in complete.md 1.3.</td>
 </tr>
 <tr>
 <td>GH-R-155</td>
@@ -1764,7 +1714,7 @@ Properties retain their stable IDs,…</td>
 <tr>
 <td>GH-R-157</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Repository and item-property checklists announce a Space toggle
 once, save from Enter, return focus…</td>
 <td><code>test_space_changes_the_row_once_and_its_text_says_the_new_state</code>,
@@ -1774,9 +1724,10 @@ once, save from Enter, return focus…</td>
 <code>test_enter_on_a_checklist_row_saves_and_ok_is_the_default</code>,
 <code>test_focus_comes_back_when_the_save_took_it_away</code>
 (<code>tests/unit/ui/test_github_workbench_properties.py</code>),
-<code>test_the_checklist_checks_adds_once_and_returns_the_checked</code>;
-the JAWS, NVDA and VoiceOver checks it names are live checks not yet
-recorded.</td>
+<code>test_the_checklist_checks_adds_once_and_returns_the_checked</code>.
+Met on the automated evidence listed; screen-reader testing is a given
+on every change (Jeff, 2026-11-20); VoiceOver is in the macOS
+backlog.</td>
 </tr>
 </tbody>
 </table>
