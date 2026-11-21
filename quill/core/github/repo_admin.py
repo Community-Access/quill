@@ -21,7 +21,7 @@ exact repository/branch/action, exactly like the existing
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -90,6 +90,70 @@ def _to_repository(repo: Any) -> RemoteRepository:
     )
 
 
+def _current_protection(ref: Any) -> Mapping[str, Any]:
+    """The branch's protection as GitHub sent it; empty when it has none (404)."""
+    try:
+        raw = ref.get_protection().raw_data
+    except Exception:  # noqa: BLE001 - unprotected or unreadable: nothing to keep
+        return {}
+    return raw if isinstance(raw, Mapping) else {}
+
+
+def _names(group: object, key: str) -> list[str]:
+    items = group if isinstance(group, list) else ()
+    return [str(item.get(key) or "") for item in items if isinstance(item, Mapping)]
+
+
+def _kept_protection(
+    raw: Mapping[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any], bool]:
+    """What a protection PUT must send back unchanged: (always, with reviews, strict)."""
+
+    def on(key: str) -> bool:
+        found = raw.get(key)
+        return bool(found.get("enabled")) if isinstance(found, Mapping) else bool(found)
+
+    always: dict[str, Any] = {
+        key: on(key)
+        for key in (
+            "required_linear_history",
+            "allow_force_pushes",
+            "allow_deletions",
+            "required_conversation_resolution",
+            "lock_branch",
+            "allow_fork_syncing",
+            "block_creations",
+        )
+        if key in raw
+    }
+    who = raw.get("restrictions")
+    if isinstance(who, Mapping):
+        always["user_push_restrictions"] = _names(who.get("users"), "login")
+        always["team_push_restrictions"] = _names(who.get("teams"), "slug")
+        always["app_push_restrictions"] = _names(who.get("apps"), "slug")
+    reviews: dict[str, Any] = {}
+    pr = raw.get("required_pull_request_reviews")
+    if isinstance(pr, Mapping):
+        for key, api in (
+            ("dismiss_stale_reviews", "dismiss_stale_reviews"),
+            ("require_code_owner_reviews", "require_code_owner_reviews"),
+            ("require_last_push_approval", "require_last_push_approval"),
+        ):
+            if api in pr:
+                reviews[key] = bool(pr.get(api))
+        for group, prefix, suffix in (
+            ("dismissal_restrictions", "dismissal_", ""),
+            ("bypass_pull_request_allowances", "", "_bypass_pull_request_allowances"),
+        ):
+            found = pr.get(group)
+            if isinstance(found, Mapping):
+                for kind, key in (("users", "login"), ("teams", "slug"), ("apps", "slug")):
+                    reviews[f"{prefix}{kind}{suffix}"] = _names(found.get(kind), key)
+    checks = raw.get("required_status_checks")
+    strict = bool(checks.get("strict")) if isinstance(checks, Mapping) else True
+    return always, reviews, strict
+
+
 class GitHubRepoAdminProvider:
     """Repository-lifecycle operations backed by PyGithub.
 
@@ -121,19 +185,24 @@ class GitHubRepoAdminProvider:
         private: bool = True,
         description: str = "",
         org: str = "",
+        options: Mapping[str, object] | None = None,
     ) -> RemoteRepository:
         """Create a new repository, optionally under an organization.
 
-        Raises :class:`GitHubRepoAdminError` if the name is taken, invalid,
-        or the token lacks the ``repo`` scope.
+        *options* are :func:`quill.core.github.repo_create.create_kwargs`'s
+        (website, README, .gitignore and licence templates), which
+        replace *private* and *description* when given. Naming your own
+        login as *org* creates it on your account. Raises
+        :class:`GitHubRepoAdminError` if the name is taken, invalid, or the
+        token lacks the ``repo`` scope.
         """
+        chosen: dict[str, Any] = dict(options or {"private": private, "description": description})
         try:
-            if org:
-                owner = self._gh.get_organization(org)
-                repo = owner.create_repo(name, private=private, description=description)
+            me = self._gh.get_user()
+            if org and org.lower() != str(getattr(me, "login", "")).lower():
+                repo = self._gh.get_organization(org).create_repo(name, **chosen)
             else:
-                user = self._gh.get_user()
-                repo = user.create_repo(name, private=private, description=description)
+                repo = me.create_repo(name, **chosen)
         except Exception as exc:  # noqa: BLE001
             raise _translate(exc, context=f"Could not create repository {name!r}") from exc
         return _to_repository(repo)
@@ -200,19 +269,24 @@ class GitHubRepoAdminProvider:
     ) -> None:
         """Apply branch protection to *branch*.
 
-        ``required_approving_review_count`` of ``None`` skips the required-
-        reviews rule entirely; a value of 0 is rejected by GitHub's API (use
-        :meth:`remove_branch_protection` to clear protection instead).
+        ``required_approving_review_count`` of ``None`` turns the required-
+        reviews rule off; no status checks turn that rule off. GitHub replaces
+        protection whole on a PUT, so every setting this call does not name
+        (who may push, linear history, force pushes, deletion, the reviewers'
+        own settings) is read first and sent back as it was, never reset.
         """
         repo = self._repo(full_name)
         try:
             ref = repo.get_branch(branch)
-            ref.edit_protection(
-                strict=bool(required_status_checks),
-                contexts=list(required_status_checks),
-                enforce_admins=enforce_admins,
-                required_approving_review_count=required_approving_review_count,
-            )
+            settings, reviews, strict = _kept_protection(_current_protection(ref))
+            if required_status_checks:
+                settings["strict"] = strict
+                settings["contexts"] = list(required_status_checks)
+            settings["enforce_admins"] = enforce_admins
+            if required_approving_review_count is not None:
+                settings.update(reviews)
+                settings["required_approving_review_count"] = required_approving_review_count
+            ref.edit_protection(**settings)
         except Exception as exc:  # noqa: BLE001
             raise _translate(exc, context=f"Could not protect {branch!r} on {full_name}") from exc
 

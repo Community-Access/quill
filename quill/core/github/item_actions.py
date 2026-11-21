@@ -6,10 +6,9 @@ selected row only. The window shows about eight and puts the rest under
 More (:meth:`ActionTable.menu_for`); the Item menu is the same rows, so
 nothing is reachable only by right-clicking.
 
-GitHub's own rules, tested beside this table: Codespaces only on a
-repository, a branch or a pull request; the API rate limit on no row at all
-(it lives in the Account menu and the status bar); and no default that
-deletes, because Enter must never destroy anything.
+GitHub's own rules, tested beside this table: Codespaces only on a repository,
+a branch or a pull request; the API rate limit on no row at all (it lives in the
+Account menu and the status bar); and no default that deletes: Enter never destroys.
 """
 
 from __future__ import annotations
@@ -25,6 +24,7 @@ from quill.core.github.item_action_parts import (
     _W,
     ACCOUNT_ROWS,
     AUTHORING_ROWS,
+    COLLAB_ROWS,
     PROJECT_ROWS,
     PROPERTIES_COMMAND,
     _a,
@@ -169,8 +169,9 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _a(
             "why_cant_merge",
             "Why Can't I Merge?",
-            help="Whether it can merge, or each reason it cannot, for the commit it is at.",
+            help="Whether it can merge, or each rule that blocks it, for the commit it is at.",
         ),
+        _a("watch_readiness", "Watch Readiness", _O, "", "Say when it can merge, or stops."),
         _a(
             "merge_selected",
             "Merge Selected...",
@@ -363,10 +364,16 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _default("open", "Open", "Open what the notification is about."),
         _a("mark_read", "Mark Read", _O, "sign_in", "Mark it read on GitHub."),
         _a("mark_done", "Mark Done", _O, "sign_in", "Clear it from your notifications."),
-        _a("snooze", "Snooze for One Day", _O, "", "Hide it here until tomorrow."),
+        _a(
+            "snooze",
+            "Snooze for One Day",
+            _O,
+            "",
+            "Note on this computer that you put it off until tomorrow; GitHub is not told.",
+        ),
         _a("unsubscribe", "Unsubscribe from Thread", _O, "sign_in", "Stop notifications for it."),
         _OPEN_WEB,
-        _a("unsnooze", "Unsnooze Locally", _O, "", "Show a snoozed notification again."),
+        _a("unsnooze", "Unsnooze Locally", _O, "", "Take the snooze off again."),
         _a("why", "Why?", help="Why this happened on its own, and what decides it."),
         _PROPERTIES,
     ),
@@ -391,6 +398,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
             "Choose which of your star lists it is on.",
         ),
         _FAVORITE,
+        _a("sponsor_owner", "Sponsor the Owner...", help="Open the owner's Sponsor tiers."),
         _OPEN_WEB,
         _CODESPACES,
         _a(
@@ -584,7 +592,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
 
 _ROWS.update(ACCOUNT_ROWS)
 # The quick commands (quill/core/github/quick_tables.py): each goes before Properties.
-for _type, _extra in (*QUICK_ROWS.items(), *AUTHORING_ROWS.items()):
+for _type, _extra in (*QUICK_ROWS.items(), *AUTHORING_ROWS.items(), *COLLAB_ROWS.items()):
     _have = _ROWS.get(_type, (_PROPERTIES,))
     _ROWS[_type] = (*_have[:-1], *_extra, _have[-1])
 

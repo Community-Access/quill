@@ -1422,24 +1422,24 @@ point you to the right chapter.
 
 The first time you use a GitHub command, QUILL asks once whether it may
 connect. You can read public repositories without an account; for private
-ones and for anything that changes GitHub, you sign in with a personal access
-token. The GitHub commands belong to the GitHub Remote Access feature, which
-is part of the Developer profile. See
+ones and for anything that changes GitHub, you sign in with GitHub in your
+browser. The GitHub commands belong to the GitHub Remote Access feature, which
+is on in most profiles. See
 [Chapter 1: Getting started](../github-guide/github-guide-01-getting-started.html).
 
 #### Managing your GitHub account
 
-**File > Open from Remote > Manage GitHub Accounts...** adds a token, switches
-between accounts and removes one. The token is kept in your operating system's
-secure store. See
+**File > Open from Remote > Manage GitHub Accounts...** signs you in with
+GitHub, switches between accounts and removes one. Your sign-in is kept in
+your operating system's secure store. See
 [More than one account](../github-guide/github-guide-01-getting-started.html#more-than-one-account).
 
 ### Opening and saving GitHub files
 
 **File > Open from Remote > GitHub Repository...** browses a repository and
 opens a file from it, **GitHub File URL...** opens one file from its address,
-and **Open GitHub Reference...** takes any GitHub link and opens the right
-window. See
+and **Open GitHub Reference...** takes any GitHub link and opens the GitHub
+Workbench at the right place, or a file in the editor. See
 [Opening and saving files in QUILL](../github-guide/github-guide-07-code-and-repositories.html#opening-and-saving-files-in-quill).
 
 #### Saving back to GitHub
@@ -1449,14 +1449,16 @@ you opened from GitHub, with a message you write. Pressing Save never does
 this for you. See
 [Opening and saving files in QUILL](../github-guide/github-guide-07-code-and-repositories.html#opening-and-saving-files-in-quill).
 
-### The GitHub Items viewer
+### The GitHub Workbench
 
-**File > Open from Remote > GitHub Items...** opens the workbench on one
-repository: its issues and pull requests, branches, commits, tags, releases,
-workflows and runs. It owes a great deal to
-[GHManage](https://github.com/kellylford/GHManage), Kelly Ford's open-source
-GitHub browser for screen-reader users, which QUILL has followed from the
-start. See [Chapter 2: Getting around](../github-guide/github-guide-02-getting-around.html).
+**File > Open from Remote > GitHub Items...** opens the GitHub Workbench, one
+window for everything GitHub: a tree of places on the left (your Inbox, each
+repository's issues, pull requests, Actions and settings, Search, People),
+the list of what is there, and the details of the row you are on. It owes a
+great deal to [GHManage](https://github.com/kellylford/GHManage), Kelly
+Ford's open-source GitHub browser for screen-reader users, which QUILL has
+followed from the start. See
+[Chapter 2: A tour of the GitHub Workbench](../github-guide/github-guide-02-getting-around.html).
 
 #### Cloning a repository
 
@@ -1603,7 +1605,8 @@ numbers. See
 
 **Unlink Branch...** and **Not a Duplicate...** on an issue in the GitHub
 Workbench undo a linked branch and a "duplicate of" mark. See
-[Closing, branches and task lists](../github-guide/github-guide-04-issues.html#closing-branches-and-task-lists).
+[Branches and task lists](../github-guide/github-guide-04-issues.html#branches-and-task-lists)
+and [Closing and reopening](../github-guide/github-guide-04-issues.html#closing-and-reopening).
 
 #### Security policy and advisories
 
@@ -1647,13 +1650,14 @@ last reviewed. See
 
 #### Auto-merge and the merge queue
 
-**Auto-Merge and Queue...** in the review turns auto-merge on or off and adds
-a pull request to the merge queue or takes it out. See
+**Auto-Merge...** and **Add to or Remove from Merge Queue...**, on a pull
+request's row in the GitHub Workbench, turn auto-merge on or off and add a
+pull request to the merge queue or take it out. See
 [Getting a pull request merged](../github-guide/github-guide-05-pull-requests-and-review.html#getting-a-pull-request-merged).
 
 #### What failed in a workflow run
 
-`Ctrl+Shift+W` in the Workflow Runs view gives one digest of a failed run: the
+`Ctrl+Shift+W` on a run in the GitHub Workbench gives one digest of it: the
 failed jobs and steps, the errors with their file and line, and the last lines
 of each failed step's log. See
 [What Failed](../github-guide/github-guide-06-actions-and-checks.html#what-failed).
@@ -1687,25 +1691,30 @@ pull request or a comment. See
 
 #### Batch operations
 
-**Batch...** closes, reopens, labels, sets the milestone of, or assigns
-several selected issues at once, after naming them all. See
+Select several issues in the GitHub Workbench and press `Alt+Enter` to label,
+assign, close or set the milestone of all of them on one sheet, or say the
+change in words with the Workbench's **Plain-Language Batch...** (on its
+Tools menu, `Ctrl+Shift+S`) and
+check the exact items it found before it sends anything. See
 [Changing many issues at once](../github-guide/github-guide-04-issues.html#changing-many-issues-at-once).
 
 #### GitHub milestones
 
-**Milestones...** lists a repository's milestones in words, and creates,
-edits, closes and reopens them. See
+A repository's **Milestones** place in the GitHub Workbench lists its
+milestones in words, and the **Milestones...** window, from **Repository
+Actions...** (`Ctrl+Shift+G`), creates, edits, closes and reopens them. See
 [Milestones](../github-guide/github-guide-04-issues.html#milestones).
 
 #### Issue housekeeping
 
-The **Housekeeping** submenu on an issue locks, transfers, pins, sets the type
-of, and reorders the sub-issues of an issue. See
+The housekeeping commands on an issue's context menu lock, transfer, pin, set
+the type of, and reorder the sub-issues of an issue. See
 [Housekeeping](../github-guide/github-guide-04-issues.html#housekeeping). In the
 GitHub Workbench, closing an issue asks its reason, **Create Branch for This
 Issue...** links a branch to it, and the issue's task list can be checked off
 or made into sub-issues. See
-[Closing, branches and task lists](../github-guide/github-guide-04-issues.html#closing-branches-and-task-lists).
+[Closing and reopening](../github-guide/github-guide-04-issues.html#closing-and-reopening)
+and [Branches and task lists](../github-guide/github-guide-04-issues.html#branches-and-task-lists).
 
 #### Managing a release
 
@@ -1715,8 +1724,10 @@ upload or delete its files. See
 
 #### Repository files
 
-**Files...** (`Alt+F`) in GitHub Items browses a repository's folders and files
-at any branch, tag or commit, shows READMEs, and opens a file to edit. See
+A repository's **Code > Files** (`Ctrl+Shift+5`) in the GitHub Workbench
+browses its folders and files, and **Files, History and Blame...**, from
+**Repository Actions...** (`Ctrl+Shift+G`), reads any file at any branch, tag
+or commit and opens one to edit. See
 [Browsing a repository's files](../github-guide/github-guide-07-code-and-repositories.html#browsing-a-repositorys-files).
 
 #### Blame and file history
@@ -1754,9 +1765,10 @@ that finds nothing new says so and costs nothing. See
 
 #### Copilot review and the coding agent
 
-**Request Copilot Review**, on a pull request's context menu in the review,
-asks Copilot code review for a review, and **Assign to Copilot**, on an issue's
-context menu, hands the issue to Copilot's coding agent. Each says plainly when
+**Ask Copilot to Review**, on a pull request's row in the GitHub Workbench,
+asks Copilot code review for a review, and **Assign to Copilot...**
+(`Ctrl+Shift+A`), on an issue's row, hands the issue to Copilot's coding
+agent. Each says plainly when
 Copilot is not available to your account or repository. See
 [Asking Copilot for a review](../github-guide/github-guide-05-pull-requests-and-review.html#asking-copilot-for-a-review)
 and
@@ -1771,61 +1783,68 @@ file. See
 
 ### Managing repositories
 
-**Tools > Git and GitHub > GitHub** creates, forks, renames and deletes
-repositories, changes visibility, the default branch and branch protection,
-commits several files at once, and browses an organization's repositories.
-The riskiest of these make you type a name instead of pressing Yes. See
+**Tools > Git and GitHub > GitHub** creates and forks repositories, and its
+rows for renaming one, changing its visibility, its default branch or its
+branch protection, deleting a branch, releases, workflows, security alerts
+and an organization's repositories open the GitHub Workbench at the right
+place or Properties page. The riskiest changes make you type a name instead
+of pressing Yes. See
 [Looking after a repository](../github-guide/github-guide-07-code-and-repositories.html#looking-after-a-repository).
 
 #### GitHub notifications
 
-**Tools > Git and GitHub > GitHub > Notifications...** opens your whole GitHub
-inbox, with Mark Done, Unsubscribe and Mark All Read, and each notification's
-reason in words. See
+**Tools > Git and GitHub > GitHub > Notifications...** opens the GitHub
+Workbench at your notifications, with Mark Read, Mark Done, Unsubscribe and
+Mark All Read, and each notification's reason in words. See
 [Chapter 3: Your inbox and your work](../github-guide/github-guide-03-inbox-and-your-work.html).
 
 #### Discussion threads
 
-Explore opens a repository's discussions as threads, with replies, answers
-and polls, and starts new ones. See
+A repository's **Discussions** (`Ctrl+Shift+3`) in the GitHub Workbench open
+as threads, with replies, answers and polls, and `Ctrl+N` starts a new one.
+See
 [Discussions](../github-guide/github-guide-08-discussions-and-security.html#discussions).
 
 #### Security alert triage
 
-Explore lists a repository's Dependabot, code scanning and secret scanning
-alerts, dismisses them with GitHub's own reasons, and reopens them. See
+A repository's **Security** (`Ctrl+Shift+8`) in the GitHub Workbench lists
+its Dependabot, code scanning and secret scanning alerts, dismisses them with
+GitHub's own reasons, and reopens them. See
 [Security alerts](../github-guide/github-guide-08-discussions-and-security.html#security-alerts).
 
 #### Searching code, commits and repositories
 
-Explore searches all of GitHub for issues, code, commits and repositories,
-and keeps the searches you save. See
+**Search** in the GitHub Workbench (there, `Ctrl+3`) searches all of GitHub for
+issues, code, commits, repositories, people and topics, and keeps the
+searches you save. See
 [Searching](../github-guide/github-guide-07-code-and-repositories.html#searching).
 
 #### Insights and the community profile
 
-Explore says a repository's traffic and contributors in sentences, and checks
-it for the files GitHub recommends. See
+A repository's **Insights** (`Ctrl+Shift+0`) in the GitHub Workbench say its
+traffic, contributors and commit activity in sentences, and check it for the
+files GitHub recommends. See
 [Insights](../github-guide/github-guide-07-code-and-repositories.html#insights).
 
-#### Repository actions in Explore
+#### Repository actions in the Workbench
 
-The **Repository Actions** submenu in Explore syncs a fork, sets topics,
-changes the watch level, archives a repository, makes one from a template and
-deletes one. See
+**Repository Actions...** (`Ctrl+Shift+G`) in the GitHub Workbench lists
+everything else you can do with a repository: star, watch, fork, clone,
+Codespaces and its administration. Its topics, watch level and archiving are
+on its Properties sheet (`Alt+Enter`). See
 [Forks, templates and topics](../github-guide/github-guide-07-code-and-repositories.html#forks-templates-and-topics).
 
-#### Gists in Explore
+#### Gists in the Workbench
 
-Explore's **My gists** view writes gists as well as listing them: a new one
-from the document or its selection, public or secret, and editing, starring
-and deleting the ones you have. See
+**My Gists** (`Ctrl+5`) in the GitHub Workbench writes gists as well as
+listing them: a new one from the document or its selection, public or secret,
+and editing, starring and deleting the ones you have. See
 [Gists](../github-guide/github-guide-07-code-and-repositories.html#gists).
 
 #### Pull request summaries in the attention queue
 
-Each pull request in the attention queue says where it stands, in the review's
-one sentence, read for the whole queue in one request. See
+Each pull request in the GitHub Workbench's Inbox says where it stands, in
+the review's one sentence, read for the whole Inbox in one request. See
 [Where each pull request stands](../github-guide/github-guide-03-inbox-and-your-work.html#where-each-pull-request-stands).
 
 #### Codespaces

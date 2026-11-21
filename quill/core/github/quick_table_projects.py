@@ -54,7 +54,8 @@ def _part(api: Any, ctx: dict[str, str], part: str) -> list[Mapping[str, Any]]:
         "{ id name dataType } } }",
         "drafts": "items(first: 100) { nodes { id content { __typename ... on DraftIssue "
         "{ id title } } } }",
-        "items": "items(first: 100) { nodes { id content { __typename ... on DraftIssue { title }"
+        "items": "items(first: 100) { nodes { id isArchived content { __typename "
+        "... on DraftIssue { title }"
         " ... on Issue { title number } ... on PullRequest { title number } } } }",
         "updates": "statusUpdates(first: 20) { nodes { id status body createdAt } }",
         "workflows": "workflows(first: 50) { nodes { id name enabled } }",
@@ -103,6 +104,31 @@ def _title(n: Mapping[str, Any]) -> str:
 
 def _items(api: Any, ctx: dict[str, str]) -> list[tuple[str, str]]:
     return [(_title(n), str(n["id"])) for n in _part(api, ctx, "items") if n.get("id")]
+
+
+def _items_archived(archived: bool) -> Any:
+    """The Project's items that are (or are not) archived, for Archive and Restore."""
+
+    def pick(api: Any, ctx: dict[str, str]) -> list[tuple[str, str]]:
+        found = [
+            (_title(n), str(n["id"]))
+            for n in _part(api, ctx, "items")
+            if n.get("id") and bool(n.get("isArchived")) is archived
+        ]
+        if not found:
+            raise QuickError(
+                "This Project has no archived items."
+                if archived
+                else "This Project has no items to archive."
+            )
+        return found
+
+    return pick
+
+
+def _item_mutation(name: str) -> Any:
+    """archiveProjectV2Item, unarchiveProjectV2Item or deleteProjectV2Item on the chosen item."""
+    return lambda api, ctx: _mutate(api, name, {"projectId": ctx["key"], "itemId": ctx["item"]})
 
 
 def _move(api: Any, ctx: dict[str, str]) -> str:
@@ -219,6 +245,26 @@ PROJECT_QUICK: tuple[Quick, ...] = (
           pick_key="item", pick_question="Which item?",
           asks=(Ask("after", "After which item? Type the start of its title, or nothing for "
                     "the top:", optional=True),),
+          needs=("key",), live=_LIVE_PROJECT),
+    Quick("project_archive_item", "Archive an Item...", ("project",), _PROJECT,
+          "Hide an item from the Project's views; its field values are kept.",
+          ("graphql:archiveProjectV2Item",), _item_mutation("archiveProjectV2Item"),
+          lambda _d, ctx: f"Archived {ctx['item_label']}.", tier="O", need="sign_in",
+          pick=_items_archived(False), pick_key="item", pick_question="Archive which item?",
+          needs=("key",), live=_LIVE_PROJECT),
+    Quick("project_restore_item", "Restore an Archived Item...", ("project",), _PROJECT,
+          "Bring an archived item back into the Project's views, with its field values.",
+          ("graphql:unarchiveProjectV2Item",), _item_mutation("unarchiveProjectV2Item"),
+          lambda _d, ctx: f"Restored {ctx['item_label']}.", tier="O", need="sign_in",
+          pick=_items_archived(True), pick_key="item", pick_question="Restore which item?",
+          needs=("key",), live=_LIVE_PROJECT),
+    Quick("project_remove_item", "Remove an Item...", ("project",), _PROJECT,
+          "Take an item out of the Project. The issue or pull request stays; a draft is "
+          "deleted.", ("graphql:deleteProjectV2Item",), _item_mutation("deleteProjectV2Item"),
+          lambda _d, ctx: f"Removed {ctx['item_label']} from the Project.", tier="D",
+          need="sign_in", pick=_items, pick_key="item", pick_question="Remove which item?",
+          confirm="Remove {item_label} from the Project? Its values in the Project's fields "
+          "go with it and cannot be put back; an issue or pull request itself stays.",
           needs=("key",), live=_LIVE_PROJECT),
     Quick("project_edit_status", "Edit a Status Update...", ("project",), _PROJECT,
           "Change a status update's status or text.", ("graphql:updateProjectV2StatusUpdate",),

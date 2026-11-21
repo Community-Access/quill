@@ -46,9 +46,10 @@ class SpeechCommandsMixin:
         chosen = str(getattr(self.settings, "speech_provider", "") or "")
         if chosen:
             provider = registry.get(chosen)  # type: ignore[attr-defined]
-            try:
+            try:  # offline means offline: a cloud transcriber is never used here
                 if provider is not None and provider.is_available():
-                    return provider
+                    if not getattr(provider, "requires_network", False):
+                        return provider
             except Exception:  # noqa: BLE001 - fall back to the bundled engine
                 pass
         return registry.get(DEFAULT_PROVIDER_ID)  # type: ignore[attr-defined]

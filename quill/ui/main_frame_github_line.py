@@ -53,6 +53,19 @@ class GitHubLineCommandsMixin:
 
         getattr(github_editor_line, LINE_HANDLERS[command_id])(self._github_line_host())
 
+    def _github_alt_enter(self, event: Any) -> bool:
+        """Alt+Enter with the caret on a GitHub reference: its sheet (GH-R-036).
+
+        False (the key goes on) anywhere else, and when GitHub is switched off.
+        """
+        if not self._feature_enabled("core.github_remote"):  # type: ignore[attr-defined]
+            return False
+        from quill.ui.github_editor_line import alt_enter_on_reference
+
+        return alt_enter_on_reference(
+            event, self._github_line_text_and_offset, self._github_line_host
+        )
+
     def _github_line_host(self) -> Any:
         from quill.ui.github_editor_line import LineHost
 

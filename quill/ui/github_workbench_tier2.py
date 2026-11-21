@@ -340,7 +340,11 @@ class GitHubWorkbenchTier2Mixin:
         return self.signed_in and getattr(current, "template", "") == "repository"
 
     def _do_transfer_repository(self, ref: Any, _row: object) -> None:
-        from quill.core.github.repo_transfer import transfer_repository, valid_owner
+        from quill.core.github.repo_transfer import (
+            transfer_repository,
+            valid_name,
+            valid_owner,
+        )
         from quill.ui.github_repo_admin_dialogs import TypedConfirmDialog
 
         repository = ref.instance
@@ -350,17 +354,32 @@ class GitHubWorkbenchTier2Mixin:
         ).lstrip("@")
         if not owner:
             return
-        why = valid_owner(owner)
-        if why:
-            self._say(why)
+        if valid_owner(owner):
+            self._say(valid_owner(owner))
             return
+        name = repository.partition("/")[2]
+        new_name = self._ask_text(
+            "Transfer Repository", "Its name there (keep it to leave it unchanged):", value=name
+        ).strip()
+        teams = self._ask_text(
+            "Transfer Repository",
+            f"If {owner} is an organization, teams there to give access, separated by "
+            "commas (leave it empty for none):",
+        )
+        if valid_name(new_name):
+            self._say(valid_name(new_name))
+            return
+        team_list = [team.strip() for team in teams.split(",") if team.strip()]
+        landing = f"{owner}/{new_name or name}"
+        with_teams = f", giving {', '.join(team_list)} access" if team_list else ""
         if not TypedConfirmDialog(
             self.frame.frame,
             title="Transfer Repository",
             message=(
-                f"Transfer {repository} to {owner}, with its issues, pull requests, wiki, "
-                "stars and watchers. You may lose access to it, and only the new owner can "
-                "transfer it back. Type the repository's full name to confirm."
+                f"Transfer {repository} to {owner} as {landing}{with_teams}, with its issues, "
+                "pull requests, wiki, stars and watchers. You may lose access to it, and only "
+                "the new owner can transfer it back. Type the repository's full name to "
+                "confirm."
             ),
             expected=repository,
             confirm_label="Transfer",
@@ -370,7 +389,7 @@ class GitHubWorkbenchTier2Mixin:
         api = self.github_api()
         self._background(
             "transfer the repository",
-            lambda: transfer_repository(api, repository, owner),
+            lambda: transfer_repository(api, repository, owner, new_name=new_name, teams=team_list),
             self._say,
         )
 

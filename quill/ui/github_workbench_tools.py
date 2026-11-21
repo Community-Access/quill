@@ -84,6 +84,7 @@ class GitHubWorkbenchToolsMixin(
     def load_teams(self, loader: str, organization: str) -> list[Any]:
         """Organizations > org > Teams, or People > My Teams. Runs off the UI thread."""
         from quill.core.github.explore_models import ExploreRow
+        from quill.core.github.sheets_teams import team_privacy
 
         api = self.github_api()  # type: ignore[attr-defined]
         path = "/user/teams" if loader == "teams:mine" else f"/orgs/{organization}/teams"
@@ -97,7 +98,7 @@ class GitHubWorkbenchToolsMixin(
             parent = (team.get("parent") or {}).get("name") if team.get("parent") else ""
             where = f", child of {parent}" if parent else ""
             mine = f" ({org})" if loader == "teams:mine" else ""
-            label = f"{team.get('name', '')}{mine}{where}, {team.get('privacy', '')}"
+            label = f"{team.get('name', '')}{mine}{where}, {team_privacy(team)}"
             detail = f"{team.get('description') or 'No description.'}\n{team.get('html_url', '')}"
             found.append(
                 ExploreRow(

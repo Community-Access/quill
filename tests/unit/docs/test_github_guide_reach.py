@@ -1,7 +1,8 @@
 """Every contents page lists all of the GitHub Guide, and every route to it works.
 
-The GitHub Guide is thirteen chapters (eleven until Chapter 12, the Workbench,
-2026-11-10; twelve until Chapter 13, Properties, Filters and Permissions).
+The GitHub Guide is fourteen chapters (eleven until Chapter 12, the Workbench,
+2026-11-10; twelve until Chapter 13, Properties, Filters and Permissions;
+thirteen until Chapter 14, GitHub in QUILL Lite, 2026-11-20).
 QUILL's contents page listed five until 2026-11-08, so six chapters
 were reachable only from inside the guide itself.
 """
@@ -29,7 +30,7 @@ _CONTENTS = {
 
 
 #: Raise this with the chapter that adds one; both books keep the same count.
-_CHAPTER_COUNT = 13
+_CHAPTER_COUNT = 14
 
 
 def _chapters(folder: Path, prefix: str) -> set[str]:

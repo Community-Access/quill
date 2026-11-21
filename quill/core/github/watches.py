@@ -5,7 +5,12 @@ A watch is a saved rule, kept per account on this device:
 - ``run``: a workflow run finishes on a repository, or on one branch of it;
 - ``review``: a review arrives on a pull request;
 - ``release``: a repository publishes a new release;
-- ``comment``: an issue or pull request gets a new comment.
+- ``comment``: an issue or pull request gets a new comment;
+- ``ready``: a pull request becomes able to merge, or stops being able to
+  (Watch Readiness on its row, GX09). It asks the question Why Can't I
+  Merge? asks, and keeps only the last answer: it speaks once when the
+  answer changes, naming the blocking rules when it stops, and says nothing
+  while GitHub is still working the answer out.
 
 The Workbench checks them on the GitHub notification check's own cadence
 (``poll_interval_minutes`` in Workbench Options, through
@@ -42,6 +47,7 @@ __all__ = [
     "FILENAME",
     "KINDS",
     "MIN_MINUTES",
+    "READY",
     "SCHEMA_VERSION",
     "Watch",
     "WatchStore",
@@ -56,6 +62,7 @@ FILENAME = "github_watches.json"
 SCHEMA_VERSION = 1
 MIN_MINUTES = 5
 _SEEN_CAP = 200
+READY = "ready"
 
 #: Each kind, as the sentence the Add Watch choice shows.
 KINDS: Mapping[str, str] = {
@@ -63,7 +70,10 @@ KINDS: Mapping[str, str] = {
     "review": "A review arrives on a pull request",
     "release": "A repository publishes a new release",
     "comment": "An issue or pull request gets a new comment",
+    READY: "A pull request becomes able to merge, or stops being able to",
 }
+#: The kinds whose target is one issue or pull request, typed as owner/name#42.
+_NUMBERED = ("review", "comment", READY)
 
 _REVIEW_WORDS = {
     "APPROVED": "approved",
@@ -97,6 +107,8 @@ class Watch:
             return f"Reviews on pull request {self.repository}#{self.number}"
         if self.kind == "release":
             return f"New releases in {self.repository}"
+        if self.kind == READY:
+            return f"Whether pull request {self.repository}#{self.number} can merge"
         return f"Comments on {self.repository}#{self.number}"
 
     def label(self, now: float | None = None) -> str:
@@ -122,6 +134,7 @@ class Watch:
             "run": f"{base}/actions",
             "release": f"{base}/releases",
             "review": f"{base}/pull/{self.number}",
+            READY: f"{base}/pull/{self.number}",
             "comment": f"{base}/issues/{self.number}",
         }.get(self.kind, base)
 
@@ -166,9 +179,9 @@ def parse_target(kind: str, text: str) -> tuple[str, str, int]:
     if len(parts) != 2 or any(c in raw for c in " \\") or ".." in raw:
         raise ValueError("Type the repository as owner/name.")
     repository = "/".join(parts)
-    if kind in ("review", "comment") and number <= 0:
+    if kind in _NUMBERED and number <= 0:
         raise ValueError("Type the number too, as owner/name#42.")
-    if kind not in ("review", "comment"):
+    if kind not in _NUMBERED:
         number = 0
     return repository, branch, number
 
@@ -319,6 +332,49 @@ def _found(api: GitHubApi, watch: Watch) -> list[tuple[str, str]]:
     ]
 
 
+def _readiness_now(api: GitHubApi, watch: Watch, said: bool) -> tuple[str, str]:
+    """(state, sentence) for a readiness watch: ``mergeable``, ``blocked``, ``merged``,
+    ``closed``, or ``""`` while GitHub is still working it out."""
+    from quill.core.github.merge_readiness import load_readiness
+
+    name = f"{watch.repository}#{watch.number}"
+    ready = load_readiness(api, watch.repository, watch.number)
+    if ready.state in ("MERGED", "CLOSED"):
+        return ready.state.lower(), f"Pull request {name} was {ready.state.lower()}."
+    at = f", as of commit {ready.short_head}" if ready.head else ""
+    if ready.can_merge:
+        verb = "can join the merge queue" if ready.queue_required else "can merge"
+        return "mergeable", f"Pull request {name} {verb} now{at}."
+    if ready.mergeable == "UNKNOWN" and ready.merge_state == "UNKNOWN":
+        return "", ""
+    if not said:  # Nothing will be said, so the rules need not be read.
+        return "blocked", ""
+    ready = load_readiness(api, watch.repository, watch.number, named=True)
+    return "blocked", f"Pull request {name} cannot merge now{at}. {' '.join(ready.reasons)}"
+
+
+def _check_ready(api: GitHubApi, watch: Watch, now: Callable[[], float]) -> tuple[Watch, list[str]]:
+    """A readiness watch keeps only its last answer and speaks once when it changes."""
+    before = watch.seen[-1] if watch.seen else ""
+    try:
+        state, sentence = _readiness_now(api, watch, watch.primed and before != "blocked")
+    except Exception as exc:  # noqa: BLE001 - one watch failing never stops the round
+        reason = str(exc.args[0]) if exc.args else str(exc)
+        return replace(watch, last_checked=now(), last_result=f"Could not check: {reason}"), []
+    if not state:  # Not an answer yet: nothing learned, nothing said.
+        result = "GitHub is still working out whether it can merge"
+        return replace(watch, last_checked=now(), last_result=result), []
+    words = {"mergeable": "it can merge", "blocked": "it cannot merge yet"}.get(
+        state, f"it was {state}"
+    )
+    if state == before:
+        return replace(watch, last_checked=now(), last_result=f"no change, {words}"), []
+    said = [sentence] if watch.primed else []
+    result = sentence if said else f"started watching: {words}"
+    updated = replace(watch, primed=True, seen=(state,), last_checked=now(), last_result=result)
+    return updated, said
+
+
 def check_watch(
     api: GitHubApi, watch: Watch, *, now: Callable[[], float] = time.time
 ) -> tuple[Watch, list[str]]:
@@ -327,6 +383,8 @@ def check_watch(
     The first check learns and says nothing. A failure keeps what was seen and
     records the reason as the last result, so the list says why it is stale.
     """
+    if watch.kind == READY:
+        return _check_ready(api, watch, now)
     try:
         found = _found(api, watch)
     except Exception as exc:  # noqa: BLE001 - one watch failing never stops the round

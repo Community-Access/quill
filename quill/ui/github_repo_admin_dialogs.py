@@ -17,7 +17,14 @@ custom-drawn controls, and every dialog goes through ``apply_modal_ids`` +
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
+from quill.core.github.repo_create import (
+    GITIGNORE_TEMPLATES,
+    LICENSE_TEMPLATES,
+    NewRepository,
+    problem,
+)
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
 from quill.ui.spin_value import spin_value
 
@@ -112,12 +119,25 @@ class CreateRepositoryResult:
     description: str
     private: bool
     org: str  # "" for the authenticated user's own account
+    new: NewRepository | None = None
+    """Every option asked, for :func:`quill.core.github.repo_create.create_kwargs`."""
+
+
+_VISIBILITY_WORDS = ("Private", "Public")
+_NO_LICENSE = "No licence"
 
 
 class CreateRepositoryDialog:
-    """Collect a name, description, visibility, and optional org."""
+    """Every option GitHub's create and generate routes take (GitHub PRD 14.1).
 
-    def __init__(self, parent: object) -> None:
+    Owner, name, description, website and visibility; then how it starts: a
+    template repository (with all its branches or only the default), or a
+    README, a .gitignore template and a licence. OK checks the combination
+    with :func:`quill.core.github.repo_create.problem` and, when GitHub would
+    refuse it, says why in the Problem box and stays open.
+    """
+
+    def __init__(self, parent: object, *, template: str = "") -> None:
         import wx
 
         self._wx = wx
@@ -127,25 +147,24 @@ class CreateRepositoryDialog:
         panel = wx.Panel(self.dialog)
         sizer = wx.BoxSizer(wx.VERTICAL)
 
+        # The label is built first: on wxMSW it is what names the box.
+        self._problem_label = wx.StaticText(panel, label="Problem")
+        self._problem_label.Hide()
+        sizer.Add(self._problem_label, flag=wx.LEFT | wx.RIGHT | wx.TOP, border=12)
+        self._problem_ctrl = wx.TextCtrl(panel, style=wx.TE_READONLY | wx.TE_MULTILINE)
+        self._problem_ctrl.SetHelpText(
+            "Why GitHub would refuse what is chosen, and what to change."
+        )
+        self._problem_ctrl.SetName("Problem")
+        self._problem_ctrl.Hide()
+        sizer.Add(self._problem_ctrl, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border=12)
+
         grid = wx.FlexGridSizer(0, 2, 8, 8)
         grid.AddGrowableCol(1, 1)
 
-        grid.Add(wx.StaticText(panel, label="Repository name"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self._name_ctrl = wx.TextCtrl(panel)
-        self._name_ctrl.SetHelpText("The new repository's name, such as my-project.")
-        self._name_ctrl.SetName("Repository name")
-        grid.Add(self._name_ctrl, 1, wx.EXPAND)
-
-        grid.Add(wx.StaticText(panel, label="Description (optional)"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self._description_ctrl = wx.TextCtrl(panel)
-        self._description_ctrl.SetHelpText(
-            "A short sentence about what the repository is for. You can leave it empty."
-        )
-        self._description_ctrl.SetName("Description")
-        grid.Add(self._description_ctrl, 1, wx.EXPAND)
-
+        # Each label is built before its control: on wxMSW that is what names it.
         grid.Add(
-            wx.StaticText(panel, label="Organization (optional; blank = your account)"),
+            wx.StaticText(panel, label="Owner (optional; blank = your account)"),
             0,
             wx.ALIGN_CENTER_VERTICAL,
         )
@@ -153,20 +172,87 @@ class CreateRepositoryDialog:
         self._org_ctrl.SetHelpText(
             "An organization to create it in. Leave it empty to create it on your account."
         )
-        self._org_ctrl.SetName("Organization, blank for your own account")
+        self._org_ctrl.SetName("Owner, blank for your own account")
         grid.Add(self._org_ctrl, 1, wx.EXPAND)
+        grid.Add(wx.StaticText(panel, label="Repository name"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._name_ctrl = wx.TextCtrl(panel)
+        self._name_ctrl.SetHelpText("The new repository's name, such as my-project.")
+        self._name_ctrl.SetName("Repository name")
+        grid.Add(self._name_ctrl, 1, wx.EXPAND)
+        grid.Add(wx.StaticText(panel, label="Description (optional)"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._description_ctrl = wx.TextCtrl(panel)
+        self._description_ctrl.SetHelpText(
+            "A short sentence about what the repository is for. You can leave it empty."
+        )
+        self._description_ctrl.SetName("Description")
+        grid.Add(self._description_ctrl, 1, wx.EXPAND)
+        grid.Add(wx.StaticText(panel, label="Website (optional)"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._homepage_ctrl = wx.TextCtrl(panel)
+        self._homepage_ctrl.SetHelpText(
+            "An address shown beside the description, such as the project's site."
+        )
+        self._homepage_ctrl.SetName("Website")
+        grid.Add(self._homepage_ctrl, 1, wx.EXPAND)
+
+        grid.Add(wx.StaticText(panel, label="Visibility"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._visibility_choice = wx.Choice(panel, choices=list(_VISIBILITY_WORDS))
+        self._visibility_choice.SetSelection(0)
+        self._visibility_choice.SetHelpText("Private: only people you add. Public: everyone.")
+        self._visibility_choice.SetName("Visibility")
+        grid.Add(self._visibility_choice, 1, wx.EXPAND)
+
+        grid.Add(
+            wx.StaticText(panel, label="Template (optional, owner/name)"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL,
+        )
+        self._template_ctrl = wx.TextCtrl(panel, value=template)
+        self._template_ctrl.SetHelpText(
+            "A template repository to copy, as owner/name. Leave it empty to start a new one."
+        )
+        self._template_ctrl.SetName("Template repository, blank to start fresh")
+        grid.Add(self._template_ctrl, 1, wx.EXPAND)
+
+        grid.Add(wx.StaticText(panel, label=".gitignore template"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._gitignore_combo = wx.ComboBox(panel, choices=["", *GITIGNORE_TEMPLATES])
+        self._gitignore_combo.SetHelpText(
+            "Files Git should ignore, from GitHub's templates, such as Python or Node. "
+            "Type any template name GitHub lists, or leave it empty."
+        )
+        self._gitignore_combo.SetName(".gitignore template")
+        grid.Add(self._gitignore_combo, 1, wx.EXPAND)
+
+        grid.Add(wx.StaticText(panel, label="Licence"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._license_keys = ["", *LICENSE_TEMPLATES]
+        self._license_choice = wx.Choice(panel, choices=[_NO_LICENSE, *LICENSE_TEMPLATES.values()])
+        self._license_choice.SetSelection(0)
+        self._license_choice.SetHelpText(
+            "The licence GitHub adds as a LICENSE file, or none. Not with a template."
+        )
+        self._license_choice.SetName("Licence")
+        grid.Add(self._license_choice, 1, wx.EXPAND)
 
         sizer.Add(grid, flag=wx.EXPAND | wx.ALL, border=12)
 
-        self._private_check = wx.CheckBox(panel, label="Private repository")
-        self._private_check.SetName("Private repository")
-        self._private_check.SetValue(True)
-        sizer.Add(self._private_check, flag=wx.LEFT | wx.RIGHT | wx.BOTTOM, border=12)
+        self._branches_check = wx.CheckBox(panel, label="Include all of the template's branches")
+        self._branches_check.SetHelpText(
+            "Copy every branch of the template, not only its default branch."
+        )
+        self._branches_check.SetName("Include all of the template's branches")
+        sizer.Add(self._branches_check, flag=wx.LEFT | wx.RIGHT | wx.BOTTOM, border=12)
+
+        self._readme_check = wx.CheckBox(panel, label="Add a README")
+        self._readme_check.SetHelpText(
+            "Start with a first commit holding a README, so it can be cloned at once."
+        )
+        self._readme_check.SetName("Add a README")
+        sizer.Add(self._readme_check, flag=wx.LEFT | wx.RIGHT | wx.BOTTOM, border=12)
 
         btn_sizer = wx.StdDialogButtonSizer()
         ok_btn = wx.Button(panel, wx.ID_OK, label="Create")
         ok_btn.SetHelpText("Do it on GitHub. This is the button that makes the change.")
         ok_btn.SetDefault()
+        ok_btn.Bind(wx.EVT_BUTTON, self._on_create)
         btn_sizer.AddButton(ok_btn)
         cancel_button = wx.Button(panel, wx.ID_CANCEL, label="Cancel")
         cancel_button.SetHelpText("Close without changing anything. Escape does the same.")
@@ -174,6 +260,7 @@ class CreateRepositoryDialog:
         btn_sizer.Realize()
         sizer.Add(btn_sizer, flag=wx.EXPAND | wx.ALL, border=8)
 
+        self._panel = panel
         panel.SetSizer(sizer)
         outer = wx.BoxSizer(wx.VERTICAL)
         outer.Add(panel, 1, wx.EXPAND)
@@ -181,20 +268,49 @@ class CreateRepositoryDialog:
         self.dialog.Fit()
         self._name_ctrl.SetFocus()
 
+    def _new(self) -> NewRepository:
+        visibility = ("private", "public")[max(0, self._visibility_choice.GetSelection())]
+        return NewRepository(
+            name=self._name_ctrl.GetValue().strip(),
+            owner=self._org_ctrl.GetValue().strip().lstrip("@"),
+            description=self._description_ctrl.GetValue().strip(),
+            homepage=self._homepage_ctrl.GetValue().strip(),
+            visibility=visibility,
+            template=self._template_ctrl.GetValue().strip(),
+            include_all_branches=self._branches_check.GetValue(),
+            auto_init=self._readme_check.GetValue(),
+            gitignore=self._gitignore_combo.GetValue().strip(),
+            license=self._license_keys[max(0, self._license_choice.GetSelection())],
+        )
+
+    def _on_create(self, event: Any) -> None:
+        why = problem(self._new())
+        if not why:
+            event.Skip()
+            return
+        # Stay open and say why: focus on the Problem box reads it.
+        self._problem_ctrl.SetValue(why)
+        self._problem_label.Show()
+        self._problem_ctrl.Show()
+        self._panel.Layout()
+        self.dialog.Fit()
+        self._problem_ctrl.SetFocus()
+
     def show(self) -> CreateRepositoryResult | None:
         wx = self._wx
         apply_modal_ids(self.dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
         try:
             if show_modal_dialog(self.dialog, "Create GitHub Repository") != wx.ID_OK:
                 return None
-            name = self._name_ctrl.GetValue().strip()
-            if not name:
+            new = self._new()
+            if not new.name:
                 return None
             return CreateRepositoryResult(
-                name=name,
-                description=self._description_ctrl.GetValue().strip(),
-                private=self._private_check.GetValue(),
-                org=self._org_ctrl.GetValue().strip(),
+                name=new.name,
+                description=new.description,
+                private=new.private,
+                org=new.owner,
+                new=new,
             )
         finally:
             self.dialog.Destroy()

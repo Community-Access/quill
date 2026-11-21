@@ -6,6 +6,8 @@ wiki, stars and watchers go with it, and GitHub redirects the old address.
 Moving to a person's account sends them a request they must accept within a
 day; moving to an organization you can create repositories in happens at
 once. GitHub answers 202 either way, so the sentence says which to expect.
+It may take a new name on the way (`new_name`), and, for an organization,
+the teams to give access (`team_ids`, found here from their names).
 
 Takes the Workbench's :class:`~quill.core.github.workbench_api.GitHubApi`.
 wx-free and strict-typed.
@@ -14,13 +16,14 @@ wx-free and strict-typed.
 from __future__ import annotations
 
 import re
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
+from urllib.parse import quote
 
 from quill.core.error_codes import CodedError
 from quill.core.github.rest_transport import GitHubRestError
 from quill.core.github.workbench_api import GitHubApi
 
-__all__ = ["TransferError", "transfer_repository", "valid_owner"]
+__all__ = ["TransferError", "team_ids", "transfer_repository", "valid_name", "valid_owner"]
 
 _OWNER = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}$")
 
@@ -40,17 +43,66 @@ def valid_owner(owner: str) -> str:
     return ""
 
 
-def transfer_repository(api: GitHubApi, repository: str, new_owner: str) -> str:
-    """Transfer *repository* to *new_owner*; returns the sentence to say."""
+_NAME = re.compile(r"^[A-Za-z0-9._-]{1,100}$")
+
+
+def valid_name(name: str) -> str:
+    """Why *name* cannot be a repository's new name, or "" when it can (or is blank)."""
+    if name and (not _NAME.match(name) or name in (".", "..")):
+        return (
+            f"{name} is not a repository name: use letters, digits, hyphens, "
+            "underscores and full stops."
+        )
+    return ""
+
+
+def team_ids(api: GitHubApi, org: str, names: Sequence[str]) -> list[int]:
+    """The ids of *org*'s teams named *names* (slugs or names), for the transfer to give access."""
+    found: list[int] = []
+    for name in (n.strip() for n in names):
+        if not name:
+            continue
+        slug = re.sub(r"[^a-z0-9_-]+", "-", name.lower()).strip("-")
+        try:
+            data = api.rest("GET", f"/orgs/{quote(org, safe='')}/teams/{quote(slug, safe='')}").data
+        except GitHubRestError as exc:
+            if exc.status == 404:
+                raise TransferError(
+                    f"{org} has no team called {name} that you can see; teams are for "
+                    "an organization, and a person's account has none."
+                ) from exc
+            raise
+        number = data.get("id") if isinstance(data, Mapping) else None
+        if not isinstance(number, int):
+            raise TransferError(f"GitHub did not say which team {name} is.")
+        found.append(number)
+    return found
+
+
+def transfer_repository(
+    api: GitHubApi,
+    repository: str,
+    new_owner: str,
+    *,
+    new_name: str = "",
+    teams: Sequence[str] = (),
+) -> str:
+    """Transfer *repository* to *new_owner*, renamed and with *teams* given access; says it."""
     owner = new_owner.strip().lstrip("@")
-    why = valid_owner(owner)
+    why = valid_owner(owner) or valid_name(new_name.strip())
     if why:
         raise TransferError(why)
     current, _, name = repository.partition("/")
+    renamed = new_name.strip()
     if owner.lower() == current.lower():
         raise TransferError(f"{repository} already belongs to {owner}.")
+    body: dict[str, object] = {"new_owner": owner}
+    if renamed and renamed != name:
+        body["new_name"] = renamed
+    if any(t.strip() for t in teams):
+        body["team_ids"] = team_ids(api, owner, teams)
     try:
-        data = api.rest("POST", f"/repos/{repository}/transfer", body={"new_owner": owner}).data
+        data = api.rest("POST", f"/repos/{repository}/transfer", body=body).data
     except GitHubRestError as exc:
         if exc.status == 403:
             raise TransferError(
@@ -59,7 +111,7 @@ def transfer_repository(api: GitHubApi, repository: str, new_owner: str) -> str:
         if exc.status == 422:
             raise TransferError(
                 f"GitHub refused: {owner} may not exist, may already have a repository "
-                f"called {name}, or you cannot create repositories there."
+                f"called {renamed or name}, or you cannot create repositories there."
             ) from exc
         raise
     landed = str(data.get("full_name") or "") if isinstance(data, Mapping) else ""

@@ -219,13 +219,13 @@ def test_show_only_writes_the_qualifiers_github_search_answers() -> None:
 # -- Properties --------------------------------------------------------------------------
 
 
-def test_the_sheet_gains_one_typed_read_only_field_per_issue_field() -> None:
+def test_the_sheet_gains_one_typed_field_per_issue_field() -> None:
     api = _api()
     api.answer("GET", f"/repos/{REPO}/issues/1", {"number": 1, "type": {"name": "Bug"}})
     loaded = load(api, ISSUE, {"repo": REPO, "number": "1"})
     values = loaded.values
     assert values["issue_type"] == "Bug"
-    assert values[STATE_KEY] == "7 fields"
+    assert values[STATE_KEY] == "7 fields. Not set: Owner. Set to nothing: Notes."
     sheet = with_field_page(ISSUE.sheet, values)
     keys = [page.key for page in sheet.pages]
     assert keys.index(FIELD_PAGE) == keys.index("organize") + 1
@@ -236,13 +236,14 @@ def test_the_sheet_gains_one_typed_read_only_field_per_issue_field() -> None:
     assert kinds["Points"] is FieldKind.NUMBER
     assert kinds["Areas"] is FieldKind.LIST
     assert kinds["Odd"] is FieldKind.TEXT
-    assert all(spec.readonly for spec in page.fields)
+    readonly = {spec.label for spec in page.fields if spec.readonly}
+    assert readonly == {"Issue fields", "Areas", "Odd"}  # several choices, and unknown types
     odd = next(spec for spec in page.fields if spec.label == "Odd")
     assert "does not edit yet" in odd.help
     by_label = {spec.label: values.get(spec.key) for spec in page.fields}
-    assert by_label["Points"] == 3 and by_label["Due"] == "2026-12-31"
+    assert by_label["Points"] == "3" and by_label["Due"] == "2026-12-31"
     assert by_label["Areas"] == ("Docs", "UI")
-    assert by_label["Notes"] == "set to nothing" and by_label["Owner"] == "not set"
+    assert by_label["Notes"] is None and by_label["Owner"] is None  # told apart in the summary
     assert by_label["Odd"] == "shimmer (read only)"
     # A pull request's values carry no fields, so its sheet is unchanged.
     assert with_field_page(ISSUE.sheet, {"title": "x"}) is ISSUE.sheet

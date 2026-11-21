@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Appendix A: What GitHub needs for each part of the
+Workbench</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="appendix-a-what-github-needs-for-each-part-of-the-workbench">Appendix
+A: What GitHub needs for each part of the Workbench</h1>
+<h2 id="what-this-appendix-covers">What this appendix covers</h2>
+<p>You are looking after an organization and deciding what to let people
+do, or a command said it could not do something and you want to know
+why. This appendix is for you.</p>
+<p>The Workbench can do anything GitHub lets your account do, and
+nothing more. Three things decide what that is, and this appendix lists,
+part by part, what each one needs:</p>
+<ul>
+<li><strong>Your role</strong> on the repository or organization: read,
+triage, write, maintain or admin on a repository; member or owner in an
+organization. A custom role counts as whatever it grants.</li>
+<li><strong>Your sign-in’s permissions</strong>, called scopes. Sign In
+with GitHub asks for every scope the Workbench uses (Chapter 1). A token
+you made yourself has only what you gave it. <strong>Account &gt; GitHub
+Permissions…</strong> (<code>Ctrl+Shift+P</code>) lists them all, and
+which you have.</li>
+<li><strong>Your Workbench level</strong>, Read Only, Organize or Full,
+which QUILL checks before GitHub is asked (Chapters 1 and 13).</li>
+</ul>
+<p>Some parts also need a feature GitHub turns on only for certain
+repositories, organizations or plans. Those are named in the last
+column.</p>
+<h2 id="how-to-read-it">How to read it</h2>
+<ul>
+<li><strong>Role</strong> is the role the Workbench checks for before it
+offers a command, which is the smallest role GitHub asks for. An
+organization can make GitHub stricter; GitHub’s answer always wins.</li>
+<li><strong>Workbench level.</strong> Read Only reads everything.
+Organize adds organizing changes, such as labels, reactions and stars,
+and changes other people will see, such as comments, merges and re-runs.
+Full adds access and settings changes, and anything destructive or hard
+to reverse, such as deleting. <code>Shift+F1</code> on a command says
+the level it needs.</li>
+<li><strong>When it is missing.</strong> QUILL does not guess. A place
+you cannot read says why on its one row, and a command you cannot use is
+greyed, and <code>Shift+F1</code> says why. When GitHub itself refuses,
+QUILL says so and names the permission or scope GitHub asked for
+(Chapter 10).</li>
+</ul>
+<h2 id="reading">Reading</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Role</th>
+<th>Scope</th>
+<th>Also needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A public repository’s issues, pull requests, files, runs and
+logs</td>
+<td>none: works signed out</td>
+<td>none</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Private repositories</td>
+<td>read</td>
+<td><code>repo</code></td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Inbox, notifications, review requests, mentions</td>
+<td>signed in</td>
+<td><code>repo</code></td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Your organizations and their repositories</td>
+<td>member</td>
+<td><code>read:org</code></td>
+<td>an organization that has not blocked QUILL (Chapter 10)</td>
+</tr>
+<tr>
+<td>Projects</td>
+<td>read on the project</td>
+<td><code>project</code></td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Your gists</td>
+<td>signed in</td>
+<td><code>gist</code></td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Your keys</td>
+<td>signed in</td>
+<td><code>admin:public_key</code>, <code>admin:gpg_key</code>,
+<code>admin:ssh_signing_key</code></td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Your billing and usage</td>
+<td>signed in</td>
+<td><code>user</code></td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Your packages</td>
+<td>signed in</td>
+<td><code>read:packages</code></td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Insights: Health Snapshot</td>
+<td>read</td>
+<td><code>repo</code></td>
+<td>your opt-in, in Workbench Options, Privacy</td>
+</tr>
+</tbody>
+</table>
+<h2 id="issues-pull-requests-and-discussions">Issues, pull requests and
+discussions</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Role</th>
+<th>Also needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Comment, react, open an issue</td>
+<td>signed in</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Labels, assignees, milestones, issue type, issue fields,
+sub-issues</td>
+<td>triage</td>
+<td>issue types and issue fields need an organization that has them</td>
+</tr>
+<tr>
+<td>Close or reopen</td>
+<td>whatever GitHub says this account may do; the author of an issue may
+close it</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Pin an issue</td>
+<td>triage</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Lock a conversation, transfer an issue</td>
+<td>write</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Delete an issue</td>
+<td>admin</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Review a pull request, re-request a review</td>
+<td>write to request; anyone signed in may review</td>
+<td>approving your own needs a second account (Act As)</td>
+</tr>
+<tr>
+<td>Merge, auto-merge, merge queue</td>
+<td>write, and whatever the branch’s rules ask</td>
+<td>a merge queue needs a repository with a merge queue rule</td>
+</tr>
+<tr>
+<td>Discussions: reply, upvote, vote</td>
+<td>signed in</td>
+<td>Discussions turned on for the repository</td>
+</tr>
+<tr>
+<td>Discussions: close or reopen</td>
+<td>triage</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Assign to Copilot, Ask Copilot to Review, agent tasks</td>
+<td>write</td>
+<td>a Copilot plan with the cloud agent</td>
+</tr>
+</tbody>
+</table>
+<h2 id="code-releases-and-actions">Code, releases and Actions</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Role</th>
+<th>Also needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Make a branch or a tag</td>
+<td>write</td>
+<td>a protected branch refuses what its rules forbid</td>
+</tr>
+<tr>
+<td>Delete a branch, a tag or a label</td>
+<td>write</td>
+<td>the default branch is never deleted</td>
+</tr>
+<tr>
+<td>Make and edit releases, upload files</td>
+<td>write</td>
+<td>an immutable release cannot be changed after it is published</td>
+</tr>
+<tr>
+<td>Delete a release</td>
+<td>push</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Re-run, cancel and delete runs, run a workflow by hand</td>
+<td>write</td>
+<td>a workflow with a manual trigger, to run one by hand</td>
+</tr>
+<tr>
+<td>New and edit a workflow</td>
+<td>write</td>
+<td>the <code>workflow</code> scope</td>
+</tr>
+<tr>
+<td>Approve a deployment, approve a run from a fork</td>
+<td>write</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Environments: secrets, variables, protection rules, branch
+policies</td>
+<td>admin</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Self-hosted runners</td>
+<td>admin; owner for an organization’s</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Codespaces</td>
+<td>signed in, with access to the repository</td>
+<td>Codespaces on your account or organization; costs may apply</td>
+</tr>
+<tr>
+<td>Delete a package or a version</td>
+<td>signed in, admin on the package</td>
+<td><code>delete:packages</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="repository-settings-and-security">Repository settings and
+security</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Role</th>
+<th>Also needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Repository settings, branch protection</td>
+<td>admin</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Webhooks, deploy keys, autolinks</td>
+<td>admin</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Collaborators, access templates, bulk access changes</td>
+<td>admin</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Dismiss or reopen an alert</td>
+<td>write</td>
+<td>the <code>security_events</code> scope, and the scanning turned on
+for the repository</td>
+</tr>
+<tr>
+<td>Allow a blocked secret</td>
+<td>write</td>
+<td>a real blocked push, and its placeholder id</td>
+</tr>
+<tr>
+<td>Security advisories</td>
+<td>admin</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Transfer a repository</td>
+<td>admin</td>
+<td>you type its name</td>
+</tr>
+<tr>
+<td>Delete a repository</td>
+<td>admin</td>
+<td><code>delete_repo</code>, and you type its full name</td>
+</tr>
+</tbody>
+</table>
+<h2 id="organizations-teams-and-access">Organizations, teams and
+access</h2>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Role</th>
+<th>Also needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accept an invitation or a membership</td>
+<td>signed in</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>New team</td>
+<td>member, where the organization allows it</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Delete a team</td>
+<td>owner</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Members, outside collaborators</td>
+<td>owner</td>
+<td>QUILL refuses a change that would leave nobody to manage it</td>
+</tr>
+<tr>
+<td>Organization roles and rulesets</td>
+<td>owner</td>
+<td>custom roles depend on the organization’s plan</td>
+</tr>
+<tr>
+<td>Dependabot’s repository access, custom properties, fork
+settings</td>
+<td>owner</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Organization runners</td>
+<td>owner</td>
+<td>nothing</td>
+</tr>
+<tr>
+<td>Organization webhooks</td>
+<td>owner</td>
+<td><code>admin:org_hook</code></td>
+</tr>
+<tr>
+<td>Access Review, Security Overview</td>
+<td>member, to read what GitHub shows you</td>
+<td>parts GitHub will not show you are said, never counted as none</td>
+</tr>
+</tbody>
+</table>
+<h2 id="enterprise-server">Enterprise Server</h2>
+<p>An account on a GitHub Enterprise Server reaches the same parts, if
+that server’s GitHub has them. When it does not, QUILL says “This
+server’s GitHub does not have” that part, with the server’s name and
+version, and sends nothing more for it. Enterprise accounts, and
+administering the server itself, are not part of the Workbench.</p>
+<h2 id="outside-github">Outside GitHub</h2>
+<p>Two commands read something other than GitHub, and both say so
+first:</p>
+<ul>
+<li><strong>Help &gt; GitHub Service Status…</strong>
+(<code>Ctrl+Alt+F1</code>) reads <a
+href="http://www.githubstatus.com">www.githubstatus.com</a>, only when
+you ask.</li>
+<li><strong>Use GitHub CLI Sign-In…</strong> asks the <code>gh</code>
+program on your computer for its sign-in. Nothing leaves your computer
+for it.</li>
+</ul>
+<p>Chapter 10 has the full list of what goes over the network.</p>
+<hr />
+<ul>
+<li>Previous: <a href="lite-github-guide-14-quill-lite.html">Chapter 14:
+GitHub in QUILL Lite</a></li>
+<li><a href="lite-github-guide.html">Contents</a></li>
+</ul>
+</main>
+</body>
+</html>

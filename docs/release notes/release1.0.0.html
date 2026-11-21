@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL 1.0</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -171,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -979,13 +986,14 @@ reader’s heading keys to jump from one change to the next.</p>
 <h3 id="the-guides-from-every-download">The guides, from every
 download</h3>
 <p><strong>Help &gt; Open GitHub Guide</strong> opens the GitHub Guide
-in your browser (press Alt+H, then I), and F1 in any GitHub window
-offers it too. <strong>Help &gt; Open User Guide</strong>
-(Ctrl+Shift+F1) now finds the guide however QUILL was started; before,
-an installed copy started by opening a file from File Explorer opened
-the welcome guide instead. The Start menu has a GitHub Guide shortcut,
-the macOS disk image carries the guides, and the user guide’s contents
-page lists all eleven GitHub Guide chapters.</p>
+in your browser (press Alt+H, then I), and Ctrl+F1 in the GitHub
+Workbench opens it at the chapter for where you are. <strong>Help &gt;
+Open User Guide</strong> (Ctrl+Shift+F1) now finds the guide however
+QUILL was started; before, an installed copy started by opening a file
+from File Explorer opened the welcome guide instead. The Start menu has
+a GitHub Guide shortcut, the macOS disk image carries the guides, and
+the user guide’s contents page lists all fourteen GitHub Guide chapters
+and its appendix.</p>
 <hr />
 <h2 id="documents-and-formats">Documents and Formats</h2>
 <h3 id="what-quill-can-open">What QUILL can open</h3>
@@ -2304,100 +2312,77 @@ opens the <code>#42</code>, <code>owner/name#42</code>, commit or
 menu.</p>
 <h4 id="files-on-github">Files on GitHub</h4>
 <p>QUILL opens files straight from a GitHub repository, lets you browse
-the repository’s tree, and saves a file back. Your token is kept in the
-system credential store, and QUILL asks for your consent the first time.
-The repository field takes <code>owner/repo</code>, a
+the repository’s tree, and saves a file back. Your sign-in is kept in
+the system credential store, and QUILL asks for your consent the first
+time. The repository field takes <code>owner/repo</code>, a
 <code>github.com</code> address you paste in, or a
 <code>git@github.com:</code> remote.</p>
-<h4 id="the-items-viewer">The Items viewer</h4>
-<p>The GitHub Items viewer lists issues, pull requests, branches,
-commits, workflows and workflow runs, all in one list you can arrow
-through.</p>
-<p>Select a pull request and choose <strong>Review…</strong> to open its
-review reader. The top line states whether the PR is draft, blocked,
-conflicted or ready, then summarizes approvals, checks and review-thread
-counts. An expandable PR outline groups review threads under changed
-files and check runs under Checks. Arrow among nodes, Right and Left
-expand or collapse, and Tab reads the selected node’s details. Ctrl+R
-replies to a selected thread; Shift+F10 opens its context menu for
-reply, copy, or opening on GitHub. A file’s menu opens its differences,
-and Enter on a check opens its job. <strong>Copy Review Summary</strong>
-copies a short plain-text brief with the PR link. Public PRs can be read
-without signing in. With a token, an open PR can be approved, given a
-changes-requested or comment review, replied to in a selected thread,
-sent to reviewers, marked draft or ready, and updated from its base
-branch. QUILL asks for a message where GitHub requires one and confirms
-changes to the PR state. The reader identifies outdated comments;
-resolved and unresolved review-thread state is not yet available, and
-resolving a thread still requires GitHub’s own interface. The same
-GitHub Items viewer and PR review controls are available in QUILL Lite
-through <strong>File &gt; GitHub Workbench…</strong>
-(<strong>Alt+F</strong>, then <strong>G</strong>). The Items list and
-details field now have contextual menus for opening, copying,
-favoriting, reviewing a PR, comparing branches, inspecting runs, and
-available write actions.</p>
-<ul>
-<li><strong>Pinned repositories</strong> keep the few you use most close
-at hand, so you are not typing <code>owner/repo</code> again.
-<strong>Favorites</strong> (<strong>Ctrl+D</strong>) bookmark one issue,
-pull request, branch or release, from any repository. They stay on your
-computer.</li>
-<li><strong>Full GitHub search syntax</strong> (<strong>Ctrl+F</strong>)
-takes a real query, such as <code>label:bug is:open crash</code>, within
-the loaded repository.</li>
-<li><strong>Quick filter</strong> (<strong>Ctrl+Shift+F</strong>)
-narrows the rows already loaded, live as you type, without going back to
-GitHub. Focus stays in the box you are typing in. It keeps quiet while
-you type and says the count once you stop, so it never talks over your
-screen reader’s typing echo.</li>
-<li><strong>Local git awareness</strong> fills in the repository for you
-when the document you are editing sits in a clone whose origin is on
-GitHub.</li>
-<li><strong>View Upstream</strong> loads a fork’s parent repository in
-place.</li>
-<li><strong>Columns</strong> chooses which fields show for this view,
-and remembers your choice.</li>
-</ul>
-<p><strong>Diff</strong> on a pull request lets you browse its changed
-files. Instead of a wall of plus and minus signs, each file goes through
-the same comparison as <strong>Compare Documents</strong>, and you hear
-a numbered walk through the changes that matter: “Difference 2 of 5.
-Text changed at line 41.” A new file is read as its content. A deleted
-file is announced as deleted. A binary or very large file gives you its
-change counts. <strong>Compare</strong> on a branch does the same
-between two branches, and you do not need to sign in, because it changes
-nothing.</p>
-<p><strong>Summarize</strong> hands a long thread, even a hundred
-comments, to your AI and gives you back a short summary in plain prose:
-what it is about, where it stands, what is still open, and what seems to
-come next. It uses the same AI connection, privacy settings and consent
-as the rest of QUILL. Nothing is sent until you press it.</p>
-<p><strong>Batch</strong> works on several selected items at once:
-close, reopen or label them. It is the one part of the viewer that
-changes things in bulk, so it has firm limits. You must be signed in,
-and anonymous viewing stays read-only. The confirmation names the exact
-action and the exact item numbers. If some items fail, the rest still go
-through, and QUILL tells you which ones failed and why.</p>
-<p><strong>Actions</strong> holds the commands that change one item: New
-Issue, New Pull Request, Merge Pull Request, Delete Branch, Re-run
-Workflow, View Artifacts, Reply to Thread, Edit This Comment and Delete
-This Comment. The comment commands work with <strong>Alt+N</strong> and
-<strong>Alt+P</strong>: move to a comment, then act on that one.</p>
-<p><strong>View Artifacts</strong> lists a workflow run’s build
-artifacts with name, size and expiry date. It downloads one or all of
-them to a folder you choose, with a progress window you can cancel and a
-question before anything is overwritten. Your GitHub token only ever
-goes to github.com. GitHub hands back a short-lived download address on
-another server, and QUILL fetches that with no token attached.</p>
 <h4 id="the-github-workbench">The GitHub Workbench</h4>
-<p>The shared QUILL and QUILL Lite GitHub windows add PR thread
-resolve/reopen, exact changed-line navigation when a patch position is
-current, global saved searches, My Work, activity and people views,
-repository discovery and watch controls, Pages builds, labels, gists,
-and workflow job logs. Run actions now use GitHub’s actual run ID. See
-the <a href="../github/workbench-reference.md">workbench reference</a>
-for keys, context menus, account requirements, and current
-limitations.</p>
+<p>Everything GitHub is now one window, the <strong>GitHub
+Workbench</strong>, in QUILL and QUILL Lite alike. In QUILL, choose
+<strong>File &gt; Open from Remote &gt; GitHub Items…</strong>; in QUILL
+Lite, <strong>File &gt; GitHub Workbench…</strong> (Alt+F, then G). It
+replaces the GitHub Items and Explore GitHub windows, and it is a window
+of its own, not a dialog, so the editor stays usable beside it.</p>
+<ul>
+<li><strong>A tree, a list and details,</strong> like Outlook or File
+Explorer. Needs My Attention holds your Inbox, notifications,
+invitations and review requests, team requests included. Every
+repository has the same places, in the same order: Issues, Pull
+Requests, Discussions, Actions, Code, Releases, Projects, Security,
+Settings and Insights. <strong>Ctrl+1</strong> to
+<strong>Ctrl+0</strong> go to a place, <strong>Ctrl+Shift+1</strong> to
+<strong>Ctrl+Shift+0</strong> to a part of the repository, and
+<strong>Alt+1</strong> to <strong>Alt+9</strong> say something without
+moving you.</li>
+<li><strong>Alt+Enter on anything</strong> opens its Properties: an
+issue, a pull request, a repository, a ruleset, a team. Change what
+GitHub lets you change, on one item or many at once, and
+<strong>Ctrl+Z</strong> takes it back. <strong>Change History</strong>
+(Ctrl+Shift+H) lists every change the Workbench made, with Undo where
+GitHub allows it.</li>
+<li><strong>It asks before it matters.</strong> Organizing changes save
+at once and can be undone; access and settings changes show a preview in
+words; anything destructive wants its name typed. Each account has a
+Workbench level, Read Only, Organize or Full, and <strong>Dry
+Run</strong> (Ctrl+Alt+D) tries any command without sending it.</li>
+<li><strong>Filter on anything:</strong> GitHub’s own words in the
+filter box (Ctrl+E), the Filter Builder, Quick Filters, and Sort By and
+Group By on every list.</li>
+<li><strong>Pull requests:</strong> the review outline with its
+one-sentence summary, the diff read as numbered changes, comments on a
+line or a range, suggestions, viewed files, Why Can’t I Merge?,
+auto-merge and the merge queue, and Merge Selected for several at
+once.</li>
+<li><strong>Actions:</strong> What Failed (Ctrl+Shift+W) in one key,
+Re-run Failed Jobs (Ctrl+Shift+F5), jobs and logs you can follow while
+they run, artifacts, caches, runners, environments and deployments, and
+workflows you can edit as plain controls.</li>
+<li><strong>Across Repositories</strong> (Ctrl+0) reads one kind of
+thing from many repositories at once, and changes a label, tag, secret,
+webhook or rule by name everywhere, after a preview.</li>
+<li><strong>Who has access:</strong> My Access Here, Why Can’t They?,
+View As Role, Access Review, Bulk Access Changes and Access Templates,
+read from GitHub’s own answers. <strong>Compare Accounts</strong> shows
+two of your accounts side by side, and <strong>Act As Another
+Account</strong> sends one action as another of them.</li>
+<li><strong>More than github.com:</strong> an account can live on a
+GitHub Enterprise Server, and <strong>Use GitHub CLI Sign-In…</strong>
+adds the account <code>gh</code> already uses.</li>
+<li><strong>Help everywhere:</strong> F1 on every place and control,
+Shift+F1 for what you can do here, the GitHub glossary, Search Help, and
+<strong>Help &gt; Practice on GitHub…</strong> (Ctrl+Alt+P), a private
+repository to learn on, with ten lessons in <strong>Help &gt;
+Tutorials</strong> that use it.</li>
+</ul>
+<p>Reading works signed out, on any public repository. <strong>Summarize
+Discussion</strong> uses your AI only when you choose it. When GitHub
+hands a log or an artifact to another server, QUILL fetches it without
+your sign-in attached. The <a
+href="../user%20guide/github-guide/github-guide.md">GitHub Guide</a>
+walks through all of it in 14 chapters, and the <a
+href="../github/workbench-reference.md">Workbench reference</a> lists
+every key and menu row.</p>
 <h4 id="lists-out-issues-in">Lists out, issues in</h4>
 <p>A list is only useful while you are looking at it, unless you can
 take it with you. <strong>Export List…</strong> (Ctrl+Shift+X), on the
@@ -2653,12 +2638,12 @@ chosen by name. QUILL Lite has all of it in the same windows.</p>
 what failed, and merge automation</h4>
 <p>Your GitHub notifications are now something you can work through
 rather than just read. <strong>Tools &gt; Git and GitHub &gt; GitHub
-&gt; Notifications…</strong> opens the inbox in Explore and says how
-many are unread. Each one says why you got it, in words: “review
-requested”, “you were mentioned”. Press Enter and QUILL marks it read
-and opens it in its own view, a pull request in Review and an issue in
-GitHub Items. Press Delete for Done, or Alt+U to unsubscribe, and you
-land on the next one, so you never lose your place.</p>
+&gt; Notifications…</strong> opens them in the GitHub Workbench, under
+Needs My Attention. Each one says why you got it, in words: “review
+requested”, “you were mentioned”. <strong>Ctrl+Q</strong> marks one
+read, <strong>Delete</strong> marks it done, and Unsubscribe from Thread
+is on its context menu; you stay on the next row, so you never lose your
+place.</p>
 <p>When a workflow run fails, select it and press
 <strong>Ctrl+Shift+W</strong>. <strong>What Failed</strong> gives you
 one plain text to arrow through: the failed jobs, the steps that failed,
@@ -2666,39 +2651,38 @@ the annotations with file and line, and the last 40 lines of each failed
 step’s log, without the timestamps and colour codes. You can re-run only
 the failed jobs, cancel or delete a run, approve a run from a fork, and
 approve or reject a deployment that is waiting for you.</p>
-<p>In pull request Review, <strong>Auto-Merge and Queue…</strong>
-(Alt+A) turns on auto-merge with the merge method you choose, or adds
-the pull request to the merge queue, and tells you plainly what GitHub
-did. QUILL Lite has all of this in the same windows.</p>
+<p>On a pull request’s row, <strong>Auto-Merge…</strong> turns on
+auto-merge with the merge method you choose, and <strong>Add to or
+Remove from Merge Queue…</strong> adds it to the merge queue, and each
+tells you plainly what GitHub did. QUILL Lite has all of this in the
+same windows.</p>
 <h4 id="copilot-commit-comments-gists-and-queue-summaries">Copilot,
 commit comments, gists and queue summaries</h4>
-<p>You can now ask Copilot to review a pull request (Request Copilot
-Review on the pull request’s context menu in the review window) and hand
-an issue to Copilot’s coding agent (Assign to Copilot on the issue’s
-context menu in GitHub Items). Both say plainly when Copilot is not
-available to your account or repository, and neither claims success
-GitHub did not confirm.</p>
+<p>You can now ask Copilot to review a pull request (Ask Copilot to
+Review on the pull request’s row in the Workbench) and hand an issue to
+Copilot’s coding agent (Assign to Copilot…, Ctrl+Shift+A, on the issue’s
+row). Both say plainly when Copilot is not available to your account or
+repository, and neither claims success GitHub did not confirm.</p>
 <p>A commit’s context menu has Commit Comments, which reads its comments
 as author, date and text and adds one on the whole commit or on a line
-of a file. Explore’s My gists view now writes gists as well as listing
-them: new from the document or its selection, public or secret; edit the
+of a file. My Gists (Ctrl+5) writes gists as well as listing them: new
+from the document or its selection, public or secret; edit the
 description and files; star, unstar and delete, with a question before
-anything is deleted. And the attention queue says where each pull
-request stands, in the same one sentence the review window opens with,
-read for the whole queue in one request.</p>
+anything is deleted. And the Inbox says where each pull request stands,
+in the same one sentence the review window opens with, read for the
+whole Inbox in one request.</p>
 <h4 id="search-releases-housekeeping-and-rate-limits">Search, releases,
 housekeeping and rate limits</h4>
 <p>The GitHub windows now search code, commits and repositories, and
 read a repository’s Insights (traffic and contributors) and community
-profile as plain sentences. Explore’s context menu has Repository
-Actions: sync a fork, set topics, choose a watch level, archive, create
-from a template, and delete a repository after typing its name. It lists
-Actions caches and secret and variable names, never values, and people
-rows have Follow and Unfollow.</p>
-<p>In GitHub Items, releases can be edited and published, and files
-uploaded with progress said at quarter steps, or deleted. An issue’s
-Housekeeping submenu locks, transfers, pins, sets the type and reorders
-sub-issues.</p>
+profile as plain sentences. A repository’s Properties sets its topics,
+watch level and archiving, and Repository Actions… (Ctrl+Shift+G) lists
+everything else you can do with it. Actions caches and secret and
+variable names, never values, are places under the repository, and
+people rows have Follow and Unfollow.</p>
+<p>A release can be edited and published, and its files uploaded or
+deleted, from its row in the Workbench. An issue’s context menu locks,
+transfers, pins, sets the type and reorders sub-issues.</p>
 <p>Ctrl+Shift+L says how much of GitHub’s hourly allowance is left.
 QUILL now asks GitHub only for what changed, says “No changes since the
 last load” when nothing did, checks notifications less often when the
@@ -2707,22 +2691,23 @@ repeatedly.</p>
 <h4
 id="repository-files-milestones-discussions-and-security-triage">Repository
 files, milestones, discussions and security triage</h4>
-<p><strong>Files…</strong> (Alt+F) in GitHub Items opens a repository as
-a tree you can walk with the arrow keys, at any branch, tag or commit.
-Read a file in place, open it in the editor, read a folder’s README,
-list the commits that changed it, or read its blame. Blame comes in
-runs, each one a sentence: “Lines 10 to 14: Jeff Bishop, 3 November,
-1a2b3c4, Fix the diff”. Alt+N and Alt+P move between runs.</p>
+<p><strong>Files, History and Blame…</strong>, from Repository Actions
+in the Workbench, opens a repository as a tree you can walk with the
+arrow keys, at any branch, tag or commit. Read a file in place, open it
+in the editor, read a folder’s README, list the commits that changed it,
+or read its blame. Blame comes in runs, each one a sentence: “Lines 10
+to 14: Jeff Bishop, 3 November, 1a2b3c4, Fix the diff”. Alt+N and Alt+P
+move between runs.</p>
 <p><strong>Milestones…</strong> says each milestone the way you would
 say it: “61 percent done, 5 open, 8 closed, due 12 December”. You can
-create, edit and close them, and the <strong>Batch…</strong> menu now
-sets a milestone or adds assignees on the issues you select.</p>
-<p>Discussions are no longer read-only. Enter on one in Explore opens
-its thread, says who answered it, and reads any poll as text. You can
-reply, mark the answer, and start a discussion. And in Explore’s
-security alerts you can dismiss an alert with GitHub’s own reasons,
-after QUILL checks with you, or reopen one. QUILL Lite has all of this
-in the same windows.</p>
+create, edit and close them, and Alt+Enter on several selected issues
+sets a milestone or adds assignees on all of them at once.</p>
+<p>Discussions are no longer read-only. Enter on one in the Workbench
+opens its thread, says who answered it, and reads any poll as a table.
+You can reply, mark the answer, vote, and start a discussion. And in a
+repository’s security alerts you can dismiss an alert with GitHub’s own
+reasons, after QUILL checks with you, or reopen one. QUILL Lite has all
+of this in the same windows.</p>
 <h4 id="administering-a-repository">Administering a repository</h4>
 <p><strong>Tools &gt; Git and GitHub &gt; GitHub</strong> gathers the
 jobs that would otherwise send you to a web browser:</p>
@@ -2877,14 +2862,16 @@ inside QUILL</a> teaches all of this from start to finish.</p>
 <h4 id="a-complete-github-guide">A complete GitHub guide</h4>
 <p>QUILL now ships a book of its own on doing GitHub work with a screen
 reader: <a href="https://www.quillforall.org/docs/github-guide.html">The
-GitHub Guide for QUILL and QUILL Lite</a>. Its eleven chapters cover
-signing in, getting around the GitHub windows, your notifications,
-issues, reviewing a pull request line by line, what failed in a workflow
-run, repository files and releases, discussions and security alerts,
-Codespaces, and every refusal GitHub can give and what to do about it.
-The last chapter is a keyboard reference for every window. It is in the
-docs folder beside QUILL, and the user guide’s GitHub section is now a
-short map of it.</p>
+GitHub Guide for QUILL and QUILL Lite</a>. Its fourteen chapters cover
+signing in, a tour of the GitHub Workbench, your inbox, issues,
+reviewing a pull request line by line, what failed in a workflow run,
+code and releases, discussions and security, Codespaces, every refusal
+GitHub can give and what to do about it, every key, every place in the
+Workbench, Properties, filters and permissions, and what differs in
+QUILL Lite. Each chapter ends with a walk-through on a practice
+repository of your own, and an appendix says what GitHub needs for each
+part. It is in the docs folder beside QUILL, and the user guide’s GitHub
+section is now a short map of it.</p>
 <hr />
 <h2 id="quill-lite-and-one-family">QUILL Lite, and one family</h2>
 <p><strong>QUILL Lite</strong> is QUILL’s editor on its own: a

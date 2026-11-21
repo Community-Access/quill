@@ -25,6 +25,20 @@ class GitHubLineLiteMixin:
     path: Any
     control: Any
 
+    def _github_alt_enter(self, event: Any) -> bool:
+        """Alt+Enter with the caret on a GitHub reference: its sheet (GH-R-036).
+
+        False (the key goes on) anywhere else. GitHub's editor commands are in
+        no switchable area in QUILL Lite (``command_areas``), so neither is this.
+        """
+        from quill.ui.github_editor_line import alt_enter_on_reference
+
+        return alt_enter_on_reference(
+            event,
+            lambda: (str(self.control.GetValue()), int(self.control.GetInsertionPoint())),
+            self._github_line_host,
+        )
+
     def _github_line_host(self) -> Any:
         from quill.apps.lite_window_open import app_task_manager
         from quill.ui.dialog_contract import show_modal_dialog

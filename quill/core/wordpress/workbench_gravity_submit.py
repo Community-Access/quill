@@ -121,8 +121,17 @@ def sample_inputs(form: Mapping[str, Any]) -> tuple[list[TestInput], list[str]]:
             for sub in inputs:
                 name = "input_" + str(sub.get("id", "")).replace(".", "_")
                 found.append(TestInput(name, f"{label}, {sub.get('label', '')}", _SAMPLES["email"]))
+        elif kind == "time":
+            # One string, not its three inputs: input_N_1..3 are refused with no message,
+            # while "10:30 am" is stored as given (live, Gravity Forms 3.2.3.1, 2026-11-20).
+            clock = "10:30" if str(spec.get("timeFormat", "") or "12") == "24" else "10:30 am"
+            found.append(TestInput(f"input_{fid}", label, clock))
         elif kind == "date":
             found.append(TestInput(f"input_{fid}", label, _date_sample(spec)))
+        elif kind == "phone" and str(spec.get("phoneFormat", "") or "standard") == "standard":
+            # Gravity Forms' default phone format refuses "555-0100" ("Phone format:
+            # (###) ###-####", live on the test site, 3.2.3.1, 2026-11-20).
+            found.append(TestInput(f"input_{fid}", label, "(555) 555-0100"))
         elif kind == "number" and spec.get("rangeMin") not in (None, ""):
             found.append(TestInput(f"input_{fid}", label, str(spec["rangeMin"])))
         elif kind in _SAMPLES:

@@ -102,7 +102,10 @@ class WorkbenchPrefs:
     poll_interrupt_speech: bool = False
     include_read_notifications: bool = False
     speak_column_names: bool = False
+    braille_rows: bool = False
     first_time_help: bool = True
+    tips_when_useful: bool = True
+    plain_help: bool = False
     health_snapshot_opt_in: bool = False
 
     def with_changes(self, **changes: Any) -> WorkbenchPrefs:

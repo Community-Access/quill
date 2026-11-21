@@ -248,15 +248,17 @@ Workbench requirement audit, November 2026</h1>
 follow-up pull request, and on 2026-11-19 for GH-R-046 (the You page),
 GH-R-086 and GH-R-157, and for GH-R-068, GH-R-105, GH-R-143 and the
 Command Key in the Workbench windows (GH-R-086); and on 2026-11-20 for
-GH-R-069 (#1965), when the tallies were checked against the rows below.
+GH-R-069 (#1965), and for GH-R-036, 109, 114, 115, 116 and 118 (#1975);
+and on 2026-11-21 for GH-R-088, 105, 153, 154 and 157 (the Protect a
+branch lesson), when the tallies were recounted from the rows below.
 This is the record of the complete.md 1.3 requirement audit: every id in
 Part E of <a
 href="../Product Requirement Documents and Specifications/github-workbench-prd.md">the
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 86 are met, 8 are partly met and 6 are
-not met. GH-R-042 is withdrawn.</p>
+<p>Of the 100 live requirements, 97 are met and 3 are partly met.
+GH-R-042 is withdrawn.</p>
 <table>
 <thead>
 <tr>
@@ -270,23 +272,23 @@ not met. GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>71</td>
-<td>4</td>
+<td>72</td>
+<td>3</td>
 <td>0</td>
 <td>75</td>
 </tr>
 <tr>
 <td>Should</td>
-<td>14</td>
-<td>4</td>
-<td>5</td>
+<td>23</td>
+<td>0</td>
+<td>0</td>
 <td>23</td>
 </tr>
 <tr>
 <td>May</td>
-<td>1</td>
+<td>2</td>
 <td>0</td>
-<td>1</td>
+<td>0</td>
 <td>2</td>
 </tr>
 </tbody>
@@ -295,59 +297,7 @@ not met. GH-R-042 is withdrawn.</p>
 them. The tests the audit cites pass; GH-R-002 was checked on Windows
 and fixed; nothing here was checked with a screen reader.</p>
 <h2 id="not-met">Not met</h2>
-<table>
-<thead>
-<tr>
-<th>Id</th>
-<th>Strength</th>
-<th>Requirement</th>
-<th>Evidence and what remains</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>GH-R-036</td>
-<td>Should</td>
-<td>Alt+Enter on a GitHub reference in a document opens its sheet</td>
-<td>No Alt+Enter on a GitHub reference in the editor (keymap has none);
-decision 23 recommends it.</td>
-</tr>
-<tr>
-<td>GH-R-109</td>
-<td>Should</td>
-<td>Examples from the person’s own data and situation</td>
-<td>No examples drawn from the person’s own data (D14).</td>
-</tr>
-<tr>
-<td>GH-R-114</td>
-<td>Should</td>
-<td>A braille-shaped row option</td>
-<td>No braille-shaped (short) row option.</td>
-</tr>
-<tr>
-<td>GH-R-115</td>
-<td>Should</td>
-<td>Key cards in print and braille, the guide as a book, the spoken
-tour</td>
-<td>No key cards, book edition of the guide beyond the EPUBs, or spoken
-tour (D15). The guide’s EPUB siblings exist.</td>
-</tr>
-<tr>
-<td>GH-R-116</td>
-<td>Should</td>
-<td>QUILLBert and QUILLBee tips at the right moment, with an option for
-plain help</td>
-<td>No QUILLBert or QUILLBee tips in the GitHub Workbench (D16).</td>
-</tr>
-<tr>
-<td>GH-R-118</td>
-<td>May</td>
-<td>Ask How through the family’s AI, grounded only in the help
-catalogue</td>
-<td>(May) no Ask How.</td>
-</tr>
-</tbody>
-</table>
+<p>None.</p>
 <h2 id="partly-met">Partly met</h2>
 <table>
 <thead>
@@ -689,10 +639,28 @@ sheet.</td>
 <tr>
 <td>GH-R-036</td>
 <td>Should</td>
-<td>Not met</td>
+<td>Met</td>
 <td>Alt+Enter on a GitHub reference in a document opens its sheet</td>
-<td>No Alt+Enter on a GitHub reference in the editor (keymap has none);
-decision 23 recommends it.</td>
+<td>Both editors’ key handlers ask one shared call first
+(<code>github_editor_line.alt_enter_on_reference</code>, from
+<code>main_frame._on_editor_char_hook</code> and QUILL Lite’s
+<code>lite_window_typing._on_key_down</code>): with the caret on
+<code>#42</code>, <code>owner/name#42</code>, <code>@person</code>, a
+commit hash or a GitHub issue, pull request, discussion or commit
+address (<code>editor_line.references_in</code>,
+<code>sheet_request</code>), Alt+Enter opens that object’s Properties
+sheet in the Workbench (the <code>properties:</code> door,
+<code>github_workbench_reference_sheet.py</code>; a bare
+<code>#42</code> is read first to choose issue or pull request);
+anywhere else the key goes on as before. Not a keymap chord, so
+Alt+Enter is taken nowhere else (rules 1 and 7; the reason is in
+<code>keymap.py</code> and
+<code>workbench_menu.line_key_bindings</code>); the same key in both
+editors, so no parity divergence. Open the GitHub Reference at the
+Cursor now opens the sheet too.
+<code>tests/unit/ui/test_github_editor_line.py::test_alt_enter_opens_the_sheet_only_on_a_reference</code>,
+<code>tests/unit/ui/test_github_reference_sheet.py</code>,
+<code>tests/unit/core/github_workbench/test_editor_line.py::test_addresses_are_references_with_their_kind</code></td>
 </tr>
 </tbody>
 </table>
@@ -1104,8 +1072,8 @@ Workbench result (<code>outcome_feedback.py</code>;
 <td>Met</td>
 <td>The editor commands of 22.3</td>
 <td><code>editor_line.py</code> / <code>github_editor_line.py</code> in
-both editors; <code>test_editor_line.py</code>. (Alt+Enter on a
-reference, C9, is the missing part, see 036.)</td>
+both editors; <code>test_editor_line.py</code>. Alt+Enter on a reference
+(C9) is GH-R-036.</td>
 </tr>
 <tr>
 <td>GH-R-085</td>
@@ -1329,26 +1297,54 @@ commands and read-only fields already say why
 <tr>
 <td>GH-R-109</td>
 <td>Should</td>
-<td>Not met</td>
+<td>Met</td>
 <td>Examples from the person’s own data and situation</td>
-<td>No examples drawn from the person’s own data (D14).</td>
+<td>F1 in the Workbench ends with an example built from what the window
+has loaded: the repository, the selected row and the signed-in account
+(“On Community-Access/quill, #42 Crash on start is selected: Alt+Enter
+opens everything about it”); none when it knows too little; nothing is
+read or sent for it (<code>help_examples.example_for</code>, the
+provider’s <code>help_example</code> hook in
+<code>workbench_frame_help.show_layered_help</code>).
+<code>tests/unit/core/github_workbench/test_help_examples.py</code></td>
 </tr>
 <tr>
 <td>GH-R-115</td>
 <td>Should</td>
-<td>Not met</td>
+<td>Met</td>
 <td>Key cards in print and braille, the guide as a book, the spoken
 tour</td>
-<td>No key cards, book edition of the guide beyond the EPUBs, or spoken
-tour (D15). The guide’s EPUB siblings exist.</td>
+<td>Key cards generated from the window’s key table:
+<code>docs/github/key-card.html</code> (an accessible print card) and
+<code>docs/github/key-card-braille-ready.txt</code> (ASCII, 40 cells by
+25 lines, form feeds) by
+<code>python -m quill.tools.build_github_key_card</code>, drift-gated
+(<code>tests/unit/tools/test_github_key_card.py</code>). The whole guide
+as one book for each editor, <code>github-guide-book.md/.epub</code> and
+<code>lite-github-guide-book.md/.epub</code>, by
+<code>python -m quill.tools.build_github_guide_book</code>, drift-gated
+(<code>tests/unit/tools/test_github_guide_book.py</code>). The spoken
+tour: Help &gt; Take the Tour (Alt+Shift+T), and once on the first
+visit, a step per pane through the announcements, F6 on, Escape skips
+(<code>workbench_tour.py</code>, <code>github_workbench_tour.py</code>,
+on the Walk Me Through It engine). D15’s Word and DAISY editions and
+recorded audio of the guide are not made.</td>
 </tr>
 <tr>
 <td>GH-R-116</td>
 <td>Should</td>
-<td>Not met</td>
+<td>Met</td>
 <td>QUILLBert and QUILLBee tips at the right moment, with an option for
 plain help</td>
-<td>No QUILLBert or QUILLBee tips in the GitHub Workbench (D16).</td>
+<td>A tip is offered in the details pane, unspoken, the third time a
+slow way is done (a long list without the filter, Properties one row at
+a time, Load More again and again), once per tip, remembered per person
+(<code>workbench_tips.TipMoments</code>, <code>offer_tip</code> in
+<code>github_workbench_view.py</code>); Workbench Options, General:
+Offer a tip when it would help, and Plain help, without QUILLBert and
+QUILLBee (Tips and Words drop the names:
+<code>workbench_tips.voice</code>). Words are QUILLBee’s.
+<code>tests/unit/core/github_workbench/test_workbench_tips.py</code></td>
 </tr>
 <tr>
 <td>GH-R-117</td>
@@ -1365,10 +1361,20 @@ thing said, scrubbed of secrets first
 <tr>
 <td>GH-R-118</td>
 <td>May</td>
-<td>Not met</td>
+<td>Met</td>
 <td>Ask How through the family’s AI, grounded only in the help
 catalogue</td>
-<td>(May) no Ask How.</td>
+<td>Help &gt; Ask How… (Alt+Shift+A): the help records and menu rows
+that meet the question (<code>ask_how.passages</code> over
+<code>ask_how.corpus</code>) go with an instruction to answer only from
+them and otherwise to say “The GitHub help does not cover that.”; when
+no help meets it, no request is made. Sent through the opening editor’s
+Choose Your AI
+(<code>github_workbench_ask_how.ask_through_editor</code>: the hosted-AI
+readiness and capability gates and <code>AiService.ask</code>), the same
+in both editors; the answer is a list with a Do It row per command it
+names, run only when chosen. Greyed without an AI connection and in Safe
+Mode. <code>tests/unit/core/github_workbench/test_ask_how.py</code></td>
 </tr>
 <tr>
 <td>GH-R-119</td>
@@ -1440,9 +1446,16 @@ always spoken, a bare acknowledgement by the setting
 <tr>
 <td>GH-R-114</td>
 <td>Should</td>
-<td>Not met</td>
+<td>Met</td>
 <td>A braille-shaped row option</td>
-<td>No braille-shaped (short) row option.</td>
+<td>Workbench Options, Lists, Short rows for braille
+(<code>braille_rows</code>): each list is one column whose text is the
+row shaped for a braille display, number and title first, no column
+names, abbreviations (cl, PR, 3c, 9 Nov), nothing cut off; Columns…
+still chooses what the line holds
+(<code>core/workbench/braille_rows.py</code>,
+<code>github_workbench_view.shaped_columns/shaped_cells</code>).
+<code>tests/unit/core/workbench/test_github_braille_rows.py</code></td>
 </tr>
 </tbody>
 </table>

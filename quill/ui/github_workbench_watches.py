@@ -31,6 +31,7 @@ __all__ = [
     "WATCH_VERBS",
     "GitHubWorkbenchWatchesMixin",
     "watch_rows",
+    "watch_store",
 ]
 
 WATCH_PREFIX = "watches:"
@@ -49,17 +50,19 @@ WATCH_REASONS: dict[str, str] = {
     "check_watches": "Sign in to GitHub first: Account, Manage GitHub Accounts.",
 }
 
-_KIND_ORDER = ("run", "review", "release", "comment")
+_KIND_ORDER = ("run", "review", "release", "comment", "ready")
 _PROMPTS = {
     "run": "Repository, and a branch after a space if you want only that branch "
     "(owner/name or owner/name main):",
     "review": "The pull request, as owner/name#42 or its link:",
     "release": "The repository, as owner/name or its link:",
     "comment": "The issue or pull request, as owner/name#42 or its link:",
+    "ready": "The pull request, as owner/name#42 or its link:",
 }
 
 
-def _store(items: Any) -> Any:
+def watch_store(items: Any) -> Any:
+    """This account's watches, loaded from this device."""
     from quill.core.github.navigation_state import account_key_for_token
     from quill.core.github.watches import WatchStore
 
@@ -84,7 +87,7 @@ def watch_rows(store: Any, now: float | None = None) -> list[ExploreRow]:
 
 
 def _target_text(watch: Any) -> str:
-    if watch.kind in ("review", "comment"):
+    if watch.kind in ("review", "comment", "ready"):
         return f"{watch.repository}#{watch.number}"
     return f"{watch.repository} {watch.branch}".strip()
 
@@ -110,7 +113,7 @@ class GitHubWorkbenchWatchesMixin:
     def load_watches(self) -> list[object]:
         from quill.core.github.workbench_prefs import github_monitor_policy
 
-        store = _store(self.items)
+        store = watch_store(self.items)
         minutes = github_monitor_policy().poll_interval_minutes
         active = sum(not w.paused for w in store.watches)
         self.local_note = (
@@ -144,14 +147,14 @@ class GitHubWorkbenchWatchesMixin:
         target = self._watch_target(kind, self._current_repository())
         if target is None:
             return
-        store = _store(self.items)
+        store = watch_store(self.items)
         watch = store.add(kind, *target)
         store.save()
         self._say(f"Watching: {watch.describe()}. The first check learns what is there now.")
         self._reload_if_watches()
 
     def _picked_watch(self, row: object) -> tuple[Any, Any] | None:
-        store = _store(self.items)
+        store = watch_store(self.items)
         watch = store.find(row.key) if isinstance(row, ExploreRow) else None
         if watch is None:
             self._say("That watch is no longer in the list.")
@@ -246,7 +249,7 @@ class GitHubWorkbenchWatchesMixin:
             return False
         if self._watching or self.frame is None:
             return False
-        store = _store(self.items)
+        store = watch_store(self.items)
         active = sum(not w.paused for w in store.watches)
         if forced and not active:
             self._say("There are no active watches. Ctrl+N in Watches adds one.")

@@ -203,3 +203,37 @@ def test_reference_at_and_its_url() -> None:
     assert el.reference_at(text, 2, "o/r") is None
     unknown = el.reference_at("#5", 1, "")
     assert unknown is not None and el.reference_url(unknown) == ""
+
+
+def test_addresses_are_references_with_their_kind() -> None:
+    """GH-R-036: a GitHub address of an issue, pull request, discussion or commit."""
+    text = (
+        "https://github.com/a/b/issues/4 and https://github.com/a/b/pull/7/files#diff "
+        "and https://github.com/a/b/discussions/9 and https://github.com/a/b/commit/abc1234def"
+    )
+    found = el.references_in(text)
+    assert [(r.kind, r.item_kind, r.repository) for r in found] == [
+        ("item", "issue", "a/b"),
+        ("item", "pull_request", "a/b"),
+        ("item", "discussion", "a/b"),
+        ("commit", "", "a/b"),
+    ]
+    assert found[1].describe() == "pull request a/b#7"
+    assert found[3].sha == "abc1234def"
+
+
+def test_sheet_request_names_the_sheet_alt_enter_opens() -> None:
+    def first(text: str, repository: str = "") -> el.ShortReference:
+        return el.references_in(text, repository)[0]
+
+    assert el.sheet_request(first("#42", "o/r")) == ("item", {"repo": "o/r", "number": "42"})
+    assert el.sheet_request(first("#42")) is None
+    assert el.sheet_request(first("@ada")) == ("person", {"login": "ada"})
+    assert el.sheet_request(first("deadbeef1", "o/r")) == (
+        "commit",
+        {"repo": "o/r", "sha": "deadbeef1"},
+    )
+    assert el.sheet_request(first("https://github.com/a/b/pull/7")) == (
+        "pull_request",
+        {"repo": "a/b", "number": "7"},
+    )

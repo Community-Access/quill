@@ -75,7 +75,7 @@ class WriteTier(IntEnum):
 
 _TIER_WORDS = {
     WriteTier.ORGANIZING: "organizing: saves at once and can be undone",
-    WriteTier.VISIBLE: "visible to others: saves at once unless Workbench Options asks first",
+    WriteTier.VISIBLE: "visible to others: saves at once",
     WriteTier.ACCESS: "access and settings: a preview in words first",
     WriteTier.DESTRUCTIVE: (
         "destructive or hard to reverse: a preview, then the name typed to confirm"

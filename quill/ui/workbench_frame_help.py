@@ -96,7 +96,10 @@ class WorkbenchHelpMixin:
             where = ""
             if self.current is not None:
                 where = self.provider.node_help(self.current, self.node(self.current))
-            body = "\n\n".join(part for part in (purpose, f"Where you are: {where}") if part)
+            example_hook = self._hook("help_example")  # D14: an example from your own data
+            example = str(example_hook() or "") if example_hook else ""
+            parts = (purpose, f"Where you are: {where}", example)
+            body = "\n\n".join(part for part in parts if part)
             route = app_context_help.guide_route_for(self.frame.GetTitle())
             label, opener = route if route is not None else ("", None)
             dialog = ContextHelpDialog(

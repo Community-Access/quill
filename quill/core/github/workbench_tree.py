@@ -350,6 +350,13 @@ _REPOSITORY: tuple[NodeSpec, ...] = (
     _r("tags", "Tags", "code", loader="items:tags", row_type="tag"),
     _r("upstream", "Upstream", "code", needs=frozenset({Need.FORK}), loader="nav:upstream"),
     _r("releases", "Releases", loader="items:releases", row_type="release"),
+    _r(
+        "repo_packages",
+        "Packages",
+        needs=_SIGN_IN,
+        loader="explore:repo_packages",
+        row_type="package",
+    ),
     _r("labels", "Labels", loader="explore:labels", row_type="label"),
     _r("milestones", "Milestones", loader="milestones:list", row_type="milestone"),
     # PRD 21.3: issue forms, Markdown templates, the chooser, pull request

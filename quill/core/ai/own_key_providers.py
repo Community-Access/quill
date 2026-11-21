@@ -61,8 +61,11 @@ __all__ = [
     "host_for",
     "hosts_path",
     "is_local",
+    "mark_set_up",
     "needs_key",
     "save_host",
+    "sign_out_local",
+    "signed_out",
     "use_for_advanced_features",
 ]
 
@@ -159,12 +162,56 @@ def hosts_path() -> Any:
     return assistant_connection_path().parent / _HOSTS_FILE
 
 
-def _saved_hosts() -> dict[str, str]:
+def _saved() -> dict[str, Any]:
     from quill.core.storage import read_json
 
     raw = read_json(hosts_path(), default={})
-    hosts = raw.get("hosts", {}) if isinstance(raw, dict) else {}
+    return raw if isinstance(raw, dict) else {}
+
+
+def _saved_hosts() -> dict[str, str]:
+    hosts = _saved().get("hosts", {})
     return {str(k): str(v) for k, v in hosts.items()} if isinstance(hosts, dict) else {}
+
+
+def _signed_out() -> list[str]:
+    names = _saved().get("signed_out", [])
+    return [str(name) for name in names] if isinstance(names, list) else []
+
+
+def _write(hosts: dict[str, str], signed_out: list[str]) -> None:
+    from quill.core.storage import write_json_atomic
+
+    payload: dict[str, Any] = {"schema_version": 1, "hosts": hosts}
+    if signed_out:
+        payload["signed_out"] = signed_out
+    write_json_atomic(hosts_path(), payload)
+
+
+def signed_out(provider: str) -> bool:
+    """Whether the person signed out of *provider*, a provider with no key.
+
+    Ollama on this computer has no key to forget, so signing out of it is kept
+    here, beside its address. Until it is chosen again it is not set up, and no
+    AI is in use -- rather than the choice moving to another provider, which
+    could be a cloud one (2026-11 audit, gap 3).
+    """
+    return provider in _signed_out()
+
+
+def sign_out_local(provider: str) -> None:
+    """Sign out of *provider*, a provider with no key (see :func:`signed_out`)."""
+    names = _signed_out()
+    if needs_key(provider) or provider in names:
+        return
+    _write(_saved_hosts(), [*names, provider])
+
+
+def mark_set_up(provider: str) -> None:
+    """*provider* was chosen again in Use My Own AI Key: it is set up again."""
+    names = _signed_out()
+    if provider in names:
+        _write(_saved_hosts(), [name for name in names if name != provider])
 
 
 def host_for(provider: str) -> str:
@@ -201,7 +248,6 @@ def save_host(provider: str, host: str) -> None:
     if provider not in HOST_PROVIDERS:
         return
     from quill.core.assistant_ai import default_host_for_provider
-    from quill.core.storage import write_json_atomic
 
     value = host.strip().rstrip("/")
     hosts = _saved_hosts()
@@ -211,7 +257,7 @@ def save_host(provider: str, host: str) -> None:
         hosts.pop(provider, None)
     else:
         hosts[provider] = value
-    write_json_atomic(hosts_path(), {"schema_version": 1, "hosts": hosts})
+    _write(hosts, _signed_out())
 
 
 def use_for_advanced_features(provider: str, model: str) -> None:

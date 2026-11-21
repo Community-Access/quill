@@ -28,7 +28,26 @@ from quill.core.github.sheet_rows import (
     rows_of,
     team_row,
 )
+from quill.core.github.sheets_repo_more import (
+    MERGE_DEFAULT_FIELDS,
+    MORE_READS,
+    MORE_WRITES,
+    PAGES_PAGE,
+    SPONSOR_FIELD,
+    merge_defaults,
+)
 from quill.core.github.sheets_you import profile_pin_field, profile_pin_read
+from quill.core.github.sheets_you_repo import (
+    FORK_READ,
+    FORK_WRITE,
+    OWNER_SPONSOR_READ,
+    STAR_LISTS_OPTIONS,
+    STAR_LISTS_READ,
+    STAR_LISTS_WRITE,
+    forked_field,
+    owner_sponsoring_field,
+    star_lists_field,
+)
 from quill.core.workbench.properties import FieldKind, SheetSpec, Value
 
 __all__ = ["REPOSITORY", "VIEWER_REPO_QUERY", "WATCH_LEVELS", "repo_variables"]
@@ -111,13 +130,7 @@ def _repo(data: Mapping[str, Any]) -> dict[str, Value]:
         "web_commit_signoff_required",
     ):
         found[key] = _flag(data, key)
-    for key in (
-        "squash_merge_commit_title",
-        "squash_merge_commit_message",
-        "merge_commit_title",
-        "merge_commit_message",
-    ):
-        found[key] = str(data.get(key) or "")
+    found.update(merge_defaults(data))
     return found
 
 
@@ -149,17 +162,6 @@ def _workflow_permissions(data: Mapping[str, Any]) -> dict[str, Value]:
     return {
         "token_permission": str(data.get("default_workflow_permissions") or "read"),
         "actions_approve_prs": bool(data.get("can_approve_pull_request_reviews")),
-    }
-
-
-def _pages(data: Mapping[str, Any]) -> dict[str, Value]:
-    return {
-        "pages_url": str(data.get("html_url") or ""),
-        "pages_source": " ".join(
-            str(dig(data, "source", part) or "") for part in ("branch", "path")
-        ).strip(),
-        "pages_cname": str(data.get("cname") or ""),
-        "pages_https": bool(data.get("https_enforced")),
     }
 
 
@@ -244,6 +246,8 @@ _YOU = page(
         "All activity, only when participating or mentioned, or ignore it.",
         choices=WATCH_LEVELS,
     ),
+    star_lists_field(),
+    forked_field(),
     ro(
         "custom_watch",
         "Custom watching",
@@ -252,6 +256,7 @@ _YOU = page(
         "Open on GitHub, Shift+Enter, goes there.",
     ),
     profile_pin_field(),
+    owner_sponsoring_field(),
     ro("your_access", "Your access", help="Your role, as GitHub reports it."),
 )
 _FORK = page(
@@ -270,6 +275,7 @@ _FEATURES = page(
     ed("has_wiki", "Wiki", _K.CHECK),
     ed("has_discussions", "Discussions", _K.CHECK),
     ed("web_commit_signoff_required", "Require sign-off on web commits", _K.CHECK),
+    SPONSOR_FIELD,
 )
 _MERGING = page(
     "merging",
@@ -280,27 +286,7 @@ _MERGING = page(
     ed("allow_auto_merge", "Allow auto-merge", _K.CHECK),
     ed("allow_update_branch", "Always suggest updating branches", _K.CHECK),
     ed("delete_branch_on_merge", "Delete head branches after merging", _K.CHECK),
-    ed(
-        "squash_merge_commit_title",
-        "Squash commit title",
-        _K.CHOICE,
-        choices=("PR_TITLE", "COMMIT_OR_PR_TITLE"),
-    ),
-    ed(
-        "squash_merge_commit_message",
-        "Squash commit message",
-        _K.CHOICE,
-        choices=("PR_BODY", "COMMIT_MESSAGES", "BLANK"),
-    ),
-    ed(
-        "merge_commit_title", "Merge commit title", _K.CHOICE, choices=("PR_TITLE", "MERGE_MESSAGE")
-    ),
-    ed(
-        "merge_commit_message",
-        "Merge commit message",
-        _K.CHOICE,
-        choices=("PR_BODY", "PR_TITLE", "BLANK"),
-    ),
+    *MERGE_DEFAULT_FIELDS,
 )
 _RULES = page(
     "rules",
@@ -355,14 +341,6 @@ _SECURITY = page(
     ed("secret_scanning", "Secret scanning", _K.CHECK),
     ed("push_protection", "Push protection", _K.CHECK),
 )
-_PAGES = page(
-    "pages",
-    "Pages",
-    ro("pages_url", "Site address", _K.LINK),
-    ro("pages_source", "Source"),
-    ed("pages_cname", "Custom domain"),
-    ed("pages_https", "Enforce HTTPS", _K.CHECK),
-)
 
 REPOSITORY = SheetDef(
     "repository",
@@ -380,7 +358,7 @@ REPOSITORY = SheetDef(
             _ACTIONS,
             page("environments", "Environments", ro("environments", "Environments", _K.TABLE)),
             _SECURITY,
-            _PAGES,
+            PAGES_PAGE,
             page("webhooks", "Webhooks", ro("hooks", "Webhooks", _K.TABLE)),
             page("deploy_keys", "Deploy Keys", ro("deploy_keys", "Deploy keys", _K.TABLE)),
             page("autolinks", "Autolinks", ro("autolinks", "Autolinks", _K.TABLE)),
@@ -440,6 +418,9 @@ REPOSITORY = SheetDef(
         Read(_REPO, _repo),
         Read(graphql=VIEWER_REPO_QUERY, variables=repo_variables, extract=_viewer, optional=True),
         profile_pin_read("repo"),
+        STAR_LISTS_READ,
+        FORK_READ,
+        OWNER_SPONSOR_READ,
         Read(
             _REPO + "/subscription",
             _watch,
@@ -477,7 +458,7 @@ REPOSITORY = SheetDef(
         ),
         Read(_REPO + "/actions/permissions", _actions, optional=True),
         Read(_REPO + "/actions/permissions/workflow", _workflow_permissions, optional=True),
-        Read(_REPO + "/pages", _pages, optional=True),
+        *MORE_READS,
         Read(
             _REPO + "/interaction-limits",
             _limits,
@@ -519,19 +500,13 @@ REPOSITORY = SheetDef(
         "visibility": _admin_patch(_D),
         **{key: _admin_patch() for key in _FLAGS_FEATURES},
         **{key: _admin_patch() for key in _FLAGS_MERGING},
-        **{
-            key: _admin_patch()
-            for key in (
-                "squash_merge_commit_title",
-                "squash_merge_commit_message",
-                "merge_commit_title",
-                "merge_commit_message",
-            )
-        },
+        **MORE_WRITES,
         "secret_scanning": _admin_patch(encode=_security_encode("secret_scanning")),
         "push_protection": _admin_patch(encode=_security_encode("secret_scanning_push_protection")),
         "starred": toggle("/user/starred/{repo}", "sign_in", _O),
         "watch": Write(_REPO + "/subscription", "sign_in", _O, "PUT", "put", encode=_watch_encode),
+        "star_lists": STAR_LISTS_WRITE,
+        "forked": FORK_WRITE,
         "interaction_limit": Write(
             _REPO + "/interaction-limits", _ADMIN, _A, "PUT", "put", encode=_limit_encode
         ),
@@ -558,9 +533,8 @@ REPOSITORY = SheetDef(
         "vulnerability_alerts": toggle(_REPO + "/vulnerability-alerts", _ADMIN, _A),
         "security_fixes": toggle(_REPO + "/automated-security-fixes", _ADMIN, _A),
         "private_reporting": toggle(_REPO + "/private-vulnerability-reporting", _ADMIN, _A),
-        "pages_cname": patch(_REPO + "/pages", _ADMIN, _A, "cname", method="PUT"),
-        "pages_https": patch(_REPO + "/pages", _ADMIN, _A, "https_enforced", method="PUT"),
     },
+    {"star_lists": STAR_LISTS_OPTIONS},
     title=lambda ident: ident["repo"],
     url=lambda ident: f"https://github.com/{ident['repo']}",
     renames=("name", "repo"),

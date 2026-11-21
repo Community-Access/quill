@@ -5689,7 +5689,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="github-workbench">GitHub Workbench</h2>
-<p>Control coverage: 402 audited sites (402 helped).</p>
+<p>Control coverage: 408 audited sites (408 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>Add Entry.</strong> A new Dependabot entry: ecosystem,
@@ -6209,6 +6209,10 @@ commits, usually versions.</p>
 one was forked from. Forks only.</p>
 <p><strong>repository: Releases.</strong> Releases: published versions
 and their files. Enter lists the files.</p>
+<p><strong>repository: Packages.</strong> Packages: what this repository
+publishes, such as container images and npm packages. Show Versions
+lists each one’s versions; Delete Package Version asks you to type the
+package’s name.</p>
 <p><strong>repository: Labels.</strong> Labels: tags for issues and pull
 requests. Enter finds the issues.</p>
 <p><strong>repository: Milestones.</strong> Milestones: goals with a
@@ -6488,8 +6492,8 @@ Unpin Node, on its row in Saved Searches, takes the node away.</p>
 issue in Issues, a saved search in Saved Searches.</p>
 <p><strong>File &gt; New….</strong> Choose what to create, wherever you
 are.</p>
-<p><strong>File &gt; Open GitHub Address….</strong> Type or paste
-owner/name, #42, owner/name#42 or any GitHub link to go there.</p>
+<p><strong>File &gt; Open GitHub Address….</strong> Open a repository by
+owner/name or link; a compare link opens the comparison.</p>
 <p><strong>File &gt; Go to Number….</strong> Go to an issue or pull
 request in this repository by its number.</p>
 <p><strong>File &gt; Open on GitHub.</strong> Open the selected row, or
@@ -6809,6 +6813,12 @@ row, explained.</p>
 at the chapter for where you are.</p>
 <p><strong>Help &gt; Search Help….</strong> Type a few words to find a
 help topic, a command or a GitHub word.</p>
+<p><strong>Help &gt; Take the Tour.</strong> A spoken tour of the
+window: each pane, and one thing to do there. F6 moves on, Escape
+stops.</p>
+<p><strong>Help &gt; Ask How….</strong> Ask in your own words how to do
+something here. The answer comes only from this help, through the AI you
+chose. A command it names runs only when you choose it.</p>
 <p><strong>Help &gt; Tutorials.</strong> The GitHub lessons, each on the
 practice repository, with what you have done.</p>
 <p><strong>Help &gt; Practice on GitHub….</strong> Make, open or delete
@@ -6878,6 +6888,18 @@ Favorites.</p>
 requests close this issue when they merge.</p>
 <p><strong>Unlink a Pull Request.</strong> Take a pull request off the
 ones that close this issue.</p>
+<p><strong>Subscribe or Unsubscribe.</strong> Hear of all its activity,
+or only when you take part or are mentioned.</p>
+<p><strong>React to a Comment.</strong> Add a reaction to one of its
+comments, or take back one you gave.</p>
+<p><strong>Related.</strong> The issues, pull requests and discussions
+linked to it, and how each is linked.</p>
+<p><strong>Start Pull Request for This Issue.</strong> A linked branch
+and a draft pull request that closes the issue; asks first.</p>
+<p><strong>Draft Task Breakdown with AI.</strong> Small ordered tasks
+drafted by AI from the issue; opens as a draft.</p>
+<p><strong>Draft Release Notes with AI.</strong> Release notes drafted
+by AI from the selected issues and pull requests only.</p>
 <p><strong>Properties.</strong> Everything about this item on one sheet.
 Alt+Enter opens it from anywhere.</p>
 <p><strong>Review.</strong> Read the review threads and checks, and
@@ -6887,7 +6909,9 @@ per file.</p>
 <p><strong>Merge.</strong> Merge it, with the methods the repository
 allows.</p>
 <p><strong>Why Can’t I Merge?.</strong> Whether it can merge, or each
-reason it cannot, for the commit it is at.</p>
+rule that blocks it, for the commit it is at.</p>
+<p><strong>Watch Readiness.</strong> Say when it can merge, or
+stops.</p>
 <p><strong>Merge Selected.</strong> Merge the selected pull requests one
 at a time, each checked on its own, after a preview of which will merge
 and which will not.</p>
@@ -6924,6 +6948,12 @@ the dependencies: each one added or removed, its licence, and its known
 vulnerabilities.</p>
 <p><strong>Dependabot Commands.</strong> On a Dependabot pull request:
 rebase, recreate, merge, ignore a version, and more.</p>
+<p><strong>Open in github.dev.</strong> GitHub’s free web editor, at
+exactly this; nothing is created.</p>
+<p><strong>Draft Description with AI.</strong> A description drafted by
+AI from the changed files; opens as a draft.</p>
+<p><strong>Draft Reviewer Brief with AI.</strong> What a reviewer should
+check, drafted by AI from the changed files.</p>
 <p><strong>Jobs and Logs.</strong> The run’s jobs, steps and logs.</p>
 <p><strong>What Failed.</strong> The failing steps and their log
 lines.</p>
@@ -6994,7 +7024,8 @@ commit.</p>
 <p><strong>Reactions on a Commit Comment.</strong> Who reacted to a
 comment on this commit, and how.</p>
 <p><strong>React to a Commit Comment.</strong> Add a reaction to a
-comment on this commit.</p>
+comment on this commit. GitHub’s API reacts to a commit’s comments,
+never to the commit itself.</p>
 <p><strong>Remove My Reaction from a Commit Comment.</strong> Take back
 a reaction you gave a comment on this commit.</p>
 <p><strong>Delete Tag.</strong> Remove the tag; the commit stays.</p>
@@ -7005,11 +7036,11 @@ access offered.</p>
 <p><strong>Decline Invitation.</strong> Say no to it.</p>
 <p><strong>Mark Read.</strong> Mark it read on GitHub.</p>
 <p><strong>Mark Done.</strong> Clear it from your notifications.</p>
-<p><strong>Snooze for One Day.</strong> Hide it here until tomorrow.</p>
+<p><strong>Snooze for One Day.</strong> Note on this computer that you
+put it off until tomorrow; GitHub is not told.</p>
 <p><strong>Unsubscribe from Thread.</strong> Stop notifications for
 it.</p>
-<p><strong>Unsnooze Locally.</strong> Show a snoozed notification
-again.</p>
+<p><strong>Unsnooze Locally.</strong> Take the snooze off again.</p>
 <p><strong>Why?.</strong> Why this happened on its own, and what decides
 it.</p>
 <p><strong>Open.</strong> Select the repository’s node in the tree.</p>
@@ -7022,6 +7053,8 @@ listen for repository_dispatch.</p>
 <p><strong>Pin.</strong> Keep it under Repositories &gt; Pinned.</p>
 <p><strong>Star Lists.</strong> Choose which of your star lists it is
 on.</p>
+<p><strong>Sponsor the Owner.</strong> Open the owner’s Sponsor
+tiers.</p>
 <p><strong>Rename or Delete Star List.</strong> In Star Lists: rename
 the list this row is on, change who sees it, or delete it.</p>
 <p><strong>Fork Workflow Settings.</strong> How workflows run for pull
@@ -7047,6 +7080,14 @@ materials report, and read it.</p>
 repository’s rulesets, and who made it.</p>
 <p><strong>Secret Scanning History.</strong> When GitHub last scanned
 this repository for secrets, and how.</p>
+<p><strong>Sync Fork with Upstream.</strong> Bring this fork’s default
+branch up to date with the repository it was forked from.</p>
+<p><strong>Create Repository from This Template.</strong> A new
+repository with this template repository’s files. Only a template
+repository can be used; its General page says whether it is one.</p>
+<p><strong>Delete Repository.</strong> Delete this repository and
+everything in it: code, issues, pull requests, wiki and releases. It
+cannot be undone; you type its full name to confirm.</p>
 <p><strong>Require Sign-off on Web Commits.</strong> Whether commits
 made on GitHub’s site must carry a sign-off.</p>
 <p><strong>Sponsor Links.</strong> Where people can sponsor this
@@ -7082,8 +7123,18 @@ organization’s agent variables this repository may use.</p>
 <p><strong>Allow a Blocked Secret.</strong> When push protection stopped
 your push, let that one secret through: give the placeholder id git push
 printed and say why.</p>
+<p><strong>Copilot Agent Configuration.</strong> How Copilot’s cloud
+agent is set up in this repository.</p>
+<p><strong>Copilot Review Settings.</strong> Whether Copilot reviews
+pull requests here on its own, and how.</p>
+<p><strong>Fork.</strong> Make your own copy of this repository, in your
+account or an organization’s.</p>
+<p><strong>Prompt Files.</strong> A repository’s GitHub Models prompt
+files, each read as model, messages and tests.</p>
 <p><strong>Open.</strong> Select the person’s node in the tree.</p>
 <p><strong>Follow or Unfollow.</strong> Follow them, or stop.</p>
+<p><strong>Block or Unblock.</strong> Block them from following you and
+from your repositories, or lift the block.</p>
 <p><strong>Find Issues with Label.</strong> Issues and pull requests
 with it.</p>
 <p><strong>Edit Label.</strong> Change its name, color or
@@ -7114,6 +7165,10 @@ cast your vote; says the new count.</p>
 <p><strong>Edit a Comment.</strong> Change a comment you may edit.</p>
 <p><strong>Delete a Comment.</strong> Delete a comment you may
 delete.</p>
+<p><strong>React to a Comment.</strong> Add a reaction to one of its
+comments or replies, or take back one you gave.</p>
+<p><strong>Create Issue from Discussion.</strong> An issue that links
+back to the discussion; asks first.</p>
 <p><strong>Dismiss or Reopen Alert.</strong> Dismiss with a reason.</p>
 <p><strong>Copilot Autofix.</strong> Ask for a fix, or commit it.</p>
 <p><strong>Show Every Place.</strong> Each place it was found.</p>
@@ -7167,6 +7222,12 @@ issue fields to this Project.</p>
 issue in a repository; it stays in the Project.</p>
 <p><strong>Move an Item.</strong> Put an item in another place in the
 Project’s own order.</p>
+<p><strong>Archive an Item.</strong> Hide an item from the Project’s
+views; its field values are kept.</p>
+<p><strong>Restore an Archived Item.</strong> Bring an archived item
+back into the Project’s views, with its field values.</p>
+<p><strong>Remove an Item.</strong> Take an item out of the Project. The
+issue or pull request stays; a draft is deleted.</p>
 <p><strong>Edit a Status Update.</strong> Change a status update’s
 status or text.</p>
 <p><strong>Delete a Status Update.</strong> Delete one of this Project’s
@@ -7224,6 +7285,32 @@ in your feed.</p>
 <p><strong>Security Overview.</strong> Open Dependabot, code scanning
 and secret scanning alerts in every repository, counted by severity,
 worst first.</p>
+<p><strong>Copilot Plan.</strong> The organization’s Copilot seats, who
+may have one, and its settings.</p>
+<p><strong>Copilot Seats.</strong> Who has a Copilot seat here, through
+which team, and when each last used it.</p>
+<p><strong>A Member’s Copilot Seat.</strong> Whether one member has a
+Copilot seat here, and when they last used it.</p>
+<p><strong>Give Copilot Seats.</strong> Give people Copilot seats in the
+organization; each is billed to it.</p>
+<p><strong>Take Copilot Seats Away.</strong> Take people’s Copilot seats
+away; each ends at the close of the billing cycle.</p>
+<p><strong>Give Teams Copilot.</strong> Give every member of some teams
+a Copilot seat; each is billed to the organization.</p>
+<p><strong>Take Copilot from Teams.</strong> End the Copilot seats that
+came through some teams.</p>
+<p><strong>Copilot Usage Report.</strong> GitHub’s latest 28-day Copilot
+usage report for the organization, as download links.</p>
+<p><strong>Copilot Agent Access.</strong> Which of the organization’s
+repositories Copilot’s cloud agent may work in.</p>
+<p><strong>Copilot Content Exclusions.</strong> Files Copilot is kept
+away from in the organization’s repositories.</p>
+<p><strong>Block from Organization.</strong> Stop an account from taking
+part in this organization’s repositories.</p>
+<p><strong>Leave Organization.</strong> Stop being a member of this
+organization.</p>
+<p><strong>Your Invitation.</strong> Whether this organization has
+invited you, and how to answer.</p>
 <p><strong>Open.</strong> Open the settings dialog for this; it asks
 before saving.</p>
 <p><strong>Edit Watch.</strong> Change what the watch looks at.</p>
@@ -7331,6 +7418,8 @@ tree.</p>
 <p><strong>Download.</strong> Download the file in your browser.</p>
 <p><strong>Attestations.</strong> The file’s digest and GitHub’s
 attestations for it, such as build provenance.</p>
+<p><strong>Check Download.</strong> Whether the copy you downloaded
+matches GitHub’s SHA-256 digest for the file.</p>
 <p><strong>Delete Asset.</strong> Remove the file from the release.</p>
 <p><strong>Delete Deployment.</strong> Only an inactive one.</p>
 <p><strong>Open Section.</strong> List the categories in this
@@ -7416,6 +7505,13 @@ organization’s runners into this group.</p>
 of this group; it goes back to the Default group.</p>
 <p><strong>Teams It Adds To.</strong> The teams this invitation puts the
 person in when they accept.</p>
+<p><strong>Block from Organization.</strong> Stop this member’s account
+from taking part in the organization’s repositories.</p>
+<p><strong>Edit Wiki Pages.</strong> Copy the wiki here or bring the
+copy up to date, list its pages, open one.</p>
+<p><strong>New Wiki Page.</strong> Make a page here, then open it.</p>
+<p><strong>Publish Wiki Changes.</strong> Commit the pages changed here
+and push them to GitHub; asks first.</p>
 <p><strong>Clone Wiki.</strong> Copy its pages to a folder, to edit
 them.</p>
 <p><strong>Cancel Sponsorship.</strong> Stop it; asks first.</p>
@@ -7430,8 +7526,8 @@ sponsors on it stay.</p>
 opens when no menu row asks for a place: Inbox (Start Here until you
 have signed in), Start Here, or wherever you were last time.</p>
 <p><strong>General: List shows.</strong> Quick lists show a few columns,
-fast to arrow through; Full lists show every column GitHub Items knows
-for that view.</p>
+fast to arrow through; Full lists show every column the Workbench has
+for that list.</p>
 <p><strong>General: Sort issues and pull requests by.</strong> The order
 a list of issues and pull requests opens in. Newest first is the usual
 choice.</p>
@@ -7454,6 +7550,17 @@ Notifications.</p>
 <p><strong>Lists: Say column names before values.</strong> Put each
 column’s name before its value in a list row, as in Number 42, Title
 Crash on start. Off keeps rows short.</p>
+<p><strong>Lists: Short rows for braille.</strong> Each list row as one
+short line for a braille display: the number and title first, no column
+names, and short words (cl for closed, PR for pull request, 3c for three
+comments, 9 Nov for a date). Details still says everything.</p>
+<p><strong>General: Offer a tip when it would help.</strong> Now and
+then, after you do something a longer way, the details pane offers one
+tip on a shorter way, once per tip. Off keeps tips in Help and Learning,
+Tips, only.</p>
+<p><strong>General: Plain help, without QUILLBert and QUILLBee.</strong>
+Help and tips without the two characters’ names: the same words, said
+plainly, as Tip and Help.</p>
 <p><strong>Privacy: Load the repository Health Snapshot.</strong>
 Insights, Health Snapshot reads extra data from GitHub about a
 repository’s activity. It loads only when this is checked.</p>
@@ -8282,12 +8389,29 @@ does the same.</li>
 id="createrepositorydialog-quilluigithub_repo_admin_dialogspy">CreateRepositoryDialog
 (<code>quill/ui/github_repo_admin_dialogs.py</code>)</h4>
 <ul>
+<li><code>self._problem_ctrl</code>: Why GitHub would refuse what is
+chosen, and what to change.</li>
+<li><code>self._org_ctrl</code>: An organization to create it in. Leave
+it empty to create it on your account.</li>
 <li><code>self._name_ctrl</code>: The new repository’s name, such as
 my-project.</li>
 <li><code>self._description_ctrl</code>: A short sentence about what the
 repository is for. You can leave it empty.</li>
-<li><code>self._org_ctrl</code>: An organization to create it in. Leave
-it empty to create it on your account.</li>
+<li><code>self._homepage_ctrl</code>: An address shown beside the
+description, such as the project’s site.</li>
+<li><code>self._visibility_choice</code>: Private: only people you add.
+Public: everyone.</li>
+<li><code>self._template_ctrl</code>: A template repository to copy, as
+owner/name. Leave it empty to start a new one.</li>
+<li><code>self._gitignore_combo</code>: Files Git should ignore, from
+GitHub’s templates, such as Python or Node. Type any template name
+GitHub lists, or leave it empty.</li>
+<li><code>self._license_choice</code>: The licence GitHub adds as a
+LICENSE file, or none. Not with a template.</li>
+<li><code>self._branches_check</code>: Copy every branch of the
+template, not only its default branch.</li>
+<li><code>self._readme_check</code>: Start with a first commit holding a
+README, so it can be cloned at once.</li>
 <li><code>ok_btn</code>: Do it on GitHub. This is the button that makes
 the change.</li>
 <li><code>cancel_button</code>: Close without changing anything. Escape

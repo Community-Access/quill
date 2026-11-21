@@ -2343,11 +2343,11 @@ Work through what is waiting for you: read it, put it off for a day, and know wh
    - Keys: Ctrl+Q
    - You should hear: Marked read.
 
-5. **Put one off until tomorrow.** Open the context menu on a notification and choose Snooze for One Day. It leaves the list until tomorrow. Only this computer knows; GitHub is not told.
+5. **Put one off until tomorrow.** Open the context menu on a notification and choose Snooze for One Day. This computer notes that you put it off until tomorrow; GitHub is not told. The row stays in the list.
    - Keys: Shift+F10
    - You should hear: Snoozed here for one day. GitHub was not changed.
 
-6. **Bring it back.** Changed your mind? Unsnooze Locally, on the same menu, brings the notification back into the list now.
+6. **Bring it back.** Changed your mind? Unsnooze Locally, on the same menu, takes the snooze off again.
    - Keys: Shift+F10
    - You should hear: Unsnoozed here. GitHub was not changed.
 

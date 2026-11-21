@@ -20,8 +20,12 @@ Properties sheet, through those same readers:
   ``field.priority:high`` itself, so Show Only on a type or field cell writes
   those qualifiers into the one filter box (:func:`field_choices`).
 - **Properties:** an issue's sheet gains an Issue Fields page with one
-  read-only field per field, of its own kind (:func:`with_field_page`);
-  Issue Fields... on the row sets or clears one.
+  field per field, of its own kind (:func:`with_field_page`). A date, a
+  number, a single choice and text are edited there and saved by the very
+  request Issue Fields... on the row sends (:data:`FIELD_WRITES`), then
+  checked by reading the issue again; several issues at once show Mixed
+  where they differ (:func:`with_field_page_many`). Several choices, and
+  field types QUILL does not know, stay read only.
 
 wx-free and strict-typed.
 """
@@ -38,20 +42,33 @@ from quill.core.github.across_issue_fields import (
     IssueExtras,
     read_issue_extras,
 )
-from quill.core.workbench.properties import FieldKind, FieldSpec, PageSpec, SheetSpec, Value
+from quill.core.github.issue_admin import field_request
+from quill.core.github.permissions import WriteTier
+from quill.core.github.sheet_engine import Ident, Write
+from quill.core.workbench.properties import (
+    FieldChange,
+    FieldKind,
+    FieldSpec,
+    PageSpec,
+    SheetSpec,
+    Value,
+)
 
 __all__ = [
     "FIELD_PAGE",
+    "FIELD_WRITES",
     "ISSUE_FIELD_COLUMNS",
     "STATE_KEY",
     "IssueExtras",
     "cell",
     "detail_lines",
+    "field_key",
     "field_choices",
     "issue_type_of",
     "read_row_fields",
     "sheet_values",
     "with_field_page",
+    "with_field_page_many",
 ]
 
 #: Columns an Issues list offers but does not show until chosen: the fields
@@ -171,23 +188,43 @@ def read_row_fields(api: Any, repository: str, rows: Sequence[object]) -> list[o
 
 # -- Properties -------------------------------------------------------------------------
 
+#: The field types the sheet edits, each by its own kind of control.
+_EDITABLE = ("date", "number", "single_select", "text")
+_EDIT_STATES = ("value", "empty", "unset")
+_OPTION_SEP = "\x1f"
+
+
+def _editable(data_type: str, state: str) -> bool:
+    return data_type in _EDITABLE and state in _EDIT_STATES
+
 
 def _sheet_value(value: FieldValue) -> Value:
-    """A field's value on the sheet: typed when it has one, its state in words when not."""
+    """A field's value on the sheet: its text when editable, its state in words when not."""
+    if _editable(value.data_type, value.state):
+        return value.shown() or None  # empty and not set are told apart in the summary
     if value.state == "value":
         typed = value.typed()
-        if isinstance(typed, tuple):
-            return typed
-        if isinstance(typed, int):
-            return typed
-        return value.shown()
+        return typed if isinstance(typed, (tuple, int)) else value.shown()
     if value.state == "unsupported":
         return f"{', '.join(value.values) or 'no value'} (read only)"
-    return {
-        "empty": "set to nothing",
-        "unset": "not set",
-        "hidden": "hidden from you",
-    }.get(value.state, f"unreadable: {value.reason or 'unknown error'}")
+    if value.state == "hidden":
+        return "hidden from you"
+    return f"unreadable: {value.reason or 'unknown error'}"
+
+
+def _summary(fields: Sequence[FieldValue]) -> str:
+    """How many fields, and which are not set or set to nothing (both show an empty box)."""
+    said = f"{len(fields)} field{'s' if len(fields) != 1 else ''}."
+    for state, words in (("unset", "Not set"), ("empty", "Set to nothing")):
+        names = [f.name for f in fields if f.state == state and _editable(f.data_type, state)]
+        if names:
+            said += f" {words}: {', '.join(names)}."
+    return said
+
+
+def field_key(field_id: str, data_type: str) -> str:
+    """A field's key on the sheet, ``issue_field:date:12``: the type says how it is sent."""
+    return f"{_PREFIX}{data_type}:{field_id}"
 
 
 def sheet_values(api: Any, ident: Mapping[str, str]) -> dict[str, Value]:
@@ -204,27 +241,50 @@ def sheet_values(api: Any, ident: Mapping[str, str]) -> dict[str, Value]:
         "unavailable": f"could not be read: {extras.reason or 'unknown error'}",
     }.get(extras.fields_state, "")
     if not state:
-        state = f"{len(extras.fields)} fields" if extras.fields else "the owner defines none"
+        state = _summary(extras.fields) if extras.fields else "the owner defines none"
     values: dict[str, Value] = {STATE_KEY: state}
     values[_INDEX_KEY] = tuple(
-        "\t".join((f.field_id, f.name, f.data_type, f.state)) for f in extras.fields
+        "\t".join((f.field_id, f.name, f.data_type, f.state, _OPTION_SEP.join(f.options)))
+        for f in extras.fields
     )
     for field in extras.fields:
-        values[_PREFIX + field.field_id] = _sheet_value(field)
+        values[field_key(field.field_id, field.data_type)] = _sheet_value(field)
     return values
 
 
+_HOW = {
+    "date": " Type it as year-month-day, such as 2026-12-31.",
+    "number": " Type a number, such as 3 or 2.5.",
+    "single_select": " Choose one of the owner's choices, or (none).",
+    "text": "",
+}
+
+
+def _parts(line: str) -> list[str]:
+    """An index line's field id, name, data type, state and choices."""
+    return (str(line).split("\t") + [""] * 5)[:5]
+
+
 def _spec(line: str) -> FieldSpec:
-    field_id, name, data_type, state = (line.split("\t") + ["", "", "", ""])[:4]
+    field_id, name, data_type, state, options = _parts(line)
+    key = field_key(field_id, data_type)
+    if _editable(data_type, state):
+        words = (
+            f"{_KIND_WORDS[data_type]}, field {field_id}.{_HOW[data_type]} Saving sets it on "
+            "GitHub, and leaving it empty clears it; Issue Fields... on the row does the same."
+        )
+        choices = ("", *options.split(_OPTION_SEP)) if options else ()
+        return FieldSpec(key, name or field_id, _KINDS[data_type], help=words, choices=choices)
     supported = state != "unsupported" and data_type in _KINDS
     kind = _KINDS[data_type] if supported and state == "value" else FieldKind.TEXT
-    if supported:
-        words = f"{_KIND_WORDS[data_type]}, field {field_id}."
-        how = " Issue Fields... on the issue's row sets or clears it."
+    if supported and data_type == "multi_select":
+        words = f"Several choices, field {field_id}. Change them on GitHub's site."
+    elif supported:
+        words = f"{_KIND_WORDS[data_type]}, field {field_id}. Shown as GitHub sent it."
     else:
         words = f"A field type QUILL does not edit yet ({data_type or 'unknown'}), {field_id}."
-        how = " It is shown read only, as GitHub sent it."
-    return FieldSpec(_PREFIX + field_id, name or field_id, kind, readonly=True, help=words + how)
+        words += " It is shown read only, as GitHub sent it."
+    return FieldSpec(key, name or field_id, kind, readonly=True, help=words)
 
 
 def with_field_page(sheet: SheetSpec, values: Mapping[str, object]) -> SheetSpec:
@@ -235,7 +295,8 @@ def with_field_page(sheet: SheetSpec, values: Mapping[str, object]) -> SheetSpec
         STATE_KEY,
         "Issue fields",
         readonly=True,
-        help="How many fields the issue's owner defines, or why they could not be shown.",
+        help="How many fields the issue's owner defines, which are not set or set to "
+        "nothing, or why they could not be shown.",
     )
     index = values.get(_INDEX_KEY)
     lines = index if isinstance(index, tuple) else ()
@@ -244,3 +305,40 @@ def with_field_page(sheet: SheetSpec, values: Mapping[str, object]) -> SheetSpec
     at = next((i + 1 for i, p in enumerate(pages) if p.key == "organize"), len(pages))
     pages.insert(at, page)
     return SheetSpec(sheet.kind, sheet.title, tuple(pages))
+
+
+def with_field_page_many(sheet: SheetSpec, objects: Sequence[Mapping[str, object]]) -> SheetSpec:
+    """The Issue Fields page for several issues: every field any of them has, once.
+
+    A field editable on one of them is editable on the page; the sheet shows
+    Mixed where their values differ, and each issue is saved and checked on
+    its own (:func:`quill.core.github.batch.run`).
+    """
+    if not any(STATE_KEY in values for values in objects):
+        return sheet
+    lines: dict[str, str] = {}
+    for values in objects:
+        index = values.get(_INDEX_KEY)
+        for line in index if isinstance(index, tuple) else ():
+            field_id, _name, data_type, state, _options = _parts(line)
+            have = _parts(lines[field_id]) if field_id in lines else None
+            if have is None or (_editable(data_type, state) and not _editable(have[2], have[3])):
+                lines[field_id] = str(line)
+    return with_field_page(sheet, {STATE_KEY: "", _INDEX_KEY: tuple(lines.values())})
+
+
+def _request(
+    change: FieldChange, value: Value, ident: Ident
+) -> tuple[str, str, dict[str, object] | None]:
+    """Issue Fields...'s own request (:func:`issue_admin.field_request`) for one changed field."""
+    data_type, _sep, field_id = change.key.removeprefix(_PREFIX).partition(":")
+    field = FieldValue(field_id, change.label, data_type, "value")
+    answer = "" if value is None else str(value)
+    return field_request(ident.get("repo", ""), int(ident.get("number", "0") or 0), field, answer)
+
+
+#: Every field an issue's owner defines is saved by this one write. Setting one
+#: needs triage access, as Issue Fields... does (``POST .../issue-field-values``).
+FIELD_WRITES: dict[str, Write] = {
+    _PREFIX: Write("", "repo:triage", WriteTier.ORGANIZING, "POST", "request", request=_request)
+}

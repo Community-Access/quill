@@ -14,9 +14,19 @@ wx-free and strict-typed.
 
 from __future__ import annotations
 
+from quill.core.error_codes import CodedError
+from quill.core.github.actions_refusals import actions_refusal
+from quill.core.github.rest_transport import GitHubRestError
 from quill.core.github.workbench_api import GitHubApi
 
-__all__ = ["STATE_WORDS", "is_enabled", "set_enabled", "state_words"]
+__all__ = ["STATE_WORDS", "WorkflowStateError", "is_enabled", "set_enabled", "state_words"]
+
+
+class WorkflowStateError(CodedError):
+    """GitHub would not turn a workflow on or off; the message is said."""
+
+    code = "QUILL-GITHUB-WORKFLOW-STATE"
+
 
 STATE_WORDS: dict[str, str] = {
     "active": "on",
@@ -37,7 +47,11 @@ def is_enabled(state: str) -> bool:
 def set_enabled(api: GitHubApi, repository: str, workflow_id: int, name: str, on: bool) -> str:
     """Turn workflow *workflow_id* on or off; returns the sentence to say."""
     verb = "enable" if on else "disable"
-    api.rest("PUT", f"/repos/{repository}/actions/workflows/{int(workflow_id)}/{verb}")
+    try:
+        api.rest("PUT", f"/repos/{repository}/actions/workflows/{int(workflow_id)}/{verb}")
+    except GitHubRestError as exc:
+        doing = f"turn {name} {'on' if on else 'off'}"
+        raise WorkflowStateError(actions_refusal(doing, exc)) from exc
     if on:
         return f"Turned on {name}. It runs on its triggers again."
     return f"Turned off {name}. It runs on no trigger until it is turned on again."
