@@ -29,4 +29,12 @@ FAMILY_ENTRIES: dict[str, str] = {
     # Sync conflicts waiting for review: the user's notes, additive.
     "apps/beacon/sync_ui.py::_persist_conflicts": "content",
     "apps/beacon/sync_ui.py::resolve_conflict": "content",
+    # Scribe for Documents, one set for the whole family in the shared data
+    # folder, per Windows user (2026-11-21): the options and the documents
+    # converted so far are the person's own, additive; the queue is jobs and
+    # the family's action count, and the runner lock is who runs it.
+    "core/scribe/options.py::save_options": "marker",
+    "core/scribe/library.py::record": "content",
+    "core/scribe/queue.py::_write": "content",
+    "core/scribe/queue.py::try_acquire": "marker",
 }

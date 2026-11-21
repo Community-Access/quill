@@ -92,12 +92,22 @@ class DocConvertMixin:
     def _docconvert_finished(self, source: Path, outcome) -> None:
         wx = self._wx
         if outcome.offer_local_ocr:
-            # PRD §11.4 Tier 1 -> 2 escalation prompt (stays free and local).
-            choice = self._show_message_box(
-                scanned_import_question(source.name),
-                IMPORT_TITLE,
-                wx.ICON_INFORMATION | wx.YES_NO | wx.CANCEL,
+            # The Scribe tier after the free ones (main_frame_scribe, PRD 8.1.1);
+            # None means Scribe is not offered and the free question is asked.
+            picked = getattr(self, "_scribe_scanned_choice", lambda *_a: None)(
+                source, int(outcome.page_count or 0)
             )
+            if picked == "scribe":
+                self.scribe_import_file(source)
+                return
+            if picked is not None:
+                choice = {"ocr": wx.YES, "open": wx.NO}.get(picked, wx.CANCEL)
+            else:  # PRD §11.4 Tier 1 -> 2 escalation prompt (stays free and local).
+                choice = self._show_message_box(
+                    scanned_import_question(source.name),
+                    IMPORT_TITLE,
+                    wx.ICON_INFORMATION | wx.YES_NO | wx.CANCEL,
+                )
             if choice == wx.YES:
                 self._docconvert_run_local_ocr(source)
                 return
