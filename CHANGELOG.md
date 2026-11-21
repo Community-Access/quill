@@ -135,6 +135,54 @@ what shipped.
   Each step says what to press and what you should hear. That makes all
   eleven of the GitHub lessons the plan asked for.
 
+### Scribe for Documents in QUILL, phase 1 (2026-11-20)
+
+- **QUILL can send a hard document to Scribe for Documents.** Pneuma
+  Solutions' Scribe rebuilds scanned and badly made documents, with headings,
+  tables and described pictures, into accessible HTML, Word, tagged PDF, EPUB,
+  Kindle, DAISY, MP3 audio and braille. Tools > Scribe for Documents has
+  Convert a File, Convert This Document, Convert from a Link, My Scribe
+  Documents, Conversions, Scribe Status, Sign In and Out, your Scribe account,
+  Options and About. You sign in with your own Scribe account and pay Scribe
+  for your own pages; QUILL never takes payment or sees your Scribe password.
+- **Nothing is sent without your say, every time.** The convert dialog opens
+  on exactly what will be sent and where, warns about a file whose name looks
+  private, gives the privacy notes before your first upload, and sends nothing
+  until you press Send and Convert. There is no "don't ask again". Safe Mode
+  turns Scribe off.
+- **One document at a time, for the whole family.** Scribe Conversions (Window
+  menu) lists every job from every QUILL app on this computer. Each stage is
+  said once, the 25, 50 and 75 percent marks only while QUILL is in front, and
+  each job ends with one sentence saying what was made and where. A job
+  survives closing QUILL: the next start picks it up without uploading again.
+  A password-protected PDF waits for its password there, with three tries.
+- **Where QUILL meets an inaccessible document, Scribe is offered.** A
+  scanned PDF's OCR question and Import / Convert Document now offer Scribe
+  beside free OCR. File > Export > With Scribe for Documents reaches tagged
+  PDF, Kindle, DAISY with audio and large print, which QUILL cannot make
+  itself, and Tools > Braille > Translate with Scribe for Documents opens
+  Scribe's braille in the braille view.
+- **Switched on.** Pneuma Solutions approved QUILL on 2026-11-21 and issued
+  its client ID, which is in this build. QUILL Lite and Media Player get their
+  Scribe commands in a later change.
+- **Pneuma's answers of 2026-11-21 are built in.** Several files chosen
+  together now go one after another without asking again (Pneuma approved
+  this), a file that fails does not stop the rest, and the last one ends with
+  a sentence saying what was made and what was not; Send Next File is gone.
+  Scribe is offered only for the 23 kinds of file it takes, and a web page or
+  a file over 500 MB is refused before anything is sent. QUILL keeps every
+  QUILL app under Scribe's limit of 10 actions a minute and, if Scribe still
+  asks it to slow down, says so once and tries again a minute later. The
+  convert dialog starts from your Scribe account's own settings, sends them
+  all with the upload, and changes your account defaults only when you tick
+  the box; speed now offers the website's choices, from half to four times,
+  and braille lines run 20 to 42 cells and pages 20 to 30 lines. Another
+  format of a document already in your account says "no pages used", an
+  organization's pages say whose credits they are, a DAISY book is unpacked
+  so it opens straight away, and the privacy notes say where documents are
+  processed, that Pneuma never trains AI on them, and how long they are kept.
+
+
 ### More settings that stick: Studio, Media Player, Transcribe, Beacon, Weather, Radio and QUILL's dialogs (2026-11-20)
 
 - **QUILL Studio, Quill Media Player and QUILL Transcribe tell you when a

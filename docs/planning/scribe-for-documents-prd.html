@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Scribe for Documents in the QUILL family</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="scribe-for-documents-in-the-quill-family">Scribe for Documents
+in the QUILL family</h1>
+<p>Product requirements. Written 2026-11-20, updated 2026-11-21 with
+Pneuma’s answers and the app’s approval. Phase 1 (the shared foundation
+and QUILL) is built and switched on; phases 2 and 3 are not started.
+Section 2 says what is built and what is not.</p>
+<p>This replaces the June draft in <code>docs/planning/scribe.md</code>.
+That draft was written before the API existed and covered only three
+endpoints. The API that opened today does much more, and this PRD asks
+for all of it.</p>
+<h2 id="1-summary">1. Summary</h2>
+<p>Pneuma Solutions’ Scribe for Documents turns PDFs (password-protected
+ones too), images, Office files, OpenDocument, RTF, ebooks and plain
+text into accessible tagged PDF, Word, EPUB, MOBI, HTML, DAISY, MP3
+audio and braille (BRF). Since 2026-11-20 any app can use it through a
+public API, free for the developer. Each person pays Scribe for their
+own page credits or subscription.</p>
+<p>QUILL already converts a great deal on the person’s own computer:
+Pandoc, MarkItDown, Tesseract and Windows OCR, liblouis braille, and
+local speech. What QUILL cannot do well is the hard case: a scanned or
+badly made document whose structure has to be rebuilt, with headings,
+reading order, tables and described images. Scribe fixes exactly that,
+and it also produces formats QUILL cannot make at all: tagged PDF, MOBI,
+and DAISY with audio.</p>
+<p>The goal is that wherever someone in the QUILL family meets an
+inaccessible document, Scribe is one clear, consented step away. The
+result then lands in the tool where they will use it: the editor, the
+media player, the braille view, or a folder of their choosing. It should
+speak every step on the way and end by saying what it made and
+where.</p>
+<h2 id="2-where-things-stand">2. Where things stand</h2>
+<ul>
+<li><strong>Registration.</strong> Jeff registered QUILL on the
+developer portal (scribeit.io/developer) on 2026-11-20, for Windows and
+macOS. Pneuma approved it on 2026-11-21 and issued the client ID, which
+ships in <code>quill.core.scribe.CLIENT_ID</code>.
+<ul>
+<li>It is a public client using OAuth 2.0 with PKCE, so there is no
+client secret. The client ID may ship in the source.</li>
+<li>Registered redirect URIs:
+<ul>
+<li><code>http://127.0.0.1/scribe/callback</code></li>
+<li><code>http://[::1]/scribe/callback</code></li>
+</ul></li>
+<li>Any port is allowed on loopback. QUILL listens on whatever port is
+free.</li>
+</ul></li>
+<li><strong>Exception approved (Mike Calvo, 2026-11-21).</strong>
+Several files the person chose may be sent strictly one after another:
+wait for <code>conversion_complete</code> or an error before the next
+upload, back off on <code>rate_limited</code>, and pass every status to
+the person (7.4).</li>
+<li><strong>Pneuma’s answers (2026-11-21).</strong> Mike Calvo answered
+every question in our email of 2026-11-20, checked by Matt Campbell
+against the server code. The answers are folded into this document and
+summarised in section 16.</li>
+<li><strong>Built (phase 1, PR #1994, 2026-11-21).</strong> Switched on
+with the issued client ID; tested against a fake Scribe server
+(<code>tests/unit/core/scribe/fake_scribe.py</code>), not yet live.
+<ul>
+<li>The shared foundation in <code>quill/core/scribe/</code>: the REST
+client, the Phoenix channel, PKCE sign-in, the family queue with its
+runner lock and shared rate count, the 23 input types and the size
+check, consent, options, the library, and the QUILL-SCRIBE-*
+errors.</li>
+<li>The shared windows in <code>quill/ui/scribe_*.py</code>: Sign In,
+Enter Password, Convert with Scribe for Documents, Scribe Conversions,
+My Scribe Documents (with Trash) and Options.</li>
+<li>QUILL: Tools &gt; Scribe for Documents; File &gt; Import &gt;
+Convert with Scribe for Documents; File &gt; Export &gt; With Scribe for
+Documents; Tools &gt; Braille &gt; Translate with Scribe for Documents;
+Window &gt; Scribe Conversions; the offer beside OCR when a PDF has
+little or no text.</li>
+</ul></li>
+<li><strong>Built differently from this document</strong> (to settle
+before phase 2):
+<ul>
+<li>Options are their own dialog and their own file,
+<code>scribe/options.json</code> in the shared data folder, one set for
+the whole family, rather than a page in each app’s Preferences (7.7). So
+the settings vocabulary and documentation gates have nothing to check
+for them.</li>
+<li>Scribe Status and Repeat Last Scribe Message have no keys yet
+(12).</li>
+</ul></li>
+<li><strong>Not built yet.</strong> The chained actions after conversion
+(8.1.7), QUILL’s streaming read tab and watch-folder action (8.1), QUILL
+Lite (8.2), the Media Player (8.3), Converter, Studio, Cast, Beacon and
+Social (8.4 to 8.8), and the Explorer Send To item (8.10). Live testing
+against scribeit.io comes once the code is merged.</li>
+</ul>
+<h2 id="3-what-scribe-provides-all-of-it-from-the-api-client-source">3.
+What Scribe provides (all of it, from the API client source)</h2>
+<p>There is no published HTTP reference. What follows is read from
+Pneuma’s open-source client library
+(<code>github.com/PneumaSolutions/scribe-api-client</code>, v0.3.1,
+Apache-2.0 or MIT; the Rust crate is the reference), the user manual
+(manual.scribeit.io), the announcement, and Pneuma’s answers of
+2026-11-21. Where the manual disagrees with those answers, the answers
+win: the manual’s FAQ lists are out of date.</p>
+<h3 id="31-inputs">3.1 Inputs</h3>
+<ul>
+<li><strong>The API accepts 23 types (Pneuma, 2026-11-21):</strong>
+<ul>
+<li>PDF (password-protected included);</li>
+<li>images: JPEG, GIF, PNG, TIFF, BMP, DCX, PCX, JPEG 2000, DjVu;</li>
+<li>text: DOC, DOCX, RTF, ODT, TXT;</li>
+<li>spreadsheets: XLS, XLSX, ODS;</li>
+<li>presentations: PPT, PPTX, ODP;</li>
+<li>ebooks: EPUB, MOBI.</li>
+</ul></li>
+<li><strong>HTML is not accepted,</strong> neither as a file nor as a
+URL that returns a web page; the server answers
+<code>not_a_document</code>. QUILL offers Scribe only for the 23 types
+and says so before sending anything else (“Scribe for Documents does not
+take web pages. Save it as Word or PDF first.”).</li>
+<li><strong>A file or a link.</strong> Input is an uploaded file, or a
+URL that points straight at one of those files. Links behind a sign-in
+are not supported.</li>
+<li><strong>Size.</strong> 500 MB per upload. QUILL checks the size
+before sending and refuses larger files with a sentence naming the
+limit.</li>
+<li><strong>Pages.</strong> No page cap; the person’s page credits are
+the limit. When credits are short, the upload still gives a free 2-page
+preview, and other formats return <code>needs_purchase</code>.</li>
+</ul>
+<h3 id="32-outputs-api-format-identifiers">3.2 Outputs (API format
+identifiers)</h3>
+<table>
+<thead>
+<tr>
+<th>Identifier</th>
+<th>What the person gets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>html</code></td>
+<td>Accessible HTML</td>
+</tr>
+<tr>
+<td><code>html_stream</code></td>
+<td>HTML streamed in chunks while converting; a preview that is free
+even with no credits</td>
+</tr>
+<tr>
+<td><code>offline_html</code></td>
+<td>A downloadable web page</td>
+</tr>
+<tr>
+<td><code>pdf</code></td>
+<td>Tagged PDF (large print available)</td>
+</tr>
+<tr>
+<td><code>docx</code></td>
+<td>Word (large print available)</td>
+</tr>
+<tr>
+<td><code>epub</code></td>
+<td>EPUB</td>
+</tr>
+<tr>
+<td><code>mobi</code></td>
+<td>MOBI (Kindle)</td>
+</tr>
+<tr>
+<td><code>daisy</code></td>
+<td>DAISY 3 (Z39.86-2005) text and audio, as a zip</td>
+</tr>
+<tr>
+<td><code>mp3</code></td>
+<td>MP3 audio</td>
+</tr>
+<tr>
+<td><code>brf</code></td>
+<td>Braille ready file</td>
+</tr>
+</tbody>
+</table>
+<p>Most formats are made from the <code>html</code> output, and
+<code>daisy</code> is assembled from <code>mp3</code>.</p>
+<h3 id="33-settings">3.3 Settings</h3>
+<p>Settings can be set per document, or as the account’s defaults.
+<strong>QUILL uses per-document settings and leaves the account defaults
+alone</strong> unless the person explicitly asks to change their
+defaults (Pneuma, 2026-11-21). The rules:</p>
+<ul>
+<li><strong>Read the person’s defaults first.</strong>
+<code>GET /api/document_settings</code>, then send the full set with the
+upload as <code>document[settings][field]</code> form fields. A field
+left out at upload gets Scribe’s built-in default, not the
+person’s.</li>
+<li><strong>HTML-shaping settings go in at upload.</strong> Language,
+image descriptions, math and large print shape the HTML, and the HTML
+conversion starts as soon as the upload lands. They cannot be changed
+afterwards for that document.</li>
+<li><strong>Later changes</strong> use
+<code>PATCH /api/documents/{id}/settings</code>, and apply only to
+formats not made yet: a format already made is not remade. When reusing
+a document from My Scribe Documents (7.5), the dialog says which
+settings are fixed by the earlier upload, and that formats already made
+keep their settings.</li>
+<li><strong>The server does not validate ranges yet.</strong> QUILL
+offers only the website’s values (below).</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>What it does</th>
+<th>How QUILL fills the choices</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>language</code></td>
+<td>Document language; empty means detect it</td>
+<td>List from <code>/api/settings/languages</code> (140+)</td>
+</tr>
+<tr>
+<td><code>dialects</code></td>
+<td>Dialect for each language</td>
+<td>List from <code>/api/settings/dialects</code></td>
+</tr>
+<tr>
+<td><code>voices</code></td>
+<td>Voice for each dialect</td>
+<td>List from <code>/api/settings/voices</code>; each can have a sample
+MP3</td>
+</tr>
+<tr>
+<td><code>tts_gender</code></td>
+<td>Male, female or neutral, used when the language is detected</td>
+<td>Fixed choices</td>
+</tr>
+<tr>
+<td><code>tts_rate</code></td>
+<td>Speech speed</td>
+<td>0.5, 0.75, 1, 1.5, 2, 3 and 4. 3 and 4 are labelled “(may not be
+faster than 2)” until Pneuma confirms they are</td>
+</tr>
+<tr>
+<td><code>braille_translation_table</code></td>
+<td>Grade 1, Grade 2, UEB, computer braille, other languages (30+)</td>
+<td>List from <code>/api/settings/braille_tables</code></td>
+</tr>
+<tr>
+<td><code>braille_cells_per_line</code></td>
+<td>Line length (default 40)</td>
+<td>Spin control, 20 to 42</td>
+</tr>
+<tr>
+<td><code>braille_split_into_pages</code></td>
+<td>Split into pages</td>
+<td>Check box</td>
+</tr>
+<tr>
+<td><code>braille_lines_per_page</code></td>
+<td>Lines per page</td>
+<td>Spin control, 20 to 30</td>
+</tr>
+<tr>
+<td><code>large_print</code></td>
+<td>Large print PDF and Word</td>
+<td>Check box</td>
+</tr>
+<tr>
+<td><code>add_image_descriptions</code></td>
+<td>Describe the pictures</td>
+<td>Check box</td>
+</tr>
+<tr>
+<td><code>math</code></td>
+<td>Mathematics as MathML (beta)</td>
+<td>Check box</td>
+</tr>
+<tr>
+<td><code>notify_when_complete</code></td>
+<td>Scribe’s own notification</td>
+<td>Check box</td>
+</tr>
+</tbody>
+</table>
+<h3 id="34-account-and-documents">3.4 Account and documents</h3>
+<p>The API also covers the person’s account and their documents:</p>
+<ul>
+<li><strong>Account:</strong> who is signed in (name, email,
+organization), and pages remaining. <code>GET /api/account_info</code>
+returns <code>organization_name</code> (null for an individual). For an
+organization member, <code>pages_remaining</code> is the organization’s
+shared pool, and QUILL says so beside the count: “1,240 pages left,
+using credits from <organization>.”</li>
+<li><strong>Buying:</strong> a purchase link whenever more pages are
+needed.</li>
+<li><strong>Documents:</strong> the list of the person’s documents with
+their outputs; rename; trash, recover and permanent delete. The trash
+deletes after 7 days or the account’s retention setting.</li>
+<li><strong>Retention.</strong> API uploads follow the account’s
+retention setting, the same as the website: 30 days by default, 1 to 30
+days by choice, indefinite with an active subscription; organizations
+must choose 1 to 30 days. The API cannot read or set it today, so QUILL
+describes the rule and links to the setting (Open My Scribe Account in
+Browser). The manual’s 72-hour figure is out of date.</li>
+<li><strong>Human review:</strong> “send for human review” with a
+comment, which is Scribe’s paid remediation.</li>
+<li><strong>Downloads:</strong> downloads support resuming (HTTP Range),
+and the file name comes from the server.</li>
+</ul>
+<h3 id="35-how-a-conversion-runs">3.5 How a conversion runs</h3>
+<ol type="1">
+<li><strong>Create.</strong> <code>POST /api/documents</code> with a
+file or a URL (and a password if the PDF needs one). The free
+<code>html_stream</code> preview starts automatically.</li>
+<li><strong>Join the channel.</strong> QUILL joins the document’s
+channel: a Phoenix WebSocket at
+<code>wss://scribeit.io/socket/websocket</code>, topic
+<code>documents:{id}</code>, with a heartbeat every 30 seconds.</li>
+<li><strong>Start a format.</strong> QUILL sends
+<code>start_conversion</code> with the format. Only one conversion per
+document runs at a time. If a format is already done, the server says so
+instead of converting again. Channel details confirmed by Pneuma: socket
+<code>/socket/websocket</code>, <code>vsn=2.0.0</code>, topic
+<code>documents:&lt;id&gt;</code>; server pushes are
+<code>status</code>, <code>chunk</code>,
+<code>conversion_complete</code>, <code>error</code> and
+<code>password_required</code>.</li>
+<li><strong>Follow the events.</strong>
+<ul>
+<li><code>status</code> reports the stage (<code>queue</code>,
+<code>start</code>, <code>convert</code>,
+<code>add_image_descriptions</code>, <code>complete</code>) and the
+progress.</li>
+<li><code>chunk</code> delivers the streaming HTML.</li>
+<li><code>conversion_complete</code> says a format is done.</li>
+<li><code>error</code> reports a failure, for example
+<code>invalid_password</code>, <code>needs_purchase</code> (with a
+purchase link), <code>rate_limited</code> or
+<code>conversion_in_progress</code>.</li>
+<li><code>password_required</code> arrives when the PDF is locked.</li>
+</ul></li>
+<li><strong>Download.</strong>
+<code>GET .../outputs/{format}/download</code>.</li>
+</ol>
+<p>If the connection drops, the conversion carries on. QUILL reconnects
+and joins again; it never uploads again. There are no webhooks. Polling
+<code>GET .../outputs</code> is the fallback.</p>
+<p><strong>Rate limit (Pneuma, 2026-11-21).</strong> 10 actions per
+minute per person, in fixed 60-second windows. Uploads,
+<code>start_conversion</code> and password tries share one counter, and
+the person’s own use of the website counts against it too. There is no
+Retry-After header. QUILL keeps itself to 8 actions a minute across the
+whole family (the shared queue counts them), and after
+<code>rate_limited</code> waits 60 seconds before the next action.</p>
+<h3 id="36-what-the-person-pays">3.6 What the person pays</h3>
+<ul>
+<li><strong>New accounts:</strong> 100 free pages, for 30 days.</li>
+<li><strong>Packs:</strong> page packs from $10 (200 pages minimum).
+They never expire.</li>
+<li><strong>Subscription:</strong> $99 a year for 10,000 pages.</li>
+<li><strong>Human remediation:</strong> extra.</li>
+<li><strong>Without credits:</strong> a person still gets the first two
+pages as a preview.</li>
+<li><strong>Repeat formats are free.</strong> Pages are charged once, at
+the first full conversion, which is normally the HTML the upload starts.
+A second format of the same document costs no pages (Pneuma,
+2026-11-21).</li>
+</ul>
+<p>QUILL never takes payment. It shows pages remaining and opens
+Scribe’s purchase page.</p>
+<h2 id="4-goals">4. Goals</h2>
+<ol type="1">
+<li><strong>Every format.</strong> Every output format and every setting
+the API offers is reachable from QUILL, from the keyboard, with speech
+and braille.</li>
+<li><strong>Every inaccessible document.</strong> Scribe is offered at
+every point where QUILL meets an inaccessible document: opening a
+scanned PDF, importing, a picture of text, and a document someone has
+been sent.</li>
+<li><strong>The right tool.</strong> The result goes where it is used:
+the editor, Media Player, the braille view, Studio, or a folder.</li>
+<li><strong>Consent every time.</strong> Nothing leaves the computer
+without the person’s say, every time. Safe Mode and the AI-off choice
+are respected.</li>
+<li><strong>One integration.</strong> One sign-in, one queue and one set
+of choices for the whole family. An app adds only its own entry
+points.</li>
+<li><strong>Pneuma’s policy, in full</strong> (section 5).</li>
+</ol>
+<h2 id="5-pneumas-policy-as-requirements">5. Pneuma’s policy as
+requirements</h2>
+<table>
+<thead>
+<tr>
+<th>Policy</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Say features are powered by Scribe for Documents</td>
+<td><strong>SCR-POL-1.</strong> Every Scribe command, dialog title,
+progress window and result sentence names “Scribe for Documents”. Menus
+read, for example, “Convert with Scribe for Documents…”. The About box
+and the user guide say “Powered by Scribe for Documents”.</td>
+</tr>
+<tr>
+<td>Open Scribe’s sign-in page unchanged, without intercepting what is
+typed</td>
+<td><strong>SCR-POL-2.</strong> Sign-in opens Scribe’s page in the
+person’s default browser. QUILL never embeds it and never reads what is
+typed. QUILL only receives the redirect on the loopback address.</td>
+</tr>
+<tr>
+<td>Documents submitted interactively, one at a time</td>
+<td><strong>SCR-POL-3.</strong> Every upload follows a choice the person
+made. The family-wide queue (7.4) sends one document at a time. Under
+the exception Pneuma approved on 2026-11-21, several files the person
+chose go strictly one after another: the next upload waits for
+<code>conversion_complete</code> or an error, <code>rate_limited</code>
+backs off, and every status reaches the person.</td>
+</tr>
+<tr>
+<td>Pass along every status update</td>
+<td><strong>SCR-POL-4.</strong> Every <code>status</code>,
+<code>error</code> and <code>conversion_complete</code> reaches the
+person as text in the progress window. Each change of stage is spoken
+once. Percentages are shown, and spoken only at milestones
+(GATE-13).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-not-doing">6. Not doing</h2>
+<ul>
+<li><strong>No credentials in QUILL.</strong> QUILL never handles
+payment or a Scribe password.</li>
+<li><strong>No mixing with QUILL’s AI choice.</strong> Scribe is not
+routed through “Choose Your AI” or the AI gateway. It is a document
+service with its own consent. If the person has turned AI off, the
+image-description setting is off by default and the consent box says so
+(see 10.2).</li>
+<li><strong>No silent uploads.</strong> Nothing is uploaded
+automatically without a standing, per-profile consent (watch folder,
+8.1.6).</li>
+<li><strong>No resale.</strong> No organization admin, reseller or
+human-remediation ordering beyond <code>feedback</code>.</li>
+<li><strong>macOS later.</strong> macOS waits on the family’s macOS
+release (backlog). Its client ID is already registered.</li>
+</ul>
+<h2
+id="7-shared-foundation-built-once-in-quillcorescribe-and-quilluiscribe_">7.
+Shared foundation (built once, in <code>quill/core/scribe/</code> and
+<code>quill/ui/scribe_*</code>)</h2>
+<h3 id="71-our-own-client">7.1 Our own client</h3>
+<ul>
+<li><strong>Write it ourselves.</strong> QUILL writes its own small
+Python client for the REST and channel protocol, using Pneuma’s Rust
+crate as the reference.</li>
+<li><strong>Why not the official wheel.</strong> The
+<code>scribe-client</code> wheel on PyPI is a compiled Rust module, so
+GATE-9 (no silent network) could not see its calls. It also lacks
+rename, feedback, account defaults, billing and account info. Pneuma
+agreed to our own client on 2026-11-21 (16).</li>
+<li><strong>Modules.</strong> Each stays under the 600-line cap.
+<ul>
+<li><code>client.py</code>: REST, with <code>verified_ssl_context</code>
+and errors as <code>CodedError</code>.</li>
+<li><code>channel.py</code>: the Phoenix channel, heartbeat, reconnect
+and join again.</li>
+<li><code>auth.py</code>: on <code>core/auth</code> PKCE and the
+loopback listener.</li>
+<li><code>model.py</code>: formats, stages and settings.</li>
+<li><code>queue.py</code>: section 7.4.</li>
+<li><code>library.py</code>: the local record of documents and
+downloads.</li>
+</ul></li>
+<li><strong>WebSocket library.</strong> The channel uses
+<code>websockets</code>, already a QUILL dependency
+(<code>pyproject.toml</code>, used by OpenAI live dictation in
+<code>quill/core/windows_dictation/cloud/transport.py</code>). No new
+package is needed.</li>
+<li><strong>Network audit.</strong> Every call has a GATE-9 entry with
+its reason.</li>
+</ul>
+<h3 id="72-signing-in">7.2 Signing in</h3>
+<ul>
+<li><strong>Where.</strong> Options &gt; Scribe for Documents &gt; Sign
+In, and the first time any Scribe command runs.</li>
+<li><strong>How.</strong> QUILL opens a loopback listener on a free
+port, then opens Scribe’s authorize URL in the browser. It says “Your
+browser is open at Scribe for Documents. Sign in there, then come back
+to QUILL.” Then it waits, with Cancel.</li>
+<li><strong>Tokens.</strong> Tokens are stored with
+<code>SecretsManager</code> under namespace <code>scribe</code>, so one
+sign-in covers every app in the family. QUILL refreshes 5 minutes before
+expiry and once on a 401.</li>
+<li><strong>While waiting.</strong> A small dialog shows that sentence,
+with a Copy Sign-in Link button (for when the browser does not open, or
+the person uses another browser) and Cancel. After a time limit it says
+“Sign-in timed out. Try again?”</li>
+<li><strong>Signed in.</strong> The same dialog changes to “Signed in to
+Scribe for Documents as <name>. <n> pages left.”, with focus on
+Continue. That is the one announcement.
+<ul>
+<li>If a Scribe command started the sign-in, Continue carries on into
+that command.</li>
+<li>The browser tab the redirect lands on says “Signed in. You can close
+this tab and return to QUILL.”</li>
+</ul></li>
+<li><strong>Sign Out.</strong> Revokes the token and wipes the
+namespace.
+<ul>
+<li>With jobs waiting it asks first: “Two conversions are waiting.
+Signing out stops QUILL waiting for them; they still finish in your
+Scribe account.”</li>
+</ul></li>
+<li><strong>Open My Scribe Account in Browser.</strong> Uses
+<code>browser_from_oauth</code> so the browser is already signed in. It
+reaches settings, retention, purchases and account deletion.</li>
+</ul>
+<h3 id="73-convert-with-scribe-for-documents-the-one-dialog">7.3 Convert
+with Scribe for Documents (the one dialog)</h3>
+<p>One dialog, the same in every app, opened with the file (or files)
+already chosen. Its parts:</p>
+<ol type="1">
+<li><strong>What will be sent.</strong> This is a read-only multi-line
+text field, the first control in the tab order, and focused when the
+dialog opens, so the person can read it again at any time. It holds:
+<ul>
+<li>The text: “Notes.pdf (2.1 MB, 34 pages) will be sent to Scribe for
+Documents (Pneuma Solutions) and converted in the United States. It
+stays in your Scribe account under your retention setting (30 days
+unless you changed it) until you delete it. Pictures may be described by
+AI. Pneuma does not use documents to train AI. Convert only documents
+you own, have permission for, or that are out of copyright.”</li>
+<li>Several files are listed with a count.</li>
+<li>A caution line if a file name looks sensitive, as Datalab has.</li>
+<li>The privacy lines from 10.1, on the first upload only.</li>
+<li>When nothing is uploaded (reusing a document from 7.5), the text
+says instead: “No file is sent. Scribe makes these formats from Notes,
+already in your account.”</li>
+</ul></li>
+<li><strong>What you want back.</strong> A check box for each format:
+Accessible HTML, Word, Tagged PDF, EPUB, Kindle (MOBI), DAISY (text and
+audio), MP3 audio, Braille (BRF), Web page for offline reading.
+<ul>
+<li>The default comes from the app (8.x) and the last choice.</li>
+<li>Each format the person has already converted for this document says
+“already made”. Another format of a document already in the account says
+“no pages used”: pages are charged once per document.</li>
+</ul></li>
+<li><strong>Settings,</strong> grouped under “Language and voice”,
+“Braille”, “Print” and “Pictures and maths”.
+<ul>
+<li><strong>Building the groups.</strong> Each group is a labelled
+static box, so screen readers say its name on entering it. Every group
+is created when the dialog is built, in display order, directly after
+the format check boxes. A group is only shown or hidden to match the
+chosen formats, followed by Layout(), because wx tab order follows
+creation order.</li>
+<li><strong>Hiding.</strong> Hiding never removes the focused control,
+and hidden groups keep their values.</li>
+<li><strong>Summary line.</strong> After the formats, a read-only
+summary line (“Settings below: Language and voice, Braille”) updates
+without being spoken.</li>
+<li><strong>Choice lists.</strong> Each group’s choices come from the
+server lists, cached for the session.
+<ul>
+<li>While a list loads, the control says “Loading voices…”. If loading
+fails, it says “Voices could not be loaded” with a Retry button. A combo
+box is never left empty.</li>
+<li>Each label is created immediately before its control.</li>
+</ul></li>
+<li><strong>Play Sample</strong> beside the voice plays that voice’s
+sample. While it plays, the button reads Stop Sample, and Escape stops
+the sample without closing the dialog. Otherwise Escape cancels.</li>
+<li><strong>Starting values</strong> are the person’s Scribe account
+defaults, read from <code>GET /api/document_settings</code> when the
+dialog opens, then QUILL’s last choice for this app where the person
+made one. The full set is sent with the upload (3.3).</li>
+<li><strong>Account defaults check box:</strong> “Also save as my Scribe
+account defaults (changes your Scribe website settings too)”. Off by
+default and never remembered on, as Pneuma asked: account defaults
+change only when the person asks.</li>
+<li><strong>Small screens.</strong> If the dialog uses a scrolled panel,
+the panel scrolls to the focused control.</li>
+</ul></li>
+<li><strong>Password.</strong>
+<ul>
+<li><strong>When it is asked.</strong> Only when the file needs one and
+the person has just pressed the button. If the server says
+<code>password_required</code> after the upload, the job waits in the
+progress window instead (7.8).</li>
+<li><strong>The field.</strong> A password field labelled “Password for
+Notes.pdf”, never pre-filled, never saved or logged, with a “Show
+password” check box so braille and typing-echo users can check what they
+typed.</li>
+<li><strong>A wrong password.</strong> The text stays selected and QUILL
+says “Password not accepted. 2 tries left.” After the third try:
+“Notes.pdf was not sent: password not accepted”, with Retry on the
+job.</li>
+</ul></li>
+<li><strong>Pages.</strong> A read-only field reachable by Tab: “This
+uses about <x> of your <n> pages.” It updates silently as formats are
+checked. Buy Pages opens the purchase page, and the count refreshes
+silently when the dialog is active again.</li>
+<li><strong>Buttons.</strong> Send and Convert (default; the name states
+what the person agrees to) and Cancel. When nothing is uploaded, the
+button reads Convert. There is no “don’t ask again”.</li>
+</ol>
+<h3 id="74-the-family-queue-and-progress">7.4 The family queue and
+progress</h3>
+<ul>
+<li><strong>One queue for the whole family.</strong>
+<ul>
+<li>It is per Windows user, across every running QUILL app.</li>
+<li>A lock file and a queue file sit in the shared QUILL data folder.
+Writes are atomic.</li>
+<li>Two apps never upload at the same moment.</li>
+</ul></li>
+<li><strong>One conversion at a time.</strong>
+<ul>
+<li>Each document goes in as one job, and each format as one step within
+it, because the server runs one conversion per document.</li>
+<li>Formats follow Scribe’s dependency order: html, then the formats
+made from it, with mp3 before daisy.</li>
+</ul></li>
+<li><strong>Progress window (Scribe Conversions).</strong>
+<ul>
+<li>Each app shows its own instance, read from the shared queue
+file.</li>
+<li>It is a top-level modeless window with a title and its own key.
+Escape closes it and returns focus to where it was opened from, and it
+has an F1 topic.</li>
+<li>It is reachable from every app: Window &gt; Scribe Conversions, and
+Tools &gt; Scribe for Documents &gt; Conversions.</li>
+<li><strong>The list.</strong> A list in report view (wx.ListCtrl, not a
+tree or DataViewCtrl), one row per job, with the formats as a column.
+Enter opens the result, Delete removes the row from the list, and the
+Applications key or Shift+F10 opens every job command.</li>
+<li><strong>Row text</strong> changes only when the stage changes.
+Percent, estimated time and the full latest message sit in a read-only
+details field below the list. Each stage change is announced once even
+when the focused row is the job that changed: an in-place change to a
+list row is not re-read by NVDA, JAWS or Narrator (accessibility review
+of the built window, 2026-11-20).</li>
+<li>It lists each job, its formats, its stage, its percent and its
+estimated time.</li>
+<li>Focus stays where the person left it. Rows update in place
+(FUX-06).</li>
+<li>Each stage change is spoken once, through the announcement service:
+“Scribe for Documents: Notes.pdf, adding image descriptions.”</li>
+<li>Errors are spoken with the server’s own message, which Scribe
+already writes for people to read.</li>
+</ul></li>
+<li><strong>When a job finishes,</strong> the result is said once
+(FUX-04): “Scribe for Documents made Notes.docx and Notes.brf in
+Documents\Scribe for Documents\Notes. Word is open in QUILL.”</li>
+<li><strong>Commands for a job:</strong> Cancel Waiting, Open Result,
+Open Folder, Retry, Ask for Human Review…, and Remove from List.
+<ul>
+<li><strong>Cancel.</strong> A running conversion cannot be stopped on
+Scribe’s side. Cancel stops QUILL waiting and downloading, and says
+so.</li>
+</ul></li>
+<li><strong>Closing an app.</strong>
+<ul>
+<li>Closing an app does not lose a job.</li>
+<li>The queue file remembers it, and the next app to start reconnects
+and downloads.</li>
+<li>The app that downloads says it once, after its startup messages,
+combined into one sentence: “Scribe for Documents finished 2 documents
+while QUILL was closed: Notes and Chapter 2, in Documents\Scribe for
+Documents.”</li>
+</ul></li>
+<li><strong>Cancel Waiting</strong> says what it means: “QUILL stopped
+waiting for Notes.pdf. Scribe will still finish it and may use pages; it
+stays in My Scribe Documents.”</li>
+<li><strong>Several files (exception approved 2026-11-21).</strong>
+<ul>
+<li>When the person chooses several files in one Convert dialog, they go
+one after another without asking again: the next upload starts only
+after the previous document’s <code>conversion_complete</code> or
+error.</li>
+<li>On <code>rate_limited</code>, the queue waits 60 seconds and says so
+once (QUILL-SCRIBE-BUSY). Every status of every file reaches the
+person.</li>
+<li>A file that fails does not stop the rest; the final sentence names
+what was made and what was not.</li>
+<li>A watch folder runs the same way, for the files that arrive in a
+profile where the person turned Scribe on.</li>
+</ul></li>
+</ul>
+<h3 id="74a-who-speaks-and-when">7.4a Who speaks, and when</h3>
+<ul>
+<li><strong>One announcer.</strong> Only the app holding the queue lock
+speaks Scribe stages, errors and results. Other running apps show the
+same state silently. When the lock passes to another app, the speaking
+passes with it.</li>
+<li><strong>Background jobs never open a dialog.</strong> A job that
+needs the person moves to a “Waiting for you” state and says so once,
+for example: “Notes.pdf needs its password. Open Scribe Conversions to
+enter it.”
+<ul>
+<li>The action is a command on the job in the progress window: Enter
+Password…, Sign In…, Open Result.</li>
+<li>A dialog may open only straight after the person’s own command, such
+as pressing Send and Convert.</li>
+</ul></li>
+<li><strong>How much is spoken.</strong>
+<ul>
+<li>“Speak each stage” defaults to “Only while a QUILL app is in front”.
+Start, finish and errors are always spoken.</li>
+<li>Percentages are spoken at 25, 50 and 75 percent of the whole job
+(not per format), and only when stage speech is on.</li>
+<li>Intermediate stages may drop the “Scribe for Documents:” prefix
+(“Notes.pdf, adding image descriptions”). Start, result and error
+sentences always name Scribe for Documents (section 5).</li>
+</ul></li>
+<li><strong>Errors</strong> carry their context: “Scribe for Documents
+could not convert Notes.pdf: <server message>”. The text stays in the
+job’s details field so it can be read again. The QUILL error code
+appears in Copy Details and is not spoken.</li>
+<li><strong>Scribe Status (keyed)</strong> says the current job once
+without opening anything: “Notes.pdf: adding image descriptions, 40
+percent, about 2 minutes.”</li>
+<li><strong>Repeat Last Scribe Message (keyed)</strong> says the last
+Scribe sentence again.</li>
+<li><strong>Opening results.</strong>
+<ul>
+<li>A result opens on its own only in the app that started the job, and
+only if that app is in front and the person has not typed in the last
+few seconds.</li>
+<li>Otherwise the result sentence ends: “Open it from Scribe
+Conversions.”</li>
+<li>The result sentence names the final file name, after any “(2)”.</li>
+</ul></li>
+</ul>
+<h3 id="75-my-scribe-documents">7.5 My Scribe Documents</h3>
+<ul>
+<li><strong>Where.</strong> File &gt; My Scribe Documents in QUILL and
+Lite, and in the progress window.</li>
+<li><strong>What it is.</strong> A modal dialog with a Refresh button.
+It is not a live list.</li>
+<li><strong>What it lists.</strong> Every document in the person’s
+Scribe account (including those made on the web or iPhone): title,
+pages, date, and formats ready.
+<ul>
+<li>A “Show: Documents / Trash” choice sits above the list.</li>
+<li>When there is nothing to list, a focusable line says “No documents
+in your Scribe account.”</li>
+</ul></li>
+<li><strong>Commands:</strong>
+<ul>
+<li>Download formats (any, already made or new: the same dialog as 7.3,
+without the upload).</li>
+<li>Open in QUILL.</li>
+<li>Rename.</li>
+<li>Move to Trash, with a separate Trash view offering Recover and
+Delete Forever. Delete Forever is confirmed, says it cannot be undone,
+and gives the server’s deletion date.</li>
+<li>Ask for Human Review.</li>
+<li>Copy Details.</li>
+</ul></li>
+<li><strong>How the commands behave.</strong>
+<ul>
+<li><strong>Rename</strong> is a small dialog with the current name
+selected. There is no editing in the list itself, which is unreliable
+with JAWS.</li>
+<li><strong>Delete Forever’s</strong> confirmation has Cancel as its
+default button.</li>
+<li><strong>After Move to Trash, Recover or Delete,</strong> focus moves
+to the next row (or the previous one if it was the last), and QUILL says
+once, for example “Notes moved to Trash.” The person caused this change,
+so it is said, unlike the rows FUX-06 covers.</li>
+</ul></li>
+<li><strong>Pages left.</strong> It shows pages left and the Buy Pages
+button.</li>
+</ul>
+<h3 id="76-where-downloads-go">7.6 Where downloads go</h3>
+<ul>
+<li><strong>Default folder:</strong>
+<code>Documents\Scribe for Documents\&lt;document title&gt;\</code>.
+<ul>
+<li>It can be changed in Options.</li>
+<li>The server’s file name is used and made safe.</li>
+<li>An existing file is never overwritten: QUILL adds “(2)”.</li>
+</ul></li>
+<li><strong>Resuming.</strong> Downloads resume with Range after a
+drop.</li>
+<li><strong>Local record.</strong> <code>library.py</code> keeps which
+document ID made which file, so My Scribe Documents can say “downloaded
+to …” and Beacon can find it.</li>
+</ul>
+<h3 id="77-options--scribe-for-documents">7.7 Options &gt; Scribe for
+Documents</h3>
+<p>This page is shared and mirrored in each app’s options. Its
+controls:</p>
+<ul>
+<li><strong>Sign in / out:</strong> shows who is signed in and pages
+left.</li>
+<li><strong>Default formats</strong> and default settings: local
+defaults, kept separately from Scribe’s account defaults.</li>
+<li><strong>Download folder.</strong></li>
+<li><strong>Open each result when it is ready:</strong> Yes / Offer /
+No. “Offer” adds Open Result to the job and to the result sentence,
+never as a dialog (7.4a).</li>
+<li><strong>Offer Scribe when a PDF has little or no text:</strong> on
+by default.</li>
+<li><strong>Watch folders</strong> can use Scribe only in profiles where
+you have turned it on.</li>
+<li><strong>Speak each stage:</strong> “Only while a QUILL app is in
+front” by default, with Always and Never. Percentages as in 7.4a.</li>
+<li><strong>Powered by Scribe for Documents:</strong> the policy text,
+privacy notes (10), and links to Scribe’s terms, privacy policy and
+manual.</li>
+</ul>
+<p>Every field is in the settings vocabulary gate and the settings
+documentation gate. Tokens never go in settings.</p>
+<h2 id="8-per-app">8. Per app</h2>
+<h3 id="81-quill">8.1 QUILL</h3>
+<ol type="1">
+<li><p><strong>File &gt; Import / Convert Document (OCR).</strong></p>
+<ul>
+<li>Scribe becomes a tier after the free ones: QUILL’s own reader,
+MarkItDown, Tesseract and Windows OCR.</li>
+<li>It is offered when the free tiers produced little or nothing, or
+when the person chooses it outright with “Convert with Scribe for
+Documents…”.</li>
+<li>The result (Word by default, opened as rich text) opens in a new
+tab, unsaved, named “<stem> (Scribe)”.</li>
+<li><code>ConversionOutcome</code> gains <code>TIER_SCRIBE</code>, and
+<code>import_convert.opened_sentence</code> gets its sentence.</li>
+</ul></li>
+<li><p><strong>Opening a PDF with little or no text</strong>
+(<code>text_layer_looks_empty</code>).</p>
+<ul>
+<li>The existing OCR offer adds “Convert with Scribe for Documents
+(rebuilds headings, tables and picture descriptions; uses about <n>
+pages of your Scribe credit)”.</li>
+</ul></li>
+<li><p><strong>Read while it converts.</strong></p>
+<ul>
+<li>With the HTML format chosen, QUILL can open a read-only tab that
+fills from <code>html_stream</code> chunks as they arrive.</li>
+<li><strong>Adding text.</strong> Only complete blocks are added (whole
+paragraphs, headings and list items), never raw chunks, so a half-built
+line never changes under the caret or the braille line. New text is
+added at the end without moving the caret, and is never announced
+(FUX-06).</li>
+<li><strong>The tab’s name</strong> says whether more is coming: “<stem>
+(Scribe, converting)”, then “(Scribe, complete)” or “(Scribe,
+incomplete)”. Scribe Status works inside it.</li>
+<li><strong>When it is finished.</strong> File &gt; Replace with
+Finished Document (keyed) swaps in the finished document and keeps the
+reading position at the same block. Its completion is part of the one
+result sentence (7.4a), not a second message.</li>
+<li><strong>If it fails partway,</strong> the partial text stays, the
+tab is renamed “(Scribe, incomplete)”, and one message is said.</li>
+</ul></li>
+<li><p><strong>File &gt; Export &gt; With Scribe for
+Documents…</strong></p>
+<ul>
+<li>Sends the current document (saved first as DOCX, the richest input
+QUILL writes and one Scribe certainly takes) for any output format.</li>
+<li>This is how QUILL gains tagged PDF, MOBI, DAISY with audio, and
+large print, none of which it makes itself.</li>
+<li>QUILL’s own export of EPUB, Word, BRF and text-only DAISY stays.
+This is added, not a replacement, and the menu says which is which.</li>
+</ul></li>
+<li><p><strong>Braille.</strong></p>
+<ul>
+<li>The Braille menu gets “Translate with Scribe for Documents…” (BRF
+with Scribe’s table and page settings).</li>
+<li>The result opens in QUILL’s braille view through
+<code>brf_document.py</code>, where the proofing and validation tools
+work on it as on any BRF.</li>
+</ul></li>
+<li><p><strong>Watch folder.</strong></p>
+<ul>
+<li>A new action, “Convert with Scribe for Documents”, with
+<code>requires_consent</code> per profile, like
+<code>CloudTranscribeAction</code>.</li>
+<li>The profile names the formats and settings.</li>
+<li>It goes through the family queue, strictly one at a time, under the
+approved exception (7.4). Only the 23 types Scribe takes are sent; other
+files are left for the profile’s other actions.</li>
+<li>The watch folder’s results are said as every other watch result
+is.</li>
+</ul></li>
+<li><p><strong>After conversion, chained actions.</strong> Each one is a
+separate, chosen command, never automatic:</p>
+<ul>
+<li>Read Aloud, using QUILL’s voices.</li>
+<li>Summarize and the other AI commands, through the person’s chosen AI
+(Choose Your AI), with that route’s own consent.</li>
+<li>Send to Media Player (the MP3 or DAISY).</li>
+<li>Save a Beacon place (8.7).</li>
+</ul></li>
+<li><p><strong>Menus.</strong> Tools &gt; Scribe for Documents
+holds:</p>
+<ul>
+<li>Convert a File…</li>
+<li>Convert This Document…</li>
+<li>Convert from a Link…</li>
+<li>My Scribe Documents</li>
+<li>Conversions</li>
+<li>Sign In / Sign Out</li>
+<li>Open My Scribe Account in Browser</li>
+<li>Options</li>
+<li>About Scribe for Documents</li>
+</ul>
+<p>Keys are deliberately few, with written reasons for those left
+without, as <code>file.import_convert</code> has.</p></li>
+</ol>
+<h3 id="82-quill-lite">8.2 QUILL Lite</h3>
+<p>Under family rule 10, Lite gets nothing QUILL does not have. Every
+Lite command below uses the shared code, and QUILL gets it in the same
+change.</p>
+<ul>
+<li><strong>Feature area.</strong>
+<ul>
+<li>A new area, “Scribe for Documents”, is off by default in the Lite
+profiles that keep things simple, and offered on first need.</li>
+<li>It has its own versioned agreement, like Lite’s hosted AI, because
+Lite promises nothing leaves the computer unless the person turns it
+on.</li>
+</ul></li>
+<li><strong>File &gt; Import / Convert Document (OCR).</strong>
+<ul>
+<li>Gains the Scribe tier.</li>
+<li>Results open in a new window, as Lite does now.</li>
+<li>The default format is Word, opened as rich text, or HTML if the
+person prefers.</li>
+</ul></li>
+<li><strong>File &gt; Convert with Scribe for Documents…</strong></li>
+<li><strong>File &gt; My Scribe Documents.</strong></li>
+<li><strong>File &gt; Export &gt; With Scribe for Documents…</strong>
+<ul>
+<li>Lite then reaches every Scribe format, although its own export is
+HTML only.</li>
+</ul></li>
+<li><strong>The progress window</strong> is the shared one.</li>
+<li><strong>Not in Lite:</strong> watch folder, streaming read, chained
+AI.</li>
+<li><strong>Coverage gate.</strong> Each new <code>cmd_*</code> gets a
+behavioural test (GATE-LITE-COVER) and a row in
+<code>parity.py</code>.</li>
+</ul>
+<h3 id="83-quill-media-player">8.3 Quill Media Player</h3>
+<ul>
+<li><strong>Opens Scribe’s MP3 and DAISY</strong> with chapters from the
+DAISY navigation, plus resume and bookmarks.
+<ul>
+<li>Scribe writes DAISY 3 (Z39.86-2005), text and audio, as a zip. The
+player already opens DAISY 3 from its <code>.ncx</code>, with
+multi-level heading chapters (<code>quill/apps/player.py</code>,
+<code>_on_open_daisy</code>), so no NCC reader is needed. QUILL unpacks
+the zip next to it and opens the <code>.ncx</code> straight away,
+without a file picker.</li>
+</ul></li>
+<li><strong>File &gt; Listen to a Document with Scribe for
+Documents…</strong>
+<ul>
+<li>Picks a document, converts it to MP3 or DAISY with the person’s
+chosen voice and speed, and plays it when ready.</li>
+<li>Uses the shared dialog with the audio formats checked.</li>
+</ul></li>
+</ul>
+<h3 id="84-quill-converter">8.4 Quill Converter</h3>
+<ul>
+<li>Converter is audio and video today. It gains a
+<strong>Documents</strong> source type that uses Scribe as its engine.
+<ul>
+<li>The queue window shows document jobs beside audio jobs.</li>
+<li>Effect recipes do not apply.</li>
+<li>The output folder rules are Converter’s own.</li>
+</ul></li>
+<li><strong>The batch exception covers this</strong> (approved
+2026-11-21): the document queue runs strictly one file after another
+(7.4).</li>
+<li><strong>Audio formats</strong> (MP3 or DAISY’s audio) can go on
+through Converter’s normal audio steps, such as loudness or another
+format, as a second, chosen step.</li>
+</ul>
+<h3 id="85-quill-studio">8.5 QUILL Studio</h3>
+<ul>
+<li><strong>File &gt; Import &gt; Narration from Scribe for
+Documents…</strong> converts a document to MP3 and opens it as a Studio
+project, with chapter markers from the document’s headings where the
+DAISY navigation gives them.</li>
+<li>The person can then edit, run the loudness check, and export
+M4B.</li>
+</ul>
+<h3 id="86-quill-cast">8.6 QUILL Cast</h3>
+<ul>
+<li><strong>Episode attachments.</strong> When an episode’s show notes
+link a PDF or document, the episode menu offers “Convert Linked Document
+with Scribe for Documents…”, using URL input (direct file links only).
+The result opens in QUILL or Lite, whichever is installed.</li>
+</ul>
+<h3 id="87-quillbeacon">8.7 QuillBeacon</h3>
+<ul>
+<li><strong>Places.</strong>
+<ul>
+<li>A Beacon place can point into a Scribe result (a heading or passage
+in the HTML or Word) and remembers the Scribe document ID.</li>
+<li>If the local file is gone, Beacon offers to download it again from
+My Scribe Documents.</li>
+</ul></li>
+<li><strong>Scribe Documents source.</strong> Beacon’s sources list
+gains “Scribe Documents”, showing the person’s Scribe library as
+places.</li>
+</ul>
+<h3 id="88-quill-social">8.8 QUILL Social</h3>
+<ul>
+<li><strong>Linked documents.</strong> When a post links a PDF or
+document, the post menu offers “Convert Linked Document with Scribe for
+Documents…”, as in Cast.</li>
+</ul>
+<h3 id="89-apps-that-do-not-get-scribe-and-why">8.9 Apps that do not get
+Scribe, and why</h3>
+<ul>
+<li><strong>Radio and Weather:</strong> they do not handle
+documents.</li>
+<li><strong>Transcribe and Inkwell:</strong> they type into other
+programs and do not open documents. If Pneuma later accepts audio input,
+Transcribe should be looked at again.</li>
+<li><strong>Radio for macOS and Weather for iOS:</strong> out of this
+release.</li>
+</ul>
+<h3 id="810-outside-the-apps">8.10 Outside the apps</h3>
+<ul>
+<li><strong>Explorer.</strong> An optional “Convert with Scribe for
+Documents” item in Explorer’s Send To menu. The family runtime installer
+adds a shortcut that starts QUILL (or Lite) with the file and opens the
+shared dialog. It is opt-in in the installer.</li>
+</ul>
+<h2 id="9-what-happens-to-each-output">9. What happens to each
+output</h2>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Default action when ready</th>
+<th>Also offered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTML</td>
+<td>Open in QUILL (rich) or Lite</td>
+<td>Open in browser, Save</td>
+</tr>
+<tr>
+<td>Offline web page</td>
+<td>Save</td>
+<td>Open in browser</td>
+</tr>
+<tr>
+<td>Word</td>
+<td>Open in QUILL or Lite as rich text</td>
+<td>Open in Word, Save</td>
+</tr>
+<tr>
+<td>Tagged PDF</td>
+<td>Save</td>
+<td>Open in the default PDF reader; open in QUILL (text)</td>
+</tr>
+<tr>
+<td>EPUB</td>
+<td>Save</td>
+<td>Open in QUILL; open in the default ebook reader</td>
+</tr>
+<tr>
+<td>MOBI</td>
+<td>Save</td>
+<td>Send to Kindle is not offered; QUILL says where the file is</td>
+</tr>
+<tr>
+<td>DAISY</td>
+<td>Open in Media Player</td>
+<td>Save, Open folder</td>
+</tr>
+<tr>
+<td>MP3</td>
+<td>Open in Media Player</td>
+<td>Open in Studio, Save</td>
+</tr>
+<tr>
+<td>BRF</td>
+<td>Open in QUILL’s braille view</td>
+<td>Save, emboss, send to a display through the existing braille
+commands</td>
+</tr>
+</tbody>
+</table>
+<p>Each app’s “Open each result when it is ready” choice decides whether
+the default action runs or is only offered.</p>
+<h2 id="10-privacy-consent-and-safety">10. Privacy, consent and
+safety</h2>
+<h3 id="101-consent-and-blocks">10.1 Consent and blocks</h3>
+<ol type="1">
+<li><strong>Consent for every upload.</strong> It is part of the convert
+dialog’s wording, and has no “don’t ask again”. The only standing
+consent is a watch-folder profile’s, given per profile, shown in the
+profile, and revocable.</li>
+<li><strong>What the person is told before the first upload,</strong> in
+Options and in the first consent:
+<ul>
+<li>Pneuma Solutions processes the document in the United States: on AWS
+in Ohio, with Microsoft Azure (East US) for speech and text recognition,
+Mathpix for maths, and Google Gemini through OpenRouter for picture
+descriptions.</li>
+<li>Pneuma never uses documents to train AI.</li>
+<li>The document is kept in their Scribe account under their retention
+setting: 30 days unless they changed it, 1 to 30 days by choice, as long
+as they like with a subscription; an organization sets 1 to 30
+days.</li>
+<li>Pictures can be described by AI. Pneuma is reviewing the
+picture-description provider and makes no promise yet about how long
+that provider keeps data; QUILL says exactly that, and nothing more,
+until Pneuma updates it.</li>
+<li>Here is how to delete it: My Scribe Documents, Move to Trash, Delete
+Forever.</li>
+</ul></li>
+<li><strong>Safe Mode</strong> turns every Scribe command off with the
+family’s usual message. So does running without network.</li>
+<li><strong>AI turned off.</strong> If the person has turned AI off in
+QUILL, “Describe the pictures” defaults to off, and the dialog says why.
+The person may still check it, because it is Scribe’s processing, not
+QUILL’s AI route.</li>
+</ol>
+<h3 id="102-secrets-and-logging">10.2 Secrets and logging</h3>
+<ol start="5" type="1">
+<li><strong>Logging.</strong> Only state changes, document IDs and page
+counts are logged. Never document text, chunks, titles of files marked
+sensitive, tokens or passwords. Every log line goes through
+<code>redaction.py</code>. Tokens live only in the secrets vault.</li>
+<li><strong>PDF passwords</strong> are used for the one upload and are
+never stored.</li>
+<li><strong>Outputs belong to the person.</strong> QUILL saves them
+locally and the person may share them however they like. QUILL never
+caches or shares one person’s outputs with another: the download folder
+and the queue are per Windows user, and nothing from Scribe goes into a
+shared or family-wide cache.</li>
+</ol>
+<h3 id="103-copyright">10.3 Copyright</h3>
+<ol start="8" type="1">
+<li><strong>The manual’s notice,</strong> shown once, with the convert
+dialog: convert only documents you own, have permission for, or that are
+out of copyright.</li>
+</ol>
+<h2 id="11-errors-gate-ec-codes">11. Errors (GATE-EC codes)</h2>
+<table>
+<thead>
+<tr>
+<th>Server</th>
+<th>QUILL code</th>
+<th>What the person hears and can do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>unauthenticated</code>, <code>invalid_grant</code>, refresh
+failed mid-job</td>
+<td>QUILL-SCRIBE-SIGNIN</td>
+<td>“Your Scribe for Documents sign-in has ended. Conversions are paused
+until you sign in again.” Sign In… is a command on the job; it is a
+dialog only when the person is acting.</td>
+</tr>
+<tr>
+<td><code>needs_purchase</code></td>
+<td>QUILL-SCRIBE-PAGES</td>
+<td>The server’s message, then Buy Pages (opens the purchase link) or
+Cancel, and how to get the free two-page preview: “You can still read
+the first two pages: Open Preview.”</td>
+</tr>
+<tr>
+<td><code>password_required</code>, <code>invalid_password</code></td>
+<td>QUILL-SCRIBE-PASSWORD</td>
+<td>In the dialog, up to three tries (7.3). After the upload, the job
+waits in the “Needs password” state (7.4a).</td>
+</tr>
+<tr>
+<td><code>conversion_in_progress</code></td>
+<td>(none)</td>
+<td>Queued; QUILL waits for the current format. Never shown as an
+error.</td>
+</tr>
+<tr>
+<td><code>rate_limited</code></td>
+<td>QUILL-SCRIBE-BUSY</td>
+<td>Said once per job: “Scribe for Documents asked <app> to slow down;
+trying again in a minute.” QUILL waits 60 seconds (no Retry-After is
+sent); the countdown shows silently in the job.</td>
+</tr>
+<tr>
+<td><code>not_a_document</code></td>
+<td>QUILL-SCRIBE-NOTDOC</td>
+<td>“Scribe for Documents cannot convert <name>: it takes PDF, pictures,
+Office, OpenDocument, text, EPUB and MOBI files, not web pages.”
+Normally caught before upload.</td>
+</tr>
+<tr>
+<td>File over 500 MB</td>
+<td>QUILL-SCRIBE-TOOBIG</td>
+<td>Before upload: “<name> is <size>. Scribe for Documents takes files
+up to 500 MB.” Nothing is sent.</td>
+</tr>
+<tr>
+<td><code>not_found</code>, <code>forbidden</code></td>
+<td>QUILL-SCRIBE-GONE</td>
+<td>The job stays, as “No longer in your Scribe account”, until the
+person removes it.</td>
+</tr>
+<tr>
+<td>Network drop</td>
+<td>QUILL-SCRIBE-OFFLINE</td>
+<td>Said once per outage, after it has lasted a few seconds; recovery is
+silent. During a conversion: “Reconnecting to Scribe for Documents; your
+conversion is still running there.” During an upload: “Upload of
+Notes.pdf was interrupted; <app> will resume it.”</td>
+</tr>
+<tr>
+<td>Browser did not open, or the loopback port is blocked</td>
+<td>QUILL-SCRIBE-SIGNIN-LOCAL</td>
+<td>Copy Sign-in Link, and what to check.</td>
+</tr>
+<tr>
+<td>Download failed, disk full, or folder not writable</td>
+<td>QUILL-SCRIBE-SAVE</td>
+<td>Names the folder, offers Choose Another Folder and Retry; the output
+stays on Scribe.</td>
+</tr>
+<tr>
+<td>Safe Mode or no network when a command is chosen</td>
+<td>QUILL-SCRIBE-OFF</td>
+<td>The family’s usual Safe Mode or offline message. Nothing is
+queued.</td>
+</tr>
+<tr>
+<td><code>server_error</code>, other</td>
+<td>QUILL-SCRIBE-FAILED</td>
+<td>“Scribe for Documents could not convert Notes.pdf:
+<server message>”, plus Retry and Copy Details.</td>
+</tr>
+</tbody>
+</table>
+<p>All messages use the running app’s own name (QUILL, QUILL Lite,
+Converter), never a fixed “QUILL”.</p>
+<h2 id="12-accessibility">12. Accessibility</h2>
+<ul>
+<li><strong>Keyboard and names.</strong> Every dialog follows the
+family’s dialog contract: <code>_show_modal_dialog</code>, a Close
+button, accessible names, the first control focused, and an F1 topic for
+every control.</li>
+<li><strong>Announcements.</strong>
+<ul>
+<li>Stage announcements go through the announcement service, once each,
+with no double speech with the screen reader (GATE-13 and
+GATE-BRAILLE).</li>
+<li>Percentages are shown always and spoken only at 25, 50 and 75
+percent.</li>
+</ul></li>
+<li><strong>Live lists</strong> (progress window, My Scribe Documents)
+hold focus and position while rows change (FUX-06).</li>
+<li><strong>Results.</strong> The result sentence names the file and
+folder and is said once (FUX-04).</li>
+<li><strong>The streaming tab</strong> never moves the caret or speaks
+arriving text.</li>
+<li><strong>Voice samples</strong> play through the app’s audio output,
+stopped as 7.3 says.</li>
+<li><strong>Modeless windows.</strong> Scribe Conversions follows a
+modeless-window contract: a title, Escape returns focus to where it was
+opened from, an F1 topic, and no focus stealing when it updates. The
+family’s <code>_show_modal_dialog</code> contract covers only modal
+dialogs, so this contract is new.</li>
+<li><strong>Options page.</strong> Account and pages are shown in
+read-only text fields that Tab reaches. Links to Scribe’s terms, privacy
+policy and manual are buttons (“Open Scribe Terms in Browser”), as
+elsewhere in the family.</li>
+<li><strong>Testing with screen readers.</strong> Every new surface is
+tested on NVDA, JAWS and Narrator. That includes braille flash messages
+for stage and result sentences, and the case where two apps are running
+and only one may speak.</li>
+<li><strong>Review.</strong> The accessibility-lead reviewed this design
+on 2026-11-20 and its findings are in sections 7.2 to 7.5, 7.4a, 8.1, 11
+and 12. It reviews every new dialog again before it merges.</li>
+</ul>
+<h2 id="13-gates-and-tests">13. Gates and tests</h2>
+<ul>
+<li><strong>GATE-9:</strong> every REST and WebSocket call has an
+entry.</li>
+<li><strong>GATE-11:</strong> each module is under 600 lines. The UI is
+in mixins, not <code>main_frame.py</code>.</li>
+<li><strong>GATE-EC:</strong> codes in section 11.</li>
+<li><strong>Menus:</strong> GATE-DOCMENU and GATE-DOCKEY in QUILL, Lite,
+Player, Converter and Studio; the menu accelerators gate, with keyless
+reasons.</li>
+<li><strong>Settings:</strong> the settings vocabulary and settings
+documentation gates.</li>
+<li><strong>Help:</strong> GATE-HELPREF and GATE-CATALOGUE.</li>
+<li><strong>Lite:</strong> GATE-LITE-COVER and parity rows.</li>
+<li><strong>Tests:</strong>
+<ul>
+<li><strong>A fake Scribe server in tests:</strong> REST plus a scripted
+Phoenix channel, replaying stages, chunks, errors, drops and
+<code>password_required</code>.</li>
+<li><strong>Behavioural tests</strong> for:
+<ul>
+<li>The queue: one at a time across two app processes, and survival over
+a restart.</li>
+<li>Consent: no upload without it.</li>
+<li>Safe Mode.</li>
+<li>Redaction: a password never reaches a log.</li>
+<li>Every error row.</li>
+<li>Each per-app entry point.</li>
+</ul></li>
+</ul></li>
+<li><strong>A live test script</strong> (people, on Jeff’s Scribe
+account), with each format once from each entry point, added to the live
+testing list.</li>
+</ul>
+<h2 id="14-documentation">14. Documentation</h2>
+<ul>
+<li><strong>QUILL-PRD:</strong> a new numbered section (next to 5.93
+Datalab).</li>
+<li><strong>QUILL Lite PRD</strong> and the PRDs of Player, Converter,
+Studio, Cast, Beacon and Social: their parts.</li>
+<li><strong>User guide:</strong> chapter 3 (opening, saving and
+converting), a new “Scribe for Documents” chapter, and F1 help
+topics.</li>
+<li><strong>Release notes, What’s New and CHANGELOG,</strong> in Jeff’s
+plain style.</li>
+<li><strong>Retire <code>docs/planning/scribe.md</code></strong> with a
+pointer here.</li>
+</ul>
+<h2 id="15-phases">15. Phases</h2>
+<ol type="1">
+<li><strong>Foundation and QUILL. Built (PR #1994).</strong> Client,
+channel, sign-in, the convert dialog, the queue and progress, My Scribe
+Documents, options; QUILL’s Import tier, low-text PDF offer, Export with
+Scribe, braille. The client ID arrived on 2026-11-21 and is in the
+build; tested against the fake server, live testing still to do. Left
+from this phase: the chained actions, the streaming tab and the
+watch-folder action.</li>
+<li><strong>Lite and Media Player. Next.</strong> Lite’s area and
+commands (with QUILL already having them); Player’s Listen command and
+DAISY audio reading.</li>
+<li><strong>Converter, Studio, Beacon, Cast, Social.</strong> Their
+entry points; the watch-folder action; the streaming read tab; the
+Explorer Send To item.</li>
+<li><strong>Batch.</strong> The exception is approved (2026-11-21):
+several chosen files and the watch folder run one after another, from
+phase 1 on.</li>
+</ol>
+<h2 id="16-pneumas-answers-2026-11-21">16. Pneuma’s answers
+(2026-11-21)</h2>
+<p>Mike Calvo answered our questions on 2026-11-21; Matt Campbell
+checked the answers against the server code.</p>
+<ol type="1">
+<li><strong>Inputs:</strong> 23 types, no HTML (3.1).</li>
+<li><strong>Limits:</strong> 500 MB per upload; no page cap beyond
+credits (3.1).</li>
+<li><strong>Rate limit:</strong> 10 actions a minute per person, fixed
+windows, shared with the website; QUILL stays under 8 and backs off 60
+seconds (3.5).</li>
+<li><strong>Ranges:</strong> speeds 0.5 to 4 (3 and 4 unverified), 20 to
+42 cells, 20 to 30 lines (3.3). The server will add its own checks.</li>
+<li><strong>Retention:</strong> the account’s setting, not readable
+through the API (3.4).</li>
+<li><strong>Processing:</strong> United States; AWS Ohio, Azure East US,
+Mathpix, Gemini through OpenRouter; no training on documents (10.1).
+Pneuma will say more about the picture-description provider later.</li>
+<li><strong>Terms:</strong> the portal policy is all of it. Outputs
+belong to the person; never cached or shared across people (10.2).</li>
+<li><strong>Account defaults:</strong> per-document settings, read the
+defaults first, HTML-shaping settings at upload (3.3, 7.3).</li>
+<li><strong>Own client:</strong> fine. The Rust crate is the reference,
+the server stays backward compatible, and a changelog will start in
+<code>scribe-api-client</code> (7.1).</li>
+<li><strong>Organizations:</strong> nothing special; show “using credits
+from <organization>” (3.4).</li>
+</ol>
+<p>Also settled: a second format costs no pages (3.6), and DAISY is
+DAISY 3 as a zip (8.3). The batch exception is approved (7.4).</p>
+<p>Still open:</p>
+<ul>
+<li><strong>3x and 4x speech.</strong> Whether they really come out
+faster than 2x. Labelled in the dialog until Pneuma confirms.</li>
+<li><strong>The picture-description provider’s retention.</strong>
+Pneuma will tell us when its review settles; the privacy text then
+changes.</li>
+<li><strong>Watch <code>scribe-api-client</code>’s changelog</strong>
+for protocol changes.</li>
+</ul>
+<h2 id="17-done-means">17. Done means</h2>
+<ul>
+<li>A person can sign in once and use Scribe from QUILL, Lite, Player,
+Converter, Studio, Cast, Beacon and Social.</li>
+<li>Every format and setting the API offers is reachable from the
+keyboard, with speech and braille.</li>
+<li>Nothing is uploaded without consent, and Safe Mode blocks it
+all.</li>
+<li>Every status reaches the person. Every job ends with one sentence
+naming what was made and where, and the result opens in the right
+tool.</li>
+<li>One document at a time across the whole family, and jobs survive
+closing the app.</li>
+<li>All gates green. The live script has passed once for every format
+and every entry point.</li>
+<li>Pneuma has approved the app and the batch exception (2026-11-21),
+and the branding is in every place in section 5.</li>
+</ul>
+</main>
+</body>
+</html>

@@ -3174,6 +3174,7 @@ class MenuBuilderMixin:
         }
         self._place_wordpress_rows(placed)
         self._place_forms_rows(placed)
+        self._place_scribe_rows(menu_bar)  # every Scribe for Documents row (main_frame_scribe)
         self._apply_menu_customization(menu_bar)
         self.frame.SetMenuBar(menu_bar)
         self._refresh_contextual_menu_items()
