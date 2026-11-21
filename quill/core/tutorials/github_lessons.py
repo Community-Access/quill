@@ -6,7 +6,7 @@ in your own account, so nothing a lesson asks you to change matters to anyone:
 make it and look round; your first issue (label, comment, close); Dry Run;
 reviewing and merging a pull request; reading a failed run; and deleting the
 repository when you are done. The rest of D8's list (triage, forms,
-milestones, projects, access, the API Console) is in
+milestones, projects, access, a branch rule, the API Console) is in
 :mod:`quill.core.tutorials.github_lessons_more`, between the failed run and
 the clean-up.
 
@@ -31,8 +31,8 @@ GITHUB_TRACK = Track(
     "Make a private repository to practise on, then file and close an issue, "
     "try Dry Run, review and merge a pull request, read a failed run, triage "
     "your inbox, build and use an issue form, plan a milestone and a project, "
-    "give someone access, use the API Console, and delete the repository when "
-    "you finish.",
+    "give someone access, protect a branch, use the API Console, and delete the "
+    "repository when you finish.",
 )
 
 _SURFACES = ("GitHub Workbench",)

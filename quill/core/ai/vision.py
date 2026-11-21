@@ -174,6 +174,10 @@ def describe_image(
     provider = settings.provider.strip().lower()
     if provider == "off":
         return None, "The AI provider is set to Off."
+    from quill.core.ai import chosen_route
+
+    if provider == chosen_route.ROUTE_PROVIDER:  # the AI chosen in Choose Your AI
+        return chosen_route.send_picture(Path(image_path), prompt)
     host = (settings.host or "").strip().rstrip("/") or default_host_for_provider(provider)
     policy_error = _validate_endpoint_security(provider, host)
     if policy_error:

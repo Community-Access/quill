@@ -4396,7 +4396,7 @@ Control coverage: 408 audited sites (408 helped).
 - `self._detail`: The selected item in full, read-only. Arrow through it line by line.
 - `self._hunk`: Read the changed line and its surrounding patch context.
 - `close_btn`: Close this window. Escape does the same.
-- `self._explain_btn`: Send this selected file's bounded diff to the configured AI provider after consent. The output includes the source file and head SHA.
+- `self._explain_btn`: Sends this file's changes to the AI chosen in Choose Your AI; if they are very long, only the first part is sent. Under Auto, QUILL says which AI it will use first, and it asks before a different company is used. The answer names the file and the commit it explains.
 #### GitHubPullReviewDialog (`quill/ui/github_pr_review_dialog.py`)
 
 - `self._one_line`: Review decision, failing checks, open threads, auto-merge and how far behind the base branch it is. Said once when the review opens.

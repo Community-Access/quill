@@ -32,13 +32,24 @@ def provider_api_key(provider: str) -> str:
     across providers, so after a switch it can hold a *different* company's
     key; it is used only when it is *provider*'s (2026-11 audit, gap 13).
     """
+    from quill.core.ai import chosen_route
     from quill.core.ai.legacy_key_owner import belongs_to
 
     target = provider.strip().lower()
+    if target == chosen_route.ROUTE_PROVIDER:
+        return ""  # the chosen AI's own route carries its own credentials
     own = load_provider_api_key(target)
     if own:
         return own
     return stored_assistant_api_key() if belongs_to(target) else ""
+
+
+def _default_settings() -> AssistantConnectionSettings:
+    from quill.core.ai import chosen_route
+
+    if chosen_route.active():
+        return chosen_route.route_settings()
+    return load_assistant_connection_settings()
 
 
 class ProviderChatBackend(AIBackend):
@@ -51,7 +62,9 @@ class ProviderChatBackend(AIBackend):
         settings: AssistantConnectionSettings | None = None,
         api_key: str | None = None,
     ) -> None:
-        self._settings = settings or load_assistant_connection_settings()
+        # In QUILL, the AI chosen in Choose Your AI (chosen_route); elsewhere,
+        # the app's own provider settings.
+        self._settings = settings or _default_settings()
         if api_key is not None:
             self._api_key = api_key
         else:
@@ -65,6 +78,11 @@ class ProviderChatBackend(AIBackend):
         provider = self._settings.provider.strip().lower()
         if provider == "off":
             return False, "The AI provider is set to Off."
+        from quill.core.ai import chosen_route
+
+        if provider == chosen_route.ROUTE_PROVIDER:
+            ready = chosen_route.active()
+            return ready, None if ready else "No AI is in use. Press Ctrl+4 to choose one."
         if provider_requires_api_key(provider) and not self._api_key.strip():
             return False, "No API key is configured for this provider. Add one in AI settings."
         return True, None
