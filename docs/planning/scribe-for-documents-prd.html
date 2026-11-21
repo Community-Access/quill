@@ -275,8 +275,8 @@ where.</p>
 <ul>
 <li><strong>Registration.</strong> Jeff registered QUILL on the
 developer portal (scribeit.io/developer) on 2026-11-20, for Windows and
-macOS. It is waiting for review, and the client ID comes by email on
-approval.
+macOS. Pneuma approved it on 2026-11-21 and issued the client ID, which
+ships in <code>quill.core.scribe.CLIENT_ID</code>.
 <ul>
 <li>It is a public client using OAuth 2.0 with PKCE, so there is no
 client secret. The client ID may ship in the source.</li>
@@ -288,12 +288,15 @@ client secret. The client ID may ship in the source.</li>
 <li>Any port is allowed on loopback. QUILL listens on whatever port is
 free.</li>
 </ul></li>
-<li><strong>Exception requested.</strong> The registration asks for an
-exception to “one document at a time” for the Converter and watch-folder
-queues: strictly one after another, files chosen by the person. Until
-Pneuma answers, build as if the answer is no (see 7.4).</li>
-<li><strong>Email to Pneuma.</strong> <code>email.md</code> (Matt
-Campbell and Mike) asks the open questions listed in section 16.</li>
+<li><strong>Exception approved (Mike Calvo, 2026-11-21).</strong>
+Several files the person chose may be sent strictly one after another:
+wait for <code>conversion_complete</code> or an error before the next
+upload, back off on <code>rate_limited</code>, and pass every status to
+the person (7.4).</li>
+<li><strong>Pneuma’s answers (2026-11-21).</strong> Mike Calvo answered
+every question in <code>email.md</code>, checked by Matt Campbell
+against the server code. The answers are folded into this document and
+summarised in section 16.</li>
 <li><strong>Nothing is built yet.</strong> The nearest working
 precedents are Datalab cloud OCR
 (<code>quill/core/datalab_ocr.py</code>, PRD 5.93) for consented cloud
@@ -305,24 +308,35 @@ What Scribe provides (all of it, from the API client source)</h2>
 <p>There is no published HTTP reference. What follows is read from
 Pneuma’s open-source client library
 (<code>github.com/PneumaSolutions/scribe-api-client</code>, v0.3.1,
-Apache-2.0 or MIT), the user manual (manual.scribeit.io) and the
-announcement. Anything unconfirmed is marked.</p>
+Apache-2.0 or MIT; the Rust crate is the reference), the user manual
+(manual.scribeit.io), the announcement, and Pneuma’s answers of
+2026-11-21. Where the manual disagrees with those answers, the answers
+win: the manual’s FAQ lists are out of date.</p>
 <h3 id="31-inputs">3.1 Inputs</h3>
 <ul>
-<li><strong>Announcement:</strong> PDF (password-protected included),
-images, Word, Excel, PowerPoint, OpenDocument, RTF, EPUB, MOBI, plain
-text.</li>
-<li><strong>Manual FAQ (18 types):</strong> HTML, HTM, PDF, DOC, DOCX,
-RTF, XLS, XLSX, PPT, PPTX, ODT, ODS, ODP, TXT, TIF, GIF, JPG, PNG.
+<li><strong>The API accepts 23 types (Pneuma, 2026-11-21):</strong>
 <ul>
-<li>The exact list for the API is <strong>unconfirmed</strong> (question
-1).</li>
+<li>PDF (password-protected included);</li>
+<li>images: JPEG, GIF, PNG, TIFF, BMP, DCX, PCX, JPEG 2000, DjVu;</li>
+<li>text: DOC, DOCX, RTF, ODT, TXT;</li>
+<li>spreadsheets: XLS, XLSX, ODS;</li>
+<li>presentations: PPT, PPTX, ODP;</li>
+<li>ebooks: EPUB, MOBI.</li>
 </ul></li>
+<li><strong>HTML is not accepted,</strong> neither as a file nor as a
+URL that returns a web page; the server answers
+<code>not_a_document</code>. QUILL offers Scribe only for the 23 types
+and says so before sending anything else (“Scribe for Documents does not
+take web pages. Save it as Word or PDF first.”).</li>
 <li><strong>A file or a link.</strong> Input is an uploaded file, or a
-URL that points straight at a file. Web pages and links behind a sign-in
+URL that points straight at one of those files. Links behind a sign-in
 are not supported.</li>
-<li><strong>Limits.</strong> No size or page limits are published
-(question 2).</li>
+<li><strong>Size.</strong> 500 MB per upload. QUILL checks the size
+before sending and refuses larger files with a sentence naming the
+limit.</li>
+<li><strong>Pages.</strong> No page cap; the person’s page credits are
+the limit. When credits are short, the upload still gives a free 2-page
+preview, and other formats return <code>needs_purchase</code>.</li>
 </ul>
 <h3 id="32-outputs-api-format-identifiers">3.2 Outputs (API format
 identifiers)</h3>
@@ -365,7 +379,7 @@ even with no credits</td>
 </tr>
 <tr>
 <td><code>daisy</code></td>
-<td>DAISY text and audio</td>
+<td>DAISY 3 (Z39.86-2005) text and audio, as a zip</td>
 </tr>
 <tr>
 <td><code>mp3</code></td>
@@ -380,7 +394,29 @@ even with no credits</td>
 <p>Most formats are made from the <code>html</code> output, and
 <code>daisy</code> is assembled from <code>mp3</code>.</p>
 <h3 id="33-settings">3.3 Settings</h3>
-<p>Settings can be set per document, or as the account’s defaults.</p>
+<p>Settings can be set per document, or as the account’s defaults.
+<strong>QUILL uses per-document settings and leaves the account defaults
+alone</strong> unless the person explicitly asks to change their
+defaults (Pneuma, 2026-11-21). The rules:</p>
+<ul>
+<li><strong>Read the person’s defaults first.</strong>
+<code>GET /api/document_settings</code>, then send the full set with the
+upload as <code>document[settings][field]</code> form fields. A field
+left out at upload gets Scribe’s built-in default, not the
+person’s.</li>
+<li><strong>HTML-shaping settings go in at upload.</strong> Language,
+image descriptions, math and large print shape the HTML, and the HTML
+conversion starts as soon as the upload lands. They cannot be changed
+afterwards for that document.</li>
+<li><strong>Later changes</strong> use
+<code>PATCH /api/documents/{id}/settings</code>, and apply only to
+formats not made yet: a format already made is not remade. When reusing
+a document from My Scribe Documents (7.5), the dialog says which
+settings are fixed by the earlier upload, and that formats already made
+keep their settings.</li>
+<li><strong>The server does not validate ranges yet.</strong> QUILL
+offers only the website’s values (below).</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -413,8 +449,9 @@ MP3</td>
 </tr>
 <tr>
 <td><code>tts_rate</code></td>
-<td>Speech speed (1x, 1.5x, 2x on the web)</td>
-<td>Range unconfirmed</td>
+<td>Speech speed</td>
+<td>0.5, 0.75, 1, 1.5, 2, 3 and 4. 3 and 4 are labelled “(may not be
+faster than 2)” until Pneuma confirms they are</td>
 </tr>
 <tr>
 <td><code>braille_translation_table</code></td>
@@ -424,7 +461,7 @@ MP3</td>
 <tr>
 <td><code>braille_cells_per_line</code></td>
 <td>Line length (default 40)</td>
-<td>Range unconfirmed</td>
+<td>Spin control, 20 to 42</td>
 </tr>
 <tr>
 <td><code>braille_split_into_pages</code></td>
@@ -434,7 +471,7 @@ MP3</td>
 <tr>
 <td><code>braille_lines_per_page</code></td>
 <td>Lines per page</td>
-<td>Range unconfirmed</td>
+<td>Spin control, 20 to 30</td>
 </tr>
 <tr>
 <td><code>large_print</code></td>
@@ -462,12 +499,22 @@ MP3</td>
 <p>The API also covers the person’s account and their documents:</p>
 <ul>
 <li><strong>Account:</strong> who is signed in (name, email,
-organization), and pages remaining.</li>
+organization), and pages remaining. <code>GET /api/account_info</code>
+returns <code>organization_name</code> (null for an individual). For an
+organization member, <code>pages_remaining</code> is the organization’s
+shared pool, and QUILL says so beside the count: “1,240 pages left,
+using credits from <organization>.”</li>
 <li><strong>Buying:</strong> a purchase link whenever more pages are
 needed.</li>
 <li><strong>Documents:</strong> the list of the person’s documents with
 their outputs; rename; trash, recover and permanent delete. The trash
 deletes after 7 days or the account’s retention setting.</li>
+<li><strong>Retention.</strong> API uploads follow the account’s
+retention setting, the same as the website: 30 days by default, 1 to 30
+days by choice, indefinite with an active subscription; organizations
+must choose 1 to 30 days. The API cannot read or set it today, so QUILL
+describes the rule and links to the setting (Open My Scribe Account in
+Browser). The manual’s 72-hour figure is out of date.</li>
 <li><strong>Human review:</strong> “send for human review” with a
 comment, which is Scribe’s paid remediation.</li>
 <li><strong>Downloads:</strong> downloads support resuming (HTTP Range),
@@ -485,7 +532,12 @@ channel: a Phoenix WebSocket at
 <li><strong>Start a format.</strong> QUILL sends
 <code>start_conversion</code> with the format. Only one conversion per
 document runs at a time. If a format is already done, the server says so
-instead of converting again.</li>
+instead of converting again. Channel details confirmed by Pneuma: socket
+<code>/socket/websocket</code>, <code>vsn=2.0.0</code>, topic
+<code>documents:&lt;id&gt;</code>; server pushes are
+<code>status</code>, <code>chunk</code>,
+<code>conversion_complete</code>, <code>error</code> and
+<code>password_required</code>.</li>
 <li><strong>Follow the events.</strong>
 <ul>
 <li><code>status</code> reports the stage (<code>queue</code>,
@@ -506,6 +558,13 @@ purchase link), <code>rate_limited</code> or
 <p>If the connection drops, the conversion carries on. QUILL reconnects
 and joins again; it never uploads again. There are no webhooks. Polling
 <code>GET .../outputs</code> is the fallback.</p>
+<p><strong>Rate limit (Pneuma, 2026-11-21).</strong> 10 actions per
+minute per person, in fixed 60-second windows. Uploads,
+<code>start_conversion</code> and password tries share one counter, and
+the person’s own use of the website counts against it too. There is no
+Retry-After header. QUILL keeps itself to 8 actions a minute across the
+whole family (the shared queue counts them), and after
+<code>rate_limited</code> waits 60 seconds before the next action.</p>
 <h3 id="36-what-the-person-pays">3.6 What the person pays</h3>
 <ul>
 <li><strong>New accounts:</strong> 100 free pages, for 30 days.</li>
@@ -515,6 +574,10 @@ They never expire.</li>
 <li><strong>Human remediation:</strong> extra.</li>
 <li><strong>Without credits:</strong> a person still gets the first two
 pages as a preview.</li>
+<li><strong>Repeat formats are free.</strong> Pages are charged once, at
+the first full conversion, which is normally the HTML the upload starts.
+A second format of the same document costs no pages (Pneuma,
+2026-11-21).</li>
 </ul>
 <p>QUILL never takes payment. It shows pages remaining and opens
 Scribe’s purchase page.</p>
@@ -564,9 +627,11 @@ typed. QUILL only receives the redirect on the loopback address.</td>
 <tr>
 <td>Documents submitted interactively, one at a time</td>
 <td><strong>SCR-POL-3.</strong> Every upload follows a choice the person
-made. The family-wide queue (7.4) sends one document at a time. Until
-the batch exception is granted, a queue starts each next document only
-when the person says so, or is limited to one document.</td>
+made. The family-wide queue (7.4) sends one document at a time. Under
+the exception Pneuma approved on 2026-11-21, several files the person
+chose go strictly one after another: the next upload waits for
+<code>conversion_complete</code> or an error, <code>rate_limited</code>
+backs off, and every status reaches the person.</td>
 </tr>
 <tr>
 <td>Pass along every status update</td>
@@ -607,8 +672,8 @@ crate as the reference.</li>
 <li><strong>Why not the official wheel.</strong> The
 <code>scribe-client</code> wheel on PyPI is a compiled Rust module, so
 GATE-9 (no silent network) could not see its calls. It also lacks
-rename, feedback, account defaults, billing and account info. We tell
-Pneuma this (question 9).</li>
+rename, feedback, account defaults, billing and account info. Pneuma
+agreed to our own client on 2026-11-21 (16).</li>
 <li><strong>Modules.</strong> Each stays under the 600-line cap.
 <ul>
 <li><code>client.py</code>: REST, with <code>verified_ssl_context</code>
@@ -676,11 +741,11 @@ text field, the first control in the tab order, and focused when the
 dialog opens, so the person can read it again at any time. It holds:
 <ul>
 <li>The text: “Notes.pdf (2.1 MB, 34 pages) will be sent to Scribe for
-Documents (Pneuma Solutions, United States) and converted there. It
-stays in your Scribe account under your retention setting until you
-delete it. Pictures may be described by Scribe’s AI. Convert only
-documents you own, have permission for, or that are out of
-copyright.”</li>
+Documents (Pneuma Solutions) and converted in the United States. It
+stays in your Scribe account under your retention setting (30 days
+unless you changed it) until you delete it. Pictures may be described by
+AI. Pneuma does not use documents to train AI. Convert only documents
+you own, have permission for, or that are out of copyright.”</li>
 <li>Several files are listed with a count.</li>
 <li>A caution line if a file name looks sensitive, as Datalab has.</li>
 <li>The privacy lines from 10.1, on the first upload only.</li>
@@ -694,8 +759,8 @@ audio), MP3 audio, Braille (BRF), Web page for offline reading.
 <ul>
 <li>The default comes from the app (8.x) and the last choice.</li>
 <li>Each format the person has already converted for this document says
-“already made, no pages used”. <strong>Unconfirmed:</strong> whether a
-repeat format costs pages.</li>
+“already made”. Another format of a document already in the account says
+“no pages used”: pages are charged once per document.</li>
 </ul></li>
 <li><strong>Settings,</strong> grouped under “Language and voice”,
 “Braille”, “Print” and “Pictures and maths”.
@@ -722,9 +787,14 @@ box is never left empty.</li>
 <li><strong>Play Sample</strong> beside the voice plays that voice’s
 sample. While it plays, the button reads Stop Sample, and Escape stops
 the sample without closing the dialog. Otherwise Escape cancels.</li>
+<li><strong>Starting values</strong> are the person’s Scribe account
+defaults, read from <code>GET /api/document_settings</code> when the
+dialog opens, then QUILL’s last choice for this app where the person
+made one. The full set is sent with the upload (3.3).</li>
 <li><strong>Account defaults check box:</strong> “Also save as my Scribe
 account defaults (changes your Scribe website settings too)”. Off by
-default (question 8).</li>
+default and never remembered on, as Pneuma asked: account defaults
+change only when the person asks.</li>
 <li><strong>Small screens.</strong> If the dialog uses a scrolled panel,
 the panel scrolls to the focused control.</li>
 </ul></li>
@@ -819,13 +889,19 @@ Documents.”</li>
 <li><strong>Cancel Waiting</strong> says what it means: “QUILL stopped
 waiting for Notes.pdf. Scribe will still finish it and may use pages; it
 stays in My Scribe Documents.”</li>
-<li><strong>Batch exception.</strong>
+<li><strong>Several files (exception approved 2026-11-21).</strong>
 <ul>
-<li>Until Pneuma grants it, a queue of several files puts the next file
-in a “Waiting for you” state, with a Send Next File command. That keeps
-it interactive without a pop-up (7.8).</li>
-<li>Once granted, it runs without asking, still one at a time. This is a
-setting that ships off.</li>
+<li>When the person chooses several files in one Convert dialog, they go
+one after another without asking again: the next upload starts only
+after the previous document’s <code>conversion_complete</code> or
+error.</li>
+<li>On <code>rate_limited</code>, the queue waits 60 seconds and says so
+once (QUILL-SCRIBE-BUSY). Every status of every file reaches the
+person.</li>
+<li>A file that fails does not stop the rest; the final sentence names
+what was made and what was not.</li>
+<li>A watch folder runs the same way, for the files that arrive in a
+profile where the person turned Scribe on.</li>
 </ul></li>
 </ul>
 <h3 id="74a-who-speaks-and-when">7.4a Who speaks, and when</h3>
@@ -840,7 +916,7 @@ for example: “Notes.pdf needs its password. Open Scribe Conversions to
 enter it.”
 <ul>
 <li>The action is a command on the job in the progress window: Enter
-Password…, Send Next File, Sign In…, Open Result.</li>
+Password…, Sign In…, Open Result.</li>
 <li>A dialog may open only straight after the person’s own command, such
 as pressing Send and Convert.</li>
 </ul></li>
@@ -948,7 +1024,6 @@ by default.</li>
 you have turned it on.</li>
 <li><strong>Speak each stage:</strong> “Only while a QUILL app is in
 front” by default, with Always and Never. Percentages as in 7.4a.</li>
-<li><strong>The batch exception setting</strong> (7.4), off.</li>
 <li><strong>Powered by Scribe for Documents:</strong> the policy text,
 privacy notes (10), and links to Scribe’s terms, privacy policy and
 manual.</li>
@@ -1020,9 +1095,9 @@ work on it as on any BRF.</li>
 <code>requires_consent</code> per profile, like
 <code>CloudTranscribeAction</code>.</li>
 <li>The profile names the formats and settings.</li>
-<li>It goes through the family queue, one at a time. Before the
-exception is granted, the profile is limited to one file per arrival and
-asks before each.</li>
+<li>It goes through the family queue, strictly one at a time, under the
+approved exception (7.4). Only the 23 types Scribe takes are sent; other
+files are left for the profile’s other actions.</li>
 <li>The watch folder’s results are said as every other watch result
 is.</li>
 </ul></li>
@@ -1090,13 +1165,12 @@ behavioural test (GATE-LITE-COVER) and a row in
 <li><strong>Opens Scribe’s MP3 and DAISY</strong> with chapters from the
 DAISY navigation, plus resume and bookmarks.
 <ul>
-<li>The player already opens DAISY books from their <code>.ncx</code>
-(DAISY 3), with multi-level heading chapters
-(<code>quill/apps/player.py</code>, <code>_on_open_daisy</code>). If
-Scribe writes DAISY 2.02 (an <code>ncc.html</code>,
-<strong>unconfirmed</strong> which), the player needs an NCC reader too.
-Either way, Scribe’s DAISY opens straight to its navigation file without
-a file picker.</li>
+<li>Scribe writes DAISY 3 (Z39.86-2005), text and audio, as a zip. The
+player already opens DAISY 3 from its <code>.ncx</code>, with
+multi-level heading chapters (<code>quill/apps/player.py</code>,
+<code>_on_open_daisy</code>), so no NCC reader is needed. QUILL unpacks
+the zip next to it and opens the <code>.ncx</code> straight away,
+without a file picker.</li>
 </ul></li>
 <li><strong>File &gt; Listen to a Document with Scribe for
 Documents…</strong>
@@ -1115,8 +1189,8 @@ chosen voice and speed, and plays it when ready.</li>
 <li>Effect recipes do not apply.</li>
 <li>The output folder rules are Converter’s own.</li>
 </ul></li>
-<li><strong>This is the main reason for the batch exception.</strong>
-Until it is granted, the document queue asks before each file
+<li><strong>The batch exception covers this</strong> (approved
+2026-11-21): the document queue runs strictly one file after another
 (7.4).</li>
 <li><strong>Audio formats</strong> (MP3 or DAISY’s audio) can go on
 through Converter’s normal audio steps, such as loudness or another
@@ -1247,14 +1321,21 @@ profile, and revocable.</li>
 <li><strong>What the person is told before the first upload,</strong> in
 Options and in the first consent:
 <ul>
-<li>Pneuma Solutions in the United States processes the document.</li>
+<li>Pneuma Solutions processes the document in the United States: on AWS
+in Ohio, with Microsoft Azure (East US) for speech and text recognition,
+Mathpix for maths, and Google Gemini through OpenRouter for picture
+descriptions.</li>
+<li>Pneuma never uses documents to train AI.</li>
 <li>The document is kept in their Scribe account under their retention
-setting.</li>
-<li>Pictures can be described by Scribe’s AI.</li>
+setting: 30 days unless they changed it, 1 to 30 days by choice, as long
+as they like with a subscription; an organization sets 1 to 30
+days.</li>
+<li>Pictures can be described by AI. Pneuma is reviewing the
+picture-description provider and makes no promise yet about how long
+that provider keeps data; QUILL says exactly that, and nothing more,
+until Pneuma updates it.</li>
 <li>Here is how to delete it: My Scribe Documents, Move to Trash, Delete
 Forever.</li>
-<li><strong>Unconfirmed:</strong> the processing region and providers
-(question 6). The text is updated when Pneuma answers.</li>
 </ul></li>
 <li><strong>Safe Mode</strong> turns every Scribe command off with the
 family’s usual message. So does running without network.</li>
@@ -1271,9 +1352,14 @@ sensitive, tokens or passwords. Every log line goes through
 <code>redaction.py</code>. Tokens live only in the secrets vault.</li>
 <li><strong>PDF passwords</strong> are used for the one upload and are
 never stored.</li>
+<li><strong>Outputs belong to the person.</strong> QUILL saves them
+locally and the person may share them however they like. QUILL never
+caches or shares one person’s outputs with another: the download folder
+and the queue are per Windows user, and nothing from Scribe goes into a
+shared or family-wide cache.</li>
 </ol>
 <h3 id="103-copyright">10.3 Copyright</h3>
-<ol start="7" type="1">
+<ol start="8" type="1">
 <li><strong>The manual’s notice,</strong> shown once, with the convert
 dialog: convert only documents you own, have permission for, or that are
 out of copyright.</li>
@@ -1318,8 +1404,22 @@ error.</td>
 <tr>
 <td><code>rate_limited</code></td>
 <td>QUILL-SCRIBE-BUSY</td>
-<td>Said once per job: “Scribe for Documents asked <app> to slow down.”
-The countdown shows silently in the job.</td>
+<td>Said once per job: “Scribe for Documents asked <app> to slow down;
+trying again in a minute.” QUILL waits 60 seconds (no Retry-After is
+sent); the countdown shows silently in the job.</td>
+</tr>
+<tr>
+<td><code>not_a_document</code></td>
+<td>QUILL-SCRIBE-NOTDOC</td>
+<td>“Scribe for Documents cannot convert <name>: it takes PDF, pictures,
+Office, OpenDocument, text, EPUB and MOBI files, not web pages.”
+Normally caught before upload.</td>
+</tr>
+<tr>
+<td>File over 500 MB</td>
+<td>QUILL-SCRIBE-TOOBIG</td>
+<td>Before upload: “<name> is <size>. Scribe for Documents takes files
+up to 500 MB.” Nothing is sent.</td>
 </tr>
 <tr>
 <td><code>not_found</code>, <code>forbidden</code></td>
@@ -1454,41 +1554,57 @@ pointer here.</li>
 <li><strong>Foundation and QUILL.</strong> Client, channel, sign-in, the
 convert dialog, the queue and progress, My Scribe Documents, options;
 QUILL’s Import tier, low-text PDF offer, Export with Scribe, braille.
-Ready to merge once the client ID arrives. Until then, it is built
-against the fake server.</li>
+The client ID arrived on 2026-11-21 and is in the build; tested against
+the fake server, live testing still to do.</li>
 <li><strong>Lite and Media Player.</strong> Lite’s area and commands
 (with QUILL already having them); Player’s Listen command and DAISY
 audio reading.</li>
 <li><strong>Converter, Studio, Beacon, Cast, Social.</strong> Their
 entry points; the watch-folder action; the streaming read tab; the
 Explorer Send To item.</li>
-<li><strong>Batch.</strong> If Pneuma grants the exception, turn on
-unattended one-at-a-time queues in Converter and the watch folder.</li>
+<li><strong>Batch.</strong> The exception is approved (2026-11-21):
+several chosen files and the watch folder run one after another, from
+phase 1 on.</li>
 </ol>
-<h2 id="16-open-questions-sent-to-pneuma-in-emailmd">16. Open questions
-(sent to Pneuma in email.md)</h2>
+<h2 id="16-pneumas-answers-2026-11-21">16. Pneuma’s answers
+(2026-11-21)</h2>
+<p>Mike Calvo answered <code>email.md</code> on 2026-11-21; Matt
+Campbell checked the answers against the server code.</p>
 <ol type="1">
-<li>Exact input formats for the API (EPUB, MOBI, HTML?).</li>
-<li>Size and page limits.</li>
-<li>Rate limit numbers.</li>
-<li>Ranges for speech speed and braille line and page sizes.</li>
-<li>Retention for API uploads, and whether the API can read or set
-it.</li>
-<li>Processing region; image description and speech providers; training
-use.</li>
-<li>Developer terms beyond the policy; rules on keeping and sharing
-outputs.</li>
-<li>Whether apps should change account defaults.</li>
-<li>Our own Python client instead of the wheel; notice of protocol
-changes.</li>
-<li>Organization SSO accounts: anything to show or do differently.</li>
+<li><strong>Inputs:</strong> 23 types, no HTML (3.1).</li>
+<li><strong>Limits:</strong> 500 MB per upload; no page cap beyond
+credits (3.1).</li>
+<li><strong>Rate limit:</strong> 10 actions a minute per person, fixed
+windows, shared with the website; QUILL stays under 8 and backs off 60
+seconds (3.5).</li>
+<li><strong>Ranges:</strong> speeds 0.5 to 4 (3 and 4 unverified), 20 to
+42 cells, 20 to 30 lines (3.3). The server will add its own checks.</li>
+<li><strong>Retention:</strong> the account’s setting, not readable
+through the API (3.4).</li>
+<li><strong>Processing:</strong> United States; AWS Ohio, Azure East US,
+Mathpix, Gemini through OpenRouter; no training on documents (10.1).
+Pneuma will say more about the picture-description provider later.</li>
+<li><strong>Terms:</strong> the portal policy is all of it. Outputs
+belong to the person; never cached or shared across people (10.2).</li>
+<li><strong>Account defaults:</strong> per-document settings, read the
+defaults first, HTML-shaping settings at upload (3.3, 7.3).</li>
+<li><strong>Own client:</strong> fine. The Rust crate is the reference,
+the server stays backward compatible, and a changelog will start in
+<code>scribe-api-client</code> (7.1).</li>
+<li><strong>Organizations:</strong> nothing special; show “using credits
+from <organization>” (3.4).</li>
 </ol>
-<p>Also for us to decide:</p>
+<p>Also settled: a second format costs no pages (3.6), and DAISY is
+DAISY 3 as a zip (8.3). The batch exception is approved (7.4).</p>
+<p>Still open:</p>
 <ul>
-<li><strong>Repeat formats.</strong> Does converting a format already
-made cost pages? Test with the fake server first, then live.</li>
-<li><strong>Which DAISY.</strong> Which DAISY version Scribe writes,
-which decides the Player work.</li>
+<li><strong>3x and 4x speech.</strong> Whether they really come out
+faster than 2x. Labelled in the dialog until Pneuma confirms.</li>
+<li><strong>The picture-description provider’s retention.</strong>
+Pneuma will tell us when its review settles; the privacy text then
+changes.</li>
+<li><strong>Watch <code>scribe-api-client</code>’s changelog</strong>
+for protocol changes.</li>
 </ul>
 <h2 id="17-done-means">17. Done means</h2>
 <ul>
@@ -1505,8 +1621,8 @@ tool.</li>
 closing the app.</li>
 <li>All gates green. The live script has passed once for every format
 and every entry point.</li>
-<li>Pneuma has approved the app, and the branding is in every place in
-section 5.</li>
+<li>Pneuma has approved the app and the batch exception (2026-11-21),
+and the branding is in every place in section 5.</li>
 </ul>
 </main>
 </body>

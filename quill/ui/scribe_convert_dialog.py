@@ -7,10 +7,16 @@ Its parts, in tab order:
    what goes where, the sensitive-name caution, the privacy lines on the first
    upload, the copyright notice. There is no "don't ask again".
 2. **What you want back** -- a check box per format; one already made says
-   ", already made, no pages used".
+   ", already made", and any other format of a document already in the
+   account says ", no pages used": pages are charged once per document (3.6).
 3. A silent summary of the setting groups shown, then the groups themselves
-   (:mod:`quill.ui.scribe_convert_settings`).
-4. "Also save as my Scribe account defaults", off.
+   (:mod:`quill.ui.scribe_convert_settings`). Their starting values are the
+   person's Scribe account defaults (``GET /api/document_settings``, read when
+   the dialog opens) with this app's last choices on top; the full set goes
+   with the upload. For a document already in the account they are that
+   document's own settings, and the ones its upload fixed are turned off.
+4. "Also save as my Scribe account defaults", off by default and never
+   remembered on: account defaults change only when the person asks.
 5. **Password**, only when the file needs one: QUILL sees an encrypted PDF and
    asks at Send; "Show password" swaps in a plain field (each with its own
    label) so braille and typing-echo users can check what they typed. Never
@@ -43,6 +49,8 @@ class ConvertChoice:
     settings: ScribeSettings
     save_as_defaults: bool = False
     password: str = ""
+    #: The account defaults the dialog started from, when they were read.
+    base: ScribeSettings | None = None
 
 
 def pdf_needs_password(path: Path) -> bool:
@@ -85,6 +93,7 @@ class ScribeConvertDialog(wx.Dialog):
         existing: Any = None,
         formats: list[str],
         options: Any,
+        refused: list[str] | None = None,
     ) -> None:
         super().__init__(
             parent,
@@ -95,7 +104,10 @@ class ScribeConvertDialog(wx.Dialog):
         self._paths = list(paths or [])
         self._url = url
         self._existing = existing
+        self._options = options
         self._remaining: int | None = None
+        self._organization = ""
+        self._base: ScribeSettings | None = None
         app = controller.app_name
         ai_off = bool(getattr(controller.host, "scribe_ai_off", lambda: False)())
         self._page_counts = {str(p): c for p in self._paths if (c := pdf_pages(p))}
@@ -118,6 +130,7 @@ class ScribeConvertDialog(wx.Dialog):
                 existing_title=existing.display_title if existing is not None else "",
                 ai_off=ai_off,
                 app_name=app,
+                refused=refused or [],
             )
         )
         self.consent.SetInsertionPoint(0)
@@ -128,10 +141,12 @@ class ScribeConvertDialog(wx.Dialog):
         sizer.Add(self.consent, 0, wx.EXPAND | wx.ALL, 6)
 
         made = set(existing.ready_formats) if existing is not None else set()
+        free = bool(existing is not None and getattr(existing, "charged", False))
         box = wx.StaticBoxSizer(wx.VERTICAL, panel, "What you want back")
         self.format_boxes: dict[str, Any] = {}
         for item in FORMATS:
-            label = item.label + (", already made, no pages used" if item.id in made else "")
+            suffix = ", already made" if item.id in made else ", no pages used" if free else ""
+            label = item.label + suffix
             check = wx.CheckBox(box.GetStaticBox(), label=label)
             check.SetValue(item.id in formats)
             check.SetHelpText(f"Ask Scribe for {item.label}. You can choose several.")
@@ -149,8 +164,15 @@ class ScribeConvertDialog(wx.Dialog):
         from quill.ui.scribe_convert_settings import SettingsGroups
 
         self.groups = SettingsGroups(
-            panel, sizer, controller, options.local_settings(), ai_off=ai_off, app_name=app
+            panel,
+            sizer,
+            controller,
+            options.starting_settings(None, app),
+            ai_off=ai_off,
+            app_name=app,
         )
+        if existing is not None:
+            self.groups.fix_upload_settings(existing.display_title)
 
         self.defaults = wx.CheckBox(
             panel,
@@ -235,6 +257,7 @@ class ScribeConvertDialog(wx.Dialog):
         self.Bind(wx.EVT_WINDOW_DESTROY, self._on_destroy)
         self._formats_changed()
         self._refresh_pages()
+        self._load_starting_values()
         self.consent.SetFocus()
 
     # ------------------------------------------------------------ changes
@@ -252,33 +275,72 @@ class ScribeConvertDialog(wx.Dialog):
         self._panel.Layout()
         self._panel.SetupScrolling(scroll_x=False, rate_y=20, scrollToTop=False)
 
+    def _load_starting_values(self) -> None:
+        """The account defaults (or the document's own settings), then this app's
+        last choices: read in the background and put in silently (3.3)."""
+        controller, existing, app = self._controller, self._existing, self._controller.app_name
+
+        def work() -> tuple[ScribeSettings | None, ScribeSettings]:
+            client = controller.client()
+            if existing is not None:
+                return None, client.get_settings(existing.id)
+            defaults = client.default_settings()
+            return defaults, self._options.starting_settings(defaults, app)
+
+        def done(result: tuple[ScribeSettings | None, ScribeSettings]) -> None:
+            try:
+                if not self or self.IsBeingDeleted():
+                    return
+            except RuntimeError:
+                return
+            self._base = result[0]
+            self.groups.apply(result[1])
+
+        # If they cannot be read, the local values stay and Scribe fills the rest.
+        controller._background(work, done, lambda _error: None)
+
+    def _free(self) -> bool:
+        """Every format still to make is of a document already charged (3.6)."""
+        existing = self._existing
+        if existing is None:
+            return False
+        made = set(existing.ready_formats)
+        return all(f in made for f in self.chosen_formats()) or bool(
+            getattr(existing, "charged", False)
+        )
+
     def _estimate(self) -> int | None:
         if self._existing is not None:
-            made = set(self._existing.ready_formats)
-            if all(f in made for f in self.chosen_formats()):
-                return 0
-            return self._existing.page_count
+            return 0 if self._free() else self._existing.page_count
         if self._paths and len(self._page_counts) == len(self._paths):
             return sum(self._page_counts.values())
         return None
 
     def _show_pages(self) -> None:
-        self.pages.SetValue(pages_text(self._estimate(), self._remaining))
+        self.pages.SetValue(
+            pages_text(
+                self._estimate(),
+                self._remaining,
+                organization=self._organization,
+                free=self._free(),
+            )
+        )
 
     def _refresh_pages(self) -> None:
         self._controller._background(
-            lambda: self._controller.client().account().pages_remaining,
+            lambda: self._controller.client().account(),
             self._got_pages,
             lambda _error: None,  # the line just stays "not known"
         )
 
-    def _got_pages(self, remaining: int | None) -> None:
+    def _got_pages(self, account: Any) -> None:
         try:
             if not self or self.IsBeingDeleted():
                 return
         except RuntimeError:
             return
-        self._remaining = remaining
+        self._remaining = account.pages_remaining
+        self._organization = account.organization_name
         self._show_pages()
 
     def _on_activate(self, event: wx.ActivateEvent) -> None:
@@ -355,6 +417,7 @@ class ScribeConvertDialog(wx.Dialog):
             settings=self.groups.settings(),
             save_as_defaults=self.defaults.GetValue(),
             password=self.password_value(),
+            base=self._base,
         )
 
     def _on_destroy(self, event: wx.WindowDestroyEvent) -> None:

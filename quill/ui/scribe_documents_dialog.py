@@ -47,10 +47,12 @@ class ScribeDocumentsDialog(wx.Dialog):
         self.show.SetSelection(0)
         self.show.SetHelpText("Documents in your account, or the trash (deleted after 7 days).")
         top.Add(self.show, 0, wx.ALL, 6)
-        top.Add(wx.StaticText(self, label="Pages left:"), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 6)
+        top.Add(wx.StaticText(self, label="Pages:"), 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 6)
         self.pages = wx.TextCtrl(self, style=wx.TE_READONLY, value="Loading...")
-        self.pages.SetName("Pages left")
-        self.pages.SetHelpText("How many Scribe pages your account has left.")
+        self.pages.SetName("Pages")
+        self.pages.SetHelpText(
+            "How many Scribe pages are left; for an organization, whose shared credits they are."
+        )
         top.Add(self.pages, 1, wx.ALL, 6)
         self.buy = wx.Button(self, label="&Buy Pages")
         self.buy.SetHelpText(
@@ -139,17 +141,17 @@ class ScribeDocumentsDialog(wx.Dialog):
         trash = self.trash_view
         self._columns()
 
-        def work() -> tuple[list[DocumentSummary], int | None]:
+        def work() -> tuple[list[DocumentSummary], str]:
             client = self._controller.client()
-            if trash:
-                return client.list_trash(), client.account().pages_remaining
-            return client.list_documents()
+            # account(): pages left, and the organization whose credits they are (3.4)
+            documents = client.list_trash() if trash else client.list_documents()[0]
+            return documents, client.account().pages_phrase()
 
-        def done(result: tuple[list[DocumentSummary], int | None]) -> None:
+        def done(result: tuple[list[DocumentSummary], str]) -> None:
             if not self:
                 return
             documents, pages = result
-            self.pages.SetValue("not known" if pages is None else str(pages))
+            self.pages.SetValue(pages)
             self._fill(documents, keep_id)
 
         def failed(error: BaseException) -> None:

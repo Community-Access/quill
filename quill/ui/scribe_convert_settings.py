@@ -8,6 +8,21 @@ name on entering it. A group is only shown or hidden to match the chosen
 formats; hidden groups keep their values, and hiding never removes the
 focused control (focus moves to the format check box that hid it first).
 
+**Starting values** (3.3, Pneuma 2026-11-21) are the person's Scribe account
+defaults, read when the dialog opens (or, for a document already in the
+account, that document's own settings), with this app's last choices on
+top. They arrive after the dialog is built; :meth:`SettingsGroups.apply`
+puts them in silently, unless the person has already changed a setting.
+For a document already uploaded, the settings its upload fixed (language,
+picture descriptions, mathematics, large print) are hidden and their values
+are listed instead in a read-only field, "Fixed when <title> was uploaded",
+at the top of the first group: a disabled control would drop out of Tab, so
+nobody could find out what the values are (accessibility review, 2026-11-21).
+
+Speed is a choice of the website's speeds, 3 and 4 times labelled "(may not
+be faster than 2)"; line length is a spin control from 20 to 42 cells and
+lines per page from 20 to 30.
+
 Choice lists come from the server, cached for the session by the
 controller. While a list loads its control says "Loading voices..." (enabled,
 not dimmed, so Tab still reaches it); if loading fails it says "Voices could
@@ -21,7 +36,16 @@ from typing import Any
 
 import wx
 
-from quill.core.scribe.model import GROUPS, TTS_GENDERS, ScribeSettings, visible_groups
+from quill.core.scribe.model import (
+    BRAILLE_CELLS_RANGE,
+    BRAILLE_LINES_RANGE,
+    GROUPS,
+    TTS_GENDERS,
+    TTS_RATES,
+    ScribeSettings,
+    nearest_rate,
+    visible_groups,
+)
 
 DETECT = "Detect automatically"
 SCRIBE_DEFAULT = "Scribe's default"
@@ -49,6 +73,19 @@ class SettingsGroups:
         labels = {key: label for key, label, _shown in GROUPS}
 
         box = self._box(sizer, "language", labels["language"])
+        parent = box.GetStaticBox()
+        self.fixed_label = wx.StaticText(parent, label="Fi&xed when uploaded:")
+        box.Add(self.fixed_label, 0, wx.LEFT | wx.TOP, 4)
+        self.fixed = wx.TextCtrl(parent, style=wx.TE_READONLY, value="Loading...")
+        self.fixed.SetName("Fixed when uploaded")
+        self.fixed.SetHelpText(
+            "The settings this document's upload fixed: language, picture descriptions, "
+            "mathematics and large print. They cannot be changed for it."
+        )
+        box.Add(self.fixed, 0, wx.EXPAND | wx.ALL, 4)
+        self.fixed_label.Hide()
+        self.fixed.Hide()
+        self._fixed_shown = False
         self.language = self._choice(
             box,
             "&Language:",
@@ -91,14 +128,14 @@ class SettingsGroups:
         self.gender.SetSelection(
             next((i for i, (key, _l) in enumerate(TTS_GENDERS) if key == settings.tts_gender), 0)
         )
-        self.speed = self._spin(
+        self.speed = self._choice(
             box,
-            "Sp&eed (percent of normal speech):",
-            50,
-            400,
-            int(round(settings.tts_rate * 100)),
-            "How fast the voice reads, from 50 to 400 percent of normal; 100 is normal.",
+            "Sp&eed:",
+            [label for _rate, label in TTS_RATES],
+            "How fast the voice reads, from half to four times normal speed. Scribe may not "
+            "read faster than 2 times yet, even at 3 or 4.",
         )
+        self._set_speed(settings.tts_rate)
 
         box = self._box(sizer, "braille", labels["braille"])
         self.table = self._choice(
@@ -110,10 +147,9 @@ class SettingsGroups:
         self.cells = self._spin(
             box,
             "&Cells per line:",
-            10,
-            100,
+            *BRAILLE_CELLS_RANGE,
             settings.braille_cells_per_line,
-            "How many braille cells on a line; 40 is usual. From 10 to 100.",
+            "How many braille cells on a line; 40 is usual. From 20 to 42.",
         )
         self.split = self._check(
             box,
@@ -124,10 +160,9 @@ class SettingsGroups:
         self.lines = self._spin(
             box,
             "Li&nes per page:",
-            5,
-            100,
+            *BRAILLE_LINES_RANGE,
             settings.braille_lines_per_page,
-            "How many lines on a braille page, when it is split into pages. From 5 to 100.",
+            "How many lines on a braille page, when it is split into pages. From 20 to 30.",
         )
 
         box = self._box(sizer, "print", labels["print"])
@@ -162,11 +197,97 @@ class SettingsGroups:
             "Asks Scribe to send its own notification when the conversion finishes.",
         )
 
-        self.language.Bind(wx.EVT_CHOICE, lambda _e: self._fill_dialects())
-        self.dialect.Bind(wx.EVT_CHOICE, lambda _e: self._fill_voices())
+        self.touched = False
+        for control in (self.gender, self.speed, self.table, self.voice):
+            control.Bind(wx.EVT_CHOICE, self._on_touched)
+        for control in (self.cells, self.lines):
+            control.Bind(wx.EVT_SPINCTRL, self._on_touched)
+        for control in (self.split, self.large_print, self.describe, self.math, self.notify):
+            control.Bind(wx.EVT_CHECKBOX, self._on_touched)
+        # Reaching a setting counts too: a late reply never changes a value under
+        # focus, nor one the person has already read (accessibility review, 2026-11-21).
+        for control in (
+            self.language, self.dialect, self.voice, self.gender, self.speed, self.table,
+            self.cells, self.lines, self.split, self.large_print, self.describe, self.math,
+            self.notify,
+        ):  # fmt: skip
+            control.Bind(wx.EVT_SET_FOCUS, self._on_touched)
+        self._ai_off = ai_off
+        self.language.Bind(wx.EVT_CHOICE, lambda e: (self._on_touched(e), self._fill_dialects()))
+        self.dialect.Bind(wx.EVT_CHOICE, lambda e: (self._on_touched(e), self._fill_voices()))
         self.sample.Bind(wx.EVT_BUTTON, lambda _e: self.toggle_sample())
         self.retry.Bind(wx.EVT_BUTTON, lambda _e: self.load())
         self.load()
+
+    # ------------------------------------------------------- starting values
+
+    def _on_touched(self, event: Any) -> None:
+        self.touched = True
+        event.Skip()
+
+    def _set_speed(self, rate: float) -> None:
+        rates = [value for value, _label in TTS_RATES]
+        self.speed.SetSelection(rates.index(nearest_rate(rate)))
+
+    def apply(self, settings: ScribeSettings) -> bool:
+        """Put *settings* in as the starting values, silently -- unless the person
+        has already changed one, whose choice wins. True when applied."""
+        if not self._alive():
+            return False
+        self._refresh_fixed(settings)
+        if self.touched:
+            return False
+        self._settings = settings
+        self.gender.SetSelection(
+            next((i for i, (key, _l) in enumerate(TTS_GENDERS) if key == settings.tts_gender), 0)
+        )
+        self._set_speed(settings.tts_rate)
+        self.cells.SetValue(settings.braille_cells_per_line)
+        self.split.SetValue(settings.braille_split_into_pages)
+        self.lines.SetValue(settings.braille_lines_per_page)
+        self.large_print.SetValue(settings.large_print)
+        self.describe.SetValue(settings.add_image_descriptions and not self._ai_off)
+        self.math.SetValue(settings.math)
+        self.notify.SetValue(settings.notify_when_complete)
+        if self._lists.get("languages"):
+            self._apply(self._lists)
+        return True
+
+    def _fixed_controls(self) -> tuple[Any, ...]:
+        return (
+            self.language._quill_label,
+            self.language,
+            self.large_print,
+            self.describe,
+            self.math,
+        )
+
+    def fix_upload_settings(self, title: str) -> None:
+        """A document already uploaded: its language, pictures, mathematics and
+        large print were fixed then (3.3). Their controls are hidden (they keep
+        their values) and the values are listed in the read-only field."""
+        self._fixed_shown = True
+        self.fixed_label.SetLabel(f"Fi&xed when {title} was uploaded:")
+        self.fixed.SetName(f"Fixed when {title} was uploaded")
+        self.fixed_label.Show()
+        self.fixed.Show()
+        for control in self._fixed_controls():
+            control.Hide()
+        self._parent.Layout()
+
+    def _refresh_fixed(self, settings: ScribeSettings) -> None:
+        if not self._fixed_shown or wx.Window.FindFocus() is self.fixed:
+            return  # never rewrite what is being read
+        names = dict((code, name) for name, code in self._lists.get("languages") or [])
+        language = names.get(settings.language, settings.language) or DETECT
+
+        def on(value: bool) -> str:
+            return "on" if value else "off"
+
+        self.fixed.SetValue(
+            f"Language: {language}. Describe the pictures: {on(settings.add_image_descriptions)}. "
+            f"Mathematics: {on(settings.math)}. Large print: {on(settings.large_print)}."
+        )
 
     # ---------------------------------------------------------------- build
 
@@ -180,8 +301,10 @@ class SettingsGroups:
     def _choice(box: Any, label: str, items: list[str], help_text: str, *, into: Any = None) -> Any:
         parent = box.GetStaticBox()
         target = into if into is not None else box
-        target.Add(wx.StaticText(parent, label=label), 0, wx.LEFT | wx.TOP, 4)
+        text = wx.StaticText(parent, label=label)
+        target.Add(text, 0, wx.LEFT | wx.TOP, 4)
         choice = wx.Choice(parent, choices=items)
+        choice._quill_label = text
         choice.SetSelection(0)
         choice.SetName(label.replace("&", "").rstrip(":"))
         choice.SetHelpText(help_text)
@@ -211,6 +334,8 @@ class SettingsGroups:
     def show_for(self, format_ids: list[str], focus_fallback: Any = None) -> None:
         """Show the groups the chosen formats need; keep the hidden ones' values."""
         wanted = set(visible_groups(format_ids))
+        if self._fixed_shown:
+            wanted.discard("print")  # its one control, large print, is fixed
         focused = wx.Window.FindFocus()
         for key, box in self.boxes.items():
             show = key in wanted
@@ -222,6 +347,11 @@ class SettingsGroups:
             static.Show(show)
         if not self._lists.get("failed"):
             self.retry.Hide()
+        self.fixed_label.Show(self._fixed_shown)
+        self.fixed.Show(self._fixed_shown)
+        if self._fixed_shown:
+            for control in self._fixed_controls():
+                control.Hide()
 
     # --------------------------------------------------------------- lists
 
@@ -284,6 +414,7 @@ class SettingsGroups:
             self._settings.braille_translation_table,
         )
         self._fill_dialects()
+        self._refresh_fixed(self._settings)
         self.retry.Hide()
         self._parent.Layout()
 
@@ -380,7 +511,7 @@ class SettingsGroups:
             dialects=dialects,
             voices=voices,
             tts_gender=TTS_GENDERS[gender_index][0],
-            tts_rate=self.speed.GetValue() / 100.0,
+            tts_rate=TTS_RATES[max(0, self.speed.GetSelection())][0],
             braille_translation_table=self._value(self.table)
             if self._lists.get("tables")
             else self._settings.braille_translation_table,

@@ -76,9 +76,9 @@ def document_folder(title: str, root: Path | str | None = None) -> Path:
 
 
 def library_path() -> Path:
-    from quill.core.paths import app_data_dir
+    from quill.core.scribe.queue import queue_dir
 
-    return app_data_dir() / "scribe" / "library.json"
+    return queue_dir() / "library.json"
 
 
 class Library:

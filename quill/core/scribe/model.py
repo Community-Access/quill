@@ -135,6 +135,49 @@ def stage_words(stage: str) -> str:
 
 # ---------------------------------------------------------------- settings
 
+#: Speech speeds the website offers (Pneuma, 2026-11-21), with their labels.
+#: 3x and 4x may come out no faster than 2x until Pneuma confirms they do.
+TTS_RATES: tuple[tuple[float, str], ...] = (
+    (0.5, "0.5 times"),
+    (0.75, "0.75 times"),
+    (1.0, "Normal"),
+    (1.5, "1.5 times"),
+    (2.0, "2 times"),
+    (3.0, "3 times (may not be faster than 2 times)"),
+    (4.0, "4 times (may not be faster than 2 times)"),
+)
+#: Braille ranges the website offers; the server does not check them yet.
+BRAILLE_CELLS_RANGE = (20, 42)
+BRAILLE_LINES_RANGE = (20, 30)
+
+#: Settings that shape the HTML, which Scribe starts as soon as the upload
+#: lands: they go in with the upload and are fixed for that document (3.3).
+HTML_SHAPING: tuple[tuple[str, str], ...] = (
+    ("language", "language"),
+    ("add_image_descriptions", "picture descriptions"),
+    ("math", "mathematics"),
+    ("large_print", "large print"),
+)
+HTML_SHAPING_FIELDS: frozenset[str] = frozenset(key for key, _words in HTML_SHAPING)
+
+
+def nearest_rate(value: Any, default: float = 1.0) -> float:
+    """*value* as one of :data:`TTS_RATES` (the nearest), or *default*."""
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return default
+    return min((rate for rate, _label in TTS_RATES), key=lambda rate: abs(rate - number))
+
+
+def _form_value(value: Any) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    return str(value)
+
+
 TTS_GENDERS: tuple[tuple[str, str], ...] = (
     ("", "No preference"),
     ("female", "Female"),
@@ -148,8 +191,8 @@ class ScribeSettings:
     """A document's conversion settings (3.3); every field Scribe has.
 
     ``dialects`` maps a language code to a dialect locale, ``voices`` a locale
-    to a voice's short name. The ranges for speed and braille sizes are not
-    published (question 4), so QUILL clamps only to what is plainly sane.
+    to a voice's short name. The server does not check ranges yet, so values
+    read from it or from options are clamped to the website's (3.3).
     """
 
     language: str = ""
@@ -166,10 +209,12 @@ class ScribeSettings:
     math: bool = False
     notify_when_complete: bool = False
 
-    def to_update(self) -> dict[str, Any]:
+    def to_update(self, *, leave_out: frozenset[str] = frozenset()) -> dict[str, Any]:
         """The body of ``PATCH .../settings``: ``dialects`` and ``voices`` as JSON
         strings, as the server takes them; an empty language or table is left out
-        so the server keeps detecting or its own default."""
+        so the server keeps detecting or its own default. *leave_out* names
+        fields not to send (the HTML-shaping ones, for a document already in
+        the account)."""
         body: dict[str, Any] = {
             "tts_rate": float(self.tts_rate),
             "braille_cells_per_line": int(self.braille_cells_per_line),
@@ -190,7 +235,16 @@ class ScribeSettings:
             body["tts_gender"] = self.tts_gender
         if self.braille_translation_table:
             body["braille_translation_table"] = self.braille_translation_table
-        return body
+        return {key: value for key, value in body.items() if key not in leave_out}
+
+    def to_upload_fields(self) -> list[tuple[str, str]]:
+        """The full set as ``document[settings][field]`` form fields for the
+        upload (3.3): a field left out would get Scribe's built-in default,
+        not the person's."""
+        return [
+            (f"document[settings][{key}]", _form_value(value))
+            for key, value in self.to_update().items()
+        ]
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -206,11 +260,15 @@ class ScribeSettings:
             dialects=_str_map(data.get("dialects")),
             voices=_str_map(data.get("voices")),
             tts_gender=str(data.get("tts_gender") or ""),
-            tts_rate=_clamp_float(data.get("tts_rate"), base.tts_rate, 0.5, 4.0),
+            tts_rate=nearest_rate(data.get("tts_rate"), base.tts_rate),
             braille_translation_table=str(data.get("braille_translation_table") or ""),
-            braille_cells_per_line=_clamp_int(data.get("braille_cells_per_line"), 40, 10, 100),
+            braille_cells_per_line=_clamp_int(
+                data.get("braille_cells_per_line"), 40, *BRAILLE_CELLS_RANGE
+            ),
             braille_split_into_pages=bool(data.get("braille_split_into_pages", True)),
-            braille_lines_per_page=_clamp_int(data.get("braille_lines_per_page"), 25, 5, 100),
+            braille_lines_per_page=_clamp_int(
+                data.get("braille_lines_per_page"), 25, *BRAILLE_LINES_RANGE
+            ),
             large_print=bool(data.get("large_print", False)),
             add_image_descriptions=bool(data.get("add_image_descriptions", True)),
             math=bool(data.get("math", False)),
@@ -307,6 +365,14 @@ class DocumentSummary:
     def display_title(self) -> str:
         return self.title or "Untitled document"
 
+    @property
+    def charged(self) -> bool:
+        """True once a full conversion is made: pages are charged once per
+        document, so every further format uses no pages (3.6)."""
+        return any(
+            o.is_complete and not o.is_preview and o.format != PREVIEW_FORMAT for o in self.outputs
+        )
+
     @classmethod
     def from_mapping(cls, data: Any) -> DocumentSummary | None:
         if not isinstance(data, dict) or not data.get("id"):
@@ -345,10 +411,11 @@ class Account:
         return full or self.email or "your Scribe account"
 
     def pages_phrase(self) -> str:
+        """``"1,240 pages left, using credits from Acme."`` -- for an organization
+        member the count is the organization's shared pool (3.4)."""
         if self.pages_remaining is None:
             return "Pages left unknown."
-        count = self.pages_remaining
-        return f"{count} page left." if count == 1 else f"{count} pages left."
+        return pages_left_phrase(self.pages_remaining, self.organization_name) + "."
 
     @classmethod
     def from_mappings(cls, info: Any, billing: Any) -> Account:
@@ -362,6 +429,12 @@ class Account:
             organization_name=str(info.get("organization_name") or ""),
             pages_remaining=int(pages) if isinstance(pages, (int, float)) else None,
         )
+
+
+def pages_left_phrase(count: int, organization: str = "") -> str:
+    """``"1,240 pages left"``, with ``", using credits from <organization>"``."""
+    text = f"{count:,} page left" if count == 1 else f"{count:,} pages left"
+    return f"{text}, using credits from {organization}" if organization else text
 
 
 def parse_pairs(items: Any) -> list[tuple[str, str]]:
@@ -384,13 +457,18 @@ def parse_voices(items: Any) -> list[tuple[str, str, bool]]:
 
 
 __all__ = [
+    "BRAILLE_CELLS_RANGE",
+    "BRAILLE_LINES_RANGE",
     "DEPENDENCY_ORDER",
     "FORMATS",
     "FORMAT_IDS",
     "GROUPS",
+    "HTML_SHAPING",
+    "HTML_SHAPING_FIELDS",
     "PREVIEW_FORMAT",
     "STAGES",
     "TTS_GENDERS",
+    "TTS_RATES",
     "Account",
     "DocumentSummary",
     "Format",
@@ -398,6 +476,8 @@ __all__ = [
     "ScribeSettings",
     "format_by_id",
     "format_label",
+    "nearest_rate",
+    "pages_left_phrase",
     "formats_phrase",
     "ordered_for_conversion",
     "parse_documents",

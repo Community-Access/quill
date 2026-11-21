@@ -6,9 +6,9 @@ and pages are read-only fields that Tab reaches; the links to Scribe's terms,
 privacy policy and manual are buttons, as elsewhere in the family. Tokens
 never go in options.
 
-The batch-exception check box is hidden until Pneuma grants the exception
-(7.4); hiding rather than dimming keeps Tab from landing on an option that
-cannot be used (accessibility review, 2026-11-20).
+There is no batch setting: Pneuma approved the exception on 2026-11-21, so
+several files chosen together always go one after another (7.4). The About
+text carries the privacy notes of 10.1.2.
 """
 
 from __future__ import annotations
@@ -24,9 +24,6 @@ from quill.core.scribe.library import default_download_root
 from quill.core.scribe.model import FORMATS
 from quill.core.scribe.options import OPEN_CHOICES, SPEAK_CHOICES, ScribeOptions
 from quill.ui.dialog_contract import bind_close_button
-
-#: Turned on in the release that follows Pneuma granting the batch exception.
-BATCH_EXCEPTION_GRANTED = False
 
 
 class ScribeOptionsDialog(wx.Dialog):
@@ -117,12 +114,6 @@ class ScribeOptionsDialog(wx.Dialog):
             "errors are always spoken."
         )
         sizer.Add(self.speak, 0, wx.ALL, 6)
-
-        self.batch = wx.CheckBox(self, label="Send &queued files one after another without asking")
-        self.batch.SetValue(self._options.batch_exception)
-        self.batch.SetHelpText("Only once Pneuma Solutions allows it; still one at a time.")
-        sizer.Add(self.batch, 0, wx.ALL, 6)
-        self.batch.Show(BATCH_EXCEPTION_GRANTED)
 
         box = wx.StaticBoxSizer(wx.VERTICAL, self, f"Powered by {PRODUCT_NAME}")
         parent_box = box.GetStaticBox()
@@ -223,8 +214,7 @@ class ScribeOptionsDialog(wx.Dialog):
         options.open_results = OPEN_CHOICES[max(0, self.open_results.GetSelection())][0]
         options.offer_low_text_pdf = self.offer_pdf.GetValue()
         options.speak_stages = SPEAK_CHOICES[max(0, self.speak.GetSelection())][0]
-        options.batch_exception = bool(self.batch.GetValue()) and BATCH_EXCEPTION_GRANTED
         return options
 
 
-__all__ = ["BATCH_EXCEPTION_GRANTED", "ScribeOptionsDialog"]
+__all__ = ["ScribeOptionsDialog"]

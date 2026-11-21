@@ -58,10 +58,11 @@ def _service(
     server: FakeScribe, tmp_path: Path, events: list | None = None, app: str = "QUILL"
 ) -> QueueService:
     clock = FakeClock()
+    server.clock = clock
     record = events if events is not None else []
     return QueueService(
         app,
-        queue=q.FamilyQueue(tmp_path / "scribe"),
+        queue=q.FamilyQueue(tmp_path / "scribe", now=clock),
         client_factory=lambda: _client(server),
         channel_opener=default_channel_opener(server.connector),
         download_root=lambda: str(tmp_path / "out"),
@@ -315,11 +316,22 @@ def test_a_job_uploads_converts_each_format_and_downloads(
     assert Library(tmp_path / "scribe" / "library.json").files_for(job.document_id)
 
 
-def test_without_the_batch_exception_only_the_first_file_is_sent(tmp_path: Path) -> None:
+def test_several_files_are_one_batch_sent_one_after_another(tmp_path: Path) -> None:
     queue = q.FamilyQueue(tmp_path / "scribe")
     queue.add([_job(tmp_path, "a.pdf"), _job(tmp_path, "b.pdf")])
-    assert [j.state for j in queue.jobs()] == [q.QUEUED, q.WAITING_YOU]
-    assert queue.send_next().file_name == "b.pdf"
+    jobs = queue.jobs()
+    assert [j.state for j in jobs] == [q.QUEUED, q.QUEUED]  # no Send Next File any more
+    assert jobs[0].batch and jobs[0].batch == jobs[1].batch
+    assert [j.file_name for j in queue.batch_jobs(jobs[0].batch)] == ["a.pdf", "b.pdf"]
+
+
+def test_a_queue_file_from_before_the_exception_just_runs(tmp_path: Path) -> None:
+    queue = q.FamilyQueue(tmp_path / "scribe")
+    (tmp_path / "scribe").mkdir()
+    (tmp_path / "scribe" / "queue.json").write_text(
+        json.dumps({"jobs": [{"id": "x", "file_name": "b.pdf", "state": "waiting_you"}]})
+    )
+    assert queue.jobs()[0].state == q.QUEUED
 
 
 def test_only_one_app_holds_the_queue(tmp_path: Path) -> None:

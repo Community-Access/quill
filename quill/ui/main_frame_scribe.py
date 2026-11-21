@@ -34,6 +34,7 @@ from typing import Any
 
 from quill.core.scribe import PRODUCT_NAME
 from quill.core.scribe import queue as q
+from quill.core.scribe.inputs import ACCEPTED_EXTENSIONS
 
 #: (command id, title, handler, place). Places: tools (the submenu), file,
 #: import, export, braille, window.
@@ -57,12 +58,9 @@ ROWS: tuple[tuple[str, str, str, str], ...] = (
     ("scribe.window", "Scribe &Conversions", "scribe_conversions", "window"),
 )
 
-#: Files Scribe takes as they are (3.1); anything else QUILL saves as DOCX first.
-SENDABLE = frozenset({
-    ".pdf", ".doc", ".docx", ".rtf", ".odt", ".ods", ".odp", ".xls", ".xlsx", ".ppt",
-    ".pptx", ".txt", ".html", ".htm", ".epub", ".tif", ".tiff", ".gif", ".jpg", ".jpeg",
-    ".png",
-})  # fmt: skip
+#: Files Scribe takes as they are: the 23 types Pneuma confirmed (3.1). Anything
+#: else -- Markdown, and HTML, which Scribe refuses -- QUILL saves as DOCX first.
+SENDABLE = ACCEPTED_EXTENSIONS
 
 
 def _submenu_named(menu: Any, name: str) -> Any:
@@ -248,7 +246,7 @@ class ScribeMixin:
     def _scribe_pick_and_convert(self, *, multiple: bool, app_formats: Any, open_as: str) -> None:
         import wx
 
-        from quill.core.import_convert import import_wildcard
+        from quill.core.scribe.inputs import input_wildcard
 
         controller = self._scribe()
         if not controller.check_available():
@@ -257,7 +255,7 @@ class ScribeMixin:
         dialog = wx.FileDialog(
             self.frame,  # type: ignore[attr-defined]
             f"Convert with {PRODUCT_NAME}",
-            wildcard=import_wildcard(),
+            wildcard=input_wildcard(),  # only what Scribe takes (3.1)
             style=style,
         )
         try:
@@ -294,9 +292,10 @@ class ScribeMixin:
 
             if get_external_tool_status("pandoc").installed:
                 target = folder / f"{path.stem}.docx"
-                convert_file_with_pandoc(
-                    path, target, from_format="gfm+hard_line_breaks", to_format="docx"
-                )
+                # Scribe refuses web pages (3.1), so an HTML document goes as Word.
+                web = path.suffix.lower() in {".html", ".htm", ".xhtml"}
+                source_format = "html" if web else "gfm+hard_line_breaks"
+                convert_file_with_pandoc(path, target, from_format=source_format, to_format="docx")
                 return target
         except Exception:  # noqa: BLE001 - fall back to the text
             pass
@@ -391,6 +390,10 @@ class ScribeMixin:
         """
         import wx
 
+        from quill.core.scribe.inputs import is_accepted
+
+        if not is_accepted(path):  # Scribe is offered only for what it takes (3.1)
+            return None
         controller = self._scribe()
         if controller.unavailable() or not controller.options().offer_low_text_pdf:
             return None

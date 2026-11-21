@@ -69,6 +69,8 @@ class FakeDocument:
     trashed: bool = False
     settings: dict[str, Any] = field(default_factory=dict)
     preview_running: bool = True
+    #: The ``document[settings][field]`` form fields sent with the upload.
+    upload_settings: dict[str, str] = field(default_factory=dict)
 
 
 class FakeSocket:
@@ -127,6 +129,30 @@ class FakeScribe:
         self.fail_connect = 0
         self.file_bytes: dict[str, bytes] = {}
         self._next_id = 1
+        # account
+        self.organization_name: str | None = None
+        self.account_defaults: dict[str, Any] = {"language": "", "tts_rate": 1.0}
+        self.default_patches: list[dict[str, Any]] = []
+        self.settings_patches: list[tuple[str, dict[str, Any]]] = []
+        self.not_a_document = False
+        # Scribe's rate limit: *rate_limit* actions (uploads, start_conversion,
+        # password tries) per person in fixed 60-second windows of *clock*.
+        self.rate_limit: int | None = None
+        self.clock: Any = time.monotonic
+        self.actions: list[float] = []
+        self.rate_limited_count = 0
+
+    def _over_limit(self) -> bool:
+        """Count one action; True when Scribe would answer ``rate_limited``."""
+        now = float(self.clock())
+        if self.rate_limit is not None:
+            window = int(now // 60)
+            used = sum(1 for t in self.actions if int(t // 60) == window)
+            if used >= self.rate_limit:
+                self.rate_limited_count += 1
+                return True
+        self.actions.append(now)
+        return False
 
     # ----------------------------------------------------------------- REST
 
@@ -153,10 +179,18 @@ class FakeScribe:
 
     def _route(self, method: str, path: str, body: bytes) -> FakeResponse:
         if path == "/api/documents" and method == "POST":
+            if self._over_limit():
+                return _error(429, "rate_limited", "Slow down.")
             text = body.decode("utf-8", errors="replace")
             name = re.search(r'filename="([^"]+)"', text)
             password = re.search(r'name="document\[password\]"\r\n\r\n([^\r]*)', text)
-            doc = self.add_document(title=name.group(1) if name else "Linked document")
+            title = name.group(1) if name else "Linked document"
+            if self.not_a_document or title.lower().endswith((".html", ".htm")):
+                return _error(422, "not_a_document", "That is a web page.")
+            doc = self.add_document(title=title)
+            doc.upload_settings = dict(
+                re.findall(r'name="document\[settings\]\[([a-z_]+)\]"\r\n\r\n([^\r]*)', text)
+            )
             if "LOCKED" in text and not password:
                 doc.unlocked = False
             return _json(201, {"document_id": doc.id})
@@ -183,7 +217,13 @@ class FakeScribe:
             return _json(200, {"documents": docs})
         if path == "/api/account_info":
             return _json(
-                200, {"first_name": "Pat", "last_name": "Reader", "email": "pat@example.com"}
+                200,
+                {
+                    "first_name": "Pat",
+                    "last_name": "Reader",
+                    "email": "pat@example.com",
+                    "organization_name": self.organization_name,
+                },
             )
         if path == "/api/billing":
             return _json(
@@ -203,7 +243,11 @@ class FakeScribe:
         if path == "/api/settings/braille_tables":
             return _json(200, {"braille_tables": [["UEB Grade 2", "en-ueb-g2"]]})
         if path == "/api/document_settings":
-            return _json(200, {"language": "", "tts_rate": 1.0})
+            if method == "PATCH":
+                patch = json.loads(body or b"{}").get("settings", {})
+                self.default_patches.append(patch)
+                self.account_defaults.update(patch)
+            return _json(200, dict(self.account_defaults))
         match = re.match(r"^/api/documents/([^/]+)(/.*)?$", path)
         if not match:
             return _error(404, "not_found", "No such page.")
@@ -218,6 +262,7 @@ class FakeScribe:
         if rest == "/settings":
             if method == "PATCH":
                 doc.settings = json.loads(body or b"{}").get("settings", {})
+                self.settings_patches.append((doc.id, dict(doc.settings)))
             return _json(200, {"language": "", "tts_rate": 1.0, **doc.settings})
         if rest == "/trash":
             doc.trashed = True
@@ -318,6 +363,11 @@ class FakeScribe:
         if event != "start_conversion" or doc is None:
             return
         fmt = payload["format"]
+        if self._over_limit():
+            sock._push(
+                ref, "phx_reply", {"status": "error", "response": {"reason": "rate_limited"}}
+            )
+            return
         if self.in_progress_once:
             self.in_progress_once = False
             sock._push(

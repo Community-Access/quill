@@ -2,6 +2,8 @@
 
 Each app shows its own instance, read from the shared queue file (refreshed
 on the runner's events and every two seconds, for jobs another app runs).
+Several files chosen together run one after another on their own (the
+exception Pneuma approved on 2026-11-21), so there is no Send Next File.
 
 * A report-view ``wx.ListCtrl`` (File, Formats, Stage), one row per job. A
   row's text changes only when its stage changes; rows update in place and
@@ -22,6 +24,7 @@ service -- also when the changed job is the focused row, because an in-place
 from __future__ import annotations
 
 import os
+import time
 from pathlib import Path
 from typing import Any
 
@@ -41,7 +44,6 @@ COMMANDS: tuple[tuple[str, str], ...] = (
     ("Ca&ncel Waiting", "cancel_waiting"),
     ("&Retry", "retry"),
     ("&Buy Pages", "buy_pages"),
-    ("Send Ne&xt File", "send_next"),
     ("Enter &Password...", "enter_password"),
     ("Sign &In...", "sign_in"),
     ("Ask for &Human Review...", "ask_review"),
@@ -50,9 +52,14 @@ COMMANDS: tuple[tuple[str, str], ...] = (
 )
 
 
-def job_details(job: q.Job) -> str:
-    """The Details field: everything about a job, re-readable."""
+def job_details(job: q.Job, now: float | None = None) -> str:
+    """The Details field: everything about a job, re-readable. A job Scribe
+    asked to slow down shows, silently, how long until it tries again."""
     lines = [f"{job.display_name}: {job.state_words}."]
+    if job.state == q.BUSY and job.not_before > (time.time() if now is None else now):
+        # A clock time stays true while the field is being read (it is not rewritten then).
+        at = time.strftime("%H:%M:%S", time.localtime(job.not_before))
+        lines.append(f"Trying again at {at}.")
     if job.formats:
         lines.append(f"Formats: {formats_phrase(job.formats)}.")
     percent = int(round(job.progress * 100))
@@ -243,9 +250,6 @@ class ScribeConversionsWindow(wx.Frame):
             "cancel_waiting": state in q.ACTIVE or state in q.NEEDS_PERSON,
             "retry": state in (q.FAILED, q.STOPPED, q.NEEDS_SIGNIN, q.GONE),
             "buy_pages": True,
-            "send_next": any(
-                self._stages.get(i, "").startswith("Waiting for you: Send") for i in self._ids
-            ),
             "enter_password": state == q.NEEDS_PASSWORD,
             "sign_in": state == q.NEEDS_SIGNIN,
             "ask_review": bool(job and job.document_id),
@@ -277,9 +281,7 @@ class ScribeConversionsWindow(wx.Frame):
     def run(self, method: str) -> None:
         controller = self._controller
         job = self.selected_job()
-        if method == "send_next":
-            controller.send_next()
-        elif method == "sign_in":
+        if method == "sign_in":
             if controller.sign_in() and job is not None:
                 controller.retry(job.id)
         elif job is None:
@@ -340,7 +342,6 @@ _COMMAND_HELP = {
     "cancel_waiting": "Stops QUILL waiting. Scribe still finishes it and may use pages.",
     "retry": "Tries the job again, without uploading again when Scribe already has it.",
     "buy_pages": "Opens Scribe's purchase page in your browser. QUILL never takes payment.",
-    "send_next": "Sends the next file that is waiting for you, one at a time.",
     "enter_password": "Asks for the password of a file that needs one.",
     "sign_in": "Signs in to Scribe for Documents again, then carries on.",
     "ask_review": "Sends the document for human review, Scribe's paid remediation, with a comment.",

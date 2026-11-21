@@ -29,11 +29,10 @@ import logging
 import time
 import urllib.error
 import urllib.request
-import uuid
 from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Any, Protocol
-from urllib.parse import quote, unquote, urlencode, urlsplit
+from urllib.parse import quote, urlencode, urlsplit
 
 from quill.core.scribe.errors import (
     GENERIC_MESSAGE,
@@ -45,6 +44,7 @@ from quill.core.scribe.errors import (
     ScribeSignInError,
     error_from_server,
 )
+from quill.core.scribe.forms import content_disposition_file_name, multipart, total_bytes
 from quill.core.scribe.model import (
     Account,
     DocumentSummary,
@@ -131,50 +131,6 @@ def require_secure(url: str) -> None:
     if parts.scheme == "http" and parts.hostname in {"127.0.0.1", "localhost", "::1"}:
         return
     raise ScribeError("Scribe for Documents must be reached over a secure (HTTPS) address.")
-
-
-def content_disposition_file_name(header: str) -> str:
-    """The server's file name: UTF-8 ``filename*`` first, then ``filename``,
-    keeping only the last path part so it can never leave its folder."""
-    fallback = ""
-    extended = ""
-    for param in (part.strip() for part in (header or "").split(";")):
-        lower = param.lower()
-        if lower.startswith("filename*="):
-            parts = param[len("filename*=") :].split("'", 2)
-            if len(parts) == 3 and parts[0].lower() == "utf-8":
-                extended = unquote(parts[2], encoding="utf-8", errors="replace")
-        elif lower.startswith("filename="):
-            fallback = param[len("filename=") :].strip().strip('"')
-    name = (extended or fallback).replace("\\", "/").rsplit("/", 1)[-1]
-    return name.strip()
-
-
-def _multipart(
-    fields: list[tuple[str, str]], file_field: tuple[str, Path] | None
-) -> tuple[bytes, str]:
-    boundary = uuid.uuid4().hex
-    chunks: list[bytes] = []
-    for name, value in fields:
-        chunks.append(
-            f'--{boundary}\r\nContent-Disposition: form-data; name="{name}"\r\n\r\n'.encode()
-            + value.encode("utf-8")
-            + b"\r\n"
-        )
-    if file_field is not None:
-        name, path = file_field
-        safe = path.name.replace('"', "'")
-        chunks.append(
-            (
-                f'--{boundary}\r\nContent-Disposition: form-data; name="{name}"; '
-                f"filename=\"{safe}\"; filename*=UTF-8''{quote(path.name)}\r\n"
-                "Content-Type: application/octet-stream\r\n\r\n"
-            ).encode()
-        )
-        chunks.append(path.read_bytes())
-        chunks.append(b"\r\n")
-    chunks.append(f"--{boundary}--\r\n".encode())
-    return b"".join(chunks), f"multipart/form-data; boundary={boundary}"
 
 
 class ScribeClient:
@@ -270,21 +226,31 @@ class ScribeClient:
     # ------------------------------------------------------------ documents
 
     def create_document(
-        self, *, path: Path | None = None, url: str = "", password: str = ""
+        self,
+        *,
+        path: Path | None = None,
+        url: str = "",
+        password: str = "",
+        settings: ScribeSettings | None = None,
     ) -> str:
         """``POST /api/documents`` with a file or a link; returns the document ID.
 
         The free ``html_stream`` preview starts on its own. *password* is used
-        for this one request and never kept (10.2.6).
+        for this one request and never kept (10.2.6). *settings* go in as
+        ``document[settings][field]`` form fields, the full set: the HTML
+        conversion starts as soon as the upload lands, so language, picture
+        descriptions, mathematics and large print can only be set here (3.3).
         """
         fields: list[tuple[str, str]] = []
         if url:
             fields.append(("document[url]", url))
         if password:
             fields.append(("document[password]", password))
+        if settings is not None:
+            fields.extend(settings.to_upload_fields())
         file_field = ("document[file]", path) if path is not None and not url else None
         try:
-            body, content_type = _multipart(fields, file_field)
+            body, content_type = multipart(fields, file_field)
         except OSError as error:
             raise ScribeError(f"The file could not be read: {error.strerror or error}") from None
         data = self._json(
@@ -345,14 +311,19 @@ class ScribeClient:
             self._json("GET", f"/api/documents/{_seg(document_id)}/settings")
         )
 
-    def update_settings(self, document_id: str, settings: ScribeSettings) -> None:
+    def update_settings(
+        self, document_id: str, settings: ScribeSettings, *, leave_out: frozenset[str] = frozenset()
+    ) -> None:
+        """``PATCH /api/documents/{id}/settings``: applies to formats not made yet."""
         self._json(
             "PATCH",
             f"/api/documents/{_seg(document_id)}/settings",
-            {"settings": settings.to_update()},
+            {"settings": settings.to_update(leave_out=leave_out)},
         )
 
     def default_settings(self) -> ScribeSettings:
+        """``GET /api/document_settings``: the person's account defaults, the
+        convert dialog's starting values (3.3). Read only, never changed here."""
         return ScribeSettings.from_mapping(self._json("GET", "/api/document_settings"))
 
     def update_default_settings(self, settings: ScribeSettings) -> None:
@@ -474,7 +445,7 @@ class ScribeClient:
                 )
             if response.status != 206:
                 have = 0  # the server sent the whole file: start again
-            total = _total_bytes(response, have)
+            total = total_bytes(response, have)
             try:
                 done = self._stream(response, part, have, total, on_progress, cancel_requested)
             except OSError:
@@ -540,20 +511,6 @@ class ScribeClient:
                 if on_progress is not None:
                     on_progress(received, total)
         return total is None or received >= total
-
-
-def _total_bytes(response: Response, have: int) -> int | None:
-    headers = response.headers
-    content_range = headers.get("content-range", "")
-    if "/" in content_range:
-        tail = content_range.rsplit("/", 1)[1].strip()
-        if tail.isdigit():
-            return int(tail)
-    for key in ("content-length", "x-scribe-content-length"):
-        value = headers.get(key, "").strip()
-        if value.isdigit():
-            return int(value) + (have if response.status == 206 and key == "content-length" else 0)
-    return None
 
 
 def _api_error(status: int, raw: bytes) -> ScribeError:

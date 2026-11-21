@@ -72,6 +72,20 @@ class ScribeGoneError(ScribeError):
     code = "QUILL-SCRIBE-GONE"
 
 
+class ScribeNotDocumentError(ScribeError):
+    """Not a type Scribe takes: a web page or another kind of file (``not_a_document``).
+
+    Normally caught before upload (:mod:`quill.core.scribe.inputs`)."""
+
+    code = "QUILL-SCRIBE-NOTDOC"
+
+
+class ScribeTooBigError(ScribeError):
+    """Over Scribe's 500 MB upload limit; checked before upload, nothing is sent."""
+
+    code = "QUILL-SCRIBE-TOOBIG"
+
+
 class ScribeOfflineError(ScribeError):
     """The network dropped, or Scribe could not be reached."""
 
@@ -124,6 +138,8 @@ def error_from_server(
         return ScribeBusyError(text, reason=key)
     if key in {"not_found", "forbidden"} or status in {403, 404}:
         return ScribeGoneError(text, reason=key)
+    if key == "not_a_document":
+        return ScribeNotDocumentError(text, reason=key)
     if key == "conversion_in_progress":
         return ScribeInProgressError(text, reason=key)
     if key == "conversion_not_complete":
@@ -139,6 +155,7 @@ __all__ = [
     "ScribeGoneError",
     "ScribeInProgressError",
     "ScribeNotCompleteError",
+    "ScribeNotDocumentError",
     "ScribeOffError",
     "ScribeOfflineError",
     "ScribePagesError",
@@ -146,5 +163,6 @@ __all__ = [
     "ScribeSaveError",
     "ScribeSignInError",
     "ScribeSignInLocalError",
+    "ScribeTooBigError",
     "error_from_server",
 ]

@@ -4476,7 +4476,7 @@
   {
     "id": "scribe.conversions",
     "title": "Scribe Conversions",
-    "body": "The Scribe for Documents queue: one document at a time for every QUILL app on this computer. Enter opens a result, Delete removes a row, and the Applications key lists every command: Open Result, Open Folder, Cancel Waiting, Retry, Buy Pages, Send Next File, Enter Password, Sign In, Ask for Human Review, Copy Details and Remove from List. Escape closes it.",
+    "body": "The Scribe for Documents queue: one document at a time for every QUILL app on this computer; several files chosen together go one after another on their own. Enter opens a result, Delete removes a row, and the Applications key lists every command: Open Result, Open Folder, Cancel Waiting, Retry, Buy Pages, Enter Password, Sign In, Ask for Human Review, Copy Details and Remove from List. Escape closes it.",
     "user_guide_section": "working-with-different-document-types"
   },
   {

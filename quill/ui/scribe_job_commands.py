@@ -1,5 +1,5 @@
-"""The commands on one Scribe job (PRD 7.4): Cancel Waiting, Retry, Send Next
-File, Enter Password..., Remove from List and Ask for Human Review...
+"""The commands on one Scribe job (PRD 7.4): Cancel Waiting, Retry, Enter
+Password..., Remove from List and Ask for Human Review...
 
 A mixin of :class:`quill.ui.scribe_controller.ScribeController`, kept apart
 so each module stays under the 600-line cap (GATE-11). It uses the
@@ -30,8 +30,9 @@ class ScribeJobCommands:
         job = self.queue.get(job_id)
         if job is None or job.state in q.FINISHED:
             return
-        self.queue.update(job_id, state=q.STOPPED, message="Stopped waiting")
+        stopped = self.queue.update(job_id, state=q.STOPPED, message="Stopped waiting")
         self._say(say.cancel_waiting_sentence(job, app_name=self.app_name))
+        self._batch_finished(stopped or job)
 
     def retry(self, job_id: str) -> None:
         job = self.queue.get(job_id)
@@ -43,13 +44,6 @@ class ScribeJobCommands:
             job_id, respect_stop=False, state=q.QUEUED, message="", error_code="", password_tries=0
         )
         self._said_needs_you = {m for m in self._said_needs_you if m[0] != job_id}
-        self.wake()
-
-    def send_next(self) -> None:
-        job = self.queue.send_next()
-        if job is None:
-            self._say("No file is waiting to be sent.")
-            return
         self.wake()
 
     def enter_password(self, job_id: str) -> None:

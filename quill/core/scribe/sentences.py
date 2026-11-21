@@ -26,11 +26,11 @@ from pathlib import Path
 from quill.core.scribe import PRODUCT_NAME
 from quill.core.scribe.model import format_label, formats_phrase, stage_words
 from quill.core.scribe.queue import (
+    DONE,
     DOWNLOADING,
     NEEDS_PASSWORD,
     NEEDS_SIGNIN,
     UPLOADING,
-    WAITING_YOU,
     Job,
 )
 
@@ -113,8 +113,6 @@ def needs_you_sentence(job: Job, *, app_name: str) -> str:
             f"Your {PRODUCT_NAME} sign-in has ended. Conversions are paused until you "
             "sign in again."
         )
-    if job.state == WAITING_YOU:
-        return f"{job.display_name} is ready to send. Use Send Next File in Scribe Conversions."
     return ""
 
 
@@ -124,7 +122,25 @@ def pages_sentence(message: str) -> str:
 
 
 def busy_sentence(app_name: str) -> str:
-    return f"{PRODUCT_NAME} asked {app_name} to slow down."
+    """``rate_limited``, once per job (QUILL-SCRIBE-BUSY): the queue waits a minute."""
+    return f"{PRODUCT_NAME} asked {app_name} to slow down; trying again in a minute."
+
+
+def batch_sentence(jobs: list[Job]) -> str:
+    """Said once when the last file of a batch finishes (7.4): what was made and
+    what was not. Each file's own result or error was said as it happened."""
+    made = [job.display_name for job in jobs if job.state == DONE]
+    missed = [job.display_name for job in jobs if job.state != DONE]
+    count = len(jobs)
+    head = f"{PRODUCT_NAME} finished {count} file" + ("" if count == 1 else "s")
+    if not missed:
+        return f"{head}: all were made."
+    if not made:
+        return f"{head}: none were made. Scribe Conversions has the details."
+    return (
+        f"{head}. Made: {_join_names(made)}. Not made: {_join_names(missed)}; "
+        "Scribe Conversions has the details."
+    )
 
 
 def offline_sentence(job: Job, *, app_name: str) -> str:
@@ -230,6 +246,7 @@ class Speaker:
 __all__ = [
     "MILESTONES",
     "Speaker",
+    "batch_sentence",
     "busy_sentence",
     "cancel_waiting_sentence",
     "closed_while_sentence",

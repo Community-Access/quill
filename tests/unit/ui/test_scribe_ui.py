@@ -143,7 +143,9 @@ def test_send_and_convert_queues_one_job_per_file(
 
     _fake_dialog(monkeypatch, wx.ID_OK)
     jobs = controller.convert_files([_source(isolated), _source(isolated, "b.pdf")])
-    assert [j.state for j in controller.queue.jobs()] == [q.QUEUED, q.WAITING_YOU]
+    queued = controller.queue.jobs()
+    assert [j.state for j in queued] == [q.QUEUED, q.QUEUED]  # one after another, unasked
+    assert queued[0].batch and queued[0].batch == queued[1].batch
     assert jobs[0].formats == ["docx", "brf"]
     assert controller.options().last_formats == ["docx", "brf"]
     assert controller.options().first_upload_done
@@ -264,7 +266,7 @@ def test_the_convert_dialog_opens_on_what_will_be_sent(controller: Any, isolated
     try:
         assert wx.Window.FindFocus() in (dialog.consent, None)
         text = dialog.consent.GetValue()
-        assert "will be sent to Scribe for Documents (Pneuma Solutions, United States)" in text
+        assert "will be sent to Scribe for Documents (Pneuma Solutions) and converted in" in text
         assert "Caution:" in text and "Before your first upload:" in text
         assert dialog.send.GetLabel() == "Send and Convert"
         assert not dialog.groups.boxes["braille"].GetStaticBox().IsShown()
@@ -304,7 +306,7 @@ def test_an_encrypted_pdf_asks_for_its_password_at_send(controller: Any, isolate
 def test_rows_update_in_place_and_keep_focus(controller: Any) -> None:
     from quill.ui.scribe_conversions_window import ScribeConversionsWindow
 
-    a, b = controller.queue.add([_job(), _job(file_name="b.pdf")], batch_exception=True)
+    a, b = controller.queue.add([_job(), _job(file_name="b.pdf")])
     window = ScribeConversionsWindow(None, controller)
     try:
         assert window.list.GetItemCount() == 2

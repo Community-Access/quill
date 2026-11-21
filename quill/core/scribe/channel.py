@@ -24,14 +24,18 @@ import time
 from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 from urllib.parse import urlencode, urlsplit, urlunsplit
 
 from quill.core.scribe.errors import (
     ScribeError,
     ScribeOfflineError,
+    ScribeSignInError,
     error_from_server,
 )
+
+if TYPE_CHECKING:
+    from quill.core.scribe.client import ScribeClient
 
 logger = logging.getLogger(__name__)
 
@@ -310,7 +314,35 @@ class DocumentChannel:
             pass
 
 
+def default_channel_opener(
+    connector: Connector | None = None, locale: str = ""
+) -> Callable[[ScribeClient, str], DocumentChannel]:
+    """Open a document channel with the client's token (refreshed once on refusal)."""
+
+    def opener(client: ScribeClient, document_id: str) -> DocumentChannel:
+        tokens = client._tokens  # noqa: SLF001 - the same session the client uses
+        try:
+            return DocumentChannel.open(
+                client.base_url,
+                tokens.access_token(),
+                document_id,
+                connector=connector,
+                locale=locale,
+            )
+        except ScribeSignInError:
+            return DocumentChannel.open(
+                client.base_url,
+                tokens.force_refresh(),
+                document_id,
+                connector=connector,
+                locale=locale,
+            )
+
+    return opener
+
+
 __all__ = [
+    "default_channel_opener",
     "HEARTBEAT_S",
     "ChannelEvent",
     "Connector",

@@ -18,12 +18,13 @@ The package is wx-free and strict-typed:
 * :mod:`.sentences` -- every sentence the person hears, and when.
 * :mod:`.options` -- the family's shared Scribe options.
 
-**The client ID.** QUILL is a public client (PKCE, no secret), so its ID may
-ship in the source. It has not been issued yet (QUILL is waiting for
-Pneuma's review), so :data:`CLIENT_ID` is empty and every Scribe command says
-plainly that the service is not available in this build. Set
-``QUILL_SCRIBE_CLIENT_ID`` in a development build to try it against a test
-server; release builds ignore the variable.
+**The client ID.** QUILL is a public OAuth client (PKCE, no secret), so its
+ID ships in the source: it identifies the app, it is not a credential.
+Pneuma approved QUILL on 2026-11-21 and issued it, so Scribe is on in
+release builds. A build with :data:`CLIENT_ID` empty says plainly that the
+service is not available in it. A development build may set
+``QUILL_SCRIBE_CLIENT_ID`` (and ``QUILL_SCRIBE_BASE_URL``) to try a test
+server; release builds ignore both variables.
 """
 
 from __future__ import annotations
@@ -33,8 +34,9 @@ import os
 #: Pneuma's product name, said by every command, title and result (SCR-POL-1).
 PRODUCT_NAME = "Scribe for Documents"
 
-#: The one place the issued client ID goes. Empty until Pneuma approves QUILL.
-CLIENT_ID = ""
+#: The issued client ID (Pneuma, 2026-11-21). A public OAuth (PKCE) client ID, not a
+#: secret, so secret scanners are told to allow it (gitleaks:allow).
+CLIENT_ID = "ec9bd0194b2e5f518924993b4d37ad050690e30e3c46cd39000e75f17344ac2f"  # gitleaks:allow
 
 #: The service. The channel is the same host over ``wss``.
 BASE_URL = "https://scribeit.io"
@@ -58,16 +60,17 @@ NOT_AVAILABLE_SENTENCE = (
 def client_id() -> str:
     """The issued client ID, or ``""`` when this build has none.
 
-    A development build may name one in ``QUILL_SCRIBE_CLIENT_ID`` to test
-    against a server; a release build ignores the variable.
+    A development build may name another in ``QUILL_SCRIBE_CLIENT_ID`` to
+    test against a server (it wins there, so the override still works now
+    that the issued ID ships); a release build ignores the variable.
     """
-    if CLIENT_ID:
-        return CLIENT_ID
     from quill.core import paths
 
     if getattr(paths, "_DEV_BUILD", False):
-        return os.environ.get("QUILL_SCRIBE_CLIENT_ID", "").strip()
-    return ""
+        override = os.environ.get("QUILL_SCRIBE_CLIENT_ID", "").strip()
+        if override:
+            return override
+    return CLIENT_ID
 
 
 def base_url() -> str:

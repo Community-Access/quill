@@ -265,8 +265,19 @@ class ScribeController(ScribeJobCommands):
         open_as: str = "",
         title: str = "",
     ) -> list[q.Job]:
-        """The one convert dialog, with *paths* already chosen; queue on Send."""
-        if not paths or not self.check_available() or not self.ensure_signed_in():
+        """The one convert dialog, with *paths* already chosen; queue on Send.
+
+        Only the 23 types Scribe takes, up to 500 MB, are offered (3.1): any
+        other file is refused here with its sentence, and nothing is sent.
+        """
+        if not paths or not self.check_available():
+            return []
+        paths, refused = self._sendable(paths)
+        if not paths:
+            for sentence in refused:  # no dialog follows, so nothing cuts them off
+                self._say(sentence)
+            return []
+        if not self.ensure_signed_in():
             return []
         from quill.ui.scribe_convert_dialog import ScribeConvertDialog
 
@@ -277,6 +288,7 @@ class ScribeController(ScribeJobCommands):
             paths=paths,
             formats=options.formats_for(app_formats),
             options=options,
+            refused=refused,  # said in the consent text: a dialog opening cuts speech off
         )
         try:
             from quill.ui.dialog_contract import show_modal_dialog
@@ -290,7 +302,15 @@ class ScribeController(ScribeJobCommands):
 
     def convert_url(self, url: str, *, open_as: str = "") -> list[q.Job]:
         """Convert from a link that points straight at a file (3.1)."""
-        if not url or not self.check_available() or not self.ensure_signed_in():
+        if not url or not self.check_available():
+            return []
+        from quill.core.scribe.inputs import url_refusal
+
+        refused = url_refusal(url)
+        if refused:
+            self._say(refused)
+            return []
+        if not self.ensure_signed_in():
             return []
         from quill.ui.scribe_convert_dialog import ScribeConvertDialog
 
@@ -336,6 +356,21 @@ class ScribeController(ScribeJobCommands):
             dialog.Destroy()
         return self.queue_choice(choice, existing=document)
 
+    @staticmethod
+    def _sendable(paths: list[Path]) -> tuple[list[Path], list[str]]:
+        """The *paths* Scribe takes, and a sentence for each it does not (3.1, 11)."""
+        from quill.core.scribe.inputs import refusal
+
+        kept: list[Path] = []
+        refused: list[str] = []
+        for path in paths:
+            code, sentence = refusal(path)
+            if code:
+                refused.append(sentence)
+            else:
+                kept.append(path)
+        return kept, refused
+
     def queue_choice(
         self,
         choice: Any,
@@ -351,6 +386,13 @@ class ScribeController(ScribeJobCommands):
         options.last_formats = list(choice.formats)
         if not existing:
             options.first_upload_done = True
+        # This app's choices, as what differs from the account defaults (7.3);
+        # ticking "save as my account defaults" is never remembered.
+        options.remember_choice(
+            self.app_name,
+            choice.settings,
+            choice.settings if choice.save_as_defaults else getattr(choice, "base", None),
+        )
         self.save_options(options)
         common = {
             "app": self.app_name,
@@ -383,7 +425,7 @@ class ScribeController(ScribeJobCommands):
                     **common,
                 )
             )
-        self.queue.add(jobs, batch_exception=options.batch_exception)
+        self.queue.add(jobs)  # several files: one after another (the approved exception)
         if choice.password and jobs:
             self.ensure_service()
             if self._service is not None:
@@ -417,11 +459,15 @@ class ScribeController(ScribeJobCommands):
             self._say_quietly(self._speaker.on_change(job, app_in_front=in_front))
         elif kind == "done":
             self._finished(job)
+            self._batch_finished(job)
         elif kind == "error":
             if job.error_code == "QUILL-SCRIBE-PAGES":
                 self._say(say.error_sentence(job, say.pages_sentence(job.message)))
+            elif job.error_code in ("QUILL-SCRIBE-NOTDOC", "QUILL-SCRIBE-TOOBIG"):
+                self._say(job.message)  # already names Scribe and the file
             else:
                 self._say(say.error_sentence(job, job.message))
+            self._batch_finished(job)
         elif kind == "needs_you":
             marker = (job.id, job.state)
             if marker not in self._said_needs_you:
@@ -440,6 +486,18 @@ class ScribeController(ScribeJobCommands):
                     __import__("quill.core.scribe.library", fromlist=["x"]).default_download_root()
                 )
                 self._say(say.closed_while_sentence(titles, app_name=self.app_name, folder=root))
+
+    def _batch_finished(self, job: q.Job) -> None:
+        """After the last file of a batch: what was made and what was not (7.4)."""
+        if not job.batch:
+            return
+        try:
+            jobs = self.queue.batch_jobs(job.batch)
+        except (OSError, TimeoutError):
+            return
+        if len(jobs) > 1 and all(j.state in q.FINISHED for j in jobs):
+            if self._speaker.once(q.Job(id=job.batch), "batch"):
+                self._say(say.batch_sentence(jobs))
 
     def _say_quietly(self, text: str) -> None:
         if text:

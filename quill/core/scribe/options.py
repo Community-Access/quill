@@ -9,6 +9,15 @@ and cannot drift, and the settings vocabulary gate has nothing to reconcile.
 Tokens never go here; they are in the vault (:mod:`.auth`). Nor does a PDF
 password, ever.
 
+**Settings are per document** (3.3, Pneuma 2026-11-21). The convert dialog
+starts from the person's Scribe account defaults, read from the server each
+time it opens, with the person's own last choices in this app on top
+(:func:`starting_settings`). Those choices are kept here as only the fields
+that differ from the account defaults, so a change made on the Scribe
+website still shows through everywhere the person has not chosen otherwise.
+Scribe's account defaults change only when the person ticks "Also save as my
+Scribe account defaults", which is never remembered.
+
 wx-free.
 """
 
@@ -45,15 +54,36 @@ class ScribeOptions:
     open_results: str = "yes"
     offer_low_text_pdf: bool = True
     speak_stages: str = "front"
-    #: Pneuma's batch exception (7.4): off until Pneuma grants it.
-    batch_exception: bool = False
-    #: Local default settings, kept apart from Scribe's account defaults.
+    #: Local default settings, kept apart from Scribe's account defaults:
+    #: only the fields set, never a full set that would hide the account's.
     settings: dict[str, Any] = field(default_factory=dict)
+    #: Each app's last choices in the convert dialog, as the fields that
+    #: differed from the account defaults then (``{"QUILL": {"tts_rate": 2.0}}``).
+    last_settings: dict[str, dict[str, Any]] = field(default_factory=dict)
     #: The privacy lines (10.1.2) are added to the first upload's consent only.
     first_upload_done: bool = False
 
     def local_settings(self) -> ScribeSettings:
         return ScribeSettings.from_mapping(self.settings)
+
+    def starting_settings(
+        self, account_defaults: ScribeSettings | None, app: str
+    ) -> ScribeSettings:
+        """The convert dialog's starting values: the account defaults, then the
+        local defaults, then this app's last choices (7.3)."""
+        merged = (account_defaults or ScribeSettings()).to_dict()
+        merged.update(self.settings)
+        merged.update(self.last_settings.get(app, {}))
+        return ScribeSettings.from_mapping(merged)
+
+    def remember_choice(
+        self, app: str, chosen: ScribeSettings, account_defaults: ScribeSettings | None
+    ) -> None:
+        """Keep the fields of *chosen* that differ from the account defaults."""
+        base = (account_defaults or ScribeSettings()).to_dict()
+        self.last_settings[app] = {
+            key: value for key, value in chosen.to_dict().items() if base.get(key) != value
+        }
 
     def formats_for(self, app_default: list[str] | None = None) -> list[str]:
         """The formats to tick: the last choice, else the app's, else the default."""
@@ -65,9 +95,17 @@ class ScribeOptions:
 
 
 def options_path() -> Path:
-    from quill.core.paths import app_data_dir
+    from quill.core.scribe.queue import queue_dir
 
-    return app_data_dir() / "scribe" / "options.json"
+    return queue_dir() / "options.json"
+
+
+def _known_fields(value: Any) -> dict[str, Any]:
+    """Only the settings fields present in *value*, each made valid (clamped)."""
+    if not isinstance(value, dict):
+        return {}
+    clean = ScribeSettings.from_mapping(value).to_dict()
+    return {key: clean[key] for key in value if key in clean}
 
 
 def load_options(path: Path | None = None) -> ScribeOptions:
@@ -88,9 +126,12 @@ def load_options(path: Path | None = None) -> ScribeOptions:
         speak_stages=str(data.get("speak_stages"))
         if data.get("speak_stages") in speak_ids
         else "front",
-        batch_exception=bool(data.get("batch_exception", False)),
-        settings=ScribeSettings.from_mapping(data.get("settings") or {}).to_dict()
-        if data.get("settings")
+        settings=_known_fields(data.get("settings")),
+        last_settings={
+            str(app): _known_fields(fields)
+            for app, fields in (data.get("last_settings") or {}).items()
+        }
+        if isinstance(data.get("last_settings"), dict)
         else {},
         first_upload_done=bool(data.get("first_upload_done", False)),
     )
