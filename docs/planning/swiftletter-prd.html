@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>SwiftLetter Newsletters in QUILL</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">SwiftLetter Newsletters in QUILL</h1>
+</header>
+<h1 id="swiftletter-newsletters-in-quill">SwiftLetter Newsletters in
+QUILL</h1>
+<p>Product requirements, draft for Jeff's review. 2026-11-21.</p>
+<p>Issue: Community-Access/quill#1992, from payown. REST contract:
+<code>docs/planning/swiftletter-rest-contract.md</code> (version 1.0,
+proposed).</p>
+<h2 id="1-summary">1. Summary</h2>
+<p>SwiftLetter is a WordPress plugin that builds newsletters from
+articles, runs an editorial review, and makes a Word document and audio
+from the result. Its first release candidate is 1.0.9. It is private,
+and its REST API does not exist yet. Its maintainers offered to build
+the REST contract we write.</p>
+<p>Jeff wants "a rich Windows UI/UX experience but also inside of
+WordPress". So SwiftLetter gets a first-class desktop experience in
+QUILL, and SwiftLetter's own WordPress dashboard stays a full peer. Both
+edit the same newsletters and articles. SwiftLetter is the source of
+truth.</p>
+<p>QUILL's side is built into QUILL's WordPress support, not a Quillin.
+It uses the connected site, its application password and QUILL's one
+WordPress client. It shows only on a site whose REST index lists
+<code>swiftletter/v1</code>.</p>
+<h2 id="2-where-things-stand">2. Where things stand</h2>
+<ul>
+<li><strong>This is a plan.</strong> Nothing is built in QUILL yet. Jeff
+asked to plan only until we can read the SwiftLetter repository (section
+13).</li>
+<li><strong>The contract is proposed.</strong> It is written and
+versioned 1.0, and waits for the SwiftLetter maintainers' review.</li>
+<li><strong>We have asked for access</strong> to the SwiftLetter
+repository, and for a 1.0.9 build with the routes on our test site.</li>
+</ul>
+<h2 id="3-goals">3. Goals</h2>
+<ol type="1">
+<li>A person who uses a screen reader or a braille display can write,
+order, review and export a newsletter from QUILL as easily as anyone can
+in the dashboard.</li>
+<li>Editors who never use QUILL lose nothing. The dashboard sees every
+QUILL change, and QUILL sees every dashboard change.</li>
+<li>Nothing is published, reviewed, spent or sent to an AI without a
+deliberate command.</li>
+<li>A WordPress site without SwiftLetter behaves exactly as it does
+today.</li>
+</ol>
+<h2 id="4-not-doing">4. Not doing</h2>
+<ul>
+<li>No second login, credential store or HTTP stack. The existing site
+connection is the only door.</li>
+<li>No change to SwiftLetter's code from our side. For WordPress we
+write requirements (section 10) and the contract.</li>
+<li>No offline creation of newsletters. Articles can be written offline
+as working copies, like any post.</li>
+<li>No AI writing help built for SwiftLetter. QUILL's existing AI
+commands work on an article in the editor like any document, through
+QUILL's one AI route, and only when the person asks.</li>
+<li>No DOCX import in phases 1 to 3. The issue's phase 3 asks for it. It
+waits until we have read how SwiftLetter stores an imported document's
+pictures and alt text (section 13).</li>
+</ul>
+<h2 id="5-decisions-on-the-issues-seven-questions">5. Decisions on the
+issue's seven questions</h2>
+<ol type="1">
+<li><strong>Where it lives.</strong> Both: a branch in the WordPress
+Workbench, a dedicated Newsletter window, and context-aware WordPress
+editor commands. Articles open in QUILL's normal editor.</li>
+<li><strong>Built in, not a Quillin.</strong> It follows the Gravity
+Forms and Paid Memberships Pro patterns (section 11 names the
+files).</li>
+<li><strong>Working copies.</strong> An article is a post of type
+<code>swiftletter_article</code>, so its working copy is keyed by site,
+kind and id like any post (<code>quill/core/wordpress/local.py</code>).
+The copy also remembers its newsletter and position, so Return to
+Newsletter knows where to go.</li>
+<li><strong>Keys.</strong> No new chord in the editor's main keymap. The
+WordPress key layer's D becomes "Save Article to SwiftLetter" on an
+article. P never publishes or reviews an article; it says so. Return to
+Newsletter gets the layer's Shift+N.</li>
+<li><strong>Accessible conventions.</strong> Sections 7 and 9.</li>
+<li><strong>Testing.</strong> Section 12.</li>
+<li><strong>Scope.</strong> A design first (this PRD and the contract).
+Phase 1 is the first build. Nothing merges until the contract is agreed
+and tried on a real site.</li>
+</ol>
+<h2 id="6-phases">6. Phases</h2>
+<p>The issue's phases, and ours:</p>
+<table>
+<thead>
+<tr>
+<th>Issue phase</th>
+<th>Ours</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Read and edit safely</td>
+<td>Phase 1</td>
+<td>Detect, browse, open, Save Article, Return to Newsletter,
+conflicts</td>
+</tr>
+<tr>
+<td>2. Editorial organization</td>
+<td>Phase 2a</td>
+<td>Reorder, link and unlink, new article, delete and restore, new and
+rename newsletter</td>
+</tr>
+<tr>
+<td>2. Editorial organization</td>
+<td>Phase 2b</td>
+<td>Mark Reviewed (several at once), review history</td>
+</tr>
+<tr>
+<td>3. Media and documents</td>
+<td>Phase 3</td>
+<td>Export DOCX, Generate Audio, job progress, download, open the
+result</td>
+</tr>
+<tr>
+<td>3. Media and documents</td>
+<td>Phase 3b</td>
+<td>DOCX import, once we have read their import code</td>
+</tr>
+<tr>
+<td>4. Optional advanced</td>
+<td>Phase 4</td>
+<td>Writing help (existing AI route), offline sync (existing offline
+queue), shortcuts. Nothing SwiftLetter-specific</td>
+</tr>
+</tbody>
+</table>
+<p>Each phase is built against a fake server that follows the contract,
+then checked on the test site before it merges.</p>
+<h2 id="7-quill-desktop-experience">7. QUILL desktop experience</h2>
+<h3 id="71-detecting-swiftletter">7.1 Detecting SwiftLetter</h3>
+<ul>
+<li>The Workbench reads each site's REST index once. The SwiftLetter
+branch shows only when the index lists <code>swiftletter/v1</code>. This
+is one new row in <code>PLUGIN_BRANCHES</code> in
+<code>quill/core/wordpress/workbench_plugin_branches.py</code>, which
+the Workbench's <code>shows_node</code> already checks.</li>
+<li>The first time the branch is opened, QUILL reads
+<code>GET /swiftletter/v1</code> for the version and the person's
+capabilities.</li>
+<li>An API version QUILL does not know gives one sentence in the list,
+and nothing else (contract 2.3).</li>
+</ul>
+<h3 id="72-the-workbench-branch">7.2 The Workbench branch</h3>
+<p>Sites &gt; <em>site</em> &gt; <strong>SwiftLetter</strong> lists the
+newsletters, one row each: title, state, number of articles, when it
+changed and who changed it.</p>
+<p>Under SwiftLetter, the tree has one node per newsletter, named after
+it. Selecting it lists its articles in newsletter order. Each row
+says:</p>
+<ul>
+<li>the title;</li>
+<li>the review state as words ("Reviewed", "Not reviewed", "Changed
+since review");</li>
+<li>who changed it last, and when;</li>
+<li>the position, "3 of 8", as the last column. The screen reader
+already gives a list position, so the column is mainly for braille and
+for reading the row in full.</li>
+</ul>
+<p>The Workbench tree keeps to four levels (<code>MAX_DEPTH</code> in
+<code>quill/core/workbench/tree.py</code>), so there is no separate
+Newsletters folder. The SwiftLetter node's own list is the newsletters,
+and each newsletter is a dynamic child node. This is the Calendar's
+pattern: loading the parent list caches what it found, then the tree is
+rebuilt (<code>day_children</code> and <code>_days_changed</code> in
+<code>quill/ui/wordpress_workbench_bold.py</code>).</p>
+<p>On a newsletter row, Enter opens the Newsletter window. On an article
+row, Enter opens the article in the editor, and the context menu also
+has Open Newsletter Window. Alt+Enter is Properties, as everywhere. F1
+says what the node or row is.</p>
+<p>Writes are not in the Workbench list. They are in the Newsletter
+window, where the order and the review state are in front of the
+person.</p>
+<h3 id="73-the-newsletter-window">7.3 The Newsletter window</h3>
+<p>One newsletter at a time, modeless, like the other Workbench windows.
+It has its own F1 topic. Opening it again for the same newsletter brings
+the open one forward.</p>
+<p><strong>Layout, in tab order, with its access keys.</strong> No two
+controls share a letter (GATE-14). Close carries none.</p>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Access key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&amp;Status (read-only text, label first)</td>
+<td>Alt+S</td>
+</tr>
+<tr>
+<td>&amp;Articles (the list, label first)</td>
+<td>Alt+A</td>
+</tr>
+<tr>
+<td>Open in &amp;Editor</td>
+<td>Alt+E</td>
+</tr>
+<tr>
+<td>Move &amp;Up</td>
+<td>Alt+U</td>
+</tr>
+<tr>
+<td>Move Do&amp;wn</td>
+<td>Alt+W</td>
+</tr>
+<tr>
+<td>Mar&amp;k Reviewed...</td>
+<td>Alt+K</td>
+</tr>
+<tr>
+<td>Review &amp;History...</td>
+<td>Alt+H</td>
+</tr>
+<tr>
+<td>&amp;Link Existing Article...</td>
+<td>Alt+L</td>
+</tr>
+<tr>
+<td>U&amp;nlink from Newsletter...</td>
+<td>Alt+N</td>
+</tr>
+<tr>
+<td>New Art&amp;icle...</td>
+<td>Alt+I</td>
+</tr>
+<tr>
+<td>&amp;Delete Article...</td>
+<td>Alt+D</td>
+</tr>
+<tr>
+<td>Restore from &amp;Trash...</td>
+<td>Alt+T</td>
+</tr>
+<tr>
+<td>Export D&amp;OCX...</td>
+<td>Alt+O</td>
+</tr>
+<tr>
+<td>&amp;Generate Audio...</td>
+<td>Alt+G</td>
+</tr>
+<tr>
+<td>Open &amp;Result</td>
+<td>Alt+R</td>
+</tr>
+<tr>
+<td>Re&amp;fresh</td>
+<td>Alt+F, and F5</td>
+</tr>
+<tr>
+<td>Close</td>
+<td>Escape</td>
+</tr>
+</tbody>
+</table>
+<p>Unlink and Delete are not next to each other in the tab order.</p>
+<p>The window is a <code>wx.Frame</code>, so Escape and F5 are added
+through its accelerator table (a <code>wx.Frame</code> does not map
+Escape to Cancel by itself), and Close is bound with
+<code>dialog_contract.bind_close_button</code>.</p>
+<p>The Articles list also has a context menu (the Applications key or
+Shift+F10) with the same commands, each showing its access key. Sixteen
+buttons is a long way to Tab.</p>
+<p><strong>7.3.1 The status line.</strong></p>
+<ul>
+<li>It is a <code>wx.TextCtrl</code> with <code>TE_READONLY</code>,
+labelled "&amp;Status" by a label created just before it. A plain static
+text cannot take focus and is not read when the window opens.</li>
+<li>It says the newsletter's title, state, number of articles, and the
+current job's stage. An empty newsletter says "No articles yet." here.
+The list stays empty, with no made-up row.</li>
+<li>It is updated with <code>ChangeValue</code>, never
+<code>SetValue</code>, so no change event fires.</li>
+<li>It takes focus only the first time the window opens. Every later
+return (Return to Newsletter, Refresh, closing a dialog) puts focus on
+the article in the list.</li>
+</ul>
+<p><strong>7.3.2 The list's mechanics.</strong> Focus restoration
+depends on these, so they are requirements:</p>
+<ul>
+<li>Rows are updated in place with <code>SetItem</code>. A move swaps
+the two rows' text. A focused list is never cleared with
+<code>DeleteAllItems</code> and rebuilt, because NVDA and JAWS then jump
+to row 1 or read "list, empty".</li>
+<li>A refresh that changes how many articles there are rebuilds the list
+only while it does not have focus, or keeps the focused row by id while
+rows are added or removed around it.</li>
+<li>Restoring focus sets both <code>LIST_STATE_FOCUSED</code> and
+<code>LIST_STATE_SELECTED</code> on the row with the right article id,
+then calls <code>EnsureVisible</code>. On refresh, the multi-selection
+is kept by id.</li>
+<li>Columns, in order: Title, Review, Changed By, Changed,
+Position.</li>
+</ul>
+<p><strong>7.3.3 Reorder.</strong> Move Up and Move Down are the same
+words and access keys as Menus &gt; Arrange Items
+(<code>quill/ui/wordpress_menu_commands.py</code>, which saves each move
+as it happens). Each move:</p>
+<ul>
+<li>moves the selected article in the list, keeping it selected and
+focused;</li>
+<li>is announced only when focus is not in the list. When focus is in
+the list, the screen reader already reads the moved row in its new
+place, so QUILL says nothing. When focus is on the Move button, QUILL
+says "Moved to 2 of 8." once;</li>
+<li>sends the whole order in one request, with the newsletter's version
+token, as Arrange Items saves each move;</li>
+<li>if a move arrives while the last one is still being sent, QUILL
+sends the newest order once that one finishes, so the site never gets an
+order out of turn;</li>
+<li>on a conflict, puts the site's order back, keeps focus on the same
+article, and then, after the list has settled
+(<code>wx.CallAfter</code>), says "Someone changed the order on the
+site. QUILL put their order back; your move was not saved."</li>
+</ul>
+<p>These are always announced, because nothing focused changes: "Already
+first.", "Already last.", "Select one article to move." (when several
+are selected), and the conflict sentence. Nothing is sent for them.</p>
+<p><strong>7.3.4 Mark Reviewed.</strong> On one or more selected
+articles.</p>
+<ul>
+<li>A preview names each one with the exact revision it would mark:
+"From the chair, revision 905, changed by Pat Reyes on 20 November."
+Articles already reviewed at their current revision are listed as
+"already reviewed" and skipped.</li>
+<li>If every one is marked, QUILL says one sentence ("3 marked
+reviewed.") and opens nothing.</li>
+<li>If any is refused or skipped, QUILL announces nothing and opens a
+results dialog. Its first control is a read-only text holding the
+summary ("2 marked reviewed, 1 refused."), then a list of each article
+and what happened, including SwiftLetter's own sentence for a
+refusal.</li>
+<li>The list's Review column updates in place.</li>
+</ul>
+<p><strong>7.3.5 Link, Unlink, New, Delete.</strong></p>
+<ul>
+<li>Link Existing Article opens a dialog with a labelled "&amp;Filter"
+box before a list of the site's articles not in this newsletter. The
+match count is said once, after typing pauses, because the list is not
+focused. It links the chosen article at the end.</li>
+<li>Unlink is worded "Unlink from Newsletter" everywhere and asks: "Take
+From the chair out of Winter 2026? The article is not deleted, and stays
+in every other newsletter." The safe button is the default.</li>
+<li>New Article asks for a title, makes the article on the site, links
+it at the end, and offers to open it.</li>
+<li>Delete Article asks by name, with the safe button as the default,
+sends the article to WordPress's Trash, and says "In the Trash. Restore
+from Trash brings it back." Restore from Trash lists the trashed
+articles of this newsletter.</li>
+</ul>
+<p><strong>7.3.6 Export DOCX and Generate Audio.</strong></p>
+<ul>
+<li>Each asks first when SwiftLetter says the export is paid or uses an
+outside provider, and shows SwiftLetter's own notice. A DOCX export with
+no provider asks nothing more than the command itself.</li>
+<li>The job's stage is shown in the status line, so it can be read at
+any time.</li>
+<li>While the Newsletter window is the active window, each stage is
+spoken once when it changes ("Making audio, article 3 of 8."), through
+the announcer, never on a timer. When the person is elsewhere, for
+example writing in the editor, only the final result is spoken, so a
+long job does not interrupt writing.</li>
+<li>The result is said once: "Audio is ready. Open Result plays it." or
+SwiftLetter's sentence for a failure.</li>
+<li>The window can be closed while a job runs. The job carries on on the
+site, and QUILL says the result once if it finishes while QUILL is
+open.</li>
+</ul>
+<p><strong>7.3.7 Open Result.</strong> A DOCX opens in QUILL's editor.
+Audio opens in the Media Player. The file is downloaded through the
+authenticated route into QUILL's data folder,
+<code>swiftletter/&lt;site&gt;/&lt;newsletter&gt;/</code>, and never
+from a public address.</p>
+<p><strong>7.3.8 Focus after actions.</strong> When the person comes
+back from an article, focus is on the same article in the list, by id,
+even if the order changed meanwhile. After a refresh, a move, a review
+or an unlink, focus stays on the same article, or on the nearest one if
+it is gone.</p>
+<h3 id="74-articles-in-the-editor">7.4 Articles in the editor</h3>
+<ul>
+<li>Opening an article puts it in QUILL's normal editor as a working
+copy, in HTML or Markdown as the person chooses, exactly like a post
+(<code>open_item</code> and <code>_open_as</code> in
+<code>quill/ui/wordpress_open_commands.py</code>). The working copy's
+properties also keep its newsletter's id and title and the article's
+position.</li>
+<li><strong>Ctrl+S stays local save.</strong> Nothing is sent.</li>
+<li><strong>D on the WordPress key layer</strong> (Ctrl+Alt+Shift+Grave,
+then D) and File &gt; WordPress &gt; Save Draft to Site become
+<strong>Save Article to SwiftLetter</strong> on an article. It saves
+title and content as a new revision, with the same
+<code>modified_gmt</code> conflict check as posts
+(<code>send_work</code> in
+<code>quill/ui/wordpress_more_commands.py</code>), and never sends a
+status. When the article had been reviewed, it says "Article saved to
+SwiftLetter on Example Site. Its review state is now Changed since
+review."</li>
+<li><strong>P never publishes or reviews an article.</strong> It says:
+"Articles are published with their newsletter, and reviewed in the
+Newsletter window. Return to Newsletter is Ctrl+Alt+Shift+Grave, then
+Shift+N."</li>
+<li><strong>Return to Newsletter</strong> (File &gt; WordPress, and the
+layer's Shift+N) brings forward, or opens, the Newsletter window with
+focus on this article. On a document that is not an article it says
+so.</li>
+<li><strong>Remote changes.</strong> Compare with Site, Previous
+Versions, Keep Theirs and Use Mine work as they do for posts, because
+the article is a post.</li>
+<li><strong>Offline.</strong> A failed save offers Try Again or the
+offline queue, like any post
+(<code>quill/core/wordpress/offline.py</code>).</li>
+</ul>
+<h3 id="75-safe-mode-and-read-only-access">7.5 Safe Mode and Read Only
+access</h3>
+<ul>
+<li>Safe Mode, and Workbench access set to Read Only for the site,
+refuse every write in the Newsletter window with one sentence, before
+anything is sent. The window asks the Workbench's guard
+(<code>access_refusal</code> in
+<code>quill/ui/wordpress_workbench_guard.py</code>).</li>
+<li>Nothing publishes, reviews, calls an AI or starts a paid export
+without a deliberate command and, for a paid export, a yes.</li>
+</ul>
+<h3 id="76-wp-admin-for-this-place">7.6 wp-admin for This Place</h3>
+<p>The wp-admin map gets a SwiftLetter row
+(<code>quill/core/wordpress/workbench_admin_map_plugins.py</code>), so
+wp-admin for This Place on the SwiftLetter node or a newsletter opens
+SwiftLetter's own screen. Its <code>admin.php?page=</code> slug is read
+from their code once we have access.</p>
+<h2 id="8-errors-gate-ec">8. Errors (GATE-EC)</h2>
+<p>Every error class inherits <code>CodedError</code> through
+<code>WordPressApiError</code>
+(<code>quill/core/wordpress/api.py</code>), so the existing
+<code>failure_sentence</code> speaks its plain sentence.</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>When</th>
+<th>What the person hears</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>QUILL-SWIFTLETTER-API-REQUEST</code></td>
+<td>Any refusal not listed below</td>
+<td>SwiftLetter's own sentence, or the WordPress one</td>
+</tr>
+<tr>
+<td><code>QUILL-SWIFTLETTER-API-VERSION</code></td>
+<td>An API version QUILL does not know</td>
+<td>"SwiftLetter on this site speaks version 2.0 of its connection, and
+this QUILL knows version 1. Update QUILL, or ask the site's
+administrator."</td>
+</tr>
+<tr>
+<td><code>QUILL-SWIFTLETTER-API-CONFLICT</code></td>
+<td>409 or 412</td>
+<td>"Someone changed this on the site..." and what QUILL did about
+it</td>
+</tr>
+<tr>
+<td><code>QUILL-SWIFTLETTER-API-FORBIDDEN</code></td>
+<td>403</td>
+<td>SwiftLetter's sentence, or "Your account on Example Site is not
+allowed to do that in SwiftLetter."</td>
+</tr>
+<tr>
+<td><code>QUILL-SWIFTLETTER-EXPORT-CONSENT</code></td>
+<td>428</td>
+<td>"SwiftLetter needs your yes before this export. Choose the command
+again to be asked."</td>
+</tr>
+<tr>
+<td><code>QUILL-SWIFTLETTER-EXPORT-FAILED</code></td>
+<td>A job ends failed, or runs out of time</td>
+<td>SwiftLetter's sentence, or "The export did not finish in 20 minutes.
+It may still finish on the site."</td>
+</tr>
+</tbody>
+</table>
+<p>A disconnected site, a wrong password and a site that is down use the
+existing WordPress sentences (<code>plain_error</code> in
+<code>api.py</code>).</p>
+<h2 id="9-accessibility">9. Accessibility</h2>
+<ul>
+<li>Every list is a native <code>wx.ListCtrl</code> in report view, so
+the screen reader reads row and column without help.</li>
+<li>Every control has a label created just before it, so its name is its
+label. Buttons carry their own names.</li>
+<li>Nothing is announced on focus, on opening, or for a selection change
+(GATE-13). The announcer speaks only results QUILL alone knows: a move's
+new position when focus is on the button, a job's stage change, a
+review's outcome, a refusal.</li>
+<li>What is spoken is also brailled (GATE-BRAILLE), because everything
+goes through the announcement service.</li>
+<li>F1 answers with the window's purpose and then the focused control's
+own help, written inline with <code>SetHelpText</code> at each control
+(<code>quill/ui/app_context_help.py</code>).</li>
+<li>No colour carries meaning: the review state is words.</li>
+<li>Every command is reachable by keyboard: buttons, the context menu,
+and the Workbench's menus. No drag and drop.</li>
+<li>Screen reader checks with NVDA, JAWS and Narrator are in section
+12.3, recorded in <code>docs/qa/screen-reader-checks-2026-10.md</code>
+once run.</li>
+</ul>
+<h2
+id="10-in-wordpress-what-the-swiftletter-dashboard-needs-so-both-work-together">10.
+In WordPress: what the SwiftLetter dashboard needs so both work
+together</h2>
+<p>These are requirements for SwiftLetter's own admin screens, for the
+maintainers. They are WCAG 2.2 AA, and they are what lets a QUILL user
+and a dashboard user work on the same newsletter.</p>
+<h3 id="101-reorder-without-drag">10.1 Reorder without drag</h3>
+<ul>
+<li>Every article in a newsletter's list has plain <strong>Move
+Up</strong> and <strong>Move Down</strong> buttons. Drag and drop may
+stay, but it must never be the only way (WCAG 2.5.7 Dragging Movements).
+Use plain buttons, not a menu button.</li>
+<li>The accessible name starts with the visible words, then names the
+article:
+<code>&lt;button&gt;Move Up&lt;span class="screen-reader-text"&gt; From the chair&lt;/span&gt;&lt;/button&gt;</code>,
+which is read "Move Up From the chair" (WCAG 2.5.3 Label in Name). The
+same pattern goes on Unlink, Delete and Mark Reviewed.</li>
+<li>Moving a row's DOM node drops its focus to the page body. After the
+row moves, the script calls <code>focus()</code> on the same button of
+the same article.</li>
+<li>Focus stays on that button even when the move makes it first or
+last.</li>
+<li>A polite live region says the result once, through
+<code>wp.a11y.speak( message, 'polite' )</code>: "From the chair moved
+to position 1 of 8, now first."</li>
+<li>The first article's Move Up and the last article's Move Down use
+<code>aria-disabled="true"</code>, not <code>disabled</code>, so they
+stay focusable. Activating one speaks "Already first." or "Already
+last." and does nothing else.</li>
+<li>If the table can be sorted by another column, Move Up and Move Down
+are disabled while it is, with a sentence saying why.</li>
+<li>The order is saved by the same <code>PUT .../articles/order</code>
+route QUILL uses, with the version token, so a dashboard move and a
+QUILL move cannot silently overwrite each other.</li>
+<li>On a conflict (409), the screen reloads the order, keeps focus on
+that article's Move button, and announces "Someone changed the order.
+Their order is shown; your move was not saved."</li>
+</ul>
+<h3 id="102-review-state-as-text">10.2 Review state as text</h3>
+<ul>
+<li>The review state is written as text in its own column ("Reviewed",
+"Not reviewed", "Changed since review"), never as a colour, an icon
+alone or a strike-through. An icon may sit beside the words with
+<code>aria-hidden="true"</code> (WCAG 1.4.1 Use of Color, 1.1.1 Non-text
+Content).</li>
+<li>The list is a real table with a caption and <code>scope="col"</code>
+headers (WCAG 1.3.1).</li>
+<li>Text meets 4.5:1 contrast, and icons and control borders 3:1 (WCAG
+1.4.3, 1.4.11).</li>
+</ul>
+<h3 id="103-focus-after-actions">10.3 Focus after actions</h3>
+<ul>
+<li>After Mark Reviewed, Unlink, Delete or Restore, focus goes to a
+predictable place: the same row if it is still there, otherwise the next
+row, otherwise the list's heading, which has <code>tabindex="-1"</code>
+so <code>focus()</code> works. Never to the top of the page (WCAG 2.4.3
+Focus Order).</li>
+<li>A confirmation dialog returns focus to the control that opened
+it.</li>
+<li>Focus is never hidden behind a sticky header or the admin bar (WCAG
+2.4.11 Focus Not Obscured), and always visible (WCAG 2.4.7).</li>
+</ul>
+<h3 id="104-notices">10.4 Notices</h3>
+<ul>
+<li>Every result of an action done without a page load is announced with
+<code>wp.a11y.speak()</code>, once: "Marked reviewed.", "Unlinked. The
+article was not deleted." <code>wp-a11y</code> is listed as a script
+dependency.</li>
+<li>After an action that reloads the page, <code>wp.a11y.speak</code> is
+unreliable. Instead focus moves to the notice (which has
+<code>tabindex="-1"</code>) or to the row, one or the other, and the
+notice is not also spoken.</li>
+<li>Admin notices use WordPress's notice markup
+(<code>notice notice-success</code>, <code>notice-error</code>) (WCAG
+4.1.3 Status Messages).</li>
+<li>Errors say what happened and what to do, in words, next to the
+control they belong to (WCAG 3.3.1, 3.3.3).</li>
+</ul>
+<h3 id="105-labelled-controls-and-page-structure">10.5 Labelled controls
+and page structure</h3>
+<ul>
+<li>Every input, select and button has a visible label, or an accessible
+name that starts with its visible text (WCAG 1.3.1, 2.5.3, 4.1.2).</li>
+<li>Icon-only buttons have an accessible name, and any tooltip on them
+can be dismissed, hovered and stays until dismissed (WCAG 1.4.13 Content
+on Hover or Focus).</li>
+<li>Unlink and Delete are worded differently and never sit side by side
+without words. Unlink says it does not delete.</li>
+<li>Repeated buttons on each row say which article they act on (WCAG
+2.4.6).</li>
+<li>No <code>&lt;select&gt;</code> acts on change. A state or position
+chosen from a list needs a button to apply it (WCAG 3.2.2 On
+Input).</li>
+<li>The page's <code>&lt;title&gt;</code> names the newsletter (WCAG
+2.4.2), and the page has one H1 naming it (WCAG 2.4.6).</li>
+<li>Row buttons are at least 24 by 24 CSS pixels, or spaced as WCAG
+allows (WCAG 2.5.8 Target Size Minimum).</li>
+<li>The table with its row buttons works at 400 percent zoom and 320 CSS
+pixels wide without scrolling in two directions, and with text resized
+to 200 percent (WCAG 1.4.10 Reflow, 1.4.4 Resize Text).</li>
+</ul>
+<h3 id="106-job-progress">10.6 Job progress</h3>
+<ul>
+<li>DOCX and audio generation show progress in text: the stage and, for
+audio, "article 3 of 8".</li>
+<li>A <code>role="status"</code> region is updated when the stage
+changes, not on a timer, so a screen reader hears each stage once.</li>
+<li>If a <code>&lt;progress&gt;</code> element is used, it has a label
+and its value is also given as text.</li>
+<li>The finished file is offered as a link with its name, type and size
+("winter-2026.docx, Word document, 47 KB").</li>
+<li>A paid or provider export asks before it starts, in a dialog with a
+heading, the notice, and two clearly named buttons ("Generate Audio",
+"Cancel"), then returns focus. Delete asks first, or can be undone
+through Restore (WCAG 3.3.4 Error Prevention).</li>
+<li>Nothing times out without warning (WCAG 2.2.1 Timing
+Adjustable).</li>
+</ul>
+<h3 id="107-seeing-quills-edits">10.7 Seeing QUILL's edits</h3>
+<ul>
+<li>Revisions authored through REST show in the article's revision list
+with the person's name and, where WordPress recorded it, the application
+password's name: "Pat Reyes, from QUILL (application password 'Pat's
+laptop')".</li>
+<li>The newsletter's article list shows who changed each article last
+and when, as text: the same <code>modified_by</code> QUILL shows.</li>
+<li>A dashboard screen that is open while QUILL saves shows the change
+on reload. The article editor respects WordPress's post lock, so a
+dashboard edit and a QUILL save cannot both win silently.</li>
+<li>To test (core WordPress behaviour, not the plugin's): with an
+article open in the block editor while QUILL saves it, check that the
+"This post has been updated" notice can be reached by keyboard and is
+announced.</li>
+</ul>
+<h3 id="108-testing-on-their-side">10.8 Testing on their side</h3>
+<ul>
+<li>Keyboard only: every action above without a mouse.</li>
+<li>NVDA with Firefox and JAWS with Chrome on the newsletter list,
+reorder, review and export.</li>
+<li>axe or Accessibility Insights on each SwiftLetter admin screen with
+zero WCAG A or AA violations, as well as the manual checks above.</li>
+</ul>
+<h2 id="11-where-it-goes-in-quill">11. Where it goes in QUILL</h2>
+<p>Each part, and the existing QUILL file or pattern it builds on.</p>
+<h3 id="111-wx-free-core-quillcorewordpress">11.1 Wx-free core
+(<code>quill/core/wordpress/</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>New module</th>
+<th>What</th>
+<th>Built on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>swiftletter_contract.py</code></td>
+<td>Routes, version check, the newsletter, article, review and job
+shapes, error mapping to <code>QUILL-SWIFTLETTER-*</code></td>
+<td><code>api.py</code> (<code>WordPressApiError</code>,
+<code>plain_error</code>)</td>
+</tr>
+<tr>
+<td><code>swiftletter.py</code></td>
+<td>One function per route, through the site's
+<code>WordPressApi</code></td>
+<td><code>api.py</code> (<code>request</code>,
+<code>iter_collection</code>, <code>batch</code>);
+<code>workbench_pmpro_rest.py</code></td>
+</tr>
+<tr>
+<td><code>workbench_swiftletter.py</code></td>
+<td>The branch's nodes, loaders and rows</td>
+<td><code>workbench_pmpro_tree.py</code>,
+<code>workbench_pmpro.py</code>, <code>workbench_rows.py</code>
+(<code>WbRow</code>)</td>
+</tr>
+<tr>
+<td><code>workbench_swiftletter_actions.py</code></td>
+<td>Context-menu rows, their tiers, help, and written reasons for having
+no chord</td>
+<td><code>workbench_gravity_actions.py</code> (<code>KEYLESS</code>),
+<code>workbench_admin_actions.py</code>,
+<code>workbench_tiers.py</code></td>
+</tr>
+</tbody>
+</table>
+<p>One small change to <code>api.py</code>: a <code>download</code>
+method that returns bytes and headers through the same signed opener,
+for the job file. It is the same door, so no new egress call site.</p>
+<p>Changes to existing modules: one row in
+<code>workbench_plugin_branches.PLUGIN_BRANCHES</code>; the nodes
+spliced into <code>workbench_tree.py</code>; the loader family in
+<code>workbench_load.py</code>; node and row help in
+<code>workbench_node_help.py</code>; the row types in
+<code>workbench_actions.py</code>; one row in
+<code>workbench_admin_map_plugins.py</code>; the Return to Newsletter
+row and its Shift+N in <code>menu.py</code>
+(<code>WORDPRESS_ROWS</code>, <code>LAYER_KEYS</code>,
+<code>DOCUMENT_ONLY</code>).</p>
+<h3 id="112-windows-quillui">11.2 Windows (<code>quill/ui/</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>New module</th>
+<th>What</th>
+<th>Built on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wordpress_workbench_swiftletter.py</code></td>
+<td>Provider mixin: dynamic newsletter nodes, Enter on a row, open the
+window or the article</td>
+<td><code>wordpress_workbench_membership_commands.py</code>,
+<code>wordpress_workbench_discovered.py</code>
+(<code>namespace_children</code>),
+<code>wordpress_workbench_bold.py</code> (Calendar's dynamic nodes)</td>
+</tr>
+<tr>
+<td><code>swiftletter_window.py</code></td>
+<td>The Newsletter window: status line, list, buttons, focus by id</td>
+<td><code>workbench_frame.py</code> (modeless frame),
+<code>dialog_contract.bind_close_button</code></td>
+</tr>
+<tr>
+<td><code>swiftletter_window_actions.py</code></td>
+<td>Move, review, link, unlink, new, delete, restore, export, jobs, open
+result</td>
+<td><code>wordpress_menu_commands.py</code> (Arrange Items' movers);
+<code>wordpress_workbench_guard.py</code> (tier checks)</td>
+</tr>
+<tr>
+<td><code>wordpress_swiftletter_commands.py</code></td>
+<td>Editor mixin on <code>WordPressCommands</code>: context-aware D and
+P, Return to Newsletter, open an article with its newsletter</td>
+<td><code>wordpress_more_commands.py</code>
+(<code>cmd_save_draft</code>, <code>send_work</code>,
+<code>_conflict</code>), <code>wordpress_open_commands.py</code></td>
+</tr>
+</tbody>
+</table>
+<p>QUILL Lite gets <code>cmd_wp_return_to_newsletter</code> in
+<code>quill/apps/lite_window_wordpress.py</code>, because File &gt;
+WordPress is shared and QUILL Lite may never be ahead or behind on a
+shared row. QUILL Lite gets no Workbench, so its Return to Newsletter
+opens the newsletter in QUILL's Workbench when QUILL is running, or says
+where to find it.</p>
+<h3 id="113-where-a-result-opens">11.3 Where a result opens</h3>
+<ul>
+<li>DOCX: the editor's <code>open_path</code>, as any document.</li>
+<li>Audio: the Media Player, as
+<code>wordpress_player_commands.py</code> does for site audio.</li>
+</ul>
+<h2 id="12-gates-and-tests">12. Gates and tests</h2>
+<h3 id="121-gates">12.1 Gates</h3>
+<ul>
+<li>GATE-9: the SwiftLetter routes named in the reviewed WordPress
+egress entry
+(<code>quill/tools/network_egress_entries_wordpress.py</code>,
+<code>send_to_site</code>).</li>
+<li>GATE-EC: the six <code>QUILL-SWIFTLETTER-*</code> codes
+(<code>quill/tools/error_code_audit.py</code>).</li>
+<li>GATE-13: no announce on focus or title; a move in the focused list
+is not announced; each job stage once
+(<code>check_over_announce.py</code>).</li>
+<li>GATE-11: every new module under 600 lines
+(<code>module_size_budgets.json</code>).
+<code>wordpress_workbench_window.py</code> is near its ceiling, so the
+provider's new code goes in the mixin.</li>
+<li>GATE-14: the access-key table in 7.3
+(<code>check_access_keys.py</code>).</li>
+<li>Menu accelerators and family rule 8: the Return to Newsletter row
+shows its layer key; each Workbench command has help and a written
+reason for having no chord (<code>test_menu_accelerators.py</code>,
+<code>test_wp_workbench_by_name.py</code>).</li>
+<li>Tiers: every new <code>do_</code> handler classified
+(<code>test_wp_workbench_tiers.py</code>).</li>
+<li>GATE-LITE-COVER: <code>cmd_wp_return_to_newsletter</code> has a
+behavioural test (<code>lite_command_coverage.json</code>).</li>
+<li>F1: authored help on the window and every control;
+<code>docs/f1-help-reference.md</code> regenerated
+(<code>build_help_reference.py</code>).</li>
+<li>GATE-REACH and the dialog inventory: the window reachable from an
+entry point (<code>surface_reachability_audit.py --write</code>,
+<code>dialog_inventory.py</code>).</li>
+<li>The Workbench reference
+(<code>python -m quill.tools.build_workbench_reference --write</code>),
+the keyboard reference, and the command catalogue and Command Key
+fixtures for the new row.</li>
+<li>A CHANGELOG entry, a SwiftLetter section in
+<code>docs/user guide/quill-guide/quill-guide-16-wordpress.md</code>,
+and HTML and EPUB regenerated for every changed document.</li>
+<li><code>python -m quill.tools.platform_report</code> clean.</li>
+</ul>
+<h3 id="122-automated-tests">12.2 Automated tests</h3>
+<ul>
+<li><code>tests/unit/core/wordpress/fake_swiftletter.py</code>: the
+contract as a fake server behind the WordPress client's opener, like the
+fake site in
+<code>tests/unit/ui/wordpress/test_wp_workbench_window.py</code>.</li>
+<li>Core: discovery and versions, every route, every error code, order
+conflicts, stale revisions, consent, jobs and downloads.</li>
+<li>Workbench: the branch hides on a site without SwiftLetter; rows say
+title, review, who and position; Enter opens the window or the
+article.</li>
+<li>Newsletter window: a move from the button announces once and sends
+one order; a move in the focused list announces nothing; a conflict
+restores the order and keeps focus; rows update in place; Mark Reviewed
+previews and reports per article as 7.3.4 says; Unlink never deletes;
+Delete trashes; Safe Mode and Read Only refuse; an export asks for
+consent, speaks each stage once and opens the result.</li>
+<li>Editor: D on an article saves title and content only, with the
+conflict check; P refuses; Return to Newsletter focuses the
+article.</li>
+</ul>
+<h3 id="123-by-hand-before-merging-phase-1">12.3 By hand, before merging
+phase 1</h3>
+<ul>
+<li>NVDA and JAWS: browse the branch, open an article, save it, return,
+and hear the same article focused.</li>
+<li>Narrator: the Newsletter window's list and buttons.</li>
+<li>A braille display: the status line and a move result.</li>
+</ul>
+<h2 id="13-what-we-need-from-the-swiftletter-repository">13. What we
+need from the SwiftLetter repository</h2>
+<p>When we have access, we will read their code for these, and change
+this PRD and the contract to match:</p>
+<ol type="1">
+<li><strong>Post types.</strong> The article type's name,
+<code>rest_base</code>, <code>show_in_rest</code>, <code>supports</code>
+(revisions, custom fields), statuses, and whether newsletters are a post
+type, a taxonomy or their own table.</li>
+<li><strong>Capabilities.</strong> The capabilities they register or
+map, how they are given to roles, and the editorial rules on top (who
+may edit, review, reorder, export).</li>
+<li><strong>Review model.</strong> What "reviewed" is stored against (a
+revision, a hash, a date), what resets it, whether review has stages or
+notes, and where review history lives.</li>
+<li><strong>Ordering and membership.</strong> How an article's place in
+a newsletter is stored, and whether one article can be in several
+newsletters.</li>
+<li><strong>Export jobs.</strong> How DOCX and audio are made (cron,
+Action Scheduler, a request), the stages, where the provider and its key
+are configured, what is paid, and how failures are recorded.</li>
+<li><strong>Private files.</strong> Where generated files are written,
+whether they are in the media library, how access is checked, and how
+long they are kept.</li>
+<li><strong>Admin screens.</strong> The <code>admin.php?page=</code>
+slugs, and how the current screens reorder and show review state, so
+section 10 can name exactly what changes.</li>
+<li><strong>DOCX import.</strong> How an imported document's title,
+headings, pictures and alt text are stored (phase 3b).</li>
+<li><strong>Their tests.</strong> What they already test, so the
+contract tests fit beside them.</li>
+</ol>
+<h2 id="14-open-questions">14. Open questions</h2>
+<p>For Jeff:</p>
+<ol type="1">
+<li>Is Shift+N on the WordPress layer right for Return to Newsletter, or
+should it stay unkeyed (reached from File &gt; WordPress)?</li>
+<li>Should the Newsletter window save each move at once, as Menus &gt;
+Arrange Items does today, or move locally and save with one Save Order
+button?</li>
+<li>Should phases 2 and 3 merge together with phase 1, or wait behind it
+until the real API has been tried?</li>
+</ol>
+<p>For the SwiftLetter maintainers: the open questions in the contract
+(section 12), and section 13 above.</p>
+</body>
+</html>
