@@ -124,9 +124,8 @@ one place.
 
 There are three ways in.
 
-- **File > Open from Remote > GitHub Items...** opens the Workbench. The row
-  keeps its old name; the window it opens is the GitHub Workbench. The same
-  submenu has **Clone Repository...**, **Open GitHub Reference...** for a
+- **File > Open from Remote > GitHub Workbench...** opens the Workbench. The
+  same submenu has **Clone Repository...**, **Open GitHub Reference...** for a
   pasted GitHub link, and **Manage GitHub Accounts...**.
 - **The GitHub menu.** Turn on **View > GitHub Workbench Mode** (`Alt+V`, then
   `K`) and a **GitHub** menu joins the menu bar after Tools. `Alt+G` opens it.
@@ -545,7 +544,8 @@ You rarely need to walk the tree. These keys go straight to a place:
 
 `Ctrl+L` (**File > Open GitHub Address...**) takes `owner/name`, or a link to
 anything in a repository, and gives that repository a place of its own in the
-tree, with you on it. A compare link opens the comparison. `Ctrl+G` (**File >
+tree, with you on it. A compare link opens the comparison, and `#42` opens
+issue or pull request 42 in the repository you are in. `Ctrl+G` (**File >
 Go to Number...**) goes to an issue or pull request in the current repository
 by its number.
 
@@ -932,8 +932,15 @@ Applications key), and the commonest have keys of their own:
 
 After Mark Read, Mark Done or Unsubscribe the list loads again.
 
-The Workbench does not hide a snoozed notification yet: it stays in the list,
-so Snooze is a note to yourself for now.
+A snoozed notification leaves the list until the next day, and the status
+bar says how many are hidden. Turn on **Include read notifications** in
+Workbench Options to see them again, each starting "Snoozed here until", so
+you can Unsnooze one. That option also shows notifications you have already
+read, as well as unread ones.
+
+GitHub asks apps to wait between checks of your notifications. A refresh
+sooner than that shows the list from the last check and says how many
+seconds to wait.
 
 `Ctrl+.` moves to the next unread row in the list, and `Ctrl+Shift+.` to the
 one before, so you can skip what you have already read.
@@ -1038,7 +1045,7 @@ first:
 - **Assigned to me**
 - **Review requested**, from you or from a team you are on
 - **Mentioned**
-- **Failed checks**: open pull requests whose checks failed
+- **Failed checks**: your own open pull requests whose checks failed
 
 Each row's details start with where it came from, so you know whether it is
 there because you were assigned or because you were mentioned. An item found
@@ -1165,8 +1172,8 @@ two places further down, lists both together, newest first.
 
 - `Ctrl+G` (**File > Go to Number...**) goes to an issue or pull request in
   this repository by its number.
-- `Ctrl+L` (**File > Open GitHub Address...**) takes `owner/name#42`, or a
-  link pasted from anywhere, and goes there.
+- `Ctrl+L` (**File > Open GitHub Address...**) takes `#42` for this
+  repository, `owner/name#42`, or a link pasted from anywhere, and goes there.
 - `Ctrl+E` moves to the filter box. Plain words narrow the list you are
   looking at; GitHub's own words, such as `is:open label:bug`, ask GitHub.
 - **View > Open or Closed** chooses open, closed or all, and **View > Quick
@@ -1191,9 +1198,13 @@ do not hear colons spelled out.
 
 ### Reading the comments
 
-The details pane holds the description, and says how many comments there
-are. To read the whole conversation, choose **Read as Document...**
-(`Ctrl+Shift+I`). It asks how you want it:
+The details pane holds the description, then the comments, oldest first,
+each starting "Comment 1 of 3", its author and its date. QUILL reads them
+the first time you select the issue; until they arrive the pane ends
+"Reading the comments...". If you are in the pane when they land, you hear
+"3 comments read; they follow the description." To read the
+whole conversation with a heading for each post, choose **Read as
+Document...** (`Ctrl+Shift+I`). It asks how you want it:
 
 - **Open in Editor** opens the thread as one document, a heading per post
   with its author and date, so your screen reader's heading keys move from
@@ -2682,23 +2693,17 @@ check for" and the job "to run again." The review window's Checks branch has
 
 Some workflows are set up to be started by hand. Choose **Run Workflow on
 Branch...** (`Ctrl+Shift+R`) from the Repository menu, or from a workflow's
-context menu in **Workflows**. QUILL asks three things: the repository, as
-`owner/name`, filled in with the repository of the document you are editing;
-the workflow's file name, such as `ci.yml`; and the branch or tag, starting
-with `main`. Then it asks "Dispatch" the workflow "on" the branch "in" the
-repository, and the editor's status bar says "Dispatched" and the workflow
-and branch.
+context menu in **Workflows**. It runs the workflow you selected, in that
+repository. QUILL asks for the branch or tag, starting with `main`, then asks
+"Run the workflow CI on main in owner/name?", and you hear that GitHub
+accepted it and that its run appears in Runs shortly. QUILL asks only for the
+branch, not for a workflow's other inputs; a workflow that needs those before
+it can start has to be run from GitHub's own page.
 
-It does not yet take the workflow or the repository from the row you
-selected, so type them as the workflow's file name says. QUILL asks only for
-the branch, not for a workflow's other inputs; a workflow that needs those
-before it can start has to be run from GitHub's own page.
-
-**Run Workflow on Branch...** is the editor's **Dispatch Workflow...**, which
-is also in the Workbench's **Repository Actions...** (`Ctrl+Shift+G`), and in
-QUILL's **Tools > Git and GitHub > GitHub** submenu. **In QUILL Lite**, which has no
-such command, the row is greyed and says the editor that opened the window
-does not have it.
+It works the same in QUILL and QUILL Lite. QUILL's editor also has
+**Dispatch Workflow...**, in the Workbench's **Repository Actions...**
+(`Ctrl+Shift+G`) and in **Tools > Git and GitHub > GitHub**, which asks for the
+repository and the workflow's file name as well.
 
 ### Starting workflows from outside
 
@@ -4373,9 +4378,11 @@ its state as GitHub words it (such as Available or Shutdown), its machine, and
 when it was last used. Its context menu has:
 
 - **Show Details**: the same, with its address on GitHub.
-- **Start** and **Stop**. You hear "Starting" and its name, or "Stopping" and
-  its name, and that its files are kept. A stopped codespace does not charge
-  for computing time.
+- **Start** and **Stop**. Start asks first, and says who GitHub bills: you,
+  or the organization that pays for the repository's codespaces. No is the
+  default, so Enter starts nothing. You hear "Starting" and its name, or
+  "Stopping" and its name, and that its files are kept. A stopped codespace
+  does not charge for computing time.
 - **Change Machine...** lists the machines GitHub offers for it and uses the
   one you choose from its next start. When there is no other, QUILL says so.
 - **Export to a Branch** puts the codespace's changes on a branch of their
@@ -4394,20 +4401,24 @@ There are three ways:
 - **In a repository's Code > Codespaces**, press `Ctrl+N`. QUILL asks which
   branch, starting with `main`, then reads what a codespace for that
   repository can use and asks which machine, and which dev container when
-  the repository has more than one. You hear "Making the codespace" and its
-  name, and that it takes a minute or two to start.
-- **On an open pull request**, **Open in a Codespace** makes one on the pull
-  request's branch at once. Use it to try a change for real before you
-  review it.
+  the repository has more than one. Then it asks whether to make it, and
+  says who GitHub bills. You hear "Making the codespace" and its name, and
+  that it takes a minute or two to start.
+- **On an open pull request**, **Open in a Codespace** asks the same
+  question, then makes one on the pull request's branch. Use it to try a
+  change for real before you review it.
 - **Open in Codespaces...**, on the context menu of a repository, branch or
   pull request, asks first, reminds you that starting a codespace can cost
   money, and then opens GitHub's own Codespaces page in your browser. It
   makes nothing itself and does not send your token. You make your choices
   on GitHub's page.
 
-**Ctrl+N** and **Open in a Codespace** make and start a codespace straight
-away, with no further question: choosing them is the decision. **Stop** it
-when you are done.
+**Start**, **Ctrl+N** and **Open in a Codespace** each ask before GitHub
+starts charging, for example "Make a codespace for pull request #42? It costs
+money for every hour it runs, and for its storage until you delete it.
+GitHub bills the organization acme." No is the default button. When GitHub
+does not say who pays, QUILL says it is you unless the repository's
+organization pays for Codespaces. **Stop** it when you are done.
 
 If a repository's dev container asks for permissions you have not accepted,
 QUILL says so and makes nothing. Open the repository's Codespaces on GitHub
@@ -7378,7 +7389,7 @@ the two editors without thinking about it.
 
 | | QUILL | QUILL Lite |
 | --- | --- | --- |
-| The Workbench | File > Open from Remote > GitHub Items... | File > GitHub Workbench... (`Alt+F`, then `G`) |
+| The Workbench | File > Open from Remote > GitHub Workbench... | File > GitHub Workbench... (`Alt+F`, then `G`) |
 | Clone a repository | File > Open from Remote > Clone Repository... | File > Clone Repository... (`Alt+F`, then `Y`) |
 | Sign in | File > Open from Remote > Manage GitHub Accounts... | File > Manage GitHub Accounts... (`Alt+F`, then `H`) |
 | This guide | Help > Open GitHub Guide | Help > Open GitHub Guide |

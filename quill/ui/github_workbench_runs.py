@@ -32,6 +32,7 @@ RUN_VERBS: dict[str, frozenset[str]] = {
     "artifacts": frozenset({"run"}),
     "check_status": frozenset({"run"}),
     "workflow_runs": frozenset({"workflow"}),
+    "run_workflow": frozenset({"workflow"}),
     "branch_commits": frozenset({"branch"}),
     "compare": frozenset({"branch"}),
     "delete_branch": frozenset({"branch"}),
@@ -41,6 +42,7 @@ RUN_REASONS: dict[str, str] = {
     "jobs": "This run has no GitHub run number to read jobs for.",
     "check_status": "This run has no commit to read checks for.",
     "delete_branch": "GitHub does not let anyone delete the repository's default branch.",
+    "run_workflow": "Run Workflow on Branch is for a workflow, while you are signed in.",
 }
 
 
@@ -82,6 +84,9 @@ class GitHubWorkbenchRunsMixin:
     _fits_delete_run = _fits_run_write
     _fits_approve_fork = _fits_run_write
     _fits_pending_deployments = _fits_run_write
+
+    def _fits_run_workflow(self, row: object) -> bool:
+        return self.signed_in and isinstance(row, GitHubWorkflow) and bool(row.id or row.path)
 
     def _fits_delete_branch(self, row: object) -> bool:
         return (
@@ -239,6 +244,24 @@ class GitHubWorkbenchRunsMixin:
         assert isinstance(row, GitHubWorkflow)
         self._go_filtered(  # type: ignore[attr-defined]
             "repository", "runs", self._repo_for(ref), row.name
+        )
+
+    def _do_run_workflow(self, ref: Any, row: object) -> None:
+        """The selected workflow, in the repository it belongs to, on a branch you name."""
+        assert isinstance(row, GitHubWorkflow)
+        repo, name = self._repo_for(ref), row.name or row.path
+        workflow_id = str(row.id) if row.id else row.path.rsplit("/", 1)[-1]
+        title = "Run Workflow on Branch"
+        branch = self._ask_text(title, f"Run {name} on which branch or tag:", value="main")
+        question = f"Run the workflow {name} on {branch} in {repo}?"
+        if not branch or not self._confirm(title, question):
+            return
+        self._background(
+            f"run {name}",
+            lambda: self.items.dispatch_workflow(repo, workflow_id, branch),
+            lambda _r: self._say(
+                f"GitHub accepted {name} on {branch}; its run appears in Runs shortly."
+            ),
         )
 
     # -- branches ------------------------------------------------------------------------

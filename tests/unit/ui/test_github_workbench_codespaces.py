@@ -20,6 +20,7 @@ class _Window(GitHubWorkbenchCodespacesMixin):
     def __init__(self, api: Api, answers: list[Any], node: str = "") -> None:
         self.api, self.answers = api, list(answers)
         self.said: list[str] = []
+        self.asked: list[tuple[Any, ...]] = []
         self.frame = SimpleNamespace(current=SimpleNamespace(key=node), reload=lambda: None)
 
     def github_api(self) -> Any:
@@ -34,7 +35,8 @@ class _Window(GitHubWorkbenchCodespacesMixin):
     def _choose(self, *_a: Any) -> int:
         return int(self.answers.pop(0))
 
-    def _confirm(self, *_a: Any) -> bool:
+    def _confirm(self, *a: Any) -> bool:
+        self.asked.append(a)
         return bool(self.answers.pop(0))
 
     def _ask_text(self, *_a: Any, **_k: Any) -> str:
@@ -63,7 +65,48 @@ def test_ctrl_n_asks_the_branch_and_machine_then_makes_it() -> None:
         "GET /repos/o/r/codespaces/machines": {"machines": [{"name": "m1"}, {"name": "m2"}]},
         "POST /repos/o/r/codespaces": {"display_name": "neat robot"},
     })
-    window = _Window(api, ["feature", 1], node="repo_codespaces")
+    window = _Window(api, ["feature", 1, True], node="repo_codespaces")
     window._do_codespace_new(SimpleNamespace(instance="o/r"), None)
     assert api.sent[-1][2] == {"ref": "feature", "machine": "m2"}
     assert window.said[0].startswith("Making the codespace neat robot for o/r on feature.")
+
+
+ORG_PAYS = {"billable_owner": {"login": "acme", "type": "Organization"}}
+
+
+def test_start_says_who_pays_and_no_starts_nothing() -> None:
+    api = Api({"GET /user/codespaces/jeff-quill-abc": ORG_PAYS})
+    window = _Window(api, [False])
+    window._do_codespace_start(None, ROW)
+    assert [sent[0] for sent in api.sent] == ["GET"]
+    title, question = window.asked[0]
+    assert title == "Start Codespace"
+    assert "jeff-quill-abc" in question and "GitHub bills the organization acme." in question
+    assert window.said == []
+    window = _Window(api, [True])
+    window._do_codespace_start(None, ROW)
+    assert api.sent[-1][:2] == ("POST", "/user/codespaces/jeff-quill-abc/start")
+
+
+def test_ctrl_n_asks_about_cost_before_making_it() -> None:
+    api = Api({"GET /repos/o/r/codespaces/new": ORG_PAYS})
+    window = _Window(api, ["feature", False], node="repo_codespaces")
+    window._do_codespace_new(SimpleNamespace(instance="o/r"), None)
+    assert all(sent[0] == "GET" for sent in api.sent)
+    assert "GitHub bills the organization acme." in window.asked[0][1]
+    assert window.said == []
+
+
+def test_open_in_a_codespace_asks_about_cost_first() -> None:
+    from quill.core.github.items_provider import GitHubItem
+
+    pull = GitHubItem(number=42, title="t", state="open", url="u", is_pr=True)
+    api = Api({"GET /repos/o/r/codespaces/new": {"billable_owner": {"login": "jeff"}}})
+    window = _Window(api, [False])
+    window._do_pull_codespace(SimpleNamespace(instance="o/r"), pull)
+    assert all(sent[0] == "GET" for sent in api.sent)
+    assert window.asked[0][0] == "Open in a Codespace"
+    assert "#42" in window.asked[0][1] and "GitHub bills you (jeff)." in window.asked[0][1]
+    window = _Window(api, [True])
+    window._do_pull_codespace(SimpleNamespace(instance="o/r"), pull)
+    assert api.sent[-1][:2] == ("POST", "/repos/o/r/pulls/42/codespaces")

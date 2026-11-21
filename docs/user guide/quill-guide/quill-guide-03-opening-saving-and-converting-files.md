@@ -1451,7 +1451,7 @@ this for you. See
 
 ### The GitHub Workbench
 
-**File > Open from Remote > GitHub Items...** opens the GitHub Workbench, one
+**File > Open from Remote > GitHub Workbench...** opens the GitHub Workbench, one
 window for everything GitHub: a tree of places on the left (your Inbox, each
 repository's issues, pull requests, Actions and settings, Search, People),
 the list of what is there, and the details of the row you are on. It owes a

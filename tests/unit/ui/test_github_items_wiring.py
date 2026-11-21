@@ -52,7 +52,9 @@ def test_menu_id_and_item_present() -> None:
     # The rows themselves come from the workbench table since 2026-11-08.
     assert "self._append_github_remote_rows(remote_menu)" in src
     table = _src("quill/core/github/workbench_menu.py")
-    assert 'Row("file.open_github_items", "GitHub &Items..."' in table
+    # W8: the row names the window it opens, as the GitHub menu and QUILL Lite do.
+    assert 'Row("file.open_github_items", "GitHub &Workbench..."' in table
+    assert "GitHub &Items" not in table
     assert 'Row("file.open_github_reference", "Open GitHub &Reference...")' in table
     assert '"file.open_github_items": "_id_github_items"' in _src(
         "quill/ui/main_frame_github_menu.py"

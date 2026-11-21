@@ -36,8 +36,8 @@ two places further down, lists both together, newest first.
 
 - `Ctrl+G` (**File > Go to Number...**) goes to an issue or pull request in
   this repository by its number.
-- `Ctrl+L` (**File > Open GitHub Address...**) takes `owner/name#42`, or a
-  link pasted from anywhere, and goes there.
+- `Ctrl+L` (**File > Open GitHub Address...**) takes `#42` for this
+  repository, `owner/name#42`, or a link pasted from anywhere, and goes there.
 - `Ctrl+E` moves to the filter box. Plain words narrow the list you are
   looking at; GitHub's own words, such as `is:open label:bug`, ask GitHub.
 - **View > Open or Closed** chooses open, closed or all, and **View > Quick
@@ -62,9 +62,13 @@ do not hear colons spelled out.
 
 ### Reading the comments
 
-The details pane holds the description, and says how many comments there
-are. To read the whole conversation, choose **Read as Document...**
-(`Ctrl+Shift+I`). It asks how you want it:
+The details pane holds the description, then the comments, oldest first,
+each starting "Comment 1 of 3", its author and its date. QUILL reads them
+the first time you select the issue; until they arrive the pane ends
+"Reading the comments...". If you are in the pane when they land, you hear
+"3 comments read; they follow the description." To read the
+whole conversation with a heading for each post, choose **Read as
+Document...** (`Ctrl+Shift+I`). It asks how you want it:
 
 - **Open in Editor** opens the thread as one document, a heading per post
   with its author and date, so your screen reader's heading keys move from

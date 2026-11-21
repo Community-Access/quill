@@ -24,7 +24,7 @@ the two editors without thinking about it.
 
 | | QUILL | QUILL Lite |
 | --- | --- | --- |
-| The Workbench | File > Open from Remote > GitHub Items... | File > GitHub Workbench... (`Alt+F`, then `G`) |
+| The Workbench | File > Open from Remote > GitHub Workbench... | File > GitHub Workbench... (`Alt+F`, then `G`) |
 | Clone a repository | File > Open from Remote > Clone Repository... | File > Clone Repository... (`Alt+F`, then `Y`) |
 | Sign in | File > Open from Remote > Manage GitHub Accounts... | File > Manage GitHub Accounts... (`Alt+F`, then `H`) |
 | This guide | Help > Open GitHub Guide | Help > Open GitHub Guide |

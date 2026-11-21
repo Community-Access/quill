@@ -144,7 +144,7 @@ With **GitHub Remote Access** on (it needs Developer Tools):
 
 - **File > Open from Remote** has Open Remote GitHub Repository..., Open
   Remote GitHub File URL..., Commit to GitHub..., Manage GitHub Accounts... and
-  Open GitHub Items..., the accessible viewer for issues, pull requests,
+  GitHub Workbench..., which opens the GitHub Workbench: issues, pull requests,
   branches and workflows. Pull request diffs read as a file list with QUILL's
   spoken compare.
 - **Tools > Git and GitHub > GitHub** has the repository commands: create,

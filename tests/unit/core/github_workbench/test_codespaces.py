@@ -113,3 +113,17 @@ def test_a_spending_limit_and_a_refusal_are_said_plainly() -> None:
         cs.start(Api(fail={"POST /user/codespaces/x/start": 402}), "x")
     with pytest.raises(cs.CodespaceError, match="codespace permission"):
         cs.fetch(Api(fail={"GET /user/codespaces": 403}))
+
+
+def test_who_pays_names_the_organization_or_you() -> None:
+    org = {"billable_owner": {"login": "community-access", "type": "Organization"}}
+    api = Api({"GET /user/codespaces/jeff-quill-abc": org})
+    assert cs.billing_owner(api, name="jeff-quill-abc") == "the organization community-access"
+    me = {"billable_owner": {"login": "jeff", "type": "User"}}
+    api = Api({"GET /repos/o/r/codespaces/new": me})
+    assert cs.billing_owner(api, repo="o/r") == "you (jeff)"
+    assert api.sent[-1][:2] == ("GET", "/repos/o/r/codespaces/new")
+    unknown = cs.billing_owner(Api(fail={"GET /repos/o/r/codespaces/new": 404}), repo="o/r")
+    assert unknown == cs.PAYER_UNKNOWN
+    found = cs.new_choices(Api({"GET /repos/o/r/codespaces/new": org}), "o/r", "main")
+    assert found.payer == "the organization community-access"

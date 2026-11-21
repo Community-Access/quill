@@ -59,9 +59,8 @@ one place.
 
 There are three ways in.
 
-- **File > Open from Remote > GitHub Items...** opens the Workbench. The row
-  keeps its old name; the window it opens is the GitHub Workbench. The same
-  submenu has **Clone Repository...**, **Open GitHub Reference...** for a
+- **File > Open from Remote > GitHub Workbench...** opens the Workbench. The
+  same submenu has **Clone Repository...**, **Open GitHub Reference...** for a
   pasted GitHub link, and **Manage GitHub Accounts...**.
 - **The GitHub menu.** Turn on **View > GitHub Workbench Mode** (`Alt+V`, then
   `K`) and a **GitHub** menu joins the menu bar after Tools. `Alt+G` opens it.

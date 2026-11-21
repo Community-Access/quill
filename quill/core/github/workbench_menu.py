@@ -127,7 +127,7 @@ NORMAL_REMOTE_ROWS: tuple[Entry, ...] = (
     Row("file.open_github_file_url", "GitHub File &URL..."),
     # T: Commit's own letters went to Copy (C) and Manage Remote Sites (M).
     Row("file.github_save_back", "Commi&t to GitHub..."),
-    Row("file.open_github_items", "GitHub &Items...", "cmd_github_workbench"),
+    Row("file.open_github_items", "GitHub &Workbench...", "cmd_github_workbench"),
     Row("file.open_github_reference", "Open GitHub &Reference..."),
     Row("file.github_manage_accounts", "Ma&nage GitHub Accounts...", "cmd_github_manage_accounts"),
 )

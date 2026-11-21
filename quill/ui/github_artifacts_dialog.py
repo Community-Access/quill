@@ -116,7 +116,7 @@ class ArtifactsDialog:
         root.Add(self._status, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         close_row = wx.StdDialogButtonSizer()
-        cancel_button = wx.Button(panel, id=wx.ID_CANCEL, label="&Close")
+        cancel_button = wx.Button(panel, id=wx.ID_CANCEL, label="Close")  # GATE-14
         cancel_button.SetHelpText("Close without changing anything. Escape does the same.")
         close_row.AddButton(cancel_button)
         close_row.Realize()

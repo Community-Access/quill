@@ -197,3 +197,32 @@ def test_a_refresh_that_changed_nothing_leaves_the_list_alone(bench, monkeypatch
     bench.reload()
     assert cleared == []
     assert bench.selected_indices() == [1]
+
+
+@pytest.mark.parametrize("typed", ["#42", " 42 "])
+def test_open_address_with_a_number_opens_it_in_this_repository(bench, monkeypatch, typed) -> None:
+    """W9: "#42" is the issue or pull request in the repository you are in, not an error."""
+
+    def _answer(dialog: Any, _title: str) -> int:
+        dialog.SetValue(typed)
+        return wx.ID_OK
+
+    monkeypatch.setattr("quill.ui.workbench_frame_actions.show_modal_dialog", _answer)
+    assert bench.select(NodeRef("repository", "tags", REPO))
+    bench.said.clear()
+    bench.open_address()
+    assert bench.current == NodeRef("repository", "issues_and_pulls", REPO)
+    assert bench.filter.GetValue() == "number:42"
+    assert "That is not a repository name or GitHub link." not in bench.said
+
+
+def test_open_address_with_a_number_and_no_repository_says_what_to_do(bench, monkeypatch) -> None:
+    def _answer(dialog: Any, _title: str) -> int:
+        dialog.SetValue("#42")
+        return wx.ID_OK
+
+    monkeypatch.setattr("quill.ui.workbench_frame_actions.show_modal_dialog", _answer)
+    assert bench.select(NodeRef("", "inbox"))
+    bench.said.clear()
+    bench.open_address()
+    assert bench.said == ["Open a repository first, then #42 opens that issue or pull request."]

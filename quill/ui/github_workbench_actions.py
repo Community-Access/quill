@@ -132,7 +132,6 @@ REPOSITORY_ACTIONS: tuple[tuple[str, str], ...] = (
 #: The Workbench verbs that are editor commands under another name.
 _EDITOR_VERBS = {
     "manage_accounts": "file.github_manage_accounts",
-    "run_workflow": "github.dispatch_workflow",
     "new_release": "github.create_release",
 }
 
@@ -462,6 +461,18 @@ class GitHubWorkbenchActionsMixin(
                 self._say("That is not a number.")
             return
         self._open_classic(ref, None, reference=f"https://github.com/{repository}/issues/{number}")
+
+    def open_number(self, text: str) -> bool:
+        """File > Open GitHub Address with "#42": that issue or pull request, here (W9)."""
+        number = text.strip().removeprefix("#").strip()
+        if not number.isdigit():
+            return False  # a name or a link: the frame opens it as a repository
+        repository = self._current_repository()
+        if not repository:
+            self._say(f"Open a repository first, then #{number} opens that issue or pull request.")
+            return True
+        self._go_filtered("repository", "issues_and_pulls", repository, f"number:{number}")
+        return True
 
     # -- small things -------------------------------------------------------------
 
