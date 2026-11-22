@@ -139,9 +139,27 @@ class PlayerAddressMixin:
                 return self._open_address(argument)
             path = Path(argument)
             if path.is_file():
-                self._load_book(path)
-                return True
+                return self._open_launch_file(path)
         return False
+
+    def _open_launch_file(self, path: Path) -> bool:
+        """A file: a DAISY book by its ``.ncx`` or as a DAISY zip (QUILL's Send to
+        Media Player, PRD 8.3), otherwise as File > Open loads it."""
+        suffix = path.suffix.lower()
+        if suffix == ".ncx":
+            self._load_daisy(path)
+            return True
+        if suffix == ".zip":
+            from quill.apps.player_scribe import open_daisy_zip
+
+            entry = open_daisy_zip(path)
+            if entry is None or entry.suffix.lower() != ".ncx":
+                self._show_message_box(f"{path.name} is not a DAISY book.", _TITLE)
+                return False
+            self._load_daisy(entry)
+            return True
+        self._load_book(path)
+        return True
 
     def _open_address(self, url: str) -> bool:
         """Stream *url* from the start: loaded, then playing, with nothing saved."""

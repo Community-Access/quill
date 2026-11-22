@@ -68,6 +68,7 @@ from quill_social.ui.manage import (
     SafetyCenterDialog,
 )
 from quill_social.ui.media_player import MediaPlayerDialog
+from quill_social.ui.scribe import ITEM_ROW, TOOLS_ROWS, SocialScribeMixin
 from quill_social.ui.studio import (
     AgendaDialog,
     ApprovalsDialog,
@@ -137,7 +138,7 @@ NAV_TREE = [
 ]
 
 
-class SocialFrame(wx.Frame):
+class SocialFrame(SocialScribeMixin, wx.Frame):
     def __init__(self) -> None:
         super().__init__(None, title=__title__, size=dip_size(None, 1180, 760))
         self.data_dir = paths.data_dir()
@@ -327,6 +328,7 @@ class SocialFrame(wx.Frame):
                 ("&Accessibility check", "accessibility_check"),
                 ("Send to &QUILL", "send_to_quill"),
                 ("&Play media", "play_media"),
+                ITEM_ROW,  # Scribe for Documents (PRD 8.8, ui/scribe.py)
             )),
             ("Fee&ds", (
                 ("&Add Feed...", "add_feed"),
@@ -372,6 +374,8 @@ class SocialFrame(wx.Frame):
                 ("Plu&gins", "plugins"),
                 ("&Outbox", "outbox"),
                 ("Summari&ze this feed (AI)", "summarize_feed"),
+                None,
+                *TOOLS_ROWS,  # Scribe for Documents, the family's shared rows
             )),
             # "Help" used to be the only item here and it opened the keyboard
             # guide, while the user guide the installer ships sat in docs\ with
@@ -469,6 +473,7 @@ class SocialFrame(wx.Frame):
             "whats_new": lambda: self.cmd_open_doc("CHANGELOG"),
             "help": self.cmd_help,
             "about": lambda: self._on_about(None),
+            **self._scribe_handlers(),
         }
 
     # -- ui -------------------------------------------------------------------
@@ -1994,6 +1999,7 @@ class SocialFrame(wx.Frame):
             Command("preferences", "Preferences", lambda: self._on_preferences(None)),
             Command("help", "Help", self.cmd_help, shortcut=km.chord_for("help")),
         ]
+        commands += self._scribe_commands(km, Command)
         # Every command the keymap binds shows its key here as on the menu.
         for command in commands:
             command.shortcut = command.shortcut or km.chord_for(command.command_id)

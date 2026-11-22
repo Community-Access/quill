@@ -67,6 +67,16 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     add(file_menu, "Add F&older...\tCtrl+Shift+O", lambda: host._on_add_folder(None))
     add(file_menu, "&Paste Files\tCtrl+V", host.paste_files)
     add(file_menu, "Convert from &URL...\tCtrl+U", host.convert_from_url)
+    # Documents, with Scribe for Documents as the engine (PRD 8.4), and the
+    # family's shared rows, on the keys they have in every app.
+    add(
+        file_menu,
+        "Convert Documents with &Scribe for Documents...\tAlt+Shift+F6",
+        host.scribe_convert_documents,
+    )
+    from quill.ui.scribe_app_host import append_scribe_submenu
+
+    ids.extend(append_scribe_submenu(host, file_menu, wx, title="Scribe for &Documents"))
     file_menu.AppendSeparator()
     add(file_menu, "Open Output &Folder\tCtrl+Shift+F", host.open_output_folder)
     # WordPress as a destination (wordpress.md 15 item 9), through the shared code.

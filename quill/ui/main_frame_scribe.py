@@ -184,6 +184,7 @@ class QuillScribeHost:
                 commands.append(("Summarize with Your AI...", "open_ai_summarize_selection"))
             for label, command in commands:
                 steps.append((named(label, format_id), self._then(path, command)))
+        steps += self._beacon_steps(job, ready, named)
         if "brf" in ready:
             steps.append(("Open in the Braille View", self._then(ready["brf"], "")))
         for format_id in ("mp3", "daisy"):
@@ -191,6 +192,26 @@ class QuillScribeHost:
                 label = f"Send to Media Player ({format_label(format_id)})"
                 steps.append((label, lambda f=format_id: self._to_player(job, f, ready[f])))
         return steps
+
+    def _beacon_steps(self, job: q.Job, ready: dict[str, Path], named: Any) -> list[Any]:
+        """Save a Beacon Place, for Word and HTML, where Beacon is (8.1.7, 8.7)."""
+        from quill.ui.scribe_beacon_place import beacon_available, save_beacon_place
+
+        places = [f for f in ("docx", "html") if f in ready]
+        if not places or not job.document_id or not beacon_available():
+            return []
+
+        def save(format_id: str) -> None:
+            save_beacon_place(
+                job,
+                format_id,
+                ready[format_id],
+                parent=self.scribe_parent(),
+                say=self.scribe_announce,
+                modal=self._mf._show_modal_dialog,
+            )
+
+        return [(named("Save a Beacon Place", f) + "...", lambda f=f: save(f)) for f in places]
 
     def _to_player(self, job: q.Job, format_id: str, path: Path) -> None:
         """Send to Media Player, saying so when it could not be opened."""
@@ -345,6 +366,43 @@ class ScribeMixin(ScribeStreamMixin, ScribeEntryPoints):
         action.app_name = controller.app_name
         action.on_wake = lambda: wx.CallAfter(controller.wake)
         action.signed_in = lambda: bool(controller.session.is_signed_in())
+
+    # -- Explorer's Send To (8.10) ---------------------------------------------
+
+    def _scribe_shell_request(self, path: Path) -> None:
+        """Send To > Convert with Scribe for Documents: one Convert dialog for
+        every file sent together (each arrives as its own request)."""
+        import wx
+
+        pending: list[Path] = self.__dict__.setdefault("_scribe_send_to", [])
+        if not pending:
+            wx.CallLater(400, self._scribe_send_to_flush)
+        if Path(path) not in pending:
+            pending.append(Path(path))
+
+    def _scribe_send_to_flush(self) -> None:
+        """Bring QUILL forward, then open the dialog; never over another dialog."""
+        import wx
+
+        frame = self.frame  # type: ignore[attr-defined]
+        if frame.IsIconized():
+            frame.Iconize(False)
+        frame.Show()
+        frame.Raise()
+        active = wx.GetActiveWindow()
+        if isinstance(active, wx.Dialog) and active.IsModal():
+            if not self.__dict__.get("_scribe_send_to_said"):
+                self.__dict__["_scribe_send_to_said"] = True
+                self._announce(  # type: ignore[attr-defined]
+                    f"Convert with {PRODUCT_NAME} is waiting until you close "
+                    f"{active.GetTitle() or 'this window'}."
+                )
+            wx.CallLater(1000, self._scribe_send_to_flush)
+            return
+        paths = list(self.__dict__.pop("_scribe_send_to", []))
+        self.__dict__.pop("_scribe_send_to_said", None)
+        if paths:
+            self._scribe().convert_files(paths)
 
     def _scribe_start(self) -> None:
         """At startup: pick up Scribe jobs another app or an earlier run left."""

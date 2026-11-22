@@ -498,6 +498,8 @@ def main() -> int:
         if safe_mode:
             os.environ["QUILL_SAFE_MODE"] = "1"
         if not force_new_window and not try_claim_primary_instance():
+            if any(request.action == "scribe" for request in launch_requests):
+                _allow_foreground_for_handover()  # the Convert dialog must come to the front
             for request in launch_requests:
                 enqueue_open_request(
                     request.path,
@@ -577,7 +579,8 @@ def _parse_cli_arguments(arguments: list[str]) -> Namespace:
         default="open",
         help=(
             "Shell verb to run on the opened file(s): one of "
-            "open, ocr, ocr-structured, read. Defaults to open."
+            "open, ocr, ocr-structured, read, or scribe (Explorer's Send To: the "
+            "Scribe for Documents Convert dialog for every file). Defaults to open."
         ),
     )
     parser.add_argument(
@@ -622,13 +625,32 @@ def _parse_cli_arguments(arguments: list[str]) -> Namespace:
     return parser.parse_args(arguments)
 
 
+def _allow_foreground_for_handover() -> None:
+    """Let the running QUILL bring its window in front of Explorer.
+
+    Windows lets only the process in the foreground hand the foreground on;
+    this short-lived one, started by Explorer's Send To, is that process.
+    Without it the Convert dialog would open behind Explorer, and a screen
+    reader user would hear nothing (accessibility review, 2026-11-21).
+    """
+    if sys.platform != "win32":
+        return
+    try:
+        import ctypes
+
+        ctypes.windll.user32.AllowSetForegroundWindow(-1)  # ASFW_ANY
+    except Exception:  # noqa: BLE001 - a focus courtesy must never block a launch
+        pass
+
+
 def _launch_configuration(
     parsed: Namespace,
 ) -> tuple[list[LaunchRequest], bool, bool, bool, bool, bool]:
     from quill.core.shell_verbs import verb_actions
 
     raw_action = str(getattr(parsed, "action", "open") or "open").strip().lower()
-    action = raw_action if raw_action in {"open", *verb_actions()} else "open"
+    # "scribe" is Explorer's Send To > Convert with Scribe for Documents (PRD 8.10).
+    action = raw_action if raw_action in {"open", "scribe", *verb_actions()} else "open"
 
     requests: list[LaunchRequest] = []
 

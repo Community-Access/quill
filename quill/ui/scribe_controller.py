@@ -265,8 +265,13 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
         app_formats: list[str] | None = None,
         open_as: str = "",
         title: str = "",
+        folder: str = "",
     ) -> list[q.Job]:
         """The one convert dialog, with *paths* already chosen; queue on Send.
+
+        *folder* is where the results go, for an app with its own output folder
+        rule (Converter, 8.4); otherwise each document gets its folder in the
+        download folder (7.6).
 
         Only the 23 types Scribe takes, up to 500 MB, are offered (3.1): any
         other file is refused here with its sentence, and nothing is sent.
@@ -299,7 +304,7 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
             choice = dialog.result()
         finally:
             dialog.Destroy()
-        return self.queue_choice(choice, paths=paths, open_as=open_as, title=title)
+        return self.queue_choice(choice, paths=paths, open_as=open_as, title=title, folder=folder)
 
     def convert_url(self, url: str, *, open_as: str = "") -> list[q.Job]:
         """Convert from a link that points straight at a file (3.1)."""
@@ -381,6 +386,7 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
         existing: Any = None,
         open_as: str = "",
         title: str = "",
+        folder: str = "",
     ) -> list[q.Job]:
         """Turn the dialog's answer into jobs on the family queue."""
         options = self.options()
@@ -423,6 +429,7 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
                     source_path=str(path),
                     size=size,
                     title=title or path.stem,
+                    folder=folder,
                     **common,
                 )
             )

@@ -96,6 +96,14 @@ DEFAULT_BINDINGS: dict[str, str] = {
     # Ctrl+Shift+F1, the family's What's New key, is the Keyboard Reference here.
     "whats_new": "Ctrl+Alt+F1",
     "about": "Alt+F1",
+    # Scribe for Documents (PRD 8.8): the keys these rows have in every app in
+    # the family (quill/ui/scribe_app_host.py), Alt+Shift with F6 to F11.
+    "scribe_convert_linked": "Alt+Shift+F6",
+    "scribe_conversions": "Alt+Shift+F7",
+    "scribe_my_documents": "Alt+Shift+F8",
+    "scribe_status": "Alt+Shift+F9",
+    "scribe_repeat": "Alt+Shift+F10",
+    "scribe_options": "Alt+Shift+F11",
 }
 
 

@@ -37,6 +37,7 @@ class ScribeEventsMixin:
     _speaker: Any
     _window: Any
     _chunk_listeners: dict[str, Callable[[str], None]]
+    _background: Callable[..., None]
 
     def add_chunk_listener(self, job_id: str, listener: Callable[[str], None]) -> None:
         """Streamed HTML for *job_id* (the read-while-it-converts tab, 8.1.3)."""
@@ -128,18 +129,40 @@ class ScribeEventsMixin:
 
     def _finished(self, job: q.Job) -> None:
         """The one result sentence; open the result only where 7.4a allows."""
+        # A step the app takes on the result first (Studio's chapter markers),
+        # off the UI thread, and said inside the one result sentence rather
+        # than after it (8.5).
+        finish = getattr(self.host, "scribe_finish_job", None)
+        if job.app == self.app_name and callable(finish):
+            self._background(
+                lambda: finish(job),
+                lambda note: self._say_result(job, str(note or "")),
+                lambda _error: self._say_result(job, ""),
+            )
+            return
+        self._say_result(job, "")
+
+    def _say_result(self, job: q.Job, note: str) -> None:
         options = self.options()
         opened = ""
         mine = job.app == self.app_name
+        # An app whose results open in another app, or in a modal window, never
+        # opens one by itself: the other app coming to the front would cut the
+        # result sentence off, and a background job must not open a dialog (7.4a).
+        on_its_own = bool(getattr(self.host, "scribe_opens_on_its_own", True))
         if mine and job.open_as == STREAM:
             # The streaming tab is already open: say it is complete (8.1.3).
             finished = getattr(self.host, "scribe_stream_finished", None)
             opened = finished(job) if callable(finished) else ""
-        elif mine and options.open_results == "yes" and self.host.scribe_in_front():
+        elif mine and on_its_own and options.open_results == "yes" and self.host.scribe_in_front():
             opened = self.open_job_result(job, speak=False)
         self._say(
             say.result_sentence(
-                job, app_name=self.app_name, opened=opened, offer=options.open_results == "offer"
+                job,
+                app_name=self.app_name,
+                opened=opened,
+                offer=options.open_results == "offer",
+                note=note,
             )
         )
 

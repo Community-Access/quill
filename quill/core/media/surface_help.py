@@ -36,6 +36,7 @@ from quill.core.control_help import (
 from quill.core.control_help import (
     role_usage as role_usage,
 )
+from quill.core.scribe.surface_help import SCRIBE_PREFIX_PURPOSES, SCRIBE_PURPOSES
 
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
@@ -179,6 +180,11 @@ GENERIC_PURPOSE: str = (
     "A Quill Media Player window. Tab moves between its controls, Escape "
     "closes it, and F1 on any control explains that control."
 )
+
+
+# The Scribe for Documents windows, the same in every app (PRD 12).
+PURPOSES.update(SCRIBE_PURPOSES)
+PREFIX_PURPOSES = (*PREFIX_PURPOSES, *SCRIBE_PREFIX_PURPOSES)
 
 
 def purpose_for_title(title: str) -> str:

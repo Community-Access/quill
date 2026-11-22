@@ -24,6 +24,7 @@ from pathlib import Path
 import wx
 
 from quill.apps.studio_capture import StudioCaptureMixin
+from quill.apps.studio_scribe import StudioScribeMixin
 from quill.core.app_version import describe_version, installed_version
 from quill.core.audio_studio.book_prefs import (
     get_prefs,
@@ -234,7 +235,7 @@ def _await_playback(
     return False
 
 
-class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
+class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, StudioScribeMixin):
     """The standalone QUILL Studio window."""
 
     #: Voices > Download Optional Components shows only what the audio workflow
@@ -944,6 +945,15 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             "Find C&hapters in a Recording...\tCtrl+Shift+R",
             "Pick a lecture or any MP3; the Workbench proposes chapters from its silences",
         )
+        narration_id = wx.NewIdRef()  # PRD 8.5; the shared rows are on every app's keys
+        studio.Append(
+            narration_id,
+            "&Narration from Scribe for Documents...\tAlt+Shift+F6",
+            "A document read aloud by Scribe for Documents, with chapters from its headings",
+        )
+        from quill.ui.scribe_app_host import append_scribe_submenu
+
+        self._keep_menu_ids(*append_scribe_submenu(self, studio, wx, title="Scribe f&or Documents"))
         studio.AppendSeparator()
         studio.Append(open_book_id, "Open Boo&k File...\tCtrl+O")
         studio.Append(job_id, "Open &Job File...\tCtrl+J", "Re-run a saved .quilljob")
@@ -1091,6 +1101,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             (edit_id, self.open_book_picker),
             (tags_id, self.open_tag_editor_picker),
             (chapters_id, self.find_chapters_in_recording),
+            (narration_id, self.scribe_narration),
             (open_book_id, self.open_book_picker),
             (job_id, self.open_job_file),
             (self._resume_menu_item_id, self._toggle_resume_on_launch),

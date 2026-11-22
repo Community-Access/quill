@@ -154,6 +154,11 @@ Name: "{group}\{#AppName} GitHub Guide"; Filename: "{app}\docs\github-guide\gith
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{code:BundledLauncherPath}"; Parameters: "-m quill"; WorkingDir: "{app}"; Check: HasBundledLauncher
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "{app}"; Check: not HasBundledLauncher
+; Explorer's Send To > Convert with Scribe for Documents (Scribe PRD 8.10),
+; opt-in: QUILL starts (or the running QUILL comes forward) with the files
+; and opens the Convert dialog, which asks before anything is sent.
+Name: "{usersendto}\Convert with Scribe for Documents"; Filename: "{code:BundledLauncherPath}"; Parameters: "-m quill --action scribe"; WorkingDir: "{app}"; Check: WantsScribeSendTo and HasBundledLauncher
+Name: "{usersendto}\Convert with Scribe for Documents"; Filename: "{app}\{#AppExeName}"; Parameters: "--action scribe"; WorkingDir: "{app}"; Check: WantsScribeSendTo and not HasBundledLauncher
 ; Companion apps: Quill Radio runs Radio standalone (quill/apps/*;
 ; PRD 5.89e). QUILL Cast is gated out of public 1.0.0 builds
 ; (RELEASED_APPS) so it gets no shortcuts. Start Menu entry always;
@@ -696,6 +701,7 @@ end;
 var
   FileAssocCheck: TNewCheckBox;
   ShellVerbsCheck: TNewCheckBox;
+  ScribeSendToCheck: TNewCheckBox;
   CompanionIconsCheck: TNewCheckBox;
   AddToPathCheck: TNewCheckBox;
   ViewReadmeCheck: TNewCheckBox;
@@ -747,6 +753,10 @@ begin
   ShellVerbsCheck := AddTaskCheck(TasksPage, Top,
     'Add "&Send to Quill" to the file right-click menu',
     'OCR, Open and Read aloud actions for supported files.');
+  ScribeSendToCheck := AddTaskCheck(TasksPage, Top,
+    'Add "&Convert with Scribe for Documents" to Send To',
+    'Sends the files you choose to Scribe for Documents, an online service.' +
+    ' QUILL shows what will be sent and asks first, every time.');
   CompanionIconsCheck := AddTaskCheck(TasksPage, Top,
     'Create a &desktop icon for Quill Radio',
     'Quill Radio is the standalone internet radio app.');
@@ -767,6 +777,11 @@ end;
 function WantsShellVerbs(): Boolean;
 begin
   Result := (ShellVerbsCheck <> nil) and ShellVerbsCheck.Checked;
+end;
+
+function WantsScribeSendTo(): Boolean;
+begin
+  Result := (ScribeSendToCheck <> nil) and ScribeSendToCheck.Checked;
 end;
 
 function WantsCompanionIcons(): Boolean;

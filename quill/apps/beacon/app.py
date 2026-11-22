@@ -9,10 +9,8 @@ engine into ``quill/apps/beacon.py`` on ``AppShellFrame`` (PRD 44.1).
 
 from __future__ import annotations
 
-import os
 import sys
 import time
-import webbrowser
 from pathlib import Path
 
 import wx
@@ -53,10 +51,8 @@ from quill.apps.beacon.dialogs import (
     TrailStepDialog,
     parse_hhmm,
 )
-from quill.apps.beacon.model import (
-    HEALTH_BROKEN,
-    SCHEMA_VERSION,
-)
+from quill.apps.beacon.model import SCHEMA_VERSION
+from quill.apps.beacon.scribe_ui import BeaconScribeMixin
 from quill.apps.beacon.sync_ui import SyncController
 from quill.apps.beacon.undo import UndoManager, restore_beacons, snapshot_beacons
 from quill.core.sound_events import SoundEvent
@@ -85,6 +81,7 @@ DESTINATIONS = [
     ("Recent", "recent"),
     ("Favorites", "favorites"),
     ("Needs Attention", "attention"),
+    ("Scribe Documents", "scribe"),  # places in Scribe results (scribe_ui.py, PRD 8.7)
     ("Archive", "archive"),
     ("Trash", "trash"),
 ]
@@ -101,7 +98,7 @@ def _data_dir() -> Path:
     return paths.data_dir()
 
 
-class BeaconFrame(wx.Frame, BeaconAiMixin):
+class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
     def __init__(self) -> None:
         super().__init__(None, title=_TITLE, size=dip_size(None, 1100, 720))
         # Maximized by default, and remembered after that, like every other app
@@ -600,6 +597,7 @@ class BeaconFrame(wx.Frame, BeaconAiMixin):
             self._on_status_center,
             "Capture bridge, sync, and library health at a glance",
         )
+        self._append_scribe_menu(m_tools)  # Scribe for Documents (PRD 8.7)
         app_sounds.append_menu_item(self, m_tools, label="App So&unds")
         self._sounds_chooser_id = app_sounds.append_chooser_item(self, m_tools, "Ctrl+Alt+S")
         mb.Append(m_tools, "&Tools")
@@ -897,6 +895,8 @@ class BeaconFrame(wx.Frame, BeaconAiMixin):
         return self.last_query
 
     def _refresh_results(self) -> None:
+        if self._scribe_scope_results():  # the Scribe Documents destination
+            return
         # Smart Collections evaluate their saved grammar live (PRD 15.6).
         if self.current_scope.startswith("smart:"):
             sid = self.current_scope.split(":", 1)[1]
@@ -1038,31 +1038,7 @@ class BeaconFrame(wx.Frame, BeaconAiMixin):
                 self._open_beacon(beacon)
         dlg.Destroy()
 
-    def _open_beacon(self, b) -> None:
-        res = self.store.get_resource(b.resource_id) if b.resource_id else None
-        if not res or not res.primary_uri:
-            self.announcer.say("No openable address for this bookmark")
-            return
-        uri = res.primary_uri
-        if res.type in ("file", "folder"):
-            if not Path(uri).exists():
-                self.announcer.say("File or folder not found. Marked as broken.")
-                self.store.conn.execute(
-                    "UPDATE beacons SET health=? WHERE beacon_id=?", (HEALTH_BROKEN, b.beacon_id)
-                )
-                self.store.conn.commit()
-                self._refresh_results()
-                return
-            if sys.platform.startswith("win"):
-                os.startfile(uri)  # noqa: S606 (local user file)
-            else:
-                import subprocess
-
-                subprocess.Popen(["open", uri] if sys.platform == "darwin" else ["xdg-open", uri])
-        else:
-            webbrowser.open(uri)
-        self.store.record_open(b.beacon_id)
-        self.announcer.say(f"Opened {b.title}")
+    # _open_beacon is in scribe_ui.py (BeaconScribeMixin), with the Scribe part.
 
     def _on_open(self, _e) -> None:
         sel = self.results.GetFirstSelected()
@@ -1493,6 +1469,7 @@ class BeaconFrame(wx.Frame, BeaconAiMixin):
             Command("Sync Now", "F9", self._on_sync_now),
             Command("Sync History", "Shift+F9", self._on_sync_history),
             Command("Status Center", "Ctrl+Alt+I", self._on_status_center),
+            *self._scribe_palette(Command),
             Command("Play in External Player", "Ctrl+Alt+P", self._on_play_external),
             Command("Suggest Tags", "Ctrl+Shift+T", self._on_suggest_tags),
             Command("Suggest Relationships", "Ctrl+Shift+K", self._on_suggest_relationships),
