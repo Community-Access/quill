@@ -15,6 +15,10 @@ QUILL Cast 2.0 is one window with everything in it, every list works from the ke
 - **Folders**: Copy to Folder (Ctrl+Shift+Y) puts a podcast in a second folder without following it twice; Ctrl+Shift+V moves it.
 - Enter on a podcast opens its list on the episode you last had selected.
 
+## Linked documents
+
+- **Episode > Convert Linked Document with Scribe for Documents (Alt+Shift+F6)** makes a PDF or document the show notes link accessible, through Pneuma Solutions' service, with your say each time.
+
 ## Listening
 
 - Ctrl+Right skips ahead 30 seconds, Ctrl+Left goes back 15, Ctrl+P pauses and picks up where you stopped.

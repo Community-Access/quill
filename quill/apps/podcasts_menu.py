@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import wx
 
+from quill.apps.podcasts_scribe import CastScribeMixin
 from quill.core import http_client
 from quill.ui.whats_new import append_whats_new_item
 
@@ -37,7 +38,7 @@ _BUILD = APP_BUILD
 _REPO = APP_REPO
 
 
-class CastMenuBarMixin:
+class CastMenuBarMixin(CastScribeMixin):
     """Builds QUILL Cast's menu bar. Mixed into ``PodcastsAppFrame``."""
 
     def _build_menu_bar(self) -> None:
@@ -269,6 +270,7 @@ class CastMenuBarMixin:
         wp_post_id = wx.NewIdRef()
         episode_menu.Append(wp_post_id, "Post This Episode to WordPress...\tCtrl+Alt+P")
         self.frame.Bind(wx.EVT_MENU, lambda _e: post_selected_episode(self), id=wp_post_id)
+        self._append_scribe_rows(episode_menu, subs_menu)  # PRD 8.6, podcasts_scribe.py
         self._append_queue_run_submenu(episode_menu)
         mark_all_id = wx.NewIdRef()
         episode_menu.Append(

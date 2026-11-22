@@ -82,17 +82,22 @@ def _join_names(names: list[str]) -> str:
     return ", ".join(names[:-1]) + " and " + names[-1]
 
 
-def result_sentence(job: Job, *, app_name: str, opened: str = "", offer: bool = False) -> str:
+def result_sentence(
+    job: Job, *, app_name: str, opened: str = "", offer: bool = False, note: str = ""
+) -> str:
     """The one sentence a finished job gets (FUX-04).
 
     *opened* names what is now open ("Word is open in QUILL"); with nothing
-    opened the sentence ends by saying where to open it from.
+    opened the sentence ends by saying where to open it from. *note* is what an
+    app did to the result before it was said ("with 12 chapter markers"), so
+    that step never needs a second message.
     """
     names = [Path(path).name for path in job.outputs.values()]
     folder = friendly_folder(job.folder) if job.folder else ""
     where = f" in {folder}" if folder else ""
     made = _join_names(names) if names else formats_phrase(job.formats)
-    text = f"{PRODUCT_NAME} made {made}{where}."
+    extra = f", {note}" if note else ""
+    text = f"{PRODUCT_NAME} made {made}{where}{extra}."
     if opened:
         return f"{text} {opened}."
     if offer or names:

@@ -419,18 +419,18 @@ class QuillConverterFrame(
 
     def add_paths(self, paths: list[Path], *, announce: bool = True) -> None:
         """Queue each existing file or folder in *paths* (drop, paste, command line)."""
-        added = skipped = 0
+        added, skipped = 0, []
         for path in paths:
             if path.is_dir():
                 added += self._add_entry(path, is_folder=True)
             elif path.is_file() and path.suffix.lower() in INPUT_EXTENSIONS:
                 added += self._add_entry(path, is_folder=False)
             else:
-                skipped += 1
+                skipped.append(path)
         if added or paths:
             self._reload()
         if announce:
-            note = f" {skipped} not a media file, left out." if skipped else ""
+            note = self._scribe_left_out(skipped)  # a document says where documents go (8.4)
             self._announce(f"Added {added} to the queue, {len(self._entries)} in all.{note}")
 
     def paste_files(self) -> None:

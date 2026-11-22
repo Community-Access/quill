@@ -422,7 +422,7 @@ class QuillMediaPlayerFrame(
                 return
             self._load_daisy(Path(picker.GetPath()))
 
-    def _load_daisy(self, ncx: Path) -> None:
+    def _load_daisy(self, ncx: Path, *, quiet: bool = False) -> None:
         from quill.core.media import parse_ncx, resolve_heading_times
 
         try:
@@ -434,11 +434,9 @@ class QuillMediaPlayerFrame(
 
         def load_smil(name: str) -> str | None:
             candidate = root_dir / name
-            return (
-                candidate.read_text(encoding="utf-8", errors="replace")
-                if candidate.is_file()
-                else None
-            )
+            if not candidate.is_file():
+                return None
+            return candidate.read_text(encoding="utf-8", errors="replace")
 
         resolved = resolve_heading_times(headings, load_smil)
         chapters, nodes, audio_path = self._daisy_build(resolved, root_dir)
@@ -458,7 +456,8 @@ class QuillMediaPlayerFrame(
         self._refresh_chapters()
         self._refresh_bookmarks()
         self._set_status(f"DAISY book: {ncx.stem}")
-        self._announce(f"DAISY book opened. {len(resolved)} headings.")
+        if not quiet:  # quiet: a Scribe result says it in its own sentence (8.3)
+            self._announce(f"DAISY book opened. {len(resolved)} headings.")
 
     @staticmethod
     def _daisy_build(

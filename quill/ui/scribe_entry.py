@@ -80,7 +80,9 @@ class ScribeEntryPoints:
             return
         self._scribe().convert_files([path], app_formats=["docx"], open_as="import")
 
-    def _scribe_pick_and_convert(self, *, multiple: bool, app_formats: Any, open_as: str) -> None:
+    def _scribe_pick_and_convert(
+        self, *, multiple: bool, app_formats: Any, open_as: str, folder: str = ""
+    ) -> None:
         import wx
 
         from quill.core.scribe.inputs import input_wildcard
@@ -101,7 +103,7 @@ class ScribeEntryPoints:
             paths = [Path(p) for p in dialog.GetPaths()] if multiple else [Path(dialog.GetPath())]
         finally:
             dialog.Destroy()
-        controller.convert_files(paths, app_formats=app_formats, open_as=open_as)
+        controller.convert_files(paths, app_formats=app_formats, open_as=open_as, folder=folder)
 
     # -- convert the document in front ------------------------------------
 

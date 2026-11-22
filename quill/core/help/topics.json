@@ -4586,5 +4586,11 @@
     "title": "Password for a Scribe document",
     "body": "A PDF waiting in Scribe Conversions needs its password. Type it and press OK. Show password lets you check it with braille. It is used once and never saved. After three wrong tries the job stops; Retry starts again.",
     "user_guide_section": "a-password-protected-pdf"
+  },
+  {
+    "id": "scribe_beacon_place_dialog",
+    "title": "Save a Beacon Place",
+    "body": "Where the Quill Beacon place should point in this Scribe result: The start of the document, or one of its headings, each read with its level, such as Methods, heading level 2. Arrow to one and press Enter; QUILL says once that the place is saved. The place remembers the Scribe document, so Beacon can download it again if the file is gone.",
+    "user_guide_section": "save-a-beacon-place"
   }
 ]

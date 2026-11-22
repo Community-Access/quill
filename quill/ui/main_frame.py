@@ -2340,6 +2340,8 @@ class MainFrame(
         """
         action = str(getattr(candidate, "action", "open") or "open").strip().lower()
         path = candidate.path
+        if action == "scribe":  # Explorer's Send To (main_frame_scribe.py, Scribe PRD 8.10)
+            return self._scribe_shell_request(path)
         if action in {"ocr", "ocr-structured"}:
             self._run_ocr_on_path(path, confirm=False, structured=action == "ocr-structured")
             return

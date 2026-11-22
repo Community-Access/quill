@@ -25,6 +25,22 @@ The first public release. The app was first built in July 2026 as an audio
 converter; that build was never published as an installer, and everything it
 had is included here.
 
+### Documents, with Scribe for Documents (2026-11-21)
+
+- **File > Convert Documents with Scribe for Documents...** (Alt+Shift+F6)
+  converts PDFs, pictures of text, Office files and ebooks through Scribe for
+  Documents into Word, accessible HTML, tagged PDF, EPUB, DAISY, MP3 or
+  braille. Several files go one after another with one consent. The results
+  go to the Output folder, or a Converted folder beside the first document.
+- **The document jobs are in Scribe Conversions** (File > Scribe for
+  Documents, Alt+Shift+F7), not the audio queue, which never moves while a
+  document converts. A document added to the audio queue is left out with one
+  sentence that says where documents go.
+- **Next Steps' Add to the Converter Queue** puts Scribe's MP3, or a DAISY
+  book's audio, in the audio queue, as a second step you choose.
+- File > Scribe for Documents also holds My Scribe Documents, Scribe Status,
+  Repeat Last Scribe Message and Scribe for Documents Options.
+
 ### Choices that could not be saved are reported (2026-11-20)
 
 If Quill Converter cannot write its settings file (it is locked, or the

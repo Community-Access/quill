@@ -563,6 +563,7 @@ one is a separate choice.
 | Word, Accessible HTML or EPUB | **Read Aloud with QUILL's Voices**, **Check Accessibility (GLOW Audit)** and **Summarize with Your AI...** |
 | Braille (BRF) | **Open in the Braille View** |
 | MP3 audio or DAISY | **Send to Media Player** |
+| Word or Accessible HTML, where Quill Beacon is installed | **Save a Beacon Place...** |
 
 Each one opens the file in QUILL first, or goes to its tab if it is already
 open, and then runs the command. When a job made more than one of Word,
@@ -572,6 +573,28 @@ Summarize uses the AI you chose in Choose Your AI, which asks first as it
 always does, and is not offered when AI is turned off. Scribe is not
 involved in that step. If the Media Player cannot be opened, QUILL says so
 and the file stays in its folder.
+
+### Save a Beacon Place
+
+Quill Beacon keeps places you want to come back to. **Save a Beacon
+Place...** keeps one in a Scribe result: its start, or one of its headings.
+It is offered for Word and accessible HTML, when Quill Beacon is installed.
+
+1. In Scribe Conversions, choose the job and press **Next Steps...**.
+2. Choose **Save a Beacon Place...**. When the job made both Word and HTML,
+   each names its format, such as **Save a Beacon Place (Word)...**.
+3. A list opens, **Save a Beacon Place**, labelled "Save the place at:". The
+   first row is "The start of the document"; then come the headings, their
+   words first and their level after, such as "Methods, heading level 2". A
+   heading that appears twice says which it is: "Results, heading level 2,
+   second". A document with no headings skips the list.
+4. Arrow to the place and press Enter. You hear once: "Saved a Beacon place:
+   Notes, at Methods."
+
+The place is in Quill Beacon, under **Scribe Documents**. It remembers the
+Scribe document, so if the file is ever gone Beacon offers to download it
+again from your Scribe account, with no pages used. A running Beacon shows
+the new place the next time it reads its list, without a word.
 
 ## My Scribe Documents
 
@@ -722,6 +745,61 @@ Things to know:
 
 **Preview (dry run)** in the profile says what would happen to a file
 without sending it.
+
+## From Explorer: Send To
+
+QUILL's installer can add **Convert with Scribe for Documents** to
+Explorer's Send To menu. It is a choice on the installer's page of extra
+options, unchecked to start with: check **Add "Convert with Scribe for
+Documents" to Send To**.
+
+1. In File Explorer, select one or more documents.
+2. Press the Applications key, choose **Send to**, then **Convert with
+   Scribe for Documents**.
+3. QUILL starts, or the QUILL that is already running comes to the front,
+   and the Convert dialog opens once for all the files you sent, on **What
+   will be sent**. Files Scribe does not take are named there, after "Not
+   sent:".
+4. Choose your formats and press **Send and Convert**, as from Convert a
+   File.
+
+If QUILL has a dialog open when the files arrive, it does not open another
+on top of it. You hear once, for example, "Convert with Scribe for Documents
+is waiting until you close Find and Replace.", and the Convert dialog opens
+when you close it.
+
+To take the item off the Send To menu, run the installer again and uncheck
+it, or delete the shortcut from your Send To folder. QUILL Lite's installer
+does not add it yet.
+
+## Scribe for Documents in the other QUILL apps
+
+The same Scribe for Documents is in five more QUILL apps. They share your
+sign-in, your Options, the queue and Scribe Conversions with QUILL: a job
+started in one shows in all of them, one at a time, and only the app running
+it speaks.
+
+| App | Where | What it does |
+|---|---|---|
+| Quill Media Player | File, Listen to a Document with Scribe for Documents | A document comes back as a DAISY book and MP3 audio, and opens as a book to listen to |
+| Quill Converter | File, Convert Documents with Scribe for Documents | Documents as a source type; results go to Converter's output folder, and audio can go on through Converter |
+| QUILL Studio | Studio, Narration from Scribe for Documents | A document read aloud, with chapter markers from its headings, opened in the Chapter Workbench |
+| QUILL Cast | Episode, Convert Linked Document with Scribe for Documents | A document the episode's show notes link |
+| QUILL Social | Item, Convert Linked Document with Scribe for Documents | A document a post links |
+| Quill Beacon | Tools, Scribe for Documents | Places in Scribe results, and your Scribe library as places |
+
+Each app also has a **Scribe for Documents** submenu with Scribe
+Conversions, My Scribe Documents, Scribe Status, Repeat Last Scribe Message
+and Options. In those apps every menu row has a key, and the Scribe rows
+are on Alt+Shift with F6 to F11, the same in each. QUILL keeps those keys for
+its own commands, so in QUILL the Scribe commands still have no key until
+you give them one. Each app's own user guide has its Scribe for Documents
+section, with the steps and what you hear.
+
+A result that would open in another app, such as Word from Quill Converter
+opening in QUILL, never opens by itself: the result sentence ends "Open it
+from Scribe Conversions.", and **Open Result** or **Next Steps...** opens it
+when you choose.
 
 ## Walkthroughs
 
@@ -1111,6 +1189,11 @@ QUILL only changes whether **Describe the pictures** starts checked.
 In Documents\Scribe for Documents, in a folder for
 each document, unless you chose another folder in Options. **Open Folder**
 in Scribe Conversions takes you there.
+
+### Can I convert a file straight from Explorer?
+
+Yes, if you checked **Add "Convert with Scribe for Documents" to Send To**
+in QUILL's installer. See [From Explorer: Send To](#from-explorer-send-to).
 
 ### Can I use QUILL Lite at the same time?
 

@@ -43,6 +43,7 @@ In the post list, **Up** and **Down** move between posts, **Left** and **Right**
 | **Ctrl+Shift+G** | Flag for follow-up | Item | Flags the focused post so it gathers under Flagged, or takes the flag off again. |
 | **F7** | Accessibility check | Item | Checks the focused post for missing image descriptions and other problems, and reads you what it found. |
 | **Ctrl+Shift+Q** | Send to QUILL | Item | Saves the focused post and its whole conversation as a Markdown document for QUILL, in the exports folder of QUILL Social's data folder, and says where. |
+| **Alt+Shift+F6** | Convert Linked Document with Scribe for Documents | Item | Converts a document the focused post links, through Scribe for Documents; the Convert dialog says what will be fetched before anything goes. |
 
 ## 3. Writing
 
@@ -126,6 +127,20 @@ Example: open a feed, press Ctrl+Shift+L, and the first unread article starts. P
 Rarely used commands, such as the Help documents and the settings-like Tools windows, have longer keys on purpose, so the short ones stay free for what you do every few minutes. Ctrl+Alt keys and keyboard layouts: where the right Alt key types accented letters, a Ctrl+Alt key may run its command instead of typing the letter while the search box has focus; the menu always works.
 
 ---
+
+## 9. Scribe for Documents
+
+The same keys as in Quill Media Player, Quill Converter, QUILL Studio, QUILL
+Cast and Quill Beacon. (QUILL and QUILL Lite use these keys for editing, and
+give their Scribe commands no key.)
+
+| Key | Command | Menu | What it does |
+| :--- | :--- | :--- | :--- |
+| **Alt+Shift+F7** | Scribe Conversions | Tools | Every Scribe for Documents job on this computer, and what it is doing. |
+| **Alt+Shift+F8** | My Scribe Documents | Tools | Your documents in your Scribe account, and the Trash. |
+| **Alt+Shift+F9** | Scribe Status | Tools | Says what the running Scribe job is doing, once. |
+| **Alt+Shift+F10** | Repeat Last Scribe Message | Tools | Says the last Scribe for Documents sentence again. |
+| **Alt+Shift+F11** | Scribe for Documents Options | Tools | Sign in or out, your account, the download folder and how much is spoken. |
 
 ## Planned, not yet in this version
 

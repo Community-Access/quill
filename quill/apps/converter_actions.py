@@ -27,6 +27,7 @@ from typing import Any
 import wx
 
 from quill.apps.converter_lifecycle import ConverterLifecycleMixin
+from quill.apps.converter_scribe import ConverterScribeMixin
 from quill.core.audio.batch_progress import BatchProgress
 from quill.core.audio.convert import (
     BatchResult,
@@ -47,7 +48,7 @@ from quill.ui.about_notices import show_app_about
 _TITLE = "Quill Converter"
 
 
-class ConverterActionsMixin(ConverterLifecycleMixin):
+class ConverterActionsMixin(ConverterLifecycleMixin, ConverterScribeMixin):
     """The Converter's commands. See the module docstring for the contract."""
 
     # -- the recipe on screen ---------------------------------------------------

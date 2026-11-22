@@ -17,11 +17,12 @@ import wx
 
 from quill.apps import player_lyrics
 from quill.apps.player_preferences import open_preferences
+from quill.apps.player_scribe import PlayerScribeMixin
 
 __all__ = ["MediaPlayerMenuMixin"]
 
 
-class MediaPlayerMenuMixin:
+class MediaPlayerMenuMixin(PlayerScribeMixin):
     """The menu bar for :class:`quill.apps.player.QuillMediaPlayerFrame`."""
 
     def _build_menu_bar(self) -> None:
@@ -41,6 +42,18 @@ class MediaPlayerMenuMixin:
         file_menu.Append(folder_id, "O&pen Folder as Book...\tCtrl+Shift+O")
         file_menu.Append(daisy_id, "Open &DAISY Book...\tCtrl+Alt+D")
         file_menu.Append(library_id, "Book &Library...\tCtrl+L")
+        # Scribe for Documents (PRD 8.3): a document as a book to listen to,
+        # and the family's shared rows, on the keys they have in every app.
+        listen_id = wx.NewIdRef()
+        file_menu.Append(
+            listen_id, "Listen to a Doc&ument with Scribe for Documents...\tAlt+Shift+F6"
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.scribe_listen(), id=listen_id)
+        from quill.ui.scribe_app_host import append_scribe_submenu
+
+        self._keep_menu_ids(
+            listen_id, *append_scribe_submenu(self, file_menu, wx, title="Scri&be for Documents")
+        )
         file_menu.Append(goto_id, "&Go to Position...\tCtrl+G")
         bookmarks_menu = wx.Menu()
         export_bm_id, export_sync_id, import_sync_id = (wx.NewIdRef() for _ in range(3))

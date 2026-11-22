@@ -51,11 +51,14 @@ def _files(tmp_path: Path, *names: str) -> list[Path]:
 
 
 def test_add_paths_queues_media_and_says_what_was_left_out(converter, tmp_path: Path) -> None:
-    song, clip, note = _files(tmp_path, "song.mp3", "clip.mkv", "notes.txt")
-    converter.add_paths([song, clip, note])
+    song, clip, note, blob = _files(tmp_path, "song.mp3", "clip.mkv", "notes.txt", "data.xyz")
+    converter.add_paths([song, clip, note, blob])
     assert [entry for entry, _root in converter._entries] == [song, clip]
     assert converter._list.GetCount() == 2
-    assert "Added 2" in converter.said[-1] and "1 not a media file" in converter.said[-1]
+    said = converter.said[-1]
+    assert "Added 2" in said and "1 not a media file" in said
+    # A document Scribe takes is named, with where to convert it.
+    assert "notes.txt is a document" in said and "Convert Documents with Scribe" in said
     converter.add_paths([song])  # a duplicate is queued once
     assert len(converter._entries) == 2
 
