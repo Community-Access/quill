@@ -42,7 +42,9 @@ __all__ = [
 #: being offered as a bogus stream candidate. Without this, iHeart ``/live``
 #: links were flagged as "stream-shaped" (``/live`` is a path hint) and the
 #: unplayable portal page URL was handed to the user (issue #1087).
-_PORTAL_HOSTS = ("iheart.com", "tunein.com")
+#: Global Player's ``/live/<brand>/`` pages joined them on 2026-11-22: the free
+#: stream is in the page's own state (:mod:`quill.core.radio.global_player`).
+_PORTAL_HOSTS = ("iheart.com", "tunein.com", "globalplayer.com")
 _PORTAL_PAGE_PATH_HINTS = ("/live/", "/radio/", "/podcast/")
 
 #: Help-centre hosts. Triton's player links its own support article,

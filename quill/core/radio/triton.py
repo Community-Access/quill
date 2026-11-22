@@ -84,6 +84,14 @@ _STATION_PARAM_RE = re.compile(r"[?&]station=([A-Za-z0-9]{3,})\b", re.IGNORECASE
 #: (``player.listenlive.co/20551``, #36) is exactly that, while its 950 AM
 #: sister page, logo and all, always resolved.
 _CONFIG_MOUNT_RE = re.compile(r'"(?:mount|callsign)"\s*:\s*"([A-Za-z0-9]{3,})"')
+#: On a ``player.listenlive.co/<id>`` page only: the PWA's own
+#: ``<meta name="application-name" content="KKSEFM">``. Read after the others,
+#: and only on the player's own host, where the app's name is its mount. An
+#: idea from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift).
+_APP_NAME_RE = re.compile(
+    r"<meta\s[^>]*name=[\"']application-name[\"'][^>]*content=[\"']([A-Za-z0-9_-]{3,40})[\"']",
+    re.IGNORECASE,
+)
 
 
 class TritonResolverError(CodedError):
@@ -157,12 +165,17 @@ def callsign_from_page(url: str, html: str) -> str | None:
 
     Pure. Tries the station-logo asset name first (the most reliable signal on
     a ``player.listenlive.co`` page), then any explicit ``station=`` query in
-    the page's scripts, then the mount the player's inline config names.
+    the page's scripts, then the mount the player's inline config names, and
+    last, on a ``player.listenlive.co`` page, the app name in its ``<meta>``.
     Returns the callsign uppercased (Triton mounts are conventionally
     upper-case) or ``None`` when the page advertises none.
     """
     for pattern in (_LOGO_CALLSIGN_RE, _STATION_PARAM_RE, _CONFIG_MOUNT_RE):
         match = pattern.search(html)
+        if match:
+            return match.group(1).upper()
+    if is_player_page_url(url):
+        match = _APP_NAME_RE.search(html)
         if match:
             return match.group(1).upper()
     return None

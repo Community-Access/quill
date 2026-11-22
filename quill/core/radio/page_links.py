@@ -19,8 +19,8 @@ is pure and needs no network. It finds:
   at ``streaming.radio.co/s<id>/listen``;
 * the page's own player scripts and ``window.open`` pop-up players, which the
   caller fetches;
-* links to an Icecast status page, which the caller reads with
-  :func:`quill.core.radio.my_servers.parse_icecast`.
+* links to an Icecast status page or a SHOUTcast server's statistics, which
+  the caller reads with :mod:`quill.core.radio.server_listings`.
 
 The ``data-*`` attributes, the ``key: "url"`` configuration, the same-site
 script files, ``window.open`` targets, plain-text addresses, ``<base href>``,
@@ -40,6 +40,7 @@ from dataclasses import dataclass
 from html.parser import HTMLParser
 
 from quill.core.radio.address_kind import is_player_page_url
+from quill.core.radio.server_listings import status_kind
 
 #: File extensions that are almost always a direct audio stream/playlist.
 STREAM_EXTENSIONS = (".mp3", ".aac", ".ogg", ".opus", ".m3u", ".m3u8", ".pls", ".flac")
@@ -104,6 +105,8 @@ class PageStreamCandidate:
     genre: str = ""
     #: Why the check said what it said, mostly why a link is "not checked".
     check_note: str = ""
+    #: How many were listening, when a server's own listing said (else ``None``).
+    listeners: int | None = None
 
     @property
     def live(self) -> bool:
@@ -200,7 +203,7 @@ class StreamLinkParser(HTMLParser):
         self.script_urls: list[str] = []
         #: ``window.open`` pop-up players, followed like an iframe.
         self.popup_urls: list[str] = []
-        #: Icecast status pages linked from the page.
+        #: Icecast status pages and SHOUTcast statistics linked from the page.
         self.status_urls: list[str] = []
         self._app_bundles = 0
         self._in_title = False
@@ -337,7 +340,7 @@ class StreamLinkParser(HTMLParser):
             # never a stream -- follow it instead of offering it.
             self.portal_urls.append(joined)
             return
-        if is_status_page(joined):
+        if is_status_page(joined) or status_kind(joined):
             self.status_urls.append(joined)
             return
         lowered_path = urllib.parse.urlsplit(lowered).path

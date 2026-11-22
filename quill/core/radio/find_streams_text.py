@@ -6,7 +6,8 @@ Two pieces of text, kept here so they are tested without wx:
   reader reads first (and, in JAWS's first-column mode, only). So it carries
   the verdict *and* what tells two rows apart: "Live: WXYZ FM, MP3, 128 kbps",
   "Live: stream.example.org, AAC" when the stream sent no name, and "Not
-  checked: it took too long to answer".
+  checked: it took too long to answer". A stream a server listed ends with its
+  listener count: "Live: Capital UK, AAC, 48 kbps, 12 listeners".
 * :func:`summary_sentence` -- the one sentence said when a scan finishes
   (FUX-04), in the same order as the list: live, then not checked, then audio
   files. Links proven not to be audio are mentioned only in the status label
@@ -38,6 +39,9 @@ def _detail(candidate: PageStreamCandidate) -> str:
     parts = [name, candidate.codec]
     if candidate.bitrate_kbps:
         parts.append(f"{candidate.bitrate_kbps} kbps")
+    if candidate.listeners is not None:
+        # Last, after what tells two rows apart: only a server listing says it.
+        parts.append(_plural(candidate.listeners, "listener", "listeners"))
     return ", ".join(part for part in parts if part)
 
 

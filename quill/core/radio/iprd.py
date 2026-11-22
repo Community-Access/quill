@@ -32,6 +32,7 @@ import ssl
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import zlib
 from collections import Counter
@@ -302,6 +303,56 @@ def search_stations(query: str, *, safe_mode: bool = False) -> list[RadioStation
     return found[:SEARCH_LIMIT]
 
 
+#: The most directory matches one website contributes to a Find Streams scan.
+WEBSITE_MATCH_LIMIT = 8
+
+
+def cached_catalog(*, safe_mode: bool = False) -> list[Row]:
+    """The catalogue already on this computer -- in memory, or the directory
+    cache at any age -- and never a download. ``[]`` when there is none."""
+    refuse_in_safe_mode(safe_mode)
+    with _memo_lock:
+        if _memo is not None:
+            return _memo[1]
+    entry = directory_cache.load(_CACHE_KEY)
+    return _coerce(entry.payload) if entry is not None else []
+
+
+def _site_key(url: str) -> tuple[str, str]:
+    """``(host without www., path without slashes)``, lower-cased."""
+    parts = urllib.parse.urlsplit(url.strip())
+    host = (parts.hostname or "").lower().removeprefix("www.")
+    return host, parts.path.strip("/").lower()
+
+
+def stations_for_website(url: str, *, safe_mode: bool = False) -> list[RadioStation]:
+    """Stations whose IPRD homepage is the website at *url*.
+
+    The host must match (``www.`` either way); a website given with a path,
+    such as a network's page for one station, must match that path too. Only
+    the cached catalogue is read (:func:`cached_catalog`), so a website scan
+    never starts the catalogue download. Errors, Safe Mode included, come back
+    as an empty list, as :func:`search_stations` does. The idea is from Andre
+    Louis's StreamSift (https://github.com/OnjLouis/StreamSift), written in
+    QUILL's own code.
+    """
+    host, path = _site_key(url)
+    if not host:
+        return []
+    try:
+        rows = cached_catalog(safe_mode=safe_mode)
+    except IprdError:
+        return []
+    found: list[RadioStation] = []
+    for row in rows:
+        home_host, home_path = _site_key(row[6])
+        if home_host == host and (not path or home_path == path):
+            found.append(to_station(row))
+            if len(found) == WEBSITE_MATCH_LIMIT:
+                break
+    return found
+
+
 def forget_memo() -> None:
     """Drop the in-memory copy (tests, and Refresh on the branch)."""
     global _memo, _last_failure
@@ -315,6 +366,7 @@ __all__ = [
     "PAGE_SIZE",
     "SOURCE",
     "IprdError",
+    "cached_catalog",
     "catalog",
     "countries",
     "country_stations",
@@ -323,6 +375,7 @@ __all__ = [
     "genres",
     "page",
     "search_stations",
+    "stations_for_website",
     "to_station",
     "trim_catalog",
 ]

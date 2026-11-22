@@ -13,7 +13,14 @@ from __future__ import annotations
 
 from quill.core.radio.page_links import PageStreamCandidate
 
-__all__ = ["securenet_candidates", "triton_candidates", "tunein_candidates"]
+__all__ = [
+    "directory_candidates",
+    "global_player_candidates",
+    "securenet_candidates",
+    "soundmap_candidates",
+    "triton_candidates",
+    "tunein_candidates",
+]
 
 
 def triton_candidates(url: str, html: str, *, safe_mode: bool) -> list[PageStreamCandidate]:
@@ -95,4 +102,63 @@ def securenet_candidates(url: str, html: str) -> list[PageStreamCandidate]:
             label=callsign,
         )
         for stream_url in securenet.stream_urls_from_page(html)
+    ]
+
+
+def global_player_candidates(url: str, html: str) -> list[PageStreamCandidate]:
+    """A Global Player station page's free streams, read from its page state.
+
+    No API call: the page carries its own playback list, and only the entries
+    Global lets anyone play are taken (see :mod:`quill.core.radio.global_player`).
+    """
+    from quill.core.radio import global_player
+
+    if not global_player.is_station_page(url):
+        return []
+    title = global_player.station_title(html)
+    return [
+        PageStreamCandidate(
+            url=stream_url,
+            reason="stream from the Global Player station page",
+            label=title,
+        )
+        for stream_url in global_player.stream_urls_from_page(html)
+    ]
+
+
+def soundmap_candidates(url: str, *, safe_mode: bool) -> list[PageStreamCandidate]:
+    """Every open microphone on air, when *url* is the Locus Sonus Soundmap page."""
+    from quill.core.radio import locus_sonus
+
+    if not locus_sonus.is_soundmap_page(url):
+        return []
+    try:
+        stations = locus_sonus.fetch_stations(safe_mode=safe_mode)
+    except locus_sonus.LocusSonusError:
+        return []
+    return [
+        PageStreamCandidate(
+            url=station.stream_url,
+            reason="open microphone on the Locus Sonus Soundmap",
+            label=station.name,
+        )
+        for station in stations
+    ]
+
+
+def directory_candidates(url: str, *, safe_mode: bool) -> list[PageStreamCandidate]:
+    """Streams IPRD lists for this website, from the catalogue already cached.
+
+    Matched by the station's homepage, never by name, and never by starting
+    the catalogue download (:func:`quill.core.radio.iprd.stations_for_website`).
+    """
+    from quill.core.radio import iprd
+
+    return [
+        PageStreamCandidate(
+            url=station.stream_url,
+            reason="listed for this website in IPRD (Public Radio Directory)",
+            label=station.name,
+        )
+        for station in iprd.stations_for_website(url, safe_mode=safe_mode)
     ]

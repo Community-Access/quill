@@ -20,6 +20,7 @@ from collections.abc import Callable
 from quill.core.radio import (
     acb_media,
     double_tap,
+    locus_sonus,
     nfb_media,
     radio_browser,
     radio_paradise,
@@ -57,4 +58,5 @@ FLAT: dict[str, Callable[[bool], list[RadioStation]]] = {
     "westwood": lambda _safe: westwood_one.westwood_one_stations(),
     "reading": lambda safe: reading_services.list_reading_services(safe_mode=safe),
     "radioparadise": lambda safe: radio_paradise.fetch_stations(safe_mode=safe),
+    "locussonus": lambda safe: locus_sonus.fetch_stations(safe_mode=safe),
 }
