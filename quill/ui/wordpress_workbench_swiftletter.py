@@ -12,14 +12,23 @@ class WorkbenchSwiftLetter:
     def swiftletter_children(self, instance: str) -> tuple[tuple[str, str], ...]:
         return getattr(self, "_swiftletter_nodes", {}).get(instance, ())
 
-    def remember_newsletters(self, site: str, sep: str, rows: list[WbRow]) -> None:
+    def swiftletter_offered(self, key: str, context: Any) -> bool:
+        """SwiftLetter is for self-hosted sites: a WordPress.com connection never shows it."""
+        api = getattr(context, "api", None)
+        return key != ROOT or api is None or not api.address.is_wpcom
+
+    def remember_newsletters(self, site: str, sep: str, rows: list[WbRow], ref: Any = None) -> None:
         """Keep each site's newsletters as tree nodes; rebuild only when they changed.
 
+        When the site said how many it has, the list's "more on the site" words say
+        how many remain, in place of the usual guess (Michael's answer 12).
         Runs on the loading thread, so the shared dict is replaced whole, never
         changed in place while the tree may be reading it.
         """
         import wx
 
+        if ref is not None and rows and "left" in rows[0].raw:
+            self.cut[self.page_key(ref)] = rows[0].raw["left"]  # type: ignore[attr-defined]
         old = getattr(self, "_swiftletter_nodes", {})
         children = tuple((f"{site}{sep}{row.key}", row.title) for row in rows)
         if children != old.get(site, ()):

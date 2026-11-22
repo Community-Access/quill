@@ -322,6 +322,7 @@ from QUILL, with the keys you will use every day. Everything else is in the
 WordPress and Forms manual, which this chapter links to.
 
 - [Where everything is](quill-guide/quill-guide-16-wordpress.html#where-everything-is)
+- [Newsletters with SwiftLetter](quill-guide/quill-guide-16-wordpress.html#newsletters-with-swiftletter)
 - [The keys you will use every day](quill-guide/quill-guide-16-wordpress.html#the-keys-you-will-use-every-day)
 
 ### [Chapter 17: Forms](quill-guide/quill-guide-17-forms.html)

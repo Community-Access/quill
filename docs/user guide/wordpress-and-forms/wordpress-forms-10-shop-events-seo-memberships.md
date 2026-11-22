@@ -5,7 +5,8 @@
 Many sites do more than publish. They sell things, list events, chase search
 engines, run memberships, or send old addresses to new ones. Each of those
 needs a plugin, and QUILL works with the commonest: WooCommerce, The Events
-Calendar, Yoast SEO, Paid Memberships Pro and Redirection.
+Calendar, Yoast SEO, Paid Memberships Pro and Redirection. It can also browse
+newsletters made with SwiftLetter.
 
 This chapter has a section for each. Skip the ones your site does not have.
 You will look after products, orders and customers, events and venues, each
@@ -390,6 +391,53 @@ found. **Redirect This Address...** sends one somewhere, after a preview.
 QUILL also offers a redirect at the moments you need one: when you change a
 page's slug in Properties, and when Replace File gives a file a new address
 (Chapter 5). Say yes, and the old address keeps working.
+
+## Newsletters: SwiftLetter
+
+SwiftLetter builds a newsletter from articles, runs an editorial review, and
+makes a Word document and audio of the issue. Each site with SwiftLetter 1.1
+or later has **SwiftLetter**. QUILL offers it on self-hosted WordPress sites,
+including managed hosts where the plugin can be installed. A site connected
+through WordPress.com says, in one sentence, that QUILL offers SwiftLetter
+only on self-hosted sites.
+
+For now QUILL browses. Nothing in the SwiftLetter branch sends a change to
+the site.
+
+**SwiftLetter** lists the site's newsletters: each title, how many articles it
+holds, and when it last changed. Two newsletters with the same title carry
+their number, so you can tell them apart. The list reads three hundred
+newsletters at first, like every Workbench list. When the site says how many
+it has, the summary after the list says how many more there are, and **View >
+Load More** reads three hundred more; **Load All** reads every one.
+
+Each newsletter is also a node under SwiftLetter in the tree. On a newsletter
+row, Enter is **Show Articles**: it selects that newsletter in the tree and
+lists its articles. If the newsletter is not in the tree yet, QUILL says so,
+and Refresh (F5) lists the newsletters again.
+
+A newsletter's list has its articles in newsletter order, each with:
+
+- its title;
+- its review state, in words: **Reviewed**, **Not reviewed**, or **Changed
+  since review** for an article reviewed and then edited. Only Reviewed counts
+  towards publishing the issue;
+- its place, such as "3 of 8".
+
+Enter on an article reads it in full in the details pane: the newsletter and
+site, who last changed its title or text and when, and whether your account
+can edit it. When SwiftLetter cannot be sure who made the last change, it says
+**Editor unknown** rather than guess. Whether you may edit or review is a hint
+from the site; SwiftLetter still checks every request.
+
+When the site refuses, the list says why: SwiftLetter is not active on the
+site, the site's SwiftLetter needs an update, your account is not allowed to
+browse newsletters, or the site's SwiftLetter is a newer version than this
+QUILL understands. F1 on SwiftLetter, a newsletter or an article says what it
+is.
+
+Opening and saving articles in QUILL's editor, reordering, review and exports
+come in later updates, and this section will grow with them.
 
 ## A podcast
 

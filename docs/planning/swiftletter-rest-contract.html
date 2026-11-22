@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
@@ -245,579 +245,466 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">SwiftLetter REST Contract for QUILL</h1>
-</header>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
 <h1 id="swiftletter-rest-contract-for-quill">SwiftLetter REST Contract
 for QUILL</h1>
-<p>Version 1.0, <strong>proposed</strong>. 2026-11-21.</p>
-<p>This is the REST contract QUILL needs from SwiftLetter, written for
-the SwiftLetter maintainers to review. Nothing here exists in
-SwiftLetter 1.0.9 yet. The maintainers offered to build the contract we
-document (issue Community-Access/quill#1992), so this is that document.
-When they agree, or change it, this file is updated and its status moves
-from proposed to agreed.</p>
-<p>Nothing is built in QUILL yet. QUILL's side will be built against a
-fake server that follows this contract exactly
-(<code>tests/unit/core/wordpress/fake_swiftletter.py</code>), and the
-contract will be checked against SwiftLetter's code once we can read it.
-If the real routes differ, only
-<code>quill/core/wordpress/swiftletter.py</code> and
-<code>swiftletter_contract.py</code> will need to change.</p>
-<p>The product requirements for both sides are in
-<code>docs/planning/swiftletter-prd.md</code>.</p>
+<p>API version 1.x, as built in SwiftLetter 1.1.0-rc.1 (branch
+<code>release/1.1.0-quill-test</code>, SwiftLetter PR #9). Corrected to
+the real API on 2026-11-22, replacing the proposal of 2026-11-21.</p>
+<p>This is the REST API QUILL uses, as SwiftLetter’s maintainer, Michael
+(payown), built it for issue Community-Access/quill#1992, with the
+changes he agreed on 2026-11-22. Sections 1 to 6 are what 1.1.0-rc.1
+does today. Section 7 is what is agreed and not yet built, in the order
+it will be built. The product requirements, including Michael’s answers
+by number, are in <code>docs/planning/swiftletter-prd.md</code> (section
+15).</p>
+<p>QUILL’s client is <code>quill/core/wordpress/swiftletter.py</code>,
+with its errors in <code>swiftletter_errors.py</code>. SwiftLetter’s
+shared contract fixtures (payown/SwiftLetter PR #11,
+<code>tests/contract/fixtures/</code>,
+<code>"contract_version": 1</code>) are run by SwiftLetter’s CI against
+a disposable WordPress on InnoDB, and replayed by QUILL’s
+<code>tests/unit/core/wordpress/test_wp_swiftletter_contract.py</code>
+from its copy in <code>tests/fixtures/swiftletter_contract/</code>.</p>
 <h2 id="1-principles">1. Principles</h2>
 <ul>
 <li><strong>SwiftLetter is the source of truth.</strong> QUILL and the
-WordPress dashboard edit the same records. Neither keeps a private copy
-the other cannot see.</li>
+WordPress dashboard edit the same records, through the same routes.</li>
 <li><strong>No second login.</strong> QUILL signs every request with the
-WordPress application password the person already connected. SwiftLetter
-checks capabilities on every request. A hidden button in QUILL is never
-the permission boundary.</li>
-<li><strong>Articles are posts.</strong> An article is a REST-enabled
-custom post type, so QUILL's existing post machinery works on it
-unchanged: working copies, the <code>modified_gmt</code> conflict check,
-revisions, Trash and Restore, the offline queue and
-<code>batch/v1</code>.</li>
-<li><strong>Three separate operations.</strong> Saving a draft, marking
-a revision reviewed and publishing are three different requests. No
-request does two of them.</li>
-<li><strong>One article, many newsletters.</strong> An article in
-several newsletters is one post. Unlinking it from a newsletter never
-deletes it.</li>
-<li><strong>Private files stay private.</strong> Exports and audio are
-downloaded through an authenticated REST route. QUILL never asks for,
-and SwiftLetter never returns, a public media address for a draft or a
-generated file.</li>
-<li><strong>Nothing costly happens by itself.</strong> A request that
-spends money or calls an outside provider carries an explicit
-<code>consent</code> flag, and SwiftLetter refuses it without one.</li>
+application password the person already connected. SwiftLetter checks
+permissions on every request; a flag or hint in a response is never the
+permission boundary.</li>
+<li><strong>Self-hosted only.</strong> Phase 1 supports self-hosted
+WordPress, including managed hosts where SwiftLetter can be installed.
+QUILL never looks for SwiftLetter on a WordPress.com connection.</li>
+<li><strong>Saving is not reviewing or publishing.</strong> A save sends
+title and content only. It never publishes, never marks anything
+reviewed, and leaves a published newsletter’s public post and Word
+download unchanged until review.</li>
+<li><strong>Nothing is retried automatically.</strong> A refused save
+stays refused until the person acts; their local copy stays in
+QUILL.</li>
+<li><strong>Nothing costly, and no AI, by itself.</strong> QUILL’s own
+AI runs only when the editor asks. A paid export (audio) needs the
+person’s explicit consent, through SwiftLetter’s notice.</li>
 </ul>
-<h2 id="2-discovery-and-versions">2. Discovery and versions</h2>
-<h3 id="21-is-swiftletter-there">2.1 Is SwiftLetter there</h3>
-<p>QUILL reads the site's REST index (<code>GET /wp-json/</code>) once
-when it connects. SwiftLetter is present when the index's
-<code>namespaces</code> list includes <code>swiftletter/v1</code>. A
-site without it behaves exactly as before: no SwiftLetter branch, no
-SwiftLetter command does anything but say so.</p>
-<h3 id="22-get-swiftletterv1">2.2 <code>GET /swiftletter/v1</code></h3>
-<p>WordPress answers this route itself with the namespace index
-(<code>namespace</code>, <code>routes</code>). SwiftLetter adds one key,
-<code>swiftletter</code>, through the core
-<code>rest_namespace_index</code> filter, so no new route is needed:</p>
+<h2 id="2-the-data-model">2. The data model</h2>
+<ul>
+<li><strong>Newsletters</strong> are the post type
+<code>swl_newsletter</code> (REST base <code>swl-newsletters</code>,
+supports <code>title</code>).</li>
+<li><strong>Articles</strong> are the post type <code>swl_article</code>
+(REST base <code>swl-articles</code>, supports <code>title</code>,
+<code>editor</code> and <code>revisions</code>). Content is block
+markup.</li>
+<li><strong>One parent newsletter.</strong> Each article belongs to one
+newsletter (<code>_swl_newsletter_id</code>). There is no linking one
+article into several newsletters. A copy is a separate article.</li>
+<li><strong>Order.</strong> Each article has
+<code>_swl_article_order</code>. The values can have gaps; the
+newsletter detail returns its <code>articles</code> array sorted by
+them. QUILL shows that array’s order and says each article’s position as
+“3 of 8”, never the stored value, and never re-sorts.</li>
+<li><strong>Review.</strong> One confirmation per article
+(<code>_swl_review_confirmed</code>, with who and when). Any change to
+the title or body clears it; a no-op or metadata-only save does not.
+Publishing refuses until every article is reviewed.</li>
+<li><strong>No state machine.</strong> A newsletter is a draft or
+published WordPress post. There are no <code>in_review</code>,
+<code>ready</code> or <code>sent</code> states.</li>
+<li><strong>Exports are made inside the request today.</strong> DOCX and
+audio (one OpenAI request for an article or a newsletter, with a
+120-second timeout). Files are stored outside the web root.</li>
+</ul>
+<h2 id="3-discovery-get-swiftletterv1">3. Discovery:
+<code>GET /swiftletter/v1</code></h2>
+<p>QUILL reads the site’s REST index (<code>GET /wp-json/</code>) once.
+SwiftLetter is present when its <code>namespaces</code> list includes
+<code>swiftletter/v1</code> (slashes ignored). Then QUILL reads the
+namespace index, to which SwiftLetter adds one key:</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;namespace&quot;</span><span class="fu">:</span> <span class="st">&quot;swiftletter/v1&quot;</span><span class="fu">,</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;routes&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;...&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span> <span class="fu">},</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;swiftletter&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;plugin_version&quot;</span><span class="fu">:</span> <span class="st">&quot;1.0.9&quot;</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;plugin_version&quot;</span><span class="fu">:</span> <span class="st">&quot;1.1.0-rc.1&quot;</span><span class="fu">,</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;api_version&quot;</span><span class="fu">:</span> <span class="st">&quot;1.0&quot;</span><span class="fu">,</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;article_rest_base&quot;</span><span class="fu">:</span> <span class="st">&quot;swiftletter_article&quot;</span><span class="fu">,</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;capabilities&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;read&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;create_newsletters&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;edit_newsletters&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;change_state&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;create_articles&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;edit_articles&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;delete_articles&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;reorder&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;link_articles&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;review&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;export_docx&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;generate_audio&quot;</span><span class="fu">:</span> <span class="kw">false</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">},</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;states&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span><span class="dt">&quot;slug&quot;</span><span class="fu">:</span> <span class="st">&quot;draft&quot;</span><span class="fu">,</span> <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Draft&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span><span class="dt">&quot;slug&quot;</span><span class="fu">:</span> <span class="st">&quot;in_review&quot;</span><span class="fu">,</span> <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;In review&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span><span class="dt">&quot;slug&quot;</span><span class="fu">:</span> <span class="st">&quot;ready&quot;</span><span class="fu">,</span> <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Ready&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span><span class="dt">&quot;slug&quot;</span><span class="fu">:</span> <span class="st">&quot;sent&quot;</span><span class="fu">,</span> <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Sent&quot;</span><span class="fu">}</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;review_states&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span><span class="dt">&quot;slug&quot;</span><span class="fu">:</span> <span class="st">&quot;not_reviewed&quot;</span><span class="fu">,</span> <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Not reviewed&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span><span class="dt">&quot;slug&quot;</span><span class="fu">:</span> <span class="st">&quot;reviewed&quot;</span><span class="fu">,</span> <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Reviewed&quot;</span><span class="fu">}</span><span class="ot">,</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>      <span class="fu">{</span><span class="dt">&quot;slug&quot;</span><span class="fu">:</span> <span class="st">&quot;changed&quot;</span><span class="fu">,</span> <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Changed since review&quot;</span><span class="fu">}</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;generation&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;docx&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;paid&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span> <span class="dt">&quot;provider&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">},</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;audio&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;paid&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;provider&quot;</span><span class="fu">:</span> <span class="st">&quot;The text-to-speech service set in SwiftLetter&#39;s settings&quot;</span><span class="fu">,</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>        <span class="dt">&quot;notice&quot;</span><span class="fu">:</span> <span class="st">&quot;Audio is made by an outside speech service and may cost money.&quot;</span></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>      <span class="fu">}</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;article_rest_base&quot;</span><span class="fu">:</span> <span class="st">&quot;swl-articles&quot;</span><span class="fu">,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;capabilities&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;read&quot;</span><span class="fu">:</span> <span class="kw">true</span> <span class="fu">},</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;features&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;browse&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span> <span class="dt">&quot;article_context&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span> <span class="dt">&quot;article_save&quot;</span><span class="fu">:</span> <span class="kw">true</span> <span class="fu">}</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <ul>
-<li><code>capabilities</code> are <strong>for the signed-in
-user</strong>, after SwiftLetter's editorial rules. QUILL uses them to
-say "you are not allowed" before trying, and to dim commands. The server
-still checks every request.</li>
-<li><code>states</code> and <code>review_states</code> carry their own
-labels, so QUILL speaks SwiftLetter's words and needs no release when a
-state is added. QUILL treats any slug it does not know as "unknown" and
-still shows its label.</li>
-<li><code>generation</code> says which exports are paid or use an
-outside provider. QUILL asks the person before any request where
-<code>paid</code> is true or <code>provider</code> is not empty, and
-shows <code>notice</code> in that question.</li>
+<li>The answer is <code>Cache-Control: no-store</code>. An anonymous
+caller gets <code>"read": false</code>.</li>
+<li><code>capabilities.read</code> is for the signed-in user. QUILL
+browses only when it and <code>features.browse</code> are true.</li>
+<li><strong>Versions.</strong> QUILL accepts any <code>1.x</code>
+(<code>1</code>, <code>1.2</code>, <code>1.2.3</code>). A minor version
+may add fields, routes and feature flags, never remove one or change
+what it means. A <code>2.x</code> or later, or a missing
+<code>api_version</code>, is refused in one sentence, said once
+(“SwiftLetter on this site uses version 2.0 of its connection, which
+needs a newer QUILL.”, <code>QUILL-SWIFTLETTER-API-VERSION</code>).</li>
+<li><strong>Feature flags.</strong> A missing flag is off. QUILL shows
+each command only when its flag is on: <code>browse</code> (the
+Workbench branch), <code>article_context</code> (open an article),
+<code>article_save</code> (Save to SwiftLetter). The next flags expected
+are for versioned reordering and review history, then export jobs.</li>
+<li>A namespace index without the <code>swiftletter</code> key is a
+SwiftLetter too old for QUILL; the Workbench says to update it.</li>
+<li>QUILL reads discovery once per site, keeps it five minutes, and
+reads it again when the site changes.</li>
 </ul>
-<h3 id="23-versions">2.3 Versions</h3>
-<ul>
-<li><code>api_version</code> is <code>major.minor</code>. QUILL 1.0
-works with any <code>1.x</code>. A minor version may add fields and
-routes, never remove or rename one.</li>
-<li>A different major version, a missing <code>swiftletter</code> key,
-or an unreadable <code>api_version</code> makes QUILL say one sentence
-and do nothing else: "SwiftLetter on this site speaks version 2.0 of its
-connection, and this QUILL knows version 1. Update QUILL, or ask the
-site's administrator." (QUILL-SWIFTLETTER-API-VERSION).</li>
-</ul>
-<h2 id="3-articles-wpv2swiftletter_article">3. Articles:
-<code>wp/v2/swiftletter_article</code></h2>
-<p>The article post type is registered with
-<code>show_in_rest =&gt; true</code>,
-<code>rest_base =&gt; 'swiftletter_article'</code>, and
-<code>supports</code> including <code>title</code>, <code>editor</code>,
-<code>author</code>, <code>revisions</code> and
-<code>custom-fields</code>. Every standard <code>wp/v2</code> route
-works on it:</p>
-<table>
-<thead>
-<tr>
-<th>Request</th>
-<th>What QUILL uses it for</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>GET wp/v2/swiftletter_article/&lt;id&gt;?context=edit</code></td>
-<td>Open an article as a working copy</td>
-</tr>
-<tr>
-<td><code>POST wp/v2/swiftletter_article/&lt;id&gt;</code></td>
-<td>Save Article to SwiftLetter (title and content only)</td>
-</tr>
-<tr>
-<td><code>POST wp/v2/swiftletter_article</code></td>
-<td>New Article</td>
-</tr>
-<tr>
-<td><code>DELETE wp/v2/swiftletter_article/&lt;id&gt;</code></td>
-<td>Delete (to the Trash)</td>
-</tr>
-<tr>
-<td><code>POST wp/v2/swiftletter_article/&lt;id&gt;</code> with
-<code>status</code> from the Trash</td>
-<td>Restore</td>
-</tr>
-<tr>
-<td><code>GET wp/v2/swiftletter_article/&lt;id&gt;/revisions</code></td>
-<td>Earlier Versions</td>
-</tr>
-<tr>
-<td><code>batch/v1</code></td>
-<td>Several saves in one request, when the site allows it</td>
-</tr>
-</tbody>
-</table>
-<h3 id="31-the-swiftletter-field">3.1 The <code>swiftletter</code>
-field</h3>
-<p>SwiftLetter registers one REST field on the type, read-only through
-<code>wp/v2</code>:</p>
+<h2 id="4-browsing-newsletters">4. Browsing newsletters</h2>
+<h3 id="41-get-swiftletterv1newsletters">4.1
+<code>GET /swiftletter/v1/newsletters</code></h3>
+<p><code>page</code> and <code>per_page</code> (up to 100). The answer
+is a list of newsletter objects, with <code>X-WP-Total</code> and
+<code>X-WP-TotalPages</code>:</p>
 <div class="sourceCode" id="cb2"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;swiftletter&quot;</span><span class="er">:</span> <span class="fu">{</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;newsletters&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="fu">{</span><span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">12</span><span class="fu">,</span> <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;Winter 2026&quot;</span><span class="fu">,</span> <span class="dt">&quot;position&quot;</span><span class="fu">:</span> <span class="dv">3</span><span class="fu">}</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;review_state&quot;</span><span class="fu">:</span> <span class="st">&quot;changed&quot;</span><span class="fu">,</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;reviewed_revision&quot;</span><span class="fu">:</span> <span class="dv">881</span><span class="fu">,</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;current_revision&quot;</span><span class="fu">:</span> <span class="dv">905</span><span class="fu">,</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;modified_by&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">7</span><span class="fu">,</span> <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Pat Reyes&quot;</span><span class="fu">}</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<ul>
-<li><code>current_revision</code> is the id of the newest revision of
-the article, the one a review would be for.</li>
-<li><code>modified_by</code> is the person who made
-<code>current_revision</code>. For a save QUILL made, that is the
-WordPress user, and the revision's own record keeps the application
-password's name (section 9).</li>
-</ul>
-<h3 id="32-saving">3.2 Saving</h3>
-<ul>
-<li>QUILL sends only <code>title</code> and <code>content</code>. It
-never sends <code>status</code>, so saving never publishes or
-unpublishes.</li>
-<li>Saving creates a revision, as WordPress always does.</li>
-<li>If the article was <code>reviewed</code>, saving changes its
-<code>review_state</code> to <code>changed</code>. A save never marks
-anything reviewed.</li>
-<li><strong>Conflicts.</strong> Before saving, QUILL reads
-<code>modified_gmt</code> and compares it with the value it opened the
-article at, as it does for every post. If they differ, nothing is sent
-and the person chooses Keep Theirs or Use Mine.</li>
-<li><strong>Optional stronger check.</strong> If SwiftLetter sends an
-<code>ETag</code> header on <code>GET</code>, QUILL sends it back as
-<code>If-Match</code> on the save, and the site answers
-<code>412 Precondition Failed</code> with the current article (section
-7) when it no longer matches.</li>
-</ul>
-<h2 id="4-newsletters">4. Newsletters</h2>
-<h3 id="41-the-newsletter-object">4.1 The newsletter object</h3>
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">9</span><span class="fu">,</span> <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;December&quot;</span><span class="fu">,</span> <span class="dt">&quot;article_count&quot;</span><span class="fu">:</span> <span class="dv">2</span><span class="fu">,</span> <span class="dt">&quot;modified_gmt&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-11-20T15:04:00&quot;</span> <span class="fu">}</span></span></code></pre></div>
+<p>QUILL reads the Workbench’s usual three pages, with Load More and
+Load All. When <code>X-WP-Total</code> is sent, the list says how many
+newsletters remain past those shown. A contributor’s list leaves out
+newsletters they may not edit. There is no <code>search</code> or
+<code>status</code> filter in Phase 1.</p>
+<h3 id="42-get-swiftletterv1newslettersid">4.2
+<code>GET /swiftletter/v1/newsletters/&lt;id&gt;</code></h3>
+<p>One newsletter with its <code>articles</code>, in newsletter order.
+Each article row today:</p>
 <div class="sourceCode" id="cb3"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">12</span><span class="fu">,</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;Winter 2026&quot;</span><span class="fu">,</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;state&quot;</span><span class="fu">:</span> <span class="st">&quot;draft&quot;</span><span class="fu">,</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;state_label&quot;</span><span class="fu">:</span> <span class="st">&quot;Draft&quot;</span><span class="fu">,</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;article_count&quot;</span><span class="fu">:</span> <span class="dv">8</span><span class="fu">,</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;modified_gmt&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-11-20T15:04:00&quot;</span><span class="fu">,</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;modified_by&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">7</span><span class="fu">,</span> <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Pat Reyes&quot;</span><span class="fu">},</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="st">&quot;n12-41&quot;</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<p><code>version</code> is an opaque token that changes whenever the
-newsletter's title, state or article order changes.</p>
-<h3 id="42-routes">4.2 Routes</h3>
+class="sourceCode json"><code class="sourceCode json"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">4</span><span class="fu">,</span> <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;From the chair&quot;</span><span class="fu">,</span> <span class="dt">&quot;order&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="fu">,</span> <span class="dt">&quot;review_confirmed&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;can_review&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span> <span class="dt">&quot;has_audio&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span> <span class="dt">&quot;edit_url&quot;</span><span class="fu">:</span> <span class="st">&quot;https://example.org/wp-admin/post.php?post=4&amp;action=edit&quot;</span> <span class="fu">}</span></span></code></pre></div>
+<p>Agreed additions to each row (answers 6 to 8), which QUILL already
+reads when present:</p>
 <table>
 <thead>
 <tr>
-<th>Request</th>
-<th>Body or query</th>
-<th>Answer</th>
+<th>Field</th>
+<th>Meaning</th>
+<th>QUILL shows</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>GET swiftletter/v1/newsletters</code></td>
-<td><code>page</code>, <code>per_page</code> (up to 100), optional
-<code>state</code></td>
-<td>A list of newsletter objects, with <code>X-WP-Total</code> and
-<code>X-WP-TotalPages</code></td>
+<td><code>review_state</code></td>
+<td><code>reviewed</code>, <code>not_reviewed</code> or
+<code>changed</code></td>
+<td>Reviewed, Not reviewed, Changed since review. Without it, QUILL
+falls back to <code>review_confirmed</code></td>
 </tr>
 <tr>
-<td><code>GET swiftletter/v1/newsletters/&lt;id&gt;</code></td>
-<td></td>
-<td>One newsletter object</td>
+<td><code>modified_gmt</code></td>
+<td>When the title or body last changed</td>
+<td>“Last changed 20 November 2026, 3:04 PM”</td>
 </tr>
 <tr>
-<td><code>POST swiftletter/v1/newsletters</code></td>
-<td><code>{"title": "..."}</code></td>
-<td><code>201</code> and the new newsletter, state
-<code>draft</code></td>
+<td><code>modified_by</code></td>
+<td>That person’s WordPress display name, or <code>null</code> when it
+cannot be verified</td>
+<td>Their name, or “Editor unknown”; never guessed from the byline</td>
 </tr>
 <tr>
-<td><code>POST swiftletter/v1/newsletters/&lt;id&gt;</code></td>
-<td><code>{"title": "...", "version": "..."}</code></td>
-<td>The renamed newsletter</td>
+<td><code>can_edit</code></td>
+<td>Whether this person may open and edit it</td>
+<td>“Your account cannot edit this article.” when false</td>
 </tr>
 <tr>
-<td><code>POST swiftletter/v1/newsletters/&lt;id&gt;/state</code></td>
-<td><code>{"state": "ready", "version": "..."}</code></td>
-<td>The newsletter in its new state</td>
+<td><code>can_review</code></td>
+<td>Whether this person may confirm its review (separate from
+<code>can_edit</code>)</td>
+<td>Kept for Mark Reviewed</td>
 </tr>
 </tbody>
 </table>
-<p>Rename and state changes carry <code>version</code>. A stale version
-is refused with <code>409 swiftletter_version_conflict</code> and the
-current newsletter (section 7).</p>
-<h2 id="5-articles-in-a-newsletter-in-order">5. Articles in a
-newsletter, in order</h2>
-<h3 id="51-get-swiftletterv1newslettersidarticles">5.1
-<code>GET swiftletter/v1/newsletters/&lt;id&gt;/articles</code></h3>
+<p><code>can_edit</code> and <code>can_review</code> are interface
+hints; SwiftLetter still checks every request. A contributor gets
+<code>403</code> on a newsletter they may not edit.</p>
+<h2 id="5-opening-an-article-get-wpv2swl-articlesidcontextedit">5.
+Opening an article:
+<code>GET /wp/v2/swl-articles/&lt;id&gt;?context=edit</code></h2>
+<p>WordPress’s own route, with one read-only field SwiftLetter adds in
+the edit context only:</p>
 <div class="sourceCode" id="cb4"><pre
 class="sourceCode json"><code class="sourceCode json"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;newsletter_id&quot;</span><span class="fu">:</span> <span class="dv">12</span><span class="fu">,</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="st">&quot;n12-41&quot;</span><span class="fu">,</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;articles&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">301</span><span class="fu">,</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;From the chair&quot;</span><span class="fu">,</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;position&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;status&quot;</span><span class="fu">:</span> <span class="st">&quot;draft&quot;</span><span class="fu">,</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;review_state&quot;</span><span class="fu">:</span> <span class="st">&quot;reviewed&quot;</span><span class="fu">,</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;review_label&quot;</span><span class="fu">:</span> <span class="st">&quot;Reviewed&quot;</span><span class="fu">,</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;reviewed_revision&quot;</span><span class="fu">:</span> <span class="dv">880</span><span class="fu">,</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;current_revision&quot;</span><span class="fu">:</span> <span class="dv">880</span><span class="fu">,</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;modified_gmt&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-11-19T10:00:00&quot;</span><span class="fu">,</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;modified_by&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">7</span><span class="fu">,</span> <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Pat Reyes&quot;</span><span class="fu">},</span></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;newsletters&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="dv">12</span><span class="ot">]</span></span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<p><code>position</code> starts at 1 and has no gaps. The list is always
-in newsletter order.</p>
-<h3 id="52-set-the-whole-order-in-one-request">5.2 Set the whole order
-in one request</h3>
-<p><code>PUT swiftletter/v1/newsletters/&lt;id&gt;/articles/order</code></p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;order&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="dv">304</span><span class="ot">,</span> <span class="dv">301</span><span class="ot">,</span> <span class="dv">302</span><span class="ot">,</span> <span class="dv">303</span><span class="ot">]</span><span class="fu">,</span> <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="st">&quot;n12-41&quot;</span><span class="fu">}</span></span></code></pre></div>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">4</span><span class="fu">,</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;raw&quot;</span><span class="fu">:</span> <span class="st">&quot;From the chair&quot;</span> <span class="fu">},</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;content&quot;</span><span class="fu">:</span> <span class="fu">{</span> <span class="dt">&quot;raw&quot;</span><span class="fu">:</span> <span class="st">&quot;&lt;!-- wp:paragraph --&gt;&lt;p&gt;...&lt;/p&gt;&lt;!-- /wp:paragraph --&gt;&quot;</span> <span class="fu">},</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;swiftletter&quot;</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;newsletters&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="fu">{</span> <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">9</span><span class="fu">,</span> <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;December&quot;</span> <span class="fu">}</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;review_state&quot;</span><span class="fu">:</span> <span class="st">&quot;not_reviewed&quot;</span><span class="fu">,</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;edit_version&quot;</span><span class="fu">:</span> <span class="st">&quot;</span><span class="ch">\&quot;</span><span class="st">&lt;64 hex digits&gt;</span><span class="ch">\&quot;</span><span class="st">&quot;</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <ul>
-<li><code>order</code> must name every article in the newsletter exactly
-once, or the site answers
-<code>400 swiftletter_order_incomplete</code>.</li>
-<li>A stale <code>version</code> is refused with
-<code>409 swiftletter_version_conflict</code>, carrying the current
-order (section 7), so QUILL can say what changed and offer to apply the
-person's move again.</li>
-<li>The answer is the same shape as <code>GET .../articles</code>, with
-the new <code>version</code>.</li>
+<li><code>newsletters</code> holds the one parent, when this person may
+edit it (an author may open their own article without access to its
+newsletter; the list is then empty).</li>
+<li><code>edit_version</code> is a quoted SHA-256 of the stored title
+and content, the same snapshot as <code>title.raw</code> and
+<code>content.raw</code>. Reopening an unchanged article gives the same
+version. The answer is
+<code>Cache-Control: private, no-store</code>.</li>
+<li>The <code>view</code> context does not carry the
+<code>swiftletter</code> field. Anonymous callers get
+<code>401</code>.</li>
+<li><strong>Compare with Site</strong> reads this same route again: the
+latest title and content at the moment of comparing, with the local copy
+untouched (answer 3).</li>
 </ul>
-<h3 id="53-link-and-unlink">5.3 Link and unlink</h3>
-<table>
-<thead>
-<tr>
-<th>Request</th>
-<th>Body</th>
-<th>What happens</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>POST swiftletter/v1/newsletters/&lt;id&gt;/articles</code></td>
-<td><code>{"article_id": 309, "position": 4, "version": "..."}</code></td>
-<td>Links an existing article; <code>position</code> is optional
-(default: last)</td>
-</tr>
-<tr>
-<td><code>DELETE swiftletter/v1/newsletters/&lt;id&gt;/articles/&lt;article_id&gt;?version=...</code></td>
-<td></td>
-<td>Unlinks it. <strong>The article is not deleted</strong> and stays in
-every other newsletter</td>
-</tr>
-</tbody>
-</table>
-<p>Both answer with the newsletter's articles and new
-<code>version</code>. Linking an article already in the newsletter is
-<code>409 swiftletter_already_linked</code>.</p>
-<h2 id="6-review-exports-and-jobs">6. Review, exports and jobs</h2>
-<h3 id="61-mark-a-revision-reviewed">6.1 Mark a revision reviewed</h3>
-<p><code>POST swiftletter/v1/articles/&lt;id&gt;/review</code></p>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;revision&quot;</span><span class="fu">:</span> <span class="dv">905</span><span class="fu">,</span> <span class="dt">&quot;note&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">}</span></span></code></pre></div>
+<h2 id="6-saving-an-article-post-swiftletterv1articlesidsave">6. Saving
+an article:
+<code>POST /swiftletter/v1/articles/&lt;id&gt;/save</code></h2>
+<pre class="http"><code>If-Match: &quot;&lt;edit_version&gt;&quot;
+Content-Type: application/json
+
+{&quot;title&quot;: &quot;From the chair&quot;, &quot;content&quot;: &quot;&lt;!-- wp:paragraph --&gt;&lt;p&gt;...&lt;/p&gt;&lt;!-- /wp:paragraph --&gt;&quot;}</code></pre>
 <ul>
-<li>The site marks <strong>that revision</strong> reviewed. If the
-article's <code>current_revision</code> is no longer 905, it refuses
-with <code>409 swiftletter_revision_stale</code> and the current
-revision id, so a review can never land on text the reviewer did not
-read.</li>
-<li>SwiftLetter's editorial rules apply (for example, an author not
-reviewing their own article):
-<code>403 swiftletter_review_not_allowed</code>, with a
-<code>message</code> QUILL speaks as it is.</li>
-<li>The answer:
-<code>{"id": 301, "review_state": "reviewed", "reviewed_revision": 905, "reviewed_by": {"id": 3, "name": "Sam"}, "reviewed_gmt": "..."}</code>.</li>
+<li>The body is exactly <code>title</code> and <code>content</code>;
+anything else (such as <code>status</code>) is refused.</li>
+<li>The route takes a row lock, compares the version in constant time,
+and writes through <code>wp_update_post</code>, so sanitisation,
+revisions and the review reset still run. When nothing changed, nothing
+is written.</li>
+<li>The answer today: <code>200</code>,
+<code>{"id": 4, "edit_version": "\"...\""}</code>, with
+<code>ETag</code> set to the new version and
+<code>Cache-Control: private, no-store</code>.</li>
+<li><strong>Agreed (answer 4):</strong> the answer also returns the
+<code>title</code> and <code>content</code> WordPress stored. QUILL
+reads them when present (as text or as <code>{"raw": ...}</code>), and
+treats any difference from what it sent as WordPress having changed it,
+for example kses storing an image’s <code>"/&gt;</code> as
+<code>" /&gt;</code> on a contributor’s save. QUILL then tells the
+person and offers Compare, and uses the stored text as the baseline for
+the next <code>If-Match</code>, without silently replacing the local
+copy.</li>
+<li>QUILL sends a save once and never retries it.</li>
 </ul>
-<h3 id="62-review-history">6.2 Review history</h3>
-<p><code>GET swiftletter/v1/articles/&lt;id&gt;/reviews</code> answers a
-list, newest first:</p>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ot">[</span><span class="fu">{</span><span class="dt">&quot;revision&quot;</span><span class="fu">:</span> <span class="dv">905</span><span class="fu">,</span> <span class="dt">&quot;reviewer&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="dv">3</span><span class="fu">,</span> <span class="dt">&quot;name&quot;</span><span class="fu">:</span> <span class="st">&quot;Sam&quot;</span><span class="fu">},</span> <span class="dt">&quot;reviewed_gmt&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-11-20T09:00:00&quot;</span><span class="fu">,</span> <span class="dt">&quot;note&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">}</span><span class="ot">]</span></span></code></pre></div>
-<h3 id="63-exports-and-generation">6.3 Exports and generation</h3>
-<p><code>POST swiftletter/v1/newsletters/&lt;id&gt;/exports</code></p>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;format&quot;</span><span class="fu">:</span> <span class="st">&quot;docx&quot;</span><span class="fu">,</span> <span class="dt">&quot;consent&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">}</span></span></code></pre></div>
-<ul>
-<li><code>format</code> is <code>docx</code> or <code>audio</code>.</li>
-<li>When <code>generation.&lt;format&gt;.paid</code> is true or
-<code>provider</code> is set, <code>consent</code> must be
-<code>true</code>, or the site answers
-<code>428 swiftletter_consent_required</code>. QUILL sends
-<code>true</code> only after the person said yes in a dialog that showed
-SwiftLetter's <code>notice</code>.</li>
-<li>The answer is <code>202</code> and a job:
-<code>{"job": "j-77", "state": "queued", "stage": "queued", "stage_label": "Waiting to start"}</code>.</li>
-</ul>
-<h3 id="64-jobs">6.4 Jobs</h3>
-<p><code>GET swiftletter/v1/jobs/&lt;job&gt;</code></p>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;job&quot;</span><span class="fu">:</span> <span class="st">&quot;j-77&quot;</span><span class="fu">,</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;newsletter_id&quot;</span><span class="fu">:</span> <span class="dv">12</span><span class="fu">,</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;format&quot;</span><span class="fu">:</span> <span class="st">&quot;audio&quot;</span><span class="fu">,</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;state&quot;</span><span class="fu">:</span> <span class="st">&quot;running&quot;</span><span class="fu">,</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;stage&quot;</span><span class="fu">:</span> <span class="st">&quot;speaking&quot;</span><span class="fu">,</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;stage_label&quot;</span><span class="fu">:</span> <span class="st">&quot;Making audio, article 3 of 8&quot;</span><span class="fu">,</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;error&quot;</span><span class="fu">:</span> <span class="st">&quot;&quot;</span><span class="fu">,</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;file&quot;</span><span class="fu">:</span> <span class="kw">null</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<ul>
-<li><code>state</code> is <code>queued</code>, <code>running</code>,
-<code>done</code> or <code>failed</code>. <code>stage</code> and
-<code>stage_label</code> say what is happening now, in SwiftLetter's
-words.</li>
-<li>QUILL asks every 3 seconds while the Newsletter window is open, at
-most 20 minutes, and speaks a stage once when it changes.</li>
-<li>When <code>state</code> is <code>done</code>, <code>file</code> is
-<code>{"name": "winter-2026.docx", "size": 48213, "content_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}</code>.</li>
-<li>When <code>state</code> is <code>failed</code>, <code>error</code>
-is one sentence QUILL speaks as it is.</li>
-</ul>
-<h3 id="65-download">6.5 Download</h3>
-<p><code>GET swiftletter/v1/jobs/&lt;job&gt;/file</code> streams the
-file with its <code>Content-Type</code> and
-<code>Content-Disposition</code>. It checks the same capability as
-reading the newsletter. It is never a public media address, never cached
-publicly (<code>Cache-Control: private, no-store</code>), and the job's
-file may be removed by SwiftLetter after a day.</p>
-<h2 id="7-errors-and-concurrency">7. Errors and concurrency</h2>
-<p>Every refusal is WordPress's usual error body, with a
-<code>swiftletter_</code> code and the HTTP status in
-<code>data.status</code>:</p>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode json"><code class="sourceCode json"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;code&quot;</span><span class="fu">:</span> <span class="st">&quot;swiftletter_version_conflict&quot;</span><span class="fu">,</span> <span class="dt">&quot;message&quot;</span><span class="fu">:</span> <span class="st">&quot;Someone changed this newsletter.&quot;</span><span class="fu">,</span> <span class="dt">&quot;data&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;status&quot;</span><span class="fu">:</span> <span class="dv">409</span><span class="fu">,</span> <span class="dt">&quot;current&quot;</span><span class="fu">:</span> <span class="fu">{</span><span class="dt">&quot;...&quot;</span><span class="fu">:</span> <span class="st">&quot;...&quot;</span><span class="fu">}}}</span></span></code></pre></div>
+<h3 id="61-refusals">6.1 Refusals</h3>
+<p>Each is WordPress’s usual error body,
+<code>{"code", "message", "data": {"status"}}</code>. SwiftLetter’s
+<code>message</code> is written to be read aloud, and QUILL says it
+exactly as written, never the code. The code decides what QUILL offers
+next.</p>
 <table>
 <thead>
 <tr>
 <th>Code</th>
 <th>Status</th>
-<th>Meaning</th>
-<th><code>data.current</code></th>
+<th>Message today</th>
+<th>QUILL</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td><code>swiftletter_version_required</code></td>
+<td>428</td>
+<td>“Refresh the article before saving.”</td>
+<td><code>QUILL-SWIFTLETTER-API-VERSION-REQUIRED</code>; offers to
+reopen</td>
+</tr>
+<tr>
+<td><code>swiftletter_invalid_version</code></td>
+<td>400</td>
+<td>“The article version is invalid. Refresh the article and try
+again.”</td>
+<td><code>QUILL-SWIFTLETTER-API-INVALID-VERSION</code>; offers to
+reopen</td>
+</tr>
+<tr>
+<td><code>swiftletter_invalid_save</code></td>
+<td>400</td>
+<td>“Send the article title and content only.”</td>
+<td><code>QUILL-SWIFTLETTER-API-INVALID-SAVE</code></td>
+</tr>
+<tr>
+<td><code>swiftletter_article_unavailable</code></td>
+<td>404</td>
+<td>“This article is no longer available to edit.”</td>
+<td><code>QUILL-SWIFTLETTER-API-ARTICLE-UNAVAILABLE</code></td>
+</tr>
+<tr>
 <td><code>swiftletter_forbidden</code></td>
 <td>403</td>
-<td>Capability or editorial rule says no</td>
-<td></td>
-</tr>
-<tr>
-<td><code>swiftletter_review_not_allowed</code></td>
-<td>403</td>
-<td>This person may not review this article</td>
-<td></td>
-</tr>
-<tr>
-<td><code>swiftletter_not_found</code></td>
-<td>404</td>
-<td>No such newsletter, article or job</td>
-<td></td>
-</tr>
-<tr>
-<td><code>swiftletter_not_linked</code></td>
-<td>404</td>
-<td>The article is not in this newsletter</td>
-<td></td>
-</tr>
-<tr>
-<td><code>swiftletter_already_linked</code></td>
-<td>409</td>
-<td>Already in this newsletter</td>
-<td></td>
-</tr>
-<tr>
-<td><code>swiftletter_version_conflict</code></td>
-<td>409</td>
-<td>The newsletter changed since <code>version</code></td>
-<td>The newsletter, or its articles for an order change</td>
-</tr>
-<tr>
-<td><code>swiftletter_revision_stale</code></td>
-<td>409</td>
-<td>The article changed since that revision</td>
-<td><code>{"current_revision": 912}</code></td>
+<td>“You cannot edit this article.”</td>
+<td><code>QUILL-SWIFTLETTER-API-FORBIDDEN</code></td>
 </tr>
 <tr>
 <td><code>swiftletter_precondition_failed</code></td>
 <td>412</td>
-<td><code>If-Match</code> no longer matches</td>
-<td>The article</td>
+<td>“This article changed on the site. Refresh it before saving.”</td>
+<td><code>QUILL-SWIFTLETTER-API-CONFLICT</code>; offers Compare with
+Site</td>
 </tr>
 <tr>
-<td><code>swiftletter_order_incomplete</code></td>
-<td>400</td>
-<td>The order does not name every article once</td>
-<td></td>
-</tr>
-<tr>
-<td><code>swiftletter_invalid_state</code></td>
-<td>400</td>
-<td>That state change is not allowed from here</td>
-<td></td>
-</tr>
-<tr>
-<td><code>swiftletter_consent_required</code></td>
-<td>428</td>
-<td>A paid or provider export without consent</td>
-<td></td>
-</tr>
-<tr>
-<td><code>swiftletter_generation_unavailable</code></td>
+<td><code>swiftletter_save_unavailable</code></td>
 <td>503</td>
-<td>Exports are switched off or misconfigured</td>
-<td></td>
+<td>“The site could not verify the save. Refresh the article before
+trying again.”</td>
+<td><code>QUILL-SWIFTLETTER-API-SAVE-UNAVAILABLE</code></td>
+</tr>
+<tr>
+<td><code>swiftletter_article_locked</code> (agreed, answer 2)</td>
+<td>409</td>
+<td>“Pat Reyes is editing this article in WordPress. Your changes are
+still in QUILL.”</td>
+<td><code>QUILL-SWIFTLETTER-API-ARTICLE-LOCKED</code></td>
 </tr>
 </tbody>
 </table>
-<p>QUILL maps each to one plain sentence and an error code
-(<code>QUILL-SWIFTLETTER-*</code>, in
-<code>quill/core/wordpress/swiftletter_contract.py</code>). The
-<code>message</code> SwiftLetter sends is spoken when QUILL has no
-better sentence, so a new editorial rule explains itself.</p>
-<h2 id="8-permissions">8. Permissions</h2>
 <ul>
-<li>WordPress capabilities first: the article type maps
-<code>edit_posts</code>-style capabilities
-(<code>edit_swiftletter_articles</code> and friends), so roles can be
-set with any role plugin.</li>
-<li>SwiftLetter's editorial rules second, applied on the server to every
-route. The discovery <code>capabilities</code> object is a summary of
-both for the signed-in user.</li>
-<li>A request QUILL makes is never more powerful than the same action in
-the dashboard.</li>
+<li>The 412 stays small: no current article in the body (answer 3).</li>
+<li>The 409 is sent when another user holds an active WordPress post
+lock; an expired lock does not block. The version check stays as
+well.</li>
+<li>For a 503 caused by a posts table that is not InnoDB, SwiftLetter
+will say: “This site can’t safely save articles from QUILL. Ask your
+WordPress administrator to check that the posts table uses InnoDB. Your
+changes are still in QUILL.”</li>
+<li>When a refusal has no <code>message</code>, QUILL says its own
+sentence (PRD section 8). A refusal that is WordPress’s rather than
+SwiftLetter’s (such as <code>rest_forbidden</code>) keeps WordPress’s
+sentence.</li>
 </ul>
-<h2 id="9-seeing-each-others-changes">9. Seeing each other's
-changes</h2>
+<h2 id="7-agreed-next-in-order">7. Agreed next, in order</h2>
+<p>Each change lands in SwiftLetter first, on its own branch with
+PHPUnit tests and a WordPress integration check, behind a discovery
+feature flag. The dashboard and QUILL use the same routes.</p>
+<ol type="1">
+<li><strong>Phase 1 fixes before 1.1.0 final.</strong> The 409 post-lock
+refusal and the stored title and content in the save answer first. Then
+review resets only when the title or body changes, and a save leaves a
+published newsletter’s public post and Word download unchanged until
+review.</li>
+<li><strong>Versioned reorder.</strong>
+<code>POST /swiftletter/v1/articles/reorder</code> gains a newsletter
+version token. The request names every current article exactly once; the
+server saves the whole order or none of it; a stale version gets
+<code>409</code> with the current order. Both editors keep focus on the
+same article and let the person try again; no automatic retry.</li>
+<li><strong>Revision-based review and history.</strong> QUILL reads
+<code>GET /swiftletter/v1/newsletters/&lt;id&gt;/audit-log</code> for
+who confirmed a review, when, and when it was reset. Older entries are
+history, not proof that a revision was reviewed; new entries record the
+exact revision approved. No review notes or stages.</li>
+<li><strong>DOCX export jobs and authenticated downloads.</strong>
+Starting an export answers <code>202</code> and a job id. Its status is
+Queued, Running, Ready or Failed, with a readable progress message. A
+retried start never makes a second job or a second charge, and a failed
+job keeps the last good export. The result is downloaded through an
+authenticated REST route that checks the editor’s permission on that
+newsletter each time and streams with
+<code>Cache-Control: private, no-store</code>; QUILL never uses
+<code>?swl_download=</code>, which application passwords do not
+authenticate, and never gets a public fallback URL for an unpublished
+export. Readers’ links for published newsletters stay as they are.</li>
+<li><strong>Split audio, on the same job API.</strong> By article, and
+long articles at headings or paragraph boundaries, with progress
+“Article 3 of 8”. The existing recording stays until the new one is
+complete. SwiftLetter provides the consent notice through the API, so
+QUILL and the dashboard show the same words: it names OpenAI, says the
+newsletter text is sent to it, and that the request may cost money.
+SwiftLetter requires explicit consent before starting.</li>
+</ol>
+<p>Also agreed, outside that order:</p>
 <ul>
-<li>Edits made through REST create ordinary WordPress revisions.
-WordPress records which application password made each REST request
-(<code>_application_passwords</code> last used, and the
-<code>application_password_used</code> action), and SwiftLetter's
-revision list in the dashboard names it: "Pat Reyes, from QUILL
-(application password 'Pat's laptop')".</li>
-<li>QUILL shows <code>modified_by</code> on every article row, so a
-person in QUILL sees who last changed it in the dashboard.</li>
-<li>Nothing is cached by SwiftLetter for QUILL. A refresh in QUILL (F5)
-reads the current state.</li>
+<li><strong>Create and copy articles</strong> through SwiftLetter’s
+existing routes. A copy is a separate article.</li>
+<li><strong>Newsletter deletion stays out of QUILL</strong> until
+deleting moves a newsletter to the Trash and restoring brings back its
+articles in their order, in both QUILL and the dashboard.</li>
+<li><strong>DOCX import</strong> improvements (lists, tables, safe
+links, Word’s alt text, private draft images) are separate changes and
+do not hold up Phase 1.</li>
+<li><strong>Generated alt text</strong> is only an editable suggestion a
+person confirms, never written from the attachment title alone.</li>
+<li><strong>Scribe for Documents.</strong> Later, QUILL’s “Make
+Accessible Editions with Scribe” sends the approved newsletter DOCX to
+Scribe after the editor confirms. Editions are not sent back to
+SwiftLetter automatically; a separate Attach to Newsletter comes once
+the formats are tested. Not part of 1.1.0.</li>
 </ul>
-<h2 id="10-what-quill-sends-in-one-list">10. What QUILL sends, in one
+<h2 id="8-what-quill-sends-in-one-list">8. What QUILL sends, in one
 list</h2>
 <ul>
 <li>The REST index, once per connection.</li>
-<li><code>GET swiftletter/v1</code> once per site per session, and on
-refresh.</li>
-<li>Reads when the person opens a node, a newsletter or an article.</li>
-<li>Writes only on a deliberate command: Save Article to SwiftLetter,
-Save Order, Link, Unlink, New, Rename, Delete, Restore, Mark Reviewed,
-Export DOCX, Generate Audio.</li>
-<li>Job status every 3 seconds while a job the person started is running
-and its window is open.</li>
-<li>Nothing in Safe Mode or in Workbench Read Only access, except
-reads.</li>
+<li><code>GET /swiftletter/v1</code> once per site, again after five
+minutes or when the site changes.</li>
+<li><code>GET /swiftletter/v1/newsletters</code> (up to three pages,
+more on Load More) and
+<code>GET /swiftletter/v1/newsletters/&lt;id&gt;</code> when the person
+opens the branch or a newsletter.</li>
+<li><code>GET /wp/v2/swl-articles/&lt;id&gt;?context=edit</code> when
+the person opens an article or chooses Compare with Site.</li>
+<li><code>POST /swiftletter/v1/articles/&lt;id&gt;/save</code> only on
+Save to SwiftLetter, once, with <code>If-Match</code>.</li>
+<li>Nothing on a WordPress.com connection. Nothing that publishes,
+reviews, calls an AI or a paid provider. Nothing in Safe Mode or
+Workbench Read Only access except reads.</li>
 </ul>
-<h2 id="11-contract-tests">11. Contract tests</h2>
-<p>The SwiftLetter maintainers offered automated contract tests. QUILL's
-fake server will be a reference: each route above will have a test in
-<code>tests/unit/core/wordpress/test_swiftletter_contract.py</code>, and
-a real site's answers can be replayed against those tests.</p>
-<h2 id="12-open-questions-for-the-swiftletter-maintainers">12. Open
-questions for the SwiftLetter maintainers</h2>
-<ol type="1">
-<li>Is <code>rest_namespace_index</code> the way you would like to
-publish discovery, or would you prefer a separate
-<code>swiftletter/v1/about</code> route? QUILL can read either.</li>
-<li>Do your newsletter states match <code>draft</code>,
-<code>in_review</code>, <code>ready</code> and <code>sent</code>, and
-which changes are allowed from which state?</li>
-<li>Should a newsletter's own text (an introduction, a footer) be an
-article, or a field on the newsletter?</li>
-<li>Is audio made per article, per newsletter, or both? The contract
-assumes per newsletter, with progress per article.</li>
-<li>How long do you keep a generated file, and can the same job's file
-be downloaded twice?</li>
-<li>Can a 1.0.9 build with these routes be put on our test site, so
-QUILL's tests can be checked against the real thing?</li>
-</ol>
+</main>
 </body>
 </html>
