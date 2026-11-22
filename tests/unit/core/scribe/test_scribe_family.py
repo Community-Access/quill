@@ -217,16 +217,23 @@ def test_no_markers_say_why_in_the_one_sentence(
     saved = _fake_book(monkeypatch, total_ms=60_000, daisy_ms=90_000)
     markers = mark_narration(tmp_path / "Notes.mp3", _daisy(tmp_path / "d"))
     assert saved == []
-    assert markers.phrase == "without chapter markers: the DAISY timings do not match the MP3"
+    assert (
+        markers.phrase == "with no chapter markers, because the DAISY timings do not match the MP3"
+    )
     several = mark_narration(tmp_path / "Notes.mp3", _daisy(tmp_path / "e", second="b2.mp3"))
-    assert several.phrase == "without chapter markers: the DAISY book has 2 audio files"
+    assert several.phrase == "with no chapter markers, because the DAISY book has 2 audio files"
 
 
 def test_the_result_sentence_carries_the_note_before_the_folder() -> None:
-    job = q.Job(file_name="Notes.pdf", outputs={"mp3": "C:/x/Notes.mp3"}, formats=["mp3"])
+    job = q.Job(
+        file_name="Notes.pdf",
+        outputs={"mp3": "C:/x/Notes.mp3"},
+        formats=["mp3"],
+        folder="C:/x",
+    )
     text = say.result_sentence(job, app_name="QUILL Studio", note="with 12 chapter markers")
     assert text == (
-        "Scribe for Documents made Notes.mp3, with 12 chapter markers. "
+        "Scribe for Documents made Notes.mp3 in C:/x, with 12 chapter markers. "
         "Open it from Scribe Conversions."
     )
 

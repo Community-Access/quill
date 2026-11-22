@@ -385,22 +385,29 @@ class ScribeMixin(ScribeStreamMixin, ScribeEntryPoints):
         import wx
 
         frame = self.frame  # type: ignore[attr-defined]
-        if frame.IsIconized():
-            frame.Iconize(False)
-        frame.Show()
-        frame.Raise()
+        if not self.__dict__.get("_scribe_send_to_raised"):  # once, never on a retry
+            self.__dict__["_scribe_send_to_raised"] = True
+            if frame.IsIconized():
+                frame.Iconize(False)
+            frame.Show()
+            frame.Raise()
         active = wx.GetActiveWindow()
-        if isinstance(active, wx.Dialog) and active.IsModal():
+        # A native modal (a file picker, a message box) is invisible to
+        # GetActiveWindow, but every modal disables the window that owns it.
+        busy = not frame.IsEnabled() or (isinstance(active, wx.Dialog) and active.IsModal())
+        if busy:
             if not self.__dict__.get("_scribe_send_to_said"):
                 self.__dict__["_scribe_send_to_said"] = True
+                title = active.GetTitle() if isinstance(active, wx.Dialog) else ""
                 self._announce(  # type: ignore[attr-defined]
                     f"Convert with {PRODUCT_NAME} is waiting until you close "
-                    f"{active.GetTitle() or 'this window'}."
+                    f"{title or 'the window that is open'}."
                 )
             wx.CallLater(1000, self._scribe_send_to_flush)
             return
         paths = list(self.__dict__.pop("_scribe_send_to", []))
         self.__dict__.pop("_scribe_send_to_said", None)
+        self.__dict__.pop("_scribe_send_to_raised", None)
         if paths:
             self._scribe().convert_files(paths)
 

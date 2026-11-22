@@ -49,15 +49,13 @@ def choose_heading(parent: Any, path: Path, modal: Callable[[Any, str], int]) ->
     rows = heading_rows(headings)
     if len(rows) == 1:
         return []  # no headings: the start is the only place there is
-    dialog = wx.SingleChoiceDialog(
-        parent, f"Where to save the place, {len(rows)} places:", TITLE, rows
-    )
+    dialog = wx.SingleChoiceDialog(parent, "Save the place at:", TITLE, rows)
     try:
         dialog.SetName("scribe_beacon_place_dialog")  # F1 finds its topic by this name
         dialog.SetSelection(0)
         for child in dialog.GetChildren():
             if isinstance(child, wx.ListBox):
-                child.SetName("Where to save the place")
+                child.SetName("Save the place at")
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         if modal(dialog, TITLE) != wx.ID_OK:
             return None
@@ -99,8 +97,11 @@ def save_beacon_place(
             )
         finally:
             store.close()
-    except Exception as error:  # noqa: BLE001 - said, never raised into Next Steps
-        say(f"Quill Beacon could not save the place: {error}")
+    except Exception:  # noqa: BLE001 - said, never raised into Next Steps
+        say(
+            "Quill Beacon could not save the place: its library is busy or cannot be "
+            "written. Close Quill Beacon's open windows and try again."
+        )
         return
     at = where[-1] if where else "the start"
     say(f"Saved a Beacon place: {title}, at {at}.")

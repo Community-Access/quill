@@ -154,7 +154,7 @@ class ScribeEventsMixin:
             # The streaming tab is already open: say it is complete (8.1.3).
             finished = getattr(self.host, "scribe_stream_finished", None)
             opened = finished(job) if callable(finished) else ""
-        elif mine and on_its_own and options.open_results == "yes" and self.host.scribe_in_front():
+        elif mine and on_its_own and options.open_results == "yes" and self._may_open_now():
             opened = self.open_job_result(job, speak=False)
         self._say(
             say.result_sentence(
@@ -165,6 +165,13 @@ class ScribeEventsMixin:
                 note=note,
             )
         )
+
+    def _may_open_now(self) -> bool:
+        """In front, and (for an app that says so) no dialog open, nothing playing."""
+        if not self.host.scribe_in_front():
+            return False
+        may = getattr(self.host, "scribe_may_open_now", None)
+        return bool(may()) if callable(may) else True
 
     def open_job_result(self, job: q.Job, *, speak: bool = True) -> str:
         """Open Result: the first output that opens somewhere, in the tool where it

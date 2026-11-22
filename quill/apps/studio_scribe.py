@@ -9,7 +9,7 @@ differently").
 When it is ready, Studio writes the DAISY book's headings into the MP3 as
 chapter markers (:mod:`quill.core.scribe.narration`) **before** the one result
 sentence, and the sentence says what happened: "...made Notes.mp3 and
-Notes.zip, with 12 chapter markers, in ...". The markers go into the file the
+Notes.zip in ..., with 12 chapter markers." The markers go into the file the
 Scribe library records.
 
 **It never opens by itself.** The Chapter Workbench is a modal window, and a
@@ -52,7 +52,7 @@ def narration_markers(job: Any) -> str:
         return ""
     ncx = _ncx_for(job)
     if ncx is None:
-        return "without chapter markers: there is no DAISY book to take them from"
+        return "with no chapter markers, because there was no DAISY book to take them from"
     return mark_narration(Path(mp3), ncx).phrase
 
 
@@ -100,8 +100,8 @@ class StudioScribeMixin(AppScribeMixin):
         """Open the narration in the Chapter Workbench, after the sentence."""
         import wx
 
-        if job is not None and job.open_as == NARRATION:
-            narration_markers(job)  # idempotent: marks a job another app finished
+        if job is not None and job.open_as == NARRATION and job.app != _TITLE:
+            narration_markers(job)  # another app finished it: mark it now (idempotent)
         back = wx.GetActiveWindow()
         focus = wx.Window.FindFocus()
 

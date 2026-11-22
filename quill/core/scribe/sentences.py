@@ -97,7 +97,7 @@ def result_sentence(
     where = f" in {folder}" if folder else ""
     made = _join_names(names) if names else formats_phrase(job.formats)
     extra = f", {note}" if note else ""
-    text = f"{PRODUCT_NAME} made {made}{extra}{where}."
+    text = f"{PRODUCT_NAME} made {made}{where}{extra}."
     if opened:
         return f"{text} {opened}."
     if offer or names:

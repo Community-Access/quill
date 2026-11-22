@@ -24,10 +24,13 @@ one of them needs the same few things, written here once:
   Sign Out and the account). **The same keys in every app**, so a person who
   knows one knows them all: these apps show a key on every menu row, and a
   once-in-a-while command gets a key, not a short one (rule 9) -- Alt+Shift
-  with F6 to F11, a block no app in the family uses, and never Ctrl+Alt+Shift
-  with a letter, which AltGr+Shift would type on many keyboards in a text
-  field (the Ctrl+Alt+Shift F-row is spoken for: ``app_keymaps``). The app's own entry point is on
-  :data:`ENTRY_KEY` wherever it sits.
+  with F6 to F11, free in every one of these six apps, and never
+  Ctrl+Alt+Shift with a letter, which AltGr+Shift would type on many keyboards
+  in a text field (the Ctrl+Alt+Shift F-row is spoken for: ``app_keymaps``).
+  **Not the editors' keys:** in QUILL and QUILL Lite, Alt+Shift+F6 to F11 are
+  editor commands (Dictation Settings, Spelling for This Word, Extend
+  Selection...), and their Scribe rows have no default key; the guides say so.
+  The app's own entry point is on :data:`ENTRY_KEY` wherever it sits.
 """
 
 from __future__ import annotations

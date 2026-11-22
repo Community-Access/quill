@@ -24,7 +24,6 @@ from __future__ import annotations
 
 import os
 import sys
-import time
 import webbrowser
 from pathlib import Path
 from typing import Any
@@ -108,12 +107,12 @@ class BeaconScribeMixin(AppScribeMixin):
         """Fill the results with Scribe places when that destination is chosen."""
         if self.current_scope != SCOPE:  # type: ignore[attr-defined]
             return False
-        places = scribe_places(self.store)  # type: ignore[attr-defined]
-        query = (self.last_query or "").strip().lower()  # type: ignore[attr-defined]
-        if query:
-            places = [b for b in places if query in b.title.lower()]
+        places, query = self._scribe_listed()
         self._results_cache = places  # type: ignore[attr-defined]
         self.results.SetItemCount(len(places))  # type: ignore[attr-defined]
+        if not places and query:
+            self.announcer.announce_count(0, filtered=True)  # type: ignore[attr-defined]
+            return True
         if not places:
             self.announcer.say(EMPTY)  # type: ignore[attr-defined]
             return True
@@ -122,15 +121,32 @@ class BeaconScribeMixin(AppScribeMixin):
         self._show_details(places[0])  # type: ignore[attr-defined]
         return True
 
+    def _scribe_listed(self) -> tuple[list[Any], str]:
+        """The Scribe places the search box lets through, and the search."""
+        places = scribe_places(self.store)  # type: ignore[attr-defined]
+        query = (self.last_query or "").strip().lower()  # type: ignore[attr-defined]
+        if query:
+            places = [b for b in places if query in b.title.lower()]
+        return places, query
+
     def _scribe_refresh_quietly(self) -> None:
-        """The Scribe destination after new places: no count spoken, focus and
-        selection left where they were (FUX-06)."""
+        """The Scribe destination after new places: no count spoken, the search
+        kept, and the reader left on the same place, wherever it now is (FUX-06)."""
         if self.current_scope != SCOPE:  # type: ignore[attr-defined]
             return
-        places = scribe_places(self.store)  # type: ignore[attr-defined]
+        results = self.results  # type: ignore[attr-defined]
+        old = list(getattr(self, "_results_cache", []))
+        focused = results.GetFocusedItem() if hasattr(results, "GetFocusedItem") else -1
+        keep = old[focused].beacon_id if 0 <= focused < len(old) else ""
+        places, _query = self._scribe_listed()
         self._results_cache = places  # type: ignore[attr-defined]
-        self.results.SetItemCount(len(places))  # type: ignore[attr-defined]
-        self.results.Refresh()  # type: ignore[attr-defined]
+        results.SetItemCount(len(places))
+        index = next((i for i, b in enumerate(places) if b.beacon_id == keep), -1)
+        if index >= 0:
+            both = wx.LIST_STATE_FOCUSED | wx.LIST_STATE_SELECTED
+            results.SetItemState(index, both, both)
+            results.EnsureVisible(index)
+        results.Refresh()
 
     # -- Add My Scribe Documents as Places ----------------------------------
 
@@ -142,10 +158,9 @@ class BeaconScribeMixin(AppScribeMixin):
             self._scribe_say("Already reading your Scribe documents.")
             return
         self.__dict__["_scribe_adding"] = True
-        started = time.monotonic()
 
         def slow() -> None:
-            if self.__dict__.get("_scribe_adding") and time.monotonic() - started >= 1.0:
+            if self.__dict__.get("_scribe_adding"):
                 self._scribe_say("Reading your Scribe documents...")
 
         wx.CallLater(1000, slow)
@@ -230,25 +245,39 @@ class BeaconScribeMixin(AppScribeMixin):
                 "Scribe for Documents, Options, to download it again."
             )
             return
+        if self.__dict__.get("_scribe_checking"):
+            self._scribe_say("Already checking your Scribe account.")
+            return
+        self.__dict__["_scribe_checking"] = True
         document_id = document_id_of(res)
         never = not res.primary_uri
+        where = "is not on this computer" if never else "is no longer on this computer"
+
+        def slow() -> None:
+            if self.__dict__.get("_scribe_checking"):
+                self._scribe_say("Checking your Scribe account...")
+
+        wx.CallLater(1000, slow)
 
         def find() -> Any:
             documents = controller.client().list_documents()[0]
             return next((d for d in documents if d.id == document_id), None)
 
+        def failed(error: BaseException) -> None:
+            self.__dict__["_scribe_checking"] = False
+            controller._failed(error)
+
         def found(document: Any) -> None:
             from quill.ui.dialog_contract import show_message_box
 
-            where = "is not on this computer" if never else "is no longer on this computer"
+            self.__dict__["_scribe_checking"] = False
             if document is None:
-                show_message_box(
-                    f"{b.title} {where} or in your Scribe account. You can remove the place "
-                    "with Delete.",
-                    ASK_TITLE,
-                    wx.OK | wx.ICON_INFORMATION,
-                    self,
+                self._scribe_say(  # said, not a box: there is nothing to choose
+                    f"{b.title} {where} or in your Scribe account. Delete removes the place."
                 )
+                return
+            if not self._scribe_still_here(b):
+                self._scribe_say(f"{b.title} can be downloaded again. Press Enter on it to choose.")
                 return
             answer = show_message_box(
                 f"{b.title} {where}. Download it again from My Scribe Documents? Nothing is "
@@ -260,7 +289,16 @@ class BeaconScribeMixin(AppScribeMixin):
             if answer == wx.YES:
                 controller.convert_existing(document)
 
-        controller._background(find, found)
+        controller._background(find, found, failed)
+
+    def _scribe_still_here(self, b: Any) -> bool:
+        """The person is still in Beacon, on the same place, with nothing open over it."""
+        if not self.IsActive() or not self.IsEnabled():  # type: ignore[attr-defined]
+            return False
+        results = self.results  # type: ignore[attr-defined]
+        index = results.GetFirstSelected()
+        cache = getattr(self, "_results_cache", [])
+        return 0 <= index < len(cache) and cache[index].beacon_id == b.beacon_id
 
 
 def _exists(uri: str) -> bool:

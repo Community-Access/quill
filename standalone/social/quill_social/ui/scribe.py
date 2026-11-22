@@ -49,6 +49,33 @@ _NAMES = {
 }
 
 
+def scribe_purpose(title: str) -> str:
+    """F1 in a Scribe window opened from Social: the family's own words."""
+    from quill.core.scribe.surface_help import SCRIBE_PREFIX_PURPOSES, SCRIBE_PURPOSES
+
+    stripped = title.strip()
+    if stripped in SCRIBE_PURPOSES:
+        return SCRIBE_PURPOSES[stripped]
+    for prefix, purpose in SCRIBE_PREFIX_PURPOSES:
+        if stripped.startswith(prefix):
+            return purpose
+    return (
+        "A QUILL Social window. Tab moves between its controls, Escape closes it, and "
+        "F1 on any control explains that control."
+    )
+
+
+def _activate_scribe_help() -> None:
+    """F1 on the shared Scribe windows, which open through the dialog contract.
+    Social's own F1 (the Keyboard Guide, from its main window) is untouched."""
+    try:
+        from quill.ui import app_context_help
+
+        app_context_help.activate(scribe_purpose)
+    except Exception:  # noqa: BLE001 - help must never stop the window opening
+        pass
+
+
 class SocialScribeHost(AppScribeHost):
     """Social's side: its announcer, and results opened elsewhere."""
 
@@ -83,6 +110,7 @@ class SocialScribeMixin(AppScribeMixin):
     def _scribe_handlers(self) -> dict[str, Any]:
         """Command id -> handler, for the menu and the key hook."""
         self._scribe_menu_ready()  # once: pick up jobs another app left (7.4)
+        _activate_scribe_help()
         return {
             "scribe_convert_linked": self.cmd_scribe_convert_linked,
             "scribe_conversions": self.scribe_conversions,

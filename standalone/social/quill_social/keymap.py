@@ -96,8 +96,10 @@ DEFAULT_BINDINGS: dict[str, str] = {
     # Ctrl+Shift+F1, the family's What's New key, is the Keyboard Reference here.
     "whats_new": "Ctrl+Alt+F1",
     "about": "Alt+F1",
-    # Scribe for Documents (PRD 8.8): the keys these rows have in every app in
-    # the family (quill/ui/scribe_app_host.py), Alt+Shift with F6 to F11.
+    # Scribe for Documents (PRD 8.8): the keys these rows have in Player,
+    # Converter, Studio, Cast and Beacon too (quill/ui/scribe_app_host.py),
+    # Alt+Shift with F6 to F11. Not QUILL's or QUILL Lite's: there they are
+    # editor commands, and the Scribe rows have no default key.
     "scribe_convert_linked": "Alt+Shift+F6",
     "scribe_conversions": "Alt+Shift+F7",
     "scribe_my_documents": "Alt+Shift+F8",

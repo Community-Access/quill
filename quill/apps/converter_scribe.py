@@ -44,7 +44,10 @@ def left_out_note(skipped: list[Path]) -> str:
         return ""
     documents = [path for path in skipped if is_accepted(path)]
     others = len(skipped) - len(documents)
-    note = f" {others} not a media file, left out." if others else ""
+    if others == 1:
+        note = " 1 not a media file, left out."
+    else:
+        note = f" {others} are not media files and were left out." if others else ""
     if len(documents) == 1:
         note += f" {documents[0].name} is a document. To convert it, use {_MENU_PATH}."
     elif documents:
@@ -118,6 +121,9 @@ class ConverterScribeMixin(AppScribeMixin):
         total = len(self._entries)  # type: ignore[attr-defined]
         what = files[0].name if len(files) == 1 else f"{added} audio files from {name}"
         if not added:
-            self._announce(f"{what} is already in the Converter queue.")  # type: ignore[attr-defined]
+            already = (
+                f"{files[0].name} is" if len(files) == 1 else f"The audio files from {name} are"
+            )
+            self._announce(f"{already} already in the Converter queue.")  # type: ignore[attr-defined]
             return
         self._announce(f"{what} added to the Converter queue, {total} in all.")  # type: ignore[attr-defined]

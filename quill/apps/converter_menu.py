@@ -71,7 +71,7 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     # family's shared rows, on the keys they have in every app.
     add(
         file_menu,
-        "Convert Documents with &Scribe for Documents...\tAlt+Shift+F6",
+        "Convert Docu&ments with Scribe for Documents...\tAlt+Shift+F6",
         host.scribe_convert_documents,
     )
     from quill.ui.scribe_app_host import append_scribe_submenu

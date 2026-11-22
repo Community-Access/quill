@@ -10,8 +10,8 @@ so My Scribe Documents and Beacon still find it.
 
 When the markers cannot be trusted -- several DAISY audio files, a length that
 does not match, a navigation that cannot be read -- nothing is written, and
-the reason is a phrase the one result sentence carries ("without chapter
-markers: the DAISY book has 4 audio files"), never a second message.
+the reason is a phrase the one result sentence carries ("with no chapter
+markers, because the DAISY book has 4 audio files"), never a second message.
 
 wx-free.
 """
@@ -42,7 +42,7 @@ class Markers:
         if self.count:
             noun = "chapter marker" if self.count == 1 else "chapter markers"
             return f"with {self.count} {noun}"
-        return f"without chapter markers: {self.reason}" if self.reason else ""
+        return f"with no chapter markers, because {self.reason}" if self.reason else ""
 
 
 def daisy_chapters(ncx: Path) -> tuple[list[Chapter], list[str]]:

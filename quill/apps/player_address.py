@@ -150,11 +150,16 @@ class PlayerAddressMixin:
             self._load_daisy(path)
             return True
         if suffix == ".zip":
-            from quill.apps.player_scribe import open_daisy_zip
+            from quill.apps.player_scribe import is_daisy2_zip, open_daisy_zip
 
             entry = open_daisy_zip(path)
             if entry is None or entry.suffix.lower() != ".ncx":
-                self._show_message_box(f"{path.name} is not a DAISY book.", _TITLE)
+                problem = (
+                    f"{path.name} is a DAISY 2 book; Media Player opens DAISY 3 books."
+                    if is_daisy2_zip(path)
+                    else f"{path.name} is not a DAISY book."
+                )
+                self._show_message_box(problem, _TITLE)
                 return False
             self._load_daisy(entry)
             return True

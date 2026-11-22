@@ -49,7 +49,7 @@ def choose(
         dialog.SetSelection(0)
         for child in dialog.GetChildren():
             if isinstance(child, wx.ListBox):
-                child.SetName("Linked documents")
+                child.SetName(list_label(len(documents), where).rstrip(":"))
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         if modal(dialog, TITLE) != wx.ID_OK:
             return None

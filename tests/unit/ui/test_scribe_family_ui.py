@@ -212,7 +212,12 @@ def test_linked_documents_none_one_and_several(monkeypatch: pytest.MonkeyPatch) 
     )
     convert_linked(controller, two, **common)
     assert asked == [
-        (TITLE, "Linked documents in this post, 2:", ["X (a.org)", "Y (a.org)"], "Linked documents")
+        (
+            TITLE,
+            "Linked documents in this post, 2:",
+            ["X (a.org)", "Y (a.org)"],
+            "Linked documents in this post, 2",
+        )
     ]
     assert controller.urls[-1] == ("https://a.org/y.pdf", "linked")
 

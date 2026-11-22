@@ -222,7 +222,7 @@ def test_no_daisy_book_means_no_markers_said_plainly(tmp_path: Path) -> None:
     mp3 = tmp_path / "N.mp3"
     mp3.write_bytes(b"ID3")
     assert narration_markers(q.Job(outputs={"mp3": str(mp3)})) == (
-        "without chapter markers: there is no DAISY book to take them from"
+        "with no chapter markers, because there was no DAISY book to take them from"
     )
     assert narration_markers(q.Job(outputs={})) == ""
 

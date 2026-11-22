@@ -49,16 +49,60 @@ def open_daisy_zip(path: Path) -> Path | None:
             names = [name.lower() for name in archive.namelist()]
     except (OSError, zipfile.BadZipFile):
         return None
-    if not any(name.endswith((".ncx", "ncc.html")) for name in names):
-        return None
+    if not any(name.endswith(".ncx") for name in names):
+        return None  # DAISY 2.02 (ncc.html) or not DAISY at all: nothing unpacked
     return daisy_entry(path)
+
+
+def is_daisy2_zip(path: Path) -> bool:
+    """A DAISY 2.02 book, which the Player does not open (it reads DAISY 3)."""
+    try:
+        with zipfile.ZipFile(path) as archive:
+            names = [name.lower() for name in archive.namelist()]
+    except (OSError, zipfile.BadZipFile):
+        return False
+    return any(name.endswith("ncc.html") for name in names) and not any(
+        name.endswith(".ncx") for name in names
+    )
+
+
+def _owner_disabled(frame: Any) -> bool:
+    """A modal -- wx or native, which ``wx.GetActiveWindow`` cannot see -- is
+    open over *frame*: every modal disables the window that owns it."""
+    try:
+        return not frame.IsEnabled()
+    except RuntimeError:
+        return True
 
 
 class PlayerScribeHost(AppScribeHost):
     """The Media Player's side: its results open in itself."""
 
-    #: Audio opens here, in this process, so it may open by itself (7.4a).
+    #: Audio opens here, in this process, so it may open by itself (7.4a)...
     scribe_opens_on_its_own = True
+
+    def scribe_may_open_now(self) -> bool:
+        """...but only into a Player the person is in, with no dialog open and no
+        book playing: a result never replaces what they are listening to, and
+        never arrives under a modal (accessibility review of the built code)."""
+        import wx
+
+        frame = getattr(self._owner, "frame", None)
+        active = wx.GetActiveWindow()
+        if frame is None or active is None or wx.GetTopLevelParent(active) is not frame:
+            return False
+        if _owner_disabled(frame):
+            return False
+        player = getattr(self._owner, "_player", None)
+        return not (player is not None and player.is_playing())
+
+    def scribe_finish_job(self, job: Any) -> str:
+        """Unpack the DAISY zip in the background, before the result sentence,
+        so opening it never freezes the window."""
+        daisy = job.outputs.get("daisy") if job is not None else None
+        if daisy and Path(daisy).exists():
+            open_daisy_zip(Path(daisy))
+        return ""
 
     def scribe_open_result(self, job: Any, format_id: str, path: Path) -> str:
         """Open an MP3 or DAISY book here; anything else is a Next Step."""
@@ -81,9 +125,10 @@ class PlayerScribeHost(AppScribeHost):
             if format_id in ready:
 
                 def play(f: str = format_id, path: Path = ready[format_id]) -> None:
-                    said = self._owner._scribe_load(f, path)
-                    if said:
-                        self.scribe_announce(f"{said}.")
+                    said = self._owner._scribe_load(f, path, where="In the Media Player window, ")
+                    self.scribe_announce(
+                        f"{said}." if said else f"{path.name} could not be opened."
+                    )
 
                 steps.append((f"Play in Media Player ({format_label(format_id)})", play))
         return steps + elsewhere_steps(job, ready, self.scribe_announce, player=False)
@@ -106,22 +151,52 @@ class PlayerScribeMixin(AppScribeMixin):
         if paths:
             controller.convert_files(paths, app_formats=["mp3", "daisy"], open_as="listen")
 
-    def _scribe_load(self, format_id: str, path: Path) -> str:
-        """Load a Scribe result without playing it or moving focus; what to say."""
+    def _scribe_load(self, format_id: str, path: Path, *, where: str = "") -> str:
+        """Load a Scribe result without playing it or moving focus; what to say,
+        or ``""`` when it could not be loaded. Nothing here opens a message box:
+        the Player's own load errors are caught and the caller says one sentence
+        (7.4a: a background result never opens a dialog)."""
+        press = f"{where}press {_PLAY_KEY} to play" if where else f"Press {_PLAY_KEY} to play"
         if format_id == "daisy":
             entry = path if path.suffix.lower() == ".ncx" else open_daisy_zip(path)
             if entry is None or entry.suffix.lower() != ".ncx":
                 return ""
-            self._load_daisy(entry, quiet=True)  # type: ignore[attr-defined]
+            if not self._scribe_quietly(lambda: self._load_daisy(entry, quiet=True)):  # type: ignore[attr-defined]
+                return ""
             if getattr(self, "_book_key", "") != str(entry):
                 return ""
             headings = len(getattr(self, "_chapter_nodes", []))
             noun = "heading" if headings == 1 else "headings"
             return (
-                f"The DAISY book is open in Media Player, {headings} {noun}, at the start. "
-                f"Press {_PLAY_KEY} to play"
+                f"The DAISY book is open in Media Player, {headings} {noun}, at the start. {press}"
             )
-        self._load_book(path)  # type: ignore[attr-defined]
+        # A Scribe result starts at the beginning: a position left by an earlier
+        # conversion of the same name is not this audio's, and Magical mode's
+        # welcome-back would be a second sentence (GATE-13).
+        from quill.core.paths import app_data_dir
+        from quill.core.speech.listening_positions import clear_position
+
+        try:
+            clear_position(app_data_dir(), path)
+        except OSError:
+            pass
+        if not self._scribe_quietly(lambda: self._load_book(path)):  # type: ignore[attr-defined]
+            return ""
         if getattr(self, "_book_key", "") != str(path):
             return ""
-        return f"The MP3 audio is open in Media Player. Press {_PLAY_KEY} to play"
+        return f"The MP3 audio is open in Media Player, at the start. {press}"
+
+    def _scribe_quietly(self, load: Any) -> bool:
+        """Run one of the Player's own loads with its message boxes caught."""
+        caught: list[str] = []
+        had = "_show_message_box" in self.__dict__
+        saved = self.__dict__.get("_show_message_box")
+        self.__dict__["_show_message_box"] = lambda text, *_a, **_k: caught.append(str(text))
+        try:
+            load()
+        finally:
+            if had:
+                self.__dict__["_show_message_box"] = saved
+            else:
+                self.__dict__.pop("_show_message_box", None)
+        return not caught
