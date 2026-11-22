@@ -28,6 +28,7 @@ PLUGIN_BRANCHES: Mapping[str, tuple[str, ...]] = {
     "seo": tuple(SEO_NAMESPACES),
     "redirects": (REDIRECTION_NAMESPACE,),
     "forms": (GRAVITY_NAMESPACE, *QAF_NAMESPACES),
+    "swiftletter": ("swiftletter/v1",),
 }
 
 

@@ -430,6 +430,16 @@ WORDPRESS_ACTIONS = ActionTable(
             _a("open_day", "Open This Day", default=True, help="List what the day holds."),
             _SHEET,
         ),
+        "swiftletter_newsletter": (
+            _a(
+                "show_articles",
+                "Show Articles",
+                default=True,
+                help="Selects the newsletter in the tree and lists its articles. Enter.",
+            ),
+            _SHEET,
+        ),
+        "swiftletter_article": (_READ, _SHEET),
         "search_result": (
             _a(
                 "open_on_site",

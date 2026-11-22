@@ -38,6 +38,7 @@ from quill.core.wordpress.workbench_places import (
 )
 from quill.core.wordpress.workbench_pmpro_tree import HEALTH_NODES, MEMBERSHIP_NODES
 from quill.core.wordpress.workbench_shop import SHOP_NODES
+from quill.core.wordpress.workbench_swiftletter import NODES as SWIFTLETTER_NODES
 from quill.core.workbench.tree import NodeSpec, Scope, TreeSpec
 
 __all__ = [
@@ -462,6 +463,7 @@ _SITE: tuple[NodeSpec, ...] = (
         row_type="form",
     ),
     *MEMBERSHIP_NODES,
+    *SWIFTLETTER_NODES,
     _n(
         "form_entries",
         "Responses",

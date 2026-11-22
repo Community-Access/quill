@@ -101,6 +101,7 @@ from quill.ui.wordpress_workbench_site_check import WorkbenchSiteCheck
 from quill.ui.wordpress_workbench_site_editor import WorkbenchSiteEditorCommands
 from quill.ui.wordpress_workbench_site_types import WorkbenchSiteTypesCommands
 from quill.ui.wordpress_workbench_sweep import WorkbenchSweepCommands
+from quill.ui.wordpress_workbench_swiftletter import WorkbenchSwiftLetter
 from quill.ui.wordpress_workbench_widgets import WorkbenchWidgetCommands
 from quill.ui.wordpress_workbench_window_search import WorkbenchSearchCommands
 from quill.ui.wordpress_workbench_window_status import WorkbenchStatusCells
@@ -141,6 +142,7 @@ class WordPressWorkbenchProvider(
     WorkbenchShopStoreCommands,  # gateways, system status, resend order details
     WorkbenchOptionsCommands,
     WorkbenchBoldCommands,
+    WorkbenchSwiftLetter,
     WorkbenchScopeMoreCommands,  # ahead of WorkbenchAcrossCommands: convert, merge, remove
     WorkbenchAcrossCommands,
     WorkbenchSweepCommands,
@@ -279,6 +281,8 @@ class WordPressWorkbenchProvider(
         if node.key == "calendar_day":
             return self.day_children()
         site = self.split(ref.instance)[0]
+        if node.key == "swiftletter_newsletter":
+            return self.swiftletter_children(site)
         if node.key == DYNAMIC_NAMESPACE:
             return self.namespace_children(site)
         if node.key == DYNAMIC_TYPE:
@@ -375,6 +379,8 @@ class WordPressWorkbenchProvider(
         with page_limit(self.pages_for_ref(ref)), scope as left:
             preset = {**dict(node.preset), **self.analytics_params(ref, node)}  # Shop Analytics
             rows = load(ctx, node.loader, preset, params, dynamic=dynamic)
+            if node.loader == "swiftletter:newsletters":
+                self.remember_newsletters(site, SEP, rows)
             self.note_loaded(ref, len(rows))
             self.remember_rows(rows)  # the glossary's examples come from these
         rows = self.with_update_facts(
