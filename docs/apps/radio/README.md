@@ -73,6 +73,16 @@ Find Streams from a Website now opens every link it finds and listens to the fir
 - **More places a stream is found.** Player settings written into the page (`data-stream`, `data-audio-src` and similar, even with several addresses in one), player configuration such as `streamUrl:` or `hls_url:` with no file extension, addresses printed as plain text, the page's `<base href>`, a Radio.co embedded player, up to three of the site's own player scripts, pop-up players opened with `window.open`, and an Icecast server's status page, which lists every mount by name.
 - The same check is used when stream recovery looks for a station's new address on its website, and when you paste a station's web page into Add Custom Station, so a link heard playing is preferred over one that only looks right.
 
+#### Streaming servers, Global Player and directories
+
+More ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift), written in QUILL's own code.
+
+- **A whole server at once.** Type the address of an Icecast or SHOUTcast server, such as `http://radio.example.org:8000/`, or scan a station site that links to the server's status page, and Find Streams lists every stream the server carries, by the name the server gives it. Icecast is asked through its status list, or its status page when the list is turned off; SHOUTcast through its statistics, so a server carrying several stations shows them all. Streams that are off air, video, and the server's own admin pages are left out. Each stream is still checked before it is listed.
+- **How many are listening.** When the server says, the row ends with the count, for example "Live: WABC Community Radio, MP3, 128 kbps, 12 listeners". The name, format and bitrate still come first, and nothing extra is said.
+- **Global's stations.** A Global Player page, such as `https://www.globalplayer.com/live/capital/uk/`, or a station site that links to one, gives the stream Global lets everyone play. Streams Global keeps for signed-in or paying listeners are never listed. Global's own list of every station, `https://media-ssl.musicradio.com/`, works too.
+- **IPRD is asked about the site.** If you have opened or searched IPRD in the last while, so its list is on your computer, the stations IPRD lists for that website are added and checked too. A scan never downloads the IPRD list itself.
+- **Locus Sonus Soundmap.** Browse Stations has a new branch of open microphones streaming live sound from places around the world: a hydrophone in an Amsterdam canal, a farm in New York state. Each is named with its place and plays, records and saves like any station. The list is the soundmap's own list of microphones on air now, so it changes through the day.
+
 ### What's playing
 
 QUILL reports the current track — artist and title — from the stream's own broadcast metadata, and can announce it automatically each time the song changes. When a stream sends no title of its own and the player has none to offer, QUILL now falls back to the station server's own now-playing information (its Icecast or Shoutcast status page, on the same host you're already streaming), so more stations tell you what's on.

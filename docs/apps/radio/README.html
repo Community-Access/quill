@@ -522,6 +522,43 @@ new address on its website, and when you paste a station’s web page into
 Add Custom Station, so a link heard playing is preferred over one that
 only looks right.</li>
 </ul>
+<h4 id="streaming-servers-global-player-and-directories">Streaming
+servers, Global Player and directories</h4>
+<p>More ideas from Andre Louis’s StreamSift (<a
+href="https://github.com/OnjLouis/StreamSift">https://github.com/OnjLouis/StreamSift</a>),
+written in QUILL’s own code.</p>
+<ul>
+<li><strong>A whole server at once.</strong> Type the address of an
+Icecast or SHOUTcast server, such as
+<code>http://radio.example.org:8000/</code>, or scan a station site that
+links to the server’s status page, and Find Streams lists every stream
+the server carries, by the name the server gives it. Icecast is asked
+through its status list, or its status page when the list is turned off;
+SHOUTcast through its statistics, so a server carrying several stations
+shows them all. Streams that are off air, video, and the server’s own
+admin pages are left out. Each stream is still checked before it is
+listed.</li>
+<li><strong>How many are listening.</strong> When the server says, the
+row ends with the count, for example “Live: WABC Community Radio, MP3,
+128 kbps, 12 listeners”. The name, format and bitrate still come first,
+and nothing extra is said.</li>
+<li><strong>Global’s stations.</strong> A Global Player page, such as
+<code>https://www.globalplayer.com/live/capital/uk/</code>, or a station
+site that links to one, gives the stream Global lets everyone play.
+Streams Global keeps for signed-in or paying listeners are never listed.
+Global’s own list of every station,
+<code>https://media-ssl.musicradio.com/</code>, works too.</li>
+<li><strong>IPRD is asked about the site.</strong> If you have opened or
+searched IPRD in the last while, so its list is on your computer, the
+stations IPRD lists for that website are added and checked too. A scan
+never downloads the IPRD list itself.</li>
+<li><strong>Locus Sonus Soundmap.</strong> Browse Stations has a new
+branch of open microphones streaming live sound from places around the
+world: a hydrophone in an Amsterdam canal, a farm in New York state.
+Each is named with its place and plays, records and saves like any
+station. The list is the soundmap’s own list of microphones on air now,
+so it changes through the day.</li>
+</ul>
 <h3 id="whats-playing">What’s playing</h3>
 <p>QUILL reports the current track — artist and title — from the
 stream’s own broadcast metadata, and can announce it automatically each

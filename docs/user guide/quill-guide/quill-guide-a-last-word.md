@@ -18,10 +18,12 @@ those projects and the people who made them, for showing what an accessible,
 keyboard-driven editor can be.
 
 Quill Radio's Find Streams from a Website checks that each link it finds is
-live audio before listing it, reads station sites that have no HTTPS, and looks
-in more places on a page for the stream. Those are ideas from Andre Louis's
-StreamSift (https://github.com/OnjLouis/StreamSift), written in QUILL's own
-code. Thank you, Andre.
+live audio before listing it, reads station sites that have no HTTPS, looks
+in more places on a page for the stream, lists every stream an Icecast or
+SHOUTcast server carries, reads Global Player pages, and asks IPRD about the
+website; Browse Stations has the Locus Sonus Soundmap. Those are ideas from
+Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift), written in
+QUILL's own code. Thank you, Andre.
 
 ---
 

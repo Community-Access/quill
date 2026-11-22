@@ -2,7 +2,35 @@
 
 ## 1.0.0
 
-### Quill Radio: Find Streams checks each link is live audio (2026-11-21)
+### Quill Radio: Find Streams reads streaming servers, Global Player and IPRD (2026-11-22)
+
+More ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),
+written in QUILL's own code.
+
+- **A streaming server lists every stream it has.** Give Find Streams an
+  Icecast or SHOUTcast server's address, or a page that links to its status
+  page, and every stream on it is listed by name, checked like any other link.
+  Icecast is read from `status-json.xsl`, or from its status page when that is
+  turned off. SHOUTcast v2 is read from `/statistics?json=1`, so a server that
+  carries several stations lists them all. Streams that are off air, video
+  and the server's own admin pages are left out.
+- **Listener counts.** When the server says how many are listening, the row
+  ends with it: "Live: WABC Community Radio, MP3, 128 kbps, 12 listeners".
+  Nothing else in the row moves, and nothing more is said.
+- **Global's stations.** A Global Player station page
+  (`globalplayer.com/live/...`), or a station site that links to one, gives the
+  stream Global lets everyone play, and never the ones kept for signed-in or
+  paying listeners. Global's catalogue, `media-ssl.musicradio.com`, lists every
+  Global station.
+- **Locus Sonus Soundmap**, new in Browse Stations: open microphones streaming
+  live sound from places around the world, such as a hydrophone in an
+  Amsterdam canal. Find Streams reads it too when given the soundmap page.
+- **IPRD is asked about the website.** When the IPRD catalogue is already on
+  your computer, the stations it lists for that website are added and checked
+  too. A scan never downloads the catalogue.
+- Triton players that name their station only in the page's app name, and
+  SecureNet's `cirruscontent` player pages, are read too.
+
 
 Ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),
 written in QUILL's own code.

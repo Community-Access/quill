@@ -37,6 +37,7 @@ You can now ask the radio about what you are hearing, keep your own music and au
 - **Double Tap Live**, a new station made for this community.
 - **Note to Self** on any station (Shift+F10): you hear it when you arrow onto the station. Add your own tags, and find a station by the team it carries.
 - **Find Streams from a Website checks each link before listing it.** Live streams come first, with their name, format and bitrate; links it could not check say why; web pages and dead links are left out. Sites without HTTPS work now too. Ideas from Andre Louis's StreamSift.
+- **Find Streams reads streaming servers, Global Player and IPRD.** Give it an Icecast or SHOUTcast server and every stream on it is listed, with how many are listening; Global Player pages give their free stream; stations IPRD lists for the website are added. **Locus Sonus Soundmap** in Browse Stations plays open microphones from around the world. More ideas from Andre Louis's StreamSift.
 - **Find a setting** in Preferences (Ctrl+,) as you type. Radio's own sounds can play on the same sound card as the station; Alt+Shift+M turns them off and on.
 - **Slider Keys** in Preferences: Up is more, with Home as 100 percent, or the Windows slider keys. One choice for every Quill app.
 - **Help > What's New** (Ctrl+Shift+F1) opens the full list of changes.
