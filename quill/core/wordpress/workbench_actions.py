@@ -432,7 +432,10 @@ WORDPRESS_ACTIONS = ActionTable(
         ),
         "swiftletter_newsletter": (
             _a(
-                "open_newsletter", "Open Newsletter", default=True, help="List its articles. Enter."
+                "show_articles",
+                "Show Articles",
+                default=True,
+                help="Selects the newsletter in the tree and lists its articles. Enter.",
             ),
             _SHEET,
         ),

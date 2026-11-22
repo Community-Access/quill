@@ -38,8 +38,6 @@ def shows(node_key: str, namespaces: Iterable[str] | None) -> bool:
     *namespaces* None means the index has not been read yet: show it.
     """
     wanted = PLUGIN_BRANCHES.get(node_key)
-    if node_key == "swiftletter" and namespaces is None:
-        return False
     if wanted is None or namespaces is None:
         return True
     have = {str(n).strip("/") for n in namespaces}

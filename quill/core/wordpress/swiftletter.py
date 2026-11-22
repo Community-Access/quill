@@ -12,6 +12,38 @@ _NAMESPACE = "swiftletter/v1"
 _ARTICLE_BASE = "swl-articles"
 _VERSION = re.compile(r'"[0-9a-f]{64}"')
 
+#: Review states as words, so the state never rests on colour or a check mark alone.
+#: ``changed`` is for a reviewed article edited since; SwiftLetter 1.1.0 reports only
+#: ``review_confirmed``, so it appears once the API sends ``review_state`` on a row.
+REVIEW_WORDS = {
+    "reviewed": "Reviewed",
+    "not_reviewed": "Not reviewed",
+    "changed": "Changed since review",
+}
+
+
+class SwiftLetterError(WordPressApiError):
+    """SwiftLetter refused a request, or answered in a shape QUILL cannot read."""
+
+    code = "QUILL-SWIFTLETTER-API-REQUEST"
+
+
+class SwiftLetterVersionError(SwiftLetterError):
+    """The site's SwiftLetter speaks a connection version this QUILL does not know."""
+
+    code = "QUILL-SWIFTLETTER-API-VERSION"
+
+
+class SwiftLetterForbidden(SwiftLetterError):
+    """The person's account may not do this in SwiftLetter."""
+
+    code = "QUILL-SWIFTLETTER-API-FORBIDDEN"
+
+
+def review_words(state: str) -> str:
+    """The words for a review state; an unknown state is said as it came."""
+    return REVIEW_WORDS.get(state, state.replace("_", " ").capitalize() or "Not reviewed")
+
 
 @dataclass(frozen=True)
 class Discovery:
@@ -34,13 +66,19 @@ class Article:
 class ArticleRow:
     id: int
     title: str
-    reviewed: bool
+    review_state: str = "not_reviewed"
+
+    @property
+    def reviewed(self) -> bool:
+        return self.review_state == "reviewed"
 
 
 @dataclass(frozen=True)
 class Newsletter:
     id: int
     title: str
+    article_count: int | None = None
+    modified_gmt: str = ""
 
 
 def _object(value: object) -> dict[str, object]:
@@ -81,14 +119,25 @@ def _edit_version(value: object) -> str:
     return value
 
 
+def lists_namespace(namespaces: Iterable[str]) -> bool:
+    """Whether a REST index's *namespaces* include SwiftLetter's, slashes ignored."""
+    return _NAMESPACE in {str(name).strip("/") for name in namespaces}
+
+
+def index_namespaces(api: WordPressApi) -> tuple[str, ...]:
+    """The namespaces the site's REST index lists, read once."""
+    reported = _object(api.get("")).get("namespaces")
+    return tuple(str(name) for name in reported) if isinstance(reported, list) else ()
+
+
 def discover(api: WordPressApi, *, namespaces: Iterable[str] | None = None) -> Discovery | None:
     """Return None when a site lacks SwiftLetter or only has the dashboard API."""
     if api.address.is_wpcom:
         return None
     if namespaces is None:
-        reported = _object(api.get("")).get("namespaces")
-        namespaces = reported if isinstance(reported, list) else ()
-    if _NAMESPACE not in namespaces:
+        namespaces = index_namespaces(api)
+    # The same comparison as the Workbench's plugin branches, so the two never disagree.
+    if not lists_namespace(namespaces):
         return None
     metadata = _object(api.get(_NAMESPACE)).get("swiftletter")
     if metadata is None:
@@ -96,8 +145,10 @@ def discover(api: WordPressApi, *, namespaces: Iterable[str] | None = None) -> D
     data = _object(metadata)
     version = data.get("api_version")
     if not isinstance(version, str) or not re.fullmatch(r"1\.\d+", version):
-        raise WordPressApiError(
-            "This site uses a SwiftLetter API version that QUILL does not support."
+        said = version if isinstance(version, str) and version else "an unknown version"
+        raise SwiftLetterVersionError(
+            f"SwiftLetter on this site speaks version {said} of its connection, and this "
+            "QUILL knows version 1. Update QUILL, or ask the site's administrator."
         )
     if data.get("article_rest_base") != _ARTICLE_BASE:
         raise WordPressApiError(
@@ -110,19 +161,53 @@ def discover(api: WordPressApi, *, namespaces: Iterable[str] | None = None) -> D
     return Discovery(browse, browse and features.get("article_save") is True)
 
 
+def _newsletter(row: dict[str, object]) -> Newsletter:
+    count = row.get("article_count")
+    modified = row.get("modified_gmt")
+    return Newsletter(
+        _id(row.get("id")),
+        _text(row.get("title")),
+        count if isinstance(count, int) and not isinstance(count, bool) and count >= 0 else None,
+        modified if isinstance(modified, str) else "",
+    )
+
+
+def _review_state(row: dict[str, object]) -> str:
+    """A row's review state: the API's own word when it sends one, else its yes or no."""
+    state = row.get("review_state")
+    if isinstance(state, str) and state:
+        return state
+    return "reviewed" if row.get("review_confirmed") is True else "not_reviewed"
+
+
 def newsletters(api: WordPressApi, *, max_pages: int = 3) -> Iterator[Newsletter]:
     for item in api.iter_collection(f"{_NAMESPACE}/newsletters", max_pages=max_pages):
-        row = _object(item)
-        yield Newsletter(_id(row.get("id")), _text(row.get("title")))
+        yield _newsletter(_object(item))
+
+
+def newsletter_detail(
+    api: WordPressApi, newsletter_id: int
+) -> tuple[Newsletter, tuple[ArticleRow, ...]]:
+    """One newsletter and its articles, in the newsletter's order (the server sorts them)."""
+    data = _object(api.get(f"{_NAMESPACE}/newsletters/{_id(newsletter_id)}"))
+    rows = (_object(item) for item in _list(data.get("articles")))
+    found = tuple(
+        ArticleRow(_id(row.get("id")), _text(row.get("title")), _review_state(row)) for row in rows
+    )
+    title = data.get("title")
+    count = data.get("article_count")
+    modified = data.get("modified_gmt")
+    newsletter = Newsletter(
+        newsletter_id,
+        title if isinstance(title, str) else "",
+        count if isinstance(count, int) and not isinstance(count, bool) else len(found),
+        modified if isinstance(modified, str) else "",
+    )
+    return newsletter, found
 
 
 def articles(api: WordPressApi, newsletter_id: int) -> tuple[ArticleRow, ...]:
-    data = _object(api.get(f"{_NAMESPACE}/newsletters/{_id(newsletter_id)}"))
-    rows = (_object(item) for item in _list(data.get("articles")))
-    return tuple(
-        ArticleRow(_id(row.get("id")), _text(row.get("title")), row.get("review_confirmed") is True)
-        for row in rows
-    )
+    return newsletter_detail(api, newsletter_id)[1]
 
 
 def open_article(api: WordPressApi, article_id: int) -> Article:
