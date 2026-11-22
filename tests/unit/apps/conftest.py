@@ -887,6 +887,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_mode import DocumentModeMixin
     from quill.apps.lite_window_pdf import DocumentPdfMixin
     from quill.apps.lite_window_read_only import DocumentReadOnlyMixin
+    from quill.apps.lite_window_scribe import DocumentScribeMixin
     from quill.apps.lite_window_sections import DocumentSectionCommandsMixin
     from quill.apps.lite_window_selection import DocumentSelectionMixin
     from quill.apps.lite_window_sources import DocumentSourcesMixin
@@ -960,6 +961,9 @@ def lite_window(tmp_path, lite_settings):
         # File > Import / Convert Document, 2026-10-17: QUILL's converter on
         # QUILL Lite's File menu.
         DocumentImportMixin,
+        # File > Scribe for Documents, 2026-11-21: the shared entry points, and the
+        # import question's Scribe tier (PRD 8.2).
+        DocumentScribeMixin,
         # Open from URL and the clipboard, drops, Reopen with Encoding and the
         # save-time disk check, 2026-10-04 (the PlanCake design note).
         DocumentSourcesMixin,

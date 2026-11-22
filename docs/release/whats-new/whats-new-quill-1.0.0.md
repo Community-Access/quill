@@ -10,10 +10,8 @@ QUILL 1.0 is the first general release. These are the newest parts; the full rel
 - **Blocks, made plain:** Next Block and Where Am I in Edit > WordPress. A block QUILL does not know goes back untouched.
 - **Checking:** Check This Page with axe-core, and Check the Whole Site with safe fixes in bulk.
 - **Looking after the site:** comments, categories and tags, people, menus and the Media Library.
-- **The WordPress Workbench** (Ctrl+Alt+Shift+Grave, then H) runs the whole site, with a preview before every change, Ctrl+Z, Needs My Attention and F1. Where WordPress cannot do something, it says so and opens wp-admin.
-- **Moving and copying:** WXR export and import, Copy to Site, snapshots and Across Sites, and a Practice Site to try it all.
-- **Plugins:** WooCommerce, The Events Calendar, Yoast SEO, Paid Memberships Pro, Redirection, Gravity Forms.
-- **Keys:** Ctrl+Alt+Shift+Grave, then O to open, P to publish, D for a draft, M for the Media Library.
+- **The WordPress Workbench** (Ctrl+Alt+Shift+Grave, then H) runs the whole site, with a preview before every change, Ctrl+Z, Needs My Attention and F1.
+- **Moving and copying:** WXR files, Copy to Site, snapshots, and a Practice Site to try it all. Six plugins, from WooCommerce to Gravity Forms.
 
 ### Forms
 
@@ -21,6 +19,10 @@ QUILL 1.0 is the first general release. These are the newest parts; the full rel
 - **Tools > Forms > Fill It In Yourself** lets you tab through your own form as a visitor would, before anyone else sees it.
 - Check This Form, rules read as sentences in Format > Form Rules, and saving as a web page, Word, large print or braille-ready text. Publish and Responses work with sites running the plugin.
 - **Payments:** Stripe and PayPal fields, set up and verified in test mode first. Publishing checks the site is ready, and Responses show each payment. Chapter 18 of the guide walks through it.
+
+## Scribe for Documents
+
+- **Tools > Scribe for Documents** sends a scanned or badly made document to Pneuma Solutions, with your say each time, for Word, tagged PDF, DAISY with audio, MP3 or braille. 100 free pages to start; chapter 19.
 
 ## GitHub
 

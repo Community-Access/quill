@@ -304,6 +304,8 @@ class QueueService:
         if fresh:
             self._listener("started", job)
         settings = ScribeSettings.from_mapping(job.settings) if job.settings else None
+        if job.open_as == "watch" and not job.document_id:
+            settings = self._watch_settings(client, job)
         if not job.document_id:
             if job.source_path:
                 check_input(Path(job.source_path))  # 23 types, 500 MB: else nothing is sent
@@ -354,6 +356,16 @@ class QueueService:
         if job.id in self._resumed:
             self._resumed_done.append(job.title or job.display_name)
         self._listener("done", job)
+
+    def _watch_settings(self, client: ScribeClient, job: q.Job) -> ScribeSettings | None:
+        """A watch-folder file: the person's Scribe account defaults, read now, with
+        the profile's (or Options') own fields on top, as the dialog starts (3.3)."""
+        try:
+            merged = client.default_settings().to_dict()
+        except ScribeError:
+            merged = {}
+        merged.update(job.settings)
+        return ScribeSettings.from_mapping(merged) if merged else None
 
     def _take_turn(self, job: q.Job) -> None:
         """Wait, silently, until the family has room for one more action (3.5)."""
@@ -465,6 +477,8 @@ class QueueService:
             self._check_cancel(job)
             event = channel.next_event(1.0)
             if event is not None and event.kind == "conversion_complete":
+                if event.format == "html_stream":
+                    self._listener("stream_done", _chunk_job(job, event))
                 return
             if event is not None and event.kind == "chunk":
                 self._listener("chunk", _chunk_job(job, event))
@@ -492,6 +506,8 @@ class QueueService:
             self._listener("changed", job)
             return event.format == format_id and event.stage == "complete"
         if event.kind == "conversion_complete":
+            if event.format == "html_stream":  # the free preview: the stream tab ends
+                self._listener("stream_done", _chunk_job(job, event))
             return event.format == format_id
         if event.kind == "chunk":
             self._listener("chunk", _chunk_job(job, event))

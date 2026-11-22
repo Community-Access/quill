@@ -20,16 +20,13 @@ hard-crashes msftedit. Neither of those was discovered here; both are QUILL's
 findings, and QUILL Lite gets them by using QUILL's surface rather than by
 copying it.
 
-The window is assembled from four neighbours, each answering one question:
-:mod:`quill.apps.lite_window_menus` builds the bar,
-:mod:`quill.apps.lite_window_commands` answers its File and Edit items,
-:mod:`quill.apps.lite_window_format` its Format items,
-:mod:`quill.apps.lite_window_markup` its Insert items and the document's
-markup language,
-:mod:`quill.apps.lite_window_view` answers its View items, and
-:mod:`quill.apps.lite_window_theme` owns mode, theme and font, and
-:mod:`quill.apps.lite_window_status` is the status bar. What is left here is
-the window itself: its document state, and its file I/O.
+The window is assembled from neighbours, each answering one question:
+:mod:`quill.apps.lite_window_menus` builds the bar, ``lite_window_commands``
+answers its File and Edit items, ``lite_window_format`` its Format items,
+``lite_window_markup`` its Insert items and the document's markup language,
+``lite_window_view`` its View items, ``lite_window_theme`` owns mode, theme and
+font, and ``lite_window_status`` is the status bar. What is left here is the
+window itself: its document state, and its file I/O.
 """
 
 from __future__ import annotations
@@ -64,6 +61,7 @@ from quill.apps.lite_window_open import DocumentBackgroundOpenMixin
 from quill.apps.lite_window_pdf import DocumentPdfMixin
 from quill.apps.lite_window_read_only import DocumentReadOnlyMixin
 from quill.apps.lite_window_recent import DocumentRecentMixin
+from quill.apps.lite_window_scribe import DocumentScribeMixin
 from quill.apps.lite_window_sections import DocumentSectionCommandsMixin
 from quill.apps.lite_window_selection import DocumentSelectionMixin
 from quill.apps.lite_window_sources import DocumentSourcesMixin
@@ -152,6 +150,7 @@ class DocumentFrame(
     # PDFs open as text through QUILL's reader, never written back (2026-10-15).
     DocumentPdfMixin,
     DocumentImportMixin,  # File > Import / Convert Document, QUILL's (2026-10-17)
+    DocumentScribeMixin,  # File > Scribe for Documents, QUILL's (PRD 8.2, 2026-11-21)
     DocumentContextMenuMixin,
     DocumentMenuMixin,
     DocumentAppearanceMixin,

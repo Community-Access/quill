@@ -160,6 +160,33 @@ what shipped.
   Each step says what to press and what you should hear. That makes all
   eleven of the GitHub lessons the plan asked for.
 
+### Scribe for Documents: the rest of QUILL, and QUILL Lite (2026-11-21)
+
+- **Next Steps after a conversion.** Scribe Conversions has a Next Steps
+  button. It lists what you can do with what was made: Read Aloud with QUILL's
+  voices, Check Accessibility with GLOW, Summarize with your own AI, Open in
+  the Braille View, and Send to Media Player. Each is a separate choice;
+  nothing runs on its own.
+- **Read while it converts.** Check "Read while it converts" in the Convert
+  dialog, and a read-only tab, "Notes (Scribe, converting)", fills with the
+  text a whole paragraph at a time, without moving your place or speaking. It
+  becomes "(Scribe, complete)" or "(Scribe, incomplete)". Tools, Scribe for
+  Documents, Replace with Finished Document swaps in the finished one and
+  keeps your place.
+- **The watch folder can use Scribe.** A profile's new action, Convert with
+  Scribe for Documents, sends each arriving document, one after another, once
+  you agree to it in that profile. Only the 23 types Scribe takes are sent,
+  and the results are said as every other watch result is.
+- **Scribe Options from Preferences.** More Preferences has a Scribe for
+  Documents page. It opens the one set of Scribe options every QUILL app
+  shares. Scribe Status, Repeat Last Scribe Message and every other Scribe
+  command can be given a key in the Keymap Editor.
+- **QUILL Lite has Scribe for Documents too**, in File > Scribe for Documents,
+  with the same windows and the same commands. It is a feature area, off until
+  you turn it on in Customize Features, or when a scanned PDF needs it.
+- **A full guide chapter** in each editor's user guide, with walk-throughs,
+  every error code and F1 help for every command.
+
 ### Scribe for Documents in QUILL, phase 1 (2026-11-20)
 
 - **QUILL can send a hard document to Scribe for Documents.** Pneuma

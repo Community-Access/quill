@@ -234,7 +234,7 @@ working:
 | Overwrite mode, Tab key behaviour, the status bar | **View** |
 | App sounds on or off | **Tools > App Sounds** (**Alt+Shift+M**) |
 | Which sound each event makes | **Tools > Sound Scheme** (**Ctrl+Alt+Shift+O**) |
-| Which of the 25 areas exist at all | **Tools > Customize Features** (**Ctrl+Alt+F10**) |
+| Which of the 26 areas exist at all | **Tools > Customize Features** (**Ctrl+Alt+F10**) |
 | What any key does | **Tools > Keyboard Manager** (**Ctrl+Alt+Shift+Space**) |
 | The twelve spelling announcement settings | **Tools > Spelling > Announcements** (**Ctrl+Alt+Shift+F7**) |
 | Whether you are asked about last session | The **Reopen Last Session** window itself (**Alt+Shift+F12**) |
@@ -286,13 +286,13 @@ what it would do, and change your mind.
 
 Under the Profile box is a **read-only description you can read line by line**.
 It tells you two things. First, what the profile is. Then what it would do to
-your copy of QUILL Lite: how many of the 24 areas it keeps and which ones, which
+your copy of QUILL Lite: how many of the 26 areas it keeps and which ones, which
 ones it removes, and anything else it changes. Notepad, for example, also makes
 **Ctrl+N** create a plain text document. Press **F1** on the Profile box to hear
 the same thing.
 
 When you choose a profile, QUILL Lite says a short version, like this: "Notepad
-profile: 3 of 25 features on. New documents will be plain text. Nothing is saved
+profile: 3 of 26 features on. New documents will be plain text. Nothing is saved
 until you press Save." Your screen reader already reads the profile's name, and
 the longer description is there for you to read at your own pace.
 
@@ -314,7 +314,7 @@ over, press **Use Profile**.
 
 **The same five profiles are in Preferences** too, at the top, with the same
 description underneath. So if you think of "make this like Notepad" as a
-setting, you will find it where your other settings are. The 22 separate
+setting, you will find it where your other settings are. The 26 separate
 checkboxes are only in Customize Features.
 
 #### The five profiles at a glance
@@ -323,24 +323,24 @@ Here is each one at a glance, and then in more detail.
 
 | Profile | Areas on | Ctrl+N makes |
 |---|---|---|
-| **Recommended** | 19 of 25 | plain text (unchanged) |
-| **Everything** | 24 of 25 | plain text (unchanged) |
-| **Developer** | 20 of 25 | plain text (unchanged) |
-| **WordPad** | 6 of 25 | **rich text** |
-| **Notepad** | 3 of 25 | **plain text** |
+| **Recommended** | 19 of 26 | plain text (unchanged) |
+| **Everything** | 25 of 26 | plain text (unchanged) |
+| **Developer** | 20 of 26 | plain text (unchanged) |
+| **WordPad** | 6 of 26 | **rich text** |
+| **Notepad** | 3 of 26 | **plain text** |
 
 #### Recommended
 
 **This is what you get when you first install QUILL Lite.** It keeps nineteen
-of the 25 areas: rich text, headings, Markdown and HTML, bookmarks, the line
+of the 26 areas: rich text, headings, Markdown and HTML, bookmarks, the line
 tools, the clipboard history, printing, abbreviations, the Selection submenu,
 spell check, the dictionary and thesaurus, Matches, Go Back and Go Forward, the
 Command Palette, Describe Character, text size, dictation, WordPress and
 Forms.
 
-**Off:** autocorrect, timestamped backups, Go To Anything, AI (artificial intelligence) help, coding
-and Form Payments.
-The first four are not switched off because they are poor. They are off
+**Off:** autocorrect, timestamped backups, Go To Anything, AI (artificial intelligence) help,
+Scribe for Documents, coding and Form Payments.
+The first five are not switched off because they are poor. They are off
 because you should choose them yourself:
 
 - Autocorrect can change the quotes in a settings file and break it.
@@ -349,9 +349,11 @@ because you should choose them yourself:
   headings list and the bookmark list already do that.
 - AI help sends the text you ask about over the internet, and only you should
   decide to do that.
+- Scribe for Documents sends a document you choose to Pneuma Solutions, to
+  be rebuilt in an accessible format. That is your choice too.
 
-Coding, the fifth, belongs to the Developer profile below. Form Payments,
-the sixth, lets a form take money through your own WordPress site, so it
+Coding, the sixth, belongs to the Developer profile below. Form Payments,
+the seventh, lets a form take money through your own WordPress site, so it
 waits until you mean a form to do that, as it does in QUILL.
 
 **Choose this** when you have been experimenting and want to get back to where
@@ -359,10 +361,11 @@ you started.
 
 #### Everything
 
-**24 of the 25 areas on**: every writing area, including the five above.
-Coding stays off, because coding is what the Developer profile is for. That includes **AI help**, which
-is the one area that sends anything off your computer, so only choose this
-profile if you are happy with that.
+**25 of the 26 areas on**: every writing area, including the six above.
+Coding stays off, because coding is what the Developer profile is for. That
+includes **AI help** and **Scribe for Documents**, the two areas that send
+anything off your computer, so only choose this profile if you are happy
+with that.
 
 With Everything on:
 
@@ -371,21 +374,23 @@ With Everything on:
 - Every save keeps a dated copy in your data folder.
 - Go To Anything joins the command palette and the two lists.
 - Form Payments' two commands appear in Tools > Forms.
+- File > Scribe for Documents appears, so you can send a document you choose
+  to be rebuilt.
 
 **Choose this** if you would rather have it all and switch things off as they
 get in your way.
 
 #### Developer
 
-**Everything in Recommended, plus Coding.** Twenty of the 25 areas: the
+**Everything in Recommended, plus Coding.** Twenty of the 26 areas: the
 nineteen Recommended keeps and the Coding area, which no other profile has.
 Coding gives you project tasks with an AI, reviewed changes across files,
 commands and tests that ask first, Undo Last Agent Turn and coach mode. See
 [Coding: project tasks, in the Developer profile](lite-guide-10-ai-help.html#coding-project-tasks-in-the-developer-profile)
 in Chapter 10.
 
-**Off:** autocorrect, timestamped backups, Go To Anything, AI help and Form
-Payments, as in Recommended. Project tasks need an AI connection, so turn on AI help too when
+**Off:** autocorrect, timestamped backups, Go To Anything, AI help, Scribe
+for Documents and Form Payments, as in Recommended. Project tasks need an AI connection, so turn on AI help too when
 you want to use them.
 
 **Ctrl+N** is unchanged.
@@ -398,9 +403,9 @@ every change it makes shown to you first.
 **Everything WordPad could do.** Rich text you can format, print and spell
 check: bold, italic, underline, headings, alignment, bullets, indenting and line
 spacing, plus Find and Replace, printing and text size, and the Command
-Palette. Six of the 24 areas.
+Palette. Six of the 26 areas.
 
-**Off**, all nineteen of the others. These are the writing tools around the
+**Off**, all twenty of the others. These are the writing tools around the
 formatting, and coding:
 
 - No line tools (Edit > Lines) and no Change Case.
@@ -414,6 +419,7 @@ formatting, and coding:
 - **No Markdown or HTML.** Ctrl+B in a `.md` file goes back to meaning rich text
   bold, and QUILL Lite tells you so.
 - **No AI help** and no coding.
+- **No Scribe for Documents.** WordPad never sent a document anywhere.
 - **No WordPress**, **no Forms**, and so no Form Payments.
 
 **Ctrl+N makes a rich text document.** So choosing WordPad changes a setting as
@@ -427,16 +433,16 @@ word processor without one would just be a nuisance.
 #### Notepad
 
 **The smallest QUILL Lite can be.** Many people come to QUILL Lite to replace
-Notepad, and this is the profile for them. It keeps three of the 24 areas:
+Notepad, and this is the profile for them. It keeps three of the 26 areas:
 **printing**, **text size** and the **Command Palette**.
 
-**Off**, all twenty-two of the others: the Format menu and everything under it,
+**Off**, all twenty-three of the others: the Format menu and everything under it,
 headings, Markdown and HTML, bookmarks, the line tools, Change Case, the
 clipboard history, abbreviations, the Selection submenu, spell check, the
 dictionary and thesaurus, Matches (and with it Find in Open Documents and
 Search in Files), Back and Forward, Go To Anything,
-Describe Character, dictation, autocorrect, backups, AI help, WordPress,
-Forms, Form Payments and coding.
+Describe Character, dictation, autocorrect, backups, AI help, Scribe for
+Documents, WordPress, Forms, Form Payments and coding.
 Nothing that Notepad does not have, apart from the palette.
 
 **Why every profile keeps the Command Palette:** it is how you find a
@@ -469,7 +475,7 @@ you need to switch things back on.
 
 ### Searching the list
 
-There are 23 checkboxes, which is a lot to Tab through. Type in the search box
+There are 26 checkboxes, which is a lot to Tab through. Type in the search box
 below the Profile box and the list narrows as you type.
 
 It searches what an area does as well as its name. Type "curly quotes" and you
@@ -477,7 +483,7 @@ find Autocorrect. Type "dictionary" and you find Spell check. The line under the
 box tells you how many are left. Press **Down** from the box to go straight into
 the list.
 
-### The 24 areas
+### The 26 areas
 
 | Area | What goes | Starts |
 |---|---|---|
@@ -504,8 +510,11 @@ the list.
 | **Timestamped backups** | A dated copy kept every time you save | **off** |
 | **Go To Anything** | One box that searches everything at once | **off** |
 | **AI help (sends your text to QUILL's servers)** | Tools > AI: summarize, rewrite, proofread, explain, and questions about a document | **off** |
+| **Scribe for Documents (sends the documents you choose to Pneuma Solutions)** | File > Scribe for Documents and Window > Scribe Conversions: accessible Word, HTML, tagged PDF, EPUB, DAISY, MP3 and braille from Pneuma Solutions' service | **off** |
+| **Form Payments** | Form Payments Setup and Check Payment Setup in Tools > Forms | **off** |
+| **Coding: project tasks with an AI** | Open Project Folder, project tasks, Review Changes and coach mode | **off** |
 
-The last four start switched off. They are still in this list, so you can find
+The last seven start switched off. They are still in this list, so you can find
 them and switch them on whenever you like.
 
 #### Why autocorrect, backups and Go To Anything start off
@@ -543,6 +552,19 @@ first:
 All three share one answer, so they always agree. If the agreement ever changes
 in a way that matters, such as what is sent or what is kept, you will be asked
 again.
+
+#### Switching on Scribe for Documents
+
+**Scribe for Documents is off for the same reason as AI help.** It sends a
+document you choose to Pneuma Solutions, and that is your choice to make.
+While it is off, there is no File > Scribe for Documents, no Scribe
+Conversions row in Window, and no connection of any kind.
+
+Check its box here, or choose **Turn on Scribe for Documents and convert**
+when QUILL Lite asks about a scanned PDF. Even then, nothing is sent until
+you press **Send and Convert** in the Convert dialog, which says first what
+will be sent and where. See [Chapter 17: Scribe for
+Documents](lite-guide-17-scribe-for-documents.html).
 
 #### How autocorrect works
 

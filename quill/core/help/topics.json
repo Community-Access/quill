@@ -4446,103 +4446,145 @@
   {
     "id": "scribe.convert_file",
     "title": "Scribe for Documents: Convert a File",
-    "body": "Send one or more files to Scribe for Documents, Pneuma Solutions' service, which rebuilds scanned and badly made documents into accessible HTML, Word, tagged PDF, EPUB, Kindle, DAISY, MP3 audio and braille. The convert dialog says exactly what is sent and where before anything leaves your computer; nothing is sent until you press Send and Convert. You sign in with your own Scribe account and pay Scribe for your own pages.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Send one or more files to Scribe for Documents, Pneuma Solutions' service, which rebuilds scanned and badly made documents into accessible Word, HTML, tagged PDF, EPUB, Kindle, DAISY with audio, MP3 audio and braille. The file picker shows only the 23 kinds of file Scribe takes, up to 500 MB each, and no web pages. Several files go in one Convert dialog and are sent one after another, without asking again. Nothing is sent until you press Send and Convert. You sign in with your own Scribe account and pay Scribe for your own pages.",
+    "user_guide_section": "convert-a-file"
   },
   {
     "id": "scribe.convert_this",
     "title": "Scribe for Documents: Convert This Document",
-    "body": "Send the document you are editing to Scribe for Documents, saved first, for any format Scribe makes. The convert dialog asks before anything is sent.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Send the document you are working on to Scribe for Documents. QUILL saves it first if it has changes. A file Scribe takes goes as it is; a Markdown or HTML document goes as Word, or as plain text when Pandoc is not installed. The Convert dialog says what will be sent before anything goes.",
+    "user_guide_section": "convert-this-document"
   },
   {
     "id": "scribe.convert_link",
     "title": "Scribe for Documents: Convert from a Link",
-    "body": "Have Scribe for Documents fetch a file from a web address that points straight at it, such as a PDF link. Web pages and links behind a sign-in are not supported.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Scribe for Documents fetches a file from its web address, such as a link to a PDF. The address must start with https:// or http:// and point straight at a file. Web pages and pages behind a sign-in do not work. The Convert dialog opens before anything is fetched.",
+    "user_guide_section": "convert-from-a-link"
   },
   {
     "id": "scribe.my_documents",
     "title": "My Scribe Documents",
-    "body": "Every document in your Scribe account, including those made on the web or iPhone: download formats, open, rename, move to Trash, recover, delete forever and ask for human review. Refresh reads the list again.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Every document in your Scribe account, including those made on the Scribe website or an iPhone, with its pages, date and the formats ready. Show switches between Documents and the Trash. Download Formats (Enter) makes or downloads a format, and another format of a document already there uses no pages. Open in QUILL, Rename, Move to Trash (Delete), Recover, Delete Forever, Ask for Human Review, Copy Details and Refresh. Delete Forever asks first and cannot be undone; the Trash is emptied after 7 days.",
+    "user_guide_section": "my-scribe-documents"
   },
   {
     "id": "scribe.file_documents",
     "title": "My Scribe Documents",
-    "body": "Every document in your Scribe account. The same window as Tools, Scribe for Documents, My Scribe Documents.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Every document in your Scribe account, and the Trash. The same window as Tools, Scribe for Documents, My Scribe Documents: Download Formats, Open in QUILL, Rename, Move to Trash, Recover and Delete Forever.",
+    "user_guide_section": "my-scribe-documents"
   },
   {
     "id": "scribe.conversions",
     "title": "Scribe Conversions",
-    "body": "The Scribe for Documents queue: one document at a time for every QUILL app on this computer; several files chosen together go one after another on their own. Enter opens a result, Delete removes a row, and the Applications key lists every command: Open Result, Open Folder, Cancel Waiting, Retry, Buy Pages, Enter Password, Sign In, Ask for Human Review, Copy Details and Remove from List. Escape closes it.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command: Open Result, Next Steps, Open Folder, Cancel Waiting, Retry, Buy Pages, Enter Password, Sign In, Ask for Human Review, Copy Details and Remove from List. Each stage is said once. Jobs carry on when you close the window or QUILL. Escape closes it.",
+    "user_guide_section": "scribe-conversions"
   },
   {
     "id": "scribe.window",
     "title": "Scribe Conversions",
-    "body": "The Scribe for Documents queue, from the Window menu. Escape closes it and returns to where you were.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Opens Scribe Conversions from the Window menu: every Scribe for Documents job on this computer and what it is doing. Enter opens a result and the Applications key lists every command. Escape closes it and returns you to where you were.",
+    "user_guide_section": "scribe-conversions"
   },
   {
     "id": "scribe.status",
     "title": "Scribe Status",
-    "body": "Says the current Scribe for Documents job once, without opening anything: its stage, percent and about how long is left.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Says what the running Scribe for Documents job is doing, once, without opening anything: for example, Notes.pdf, adding image descriptions, 40 percent, about 2 minutes. With nothing running it says so. It has no key to start with; give it one in the Keymap Editor.",
+    "user_guide_section": "scribe-status-and-repeat-last-scribe-message"
   },
   {
     "id": "scribe.repeat",
     "title": "Repeat Last Scribe Message",
-    "body": "Says the last Scribe for Documents sentence again.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Says the last Scribe for Documents sentence again: a stage, a result or a problem. It has no key to start with; give it one in the Keymap Editor.",
+    "user_guide_section": "scribe-status-and-repeat-last-scribe-message"
   },
   {
     "id": "scribe.sign_in",
     "title": "Sign In to Scribe for Documents",
-    "body": "Opens Scribe's own sign-in page in your browser and waits; QUILL never sees what you type there. One sign-in covers every QUILL app on this computer. Copy Sign-in Link helps when the browser does not open.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Opens Scribe's own sign-in page in your browser and waits. QUILL never sees what you type there. Once you are signed in, the window says who you are and how many pages are left, and Continue carries on. Copy Sign-in Link helps when the browser does not open; Try Again starts again after a timeout. One sign-in covers every QUILL app on this computer.",
+    "user_guide_section": "signing-in-to-scribe"
   },
   {
     "id": "scribe.sign_out",
     "title": "Sign Out of Scribe for Documents",
-    "body": "Ends the sign-in for every QUILL app on this computer. Conversions already sent still finish in your Scribe account.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Ends the sign-in for every QUILL app on this computer. If conversions are waiting, QUILL asks first; they still finish in your Scribe account.",
+    "user_guide_section": "signing-in-to-scribe"
   },
   {
     "id": "scribe.account",
     "title": "Open My Scribe Account in Browser",
-    "body": "Opens your Scribe account in the browser, already signed in: settings, retention, purchases and account deletion.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Opens your account on the Scribe website, already signed in. Change how long documents are kept, buy pages, change your account defaults, or delete your account there.",
+    "user_guide_section": "open-my-scribe-account-in-browser"
   },
   {
     "id": "scribe.options",
     "title": "Scribe for Documents Options",
-    "body": "Default formats, the download folder, whether results open when ready, whether QUILL offers Scribe for a PDF with little or no text, and when stages are spoken. Shared by every QUILL app.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "One window for every QUILL app: your account and pages, Sign In or Sign Out, the default formats, the download folder, whether each result opens when it is ready, whether Scribe is offered for a PDF with little or no text, and when stages are spoken. The About text has the privacy notes, with buttons for Scribe's terms, privacy policy and manual. OK saves.",
+    "user_guide_section": "scribe-for-documents-options"
   },
   {
     "id": "scribe.about",
     "title": "About Scribe for Documents",
-    "body": "What Scribe for Documents is, what it costs and the privacy notes.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Powered by Scribe for Documents, from Pneuma Solutions: what it is, that you pay Scribe for your own pages, and the privacy notes: where documents are processed, how long they are kept, and how to delete them.",
+    "user_guide_section": "about-scribe-for-documents"
   },
   {
     "id": "scribe.import",
     "title": "Import with Scribe for Documents",
-    "body": "The Scribe for Documents tier of Import / Convert Document: after the free tiers, send the file to Scribe, which rebuilds headings, tables and picture descriptions. The Word result opens as a new unsaved tab named with (Scribe).",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "The Scribe step of Import: send one file to Scribe for Documents, which rebuilds its headings, tables and picture descriptions. The result opens as a new, unsaved tab named with (Scribe), such as Notes (Scribe). Try QUILL's free, local Import / Convert Document first.",
+    "user_guide_section": "convert-with-scribe-from-import"
   },
   {
     "id": "scribe.export",
     "title": "Export with Scribe for Documents",
-    "body": "Send the current document to Scribe for Documents for formats QUILL does not make itself: tagged PDF, Kindle, DAISY with audio, MP3 and large print. QUILL's own EPUB, Word, BRF and DAISY exports stay as they are.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Send the document you are working on, saved first, to Scribe for Documents for any of its formats, including tagged PDF, Kindle, DAISY with audio, MP3 and large print, which QUILL does not make itself. Tagged PDF is checked the first time. QUILL's own EPUB, Word, braille and DAISY exports stay as they are, on your computer.",
+    "user_guide_section": "export-with-scribe"
   },
   {
     "id": "scribe.braille",
     "title": "Translate with Scribe for Documents",
-    "body": "Send the current document to Scribe for Documents for braille (BRF) with Scribe's braille table and page settings. The result opens in QUILL's braille view.",
-    "user_guide_section": "working-with-different-document-types"
+    "body": "Send the document you are working on to Scribe for Documents for braille (BRF), with Scribe's braille table, line length and page settings. The result opens in QUILL's braille view, where the proofing tools work on it. Check that Braille (BRF) is checked: the dialog starts with the formats you chose last time.",
+    "user_guide_section": "translate-with-scribe"
+  },
+  {
+    "id": "scribe.replace_finished",
+    "title": "Replace with Finished Document",
+    "body": "In a tab that is reading a Scribe for Documents conversion as it arrives, swaps in the finished Word or HTML and keeps your place at the same paragraph. The tab is then an ordinary new document you can edit and save.",
+    "user_guide_section": "replace-with-finished-document"
+  },
+  {
+    "id": "scribe_convert_dialog",
+    "title": "Convert with Scribe for Documents",
+    "body": "The one dialog every Scribe command opens. In Tab order: What will be sent (read it first; Enter here sends), the formats you want back, Read while it converts, the settings for language and voice, braille, print, and pictures and maths, Also save as my Scribe account defaults, the password when a PDF needs one, the pages it uses and Buy Pages, then Send and Convert and Cancel. Nothing is sent until you press Send and Convert.",
+    "user_guide_section": "the-convert-dialog-control-by-control"
+  },
+  {
+    "id": "scribe_conversions_window",
+    "title": "Scribe Conversions",
+    "body": "Every Scribe for Documents job on this computer. The list has the file, its formats and its stage; Details has the rest. The buttons act on the job you are on, and say why when they cannot. Escape closes the window.",
+    "user_guide_section": "scribe-conversions"
+  },
+  {
+    "id": "scribe_documents_dialog",
+    "title": "My Scribe Documents",
+    "body": "Your documents on Scribe, or the Trash. Choose one in the list, then use the buttons, or the Applications key for the same commands.",
+    "user_guide_section": "my-scribe-documents"
+  },
+  {
+    "id": "scribe_options_dialog",
+    "title": "Scribe for Documents Options",
+    "body": "The Scribe for Documents choices for every QUILL app on this computer. OK saves them; Cancel leaves them as they were.",
+    "user_guide_section": "scribe-for-documents-options"
+  },
+  {
+    "id": "scribe_signin_dialog",
+    "title": "Sign In to Scribe for Documents",
+    "body": "Waits while you sign in on Scribe's page in your browser. Copy Sign-in Link, Try Again, Continue once you are signed in, or Cancel.",
+    "user_guide_section": "signing-in-to-scribe"
+  },
+  {
+    "id": "scribe_password_dialog",
+    "title": "Password for a Scribe document",
+    "body": "A PDF waiting in Scribe Conversions needs its password. Type it and press OK. Show password lets you check it with braille. It is used once and never saved. After three wrong tries the job stops; Retry starts again.",
+    "user_guide_section": "a-password-protected-pdf"
   }
 ]

@@ -49,7 +49,7 @@ accident.
 
 Open **Tools > Customize Features...** (`Ctrl+Alt+F10`) and choose the
 **Developer** profile. It is Recommended plus one area, **Coding: project
-tasks with an AI**: twenty of the 24 areas.
+tasks with an AI**: twenty of the 26 areas.
 
 To keep your current profile and add coding alone, check **Coding: project
 tasks with an AI** in the same window.

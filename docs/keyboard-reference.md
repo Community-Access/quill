@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 596.
+Editor commands with default bindings: 614.
 
 ## The QUILL editor
 
@@ -535,6 +535,24 @@ Editor commands with default bindings: 596.
 | (unbound by default) | Play favorite 8 | `radio.play_favorite_8` |
 | (unbound by default) | Play favorite 9 | `radio.play_favorite_9` |
 | (unbound by default) | Internet Radio: Sound Enhancements... | `radio.sound_enhancements` |
+| (unbound by default) | About Scribe for Documents | `scribe.about` |
+| (unbound by default) | Open My Scribe Account in Browser | `scribe.account` |
+| (unbound by default) | Translate with Scribe for Documents... | `scribe.braille` |
+| (unbound by default) | Conversions | `scribe.conversions` |
+| (unbound by default) | Convert a File... | `scribe.convert_file` |
+| (unbound by default) | Convert from a Link... | `scribe.convert_link` |
+| (unbound by default) | Convert This Document... | `scribe.convert_this` |
+| (unbound by default) | With Scribe for Documents... | `scribe.export` |
+| (unbound by default) | My Scribe Documents | `scribe.file_documents` |
+| (unbound by default) | Convert with Scribe for Documents... | `scribe.import` |
+| (unbound by default) | My Scribe Documents | `scribe.my_documents` |
+| (unbound by default) | Options... | `scribe.options` |
+| (unbound by default) | Repeat Last Scribe Message | `scribe.repeat` |
+| (unbound by default) | Replace with Finished Document | `scribe.replace_finished` |
+| (unbound by default) | Sign In... | `scribe.sign_in` |
+| (unbound by default) | Sign Out | `scribe.sign_out` |
+| (unbound by default) | Scribe Status | `scribe.status` |
+| (unbound by default) | Scribe Conversions | `scribe.window` |
 | (unbound by default) | Story Studio... | `story.open_studio` |
 | (unbound by default) | Sync Folder with GitHub... | `sync.sync_folder` |
 | (unbound by default) | Delete Column | `table.delete_column` |

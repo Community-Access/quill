@@ -32,6 +32,7 @@ from quill.core.keymap_query import (
     find_keymap_conflicts,
 )
 from quill.core.paths import app_data_dir
+from quill.core.scribe.keys import default_bindings as scribe_key_bindings
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.wordpress.keys import default_bindings as wordpress_key_bindings
 
@@ -81,10 +82,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Alt+Shift+T since 2026-09-22, because Ctrl+Shift+N is **Word's Normal
     # style** and format.clear_formatting now has it (rule 1, Microsoft's key
     # wins; rule 3, frequency breaks the tie -- Normal Text is pressed all day
-    # in a rich document and this once per document).
-    #
-    # T for Text, and the keymap left almost no choice: four chords were free in
-    # both editors and this is the only one that means anything. Ctrl+Alt+Shift+N
+    # in a rich document and this once per document). T for Text: four chords were
+    # free in both editors and this is the only one that means anything. Ctrl+Alt+Shift+N
     # would have kept the two News a pair and is Invert Case, one of five Change
     # Case chords worth more as a family; Ctrl+Alt+R is QUILL's Trim Trailing
     # Whitespace, a divergence from QUILL Lite decided on 2026-09-16 and written
@@ -238,9 +237,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # The hosted AI -- QUILL's own free service, which is what the AI menu now
     # opens with. Every chord here is **QUILL Lite's**, unchanged, because family
     # rule 2 says the command both products have keeps its chord and all five
-    # were free on this side. A person who learned Ctrl+Alt+G in the small
-    # editor has learned it in the big one.
-    #
+    # were free on this side: learned in the small editor, learned in the big one.
     # Ctrl+Alt+G for the pad and Ctrl+Alt+Z for "ask about this document" are
     # short because they are the two things people do; Usage, Sign In and the
     # agreement are rule 9 commands -- once-a-month at most, so they earn *a*
@@ -250,9 +247,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # use it: **QUILL Lite's chord, adopted unchanged under family rule 2.** The
     # policy exists because Ctrl+Alt is AltGr on an international layout and
     # because JAWS and NVDA claim parts of that space, and the honest accounting
-    # is that this chord pair is already shipped and already pressed -- in the
-    # small editor, by the same people, for the same two commands. Giving QUILL a
-    # different key would not recover the AltGr exposure; it would only add a
+    # is that this pair is already shipped and pressed in the small editor, by the
+    # same people, for the same two commands; another key in QUILL would add a
     # second thing to remember, which is the cost rule 2 exists to refuse.
     # Neither is a default JAWS or NVDA command: NVDA's laptop layer uses
     # NVDA+Ctrl+... rather than bare Ctrl+Alt, and JAWS's Ctrl+Alt assignments
@@ -1346,6 +1342,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # The WordPress keys (wordpress.md 19): Ctrl+Alt+Shift+Grave, then one letter, the
     # same in QUILL Lite, from wordpress/menu.py LAYER_KEYS and forms/menu.py's F.
     **wordpress_key_bindings(),
+    **scribe_key_bindings(),  # Scribe for Documents: no chords (scribe/keys.py, rule 9)
 }
 
 

@@ -86,8 +86,9 @@ class ScribeOptions:
         }
 
     def formats_for(self, app_default: list[str] | None = None) -> list[str]:
-        """The formats to tick: the last choice, else the app's, else the default."""
-        for candidate in (self.last_formats, app_default or [], self.default_formats):
+        """The formats to tick: what the command is for (Translate with Scribe is
+        braille, Import is Word), else the last choice, else the default."""
+        for candidate in (app_default or [], self.last_formats, self.default_formats):
             chosen = valid_formats(candidate)
             if chosen:
                 return chosen

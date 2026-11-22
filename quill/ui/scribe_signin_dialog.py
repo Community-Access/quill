@@ -34,6 +34,7 @@ NO_BROWSER = (
 class ScribeSignInDialog(wx.Dialog):
     def __init__(self, parent: Any, controller: Any, *, app_name: str = "QUILL") -> None:
         super().__init__(parent, title="Sign In to Scribe for Documents")
+        self.SetName("scribe_signin_dialog")  # F1 finds its topic by this name (topics.json)
         self._controller = controller
         self._app = app_name
         self._attempt: Any = None

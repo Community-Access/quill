@@ -7,6 +7,7 @@ is ("It's in File, Exit").
 
 from __future__ import annotations
 
+from quill.core.command_catalogue.editor_scribe import SCRIBE_ROWS
 from quill.core.command_catalogue.spec import CommandSpec, Risk
 
 __all__ = ["NEVER_ROWS"]
@@ -53,6 +54,7 @@ NEVER_ROWS: tuple[CommandSpec, ...] = (
         group="File",
         where="File, Open a Web Address",
     ),
+    *SCRIBE_ROWS,  # Scribe for Documents (editor_scribe.py)
     CommandSpec(
         "app.preferences",
         "Settings",

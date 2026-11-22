@@ -861,33 +861,33 @@ top of that is what GATE-13 exists to stop.</p>
 <tbody>
 <tr>
 <td>Recommended</td>
-<td>19 of 25</td>
+<td>19 of 26</td>
 <td>unchanged</td>
 <td>the shipped answer, and the way back from experimenting</td>
 </tr>
 <tr>
 <td>Everything</td>
-<td>24 of 25</td>
+<td>25 of 26</td>
 <td>unchanged</td>
 <td>turning things off as they annoy you rather than finding them one at
 a time</td>
 </tr>
 <tr>
 <td>WordPad</td>
-<td>6 of 25</td>
+<td>6 of 26</td>
 <td><strong>rich</strong></td>
 <td>letters and notes that should look like something</td>
 </tr>
 <tr>
 <td>Notepad</td>
-<td>3 of 25</td>
+<td>3 of 26</td>
 <td><strong>plain</strong></td>
 <td>config files, logs, and anything where hidden formatting would be a
 problem</td>
 </tr>
 <tr>
 <td>Developer</td>
-<td>20 of 25</td>
+<td>20 of 26</td>
 <td>unchanged</td>
 <td>Recommended plus Coding, for project tasks with an AI</td>
 </tr>
@@ -4331,6 +4331,40 @@ focus when they refresh in the background.</li>
 <p>Anything QUILL Lite gains this way goes in the shared package, and
 QUILL gets it in the same change (QUILL Lite may never be ahead of
 QUILL).</p>
+<h2 id="scribe-for-documents-2026-11-21">Scribe for Documents
+(2026-11-21)</h2>
+<p>The family requirements are in
+<code>docs/planning/scribe-for-documents-prd.md</code> (section 8.2 is
+QUILL Lite’s part). What QUILL Lite has:</p>
+<ul>
+<li><strong>A feature area, <code>scribe</code>, the 26th.</strong> Its
+checkbox label says what it does: “Scribe for Documents (sends the
+documents you choose to Pneuma Solutions)”. It is off by default and on
+only in Everything, because it sends documents to a third party, as AI
+help sends text. A store seeded before the area existed gets it off once
+(<code>_seeded_scribe</code>). The profiles now count 26 areas:
+Recommended 19, Everything 25, Developer 20, WordPad 6, Notepad 3.</li>
+<li><strong>Offered on first need.</strong> When an imported PDF has
+little or no text, the question offers Scribe, and with the area off it
+says “Turn on Scribe for Documents and convert”. Choosing it turns the
+area on, converts, and then says once “Scribe for Documents is on. It is
+in the File menu.”</li>
+<li><strong>File &gt; Scribe for Documents</strong> (Alt+F, B): Convert
+a File, Convert This Document, Export with Scribe for Documents, Convert
+from a Link, My Scribe Documents, Conversions, Scribe Status, Repeat
+Last Scribe Message, Sign In, Sign Out, Open My Scribe Account in
+Browser, Options and About. <strong>Window &gt; Scribe
+Conversions</strong> (Alt+W, V). No chords, as in QUILL.</li>
+<li><strong>Shared code only.</strong> Every command is
+<code>quill/ui/scribe_entry.py</code>’s, which QUILL uses too;
+<code>quill/apps/lite_window_scribe.py</code> is an adapter with one
+controller for the app. Every window is the shared one.</li>
+<li><strong>Not in QUILL Lite:</strong> the braille view’s Translate
+with Scribe, the watch folder, the streaming tab and the chained AI
+commands. Next Steps in Scribe Conversions offers Send to Media Player
+and Open in QUILL Lite.</li>
+<li><strong>Safe Mode</strong> turns every Scribe command off.</li>
+</ul>
 </main>
 </body>
 </html>

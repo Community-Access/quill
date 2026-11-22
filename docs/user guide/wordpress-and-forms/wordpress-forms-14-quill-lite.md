@@ -34,7 +34,7 @@ same code. So:
 | Forms on in | every profile except Essential | Recommended, Everything, Developer |
 | Off in | Essential | WordPad, Notepad |
 
-In QUILL Lite, WordPress and Forms are two of the 24 areas Customize
+In QUILL Lite, WordPress and Forms are two of the 26 areas Customize
 Features lists. WordPad and Notepad leave them off on purpose, because
 neither of those programs ever published to a website or made a form, and
 those profiles promise to be exactly what they are named after. Check the

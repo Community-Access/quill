@@ -35,6 +35,7 @@ from quill.core.lite.commands_help import HELP_ROWS
 from quill.core.lite.commands_replace_jobs import REPLACE_JOB_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
 from quill.core.lite.commands_say import CLIPBOARD_SAY_ROWS, TIME_SAY_ROWS, WINDOW_SAY_ROWS
+from quill.core.lite.commands_scribe import SCRIBE_ROWS, SCRIBE_WINDOW_ROWS
 from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
 from quill.core.wordpress import menu as wordpress_menu
 
@@ -118,9 +119,11 @@ COMMANDS: list[CommandRow] = [
     ("&File", "New P&lain Text Document", "Ctrl+Alt+N", "cmd_new_plain", ""),
     *forms_menu.lite_rows("file"),  # New Form, QUILL's own table (forms/menu.py)
     ("&File", "&Open...", "Ctrl+O", "cmd_open", ""),
-    ("&File", "Open from Clip&board", "Ctrl+Alt+Shift+Enter", "cmd_open_from_clipboard", ""),
+    # No letter since 2026-11-21: Scri&be for Documents needed the B (commands_scribe.py).
+    ("&File", "Open from Clipboard", "Ctrl+Alt+Shift+Enter", "cmd_open_from_clipboard", ""),
     ("&File", "Open &from URL...", "", "cmd_open_from_url", ""),  # no key, as in QUILL
     ("&File", "&Import / Convert Document (OCR)...", "", "cmd_import_convert", ""),  # as QUILL
+    *SCRIBE_ROWS,  # File > Scribe for Documents, the scribe area (commands_scribe.py)
     *GITHUB_FILE_ROWS,  # GitHub Workbench, Manage GitHub Accounts (commands_github.py)
     ("&File", "Recent &Documents...", "Alt+Shift+0", "cmd_recent_documents", ""),
     *PROJECT_FILE_ROWS,  # Open Project Folder, Close Project: Developer only
@@ -1062,6 +1065,7 @@ COMMANDS: list[CommandRow] = [
     # prompt on each. Ctrl+F4 closes this one; Ctrl+Shift+F4 closes the others.
     ("&Window", "&Close Other Documents", "Ctrl+Shift+F4", "cmd_close_other_windows", ""),
     *WINDOW_SAY_ROWS,  # Say Windows Open (commands_say.py)
+    *SCRIBE_WINDOW_ROWS,  # Window > Scribe Conversions (commands_scribe.py)
     *HELP_ROWS,  # the Help menu (commands_help.py)
     *wordpress_menu.lite_placed_rows(),  # WordPress, at the foot of Edit to Tools
     *forms_menu.lite_placed_rows(),  # Forms, at the foot of Insert to Tools

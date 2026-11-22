@@ -250,6 +250,23 @@ receipts, refunds, and seeing who paid.
 - [Moving from test to live](guide/lite-guide-16-taking-payments.html#moving-from-test-to-live)
 - [Troubleshooting](guide/lite-guide-16-taking-payments.html#troubleshooting)
 
+### [Chapter 17: Scribe for Documents](guide/lite-guide-17-scribe-for-documents.html)
+
+Turning scanned and badly made documents into accessible Word, HTML, tagged
+PDF, EPUB, DAISY with audio, MP3 or braille, with Pneuma Solutions' Scribe
+for Documents service. It is off until you turn it on. Your account and
+pages, the commands and the Convert dialog, what you hear, privacy, and
+what each problem means.
+
+- [Turning Scribe for Documents on](guide/lite-guide-17-scribe-for-documents.html#turning-scribe-for-documents-on)
+- [Where everything is](guide/lite-guide-17-scribe-for-documents.html#where-everything-is)
+- [The Convert dialog](guide/lite-guide-17-scribe-for-documents.html#the-convert-dialog)
+- [Scribe Conversions](guide/lite-guide-17-scribe-for-documents.html#scribe-conversions)
+- [My Scribe Documents](guide/lite-guide-17-scribe-for-documents.html#my-scribe-documents)
+- [Keys and commands](guide/lite-guide-17-scribe-for-documents.html#keys-and-commands)
+- [Privacy, copyright and Safe Mode](guide/lite-guide-17-scribe-for-documents.html#privacy-copyright-and-safe-mode)
+- [When something goes wrong](guide/lite-guide-17-scribe-for-documents.html#when-something-goes-wrong)
+
 ## Reference
 
 ### [Licences and notices](guide/lite-guide-licences-and-notices.html)

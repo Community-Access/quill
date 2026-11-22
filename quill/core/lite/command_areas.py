@@ -91,6 +91,9 @@ MENU_AREA: dict[str, str] = {
     # Next and Replace are in Edit itself and are not switchable: an editor
     # that cannot find is not a small editor.
     "&Edit|&Matches": "matches",
+    # Scribe for Documents (PRD 8.2): the whole submenu, so its rows leave the
+    # palette too; an off area sends nothing anywhere.
+    "&File|Scri&be for Documents": "scribe",
 }
 
 #: Individual handlers whose area is not their menu's.
@@ -128,6 +131,7 @@ COMMAND_AREA: dict[str, str] = {
     "cmd_forms_payments_setup": "forms_payments",
     "cmd_forms_insert_payment": "forms_payments",
     "cmd_forms_verify_payments": "forms_payments",
+    "cmd_scribe_window": "scribe",  # Window > Scribe Conversions
     "cmd_page_setup": "printing",
     "cmd_print": "printing",
     # With the rest of the spelling submenu, which is one switchable area.

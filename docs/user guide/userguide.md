@@ -350,6 +350,24 @@ receipts, refunds, and seeing who paid.
 - [Moving from test to live](quill-guide/quill-guide-18-taking-payments.html#moving-from-test-to-live)
 - [Troubleshooting](quill-guide/quill-guide-18-taking-payments.html#troubleshooting)
 
+### [Chapter 19: Scribe for Documents](quill-guide/quill-guide-19-scribe-for-documents.html)
+
+Turning scanned and badly made documents into accessible Word, HTML, tagged
+PDF, EPUB, DAISY with audio, MP3 or braille, with Pneuma Solutions' Scribe
+for Documents service. Your account and pages, every command and setting,
+what you hear at each stage, six walkthroughs, privacy, and what each
+problem means.
+
+- [Where everything is](quill-guide/quill-guide-19-scribe-for-documents.html#where-everything-is)
+- [Getting started](quill-guide/quill-guide-19-scribe-for-documents.html#getting-started)
+- [The Convert dialog, control by control](quill-guide/quill-guide-19-scribe-for-documents.html#the-convert-dialog-control-by-control)
+- [Scribe Conversions](quill-guide/quill-guide-19-scribe-for-documents.html#scribe-conversions)
+- [My Scribe Documents](quill-guide/quill-guide-19-scribe-for-documents.html#my-scribe-documents)
+- [Walkthroughs](quill-guide/quill-guide-19-scribe-for-documents.html#walkthroughs)
+- [Keys and commands](quill-guide/quill-guide-19-scribe-for-documents.html#keys-and-commands)
+- [Privacy, retention and deleting](quill-guide/quill-guide-19-scribe-for-documents.html#privacy-retention-and-deleting)
+- [Troubleshooting](quill-guide/quill-guide-19-scribe-for-documents.html#troubleshooting)
+
 ### [A last word](quill-guide/quill-guide-a-last-word.html)
 
 A few words on getting to know QUILL by using it on something real. It ends

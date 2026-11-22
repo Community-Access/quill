@@ -51,6 +51,8 @@ class ConvertChoice:
     password: str = ""
     #: The account defaults the dialog started from, when they were read.
     base: ScribeSettings | None = None
+    #: Read while it converts: open the streaming tab (QUILL only, 8.1.3).
+    stream: bool = False
 
 
 def pdf_needs_password(path: Path) -> bool:
@@ -100,6 +102,7 @@ class ScribeConvertDialog(wx.Dialog):
             title="Convert with Scribe for Documents",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
+        self.SetName("scribe_convert_dialog")  # F1 finds its topic by this name (topics.json)
         self._controller = controller
         self._paths = list(paths or [])
         self._url = url
@@ -154,6 +157,24 @@ class ScribeConvertDialog(wx.Dialog):
             box.Add(check, 0, wx.ALL, 3)
             self.format_boxes[item.id] = check
         sizer.Add(box, 0, wx.EXPAND | wx.ALL, 6)
+
+        # Read while it converts (8.1.3): only in an app with a streaming tab,
+        # and then always shown, so the tab order never changes under the person.
+        self.stream: Any = None
+        can_stream = callable(getattr(controller.host, "scribe_stream_started", None))
+        if can_stream and existing is None and not url and len(self._paths) == 1:
+            # No access key: every letter it has is taken in this dialog (GATE-14).
+            self.stream = wx.CheckBox(
+                panel, label="Read while it converts, in a new tab (adds Accessible HTML)"
+            )
+            self.stream.SetHelpText(
+                f"Opens a read-only tab in {app} that fills with the text as Scribe makes it, "
+                "a whole paragraph at a time, without moving your place or speaking. One file "
+                "at a time. Replace with Finished Document, in Tools, Scribe for Documents, "
+                "swaps in the finished one."
+            )
+            self.stream.Bind(wx.EVT_CHECKBOX, lambda _e: self._stream_changed())
+            sizer.Add(self.stream, 0, wx.ALL, 6)
 
         sizer.Add(wx.StaticText(panel, label="Settings shown:"), 0, wx.LEFT | wx.TOP, 6)
         self.summary = wx.TextCtrl(panel, style=wx.TE_READONLY)
@@ -349,6 +370,12 @@ class ScribeConvertDialog(wx.Dialog):
         if event.GetActive():
             self._refresh_pages()  # after Buy Pages, silently
 
+    def _stream_changed(self) -> None:
+        """Reading while it converts needs the HTML: tick it, silently (the label says so)."""
+        if self.stream is not None and self.stream.GetValue():
+            self.format_boxes["html"].SetValue(True)
+            self._formats_changed()
+
     # ----------------------------------------------------------- password
 
     def _show_password_fields(self) -> None:
@@ -419,6 +446,9 @@ class ScribeConvertDialog(wx.Dialog):
             save_as_defaults=self.defaults.GetValue(),
             password=self.password_value(),
             base=self._base,
+            stream=bool(
+                self.stream is not None and self.stream.GetValue() and len(self._paths) == 1
+            ),
         )
 
     def _on_destroy(self, event: wx.WindowDestroyEvent) -> None:

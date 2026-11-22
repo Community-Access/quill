@@ -450,11 +450,11 @@ paragraph over the top of that is what GATE-13 exists to stop.
 
 | Profile | Areas on | Ctrl+N | For |
 |---|---|---|---|
-| Recommended | 19 of 25 | unchanged | the shipped answer, and the way back from experimenting |
-| Everything | 24 of 25 | unchanged | turning things off as they annoy you rather than finding them one at a time |
-| WordPad | 6 of 25 | **rich** | letters and notes that should look like something |
-| Notepad | 3 of 25 | **plain** | config files, logs, and anything where hidden formatting would be a problem |
-| Developer | 20 of 25 | unchanged | Recommended plus Coding, for project tasks with an AI |
+| Recommended | 19 of 26 | unchanged | the shipped answer, and the way back from experimenting |
+| Everything | 25 of 26 | unchanged | turning things off as they annoy you rather than finding them one at a time |
+| WordPad | 6 of 26 | **rich** | letters and notes that should look like something |
+| Notepad | 3 of 26 | **plain** | config files, logs, and anything where hidden formatting would be a problem |
+| Developer | 20 of 26 | unchanged | Recommended plus Coding, for project tasks with an AI |
 
 Every profile keeps the Command Palette (2026-11-04): it is how a command is
 found, so a profile that removed it removed the way to find everything else.
@@ -2819,3 +2819,31 @@ QUILL Lite is one of the two pilots chosen in
 
 Anything QUILL Lite gains this way goes in the shared package, and QUILL gets
 it in the same change (QUILL Lite may never be ahead of QUILL).
+
+## Scribe for Documents (2026-11-21)
+
+The family requirements are in `docs/planning/scribe-for-documents-prd.md`
+(section 8.2 is QUILL Lite's part). What QUILL Lite has:
+
+- **A feature area, `scribe`, the 26th.** Its checkbox label says what it does:
+  "Scribe for Documents (sends the documents you choose to Pneuma Solutions)".
+  It is off by default and on only in Everything, because it sends documents
+  to a third party, as AI help sends text. A store seeded before the area
+  existed gets it off once (`_seeded_scribe`). The profiles now count 26
+  areas: Recommended 19, Everything 25, Developer 20, WordPad 6, Notepad 3.
+- **Offered on first need.** When an imported PDF has little or no text, the
+  question offers Scribe, and with the area off it says "Turn on Scribe for
+  Documents and convert". Choosing it turns the area on, converts, and then
+  says once "Scribe for Documents is on. It is in the File menu."
+- **File > Scribe for Documents** (Alt+F, B): Convert a File, Convert This
+  Document, Export with Scribe for Documents, Convert from a Link, My Scribe
+  Documents, Conversions, Scribe Status, Repeat Last Scribe Message, Sign In,
+  Sign Out, Open My Scribe Account in Browser, Options and About. **Window >
+  Scribe Conversions** (Alt+W, V). No chords, as in QUILL.
+- **Shared code only.** Every command is `quill/ui/scribe_entry.py`'s, which
+  QUILL uses too; `quill/apps/lite_window_scribe.py` is an adapter with one
+  controller for the app. Every window is the shared one.
+- **Not in QUILL Lite:** the braille view's Translate with Scribe, the watch
+  folder, the streaming tab and the chained AI commands. Next Steps in
+  Scribe Conversions offers Send to Media Player and Open in QUILL Lite.
+- **Safe Mode** turns every Scribe command off.

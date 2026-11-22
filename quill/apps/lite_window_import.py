@@ -125,6 +125,20 @@ class DocumentImportMixin:
         if not lifetime.is_alive:
             return
         if getattr(outcome, "offer_local_ocr", False):
+            # Scribe after the free tiers (PRD 8.2), offered on first need even with
+            # its area off; None means not offered, and the free question follows.
+            picked = self._scribe_import_offer(source, int(getattr(outcome, "page_count", 0) or 0))
+            if picked == "scribe":
+                self._scribe_import_with(source)
+                return
+            if picked is not None:
+                if picked == "ocr":
+                    self._start_import(source, ocr=True)
+                elif picked == "cancel":
+                    self._set_status_message(CANCELLED_SENTENCE)
+                else:
+                    self._open_converted(source, outcome)
+                return
             answer = show_message_box(
                 scanned_import_question(source.name, app_name=self._import_app_name()),
                 IMPORT_TITLE,

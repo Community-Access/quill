@@ -28,6 +28,7 @@ def tries_sentence(tries_used: int) -> str:
 class ScribePasswordDialog(wx.Dialog):
     def __init__(self, parent: Any, file_name: str, tries_used: int) -> None:
         super().__init__(parent, title=f"Password for {file_name}")
+        self.SetName("scribe_password_dialog")  # F1 finds its topic by this name (topics.json)
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(wx.StaticText(self, label="&Message:"), 0, wx.LEFT | wx.TOP, 6)
         self.message = wx.TextCtrl(self, style=wx.TE_READONLY, value=tries_sentence(tries_used))

@@ -40,6 +40,8 @@ EMPTY = "No Scribe for Documents conversions."
 #: (label, method, needs a job) -- buttons and the context menu, one table.
 COMMANDS: tuple[tuple[str, str], ...] = (
     ("&Open Result", "open_result"),
+    # PRD 8.1.7: what can be done next with what was made, chosen by the person.
+    ("Nex&t Steps...", "next_steps"),
     ("Open &Folder", "open_folder"),
     ("Ca&ncel Waiting", "cancel_waiting"),
     ("&Retry", "retry"),
@@ -81,6 +83,7 @@ def job_details(job: q.Job, now: float | None = None) -> str:
 class ScribeConversionsWindow(wx.Frame):
     def __init__(self, parent: Any, controller: Any) -> None:
         super().__init__(parent, title=TITLE, style=wx.DEFAULT_FRAME_STYLE)
+        self.SetName("scribe_conversions_window")  # F1 finds its topic by this name (topics.json)
         self._controller = controller
         self._opener: Any = None
         self._ids: list[str] = []
@@ -198,7 +201,9 @@ class ScribeConversionsWindow(wx.Frame):
             if job.state == q.CONVERTING and job.stage:
                 from quill.core.scribe.model import format_label, stage_words
 
-                words = f"{stage_words(job.stage).capitalize()}: {format_label(job.format)}"
+                stage = stage_words(job.stage)
+                stage = stage[:1].upper() + stage[1:]  # not capitalize(): it lowers "Scribe's"
+                words = f"{stage}: {format_label(job.format)}"
             if job.id not in self._ids:
                 row = self.list.InsertItem(self.list.GetItemCount(), job.display_name)
                 self.list.SetItem(row, 1, formats_phrase(job.formats))
@@ -246,6 +251,7 @@ class ScribeConversionsWindow(wx.Frame):
         state = job.state if job is not None else ""
         rules = {
             "open_result": bool(job and job.outputs),
+            "next_steps": bool(job and job.outputs),
             "open_folder": bool(job and job.folder),
             "cancel_waiting": state in q.ACTIVE or state in q.NEEDS_PERSON,
             "retry": state in (q.FAILED, q.STOPPED, q.NEEDS_SIGNIN, q.GONE),
@@ -292,6 +298,10 @@ class ScribeConversionsWindow(wx.Frame):
             return
         elif method == "open_result":
             controller.open_job_result(job)
+        elif method == "next_steps":
+            # After any menu that chose it has closed, so the popups never nest.
+            wx.CallAfter(self._next_steps, job)
+            return
         elif method == "open_folder":
             _open_folder(Path(job.folder))
         elif method == "cancel_waiting":
@@ -314,6 +324,22 @@ class ScribeConversionsWindow(wx.Frame):
         elif method == "remove":
             self._remove(job)
         self.refresh()
+
+    def _next_steps(self, job: q.Job) -> None:
+        """A menu of what this app can do with the finished outputs (8.1.7), at
+        the Next Steps button. One code path for the button and the context menu,
+        never a submenu that could be empty (review 2026-11-21)."""
+        steps = self._controller.next_steps(job)
+        if not steps:
+            self._controller.host.scribe_announce(f"{job.display_name} has nothing made yet.")
+            return
+        button = self.buttons["next_steps"]
+        menu = wx.Menu()
+        for label, action in steps:
+            item = menu.Append(wx.ID_ANY, label)
+            menu.Bind(wx.EVT_MENU, lambda _e, a=action: a(), item)
+        button.PopupMenu(menu, wx.Point(0, button.GetSize().height))
+        menu.Destroy()
 
     def _remove(self, job: q.Job) -> None:
         index = self._ids.index(job.id) if job.id in self._ids else -1
@@ -338,6 +364,10 @@ _COMMAND_HELP = {
     "open_result": (
         "Opens the finished file where it is used: QUILL, Media Player or the braille view."
     ),
+    "next_steps": (
+        "Lists what this app can do next with what was made, such as reading it aloud "
+        "or sending it to the Media Player. Nothing runs until you choose."
+    ),
     "open_folder": "Opens the folder the results were saved in.",
     "cancel_waiting": "Stops QUILL waiting. Scribe still finishes it and may use pages.",
     "retry": "Tries the job again, without uploading again when Scribe already has it.",
@@ -350,6 +380,7 @@ _COMMAND_HELP = {
 }
 _CANNOT = {
     "open_result": "{name} has no result to open yet.",
+    "next_steps": "{name} has nothing made yet.",
     "open_folder": "{name} has no folder yet.",
     "cancel_waiting": "QUILL is not waiting for {name}.",
     "retry": "{name} does not need retrying.",
