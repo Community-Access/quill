@@ -32,11 +32,12 @@ No network: the caller (``link_finder``) fetches. wx-free, strict-typed.
 
 from __future__ import annotations
 
-import html
 import json
 import re
 import urllib.parse
 from dataclasses import dataclass
+
+from quill.core.display_text import decode_entities
 
 __all__ = [
     "MAX_MOUNTS",
@@ -253,7 +254,7 @@ def parse_shoutcast_json(text: str, root: str) -> list[ServerMount]:
 
 
 def _cell_text(fragment: str) -> str:
-    return _clean(html.unescape(_TAG_RE.sub(" ", fragment)))
+    return _clean(decode_entities(_TAG_RE.sub(" ", fragment)))
 
 
 def parse_icecast_html(page: str, url: str) -> list[ServerMount]:
