@@ -22,7 +22,7 @@ QUILL 1.0 is the first general release. These are the newest parts; the full rel
 
 ## Scribe for Documents
 
-- **Tools > Scribe for Documents** sends a scanned or badly made document to Pneuma Solutions, with your say each time, for Word, tagged PDF, DAISY with audio, MP3 or braille. 100 free pages to start; chapter 19.
+- **Tools > Scribe for Documents** sends a scanned or badly made document to Pneuma Solutions, with your say each time, for Word, tagged PDF, DAISY with audio, MP3 or braille. 100 free pages; chapter 19. Six other apps use it too.
 
 ## GitHub
 

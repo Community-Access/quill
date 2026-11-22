@@ -10,6 +10,10 @@ Quill Converter changes a sound or video file's format on your own computer, wit
 - **Convert with Quill Converter** on the File Explorer right-click menu puts every file you selected into one queue.
 - **Convert from URL (Ctrl+U)** takes a video, a playlist or a channel.
 
+## Documents
+
+- **File > Convert Documents with Scribe for Documents (Alt+Shift+F6)** converts scanned and badly made documents through Pneuma Solutions' service, with your say each time. Results go to Converter's output folder; the jobs are in Scribe Conversions (Alt+Shift+F7).
+
 ## Hear it first
 
 - **Effects** are named for the problem they solve: Clean up speech, Podcast ready, Audiobook ACX ready, Night listening and more. Custom Effects (Ctrl+E) changes one thing at a time.

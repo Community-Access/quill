@@ -12,6 +12,18 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
 
+### Narration from Scribe for Documents (2026-11-21)
+
+- **Studio > Narration from Scribe for Documents...** (Alt+Shift+F6) has
+  Scribe for Documents read a document aloud, as MP3 audio and a DAISY book.
+  Studio writes the book's headings into the MP3 as chapter markers and says
+  so in the one result sentence ("with 12 chapter markers"), or says why it
+  could not. Open it in the Chapter Workbench from Scribe Conversions, where
+  you edit it, check its loudness and export M4B. It never opens by itself.
+- **Studio > Scribe for Documents** holds Scribe Conversions, My Scribe
+  Documents, Scribe Status, Repeat Last Scribe Message and Scribe for
+  Documents Options, on Alt+Shift+F7 to F11.
+
 ### A setting that cannot be saved is said (2026-11-20)
 
 - A full disk or a locked file no longer passes silently. Book volume and

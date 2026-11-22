@@ -300,6 +300,22 @@ PDF: press **Send and Convert**, type the password in **Password for** the
 file, and press it again. If it was wrong, the job waits in Scribe
 Conversions; use **Enter Password...** there.
 
+## Scribe for Documents in the other QUILL apps
+
+QUILL Lite shares Scribe for Documents with the rest of the QUILL family:
+one sign-in, one set of Options, one queue and one Scribe Conversions
+window. Quill Media Player can turn a document into a book to listen to,
+Quill Converter converts documents as well as audio, QUILL Studio makes a
+narration with chapters, QUILL Cast and QUILL Social convert a document an
+episode or a post links, and Quill Beacon keeps places in what Scribe made.
+A job started in any of them shows in QUILL Lite's Scribe Conversions too,
+and only the app running it speaks.
+
+In those apps the Scribe commands have keys of their own. They are not QUILL
+Lite's keys: here the same keys do editing work, and the Scribe commands
+have no key until you give them one. Each app's user guide has its own
+Scribe for Documents section.
+
 ## Keys and commands
 
 | Command | Menu | Key | What it does |

@@ -1,6 +1,6 @@
 # Scribe for Documents in the QUILL family
 
-Product requirements. Written 2026-11-20, updated 2026-11-21 with Pneuma's answers and the app's approval. Phase 1 (the shared foundation and QUILL) is built and switched on; the rest of QUILL and QUILL Lite are built (PR for phase 2); the Media Player and phase 3 are not started. Section 2 says what is built and what is not.
+Product requirements. Written 2026-11-20, updated 2026-11-21 with Pneuma's answers and the app's approval. Phase 1 (the shared foundation and QUILL) is built and switched on; the rest of QUILL and QUILL Lite are built (#1998); the Media Player, Converter, Studio, Cast, Beacon, Social and the Explorer Send To item are built (phase 3, PR for the family). Section 2 says what is built, what was built differently, and what is not.
 
 This replaces the June draft in `docs/planning/scribe.md`. That draft was written before the API existed and covered only three endpoints. The API that opened today does much more, and this PRD asks for all of it.
 
@@ -30,14 +30,30 @@ The goal is that wherever someone in the QUILL family meets an inaccessible docu
   - QUILL: Next Steps in Scribe Conversions (8.1.7: Read Aloud with QUILL's voices, the GLOW accessibility check, Summarize with the person's own AI, the braille view, Send to Media Player); the streaming read tab with Replace with Finished Document (8.1.3); the watch-folder action "Convert with Scribe for Documents" (8.1.6); a Scribe for Documents page in More Preferences.
   - QUILL Lite (8.2): the `scribe` feature area (off by default, on only in Everything; offered on first need from the scanned-import question), File > Scribe for Documents and Window > Scribe Conversions, through the shared entry points (`quill/ui/scribe_entry.py`) that QUILL uses too.
   - A user guide chapter in each editor (QUILL chapter 19, Lite chapter 17) and F1 topics for every command and window.
+- **Built (phase 3, the rest of the family, 2026-11-21).** One adapter per app on the shared windows (`quill/ui/scribe_app_host.py`), no new windows of their own.
+  - Quill Media Player (8.3): File > Listen to a Document with Scribe for Documents... (MP3 and DAISY checked); the DAISY book opens with its headings as chapters, loaded, not playing. A DAISY zip or `.ncx` on the command line opens as a book (`quill/apps/player_scribe.py`).
+  - Quill Converter (8.4): File > Convert Documents with Scribe for Documents..., into Converter's output folder; Next Steps' Add to the Converter Queue (`quill/apps/converter_scribe.py`).
+  - QUILL Studio (8.5): Studio > Narration from Scribe for Documents...; chapter markers from the DAISY navigation written into the MP3 before the result sentence (`quill/core/scribe/narration.py`, `quill/apps/studio_scribe.py`).
+  - QUILL Cast (8.6) and QUILL Social (8.8): Convert Linked Document with Scribe for Documents... on the Episode and Item menus (`quill/core/scribe/links.py`, `quill/ui/scribe_link_choice.py`).
+  - Quill Beacon (8.7): the Scribe Documents destination, Tools > Scribe for Documents > Add My Scribe Documents as Places, Download Again for a place whose file is gone (`quill/apps/beacon/scribe_places.py`, `scribe_ui.py`); QUILL's Next Steps gain Save a Beacon Place... (8.1.7, `quill/ui/scribe_beacon_place.py`).
+  - Explorer (8.10): an opt-in Send To shortcut in QUILL's installer; `--action scribe` gathers the files sent together into one Convert dialog.
+  - Each app's F1 catalogue explains every Scribe window (`quill/core/scribe/surface_help.py`); each app's user guide has a Scribe for Documents section.
 - **Built differently from this document** (decided):
   - Options are their own dialog and their own file, `scribe/options.json` in the shared data folder, one set for the whole family, rather than a page in each app's Preferences (7.7). More Preferences has a Scribe for Documents page that opens it. The settings vocabulary and documentation gates have nothing to check for them.
   - No Scribe command has a default key (12), Scribe Status and Repeat Last Scribe Message included, nor Replace with Finished Document (8.1.3); every one is in the Command Palette and can be given a key in the Keymap Editor. The reasons are in the family gate.
   - QUILL Lite's rows are one File > Scribe for Documents submenu (Alt+F, B), not separate File rows (8.2): Lite's File menu has three letters left.
   - A watch-folder profile sends each file with the person's Scribe account defaults, read when it is sent, plus any Options settings; the profile names its formats (8.1.6). Next Steps in Lite are Send to Media Player and Open in QUILL Lite.
   - Replace with Finished Document is in Tools > Scribe for Documents, not File (8.1.3): with WordPress and Forms on, QUILL's File menu has no access letter left.
-  - Saving a Beacon place (8.1.7) waits for Beacon's part (8.7).
-- **Not built yet.** Save a Beacon place (8.1.7, with 8.7), the Media Player (8.3), Converter, Studio, Cast, Beacon and Social (8.4 to 8.8), and the Explorer Send To item (8.10). Live testing against scribeit.io comes once the code is merged.
+  - **The other apps' keys.** Every menu row in Player, Converter, Studio, Cast, Beacon and Social shows a key, so their Scribe rows have keys (rule 9: a key, not a short one): the app's own command on Alt+Shift+F6, then Scribe Conversions, My Scribe Documents, Scribe Status, Repeat Last Scribe Message and Options on Alt+Shift+F7 to F11, the same in each. Not Ctrl+Alt+Shift with a letter (AltGr+Shift types those on many keyboards) and not the family's Ctrl+Alt+Shift F-row. QUILL and QUILL Lite use Alt+Shift+F6 to F11 for editing, so their Scribe rows keep no default key. Each app has a Scribe for Documents submenu for the shared rows (File in Player and Converter, Studio in Studio, Podcasts in Cast, Tools in Beacon; flat Tools rows in Social, whose menus are a table without submenus). Sign In and Sign Out are in Options.
+  - **A result that opens in another app never opens by itself** (7.4a, accessibility review 2026-11-21): the other app coming to the front would cut the result sentence off. Converter, Studio, Cast, Beacon and Social end the sentence "Open it from Scribe Conversions."; Open Result and Next Steps open it. The Media Player opens its own audio by itself, and only into a Player the person is in, with no dialog open and nothing playing.
+  - **Media Player (8.3):** "plays it when ready" is "opens it ready to play": the book is loaded, not playing, so the result sentence is not talked over, and the sentence ends "Press Alt+A to play".
+  - **Converter (8.4):** document jobs are not rows in Converter's audio queue; they are in the shared Scribe Conversions window. The audio queue is a list the person edits, and a live job list beside it would move under the reader. "Converter's own output folder rules": the Output folder, or Converted beside the first document, with no folder per document. A document added to the audio queue is left out with one sentence saying where documents go.
+  - **Studio (8.5):** Studio has no File menu, so the row is Studio > Narration from Scribe for Documents...; it opens in the Chapter Workbench on the person's command, never by itself, because the Workbench is modal. Markers are written only when the DAISY book has one audio file as long as the MP3.
+  - **Cast (8.6) and Social (8.8):** "the episode menu" and "the post menu" are the Episode and Item menus. Several linked documents are chosen from a standard list, "Choose a Linked Document".
+  - **Beacon (8.7):** Beacon has Destinations, not a sources list; "Scribe Documents" is one, showing Beacon's Scribe places, and Add My Scribe Documents as Places makes the person's Scribe library into places on their command. A place points at a heading (its structural locator) or the start; Download Again checks the account first and asks only when the document is still there.
+  - **Save a Beacon place (8.1.7)** chooses the start or a heading from a list; it is offered only where Beacon is released or installed. QUILL Lite does not have it (Lite has no Beacon part, 8.2).
+  - **Send To (8.10)** is in QUILL's installer, not the runtime installer, which has no page of choices; QUILL Lite's installer does not have it yet (Lite has no command line for it).
+- **Not built yet.** QUILL Lite's Send To item and its command line (8.10). Live testing against scribeit.io comes once the code is merged, and every new surface still needs its NVDA, JAWS and Narrator check (12).
 
 ## 3. What Scribe provides (all of it, from the API client source)
 
@@ -538,8 +554,8 @@ All messages use the running app's own name (QUILL, QUILL Lite, Converter), neve
 ## 15. Phases
 
 1. **Foundation and QUILL. Built (PR #1994).** Client, channel, sign-in, the convert dialog, the queue and progress, My Scribe Documents, options; QUILL's Import tier, low-text PDF offer, Export with Scribe, braille. The client ID arrived on 2026-11-21 and is in the build; tested against the fake server, live testing still to do. The chained actions, the streaming tab and the watch-folder action followed in phase 2.
-2. **Lite and Media Player. Lite built (2026-11-21).** Lite's area and commands, with QUILL having every one; the rest of QUILL's 8.1. Next: Player's Listen command and DAISY audio reading.
-3. **Converter, Studio, Beacon, Cast, Social.** Their entry points, Beacon's place from Next Steps, and the Explorer Send To item. (The watch-folder action and the streaming read tab were built in phase 2.)
+2. **Lite and Media Player. Built (2026-11-21).** Lite's area and commands, with QUILL having every one; the rest of QUILL's 8.1 (#1998). Player's Listen command and DAISY reading followed with phase 3.
+3. **Converter, Studio, Beacon, Cast, Social. Built (2026-11-21).** Their entry points, Beacon's place from Next Steps, and the Explorer Send To item in QUILL's installer. (The watch-folder action and the streaming read tab were built in phase 2.)
 4. **Batch.** The exception is approved (2026-11-21): several chosen files and the watch folder run one after another, from phase 1 on.
 
 ## 16. Pneuma's answers (2026-11-21)

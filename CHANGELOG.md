@@ -29,6 +29,37 @@ written in QUILL's own code.
 - Stream recovery and Add Custom Station use the same check, so a link heard
   playing is chosen over one that only looks right.
 
+### Scribe for Documents in the rest of the family (2026-11-21)
+
+- **Quill Media Player:** File > Listen to a Document with Scribe for
+  Documents... turns a document into a DAISY book and MP3 audio, and opens
+  the book with its headings as chapters, ready to play. It opens by itself
+  only into a Player you are in, with nothing playing. A DAISY zip or `.ncx`
+  sent to the Player, from QUILL's Next Steps or from Explorer, now opens as
+  a book.
+- **Quill Converter:** File > Convert Documents with Scribe for Documents...
+  converts documents too. Results go where Converter's own conversions go,
+  the jobs are in Scribe Conversions, and Next Steps' Add to the Converter
+  Queue takes Scribe's audio on through Converter.
+- **QUILL Studio:** Studio > Narration from Scribe for Documents... has a
+  document read aloud, writes its headings into the MP3 as chapter markers,
+  and opens it in the Chapter Workbench when you choose.
+- **QUILL Cast and QUILL Social:** Episode > Convert Linked Document with
+  Scribe for Documents... and Item > Convert Linked Document with Scribe for
+  Documents... convert a document the show notes or a post link.
+- **Quill Beacon:** a Scribe Documents destination, Tools > Scribe for
+  Documents > Add My Scribe Documents as Places, and a place whose file is
+  gone offers to download it again, after checking your Scribe account.
+- **QUILL:** Next Steps' Save a Beacon Place... keeps a place at a heading of
+  a Word or HTML result. QUILL's installer can add Convert with Scribe for
+  Documents to Explorer's Send To menu (unchecked to start with); the files
+  sent together open one Convert dialog, and it waits for any dialog already
+  open.
+- Each app has a Scribe for Documents submenu with Scribe Conversions, My Scribe Documents, Scribe Status, Repeat Last Scribe Message and Scribe for Documents Options, on Alt+Shift+F7 to F11, and its own command on Alt+Shift+F6: the same keys in every one of these apps. QUILL and QUILL Lite keep those keys for editing, so their Scribe
+  commands still have no default key.
+- A result that would open in another app never opens by itself, so the
+  result sentence is never cut off; Open Result and Next Steps open it.
+
 ### GitHub Workbench: what writing its guide found, fixed (2026-11-21)
 
 - **Codespaces ask before they cost money.** Start, New Codespace (Ctrl+N)

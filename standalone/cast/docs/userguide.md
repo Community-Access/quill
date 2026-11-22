@@ -4492,6 +4492,164 @@ You connect your site once, in QUILL or QUILL Lite, with Connect a Site in
 the WordPress submenu of their File menu. Their user guides have a whole
 chapter on WordPress.
 
+#### Converting a linked document with Scribe for Documents
+
+Show notes often link a transcript, slides or a paper as a PDF or a
+document. Scribe for Documents, a service from Pneuma Solutions, can turn
+that into an accessible document for you: Word, accessible HTML, tagged
+PDF, EPUB, DAISY with audio, MP3 audio or braille, with the headings,
+reading order and tables rebuilt and the pictures described. This part of
+Cast is Powered by Scribe for Documents.
+
+Nothing leaves your computer until you say so. Before each conversion Cast
+shows you what will be fetched, and where it goes, and waits for you to
+press **Send and Convert**.
+
+| Menu | What is there |
+|---|---|
+| **Episode > Convert Linked Document with Scribe for Documents...** | The selected episode's linked documents |
+| **Podcasts > Scribe for Documents** | Scribe Conversions, My Scribe Documents, Scribe Status, Repeat Last Scribe Message, Scribe for Documents Options |
+
+The Episode and Podcasts menus have no access letter left for these rows,
+so use their keys, or arrow to them.
+
+The first time you use a Scribe command, your browser opens at Scribe's
+own sign-in page, and you hear "Your browser is open at Scribe for
+Documents. Sign in there, then come back to QUILL Cast." Sign in, come back, and
+press **Continue**. One sign-in covers every QUILL app on this computer, and
+QUILL Cast never sees your Scribe password. You use your own Scribe account and
+pay Scribe for your own pages; a new account has 100 free pages.
+
+Step by step:
+
+1. Select the episode in the episode list.
+2. Choose **Episode > Convert Linked Document with Scribe for Documents...**, or press Alt+Shift+F6.
+3. Cast looks for links that point straight at a file Scribe takes: a PDF,
+   a Word or other text document, a spreadsheet, a presentation, a picture,
+   an EPUB or a MOBI.
+   - **None:** you hear "This episode's show notes link no documents Scribe for Documents can convert." Nothing opens.
+   - **One:** the Convert dialog opens straight away for that link.
+   - **Several:** a list opens first, **Choose a Linked Document**. You hear,
+     for example, "Choose a Linked Document dialog, Linked documents in
+     this episode's show notes, 3, Transcript (example.org), 1 of 3". Each row starts with the
+     link's own words, then where it goes; a link with no words of its own
+     reads as the file and its site, such as "Notes.pdf on example.org".
+     Arrow to the one you want and press Enter.
+4. The Convert with Scribe for Documents dialog opens on **What will be
+   sent**, which names the link: "The file at https://example.org/Notes.pdf
+   will be fetched by Scribe for Documents...". Scribe fetches the file
+   itself, so its size and pages are known only once Scribe reads it.
+5. Press Tab, check the formats you want back (Word is the usual one), and
+   press **Send and Convert**. You hear each stage once.
+6. When it is done you hear one sentence, for example: "Scribe for
+   Documents made Notes.docx in Documents\Scribe for Documents\Notes. Open
+   it from Scribe Conversions."
+7. Open Scribe Conversions (Alt+Shift+F7), choose the row and press Enter.
+   Word, HTML and EPUB open in QUILL, or in QUILL Lite when QUILL is not
+   installed; MP3 and DAISY open in Quill Media Player. **Next Steps...**
+   lists the same choices by name, such as **Open in QUILL (Word)**.
+
+Cast never opens the result by itself. Another app coming to the front
+would cut the result sentence off, so you open it when you are ready.
+
+Only direct links to files work. A link to a web page, or to a file behind a
+sign-in, is not offered: Scribe for Documents does not take web pages.
+
+Keys:
+
+| Command | Menu | Key | What it does |
+|---|---|---|---|
+| Convert Linked Document with Scribe for Documents | Episode | **Alt+Shift+F6** | Converts a document the selected episode's show notes link |
+| Scribe Conversions | Podcasts > Scribe for Documents | **Alt+Shift+F7** | Every Scribe job on this computer, and what it is doing |
+| My Scribe Documents | Podcasts > Scribe for Documents | **Alt+Shift+F8** | Your documents on Scribe, and the Trash |
+| Scribe Status | Podcasts > Scribe for Documents | **Alt+Shift+F9** | Says what the running job is doing, once |
+| Repeat Last Scribe Message | Podcasts > Scribe for Documents | **Alt+Shift+F10** | Says the last Scribe message again |
+| Scribe for Documents Options | Podcasts > Scribe for Documents | **Alt+Shift+F11** | Sign in or out, your account, the download folder, how much is spoken |
+
+Inside the Scribe windows:
+
+| Where | Key | What it does |
+|---|---|---|
+| Scribe Conversions list | Enter | Open Result |
+| Scribe Conversions list | Delete | Remove from List |
+| Scribe Conversions and My Scribe Documents lists | Applications key or Shift+F10 | Every command for the row |
+| Scribe Conversions | Escape | Closes it, back to where you were |
+| My Scribe Documents list | Enter | Download Formats |
+| Convert dialog, What will be sent | Enter | Send and Convert |
+| Convert dialog, while a voice sample plays | Escape | Stops the sample |
+| Any Scribe window | F1 | What the window is for, then the control you are on |
+
+These keys are the same in Quill Media Player, Quill Converter, QUILL
+Studio, QUILL Cast, Quill Beacon and QUILL Social. QUILL and QUILL Lite are
+different: there Alt+Shift with F6 to F11 are editing commands, and the
+Scribe commands have no key until you give them one in the Keymap Editor.
+
+When something goes wrong:
+
+When something goes wrong, you hear one sentence that names Scribe for
+Documents and the file, and usually Scribe's own reason. QUILL Cast adds a code,
+such as QUILL-SCRIBE-PAGES, which you never hear. It is in the Details box in
+Scribe Conversions and in **Copy Details**, for when you ask for help.
+
+| Code | What you hear | What to do |
+|---|---|---|
+| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended. Conversions are paused until you sign in again." | In Scribe Conversions, press **Sign In...** on the job. It carries on when you are signed in. |
+| QUILL-SCRIBE-SIGNIN-LOCAL | That no port could be opened to receive the sign-in, or that the browser could not be opened | Allow QUILL apps in your security software, then **Try Again**. Or press **Copy Sign-in Link** and paste it into any browser. |
+| QUILL-SCRIBE-PAGES | "Scribe for Documents could not convert Notes.pdf:", Scribe's message, then "Use Buy Pages in Scribe Conversions, then Retry." | Press **Buy Pages**, buy pages in your browser, then **Retry**. Without pages, Scribe still makes a free preview of the first two pages. |
+| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open Scribe Conversions to enter it." | Press **Enter Password...** on the job. After three wrong tries, press **Retry** for three more. |
+| QUILL-SCRIBE-BUSY | "Scribe for Documents asked QUILL Cast to slow down; trying again in a minute." | Nothing. QUILL Cast waits a minute and carries on. |
+| QUILL-SCRIBE-NOTDOC | "Scribe for Documents cannot convert Data.xml: it takes PDF, pictures, Office, OpenDocument, text, EPUB and MOBI files, not web pages." | Save the file as Word or PDF and send that. |
+| QUILL-SCRIBE-TOOBIG | "Video.pdf is 612 MB. Scribe for Documents takes files up to 500 MB." | Split the document, or save a copy with smaller pictures. Nothing was sent. |
+| QUILL-SCRIBE-GONE | Scribe's reason; the row says "No longer in your Scribe account" | Press **Remove from List**, and convert the file again if you need it. |
+| QUILL-SCRIBE-OFFLINE | "Reconnecting to Scribe for Documents; your conversion is still running there." | Nothing, usually. QUILL Cast reconnects by itself without uploading again, and says nothing when it is back. |
+| QUILL-SCRIBE-SAVE | That the download folder is not writable or could not be made | Free some space or choose another **Download folder** in Options, then **Retry**. No more pages are used. |
+| QUILL-SCRIBE-OFF | "Scribe for Documents is disabled in Safe Mode." | Start QUILL Cast normally. Nothing was queued. |
+| QUILL-SCRIBE-FAILED | "Scribe for Documents could not convert Notes.pdf:" and Scribe's reason | Press **Retry**. If it fails again, press **Copy Details** and send that to support. |
+
+Questions people ask:
+
+**Does QUILL Cast send anything without asking?** No. Every upload needs **Send
+and Convert** in the Convert dialog, which first says exactly what will be
+sent and where. There is no "don't ask again".
+
+**Will a second format cost more pages?** No. Pages are charged once for each
+document. Use **Download Formats...** in My Scribe Documents for another
+format of a document already in your account.
+
+**Can I use QUILL Cast and QUILL at the same time?** Yes. Every QUILL app on this
+computer shares one sign-in, one queue and one Options window. Only one
+sends at a time, and only the app running the job speaks; the others show
+the same rows quietly. If another QUILL app is running the job, the result
+sentence ends "Open it from Scribe Conversions."
+
+**Can I stop a conversion?** Scribe cannot be stopped once it starts.
+**Cancel Waiting** stops QUILL Cast waiting and downloading, and says so.
+
+**What happens if I close QUILL Cast during a conversion?** Nothing is lost. The
+next QUILL app to start downloads what was made and tells you once.
+
+**Where is the privacy information?** In Scribe for Documents Options, under
+**Powered by Scribe for Documents**, and in the QUILL user guide's Scribe for
+Documents chapter: where documents go, how long they are kept, and how to
+delete them.
+
+**Why is a link missing from the list?** Only links that end in a file type
+Scribe takes are listed. A link to a web page, or one with no file name, is
+left out; open it in your browser and save the document first.
+
+F1 in the Scribe windows:
+
+| Window | What F1 tells you |
+|---|---|
+| Convert with Scribe for Documents | What is sent and where, the formats, the settings, and the pages it uses |
+| Scribe Conversions | The jobs, their stages, and every command on a job |
+| My Scribe Documents | Your documents and the Trash, and what each button does |
+| Scribe for Documents Options | The family's one set of Scribe choices |
+| Sign In to Scribe for Documents | Signing in on Scribe's own page, in your browser |
+| Password for Notes.pdf | A PDF's password, used once and never saved |
+| Choose a Linked Document | The links here that point straight at a file Scribe can take |
+
+
 ### What you learned, and where to go next
 
 Your listening is now safe and it can travel. You can see how much you have
@@ -5735,6 +5893,7 @@ list, and arrows navigate its rows or tree.
 | Keep This Episode | Ctrl+Alt+K |
 | Lineups | Ctrl+U |
 | Mark All as Played | Alt+Shift+E |
+| Convert Linked Document with Scribe for Documents | Alt+Shift+F6 |
 | Bookmarks | Ctrl+Alt+Shift+J |
 | Listening Statistics | Ctrl+Alt+Shift+S |
 
@@ -5758,6 +5917,11 @@ They are listed in full under "Keys in the Lineups window" in Chapter 9.
 | Rearrange Library and Inbox | Ctrl+Shift+R |
 | Settings for This Podcast | Ctrl+Alt+, |
 | Preferences | Ctrl+, |
+| Scribe Conversions | Alt+Shift+F7 |
+| My Scribe Documents | Alt+Shift+F8 |
+| Scribe Status | Alt+Shift+F9 |
+| Repeat Last Scribe Message | Alt+Shift+F10 |
+| Scribe for Documents Options | Alt+Shift+F11 |
 | Import OPML (Advanced) | Ctrl+Alt+I |
 | Export OPML (Advanced) | Ctrl+Alt+E |
 | Podcast Index Credentials (Advanced) | Ctrl+Alt+Shift+I |

@@ -503,6 +503,372 @@ publish token. Nothing on the page can modify your library, and
 Unpublish removes the files. It is read-only by design – there is no
 sign-in, no capture, and no write path back into QuillBeacon.</li>
 </ul>
+<h2 id="places-in-scribe-for-documents-results">Places in Scribe for
+Documents results</h2>
+<p>Scribe for Documents, a service from Pneuma Solutions, turns scanned
+and badly made documents into accessible Word, HTML, EPUB, DAISY and
+more. QuillBeacon keeps places in what Scribe made: a heading in a Word
+or HTML result, or its start. A Scribe place remembers the Scribe
+document, so if the file is ever gone, Beacon can download it again from
+your Scribe account. This part of QuillBeacon is Powered by Scribe for
+Documents.</p>
+<h3 id="where-it-is">Where it is</h3>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>What is there</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Scribe Documents</strong>, in the Destinations list</td>
+<td>Every place in a Scribe result</td>
+</tr>
+<tr>
+<td><strong>Tools &gt; Scribe for Documents</strong></td>
+<td>Add My Scribe Documents as Places, then Scribe Conversions, My
+Scribe Documents, Scribe Status, Repeat Last Scribe Message and Scribe
+for Documents Options</td>
+</tr>
+<tr>
+<td>QUILL’s Scribe Conversions, <strong>Next Steps…</strong></td>
+<td><strong>Save a Beacon Place…</strong>, for a Word or HTML
+result</td>
+</tr>
+</tbody>
+</table>
+<h3 id="saving-a-place-from-quill">Saving a place from QUILL</h3>
+<ol type="1">
+<li>In QUILL, open Window, Scribe Conversions, and choose a job that
+made Word or accessible HTML.</li>
+<li>Press <strong>Next Steps…</strong> and choose <strong>Save a Beacon
+Place…</strong> (when the job made both, it says which: <strong>Save a
+Beacon Place (Word)…</strong>).</li>
+<li>A list opens, <strong>Save a Beacon Place</strong>, with “The start
+of the document” first and then each heading, its words first and its
+level after, such as “Methods, heading level 2”. A heading that appears
+twice says which it is: “Results, heading level 2, second”.</li>
+<li>Arrow to the place and press Enter. QUILL says once, for example,
+“Saved a Beacon place: Notes, at Methods.”</li>
+<li>In QuillBeacon, choose <strong>Scribe Documents</strong> in the
+Destinations list. The place is there, named “Notes, Methods”. If
+QuillBeacon was already open, it appears the next time the list is read,
+without a word.</li>
+</ol>
+<h3 id="your-whole-scribe-library-as-places">Your whole Scribe library
+as places</h3>
+<p><strong>Tools &gt; Scribe for Documents &gt; Add My Scribe Documents
+as Places</strong> (Alt+Shift+F6) reads the list of documents in your
+Scribe account and makes a place for each one that is not a place yet.
+It uses the network, only when you choose it. If it takes more than a
+second you hear “Reading your Scribe documents…”, and then one sentence:
+“Added 5 Scribe documents as places; 2 were already there.” If the
+Scribe Documents list is showing, it updates without a word, and you
+stay on the same place.</p>
+<p>A document you have downloaded before points at its file. One you
+never downloaded is a place with no file yet.</p>
+<h3 id="opening-a-place-whose-file-is-gone">Opening a place whose file
+is gone</h3>
+<p>Press Enter on a Scribe place as on any other.</p>
+<ul>
+<li>If the file was downloaded again since, the place follows it and
+opens.</li>
+<li>Otherwise QuillBeacon checks your Scribe account first. If that
+takes more than a second you hear “Checking your Scribe account…”.</li>
+<li><strong>Still in your account:</strong> a question, <strong>Download
+Again from Scribe for Documents</strong>: “Notes is no longer on this
+computer. Download it again from My Scribe Documents? Nothing is
+uploaded and no pages are used.” <strong>Yes</strong> is the default. It
+opens the Convert dialog for the document already in your account, which
+says “No file is sent” and has a <strong>Convert</strong> button. When
+the download is done, open the place again.</li>
+<li><strong>No longer in your account:</strong> you hear “Notes is no
+longer on this computer or in your Scribe account. Delete removes the
+place.”</li>
+<li><strong>Not signed in:</strong> you hear how to sign in, and nothing
+is asked.</li>
+<li>If you have moved on by the time the answer comes, you hear “Notes
+can be downloaded again. Press Enter on it to choose.” instead of a
+question.</li>
+</ul>
+<p>The first time you use a Scribe command, your browser opens at
+Scribe’s own sign-in page, and you hear “Your browser is open at Scribe
+for Documents. Sign in there, then come back to QuillBeacon.” Sign in,
+come back, and press <strong>Continue</strong>. One sign-in covers every
+QUILL app on this computer, and QuillBeacon never sees your Scribe
+password. You use your own Scribe account and pay Scribe for your own
+pages; a new account has 100 free pages.</p>
+<h3 id="keys">Keys</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Menu</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add My Scribe Documents as Places</td>
+<td>Tools &gt; Scribe for Documents</td>
+<td><strong>Alt+Shift+F6</strong></td>
+</tr>
+<tr>
+<td>Scribe Conversions</td>
+<td>Tools &gt; Scribe for Documents</td>
+<td><strong>Alt+Shift+F7</strong></td>
+</tr>
+<tr>
+<td>My Scribe Documents</td>
+<td>Tools &gt; Scribe for Documents</td>
+<td><strong>Alt+Shift+F8</strong></td>
+</tr>
+<tr>
+<td>Scribe Status</td>
+<td>Tools &gt; Scribe for Documents</td>
+<td><strong>Alt+Shift+F9</strong></td>
+</tr>
+<tr>
+<td>Repeat Last Scribe Message</td>
+<td>Tools &gt; Scribe for Documents</td>
+<td><strong>Alt+Shift+F10</strong></td>
+</tr>
+<tr>
+<td>Scribe for Documents Options</td>
+<td>Tools &gt; Scribe for Documents</td>
+<td><strong>Alt+Shift+F11</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The same rows are in the Command Palette.</p>
+<p>Inside the Scribe windows:</p>
+<table>
+<thead>
+<tr>
+<th>Where</th>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scribe Conversions list</td>
+<td>Enter</td>
+<td>Open Result</td>
+</tr>
+<tr>
+<td>Scribe Conversions list</td>
+<td>Delete</td>
+<td>Remove from List</td>
+</tr>
+<tr>
+<td>Scribe Conversions and My Scribe Documents lists</td>
+<td>Applications key or Shift+F10</td>
+<td>Every command for the row</td>
+</tr>
+<tr>
+<td>Scribe Conversions</td>
+<td>Escape</td>
+<td>Closes it, back to where you were</td>
+</tr>
+<tr>
+<td>My Scribe Documents list</td>
+<td>Enter</td>
+<td>Download Formats</td>
+</tr>
+<tr>
+<td>Convert dialog, What will be sent</td>
+<td>Enter</td>
+<td>Send and Convert</td>
+</tr>
+<tr>
+<td>Convert dialog, while a voice sample plays</td>
+<td>Escape</td>
+<td>Stops the sample</td>
+</tr>
+<tr>
+<td>Any Scribe window</td>
+<td>F1</td>
+<td>What the window is for, then the control you are on</td>
+</tr>
+</tbody>
+</table>
+<p>These keys are the same in Quill Media Player, Quill Converter, QUILL
+Studio, QUILL Cast, Quill Beacon and QUILL Social. QUILL and QUILL Lite
+are different: there Alt+Shift with F6 to F11 are editing commands, and
+the Scribe commands have no key until you give them one in the Keymap
+Editor.</p>
+<h3 id="when-something-goes-wrong">When something goes wrong</h3>
+<p>When something goes wrong, you hear one sentence that names Scribe
+for Documents and the file, and usually Scribe’s own reason. QuillBeacon
+adds a code, such as QUILL-SCRIBE-PAGES, which you never hear. It is in
+the Details box in Scribe Conversions and in <strong>Copy
+Details</strong>, for when you ask for help.</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>What you hear</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL-SCRIBE-SIGNIN</td>
+<td>“Your Scribe for Documents sign-in has ended. Conversions are paused
+until you sign in again.”</td>
+<td>In Scribe Conversions, press <strong>Sign In…</strong> on the job.
+It carries on when you are signed in.</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-SIGNIN-LOCAL</td>
+<td>That no port could be opened to receive the sign-in, or that the
+browser could not be opened</td>
+<td>Allow QUILL apps in your security software, then <strong>Try
+Again</strong>. Or press <strong>Copy Sign-in Link</strong> and paste it
+into any browser.</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-PAGES</td>
+<td>“Scribe for Documents could not convert Notes.pdf:”, Scribe’s
+message, then “Use Buy Pages in Scribe Conversions, then Retry.”</td>
+<td>Press <strong>Buy Pages</strong>, buy pages in your browser, then
+<strong>Retry</strong>. Without pages, Scribe still makes a free preview
+of the first two pages.</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-PASSWORD</td>
+<td>“Notes.pdf needs its password. Open Scribe Conversions to enter
+it.”</td>
+<td>Press <strong>Enter Password…</strong> on the job. After three wrong
+tries, press <strong>Retry</strong> for three more.</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-BUSY</td>
+<td>“Scribe for Documents asked QuillBeacon to slow down; trying again
+in a minute.”</td>
+<td>Nothing. QuillBeacon waits a minute and carries on.</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-NOTDOC</td>
+<td>“Scribe for Documents cannot convert Data.xml: it takes PDF,
+pictures, Office, OpenDocument, text, EPUB and MOBI files, not web
+pages.”</td>
+<td>Save the file as Word or PDF and send that.</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-TOOBIG</td>
+<td>“Video.pdf is 612 MB. Scribe for Documents takes files up to 500
+MB.”</td>
+<td>Split the document, or save a copy with smaller pictures. Nothing
+was sent.</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-GONE</td>
+<td>Scribe’s reason; the row says “No longer in your Scribe
+account”</td>
+<td>Press <strong>Remove from List</strong>, and convert the file again
+if you need it.</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-OFFLINE</td>
+<td>“Reconnecting to Scribe for Documents; your conversion is still
+running there.”</td>
+<td>Nothing, usually. QuillBeacon reconnects by itself without uploading
+again, and says nothing when it is back.</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-SAVE</td>
+<td>That the download folder is not writable or could not be made</td>
+<td>Free some space or choose another <strong>Download folder</strong>
+in Options, then <strong>Retry</strong>. No more pages are used.</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-OFF</td>
+<td>“Scribe for Documents is disabled in Safe Mode.”</td>
+<td>Start QuillBeacon normally. Nothing was queued.</td>
+</tr>
+<tr>
+<td>QUILL-SCRIBE-FAILED</td>
+<td>“Scribe for Documents could not convert Notes.pdf:” and Scribe’s
+reason</td>
+<td>Press <strong>Retry</strong>. If it fails again, press <strong>Copy
+Details</strong> and send that to support.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="questions-people-ask">Questions people ask</h3>
+<p><strong>Does QuillBeacon send anything without asking?</strong> No.
+Every upload needs <strong>Send and Convert</strong> in the Convert
+dialog, which first says exactly what will be sent and where. There is
+no “don’t ask again”.</p>
+<p><strong>Will a second format cost more pages?</strong> No. Pages are
+charged once for each document. Use <strong>Download Formats…</strong>
+in My Scribe Documents for another format of a document already in your
+account.</p>
+<p><strong>Can I use QuillBeacon and QUILL at the same time?</strong>
+Yes. Every QUILL app on this computer shares one sign-in, one queue and
+one Options window. Only one sends at a time, and only the app running
+the job speaks; the others show the same rows quietly. If another QUILL
+app is running the job, the result sentence ends “Open it from Scribe
+Conversions.”</p>
+<p><strong>Can I stop a conversion?</strong> Scribe cannot be stopped
+once it starts. <strong>Cancel Waiting</strong> stops QuillBeacon
+waiting and downloading, and says so.</p>
+<p><strong>What happens if I close QuillBeacon during a
+conversion?</strong> Nothing is lost. The next QUILL app to start
+downloads what was made and tells you once.</p>
+<p><strong>Where is the privacy information?</strong> In Scribe for
+Documents Options, under <strong>Powered by Scribe for
+Documents</strong>, and in the QUILL user guide’s Scribe for Documents
+chapter: where documents go, how long they are kept, and how to delete
+them.</p>
+<p><strong>Does a Scribe place go to the web?</strong> No more than any
+other place: it lives in QuillBeacon’s own library on this computer.
+Only Add My Scribe Documents as Places and Download Again reach Scribe,
+and only when you choose them.</p>
+<h3 id="f1-in-the-scribe-windows">F1 in the Scribe windows</h3>
+<table>
+<thead>
+<tr>
+<th>Window</th>
+<th>What F1 tells you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Convert with Scribe for Documents</td>
+<td>What is sent and where, the formats, the settings, and the pages it
+uses</td>
+</tr>
+<tr>
+<td>Scribe Conversions</td>
+<td>The jobs, their stages, and every command on a job</td>
+</tr>
+<tr>
+<td>My Scribe Documents</td>
+<td>Your documents and the Trash, and what each button does</td>
+</tr>
+<tr>
+<td>Scribe for Documents Options</td>
+<td>The family’s one set of Scribe choices</td>
+</tr>
+<tr>
+<td>Sign In to Scribe for Documents</td>
+<td>Signing in on Scribe’s own page, in your browser</td>
+</tr>
+<tr>
+<td>Password for Notes.pdf</td>
+<td>A PDF’s password, used once and never saved</td>
+</tr>
+<tr>
+<td>Download Again from Scribe for Documents</td>
+<td>Getting a place’s file again from your Scribe account; nothing is
+uploaded</td>
+</tr>
+</tbody>
+</table>
 <h2 id="keys-and-menus-you-will-use-most">Keys and menus you will use
 most</h2>
 <p>Every command in QuillBeacon is on a menu, so you can always find it
@@ -567,6 +933,12 @@ for what the recheck found broken.</li>
 <li><strong>Tools &gt; External Player…</strong> (Ctrl+Alt+Shift+X)
 chooses the player.</li>
 <li><strong>Tools &gt; Status Center…</strong> (Ctrl+Alt+I).</li>
+<li><strong>Tools &gt; Scribe for Documents</strong> (2026-11-21), on
+Alt+Shift with F6 to F11: Add My Scribe Documents as Places, Scribe
+Conversions, My Scribe Documents, Scribe Status, Repeat Last Scribe
+Message and Scribe for Documents Options. See <a
+href="#places-in-scribe-for-documents-results">Places in Scribe for
+Documents results</a>.</li>
 <li><strong>The Sync menu is F9.</strong> <strong>Sync &gt; Sync
 Now</strong> (F9), <strong>Sync &gt; Sync Settings…</strong> (Ctrl+F9),
 <strong>Sync &gt; Sync History…</strong> (Shift+F9) and <strong>Sync

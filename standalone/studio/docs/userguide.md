@@ -1042,6 +1042,167 @@ You want to show how to fill in a web form with your screen reader, with your vo
 
 A window recording follows the window's area of the screen rather than the window itself, so a covering window is recorded and moving the window is not followed. There is no trimming or editing, no click highlighting, and no virtual camera. Real screen-reader, braille and hardware acceptance runs are still to be done.
 
+## Narration from Scribe for Documents
+
+QUILL Studio can start a book from a document. Scribe for Documents, a
+service from Pneuma Solutions, reads the document aloud with a natural voice
+and sends back MP3 audio and a DAISY book. Studio then writes the
+document's headings into the MP3 as chapter markers, and the narration is
+ready to open in the Chapter Workbench, where you edit it, run the loudness
+check and export M4B like any book. This part of Studio is Powered by Scribe
+for Documents.
+
+Nothing leaves your computer until you say so. Before each upload Studio
+shows you what will be sent, and where, and waits for you to press **Send
+and Convert**.
+
+### Where it is
+
+Studio has no File menu, so the command is in the Studio menu.
+
+| Menu | What is there |
+|---|---|
+| **Studio > Narration from Scribe for Documents...** | Choose a document to be read aloud |
+| **Studio > Scribe for Documents** | Scribe Conversions, My Scribe Documents, Scribe Status, Repeat Last Scribe Message, Scribe for Documents Options |
+
+### Signing in
+
+The first time you use a Scribe command, your browser opens at Scribe's
+own sign-in page, and you hear "Your browser is open at Scribe for
+Documents. Sign in there, then come back to QUILL Studio." Sign in, come back, and
+press **Continue**. One sign-in covers every QUILL app on this computer, and
+QUILL Studio never sees your Scribe password. You use your own Scribe account and
+pay Scribe for your own pages; a new account has 100 free pages.
+
+### Making a narration, step by step
+
+1. Choose **Studio > Narration from Scribe for Documents...**, or press
+   Alt+Shift+F6.
+2. Choose the document, here "Lecture Notes.docx".
+3. The Convert dialog opens on **What will be sent**. Read it, then press
+   Tab. **MP3 audio** and **DAISY (text and audio)** are checked: the MP3 is
+   the narration, and the DAISY book is where the chapter times come from.
+4. Choose a **Voice** (Play Sample plays it) and a **Speed**.
+5. Press **Send and Convert**. You hear each stage once.
+6. When it is done you hear one sentence, for example: "Scribe for
+   Documents made Lecture Notes.mp3 and Lecture Notes.zip in
+   Documents\Scribe for Documents\Lecture Notes, with 12 chapter markers.
+   Open it from Scribe Conversions."
+7. Open **Studio > Scribe for Documents > Scribe Conversions**
+   (Alt+Shift+F7), choose the row and press Enter, or press **Next
+   Steps...** and choose **Open in the Chapter Workbench**.
+8. The Chapter Workbench opens with a chapter for each heading. Edit the
+   chapters, run the loudness check, and export M4B as you would any book.
+   When you close the Workbench you are back where you were.
+
+### Why it does not open by itself
+
+The Chapter Workbench is a window you work in until you close it, and a job
+finishing in the background never opens a window over what you are doing.
+So the result is always one sentence, and you open it when you are ready.
+
+### When there are no chapter markers
+
+Studio writes markers only when it can trust them: the DAISY book has one
+audio file, and it is as long as the MP3. Otherwise the sentence says why,
+inside the same result sentence, for example "with no chapter markers,
+because the DAISY book has 4 audio files". The MP3 still opens as one
+chapter, and the Workbench can propose chapters from its silences.
+
+### Keys and commands
+
+| Command | Menu | Key | What it does |
+|---|---|---|---|
+| Narration from Scribe for Documents | Studio | **Alt+Shift+F6** | Chooses a document to be read aloud as a narration |
+| Scribe Conversions | Studio > Scribe for Documents | **Alt+Shift+F7** | Every Scribe job on this computer, and what it is doing |
+| My Scribe Documents | Studio > Scribe for Documents | **Alt+Shift+F8** | Your documents on Scribe, and the Trash |
+| Scribe Status | Studio > Scribe for Documents | **Alt+Shift+F9** | Says what the running job is doing, once |
+| Repeat Last Scribe Message | Studio > Scribe for Documents | **Alt+Shift+F10** | Says the last Scribe message again |
+| Scribe for Documents Options | Studio > Scribe for Documents | **Alt+Shift+F11** | Sign in or out, your account, the download folder, how much is spoken |
+
+Inside the Scribe windows:
+
+| Where | Key | What it does |
+|---|---|---|
+| Scribe Conversions list | Enter | Open Result |
+| Scribe Conversions list | Delete | Remove from List |
+| Scribe Conversions and My Scribe Documents lists | Applications key or Shift+F10 | Every command for the row |
+| Scribe Conversions | Escape | Closes it, back to where you were |
+| My Scribe Documents list | Enter | Download Formats |
+| Convert dialog, What will be sent | Enter | Send and Convert |
+| Convert dialog, while a voice sample plays | Escape | Stops the sample |
+| Any Scribe window | F1 | What the window is for, then the control you are on |
+
+These keys are the same in Quill Media Player, Quill Converter, QUILL
+Studio, QUILL Cast, Quill Beacon and QUILL Social. QUILL and QUILL Lite are
+different: there Alt+Shift with F6 to F11 are editing commands, and the
+Scribe commands have no key until you give them one in the Keymap Editor.
+
+### Troubleshooting
+
+When something goes wrong, you hear one sentence that names Scribe for
+Documents and the file, and usually Scribe's own reason. QUILL Studio adds a code,
+such as QUILL-SCRIBE-PAGES, which you never hear. It is in the Details box in
+Scribe Conversions and in **Copy Details**, for when you ask for help.
+
+| Code | What you hear | What to do |
+|---|---|---|
+| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended. Conversions are paused until you sign in again." | In Scribe Conversions, press **Sign In...** on the job. It carries on when you are signed in. |
+| QUILL-SCRIBE-SIGNIN-LOCAL | That no port could be opened to receive the sign-in, or that the browser could not be opened | Allow QUILL apps in your security software, then **Try Again**. Or press **Copy Sign-in Link** and paste it into any browser. |
+| QUILL-SCRIBE-PAGES | "Scribe for Documents could not convert Notes.pdf:", Scribe's message, then "Use Buy Pages in Scribe Conversions, then Retry." | Press **Buy Pages**, buy pages in your browser, then **Retry**. Without pages, Scribe still makes a free preview of the first two pages. |
+| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open Scribe Conversions to enter it." | Press **Enter Password...** on the job. After three wrong tries, press **Retry** for three more. |
+| QUILL-SCRIBE-BUSY | "Scribe for Documents asked QUILL Studio to slow down; trying again in a minute." | Nothing. QUILL Studio waits a minute and carries on. |
+| QUILL-SCRIBE-NOTDOC | "Scribe for Documents cannot convert Data.xml: it takes PDF, pictures, Office, OpenDocument, text, EPUB and MOBI files, not web pages." | Save the file as Word or PDF and send that. |
+| QUILL-SCRIBE-TOOBIG | "Video.pdf is 612 MB. Scribe for Documents takes files up to 500 MB." | Split the document, or save a copy with smaller pictures. Nothing was sent. |
+| QUILL-SCRIBE-GONE | Scribe's reason; the row says "No longer in your Scribe account" | Press **Remove from List**, and convert the file again if you need it. |
+| QUILL-SCRIBE-OFFLINE | "Reconnecting to Scribe for Documents; your conversion is still running there." | Nothing, usually. QUILL Studio reconnects by itself without uploading again, and says nothing when it is back. |
+| QUILL-SCRIBE-SAVE | That the download folder is not writable or could not be made | Free some space or choose another **Download folder** in Options, then **Retry**. No more pages are used. |
+| QUILL-SCRIBE-OFF | "Scribe for Documents is disabled in Safe Mode." | Start QUILL Studio normally. Nothing was queued. |
+| QUILL-SCRIBE-FAILED | "Scribe for Documents could not convert Notes.pdf:" and Scribe's reason | Press **Retry**. If it fails again, press **Copy Details** and send that to support. |
+
+### Questions people ask
+
+**Does QUILL Studio send anything without asking?** No. Every upload needs **Send
+and Convert** in the Convert dialog, which first says exactly what will be
+sent and where. There is no "don't ask again".
+
+**Will a second format cost more pages?** No. Pages are charged once for each
+document. Use **Download Formats...** in My Scribe Documents for another
+format of a document already in your account.
+
+**Can I use QUILL Studio and QUILL at the same time?** Yes. Every QUILL app on this
+computer shares one sign-in, one queue and one Options window. Only one
+sends at a time, and only the app running the job speaks; the others show
+the same rows quietly. If another QUILL app is running the job, the result
+sentence ends "Open it from Scribe Conversions."
+
+**Can I stop a conversion?** Scribe cannot be stopped once it starts.
+**Cancel Waiting** stops QUILL Studio waiting and downloading, and says so.
+
+**What happens if I close QUILL Studio during a conversion?** Nothing is lost. The
+next QUILL app to start downloads what was made and tells you once.
+
+**Where is the privacy information?** In Scribe for Documents Options, under
+**Powered by Scribe for Documents**, and in the QUILL user guide's Scribe for
+Documents chapter: where documents go, how long they are kept, and how to
+delete them.
+
+**Is Scribe's voice the same as Studio's own voices?** No. Scribe reads the
+document on Pneuma's computers with its own voices; Studio's Narrate
+Documents uses the voices on your computer and sends nothing anywhere.
+
+### F1 in the Scribe windows
+
+| Window | What F1 tells you |
+|---|---|
+| Convert with Scribe for Documents | What is sent and where, the formats, the settings, and the pages it uses |
+| Scribe Conversions | The jobs, their stages, and every command on a job |
+| My Scribe Documents | Your documents and the Trash, and what each button does |
+| Scribe for Documents Options | The family's one set of Scribe choices |
+| Sign In to Scribe for Documents | Signing in on Scribe's own page, in your browser |
+| Password for Notes.pdf | A PDF's password, used once and never saved |
+
+
 ## The Studio Mixer (unreleased)
 
 **Capture > Studio Mixer...** (Ctrl+Alt+Shift+M, or **Mixer: sounds you hear** in the Record a demonstration window) changes what *you* hear, not just what is recorded. It does what the Windows volume mixer and sound settings do, in one window you can use entirely from the keyboard. It has two tabs; Ctrl+Tab moves between them.

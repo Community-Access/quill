@@ -578,6 +578,8 @@ Control coverage: 343 audited sites (247 helped, 96 named-help).
 
 **Ask.** A conversation about the episode in front of you, on whichever AI is in use: the episode, its show notes, its chapters and where you are in it go with every message, never the audio. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. The Quick questions list holds What did I miss in this episode? and a few more: arrow freely and press Enter on one to put it in the message box.
 
+**Ask for Human Review.** Tell Scribe's people what is wrong with the document. Human review is Scribe's paid remediation; Scribe tells you the cost.
+
 **Build Me a Listening Run.** Episodes AI help chose to fit the time you have, measured by Cast. Suggestions from AI help, for you to decide. Each row starts accepted; Space switches it between Accept and Skip, and Accept All and Skip All change every row. Apply Selected does only the accepted rows; Cancel or Escape changes nothing.
 
 **Change What It Looks For.** Looking for a different kind of thing clears the rule's tests and places, because they belong to the old kind.
@@ -586,11 +588,19 @@ Control coverage: 343 audited sites (247 helped, 96 named-help).
 
 **Choose Your AI.** Choose where QUILL Cast's AI comes from: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out. Choosing here changes nothing in the other apps.
 
+**Choose a Linked Document.** The links here that point straight at a file Scribe for Documents can take. Choose one and press OK; the Convert dialog then says what will be sent before anything goes.
+
 **Closing QUILL Cast.** What closing the window should do: exit, or keep playing with QUILL Cast tucked into the system tray. Cancel leaves everything as it was. Don't ask me again remembers your answer, and Preferences can set it back to asking.
+
+**Convert from a Link.** The address of a file for Scribe for Documents to fetch, such as a link to a PDF. It must start with https:// or http:// and point straight at a file, not a web page or a page behind a sign-in.
+
+**Convert with Scribe for Documents.** Send a document to Scribe for Documents, Pneuma Solutions' service, and choose what you want back: Word, accessible HTML, tagged PDF, EPUB, Kindle, DAISY with audio, MP3 audio or braille. The first box says exactly what will be sent and where; nothing is sent until you press Send and Convert. Settings for language, voice, braille and pictures follow the formats, and Pages says how many of your Scribe pages it uses.
 
 **Copy to Folder.** Choose another folder for the same subscription, or make a new folder. The podcast remains in its original folder and shares one episode list, download set, and listening history in every placement.
 
 **Delete Lineup.** Deleting a lineup removes its rules and its order, never the stations, episodes or files in it. Undo brings it back.
+
+**Download Again from Scribe for Documents.** The file this place points to is not on this computer. Yes opens the Convert dialog for the document already in your Scribe account; nothing is uploaded and no pages are used.
 
 **Downloads.** The download queue, and everything you can do to it. Finished rows stay until you clear them so "did that actually download?" always has an answer, and Enter on a saved row opens the folder it landed in.
 
@@ -636,6 +646,8 @@ Control coverage: 343 audited sites (247 helped, 96 named-help).
 
 **Move to Position.** Type the position to move to, counting from 1. The new position is said once the item is there.
 
+**My Scribe Documents.** Every document in your Scribe account, and the Trash. Download Formats (Enter) downloads a format or makes a new one, which uses no pages for a document already there. Rename, Move to Trash, Recover, Delete Forever, Ask for Human Review and Copy Details are buttons, and the Applications key lists them.
+
 **Name These Chapters.** New chapter titles AI help wrote from the transcript. Suggestions from AI help, for you to decide. Each row starts accepted; Space switches it between Accept and Skip, and Accept All and Skip All change every row. Apply Selected does only the accepted rows; Cancel or Escape changes nothing.
 
 **New Lineup.** Type a name for the new lineup. Names are unique, ignoring capitals.
@@ -678,6 +690,8 @@ Control coverage: 343 audited sites (247 helped, 96 named-help).
 
 **Removed Rules.** Rules you removed had brought items in. Keep them as kept items, or let them go to Recently Left.
 
+**Rename.** The document's new title in your Scribe account.
+
 **Rename Lineup.** Type the lineup's new name. Names are unique, ignoring capitals, so Go to a Lineup always means one thing.
 
 **Rename Place.** Your own name for a place in the main window. Leave it as shipped, or blank, to keep the shipped name; nothing in the place changes.
@@ -686,7 +700,15 @@ Control coverage: 343 audited sites (247 helped, 96 named-help).
 
 **Save Lineup.** A name for the Play Queue's current order, so Apply Lineup can put it back later. Saving never changes the queue itself.
 
+**Save a Beacon Place.** Where in the document the Quill Beacon place should point: the start, or one of its headings. The place remembers the Scribe document, so Beacon can download it again if the file is gone.
+
+**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. Each stage is said once, and the rows never move under you. Escape closes it.
+
+**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and how much is spoken. OK saves; Cancel leaves things as they were.
+
 **Search Everywhere.** One search across everything Cast knows: your shows, their episodes, show notes and transcripts. Each result says which show and which episode it came from, and Enter opens the row it names.
+
+**Sign In to Scribe for Documents.** Your browser is open at Scribe's own sign-in page; sign in there and come back. QUILL never sees what you type. Copy Sign-in Link copies the address for another browser, and Continue closes this once you are signed in.
 
 **Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
 
@@ -699,6 +721,8 @@ Control coverage: 343 audited sites (247 helped, 96 named-help).
 **Test.** One test of a rule: a field, a comparison and a value. A number test never matches an item that does not say, so a podcast with no length is never 'at most 10 minutes'.
 
 **Tidy the Podcasts I Follow.** Podcasts that look finished, doubled up or broken, each with its reason and an action. Nothing is sent anywhere for this. Suggestions from AI help, for you to decide. Each row starts accepted; Space switches it between Accept and Skip, and Accept All and Skip All change every row. Apply Selected does only the accepted rows; Cancel or Escape changes nothing.
+
+**Turn On Scribe for Documents.** Scribe for Documents is off in QUILL Lite. Yes turns it on and opens the Convert dialog, which still says what will be sent before anything goes. You can turn it off again in Tools, Customize Features.
 
 **Undo History.** The last ten things you can take back, newest first, each saying what undoing it brings back. Undo This One takes back the highlighted step alone and leaves the rest; Ctrl+Z always takes the newest.
 
@@ -745,6 +769,8 @@ Control coverage: 343 audited sites (247 helped, 96 named-help).
 **Windows titled "My Notes...".** Your own notes on this episode, each anchored to the moment you wrote it. Enter jumps playback to a note's position, and a note can be shared as text with its timestamp.
 
 **Windows titled "Now Playing...".** The episode that is playing, as a console you can stay in: the position as a slider, the transport buttons, speed, volume and the sleep timer, the chapters with the playing one marked, the show notes you can read by heading and link, and a note of your own. Ctrl+1 returns to the library; Ctrl+2 comes back here.
+
+**Windows titled "Password for ...".** The password for this PDF, used for this one upload and never saved. Show password shows what you typed, for braille or typing echo.
 
 **Windows titled "Playback Speed...".** How fast this one podcast plays, remembered between its episodes, so a host who talks slowly stays sped up without setting it each time.
 
@@ -1076,6 +1102,8 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 **Ask.** A conversation about the book you are listening to, on whichever AI is in use: the book's title, the chapter, your place in it and the list of chapters go with every message, and the audio never does. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. Quick questions holds Remind me who this character is and a few more.
 
+**Ask for Human Review.** Tell Scribe's people what is wrong with the document. Human review is Scribe's paid remediation; Scribe tells you the cost.
+
 **Book Library.** Search LibriVox, the free public-domain audiobook catalog, and choose a book. Type a title, press Search, pick a result, and Play streams the book's sections here in order. No account is involved and nothing is saved to disk.
 
 **Chapter Summary.** The AI's summary of the chapter you are in, in a sentence or two, made from the book's own text or a short transcript made on this computer. Copy puts it on the clipboard; asking again for the same chapter gives the same answer without sending anything.
@@ -1083,6 +1111,14 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 **Choose Columns.** Decide what a row of the chosen list says, and in what order. A row is read out one column at a time, so hiding a column removes it from every spoken row, and the preview line reads exactly what one row will say. Cancel leaves every list as it was.
 
 **Choose Your AI.** Choose where Quill Media Player's AI comes from: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. The player signs in on its own, as QUILL Media Player. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out.
+
+**Choose a Linked Document.** The links here that point straight at a file Scribe for Documents can take. Choose one and press OK; the Convert dialog then says what will be sent before anything goes.
+
+**Convert from a Link.** The address of a file for Scribe for Documents to fetch, such as a link to a PDF. It must start with https:// or http:// and point straight at a file, not a web page or a page behind a sign-in.
+
+**Convert with Scribe for Documents.** Send a document to Scribe for Documents, Pneuma Solutions' service, and choose what you want back: Word, accessible HTML, tagged PDF, EPUB, Kindle, DAISY with audio, MP3 audio or braille. The first box says exactly what will be sent and where; nothing is sent until you press Send and Convert. Settings for language, voice, braille and pictures follow the formats, and Pages says how many of your Scribe pages it uses.
+
+**Download Again from Scribe for Documents.** The file this place points to is not on this computer. Yes opens the Convert dialog for the document already in your Scribe account; nothing is uploaded and no pages are used.
 
 **Edit Bookmark.** Change the note on the highlighted bookmark. Only the words change -- the bookmark keeps its position.
 
@@ -1094,6 +1130,8 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 **Mini Player.** A small always-on-top window carrying just the transport -- Play/Pause and the chapter moves -- so the book stays in reach while you work somewhere else. It drives the same playback session as the main window; there is no second audio stream, and closing it stops nothing.
 
+**My Scribe Documents.** Every document in your Scribe account, and the Trash. Download Formats (Enter) downloads a format or makes a new one, which uses no pages for a document already there. Rename, Move to Trash, Recover, Delete Forever, Ask for Human Review and Copy Details are buttons, and the Applications key lists them.
+
 **Player Information.** What is playing, as one read-only report: title, position, chapter and the engine behind it. Arrow through it as many times as you like at your own pace -- reviewing it never touches playback -- and Copy takes the whole report to the clipboard.
 
 **Quick Actions.** Decide what pressing Enter on a row does, and the order of the row's right-click menu. The first action in each list is the default and the whole list is rearranged by position -- Move Up, Move Down, Make Default -- never by checkbox. Cancel leaves every list as it was.
@@ -1102,15 +1140,29 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 **Recap.** The AI's reminder of what was happening up to your place in the book, with nothing from further on. It is made from the book's own text or a transcript of at most five minutes, made on this computer. Copy puts it on the clipboard.
 
+**Rename.** The document's new title in your Scribe account.
+
+**Save a Beacon Place.** Where in the document the Quill Beacon place should point: the start, or one of its headings. The place remembers the Scribe document, so Beacon can download it again if the file is gone.
+
+**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. Each stage is said once, and the rows never move under you. Escape closes it.
+
+**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and how much is spoken. OK saves; Cancel leaves things as they were.
+
 **Show and Hide Key.** Choose one key that shows and hides the player from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
 
+**Sign In to Scribe for Documents.** Your browser is open at Scribe's own sign-in page; sign in there and come back. QUILL never sees what you type. Copy Sign-in Link copies the address for another browser, and Continue closes this once you are signed in.
+
 **Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
+
+**Turn On Scribe for Documents.** Scribe for Documents is off in QUILL Lite. Yes turns it on and opens the Convert dialog, which still says what will be sent before anything goes. You can turn it off again in Tools, Customize Features.
 
 **Voice Command.** Say or type one natural command -- 'skip back thirty', 'next chapter', 'go to 1:20:00', 'bookmark this', 'sleep in twenty' -- and OK carries it out. The same grammar answers the hands-free Listen for a Command toggle; this field is the way to use it without a microphone.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
 
 **Windows titled "Lyrics:...".** The words of the song that is playing, from LRCLIB (lrclib.net), as text to arrow through and copy. When the words are timed, Current line shows the line being sung and Follow playback keeps the cursor on it; nothing is spoken unless you press Say Current Line. Escape closes it.
+
+**Windows titled "Password for ...".** The password for this PDF, used for this one upload and never saved. Show password shows what you typed, for braille or typing echo.
 
 ### Every authored control help sentence
 
@@ -1171,6 +1223,8 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 
 **Ask AI questions about a video.** Choose a video and the whole of it or a stretch. Studio takes frames from that stretch, lays them out as one labelled picture with the transcript if there is one, and opens a conversation about it. Nothing is sent until you approve it there.
 
+**Ask for Human Review.** Tell Scribe's people what is wrong with the document. Human review is Scribe's paid remediation; Scribe tells you the cost.
+
 **Broadcast live.** Stream to an Icecast or SHOUTcast server. Fill in the server, the show and the sound quality, choose what goes into the stream (your screen reader starts left out), and whether to save a copy. Press Check; Go live is available when nothing stops it. Test the connection privately first if you like.
 
 **Capture screen.** Choose a named window for a whole-window screenshot without entering sizes. Or choose a display, full desktop, delayed active window or guided region. For a guided region, choose a source and Whole source, top, bottom, left, right or middle. Review Capture plan and guidance before starting. Exact coordinates are optional advanced settings. Review local OCR or framing afterward. AI sharing requires approval or previously enabled automatic AI.
@@ -1183,11 +1237,17 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 
 **Choose Your AI.** Choose where QUILL Studio's AI comes from: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out. Every picture Studio asks about goes to the one in use. Choosing here changes nothing in the other apps.
 
+**Choose a Linked Document.** The links here that point straight at a file Scribe for Documents can take. Choose one and press OK; the Convert dialog then says what will be sent before anything goes.
+
 **Choose screenshot control.** Choose a specific part of the selected window by its name or role. Search filters real accessible controls without AI. Password and offscreen items are excluded. Use control selects a screenshot area; it does not press the control.
 
 **Choose the save folder.** Choose the folder where demonstrations are saved.
 
 **Convert Audio.** Convert audio files or whole folders between formats, on this machine. Build the queue, pick the output format, preset, and destination folder, and Convert runs in the background with spoken progress. The Advanced options only override what you deliberately change; untouched controls leave the preset alone.
+
+**Convert from a Link.** The address of a file for Scribe for Documents to fetch, such as a link to a PDF. It must start with https:// or http:// and point straight at a file, not a web page or a page behind a sign-in.
+
+**Convert with Scribe for Documents.** Send a document to Scribe for Documents, Pneuma Solutions' service, and choose what you want back: Word, accessible HTML, tagged PDF, EPUB, Kindle, DAISY with audio, MP3 audio or braille. The first box says exactly what will be sent and where; nothing is sent until you press Send and Convert. Settings for language, voice, braille and pictures follow the formats, and Pages says how many of your Scribe pages it uses.
 
 **Describe Again.** Choose the last picture you described, or a folder you described or one picture from it, and a prompt style. The new description is kept beside the earlier ones, so you can compare them. To use another AI, choose it in Choose Your AI first.
 
@@ -1196,6 +1256,8 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 **Describe a Picture.** Choose a picture, or a video and then the moment in it. Studio takes that one picture on this computer, fits it to the AI in use and reads the description aloud. Asking about the same picture again sends nothing.
 
 **Discard this recording.** Confirm deleting the recording in progress. It cannot be recovered.
+
+**Download Again from Scribe for Documents.** The file this place points to is not on this computer. Yes opens the Convert dialog for the document already in your Scribe account; nothing is uploaded and no pages are used.
 
 **Edit chapter.** This chapter's title and its exact start and end, typed rather than set by ear, plus the optional link and image a Podcasting 2.0 player can show. Moving the start moves the end of the chapter before it, so the book stays gapless; the sentence at the top tells you the range this chapter is allowed to occupy.
 
@@ -1208,6 +1270,8 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 **Make a YouTube video from a picture and sound.** Choose a picture and a sound file, the shape of the video, and optionally a slow zoom, a sound wave and chapters from the recording's markers. The sound is used exactly as it is. The video and its YouTube title and description are saved beside the sound.
 
 **Make a picture with AI.** Describe the picture you want, choose its shape and press Make the picture. Then ask for changes in words and press it again; every version is kept with a description from a separate look by your vision model. Every request is approved first.
+
+**My Scribe Documents.** Every document in your Scribe account, and the Trash. Download Formats (Enter) downloads a format or makes a new one, which uses no pages for a document already there. Rename, Move to Trash, Recover, Delete Forever, Ask for Human Review and Copy Details are buttons, and the Applications key lists them.
 
 **Play Queue.** The books lined up to play in order. Add a book, jump to the next one, remove or clear entries -- Delete on the list removes the highlighted row. The current book is marked in words, and a row whose file has moved says missing rather than failing silently.
 
@@ -1233,6 +1297,10 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 
 **Recover unfinished recordings.** Recordings interrupted by a crash or power cut were found. Studio can join, check and save each one beside its folder.
 
+**Rename.** The document's new title in your Scribe account.
+
+**Save a Beacon Place.** Where in the document the Quill Beacon place should point: the start, or one of its headings. The place remembers the Scribe document, so Beacon can download it again if the file is gone.
+
 **Screen reader in the stream.** Confirm putting your screen reader's speech in the stream: listeners hear everything it says while you are live.
 
 **Screen reader speech.** Confirm putting your screen reader's speech in the recording: everything it says while you record will be in the file.
@@ -1242,6 +1310,12 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 **Screenshot editing and evidence.** Edit a copy of your screenshot. Choose a plain-language action and a named area, then Add edit. Undo and Redo preserve the original. Find text to select offers recognized text as an anchor. More options reveals specialist geometry, layers, comparison and evidence exports. Review the edited result before sharing.
 
 **Screenshot visual preview.** An optional magnified visual preview. Use scrolling keys to inspect it. The editing window retains a text plan and object list for nonvisual review.
+
+**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. Each stage is said once, and the rows never move under you. Escape closes it.
+
+**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and how much is spoken. OK saves; Cancel leaves things as they were.
+
+**Sign In to Scribe for Documents.** Your browser is open at Scribe's own sign-in page; sign in there and come back. QUILL never sees what you type. Copy Sign-in Link copies the address for another browser, and Continue closes this once you are signed in.
 
 **Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
 
@@ -1255,11 +1329,15 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 
 **Test recording.** The result of a 5-second test with your exact settings: what the check found in the file. The test file is deleted when this window closes.
 
+**Turn On Scribe for Documents.** Scribe for Documents is off in QUILL Lite. Yes turns it on and opens the Convert dialog, which still says what will be sent before anything goes. You can turn it off again in Tools, Customize Features.
+
 **Windows titled "Copy Sections...".** Mark pieces of the file you are listening to and collect them into one new file. Mark a start and an end at the playhead, preview exactly what you marked, add it to the list, and keep going -- then save the collection as a new file or onto an existing one. The original recording is never changed.
 
 **Windows titled "Demonstration...".** The demonstration was saved and checked independently. Verified means every check passed; Needs review means it plays but something may be spoiled; Failed means a stream is missing or it does not decode. Play it, open its folder, copy its path or inspect a frame.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
+
+**Windows titled "Password for ...".** The password for this PDF, used for this one upload and never saved. Show password shows what you typed, for braille or typing echo.
 
 **Windows titled "Recovered:...".** An interrupted recording was finished and checked. Play it, open its folder, copy its path or inspect a frame.
 
@@ -1963,6 +2041,8 @@ Control coverage: 60 audited sites (60 helped).
 
 **Ask.** A conversation about your queued files, on whichever AI is in use: each file's details as File Properties gives them, by name and never its folder, the Convert to choice and the last conversion's report go with every message. The AI never hears the sound itself. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. Quick questions holds Will this play in my car?, Make this smaller without losing much, and a few more.
 
+**Ask for Human Review.** Tell Scribe's people what is wrong with the document. Human review is Scribe's paid remediation; Scribe tells you the cost.
+
 **Auphonic Account.** Whether an Auphonic token is stored on this computer, and on Check Account, who the account is, the credits left and the plan. Sign In stores a token only after Auphonic accepts it; Sign Out removes it, for the Audio Studio too. Nothing is uploaded from here.
 
 **Auphonic Production History.** Every production Quill Converter sent to Auphonic, newest first, kept on this computer: its status, its files and where its results went. Refresh from Auphonic brings the statuses up to date, Download Again fetches the results once more without replacing a file, and Remove from List forgets one here only.
@@ -1973,13 +2053,21 @@ Control coverage: 60 audited sites (60 helped).
 
 **Choose Your AI.** Choose where Quill Converter's AI comes from: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. Quill Converter signs in on its own, as QUILL Converter. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out.
 
+**Choose a Linked Document.** The links here that point straight at a file Scribe for Documents can take. Choose one and press OK; the Convert dialog then says what will be sent before anything goes.
+
 **Conversion Report.** Your last conversion, file by file: the settings used, where the files went, what converted, and why anything failed -- in plain words, then FFmpeg's own message. Copy All puts it on the clipboard, ready to paste into an email to support.
 
 **Convert Audio.** The full conversion dialog, seeded with your queue: every format the main window offers, video included, plus exact settings -- bit rate, sample rate, channels, loudness -- and what to do when an output file already exists. It converts with its own settings, so the main window's effects do not apply here; anything you leave alone keeps the preset's answer.
 
 **Convert from URL.** Paste a web link -- YouTube and many other sites -- and its audio is downloaded and handed to the converter. The page's best audio stream is fetched and nothing else about the page is kept; only download what you have the right to use. A playlist or a channel link asks how much of it to take. Unavailable in Safe Mode.
 
+**Convert from a Link.** The address of a file for Scribe for Documents to fetch, such as a link to a PDF. It must start with https:// or http:// and point straight at a file, not a web page or a page behind a sign-in.
+
+**Convert with Scribe for Documents.** Send a document to Scribe for Documents, Pneuma Solutions' service, and choose what you want back: Word, accessible HTML, tagged PDF, EPUB, Kindle, DAISY with audio, MP3 audio or braille. The first box says exactly what will be sent and where; nothing is sent until you press Send and Convert. Settings for language, voice, braille and pictures follow the formats, and Pages says how many of your Scribe pages it uses.
+
 **Custom Effects.** Every effect on one page, starting from the effect recipe you had chosen: cleanup, tone, leveling, a loudness target, gain, speed, fades, and keeping only part of each file. OK makes these your Custom effects for the next conversion and for Preview; Cancel changes nothing.
+
+**Download Again from Scribe for Documents.** The file this place points to is not on this computer. Yes opens the Convert dialog for the document already in your Scribe account; nothing is uploaded and no pages are used.
 
 **Download a Playlist or Channel.** The link is a playlist or a YouTube channel. Choose how much of it to download -- the whole playlist or the first few, a channel's newest videos, Shorts or live streams, from any date or only recent ones. Every video's audio joins the queue in order, tagged as one album, and pasting the same link later fetches only what is new.
 
@@ -1991,13 +2079,25 @@ Control coverage: 60 audited sites (60 helped).
 
 **More Auphonic Options.** Custom processing's own values -- loudness target, peak limit, leveling, filtering and noise reduction -- used when Processing is set to Custom, plus a second output format and captions with a transcript. OK keeps them for this submission; nothing is sent from here.
 
+**My Scribe Documents.** Every document in your Scribe account, and the Trash. Download Formats (Enter) downloads a format or makes a new one, which uses no pages for a document already there. Rename, Move to Trash, Recover, Delete Forever, Ask for Human Review and Copy Details are buttons, and the Applications key lists them.
+
 **Process with Auphonic.** Send the queue's sound files to your own Auphonic account to be post-produced online, then save the results here. Choose separate productions or one multitrack production, check your account to load your presets, and pick the processing and the output format. Nothing is uploaded until you confirm on the next page.
 
 **Quill Converter.** Convert audio and video between formats: sound to sound, video to sound, or video to video. Queue your files or folders, choose a format, a preset and any effects -- Preview lets you hear fifteen seconds of the result first -- and Convert. Everything runs on this computer, your originals are never touched, and a file already in the output folder is numbered around, never overwritten. The one exception is Process with Auphonic, which uploads only after you confirm.
 
+**Rename.** The document's new title in your Scribe account.
+
+**Save a Beacon Place.** Where in the document the Quill Beacon place should point: the start, or one of its headings. The place remembers the Scribe document, so Beacon can download it again if the file is gone.
+
+**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. Each stage is said once, and the rows never move under you. Escape closes it.
+
+**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and how much is spoken. OK saves; Cancel leaves things as they were.
+
 **Send to Auphonic?.** The last look before anything leaves this computer: every file to be uploaded and every file left out, the preset and processing, and where the results will be saved. Upload and Process sends them using your Auphonic credits; Cancel sends nothing.
 
 **Show and Hide Key.** Choose one key that shows and hides Quill Converter from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
+
+**Sign In to Scribe for Documents.** Your browser is open at Scribe's own sign-in page; sign in there and come back. QUILL never sees what you type. Copy Sign-in Link copies the address for another browser, and Continue closes this once you are signed in.
 
 **Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
 
@@ -2005,9 +2105,13 @@ Control coverage: 60 audited sites (60 helped).
 
 **Tags, Cover and Chapter Marks.** What your Auphonic productions carry besides their sound: an artist and an album that replace the files' own tags, a JPEG or PNG cover image uploaded with each production, and, for one production, its chapter marks typed one a line. OK keeps them for this submission; nothing is sent from here.
 
+**Turn On Scribe for Documents.** Scribe for Documents is off in QUILL Lite. Yes turns it on and opens the Convert dialog, which still says what will be sent before anything goes. You can turn it off again in Tools, Customize Features.
+
 **Will This Play on My Device?.** First, type the device you mean, such as an iPhone, a car stereo or an Echo, or leave it empty for the usual ones; Cancel sends nothing. Then the AI's answer, from the queued files' details only: for each kind of file, yes or no and why, and what to choose in Convert to when it will not play. Copy puts the answer on the clipboard.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
+
+**Windows titled "Password for ...".** The password for this PDF, used for this one upload and never saved. Show password shows what you typed, for braille or typing echo.
 
 ### Every authored control help sentence
 
@@ -2123,17 +2227,29 @@ Control coverage: 127 audited sites (127 helped).
 
 **Ask.** A conversation about what you have saved, on whichever AI is in use. When a search is typed, the search and its results' titles and notes go with every message; otherwise the selected beacon's title, note and tags do -- never where your library or any file is kept. Type in Your message and press Enter; the reply is read aloud and added to the conversation above.
 
+**Ask for Human Review.** Tell Scribe's people what is wrong with the document. Human review is Scribe's paid remediation; Scribe tells you the cost.
+
 **Build Search.** A form that writes the search query for you: words, an exact phrase, exclusions, type, collection, tag, link health, and domain. Search runs the built query in the main window's search box, where it can also be saved as a Smart Collection.
 
 **Choose Your AI.** Choose where QuillBeacon's AI comes from: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. QuillBeacon signs in on its own, as QUILL Beacon. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out.
+
+**Choose a Linked Document.** The links here that point straight at a file Scribe for Documents can take. Choose one and press OK; the Convert dialog then says what will be sent before anything goes.
 
 **Collection Editor.** Create a collection, or edit the one selected in the sidebar: its name, description, optional parent, sharing mark, and color. Collections are folders you invent; a bookmark can sit in several.
 
 **Command Palette.** Every command in the app as one searchable list. Type part of a name to filter, Enter runs the highlighted command, Escape closes without running anything.
 
+**Convert from a Link.** The address of a file for Scribe for Documents to fetch, such as a link to a PDF. It must start with https:// or http:// and point straight at a file, not a web page or a page behind a sign-in.
+
+**Convert with Scribe for Documents.** Send a document to Scribe for Documents, Pneuma Solutions' service, and choose what you want back: Word, accessible HTML, tagged PDF, EPUB, Kindle, DAISY with audio, MP3 audio or braille. The first box says exactly what will be sent and where; nothing is sent until you press Send and Convert. Settings for language, voice, braille and pictures follow the formats, and Pages says how many of your Scribe pages it uses.
+
 **Describe a Saved Picture.** The AI's description of the selected beacon's picture. The words in the picture were read on this computer first and sent with it. Copy puts the description on the clipboard, and you are asked once whether to add it to the beacon's note.
 
+**Download Again from Scribe for Documents.** The file this place points to is not on this computer. Yes opens the Convert dialog for the document already in your Scribe account; nothing is uploaded and no pages are used.
+
 **External Player.** Which media player handles handoffs: the default player, optional paths to VLC and mpv for installs not on PATH, and a per-type override so radio and podcasts can open in different players.
+
+**My Scribe Documents.** Every document in your Scribe account, and the Trash. Download Formats (Enter) downloads a format or makes a new one, which uses no pages for a document already there. Rename, Move to Trash, Recover, Delete Forever, Ask for Human Review and Copy Details are buttons, and the Applications key lists them.
 
 **Preferences.** Every setting in one place. The list on the left picks a section -- Accessibility, Sync, Capture Bridge, Published Pages, Routing Rules -- and Apply saves the inline fields; buttons inside the panels act immediately.
 
@@ -2145,9 +2261,19 @@ Control coverage: 127 audited sites (127 helped).
 
 **Read on This Computer.** The words read in the selected beacon's picture on this computer, because the AI in use cannot see pictures. Nothing was sent. Copy puts the words on the clipboard.
 
+**Rename.** The document's new title in your Scribe account.
+
 **Review Location Repair.** A saved location resolved poorly, and this is the decision: read what was saved against what the repair engine proposes, then accept the repair, keep the old location, or mark the bookmark broken for later. Nothing is rewritten without your choice.
 
 **Routing Rule.** One filing rule: when a new web bookmark's address contains the keyword, it is filed into the folder. The first matching rule in the Preferences list wins, and each keyword may be used only once.
+
+**Save a Beacon Place.** Where in the document the Quill Beacon place should point: the start, or one of its headings. The place remembers the Scribe document, so Beacon can download it again if the file is gone.
+
+**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. Each stage is said once, and the rows never move under you. Escape closes it.
+
+**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and how much is spoken. OK saves; Cancel leaves things as they were.
+
+**Sign In to Scribe for Documents.** Your browser is open at Scribe's own sign-in page; sign in there and come back. QUILL never sees what you type. Copy Sign-in Link copies the address for another browser, and Continue closes this once you are signed in.
 
 **Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
 
@@ -2163,9 +2289,13 @@ Control coverage: 127 audited sites (127 helped).
 
 **Trail Editor.** Build or edit a learning trail: a titled, ordered list of bookmarks, each step with its own note. Steps are added from whatever is selected in the main window's list, and reordered with Up and Down -- no dragging anywhere.
 
+**Turn On Scribe for Documents.** Scribe for Documents is off in QUILL Lite. Yes turns it on and opens the Convert dialog, which still says what will be sent before anything goes. You can turn it off again in Tools, Customize Features.
+
 **Windows titled "Attachments -- ...".** The files, URLs, and notes attached to this one bookmark. View opens the selected attachment, Add attaches something new, and Remove takes one off the bookmark without deleting any file on disk.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
+
+**Windows titled "Password for ...".** The password for this PDF, used for this one upload and never saved. Show password shows what you typed, for braille or typing echo.
 
 **Windows titled "Trail -- ...".** Step through this trail one bookmark at a time. The list shows every step with its completion mark, Mark Complete toggles the current one, and Open Current opens its bookmark. Your place and progress are saved as you go.
 

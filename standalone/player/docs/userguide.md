@@ -587,6 +587,191 @@ chapter titles, your bookmark notes and times; never the audio.
 
 ---
 
+## 13c. Listening to a document with Scribe for Documents
+
+Quill Media Player can turn a document into a book you listen to. Scribe for
+Documents, a service from Pneuma Solutions, reads the document aloud with a
+natural voice and sends back MP3 audio and a DAISY book, which is the audio
+with the document's headings as chapters. The Player then opens the book
+with those chapters, ready to play. This part of the Player is Powered by
+Scribe for Documents.
+
+Nothing leaves your computer until you say so. Before each upload the Player
+shows you what will be sent, and where, and waits for you to press **Send
+and Convert**.
+
+### Where it is
+
+| Menu | What is there |
+|---|---|
+| **File > Listen to a Document with Scribe for Documents...** | Choose a document; it comes back as a DAISY book and MP3 audio |
+| **File > Scribe for Documents** | Scribe Conversions, My Scribe Documents, Scribe Status, Repeat Last Scribe Message, Scribe for Documents Options |
+
+### Signing in
+
+The first time you use a Scribe command, your browser opens at Scribe's
+own sign-in page, and you hear "Your browser is open at Scribe for
+Documents. Sign in there, then come back to Quill Media Player." Sign in, come back, and
+press **Continue**. One sign-in covers every QUILL app on this computer, and
+Quill Media Player never sees your Scribe password. You use your own Scribe account and
+pay Scribe for your own pages; a new account has 100 free pages.
+
+### Listening to a document, step by step
+
+1. Choose **File > Listen to a Document with Scribe for Documents...**, or
+   press Alt+Shift+F6.
+2. A file picker opens. It shows only the files Scribe takes: PDF, pictures,
+   Word and other text documents, spreadsheets, presentations, EPUB and
+   MOBI, up to 500 MB. Choose one, here "Biology.pdf", and press Open.
+3. The Convert with Scribe for Documents dialog opens on **What will be
+   sent**. Read it with the arrow keys: it says the file goes to Scribe for
+   Documents in the United States and stays in your Scribe account under your
+   retention setting.
+4. Press Tab. **MP3 audio** and **DAISY (text and audio)** are already
+   checked. Uncheck one if you only want the other.
+5. Tab to **Voice**, choose a voice, and press **Play Sample** to hear it.
+   Escape stops the sample without closing the dialog. Choose a **Speed**.
+6. Tab to **Pages** to see how many of your pages it uses, then press
+   **Send and Convert**. You hear "Scribe for Documents: sending Biology.pdf,
+   for MP3 audio and DAISY (text and audio)."
+7. You hear each stage once, such as "Biology.pdf, converting to MP3 audio.",
+   and a quarter, half and three quarters of the way. A long book takes a
+   while; use Scribe Status (Alt+Shift+F9) at any time.
+8. When it is done you hear one sentence, for example: "Scribe for Documents
+   made Biology.mp3 and Biology.zip in Documents\Scribe for
+   Documents\Biology. The DAISY book is open in Media Player, 24 headings,
+   at the start. Press Alt+A to play."
+9. Press Alt+A to play. The chapters are in the Chapters page, and resume
+   and bookmarks work as for any book.
+
+### When the book does not open by itself
+
+The Player opens a finished book by itself only when it is safe to:
+
+- the Player is the window you are in, with no dialog open over it;
+- nothing is playing (a result never stops what you are listening to);
+- **Open each result when it is ready** in Options is **Open it**; and
+- this Player started the job. If another QUILL app is running Scribe's
+  queue, that app says the result.
+
+Otherwise the result sentence ends "Open it from Scribe Conversions." Open
+**File > Scribe for Documents > Scribe Conversions**, choose the row and
+press Enter, or press **Next Steps...** and choose **Play in Media Player
+(DAISY (text and audio))**. Next Steps also offers **Play in Media Player
+(MP3 audio)**, and **Open in QUILL** for any Word, HTML or EPUB made with it.
+
+### DAISY books from QUILL
+
+When QUILL's Next Steps send a DAISY book to the Media Player, or you open a
+DAISY zip or its `.ncx` file with the Player from Explorer, the Player
+unpacks the zip into a folder beside it and opens the book with its
+chapters. A zip that is not a DAISY book is left alone and you are told so.
+The Player reads DAISY 3, which is what Scribe makes; a DAISY 2 book is
+named as one, and not opened.
+
+### Keys and commands
+
+| Command | Menu | Key | What it does |
+|---|---|---|---|
+| Listen to a Document with Scribe for Documents | File | **Alt+Shift+F6** | Chooses a document and makes it a book to listen to |
+| Scribe Conversions | File > Scribe for Documents | **Alt+Shift+F7** | Every Scribe job on this computer, and what it is doing |
+| My Scribe Documents | File > Scribe for Documents | **Alt+Shift+F8** | Your documents on Scribe, and the Trash |
+| Scribe Status | File > Scribe for Documents | **Alt+Shift+F9** | Says what the running job is doing, once |
+| Repeat Last Scribe Message | File > Scribe for Documents | **Alt+Shift+F10** | Says the last Scribe message again |
+| Scribe for Documents Options | File > Scribe for Documents | **Alt+Shift+F11** | Sign in or out, your account, the download folder, how much is spoken |
+
+Inside the Scribe windows:
+
+| Where | Key | What it does |
+|---|---|---|
+| Scribe Conversions list | Enter | Open Result |
+| Scribe Conversions list | Delete | Remove from List |
+| Scribe Conversions and My Scribe Documents lists | Applications key or Shift+F10 | Every command for the row |
+| Scribe Conversions | Escape | Closes it, back to where you were |
+| My Scribe Documents list | Enter | Download Formats |
+| Convert dialog, What will be sent | Enter | Send and Convert |
+| Convert dialog, while a voice sample plays | Escape | Stops the sample |
+| Any Scribe window | F1 | What the window is for, then the control you are on |
+
+These keys are the same in Quill Media Player, Quill Converter, QUILL
+Studio, QUILL Cast, Quill Beacon and QUILL Social. QUILL and QUILL Lite are
+different: there Alt+Shift with F6 to F11 are editing commands, and the
+Scribe commands have no key until you give them one in the Keymap Editor.
+
+### Troubleshooting
+
+When something goes wrong, you hear one sentence that names Scribe for
+Documents and the file, and usually Scribe's own reason. Quill Media Player adds a code,
+such as QUILL-SCRIBE-PAGES, which you never hear. It is in the Details box in
+Scribe Conversions and in **Copy Details**, for when you ask for help.
+
+| Code | What you hear | What to do |
+|---|---|---|
+| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended. Conversions are paused until you sign in again." | In Scribe Conversions, press **Sign In...** on the job. It carries on when you are signed in. |
+| QUILL-SCRIBE-SIGNIN-LOCAL | That no port could be opened to receive the sign-in, or that the browser could not be opened | Allow QUILL apps in your security software, then **Try Again**. Or press **Copy Sign-in Link** and paste it into any browser. |
+| QUILL-SCRIBE-PAGES | "Scribe for Documents could not convert Notes.pdf:", Scribe's message, then "Use Buy Pages in Scribe Conversions, then Retry." | Press **Buy Pages**, buy pages in your browser, then **Retry**. Without pages, Scribe still makes a free preview of the first two pages. |
+| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open Scribe Conversions to enter it." | Press **Enter Password...** on the job. After three wrong tries, press **Retry** for three more. |
+| QUILL-SCRIBE-BUSY | "Scribe for Documents asked Quill Media Player to slow down; trying again in a minute." | Nothing. Quill Media Player waits a minute and carries on. |
+| QUILL-SCRIBE-NOTDOC | "Scribe for Documents cannot convert Data.xml: it takes PDF, pictures, Office, OpenDocument, text, EPUB and MOBI files, not web pages." | Save the file as Word or PDF and send that. |
+| QUILL-SCRIBE-TOOBIG | "Video.pdf is 612 MB. Scribe for Documents takes files up to 500 MB." | Split the document, or save a copy with smaller pictures. Nothing was sent. |
+| QUILL-SCRIBE-GONE | Scribe's reason; the row says "No longer in your Scribe account" | Press **Remove from List**, and convert the file again if you need it. |
+| QUILL-SCRIBE-OFFLINE | "Reconnecting to Scribe for Documents; your conversion is still running there." | Nothing, usually. Quill Media Player reconnects by itself without uploading again, and says nothing when it is back. |
+| QUILL-SCRIBE-SAVE | That the download folder is not writable or could not be made | Free some space or choose another **Download folder** in Options, then **Retry**. No more pages are used. |
+| QUILL-SCRIBE-OFF | "Scribe for Documents is disabled in Safe Mode." | Start Quill Media Player normally. Nothing was queued. |
+| QUILL-SCRIBE-FAILED | "Scribe for Documents could not convert Notes.pdf:" and Scribe's reason | Press **Retry**. If it fails again, press **Copy Details** and send that to support. |
+
+**The book did not open.** See [When the book does not open by
+itself](#when-the-book-does-not-open-by-itself). If the DAISY book's
+navigation cannot be read, use the MP3 instead: Next Steps, **Play in Media
+Player (MP3 audio)**.
+
+### Questions people ask
+
+**Does Quill Media Player send anything without asking?** No. Every upload needs **Send
+and Convert** in the Convert dialog, which first says exactly what will be
+sent and where. There is no "don't ask again".
+
+**Will a second format cost more pages?** No. Pages are charged once for each
+document. Use **Download Formats...** in My Scribe Documents for another
+format of a document already in your account.
+
+**Can I use Quill Media Player and QUILL at the same time?** Yes. Every QUILL app on this
+computer shares one sign-in, one queue and one Options window. Only one
+sends at a time, and only the app running the job speaks; the others show
+the same rows quietly. If another QUILL app is running the job, the result
+sentence ends "Open it from Scribe Conversions."
+
+**Can I stop a conversion?** Scribe cannot be stopped once it starts.
+**Cancel Waiting** stops Quill Media Player waiting and downloading, and says so.
+
+**What happens if I close Quill Media Player during a conversion?** Nothing is lost. The
+next QUILL app to start downloads what was made and tells you once.
+
+**Where is the privacy information?** In Scribe for Documents Options, under
+**Powered by Scribe for Documents**, and in the QUILL user guide's Scribe for
+Documents chapter: where documents go, how long they are kept, and how to
+delete them.
+
+**Why are there two files?** The MP3 is one long recording for any player
+or phone. The DAISY book is the same speech with the document's headings
+as chapters, which is what the Player opens. A second format of the same
+document uses no pages.
+
+### F1 in the Scribe windows
+
+Press F1 in any Scribe window for what it is for, then the control you are
+on:
+
+| Window | What F1 tells you |
+|---|---|
+| Convert with Scribe for Documents | What is sent and where, the formats, the settings, and the pages it uses |
+| Scribe Conversions | The jobs, their stages, and every command on a job |
+| My Scribe Documents | Your documents and the Trash, and what each button does |
+| Scribe for Documents Options | The family's one set of Scribe choices |
+| Sign In to Scribe for Documents | Signing in on Scribe's own page, in your browser |
+| Password for Notes.pdf | A PDF's password, used once and never saved |
+
+
 ## 14. Settings
 
 **File > Preferences...** (Ctrl+,) gathers the player's settings in one window:

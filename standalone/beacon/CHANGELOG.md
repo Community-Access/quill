@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- **Places in Scribe for Documents results** (2026-11-21). A Scribe
+  Documents destination lists places in what Scribe for Documents made.
+  Tools > Scribe for Documents > Add My Scribe Documents as Places
+  (Alt+Shift+F6) makes a place for each document in your Scribe account, and
+  QUILL's Next Steps can save one at a heading. A place whose file is gone
+  checks your Scribe account and offers to download it again, with no pages
+  used. The submenu also holds Scribe Conversions, My Scribe Documents, Scribe
+  Status, Repeat Last Scribe Message and Scribe for Documents Options, on
+  Alt+Shift+F7 to F11.
 - **A second sound scheme: VS Code Signals** (2026-11-02). QuillBeacon plays
   the QUILL family's sound scheme, and there are now two: Ink, still the
   default, and VS Code Signals, the accessibility signal sounds from Visual

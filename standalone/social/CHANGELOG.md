@@ -11,6 +11,17 @@ since the first 0.3.0 build belongs to 0.3.0. In it QUILL Social became a feed
 reader as well as a social client, and grew an installer of its own. That work
 comes first, grouped by subject; the 0.3.0 build of 2026-07-19 follows it.
 
+### Scribe for Documents (2026-11-21)
+
+- **Item > Convert Linked Document with Scribe for Documents...**
+  (Alt+Shift+F6) sends a document the focused post links, in its text, its
+  own link or its media, to Scribe for Documents, which rebuilds it as
+  accessible Word, HTML, EPUB, DAISY, MP3 or braille. With several links a
+  list asks which.
+- **Tools** gains Scribe Conversions, My Scribe Documents, Scribe Status,
+  Repeat Last Scribe Message and Scribe for Documents Options, on
+  Alt+Shift+F7 to F11, and F1 in those windows says what each is for.
+
 ### Display scaling and licensing (2026-10-31)
 
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
