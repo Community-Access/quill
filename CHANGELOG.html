@@ -245,6 +245,69 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="quill-radio-find-streams-checks-each-link-is-live-audio-2026-11-21">Quill
+Radio: Find Streams checks each link is live audio (2026-11-21)</h3>
+<p>Ideas from Andre Louis’s StreamSift (<a
+href="https://github.com/OnjLouis/StreamSift">https://github.com/OnjLouis/StreamSift</a>),
+written in QUILL’s own code.</p>
+<ul>
+<li><strong>Each link is checked before it is listed.</strong> Find
+Streams from a Website reads the reply and the first 4 KB of every link
+it finds, and recognises MP3, AAC, Ogg, FLAC and WAV. Live streams come
+first, with their name, format and bitrate. Links it could not check
+stay in the list and say why. Podcast files are marked as files. Web
+pages and dead links are left out, and the status line says how
+many.</li>
+<li><strong>One sentence when the scan ends</strong>, such as “Found 3
+live streams and 2 not checked.” The list is filled once and does not
+change. If the scan is still going after 8 seconds, it says so once.
+Scan stays enabled, so focus never drops out of the window, and pressing
+it during a scan says the scan is still going.</li>
+<li><strong>Sites without HTTPS work.</strong> If a station’s secure
+address refuses, times out or fails, the plain http page is read. The
+https copy of a stream is kept when there are both.</li>
+<li><strong>More streams are found:</strong> player data attributes,
+<code>streamUrl:</code>-style settings, plain-text addresses,
+<code>&lt;base href&gt;</code>, Radio.co players, the site’s own player
+scripts, pop-up players and Icecast status pages.</li>
+<li><strong>HLS is read properly:</strong> encrypted playlists are left
+out, master playlists are followed to their audio, and only a live
+playlist counts as live.</li>
+<li>Stream recovery and Add Custom Station use the same check, so a link
+heard playing is chosen over one that only looks right.</li>
+</ul>
+<h3
+id="github-workbench-what-writing-its-guide-found-fixed-2026-11-21">GitHub
+Workbench: what writing its guide found, fixed (2026-11-21)</h3>
+<ul>
+<li><strong>Codespaces ask before they cost money.</strong> Start, New
+Codespace (Ctrl+N) and Open in a Codespace now ask first and say who
+GitHub bills: you, or the organization that pays for the repository’s
+codespaces. No is the default.</li>
+<li><strong>Run Workflow on Branch runs the workflow you
+selected</strong>, in its own repository. It asks only for the branch.
+It used to ask for the repository and the workflow’s file name
+again.</li>
+<li><strong>Inbox’s Failed checks lists your own pull requests</strong>,
+not every failing pull request you can see.</li>
+<li><strong>Include read notifications works.</strong> Notifications
+then lists read ones too.</li>
+<li><strong>Snooze for One Day hides the notification</strong> until the
+next day. Include read notifications shows it again, marked, so you can
+unsnooze it.</li>
+<li><strong>Refreshing Notifications too soon</strong> shows the last
+list and says how many seconds GitHub asks you to wait, instead of
+asking GitHub again.</li>
+<li><strong>Comments appear in the details pane</strong>, under the
+description of an issue or pull request.</li>
+<li><strong>The artifacts window’s Close button has no access
+key.</strong> Escape closes it, as in the other Workbench windows.</li>
+<li><strong>File &gt; Open from Remote &gt; GitHub Workbench…</strong>
+is the row’s name now. It said GitHub Items….</li>
+<li><strong>Open GitHub Address (Ctrl+L) takes #42</strong>, and opens
+that issue or pull request in the repository you are in.</li>
+</ul>
+<h3
 id="quill-cast-a-new-download-folder-takes-the-waiting-downloads-with-it-2026-11-20">QUILL
 Cast: a new download folder takes the waiting downloads with it
 (2026-11-20)</h3>

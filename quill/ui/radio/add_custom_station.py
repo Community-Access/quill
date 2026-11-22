@@ -34,7 +34,7 @@ def page_resolver(host: Any) -> Callable[[str, Callable[[Any, Any], None]], None
         from quill.core.radio.link_finder import scan_page_for_streams
 
         def work(**_kwargs: Any) -> Any:
-            return scan_page_for_streams(url)
+            return scan_page_for_streams(url, check_live=True)
 
         # The task manager delivers both callbacks on the UI thread already.
         task_manager.submit(

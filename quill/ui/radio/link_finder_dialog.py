@@ -6,6 +6,16 @@ candidate stream link it finds (see ``core/radio/link_finder.py`` for what
 browser). Test plays a candidate through the shared player; "Use This
 Link..." hands the chosen URL plus guessed name/homepage to
 :class:`~quill.ui.radio.add_station_dialog.AddStationDialog`.
+
+Each candidate is checked before it is listed (the live check, an idea from
+Andre Louis's StreamSift, https://github.com/OnjLouis/StreamSift). The checks
+finish inside the scan, so the list is filled once, when everything is known,
+and never changes under the listener (FUX-06). Its first column, which a
+screen reader reads first, says what each row is ("Live: WXYZ FM, MP3, 128
+kbps" or "Not checked: it took too long to answer"), and one sentence says the
+result (FUX-04). A scan can now take a while, so Scan stays enabled --
+disabling the focused button would drop focus out of the window -- and a press
+during a scan, or eight seconds of silence, says once that it is still going.
 """
 
 from __future__ import annotations
@@ -13,11 +23,21 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.radio.find_streams_text import (
+    failure_sentence,
+    row_status,
+    status_label,
+    summary_sentence,
+)
 from quill.core.radio.link_finder import PageStreamCandidate, scan_page_for_streams
 from quill.core.radio.models import RadioStation
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip, dip_size
-from quill.ui.surface_lifetime import surface_tasks
+from quill.ui.surface_lifetime import stop_timer_on_destroy, surface_tasks
+
+#: Silence after Scan before "still scanning" is said, once.
+STILL_SCANNING_SECONDS = 8
+STILL_SCANNING = "Still scanning the page and checking its links."
 
 
 class LinkFinderDialog:
@@ -46,13 +66,14 @@ class LinkFinderDialog:
         self._page_title = ""
         self._favicon_url = ""
         self._testing = False
+        self._scanning = False
 
         self.dialog = wx.Dialog(
             parent,
             title="Find Streams from a Website",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(dip_size(self.dialog, 640, 460))
+        self.dialog.SetMinSize(dip_size(self.dialog, 760, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(
@@ -80,11 +101,16 @@ class LinkFinderDialog:
         url_row.Add(self._scan_btn, 0)
         root.Add(url_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
-        root.Add(wx.StaticText(self.dialog, label="&Candidates found"), 0, wx.LEFT | wx.TOP, 10)
-        self._results = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
-        self._results.SetName("Candidate stream links found on the page")
-        self._results.InsertColumn(0, "Link", width=dip(self._results, 340))
-        self._results.InsertColumn(1, "Why it was flagged", width=dip(self._results, 180))
+        root.Add(wx.StaticText(self.dialog, label="St&reams found"), 0, wx.LEFT | wx.TOP, 10)
+        self._results = wx.ListCtrl(
+            self.dialog, style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SIMPLE
+        )
+        self._results.SetName("Stream links found on the page")
+        # The verdict first: it is what a screen reader reads first, and in
+        # JAWS's first-column mode the only thing it reads.
+        self._results.InsertColumn(0, "Stream", width=dip(self._results, 280))
+        self._results.InsertColumn(1, "Link", width=dip(self._results, 300))
+        self._results.InsertColumn(2, "Found by", width=dip(self._results, 140))
         root.Add(self._results, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         self._status = wx.StaticText(self.dialog, label="")
@@ -114,6 +140,10 @@ class LinkFinderDialog:
         self._results.Bind(wx.EVT_LIST_ITEM_DESELECTED, self._on_result_deselected)
         self._test_btn.Bind(wx.EVT_BUTTON, self._on_test)
         self._use_btn.Bind(wx.EVT_BUTTON, self._on_use)
+        # Owned by the dialog, one-shot, and stopped whenever a scan ends.
+        self._still_timer = wx.Timer(self.dialog)
+        self.dialog.Bind(wx.EVT_TIMER, self._on_still_scanning, self._still_timer)
+        stop_timer_on_destroy(self.dialog, self._still_timer)
 
     def show(self) -> None:
         self.dialog.CentreOnParent()
@@ -128,23 +158,39 @@ class LinkFinderDialog:
         try:
             show_modal_dialog(self.dialog, "Find Streams from a Website", announce=self._announce)
         finally:
+            self._scanning = False
+            self._still_timer.Stop()
             self.dialog.Destroy()
 
     # ------------------------------------------------------------------
 
+    def _say(self, text: str) -> None:
+        """Show *text* in the status line and say it, once."""
+        self._status.SetLabel(text)
+        self._announce(text)
+
     def _on_scan(self, _event: object) -> None:
+        if self._scanning:
+            # Not disabled while it works (that would drop focus out of the
+            # window), so a press is answered rather than ignored -- and the
+            # timed notice is spent: the listener asked and has been told.
+            self._still_timer.Stop()
+            self._announce(STILL_SCANNING)
+            return
         if self._safe_mode:
-            self._status.SetLabel("Finding stream links is disabled in Safe Mode.")
+            self._say("Finding stream links is disabled in Safe Mode.")
             return
         url = self._url_ctrl.GetValue().strip()
         if not url:
-            self._status.SetLabel("Type a website address first.")
+            self._say("Type a website address first.")
             return
-        self._status.SetLabel(f"Fetching {url}...")
-        self._scan_btn.Enable(False)
+        # Shown, not said: the listener has just pressed Scan.
+        self._status.SetLabel(f"Scanning {url} and checking the links it finds...")
+        self._scanning = True
+        self._still_timer.StartOnce(STILL_SCANNING_SECONDS * 1000)
 
         def _do_scan(**_kwargs: Any) -> Any:
-            return scan_page_for_streams(url, safe_mode=self._safe_mode)
+            return scan_page_for_streams(url, safe_mode=self._safe_mode, check_live=True)
 
         self._task_manager.submit(
             "radio-link-finder",
@@ -153,27 +199,58 @@ class LinkFinderDialog:
             on_failure=lambda _op, exc: self._on_scan_done(None, exc),
         )
 
+    def _on_still_scanning(self, _event: object) -> None:
+        # The result and this tick can both be queued: say it only if still true.
+        if self._scanning:
+            self._announce(STILL_SCANNING)
+
+    def _keep_focus_through_refill(self) -> None:
+        """Emptying the list disables Test and Use. If one of them has focus,
+        that would drop focus out of the window, so move it to the list first
+        (the spoken result explains what is, or is not, in it)."""
+        focused = self._wx.Window.FindFocus()
+        if focused is self._use_btn or (focused is self._test_btn and not self._testing):
+            self._results.SetFocus()
+
     def _on_scan_done(self, result: Any, error: BaseException | None) -> None:
-        self._scan_btn.Enable(True)
+        self._scanning = False
+        self._still_timer.Stop()
+        self._keep_focus_through_refill()
         if error is not None or result is None:
-            self._status.SetLabel(f"Could not scan that page: {error}")
             self._candidates = []
             self._results.DeleteAllItems()
+            self._on_result_deselected(None)
+            self._say(failure_sentence(error))
             return
         self._page_title = result.page_title
         self._favicon_url = result.favicon_url
-        self._candidates = result.candidates
+        candidates: list[PageStreamCandidate] = list(result.candidates)
+        checked = bool(getattr(result, "checked", False))
+        left_out = int(getattr(result, "left_out", 0) or 0)
+        # One list, in one order, for the rows and for what Test and Use act
+        # on: the scan already sorted it (live first) and left out non-audio.
+        self._candidates = candidates
         self._results.DeleteAllItems()
-        for row, candidate in enumerate(self._candidates):
-            self._results.InsertItem(row, candidate.url)
-            self._results.SetItem(row, 1, candidate.reason)
-        if self._candidates:
-            self._status.SetLabel(f"{len(self._candidates)} candidate link(s) found.")
-            self._results.Select(0)
-            self._results.Focus(0)
+        for row, candidate in enumerate(candidates):
+            self._results.InsertItem(row, row_status(candidate))
+            self._results.SetItem(row, 1, candidate.url)
+            self._results.SetItem(row, 2, candidate.reason)
+        self._status.SetLabel(status_label(candidates, checked=checked, left_out=left_out))
+        # The sentence once (FUX-04); the "left out" count stays in the label.
+        self._announce(summary_sentence(candidates, checked=checked, left_out=left_out))
+        if candidates:
+            self._select_first_quietly()
         else:
-            self._status.SetLabel("No stream-shaped links were found on that page.")
-        self._announce(self._status.GetLabel())
+            self._on_result_deselected(None)
+
+    def _select_first_quietly(self) -> None:
+        """Select row 0 so Test and Use have a target -- unless the listener is
+        already in the list, where a new selection would be read over the
+        result sentence; then they arrow to a row themselves."""
+        if self._wx.Window.FindFocus() is self._results:
+            return
+        self._results.Select(0)
+        self._results.Focus(0)
 
     def _selected_candidate(self) -> PageStreamCandidate | None:
         index = self._results.GetFirstSelected()
@@ -202,7 +279,7 @@ class LinkFinderDialog:
         candidate = self._selected_candidate()
         if candidate is None:
             return
-        name = candidate.label or self._page_title or candidate.url
+        name = candidate.stream_name or candidate.label or self._page_title or candidate.url
         station = RadioStation(name=name, stream_url=candidate.url)
         self._controller.play_station(station)
         self._set_testing(True)
@@ -219,10 +296,13 @@ class LinkFinderDialog:
         candidate = self._selected_candidate()
         if candidate is None or self._on_use_link is None:
             return
-        name = candidate.label or self._page_title or "Custom Station"
+        # The stream's own name, when the live check heard one, beats a guess.
+        name = candidate.stream_name or candidate.label or self._page_title or "Custom Station"
         station = RadioStation(
             name=name,
             stream_url=candidate.url,
             favicon=self._favicon_url,
+            codec=candidate.codec if candidate.codec != "HLS" else "",
+            bitrate_kbps=candidate.bitrate_kbps,
         )
         self._on_use_link(station)

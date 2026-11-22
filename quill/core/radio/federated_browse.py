@@ -235,22 +235,27 @@ def _website(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
     a list by ear.
     """
     from quill.core.radio import link_finder
+    from quill.core.radio.find_streams_text import row_status
 
     if safe_mode:
         return [], "scanning a website needs the network"
     try:
-        found = link_finder.scan_page_for_streams(query, safe_mode=safe_mode)
+        found = link_finder.scan_page_for_streams(query, safe_mode=safe_mode, check_live=True)
     except link_finder.LinkFinderError as error:
         return [], str(error) or "could not be reached"
     rows = [
         leaf(
             RadioStation(
-                name=candidate.label or found.page_title or candidate.url,
+                name=candidate.stream_name or candidate.label or found.page_title or candidate.url,
                 stream_url=candidate.url,
                 homepage=query,
                 source="Website",
+                codec="" if candidate.codec == "HLS" else candidate.codec,
+                bitrate_kbps=candidate.bitrate_kbps,
             ),
-            note=candidate.reason,
+            note=f"{row_status(candidate)}; {candidate.reason}"
+            if candidate.check
+            else candidate.reason,
         )
         for candidate in found.candidates
     ]

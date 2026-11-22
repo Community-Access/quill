@@ -2,90 +2,90 @@
 
 RadioBrowser doesn't carry every station in existence -- smaller, local, or
 niche stations often only publish a stream link on their own site. This
-module fetches one user-typed page (a plain HTTPS GET, not an embedded
-browser: QUILL has no general-purpose accessible WebView for arbitrary-site
-navigation, and ``core/browser_reader.py`` shows a deliberate house pattern of
-preferring the user's real browser over an embedded one whenever a task is
-accessibility-sensitive) and parses the HTML with the standard library parser
-for anything that looks like a stream: ``<audio>``/``<source>`` tags, links
-whose extension or path matches common streaming patterns, quoted
-stream-shaped string literals inside inline ``<script>`` text (the common
-"the player is a bit of JavaScript that reads a URL constant" case, handled
-without running any JavaScript -- just a literal string scan), and one level
-of ``<iframe src="...">`` -- many station sites embed a third-party player
-(Zeno.fm, Radio.co, and similar embed widgets) rather than linking a stream
-directly, so the iframe's own page is fetched and scanned the same way, with
-its candidates carrying a "found via embedded iframe" reason. This still
-never executes JavaScript and never renders a page -- it cannot find a URL
-that is computed at runtime (built from an API response, obfuscated, etc.),
-only ones that appear as literal text somewhere in the fetched HTML/JS.
+module fetches one user-typed page (a plain GET, not an embedded browser: QUILL
+has no general-purpose accessible WebView for arbitrary-site navigation, and
+``core/browser_reader.py`` shows a deliberate house pattern of preferring the
+user's real browser over an embedded one whenever a task is
+accessibility-sensitive) and reads it with :mod:`quill.core.radio.page_links`
+for anything that looks like a stream. One level of ``<iframe>``, pop-up
+player, portal page and "Listen Live" link is followed, a few of the site's own
+player scripts are read, and an Icecast status page is listed mount by mount.
+This never executes JavaScript and never renders a page -- it cannot find a URL
+that is computed at runtime, only ones written somewhere in the text.
+
+**HTTPS first, plain http when the site has no HTTPS.** Many small community
+stations still serve their site only over http, and their HTTPS port refuses
+the connection or times out. So :func:`_fetch_html` tries https, and on a
+refusal, a timeout or a TLS failure reads the http:// page instead. Only public
+HTML is ever read, and certificate verification itself is never relaxed. When a
+stream is offered both ways, the https copy is kept.
+
+**The live check** (``check_live=True``): every candidate is opened, its
+headers and first 4 KB read, and judged by :mod:`quill.core.radio.live_check`,
+so the list says which links are live audio and which could not be checked,
+and leaves out the ones that answered with a web page.
+
+The HTTP fallback, the live check, the extra places a page is read and the
+Icecast status pages are ideas from Andre Louis's StreamSift
+(https://github.com/OnjLouis/StreamSift), written here in QUILL's own code.
 
 Every request funnels through the single reviewed egress site
-(:func:`_fetch_html` -- see ``quill/tools/network_egress_audit.py``),
-HTTPS-only with a verified TLS context, reached only by the explicit "Scan"
-button in the Find Streams from a Website dialog, disabled in Safe Mode via
-:func:`refuse_in_safe_mode`. wx-free, strict-typed.
+(:func:`_http_get` -- see ``quill/tools/network_egress_audit.py``), reached by
+the explicit Scan button in the Find Streams from a Website dialog and by
+stream recovery, and disabled in Safe Mode via :func:`refuse_in_safe_mode`.
+wx-free, strict-typed.
 """
 
 from __future__ import annotations
 
+import http.client
 import logging
-import re
 import ssl
 import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
-from html.parser import HTMLParser
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.net import verified_ssl_context
+from quill.core.radio import live_check
 from quill.core.radio.address_kind import is_help_page_url, same_page
 from quill.core.radio.address_kind import is_player_page_url as _is_player_page_url
+from quill.core.radio.live_check import HttpReply
+from quill.core.radio.page_links import PageStreamCandidate, StreamLinkParser, is_status_page
+from quill.core.radio.page_links import (  # noqa: F401 - kept reachable here for callers
+    looks_like_listen_link as _looks_like_listen_link,
+)
+from quill.core.radio.page_resolvers import securenet_candidates as _securenet_candidates
+from quill.core.radio.page_resolvers import triton_candidates as _triton_candidates
+from quill.core.radio.page_resolvers import tunein_candidates as _tunein_candidates
 from quill.core.radio.page_url import normalize_page_url
 from quill.stability.redaction import format_args_for_log
 
+__all__ = [
+    "LinkFinderError",
+    "PageScanResult",
+    "PageStreamCandidate",
+    "normalize_page_url",
+    "refuse_in_safe_mode",
+    "scan_page_for_streams",
+]
+
 logger = logging.getLogger(__name__)
+
+#: The parser's old private name, which callers still reach through this module.
+_StreamLinkParser = StreamLinkParser
 
 _TIMEOUT_SECONDS = 12.0
 _MAX_BYTES = 2_000_000
-
-#: File extensions that are almost always a direct audio stream/playlist.
-_STREAM_EXTENSIONS = (".mp3", ".aac", ".ogg", ".opus", ".m3u", ".m3u8", ".pls", ".flac")
-#: Path fragments common on Shoutcast/Icecast-style mount points.
-_STREAM_PATH_HINTS = ("/stream", "/listen", "/live", "icecast", "shoutcast", ";stream")
-#: Quoted string literals inside inline <script> text that look like a
-#: stream URL -- catches "the player is a few lines of JS with the URL as a
-#: string constant" without executing anything.
-_SCRIPT_STRING_URL_RE = re.compile(r"""['"](https?://[^'"\s]+)['"]""")
 _MAX_IFRAMES_TO_FOLLOW = 3
-
-#: Words in a link's visible text or its href that mark it as the station's
-#: "Listen Live"/"Play"/"Tune In" entry point. Many station homepages don't
-#: embed the player on the front page -- they link to it -- so following such a
-#: link one level deep and scanning *that* page is often what actually reaches
-#: the stream (issue #1065). Kept deliberately small and specific to avoid
-#: wandering off into unrelated navigation.
-_LISTEN_LINK_HINTS = (
-    "listen live",
-    "listen now",
-    "listen online",
-    # The Triton player network's own hostname (player.listenlive.co) --
-    # matches by href alone when the anchor's label is only an image.
-    "listenlive",
-    "live stream",
-    "livestream",
-    "tune in",
-    "tunein",
-    "play live",
-    "listen-live",
-    "/listen",
-    "/live",
-    "/player",
-    "/stream",
-)
 _MAX_LISTEN_LINKS_TO_FOLLOW = 3
+_MAX_POPUPS_TO_FOLLOW = 2
+#: The site's own player scripts read per scan, and Icecast servers listed.
+_MAX_SCRIPTS_TO_READ = 3
+_MAX_STATUS_SERVERS = 2
+_CHECK_RANK = {live_check.LIVE: 0, live_check.UNCHECKED: 1, "": 1, live_check.FILE: 2}
 
 
 class LinkFinderError(CodedError):
@@ -109,156 +109,73 @@ def refuse_in_safe_mode(safe_mode: bool) -> None:
 
 
 @dataclass(slots=True)
-class PageStreamCandidate:
-    """One candidate stream link found on a scanned page."""
-
-    url: str
-    #: Why it was flagged, e.g. "audio tag", "playlist link" -- shown to the
-    #: user so they can judge plausibility before testing it.
-    reason: str
-    #: Visible link text or the audio tag's nearby label, if any.
-    label: str = ""
-
-
-@dataclass(slots=True)
 class PageScanResult:
     """Everything usable for pre-filling the Add Custom Station dialog."""
 
     page_title: str
     favicon_url: str
     candidates: list[PageStreamCandidate]
+    #: True when the live check ran; then ``left_out`` links answered with
+    #: something that is not audio (a web page, a 404) and are not listed.
+    checked: bool = False
+    left_out: int = 0
 
 
-class _StreamLinkParser(HTMLParser):
-    """Collects ``<audio>``/``<source>`` src attributes, stream-looking
-    ``<a href>`` links, the page ``<title>``, and a favicon ``<link>``."""
-
-    def __init__(self, base_url: str) -> None:
-        super().__init__(convert_charrefs=True)
-        self._base_url = base_url
-        self.title = ""
-        self.favicon = ""
-        self.candidates: list[PageStreamCandidate] = []
-        #: <iframe src="..."> URLs found, followed one level deep by the caller.
-        self.iframe_urls: list[str] = []
-        #: "Listen Live"/"Play"-shaped <a href> URLs, followed one level deep
-        #: by the caller when the page itself yielded no direct candidate.
-        self.listen_urls: list[str] = []
-        #: Portal/player page URLs (iHeart, TuneIn, SecureNet Cirrus). These are
-        #: known *not* to be streams, so they are never offered as candidates
-        #: and the caller follows them unconditionally.
-        self.portal_urls: list[str] = []
-        self._in_title = False
-        self._in_script = False
-        self._pending_href: str | None = None
-        self._pending_text: list[str] = []
-
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        attr_map = {name: (value or "") for name, value in attrs}
-        if tag == "title":
-            self._in_title = True
-        elif tag == "script":
-            self._in_script = True
-        elif tag in ("audio", "source") and attr_map.get("src"):
-            url = urllib.parse.urljoin(self._base_url, attr_map["src"])
-            self.candidates.append(PageStreamCandidate(url=url, reason=f"<{tag}> tag"))
-        elif tag == "iframe" and attr_map.get("src"):
-            url = urllib.parse.urljoin(self._base_url, attr_map["src"])
-            # http:// is fine here: _fetch_html upgrades it to https before
-            # any request is made (stations commonly still write http links).
-            if url.startswith(("https://", "http://")):
-                self.iframe_urls.append(url)
-        elif tag == "link" and "icon" in attr_map.get("rel", "").lower() and attr_map.get("href"):
-            self.favicon = urllib.parse.urljoin(self._base_url, attr_map["href"])
-        elif tag == "a" and attr_map.get("href"):
-            self._pending_href = attr_map["href"]
-            self._pending_text = []
-
-    def handle_data(self, data: str) -> None:
-        if self._in_title:
-            self.title += data
-        if self._in_script:
-            for match in _SCRIPT_STRING_URL_RE.finditer(data):
-                url = match.group(1)
-                lowered = url.lower()
-                if lowered.endswith(_STREAM_EXTENSIONS) or any(
-                    hint in lowered for hint in _STREAM_PATH_HINTS
-                ):
-                    self.candidates.append(
-                        PageStreamCandidate(url=url, reason="stream URL found in inline script")
-                    )
-        if self._pending_href is not None:
-            self._pending_text.append(data)
-
-    def handle_endtag(self, tag: str) -> None:
-        if tag == "title":
-            self._in_title = False
-        elif tag == "script":
-            self._in_script = False
-        elif tag == "a" and self._pending_href is not None:
-            href = self._pending_href
-            label = "".join(self._pending_text).strip()
-            self._pending_href = None
-            self._pending_text = []
-            lowered = href.lower()
-            if lowered.startswith(("mailto:", "javascript:", "#")):
-                return
-            joined = urllib.parse.urljoin(self._base_url, href)
-            if joined.startswith(("https://", "http://")) and _is_player_page_url(joined):
-                # issues #1087 and #1491: a known portal/player page (iHeart
-                # /live, TuneIn /radio, a SecureNet Cirrus front-end) is a
-                # landing page, never a direct stream. Follow it one level deep
-                # so the real embedded stream URL is pulled from its inline
-                # player, instead of offering the unplayable page as a
-                # candidate.
-                self.portal_urls.append(joined)
-                return
-            if lowered.endswith(_STREAM_EXTENSIONS):
-                url = urllib.parse.urljoin(self._base_url, href)
-                self.candidates.append(
-                    PageStreamCandidate(url=url, reason="playlist/stream link", label=label)
-                )
-            elif any(hint in lowered for hint in _STREAM_PATH_HINTS):
-                url = urllib.parse.urljoin(self._base_url, href)
-                self.candidates.append(
-                    PageStreamCandidate(url=url, reason="stream-shaped link", label=label)
-                )
-            elif _looks_like_listen_link(lowered, label):
-                url = urllib.parse.urljoin(self._base_url, href)
-                # http:// is fine: _fetch_html upgrades before any request.
-                if url.startswith(("https://", "http://")):
-                    self.listen_urls.append(url)
+_FETCH_ERRORS = (
+    urllib.error.URLError,
+    TimeoutError,
+    ssl.SSLError,
+    OSError,
+    http.client.HTTPException,
+)
 
 
-def _looks_like_listen_link(lowered_href: str, label: str) -> bool:
-    """True when an ``<a>`` is a "Listen Live"/"Play"/"Tune In" entry point.
+def _http_get(
+    url: str, *, max_bytes: int = _MAX_BYTES, timeout: float = _TIMEOUT_SECONDS
+) -> HttpReply:
+    """One GET -- the reviewed egress site. Certificates are always verified.
 
-    Matches the small :data:`_LISTEN_LINK_HINTS` allowlist against the link's
-    visible text or its href, so the scanner can follow it one level deeper to
-    the page that actually hosts the player (issue #1065). Deliberately narrow
-    so a scan never wanders off into unrelated site navigation.
+    Reads at most *max_bytes* of the body: a whole page for the scan, the first
+    4 KB of a candidate for the live check. Raises on failure, including
+    ``HTTPError`` for a 4xx/5xx answer, which the live check reads.
     """
-    haystack = f"{label.lower()} {lowered_href}"
-    return any(hint in haystack for hint in _LISTEN_LINK_HINTS)
-
-
-_FETCH_ERRORS = (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError)
+    if not url.startswith(("https://", "http://")):
+        raise LinkFinderError("Only http(s):// addresses can be read.")
+    request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
+    context = verified_ssl_context()
+    with urllib.request.urlopen(request, timeout=timeout, context=context) as resp:  # noqa: S310
+        body: bytes = resp.read(max_bytes)
+        return HttpReply(int(resp.status), dict(resp.headers.items()), body, str(resp.geturl()))
 
 
 def _http_get_text(url: str) -> str:
-    """One GET returning decoded text, certificates always fully verified."""
-    request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
-    context = verified_ssl_context()
-    with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
-        payload: bytes = resp.read(_MAX_BYTES)
-    return payload.decode("utf-8", errors="replace")
+    """One GET of a whole page, decoded."""
+    return _http_get(url).body.decode("utf-8", errors="replace")
 
 
-def _is_cert_verification_failure(error: Exception) -> bool:
+def _probe(url: str, timeout: float) -> HttpReply:
+    """The live check's read of one candidate: headers and the first 4 KB."""
+    budget = max(1.0, min(_TIMEOUT_SECONDS, timeout))
+    return _http_get(url, max_bytes=live_check.PROBE_BYTES, timeout=budget)
+
+
+def _is_cert_verification_failure(error: BaseException) -> bool:
     reason = getattr(error, "reason", error)
     return isinstance(reason, ssl.SSLCertVerificationError) or isinstance(
         error, ssl.SSLCertVerificationError
     )
+
+
+_NO_HTTPS = (ssl.SSLError, ConnectionRefusedError, ConnectionResetError, TimeoutError)
+
+
+def _https_unavailable(error: BaseException) -> bool:
+    """True when a failure says "this site has no working HTTPS": a refused or
+    reset connection, a timeout, or any TLS failure. A missing host, a 404 or a
+    server error says nothing of the kind, so it earns no second try."""
+    if isinstance(error, urllib.error.HTTPError):
+        return False
+    return isinstance(getattr(error, "reason", error), _NO_HTTPS) or isinstance(error, _NO_HTTPS)
 
 
 def _www_variant(url: str) -> str:
@@ -273,19 +190,15 @@ def _www_variant(url: str) -> str:
 
 
 def _fetch_html(url: str) -> str:
-    """GET *url* returning decoded text -- the reviewed egress site.
+    """GET *url* returning decoded text, HTTPS first.
 
-    HTTPS-first, always: an ``http://`` URL (a relative link joined against
-    an http base, or a typed one) is upgraded before fetching. Some station
-    sites carry a certificate that does not cover the exact host the
-    listener typed -- www.magic104.com's cert names only magic104.com. On a
-    certificate hostname failure (and only that failure) two safe retries
-    run in order: the ``www.``-toggled variant of the same host over https
-    (fully verified like any other fetch), then the plain-http entry point,
-    following the server's own redirect to wherever its valid https home
-    is. Certificate verification itself is never relaxed at any step; a
-    site that stays on plain http merely has its public HTML read, which is
-    all this scanner ever does.
+    An ``http://`` URL is upgraded before fetching. When the https request is
+    refused, times out or fails TLS, the site may simply have no HTTPS -- many
+    small community stations do not -- so its plain-http page is read instead.
+    On a certificate failure the ``www.``-toggled host is tried over https
+    first (www.magic104.com's certificate names only magic104.com). Certificate
+    verification itself is never relaxed at any step; a site that stays on
+    plain http merely has its public HTML read, which is all this scanner does.
     """
     if url.startswith("http://"):
         url = "https://" + url.removeprefix("http://")
@@ -294,15 +207,16 @@ def _fetch_html(url: str) -> str:
     try:
         return _http_get_text(url)
     except _FETCH_ERRORS as error:
-        if not _is_cert_verification_failure(error):
+        if not _https_unavailable(error):
             raise LinkFinderError(f"Could not reach that page: {error}") from error
         first_error = error
-    variant = _www_variant(url)
-    if variant:
-        try:
-            return _http_get_text(variant)
-        except _FETCH_ERRORS:
-            pass
+    if _is_cert_verification_failure(first_error):
+        variant = _www_variant(url)
+        if variant:
+            try:
+                return _http_get_text(variant)
+            except _FETCH_ERRORS:
+                pass
     fallback = "http://" + url.removeprefix("https://")
     try:
         return _http_get_text(fallback)
@@ -310,32 +224,35 @@ def _fetch_html(url: str) -> str:
         raise LinkFinderError(f"Could not reach that page: {first_error}") from first_error
 
 
-def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResult:
+def scan_page_for_streams(
+    url: str, *, safe_mode: bool = False, check_live: bool = False
+) -> PageScanResult:
     """Fetch *url* and return every candidate stream link found on it.
 
-    Follows up to :data:`_MAX_IFRAMES_TO_FOLLOW` embedded ``<iframe>`` pages
-    one level deep (station sites commonly embed a third-party player rather
-    than linking a stream directly), and up to
-    :data:`_MAX_LISTEN_LINKS_TO_FOLLOW` "Listen Live"/"Play"/"Tune In" ``<a>``
-    links one level deep when the page itself yielded no direct candidate
-    (many homepages *link* to the player rather than hosting it -- issue
-    #1065). A failed sub-fetch is skipped, not fatal to the overall scan.
+    Follows up to :data:`_MAX_IFRAMES_TO_FOLLOW` embedded ``<iframe>`` pages and
+    :data:`_MAX_POPUPS_TO_FOLLOW` ``window.open`` pop-up players one level deep,
+    reads up to :data:`_MAX_SCRIPTS_TO_READ` of the site's own player scripts,
+    lists the mounts of a linked Icecast status page, and follows up to
+    :data:`_MAX_LISTEN_LINKS_TO_FOLLOW` "Listen Live" links when the page itself
+    yielded nothing (issue #1065). A failed sub-fetch is skipped.
 
     JavaScript players (Triton Digital / StreamTheWorld, the whole
-    ``player.listenlive.co`` network) compute their stream URL at runtime, so
-    it is never a literal string in the HTML. For those, the callsign the page
-    *does* advertise (in the Triton PWA's own asset URLs) is resolved to a real
-    playable stream through Triton's JS-free provisioning API -- see
-    :mod:`quill.core.radio.triton`. This is the only way the visible Play
-    button on such a page can be surfaced without running JavaScript.
+    ``player.listenlive.co`` network) compute their stream URL at runtime; the
+    callsign the page *does* advertise is resolved through Triton's JS-free
+    provisioning API instead -- see :mod:`quill.core.radio.triton`.
+
+    With *check_live*, every candidate is then checked: live streams first,
+    then those that could not be checked, then audio files; the links that are
+    not audio are counted in ``left_out`` rather than listed.
     """
     refuse_in_safe_mode(safe_mode)
     normalized = normalize_page_url(url)
     if not normalized:
         raise LinkFinderError("Type a website address to scan.")
     html_text = _fetch_html(normalized)
-    parser = _StreamLinkParser(normalized)
+    parser = StreamLinkParser(normalized)
     parser.feed(html_text)
+    _read_site_scripts(parser)
 
     # SecureNet first: its mount is a real, page-advertised stream, while the
     # generic parser's picks off the same page are only stream-*shaped*.
@@ -344,16 +261,17 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
     all_candidates.extend(
         _follow_pages(parser.iframe_urls, _MAX_IFRAMES_TO_FOLLOW, "embedded iframe")
     )
+    all_candidates.extend(_follow_pages(parser.popup_urls, _MAX_POPUPS_TO_FOLLOW, "pop-up player"))
+    status_pages = parser.status_urls + ([normalized] if is_status_page(normalized) else [])
+    all_candidates.extend(_icecast_candidates(status_pages))
     all_candidates.extend(_triton_candidates(normalized, html_text, safe_mode=safe_mode))
     all_candidates.extend(_tunein_candidates(normalized, html_text, safe_mode=safe_mode))
 
     # Also follow any player page that reached the candidate list some other
-    # way than an <a href> -- a front-end host quoted in the player's own
-    # inline JS, say (#1491: ``streamdb9web`` matches the "/stream" hint
-    # through its *host*). A bare host names no station, so skip a bare path.
-    # These are dropped from the results below, so following them can add no
-    # noise: unlike a "Listen Live" link, do it whatever else the page yielded.
-    # A player page links to itself (#36); following that only fetches it twice.
+    # way than an <a href> -- a front-end host quoted in the player's own inline
+    # JS, say (#1491). A bare host names no station, so skip a bare path. These
+    # are dropped from the results below, so following them adds no noise. A
+    # player page links to itself (#36); following that only fetches it twice.
     portal_urls = [u for u in parser.portal_urls if not same_page(u, normalized)]
     portal_urls.extend(
         c.url
@@ -370,9 +288,8 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
         )
     )
 
-    # Only chase "Listen Live"/"Play" links when the page and its iframes gave
-    # us nothing directly -- following them otherwise just adds noise and extra
-    # fetches when a stream was already in hand.
+    # Only chase "Listen Live"/"Play" links when nothing else turned up --
+    # otherwise they only add noise and fetches.
     if not all_candidates:
         all_candidates.extend(
             _follow_pages(
@@ -385,28 +302,131 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
         )
 
     # De-duplicate by URL, preserving first-seen order and reason, and drop
-    # every player/portal page -- including any a followed page introduced.
-    # Nothing that answers HTML is ever offered as something to play (#1491).
+    # every player/portal page -- nothing that answers HTML is offered (#1491).
     seen: dict[str, PageStreamCandidate] = {}
     for candidate in all_candidates:
         if _is_player_page_url(candidate.url) or is_help_page_url(candidate.url):
             continue
         seen.setdefault(candidate.url, candidate)
+    kept = list(seen.values())
+    left_out = 0
+    if check_live and kept:
+        kept, left_out = _apply_live_check(kept)
+    kept = _prefer_https(kept)
     # #5 observability: which links were kept, and why -- the argv-style
     # redaction masks any token a candidate URL might carry.
     if logger.isEnabledFor(logging.DEBUG):
         logger.debug(
-            "Find Streams scanned %s: %d candidate(s) [%s]",
+            "Find Streams scanned %s: %d candidate(s), %d left out [%s]",
             format_args_for_log([normalized]),
-            len(seen),
-            "; ".join(f"{c.reason}: {format_args_for_log([c.url])}" for c in seen.values())
+            len(kept),
+            left_out,
+            "; ".join(f"{c.reason} [{c.check}]: {format_args_for_log([c.url])}" for c in kept)
             or "none",
         )
     return PageScanResult(
         page_title=parser.title.strip(),
         favicon_url=parser.favicon,
-        candidates=list(seen.values()),
+        candidates=kept,
+        checked=check_live,
+        left_out=left_out,
     )
+
+
+def _apply_live_check(
+    candidates: list[PageStreamCandidate],
+) -> tuple[list[PageStreamCandidate], int]:
+    """Check each candidate; leave out what is not audio; live ones first."""
+    verdicts = live_check.check_urls([c.url for c in candidates], _probe)
+    kept: list[PageStreamCandidate] = []
+    left_out = 0
+    for candidate in candidates:
+        verdict = verdicts.get(candidate.url) or live_check.Verdict(live_check.UNCHECKED)
+        if verdict.state == live_check.NOT_AUDIO:
+            left_out += 1
+            continue
+        candidate.check = verdict.state
+        candidate.codec = verdict.codec
+        candidate.bitrate_kbps = verdict.bitrate_kbps
+        candidate.stream_name = verdict.name
+        candidate.genre = verdict.genre
+        candidate.check_note = verdict.note
+        kept.append(candidate)
+    kept.sort(key=lambda c: _CHECK_RANK.get(c.check, 1))  # stable: page order within a rank
+    return kept, left_out
+
+
+def _prefer_https(candidates: list[PageStreamCandidate]) -> list[PageStreamCandidate]:
+    """One copy of a stream offered over both http and https: the better-checked
+    one, and the https one when they check the same."""
+
+    def rank(candidate: PageStreamCandidate) -> tuple[int, bool]:
+        return _CHECK_RANK.get(candidate.check, 1), not candidate.url.startswith("https://")
+
+    best: dict[str, PageStreamCandidate] = {}
+    for candidate in candidates:
+        key = live_check.https_twin_url(candidate.url)
+        held = best.get(key)
+        if held is None or rank(candidate) < rank(held):
+            best[key] = candidate
+    chosen = {id(c) for c in best.values()}
+    return [c for c in candidates if id(c) in chosen]
+
+
+def _read_site_scripts(parser: StreamLinkParser) -> None:
+    """Read a few of the site's own player scripts into *parser*.
+
+    Only same-site scripts whose names look like a player (or, on a home page,
+    up to two app bundles) are fetched; a failed fetch is skipped.
+    """
+    for script_url in list(dict.fromkeys(parser.script_urls))[:_MAX_SCRIPTS_TO_READ]:
+        try:
+            text = _fetch_html(script_url)
+        except LinkFinderError:
+            continue
+        parser.read_script(text, "the site's own script")
+
+
+def _icecast_candidates(status_urls: list[str]) -> list[PageStreamCandidate]:
+    """Every mount an Icecast server lists on its status page.
+
+    Read with :func:`quill.core.radio.my_servers.parse_icecast` from the
+    server's ``status-json.xsl``. When that gives nothing -- a mount hidden
+    behind a proxy, or the JSON turned off -- the HTML ``status.xsl`` page is
+    read for its ``.m3u`` links instead.
+    """
+    from quill.core.radio.my_servers import parse_icecast
+
+    by_root: dict[str, str] = {}
+    for status_url in status_urls:
+        parts = urllib.parse.urlsplit(status_url)
+        by_root.setdefault(f"{parts.scheme}://{parts.netloc}", status_url)
+    out: list[PageStreamCandidate] = []
+    for root, status_url in list(by_root.items())[:_MAX_STATUS_SERVERS]:
+        try:
+            stations = parse_icecast(_fetch_html(f"{root}/status-json.xsl"), root)
+        except LinkFinderError:
+            stations = []
+        out.extend(
+            PageStreamCandidate(
+                url=_public_listen_url(station.stream_url, root),
+                reason="mount listed on the server's Icecast status page",
+                label=station.name,
+            )
+            for station in stations
+        )
+        if not stations and status_url.lower().endswith("/status.xsl"):
+            out.extend(_follow_pages([status_url], 1, "Icecast status page"))
+    return out
+
+
+def _public_listen_url(listen: str, root: str) -> str:
+    """Icecast behind a proxy reports ``http://localhost:8000/mount``; the
+    listener can only reach that mount through the server they asked."""
+    parts = urllib.parse.urlsplit(listen)
+    if (parts.hostname or "").lower() in ("localhost", "127.0.0.1", "0.0.0.0"):
+        return urllib.parse.urljoin(root + "/", parts.path.lstrip("/"))
+    return listen
 
 
 def _follow_pages(
@@ -420,10 +440,11 @@ def _follow_pages(
     """Fetch up to *cap* sub-pages and return their candidates, each tagged
     ``(found via <reason_suffix>)``.
 
-    Used for both embedded ``<iframe>`` pages and followed "Listen Live" links.
-    For the latter, each sub-page is *also* run through the Triton resolver
-    (``base`` non-empty), since a station's linked player page is exactly where
-    a Triton/StreamTheWorld player tends to live. A failed sub-fetch is skipped.
+    Used for embedded ``<iframe>`` pages, pop-up players and followed "Listen
+    Live" links. For the latter, each sub-page is *also* run through the
+    Triton, TuneIn and SecureNet resolvers (``base`` non-empty), since a
+    station's linked player page is exactly where such a player tends to live.
+    A failed sub-fetch is skipped.
     """
     out: list[PageStreamCandidate] = []
     for sub_url in urls[:cap]:
@@ -431,13 +452,12 @@ def _follow_pages(
             sub_html = _fetch_html(sub_url)
         except LinkFinderError:
             continue
-        sub_parser = _StreamLinkParser(sub_url)
+        sub_parser = StreamLinkParser(sub_url)
         sub_parser.feed(sub_html)
-        # Triton-resolved streams first: they are API-validated, playable
-        # mounts, while a player page's other links (its own help articles,
-        # for instance) are only stream-*shaped*.
+        # Resolved streams first: they are API-validated, playable mounts,
+        # while a player page's other links are only stream-*shaped*.
         page_candidates: list[PageStreamCandidate] = []
-        if base:  # a followed Listen link may itself be a Triton/TuneIn/SecureNet page
+        if base:
             page_candidates.extend(_triton_candidates(sub_url, sub_html, safe_mode=safe_mode))
             page_candidates.extend(_tunein_candidates(sub_url, sub_html, safe_mode=safe_mode))
             page_candidates.extend(_securenet_candidates(sub_url, sub_html))
@@ -451,100 +471,3 @@ def _follow_pages(
                 )
             )
     return out
-
-
-def _triton_candidates(url: str, html: str, *, safe_mode: bool) -> list[PageStreamCandidate]:
-    """Resolve a Triton Digital / StreamTheWorld player page to stream
-    candidates, or ``[]`` when the page is not a Triton player.
-
-    A Triton player's stream is JS-computed and absent from the HTML, so the
-    static parser above finds nothing on it. When the page looks like a Triton
-    player and advertises a callsign, this resolves it through Triton's JS-free
-    provisioning API and offers the real mount(s) as candidates. Any failure
-    (not a Triton page, no callsign, API unreachable, Safe Mode) degrades to an
-    empty list so it never breaks the rest of the scan.
-    """
-    from quill.core.radio import triton
-
-    if not triton.page_is_triton_player(url, html):
-        return []
-    callsign = triton.callsign_from_page(url, html)
-    if not callsign:
-        return []
-    try:
-        streams = triton.resolve_station_streams(callsign, safe_mode=safe_mode)
-    except triton.TritonResolverError:
-        return []
-    return [
-        PageStreamCandidate(
-            url=stream.url,
-            reason=f"{stream.codec} stream from the station's player ({stream.mount})",
-            label=stream.mount,
-        )
-        for stream in streams
-    ]
-
-
-def _tunein_candidates(url: str, html: str, *, safe_mode: bool) -> list[PageStreamCandidate]:
-    """Resolve a TuneIn (RadioTime) station page to stream candidates, or ``[]``
-    when the page is not a TuneIn page.
-
-    A TuneIn station page never carries the playable stream in its HTML -- it is
-    served by RadioTime's OPML API, keyed by the station's ``s``-prefixed guide
-    id (which the page URL/HTML does advertise). This mirrors
-    :func:`_triton_candidates`: when the page looks like TuneIn and a guide id is
-    present, resolve it through the keyless OPML API and offer the real
-    stream(s). Any failure (not a TuneIn page, no guide id, API unreachable,
-    Safe Mode) degrades to an empty list so it never breaks the rest of the scan.
-    """
-    from quill.core.radio import tunein
-
-    if not tunein.page_is_tunein(url, html):
-        return []
-    guide_id = tunein.guide_id_from_page(url) or tunein.guide_id_from_page(html)
-    if not guide_id:
-        return []
-    try:
-        stream_urls = tunein.resolve_station_streams(guide_id, safe_mode=safe_mode)
-    except tunein.TuneInError:
-        return []
-    return [
-        PageStreamCandidate(
-            url=stream_url,
-            reason=f"stream from the TuneIn station page ({guide_id})",
-            label=guide_id,
-        )
-        for stream_url in stream_urls
-    ]
-
-
-def _securenet_candidates(url: str, html: str) -> list[PageStreamCandidate]:
-    """Resolve a SecureNet Systems (Cirrus) player page to stream candidates,
-    or ``[]`` when the page is not a SecureNet player.
-
-    Unlike the Triton and TuneIn resolvers above, this one needs no API call --
-    a Cirrus player carries its own mount in the page HTML. The generic parser
-    still misses it, because that mount is a bare Icecast path
-    (``https://ice66.securenetsystems.net/ROM``) with no file extension and no
-    ``/stream``-style hint, so it fails the shape heuristics that keep ordinary
-    page links out of the results. Recognising the platform is what makes the
-    URL trustworthy here; the shape alone never could be.
-
-    Being fetch-free, this also runs in Safe Mode: it only reads the page the
-    caller already has.
-    """
-    from quill.core.radio import securenet
-
-    if not securenet.page_is_securenet_player(url, html):
-        return []
-    callsign = securenet.callsign_from_page(url, html)
-    return [
-        PageStreamCandidate(
-            url=stream_url,
-            reason=f"stream from the station's player ({callsign})"
-            if callsign
-            else "stream from the station's player",
-            label=callsign,
-        )
-        for stream_url in securenet.stream_urls_from_page(html)
-    ]
