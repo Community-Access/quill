@@ -114,5 +114,8 @@ class StudioScribeMixin(AppScribeMixin):
                 except RuntimeError:  # it closed while the Workbench was open
                     pass
 
-        wx.CallLater(400, open_it)  # after the sentence, so it is not cut off
+        from quill.stability.wx_dispatch import call_later_safely
+
+        # After the sentence, so it is not cut off.
+        call_later_safely(400, open_it, name="Open the narration in the Chapter Workbench")
         return "The narration opens in the Chapter Workbench"
