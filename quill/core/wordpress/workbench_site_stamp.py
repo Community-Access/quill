@@ -156,4 +156,7 @@ def stamp_changes(old: SiteStamp | None, new: SiteStamp) -> list[str]:
 
 def forget_site(api: WordPressApi) -> None:
     """Drop what was read of the site's types, taxonomies and statuses; the next caller asks."""
+    from quill.core.wordpress.workbench_swiftletter import forget_discovery
+
     tx.forget(api)
+    forget_discovery(api.address.site_url)

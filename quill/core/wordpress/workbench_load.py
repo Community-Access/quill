@@ -411,6 +411,13 @@ def load(
         from quill.core.wordpress.workbench_pmpro import load_pmpro
 
         return load_pmpro(ctx, what)
+    if family == "swiftletter":
+        from quill.core.wordpress.workbench_swiftletter import load_articles, load_newsletters
+
+        if what == "articles" and dynamic.isdecimal():
+            return load_articles(ctx.api, ctx.name, int(dynamic))
+        if what == "newsletters":
+            return load_newsletters(ctx.api, ctx.name, ctx.info.namespaces if ctx.info else None)
     found = simple.get(family)
     if found is None:
         raise WordPressApiError(f"The Workbench does not know how to load {loader}.")
