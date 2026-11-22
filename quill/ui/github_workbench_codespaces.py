@@ -26,6 +26,9 @@ CODESPACE_VERBS: dict[str, frozenset[str]] = {
     "pull_codespace": frozenset({"item"}),
 }
 
+_RUNS = "It costs money for every hour it runs, until it stops."
+_KEPT = "It costs money for every hour it runs, and for its storage until you delete it."
+
 _ON_ROW = "is for one of your codespaces, while you are signed in."
 CODESPACE_REASONS: dict[str, str] = {
     "codespace_new": "New Codespace is Ctrl+N in a repository's Codespaces.",
@@ -83,13 +86,22 @@ class GitHubWorkbenchCodespacesMixin:
         self._say(str(said))
         self.frame.reload()
 
+    def _if_paid_for(self, title: str, question: str, payer: str) -> bool:
+        """Ask before GitHub starts billing; No is the default, so Enter spends nothing."""
+        return self._confirm(title, f"{question} GitHub bills {payer}.")
+
     # -- one codespace ---------------------------------------------------------------------
 
     def _do_codespace_start(self, _ref: Any, row: object) -> None:
-        from quill.core.github.codespaces import start
+        from quill.core.github.codespaces import billing_owner, start
 
         name, api = self._codespace(row), self.github_api()
-        self._background(f"start {name}", lambda: start(api, name), self._said_and_reload)
+
+        def asked(payer: Any) -> None:
+            if self._if_paid_for("Start Codespace", f"Start the codespace {name}? {_RUNS}", payer):
+                self._background(f"start {name}", lambda: start(api, name), self._said_and_reload)
+
+        self._background(f"read who pays for {name}", lambda: billing_owner(api, name=name), asked)
 
     def _do_codespace_stop(self, _ref: Any, row: object) -> None:
         from quill.core.github.codespaces import stop
@@ -197,6 +209,9 @@ class GitHubWorkbenchCodespacesMixin:
                 if picked < 0:
                     return
                 container = found.containers[picked].value
+            question = f"Make a codespace for {repo} on {branch}? {_KEPT}"
+            if not self._if_paid_for(title, question, found.payer):
+                return
             self._background(
                 "make the codespace",
                 lambda: create(api, repo, branch, machine, container),
@@ -210,13 +225,22 @@ class GitHubWorkbenchCodespacesMixin:
         )
 
     def _do_pull_codespace(self, ref: Any, row: object) -> None:
-        from quill.core.github.codespaces import for_pull
+        from quill.core.github.codespaces import billing_owner, for_pull
 
         if not isinstance(row, GitHubItem):
             return
         api, repo, number = self.github_api(), ref.instance, row.number
+
+        def asked(payer: Any) -> None:
+            question = f"Make a codespace for pull request #{number}? {_KEPT}"
+            if not self._if_paid_for("Open in a Codespace", question, payer):
+                return
+            self._background(
+                f"make a codespace for #{number}",
+                lambda: for_pull(api, repo, number),
+                lambda said: self._say(str(said)),
+            )
+
         self._background(
-            f"make a codespace for #{number}",
-            lambda: for_pull(api, repo, number),
-            lambda said: self._say(str(said)),
+            f"read who pays for a codespace in {repo}", lambda: billing_owner(api, repo=repo), asked
         )

@@ -66,7 +66,8 @@ def fetch_attention_queue(
         # Yours by name, then those asked of a team you are on (GH-R-143).
         "review_requested": review_request_searches(login),
         "mentioned": (("Mentioned", f"is:open mentions:{login}"),),
-        "failed_checks": (("Failed checks", "is:open is:pr status:failure"),),
+        # Your own pull requests whose checks failed: not every failing PR you can see.
+        "failed_checks": (("Failed checks", f"is:open is:pr status:failure author:{login}"),),
     }
     scopes: tuple[str | None, ...] = tuple(selected_repositories) or (None,)
     warnings: list[str] = []

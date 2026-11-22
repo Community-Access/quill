@@ -258,3 +258,11 @@ def test_open_browser_opens_the_run_url(dlg, monkeypatch: pytest.MonkeyPatch) ->
     )
     dlg._on_open_browser(None)
     assert opened == ["https://github.com/owner/repo/actions/runs/42"]
+
+
+def test_close_has_no_access_key_because_escape_already_closes(dlg) -> None:
+    """GATE-14's first rule: OK, Cancel and Close carry no access key (W7)."""
+    close = dlg.dialog.FindWindowById(wx.ID_CANCEL)
+    assert close is not None
+    assert close.GetLabel() == "Close"
+    assert "&" not in close.GetLabel()

@@ -62,7 +62,7 @@ ALLOW: dict[str, str] = {
     # menus it says so, and QUILL Lite reaches the same windows from
     # File > GitHub Workbench.
     "path:file > open from remote > github": _GITHUB_GUIDE_QUILL_MENU,
-    "path:file > open from remote > github items": _GITHUB_GUIDE_QUILL_MENU,
+    "path:file > open from remote > github workbench": _GITHUB_GUIDE_QUILL_MENU,
     "path:file > open from remote > manage github accounts": _GITHUB_GUIDE_QUILL_MENU,
     "path:file > open from remote > open github reference": _GITHUB_GUIDE_QUILL_MENU,
     "path:file > open from remote > clone repository": _GITHUB_GUIDE_QUILL_MENU,

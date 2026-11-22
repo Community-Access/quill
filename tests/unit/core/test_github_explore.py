@@ -194,7 +194,7 @@ def test_attention_queue_combines_categories_and_deduplicates_by_url() -> None:
     assert result.complete
     assert len(result.items) == 1
     assert len(provider.searches) == 5  # review requests: yours, then your teams'
-    assert "status:failure" in provider.searches[-1]
+    assert provider.searches[-1] == "is:open is:pr status:failure author:me"
     assert "Also:" in result.items[0].detail
     assert result.items[0].title == "Work 7"
 
@@ -207,7 +207,7 @@ def test_attention_queue_scopes_failed_checks_to_selected_repositories() -> None
 
     assert result.complete
     assert len(result.items) == 1
-    assert provider.searches == ["is:open is:pr status:failure repo:o/r"]
+    assert provider.searches == ["is:open is:pr status:failure author:me repo:o/r"]
 
 
 def test_attention_queue_keeps_results_and_reports_a_failed_source(monkeypatch) -> None:

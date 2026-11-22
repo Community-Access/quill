@@ -14,7 +14,7 @@ Items and Explore management windows and their fallback preference are retired.
 
 QUILL and QUILL Lite share the Workbench. QUILL Lite opens it from
 **File > GitHub Workbench** (**Alt+F**, then **G**). In QUILL, use
-**File > Open from Remote > GitHub Items**. Public repository reading works
+**File > Open from Remote > GitHub Workbench...**. Public repository reading works
 without an account. Account views and writes require a signed-in GitHub
 account. Safe Mode and first-use network consent still apply.
 
@@ -155,7 +155,7 @@ first. A selected label can lead into a repository-scoped issue search. Star,
 watch, notification-read, and label changes require a signed-in account.
 
 The attention queue combines work assigned to you, requested reviews, mentions,
-and pull requests with failed checks. **Queue Options** chooses up to ten
+and your own pull requests with failed checks. **Queue Options** chooses up to ten
 repositories and the categories to include, saves and reopens local filters,
 and shows locally snoozed items. Snoozes and filters are stored separately for
 each signed-in account and do not change GitHub. Each result names its source
@@ -768,7 +768,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | --- | --- | --- |
 | New Here... | Ctrl+N | Something new where you are: an issue in Issues, a saved search in Saved Searches. |
 | New... | Ctrl+Shift+N | Choose what to create, wherever you are. |
-| Open GitHub Address... | Ctrl+L | Open a repository by owner/name or link; a compare link opens the comparison. |
+| Open GitHub Address... | Ctrl+L | Open a repository by owner/name or link; a compare link opens the comparison, and #42 opens that issue or pull request in this repository. |
 | Go to Number... | Ctrl+G | Go to an issue or pull request in this repository by its number. |
 | Open on GitHub | Shift+Enter | Open the selected row, or the node, in your browser. |
 | Open in Editor | Ctrl+Enter | Open the selected file in the editor that opened this window. |

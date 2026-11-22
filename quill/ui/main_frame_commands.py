@@ -128,7 +128,7 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "file.open_github_items",
-            "Open GitHub Items...",
+            "Open GitHub Workbench...",
             self.open_github_items_viewer,
             None,
         )

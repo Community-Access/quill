@@ -110,8 +110,15 @@ Applications key), and the commonest have keys of their own:
 
 After Mark Read, Mark Done or Unsubscribe the list loads again.
 
-The Workbench does not hide a snoozed notification yet: it stays in the list,
-so Snooze is a note to yourself for now.
+A snoozed notification leaves the list until the next day, and the status
+bar says how many are hidden. Turn on **Include read notifications** in
+Workbench Options to see them again, each starting "Snoozed here until", so
+you can Unsnooze one. That option also shows notifications you have already
+read, as well as unread ones.
+
+GitHub asks apps to wait between checks of your notifications. A refresh
+sooner than that shows the list from the last check and says how many
+seconds to wait.
 
 `Ctrl+.` moves to the next unread row in the list, and `Ctrl+Shift+.` to the
 one before, so you can skip what you have already read.
@@ -216,7 +223,7 @@ first:
 - **Assigned to me**
 - **Review requested**, from you or from a team you are on
 - **Mentioned**
-- **Failed checks**: open pull requests whose checks failed
+- **Failed checks**: your own open pull requests whose checks failed
 
 Each row's details start with where it came from, so you know whether it is
 there because you were assigned or because you were mentioned. An item found

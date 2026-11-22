@@ -34,9 +34,11 @@ its state as GitHub words it (such as Available or Shutdown), its machine, and
 when it was last used. Its context menu has:
 
 - **Show Details**: the same, with its address on GitHub.
-- **Start** and **Stop**. You hear "Starting" and its name, or "Stopping" and
-  its name, and that its files are kept. A stopped codespace does not charge
-  for computing time.
+- **Start** and **Stop**. Start asks first, and says who GitHub bills: you,
+  or the organization that pays for the repository's codespaces. No is the
+  default, so Enter starts nothing. You hear "Starting" and its name, or
+  "Stopping" and its name, and that its files are kept. A stopped codespace
+  does not charge for computing time.
 - **Change Machine...** lists the machines GitHub offers for it and uses the
   one you choose from its next start. When there is no other, QUILL says so.
 - **Export to a Branch** puts the codespace's changes on a branch of their
@@ -55,20 +57,24 @@ There are three ways:
 - **In a repository's Code > Codespaces**, press `Ctrl+N`. QUILL asks which
   branch, starting with `main`, then reads what a codespace for that
   repository can use and asks which machine, and which dev container when
-  the repository has more than one. You hear "Making the codespace" and its
-  name, and that it takes a minute or two to start.
-- **On an open pull request**, **Open in a Codespace** makes one on the pull
-  request's branch at once. Use it to try a change for real before you
-  review it.
+  the repository has more than one. Then it asks whether to make it, and
+  says who GitHub bills. You hear "Making the codespace" and its name, and
+  that it takes a minute or two to start.
+- **On an open pull request**, **Open in a Codespace** asks the same
+  question, then makes one on the pull request's branch. Use it to try a
+  change for real before you review it.
 - **Open in Codespaces...**, on the context menu of a repository, branch or
   pull request, asks first, reminds you that starting a codespace can cost
   money, and then opens GitHub's own Codespaces page in your browser. It
   makes nothing itself and does not send your token. You make your choices
   on GitHub's page.
 
-**Ctrl+N** and **Open in a Codespace** make and start a codespace straight
-away, with no further question: choosing them is the decision. **Stop** it
-when you are done.
+**Start**, **Ctrl+N** and **Open in a Codespace** each ask before GitHub
+starts charging, for example "Make a codespace for pull request #42? It costs
+money for every hour it runs, and for its storage until you delete it.
+GitHub bills the organization acme." No is the default button. When GitHub
+does not say who pays, QUILL says it is you unless the repository's
+organization pays for Codespaces. **Stop** it when you are done.
 
 If a repository's dev container asks for permissions you have not accepted,
 QUILL says so and makes nothing. Open the repository's Codespaces on GitHub

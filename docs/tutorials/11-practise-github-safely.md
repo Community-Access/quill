@@ -44,7 +44,7 @@ own pace.
 ## 1. Make the practice repository
 
 1. Open the GitHub Workbench. In QUILL, choose **File > Open from Remote >
-   GitHub Items...**. In QUILL Lite, choose **File > GitHub Workbench...**
+   GitHub Workbench...**. In QUILL Lite, choose **File > GitHub Workbench...**
    (`Alt+F`, then `G`). You land on Inbox.
 2. Press `Ctrl+Alt+P` for **Help > Practice on GitHub...**. QUILL says what it
    will make and asks first. Choose **Yes**.

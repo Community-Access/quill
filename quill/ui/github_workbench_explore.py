@@ -11,6 +11,7 @@ Explore writes as the first line of each row's details ("Review requested").
 
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Any
 
 from quill.core.github.explore_models import ExploreRow
@@ -123,6 +124,62 @@ def _matches_reason(row: ExploreRow, reason: str) -> bool:
     return any(source in first for source in sources) and (not kind or row.kind == kind)
 
 
+_POLL_WAIT = (
+    "GitHub asks apps to wait between checks; this is the list from the last check. "
+    "Try again in {wait} seconds."
+)
+
+
+def _notification_rows(
+    client: Any, include_read: bool, notes: list[str] | None
+) -> list[ExploreRow] | None:
+    """The last list while GitHub's X-Poll-Interval says not yet; None when a read may go."""
+    wait = int(getattr(client, "notification_wait_seconds", lambda _r: 0)(include_read))
+    if wait <= 0:
+        return None
+    if notes is not None:
+        notes.append(_POLL_WAIT.format(wait=wait))
+    if hasattr(client, "inbox_rules_note"):
+        client.inbox_rules_note = ""  # the rules ran on the last read; not said twice
+    return list(client.cached_notification_rows(include_read))
+
+
+def _without_snoozed(
+    client: Any, rows: list[ExploreRow], account: str, *, show: bool, notes: list[str] | None
+) -> list[ExploreRow]:
+    """Snooze for One Day hides a notification here; Include read shows it again, marked."""
+    from quill.core.github.attention_queue import GitHubAttentionQueue
+    from quill.ui.github_workbench_community import _queue_key
+
+    try:
+        state = GitHubAttentionQueue.load(account or client.account_login())
+    except Exception:  # noqa: BLE001 - no login, no snoozes: the list as GitHub sent it
+        return rows
+    kept, hidden = [], 0
+    for row in rows:
+        key = _queue_key(row)
+        if not state.is_snoozed(key):
+            kept.append(row)
+        elif show:
+            until = state.snoozed[key][:16].replace("T", " ")
+            detail = f"Snoozed here until {until} UTC.\n{row.detail}"
+            kept.append(replace(row, detail=detail))
+        else:
+            hidden += 1
+    if hidden and notes is not None:
+        one = hidden == 1
+        what = (
+            "notification snoozed on this computer is"
+            if one
+            else "notifications snoozed on this computer are"
+        )
+        notes.append(
+            f"{hidden} {what} hidden; turn on Include read notifications in Workbench "
+            f"Options to show {'it' if one else 'them'}."
+        )
+    return kept
+
+
 def load_explore(
     client: Any,
     node: NodeSpec,
@@ -147,6 +204,14 @@ def load_explore(
 
         state = GitHubAttentionQueue.load(account or client.account_login())
         repositories, categories = tuple(state.repositories), tuple(state.categories)
+    include_read = False
+    if view == "notifications":
+        from quill.core.github.workbench_prefs import load_prefs
+
+        include_read = load_prefs().include_read_notifications
+        last = _notification_rows(client, include_read, notes)
+        if last is not None:
+            return _without_snoozed(client, last, account, show=include_read, notes=notes)
     result = client.fetch_with_status(
         view,
         repo=instance if node.scope in (Scope.REPOSITORY, Scope.ORGANIZATION) else "",
@@ -161,10 +226,13 @@ def load_explore(
         repositories=repositories,
         categories=categories,
         limit=limit,
+        include_read=include_read,
     )
     warning = str(getattr(result, "warning", "") or "")
     if notes is not None and warning:
         notes.append(_more_note(warning))
     rows = list(result.items)
+    if view == "notifications":
+        return _without_snoozed(client, rows, account, show=include_read, notes=notes)
     reason = dict(node.preset).get("reason", "")
     return [row for row in rows if _matches_reason(row, reason)] if reason else rows
