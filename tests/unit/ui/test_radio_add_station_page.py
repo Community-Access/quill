@@ -182,7 +182,7 @@ def test_the_resolver_runs_the_scan_on_the_task_manager(monkeypatch) -> None:
             submitted.append(name)
             on_success(name, work())
 
-    monkeypatch.setattr(lf, "scan_page_for_streams", lambda url: _scan(f"{url}#scanned"))
+    monkeypatch.setattr(lf, "scan_page_for_streams", lambda url, **_k: _scan(f"{url}#scanned"))
     resolve = add_custom_station.page_resolver(
         SimpleNamespace(_safe_mode=False, _task_manager=_Tasks())
     )

@@ -2,6 +2,33 @@
 
 ## 1.0.0
 
+### Quill Radio: Find Streams checks each link is live audio (2026-11-21)
+
+Ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),
+written in QUILL's own code.
+
+- **Each link is checked before it is listed.** Find Streams from a Website
+  reads the reply and the first 4 KB of every link it finds, and recognises
+  MP3, AAC, Ogg, FLAC and WAV. Live streams come first, with their name,
+  format and bitrate. Links it could not check stay in the list and say why.
+  Podcast files are marked as files. Web pages and dead links are left out,
+  and the status line says how many.
+- **One sentence when the scan ends**, such as "Found 3 live streams and 2
+  not checked." The list is filled once and does not change. If the scan is
+  still going after 8 seconds, it says so once. Scan stays enabled, so focus
+  never drops out of the window, and pressing it during a scan says the scan
+  is still going.
+- **Sites without HTTPS work.** If a station's secure address refuses, times
+  out or fails, the plain http page is read. The https copy of a stream is
+  kept when there are both.
+- **More streams are found:** player data attributes, `streamUrl:`-style
+  settings, plain-text addresses, `<base href>`, Radio.co players, the site's
+  own player scripts, pop-up players and Icecast status pages.
+- **HLS is read properly:** encrypted playlists are left out, master playlists
+  are followed to their audio, and only a live playlist counts as live.
+- Stream recovery and Add Custom Station use the same check, so a link heard
+  playing is chosen over one that only looks right.
+
 ### GitHub Workbench: what writing its guide found, fixed (2026-11-21)
 
 - **Codespaces ask before they cost money.** Start, New Codespace (Ctrl+N)

@@ -124,11 +124,19 @@ def pick_stream(candidates: Sequence[_Candidate]) -> StreamPick:
 
     Resolved player mounts outrank everything else on the page -- they are the
     stream the page itself advertises, not one of its links that merely looks
-    like audio. When there are none, one candidate is an answer and two are a
-    choice. Within the chosen station the MP3 mount wins.
+    like audio. Next come candidates the live check heard playing live audio
+    (``check == "live"``), then anything that is not a finite audio file. When
+    that leaves one station, it is the answer; two are a choice. Within the
+    chosen station the MP3 mount wins. Preferring checked candidates is an idea
+    from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift).
     """
     resolved = [c for c in candidates if is_resolved_player_mount(c.url)]
-    pool = resolved or list(candidates)
+    # The live check (link_finder check_live) heard audio at these addresses.
+    # A live one outranks a guess, and an audio *file* (a podcast) is never
+    # the station while anything else is on offer.
+    live = [c for c in candidates if getattr(c, "check", "") == "live"]
+    not_files = [c for c in candidates if getattr(c, "check", "") != "file"]
+    pool = [c for c in resolved if c in live] or resolved or live or not_files or list(candidates)
     groups: dict[str, list[_Candidate]] = {}
     for candidate in pool:
         groups.setdefault(station_key(candidate.url), []).append(candidate)

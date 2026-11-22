@@ -17,6 +17,12 @@ before it. The keyboard-first way of comparing documents, and selecting with
 those projects and the people who made them, for showing what an accessible,
 keyboard-driven editor can be.
 
+Quill Radio's Find Streams from a Website checks that each link it finds is
+live audio before listing it, reads station sites that have no HTTPS, and looks
+in more places on a page for the stream. Those are ideas from Andre Louis's
+StreamSift (https://github.com/OnjLouis/StreamSift), written in QUILL's own
+code. Thank you, Andre.
+
 ---
 
 - Previous: [Chapter 19: Scribe for Documents](quill-guide-19-scribe-for-documents.html)

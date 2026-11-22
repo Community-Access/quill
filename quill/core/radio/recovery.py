@@ -176,7 +176,7 @@ def _recover_from_website(station: RadioStation, *, safe_mode: bool) -> Recovery
     seen: set[str] = set()
     for page in _pages_to_scan(station):
         try:
-            result = link_finder.scan_page_for_streams(page, safe_mode=safe_mode)
+            result = link_finder.scan_page_for_streams(page, safe_mode=safe_mode, check_live=True)
         except LinkFinderError:
             continue
         for candidate in result.candidates:

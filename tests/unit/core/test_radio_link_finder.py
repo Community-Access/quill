@@ -365,16 +365,21 @@ def test_fetch_falls_back_to_plain_http_when_both_https_hosts_fail(
     assert calls[-1] == "http://www.example.com/"
 
 
-def test_fetch_does_not_retry_on_non_certificate_errors(
+def test_fetch_does_not_retry_when_the_host_does_not_exist(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # Only a certificate hostname failure earns the fallback; a plain
-    # network error must not multiply into three fetch attempts.
+    # A refusal, a timeout or a TLS failure now earns the plain-http retry
+    # (HTTP-only station sites; tests/unit/core/radio/test_link_finder_page_reading.py).
+    # A host that does not resolve says nothing about HTTPS, so it must not
+    # multiply into more fetch attempts.
+    import socket
+    import urllib.error
+
     calls: list[str] = []
 
     def fake_get(url: str) -> str:
         calls.append(url)
-        raise TimeoutError("no route")
+        raise urllib.error.URLError(socket.gaierror("no such host"))
 
     monkeypatch.setattr(lf, "_http_get_text", fake_get)
     with pytest.raises(lf.LinkFinderError):

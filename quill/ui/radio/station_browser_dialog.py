@@ -718,12 +718,17 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
             from quill.core.radio import link_finder
 
             try:
-                result = link_finder.scan_page_for_streams(url, safe_mode=self._safe_mode)
+                result = link_finder.scan_page_for_streams(
+                    url, safe_mode=self._safe_mode, check_live=True
+                )
             except link_finder.LinkFinderError:
                 return []
             return [
                 RadioStation(
-                    name=candidate.label or candidate.reason or "Website stream",
+                    name=candidate.stream_name
+                    or candidate.label
+                    or candidate.reason
+                    or "Website stream",
                     stream_url=candidate.url,
                     homepage=url,
                     source="Website",

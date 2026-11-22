@@ -12090,6 +12090,46 @@ to make it wait for the list to be empty; that gate had been quietly costing the
 iHeart/TuneIn follow too, where one stream-shaped podcast link on a homepage was
 enough to suppress the only link that reached the station.
 
+**A candidate is checked before it is listed (2026-11-21; `core/radio/live_check.py`,
+`core/radio/audio_sniff.py`, `core/radio/page_links.py`,
+`core/radio/find_streams_text.py`).** Ideas from Andre Louis&#39;s StreamSift
+(https://github.com/OnjLouis/StreamSift), re-implemented in QUILL&#39;s own code
+(StreamSift carries no licence of its own, so nothing was copied). With
+`scan_page_for_streams(..., check_live=True)` -- used by the Find Streams dialog,
+stream recovery, Add Custom Station&#39;s page resolver, the website rows of Find in
+Browse and the station browser&#39;s website search -- every candidate is opened
+through link_finder&#39;s one reviewed egress site (`_http_get`, the same 12-second
+timeout) and only its headers and first 4 KB are read. Two consecutive MPEG or
+ADTS frames, an Ogg page (Opus, Vorbis, FLAC), `fLaC` or `RIFF/WAVE` with no
+`Content-Length` is *live*; with one it is a *file*; a playlist is judged by its
+first entry and an HLS master by its audio rendition or audio-only variant (one
+level, either way); an HLS media playlist is live only with a target duration and
+no ENDLIST or VOD tag, and an encrypted one is refused. HTML and 404/410 are *not
+audio* and left out (counted in `left_out`); anything unanswered -- a timeout, a
+refusal, 401/403, 5xx, the 20-second overall deadline, past the 16-check cap -- is
+*not checked* and stays listed with its reason. At most four checks run at once.
+`icy-name`, `icy-br` and `icy-genre` are kept, cleaned for speech. The result is
+sorted live, not checked, file (page order within each), the https twin of a
+stream wins a tie, and `stream_pick.pick_stream` prefers a resolved mount, then a
+checked-live candidate, and never a file while anything else is on offer. The
+dialog fills its list once, when every check is in (FUX-06), leads each row with
+the verdict because a screen reader reads column 0 first, says one sentence
+(FUX-04), keeps Scan enabled with a guard that answers a second press, and says
+&quot;Still scanning&quot; once after 8 seconds of silence; the accessibility lead reviewed
+the design before it was built and the code after. `_fetch_html` now also falls
+back to the plain-http page on a refused or reset connection, a timeout or any
+TLS failure, not only a certificate hostname mismatch, because many community
+stations have no HTTPS at all; verification is never relaxed. The parser moved to
+`page_links.py` (GATE-11) and now reads `data-src`/`data-url`/`data-stream*`/
+`data-audio*`/`data-dt-stream` (comma lists too), `key: &quot;url&quot;` settings after
+undoing `\/` escapes, plain-text addresses, `&lt;base href&gt;`, Radio.co embeds
+(`player.radio.co/s&lt;id&gt;` to `streaming.radio.co/s&lt;id&gt;/listen`), up to three
+same-site player scripts, `window.open` pop-up players and Icecast status pages
+(through `my_servers.parse_icecast`, with the `status.xsl` `.m3u` links as the
+fallback). Not done: UK and Nordic platform handlers (Global Player, Radioplayer,
+Sveriges Radio, radio.garden), a ranked crawl queue, and any browser-assisted
+mode.
+
 **A capture that recorded nothing is a failure, not a recording (Quill Radio
 3.0; `core/radio/recording_outcome.py`).** ffmpeg writes the output container the
 instant it opens the file, so file existence was never evidence that audio

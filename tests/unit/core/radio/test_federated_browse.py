@@ -235,7 +235,7 @@ def _scan(monkeypatch: pytest.MonkeyPatch, candidates: list[tuple[str, str, str]
 
     scanned: list[str] = []
 
-    def fake_scan(url: str, *, safe_mode: bool = False) -> link_finder.PageScanResult:
+    def fake_scan(url: str, *, safe_mode: bool = False, **_k: object) -> link_finder.PageScanResult:
         scanned.append(url)
         return link_finder.PageScanResult(
             page_title="OJ 99.1 WWOJ",
@@ -313,7 +313,7 @@ def test_an_unreachable_website_is_named_like_any_other_source(
 ) -> None:
     from quill.core.radio import link_finder
 
-    def boom(url: str, *, safe_mode: bool = False) -> object:
+    def boom(url: str, *, safe_mode: bool = False, **_k: object) -> object:
         raise link_finder.LinkFinderError("That website could not be reached.")
 
     monkeypatch.setattr(link_finder, "scan_page_for_streams", boom)
