@@ -17,7 +17,7 @@ import urllib.request
 from collections import deque
 from dataclasses import dataclass, field
 from typing import Any
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, quote, urlsplit
 
 BASE = "https://scribe.test"
 STORAGE = "https://storage.scribe.test"
@@ -128,6 +128,8 @@ class FakeScribe:
         self.drop_download_after: int | None = None
         self.fail_connect = 0
         self.file_bytes: dict[str, bytes] = {}
+        #: The file name the download's Content-Disposition gives, per format.
+        self.disposition_names: dict[str, str] = {}
         self._next_id = 1
         # account
         self.organization_name: str | None = None
@@ -153,6 +155,13 @@ class FakeScribe:
                 return True
         self.actions.append(now)
         return False
+
+    def serve_files(self, files: dict[str, Any], names: dict[str, str] | None = None) -> None:
+        """Each format's download returns the bytes of ``files[format]`` (a path:
+        the real corpus output), named *names[format]* by the server."""
+        for fmt, path in files.items():
+            self.file_bytes[fmt] = path.read_bytes()
+        self.disposition_names.update(names or {})
 
     # ----------------------------------------------------------------- REST
 
@@ -298,7 +307,8 @@ class FakeScribe:
         part = data[start:]
         out_headers = {
             "Content-Length": str(len(part)),
-            "Content-Disposition": f"attachment; filename*=UTF-8''Notes.{_ext(fmt)}",
+            "Content-Disposition": "attachment; filename*=UTF-8''"
+            + quote(self.disposition_names.get(fmt, f"Notes.{_ext(fmt)}")),
         }
         status = 200
         if start:

@@ -53,6 +53,17 @@ The goal is that wherever someone in the QUILL family meets an inaccessible docu
   - **Beacon (8.7):** Beacon has Destinations, not a sources list; "Scribe Documents" is one, showing Beacon's Scribe places, and Add My Scribe Documents as Places makes the person's Scribe library into places on their command. A place points at a heading (its structural locator) or the start; Download Again checks the account first and asks only when the document is still there.
   - **Save a Beacon place (8.1.7)** chooses the start or a heading from a list; it is offered only where Beacon is released or installed. QUILL Lite does not have it (Lite has no Beacon part, 8.2).
   - **Send To (8.10)** is in QUILL's installer, not the runtime installer, which has no page of choices; QUILL Lite's installer does not have it yet (Lite has no command line for it).
+- **Tested on real Scribe output (2026-11-22).** Pneuma's corpus (`scribe-test-corpus-2026-11`: four sources, nine formats, two variants) replays through the fake server, byte for byte, in every app's entry point. The corpus is Pneuma's and stays outside the repository: these tests run when `QUILL_SCRIBE_CORPUS` names the extracted folder, and skip otherwise. What it showed, and what changed:
+  - **F1.** The offline web page now arrives as one HTML file with its pictures inside. Its extension comes from the bytes (`.zip` only for zip bytes), and it is named `<stem>-offline.html`.
+  - **F2.** The accessible HTML's pictures are relative names the download does not include. The accessible HTML is still what opens in the editor and what every Next Step uses; the offline page is saved, and Next Steps offers "Open in Your Browser (Web page for offline reading)". The result sentence ends with where the pictures are: in the offline page, or, when it was not made, added by Download Formats in My Scribe Documents (accessibility review, 2026-11-22).
+  - **F3.** DAISY 3 with pictures missing from the zip and an OPF that says Z39.86-2002 opens from `dtb.ncx` with its headings. Its audio is split, one MP3 per section, so Studio's narration writes no chapter markers from it and says why (a follow-up can sum the section lengths).
+  - **F4.** The BRF is EBAE grade 2 (`en-us-g2.ctb`). A tab, and the UTF-8 bytes C2 B4, are kept byte for byte, flagged by Validate BRF Layout, and counted once in the open sentence ("4 characters are not braille cells; Validate BRF Layout lists them."). A 32-cell BRF opens as 32 cells, read from the page-number lines.
+  - **F5.** EPUB 2 with `dc:language` `C` imports; the language falls back to the content's own `lang` (`en`), never `C`.
+  - **F6.** Names, folders and sentences use our stem; My Scribe Documents' Convert and Beacon's Add My Scribe Documents as Places use our recorded name too, not Scribe's title.
+  - **F7.** No format has MathML or OMML, math on or off. The check box is now "Mathematics (beta)", and its help and the guides say what it does today.
+  - **F8.** Scribe's own email is never inherited from the account default (which is on, one email per format): the dialog and watch-folder jobs start with it off, and the upload sends `notify_when_complete: false` with exactly the README's eleven setting names.
+  - Each stage sentence is said once per job: the next format's "waiting in Scribe's queue" is not said again (GATE-13). Retry forgets what was said about the job, so its stages are said again. Studio says "Opening the Chapter Workbench." and opens it at once, titled with the book's name; a second request while it is open is ignored.
+  - A Kindle (MOBI) result's sentence says how to read it (an older Kindle over USB, or Calibre); when nothing made opens by itself, the sentence ends "Open Folder in Scribe Conversions shows it." "Also save as my Scribe account defaults" changes the account's email setting only when the person changed it in the dialog.
 - **Not built yet.** QUILL Lite's Send To item and its command line (8.10). Live testing against scribeit.io comes once the code is merged, and every new surface still needs its NVDA, JAWS and Narrator check (12).
 
 ## 3. What Scribe provides (all of it, from the API client source)
@@ -112,8 +123,8 @@ Settings can be set per document, or as the account's defaults. **QUILL uses per
 | `braille_lines_per_page` | Lines per page | Spin control, 20 to 30 |
 | `large_print` | Large print PDF and Word | Check box |
 | `add_image_descriptions` | Describe the pictures | Check box |
-| `math` | Mathematics as MathML (beta) | Check box |
-| `notify_when_complete` | Scribe's own notification | Check box |
+| `math` | Mathematics (beta). It makes no MathML yet: equations come as pictures whose alt text is the equation in words (Pneuma's corpus, 2026-11-21) | Check box |
+| `notify_when_complete` | Scribe's own notification, one email per format. Off unless the person checks it, whatever the account default | Check box |
 
 ### 3.4 Account and documents
 
@@ -315,7 +326,7 @@ One dialog, the same in every app, opened with the file (or files) already chose
 
 - **Default folder:** `Documents\Scribe for Documents\<document title>\`.
   - It can be changed in Options.
-  - The server's file name is used and made safe.
+  - The file is named after our own name for the document (the uploaded file's stem), never the title Scribe reads from inside it: a scan's title can begin with a library stamp (Pneuma's corpus, F6). The extension comes from the bytes that arrived: the offline web page is one HTML file or a zip, and is named `<stem>-offline.html` or `.zip` so it never takes the accessible HTML's name (F1). Without a stem, the server's file name is used. Either way the name is made safe.
   - An existing file is never overwritten: QUILL adds "(2)".
 - **Resuming.** Downloads resume with Range after a drop.
 - **Local record.** `library.py` keeps which document ID made which file, so My Scribe Documents can say "downloaded to ..." and Beacon can find it.

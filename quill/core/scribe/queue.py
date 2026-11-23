@@ -124,6 +124,9 @@ class Job:
     #: The files chosen together in one Convert dialog share a batch, so the
     #: last one to finish can say what was made and what was not (7.4).
     batch: str = ""
+    #: Fields "Also save as my Scribe account defaults" leaves as they are:
+    #: Scribe's email, unless the person changed it in the dialog (F8).
+    defaults_leave_out: list[str] = field(default_factory=list)
 
     @property
     def state_words(self) -> str:

@@ -62,6 +62,7 @@ from quill.core.scribe.inputs import check as check_input
 from quill.core.scribe.inputs import not_a_document_sentence
 from quill.core.scribe.library import Library, document_folder, unique_path
 from quill.core.scribe.model import HTML_SHAPING_FIELDS, ScribeSettings, ordered_for_conversion
+from quill.core.scribe.options import quill_base
 from quill.core.scribe.results import daisy_entry
 
 logger = logging.getLogger(__name__)
@@ -332,7 +333,7 @@ class QueueService:
             if job.reuse:  # only formats not made yet; the upload fixed the rest
                 client.update_settings(job.document_id, settings, leave_out=HTML_SHAPING_FIELDS)
             if job.save_as_defaults:  # only ever because the person ticked it
-                client.update_default_settings(settings)
+                client.update_default_settings(settings, leave_out=job.defaults_leave_out)
         outputs, needs_password = client.list_outputs(job.document_id)
         if needs_password and not self._passwords.get(job.id):
             raise ScribePasswordError(
@@ -361,7 +362,7 @@ class QueueService:
         """A watch-folder file: the person's Scribe account defaults, read now, with
         the profile's (or Options') own fields on top, as the dialog starts (3.3)."""
         try:
-            merged = client.default_settings().to_dict()
+            merged = quill_base(client.default_settings())  # no per-format emails (F8)
         except ScribeError:
             merged = {}
         merged.update(job.settings)
@@ -544,6 +545,7 @@ class QueueService:
             name_for=lambda name: unique_path(folder / name),
             on_progress=progress,
             cancel_requested=lambda: self._cancel_requested(job),
+            stem=title,  # our name, never the title Scribe read from the document (F6)
         )
         if format_id == "daisy":
             # DAISY 3 as a zip: unpack beside it now, so Open Result finds the .ncx.

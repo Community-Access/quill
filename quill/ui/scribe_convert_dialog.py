@@ -53,6 +53,9 @@ class ConvertChoice:
     base: ScribeSettings | None = None
     #: Read while it converts: open the streaming tab (QUILL only, 8.1.3).
     stream: bool = False
+    #: The person changed "Email me when it is finished" in this dialog: only
+    #: then may "Also save as my Scribe account defaults" change the account's.
+    email_changed: bool = False
 
 
 def pdf_needs_password(path: Path) -> bool:
@@ -304,8 +307,9 @@ class ScribeConvertDialog(wx.Dialog):
 
         def work() -> tuple[ScribeSettings | None, ScribeSettings]:
             client = controller.client()
-            if existing is not None:
-                return None, client.get_settings(existing.id)
+            if existing is not None:  # its own settings, but never Scribe's email (F8)
+                own = client.get_settings(existing.id).to_dict()
+                return None, ScribeSettings.from_mapping({**own, "notify_when_complete": False})
             defaults = client.default_settings()
             return defaults, self._options.starting_settings(defaults, app)
 
@@ -449,6 +453,7 @@ class ScribeConvertDialog(wx.Dialog):
             stream=bool(
                 self.stream is not None and self.stream.GetValue() and len(self._paths) == 1
             ),
+            email_changed=self.groups.email_changed(),
         )
 
     def _on_destroy(self, event: wx.WindowDestroyEvent) -> None:

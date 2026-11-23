@@ -178,7 +178,8 @@ class BeaconScribeMixin(AppScribeMixin):
                 found = library.files_for(document.id)
                 if found:
                     files[document.id] = found[-1]
-            pairs = [(d.id, d.display_title) for d in documents]
+            # Our own name where we uploaded it, not Scribe's title from inside (F6).
+            pairs = [(d.id, library.title_for(d.id) or d.display_title) for d in documents]
             added, already = add_library(self.store, pairs, files)  # type: ignore[attr-defined]
             self._scribe_refresh_quietly()
             self._scribe_say(_added_sentence(added, already))

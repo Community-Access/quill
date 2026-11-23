@@ -302,3 +302,90 @@ def test_the_options_have_no_batch_setting(controller: Any) -> None:  # noqa: F8
         assert not hasattr(result, "batch_exception")
     finally:
         dialog.Destroy()
+
+
+# ------------------------------------- the corpus variants, from the dialog
+
+
+def test_the_large_print_and_math_variants_come_from_the_dialogs_controls(
+    sync: Any,  # noqa: F811
+    isolated: Path,  # noqa: F811
+) -> None:
+    """Pneuma's two variants (large print with 32-cell braille; math on) are
+    what the dialog's own controls send, and Scribe's email starts off even
+    when the account's default is on (F8)."""
+    sync.server.account_defaults = {"notify_when_complete": True}
+    dialog = _dialog(sync, paths=[_source(isolated)], formats=["pdf", "docx", "brf"])
+    try:
+        groups = dialog.groups
+        assert not groups.notify.GetValue()
+        assert groups.math.GetLabel() == "&Mathematics (beta)"
+        groups.large_print.SetValue(True)
+        groups.cells.SetValue(32)
+        groups.math.SetValue(True)
+        fields = dict(dialog.result().settings.to_upload_fields())
+        assert fields["document[settings][large_print]"] == "true"
+        assert fields["document[settings][braille_cells_per_line]"] == "32"
+        assert fields["document[settings][math]"] == "true"
+        assert fields["document[settings][notify_when_complete]"] == "false"
+    finally:
+        dialog.Destroy()
+
+
+def test_a_document_already_in_the_account_starts_with_scribes_email_off(sync: Any) -> None:  # noqa: F811
+    doc = sync.server.add_document(outputs={"html": "complete"})
+    doc.settings = {"notify_when_complete": True}  # the document's own, from the account
+    existing = DocumentSummary(id=doc.id, title="Notes", outputs=(Output("html", "complete"),))
+    dialog = _dialog(sync, existing=existing, formats=["brf"])
+    try:
+        assert not dialog.groups.notify.GetValue()
+        assert not dialog.result().email_changed
+    finally:
+        dialog.Destroy()
+
+
+def test_saving_account_defaults_leaves_the_email_unless_it_was_changed(
+    sync: Any,  # noqa: F811
+    isolated: Path,  # noqa: F811
+) -> None:
+    from quill.core.scribe.client import ScribeClient
+    from tests.unit.core.scribe.fake_scribe import BASE, StaticTokens
+
+    dialog = _dialog(sync, paths=[_source(isolated)], formats=["docx"])
+    try:
+        dialog.defaults.SetValue(True)
+        unchanged = dialog.result()
+        dialog.groups.notify.SetValue(True)
+        changed = dialog.result()
+    finally:
+        dialog.Destroy()
+    assert not unchanged.email_changed and changed.email_changed
+    left, sent = sync.queue_choice(unchanged, paths=[_source(isolated)])[0], None
+    assert left.defaults_leave_out == ["notify_when_complete"]
+    sent = sync.queue_choice(changed, paths=[_source(isolated, "Other.pdf")])[0]
+    assert sent.defaults_leave_out == []
+    # The PATCH itself: without notify_when_complete when it was left out.
+    client = ScribeClient(StaticTokens(sync.server), base_url=BASE, transport=sync.server.transport)
+    client.update_default_settings(ScribeSettings(), leave_out=left.defaults_leave_out)
+    client.update_default_settings(ScribeSettings(notify_when_complete=True))
+    first, second = sync.server.default_patches[-2:]
+    assert "notify_when_complete" not in first and second["notify_when_complete"] is True
+
+
+def test_retry_says_the_stages_again(controller: Any) -> None:  # noqa: F811
+    from quill.core.scribe.sentences import Speaker
+
+    speaker = Speaker(speak_stages="always")
+    job = q.Job(id="j1", file_name="Notes.pdf", state=q.CONVERTING, stage="queue", progress=0.3)
+    assert speaker.on_change(job, app_in_front=True) == "Notes.pdf, waiting in Scribe's queue."
+    assert speaker.once(job, "busy")
+    speaker._said_stage["other"] = "x"
+    speaker.forget_job("j1")
+    assert speaker.on_change(job, app_in_front=True) == "Notes.pdf, waiting in Scribe's queue."
+    assert speaker.once(job, "busy") and "other" in speaker._said_stage
+    # Retry, on the controller, forgets the job's speech.
+    controller.queue.add([q.Job(id="j2", file_name="B.pdf", state=q.FAILED)])
+    controller._speaker.once(q.Job(id="j2"), "stage:B.pdf, uploading.")
+    controller.wake = lambda: None
+    controller.retry("j2")
+    assert controller._speaker.once(q.Job(id="j2"), "stage:B.pdf, uploading.")

@@ -10,7 +10,7 @@ import zipfile
 from pathlib import Path
 
 from quill.core.document import Document
-from quill.core.epub import load_epub_book, render_epub_book
+from quill.core.epub import epub_metadata, load_epub_book, render_epub_book
 from quill.core.pdf_ocr_install import PACK_ASSISTED_SUFFIXES, extraction_pack_missing
 from quill.core.pdf_open import read_pdf_for_open
 from quill.core.safe_archive import check_zip_safety
@@ -59,8 +59,8 @@ def read_structured_document(
         _guard_office_zip(path)
         text, metadata = _read_office(path)
     elif suffix == ".epub":
-        text = render_epub_book(load_epub_book(path))
-        metadata = {"source_kind": "epub", "engine": "epub", "quality_score": 100}
+        text = render_epub_book(book := load_epub_book(path))
+        metadata = epub_metadata(book)  # with its language, never Scribe's "C" (F5)
     elif suffix == ".pdf":
         text, metadata = _format_pdf(path, password=pdf_password)
     elif suffix == ".pages":

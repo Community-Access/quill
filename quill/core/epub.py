@@ -68,6 +68,37 @@ class EpubChapter:
 class EpubBook:
     title: str
     chapters: tuple[EpubChapter, ...]
+    #: The book's language tag, or ``""`` when it has none worth trusting.
+    language: str = ""
+
+
+#: A BCP 47 shape: a 2 or 3 letter language, then subtags. Scribe's EPUB says
+#: ``C`` (a POSIX locale name, not a language), so it fails this (F5).
+_LANGUAGE_TAG = re.compile(r"^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{1,8})*$")
+_HTML_LANG = re.compile(r"<html\b[^>]*?\b(?:xml:)?lang\s*=\s*[\"']([^\"']+)[\"']", re.IGNORECASE)
+
+
+def book_language(declared: str, contents: list[str]) -> str:
+    """*declared* (the OPF's ``dc:language``) when it is a language tag, else
+    the first content document's own ``lang``, else ``""`` -- never ``C``."""
+    for candidate in (declared, *(_html_lang(content) for content in contents)):
+        tag = (candidate or "").strip()
+        if _LANGUAGE_TAG.match(tag) and tag.lower() not in {"und", "zxx"}:
+            return tag
+    return ""
+
+
+def _html_lang(content: str) -> str:
+    found = _HTML_LANG.search(content)
+    return found.group(1) if found else ""
+
+
+def epub_metadata(book: EpubBook) -> dict[str, object]:
+    """The open flow's ``source_metadata`` for an EPUB."""
+    metadata: dict[str, object] = {"source_kind": "epub", "engine": "epub", "quality_score": 100}
+    if book.language:
+        metadata["language"] = book.language
+    return metadata
 
 
 def load_epub_book(path: Path) -> EpubBook:
@@ -76,12 +107,14 @@ def load_epub_book(path: Path) -> EpubBook:
         toc = _read_toc(archive)
         title = _read_book_title(archive) or path.stem
         chapters: list[EpubChapter] = []
+        contents: list[str] = []
         ordered = toc if toc else [(Path(name).stem, name) for name in chapter_files]
         for label, href in ordered:
             matched = _resolve_href(chapter_files, href)
             if matched is None:
                 continue
             content = archive.read(matched).decode("utf-8", errors="ignore")
+            contents.append(content)
             text = _extract_text(content)
             true_spans = _true_heading_spans(content)
             inferred = False
@@ -103,7 +136,8 @@ def load_epub_book(path: Path) -> EpubBook:
                     headings_inferred=inferred,
                 )
             )
-    return EpubBook(title=title, chapters=tuple(chapters))
+        language = book_language(_read_book_language(archive), contents)
+    return EpubBook(title=title, chapters=tuple(chapters), language=language)
 
 
 def render_epub_book(book: EpubBook) -> str:
@@ -162,6 +196,18 @@ def _read_book_title(archive: zipfile.ZipFile) -> str | None:
             if candidate:
                 return candidate
     return None
+
+
+def _read_book_language(archive: zipfile.ZipFile) -> str:
+    for opf_name in [name for name in archive.namelist() if name.lower().endswith(".opf")]:
+        try:
+            root = safe_xml_fromstring(archive.read(opf_name).decode("utf-8", errors="ignore"))
+        except (ET.ParseError, UnsafeXMLError):
+            continue
+        node = root.find(".//dc:language", {"dc": "http://purl.org/dc/elements/1.1/"})
+        if node is not None and node.text and node.text.strip():
+            return node.text.strip()
+    return ""
 
 
 def _resolve_href(chapter_files: list[str], href: str) -> str | None:

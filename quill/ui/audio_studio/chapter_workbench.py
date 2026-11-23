@@ -96,6 +96,7 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
             name="audio_studio.workbench",
         )
+        self.SetTitle(f"{_('Chapter Workbench')}: {book.path.stem}")  # which book, said on open
         self._book = book
         self._original_chapters = [
             Chapter(index=c.index, title=c.title, start_ms=c.start_ms, end_ms=c.end_ms)

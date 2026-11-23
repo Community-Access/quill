@@ -25,6 +25,7 @@ it, and every Tools > Scribe for Documents command.
 from __future__ import annotations
 
 import tempfile
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -283,4 +284,29 @@ def send_to_player(format_id: str, path: Path) -> bool:
     return bool(target is not None and launch_app("player", extra_args=(str(target),)))
 
 
-__all__ = ["SENDABLE", "ScribeEntryPoints", "send_to_player"]
+def open_in_browser(path: Path) -> bool:
+    """Show a saved web page in the person's own browser (a local file: no egress)."""
+    import wx
+
+    return bool(wx.LaunchDefaultBrowser(path.resolve().as_uri()))
+
+
+def browser_steps(
+    ready: dict[str, Path], announce: Callable[[str], None]
+) -> list[tuple[str, Callable[[], None]]]:
+    """Next Steps' "Open in Your Browser (Web page for offline reading)": the
+    offline web page, pictures and all, when it is one HTML file (F2)."""
+    from quill.core.scribe.results import BROWSER_STEP
+
+    page = ready.get("offline_html")
+    if page is None or page.suffix.lower() != ".html":
+        return []
+
+    def show() -> None:
+        if not open_in_browser(page):
+            announce(f"Your browser could not be opened. {page.name} is saved in its folder.")
+
+    return [(BROWSER_STEP, show)]
+
+
+__all__ = ["SENDABLE", "ScribeEntryPoints", "browser_steps", "open_in_browser", "send_to_player"]

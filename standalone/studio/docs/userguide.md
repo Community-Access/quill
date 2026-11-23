@@ -1109,6 +1109,13 @@ inside the same result sentence, for example "with no chapter markers,
 because the DAISY book has 4 audio files". The MP3 still opens as one
 chapter, and the Workbench can propose chapters from its silences.
 
+Today Scribe's DAISY books keep a separate audio file for each part of the
+document (Pneuma's test corpus, November 2026), so for now a narration
+usually comes without markers, and the sentence says so.
+
+When you open the narration from Scribe Conversions, you hear "Opening the
+Chapter Workbench." and the Workbench opens straight away, with focus in it.
+
 ### Keys and commands
 
 | Command | Menu | Key | What it does |

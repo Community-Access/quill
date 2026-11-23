@@ -34,6 +34,14 @@ def restore_offset(
     return min(offset, max(0, text_length))
 
 
+def unshown_count(meta: dict[str, object]) -> int:
+    """How many characters of an opened BRF are not braille cells, from the read
+    path's ``source_metadata`` (:func:`quill.core.brf_ascii.count_unshown`, the
+    same rule Validate BRF Layout lists them by)."""
+    value = meta.get("brf_unshown_count", 0)
+    return value if isinstance(value, int) else 0
+
+
 def format_open_announcement(
     *,
     page_count: int,
@@ -42,11 +50,22 @@ def format_open_announcement(
     line: int,
     cell: int,
     print_page: str,
+    unshown: int = 0,
 ) -> str:
-    """Build the spoken message for opening a braille file (BR-016)."""
+    """Build the spoken message for opening a braille file (BR-016).
+
+    *unshown* counts the characters that are not braille cells (bytes outside
+    braille ASCII, and tabs): said once here, so nothing is dropped unseen;
+    Validate BRF Layout goes to each.
+    """
     parts = ["BRF file opened."]
     if page_count > 0:
         parts.append(f"{page_count} braille page{'s' if page_count != 1 else ''} detected.")
+    if unshown > 0:
+        said = "1 character is not a braille cell; Validate BRF Layout lists it."
+        if unshown != 1:
+            said = f"{unshown} characters are not braille cells; Validate BRF Layout lists them."
+        parts.append(said)
     if restored:
         location = f"Last position: braille page {braille_page}, line {line}, cell {cell}"
         if print_page:

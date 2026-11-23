@@ -179,15 +179,15 @@ once.
 
 | Format | Good for | What QUILL does with it |
 |---|---|---|
-| Accessible HTML | Reading in QUILL or a browser, with real headings | Opens it in QUILL |
+| Accessible HTML | Reading in QUILL or a browser, with real headings. Its pictures are not included | Opens it in QUILL. Its pictures are in the Web page for offline reading |
 | Word | Reading and editing in QUILL or Word. Can be large print | Opens it in QUILL |
 | Tagged PDF | Sharing a PDF that screen readers can read. Can be large print | Saves it, and says where |
 | EPUB | Ebook readers and QUILL's own EPUB reading | Opens it in QUILL |
-| Kindle (MOBI) | Older Kindle devices and apps | Saves it, and says where |
+| Kindle (MOBI) | Older Kindle devices, and Calibre | Saves it, and says where |
 | DAISY (text and audio) | Talking-book players, and Quill Media Player with chapters | Opens it in Quill Media Player |
 | MP3 audio | Any audio player, or your phone | Opens it in Quill Media Player |
 | Braille (BRF) | Braille displays, embossers and braille notetakers | Opens it in QUILL's braille view |
-| Web page for offline reading | A web page you can read without the internet, as a zip | Saves it, and says where |
+| Web page for offline reading | The accessible HTML with its pictures inside, as one web page (or a zip) | Saves it, and says where. Next Steps opens it in your browser, pictures and all |
 
 DAISY is DAISY 3, with text and audio together, in a zip file. When you send
 it to Quill Media Player, QUILL unpacks the zip into a folder beside it and
@@ -196,6 +196,35 @@ opens the book there.
 Results are saved in **Documents\Scribe for Documents**, in a folder named
 after the document. You can choose another folder in Options. QUILL never
 writes over a file that is already there: it adds "(2)" to the new name.
+
+Each result is named after your file, not after the title Scribe reads from
+inside it. So Notes.pdf gives Notes.docx and Notes.brf, even when Scribe
+calls the document something else; a scanned page's title can start with a
+stamp or a handwritten note. The offline web page is named Notes-offline.html,
+or Notes-offline.zip when Scribe sends it as a zip.
+
+**Pictures in the accessible HTML.** Scribe's accessible HTML points at its
+pictures by name, but the pictures are not sent with it. The **Web page for
+offline reading** is the same document with its pictures inside. When you ask
+for both, QUILL opens the accessible HTML, and Next Steps opens the offline web
+page in your browser, pictures and all; the result sentence ends: "Its pictures
+are in the Web page for offline reading; Next Steps opens that in your
+browser." When you ask for the accessible HTML alone, the sentence ends: "The
+accessible HTML came without its pictures; Download Formats in My Scribe
+Documents can add the Web page for offline reading, which has them."
+
+**A Kindle (MOBI) book** is for older Kindles. The result sentence says so:
+"A Kindle (MOBI) book is for older Kindles: copy it to the Kindle's documents
+folder over USB, or read it on this computer in Calibre's free e-book viewer.
+Send to Kindle takes the EPUB instead." When nothing that was made opens by
+itself, the sentence ends "Open Folder in Scribe Conversions shows it."
+
+**The braille Scribe makes** is American English Braille (EBAE) grade 2, not
+UEB, unless you choose another table. If a BRF has characters that are not
+braille cells, such as a tab or an accented letter copied from the document,
+QUILL keeps them and says how many when the file opens: "4 characters are not
+braille cells; Validate BRF Layout lists them." **Braille > Validate BRF
+Layout...** goes to each one. A 32-cell BRF opens as 32 cells a line.
 
 **Options** decides whether results open by themselves. See
 [Scribe for Documents Options](#scribe-for-documents-options).
@@ -307,10 +336,15 @@ Always shown.
   picture. If you have turned AI off in QUILL, this starts unchecked and
   says why. You may still check it, because it is Scribe's own work, not
   QUILL's AI.
-- **Mathematics as MathML (beta)**: writes maths in a form screen readers
-  can read.
+- **Mathematics (beta)**: Scribe's beta setting for mathematics. Today it
+  does not make MathML in any format: an equation comes through as a
+  picture whose alt text reads the equation in words, such as "w subscript 0
+  = [n, n - 1, ..., 2, 1]", and maths inside a sentence is plain text. That is
+  true with the setting on or off.
 - **Email me when it is finished (Scribe's own email)**: Scribe sends you
-  its own email when the work is done.
+  its own email when the work is done, one email for each format. It starts
+  unchecked, even when your Scribe account's default is to email you, unless
+  you checked it last time: QUILL already tells you when each result is ready.
 
 Language, picture descriptions, maths and large print shape the document
 from the start. So they are fixed when it is uploaded. When you make

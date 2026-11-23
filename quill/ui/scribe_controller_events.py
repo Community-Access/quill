@@ -16,7 +16,6 @@ queue, host, options, speaker, window and ``_say``.
 from __future__ import annotations
 
 from collections.abc import Callable
-from pathlib import Path
 from typing import Any
 
 from quill.core.scribe import queue as q
@@ -156,6 +155,8 @@ class ScribeEventsMixin:
             opened = finished(job) if callable(finished) else ""
         elif mine and on_its_own and options.open_results == "yes" and self._may_open_now():
             opened = self.open_job_result(job, speak=False)
+        from quill.core.scribe.results import result_notes
+
         self._say(
             say.result_sentence(
                 job,
@@ -163,6 +164,7 @@ class ScribeEventsMixin:
                 opened=opened,
                 offer=options.open_results == "offer",
                 note=note,
+                after=result_notes(job.outputs),  # the pictures, a Kindle book: once
             )
         )
 
@@ -176,13 +178,13 @@ class ScribeEventsMixin:
     def open_job_result(self, job: q.Job, *, speak: bool = True) -> str:
         """Open Result: the first output that opens somewhere, in the tool where it
         is used (section 9). A tagged PDF, MOBI or offline page is only saved, so
-        a BRF or MP3 made with it still opens."""
-        from quill.core.scribe.model import valid_formats
+        a BRF or MP3 made with it still opens. The accessible HTML is what opens
+        in the editor; the offline page is a Next Step, in the browser (F2)."""
+        from quill.core.scribe.results import open_order
         from quill.core.scribe.sentences import friendly_folder
 
         saved = False
-        for format_id in valid_formats(list(job.outputs)):
-            path = Path(job.outputs[format_id])
+        for format_id, path in open_order(job.outputs):
             if not path.exists():
                 continue
             saved = True
@@ -206,13 +208,9 @@ class ScribeEventsMixin:
         offer = getattr(self.host, "scribe_next_steps", None)
         if not callable(offer):
             return []
-        from quill.core.scribe.model import valid_formats
+        from quill.core.scribe.results import open_order
 
-        ready = {
-            format_id: Path(job.outputs[format_id])
-            for format_id in valid_formats(list(job.outputs))
-            if Path(job.outputs[format_id]).exists()
-        }
+        ready = {format_id: path for format_id, path in open_order(job.outputs) if path.exists()}
         return list(offer(job, ready)) if ready else []
 
 

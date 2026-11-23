@@ -2,8 +2,11 @@
 
 * The default folder is ``Documents\\Scribe for Documents\\<document title>``;
   the family's Scribe options can name another.
-* The server's file name is used, made safe; an existing file is never
-  overwritten -- ``Notes (2).docx``.
+* A result is named after our own name for the document (the uploaded
+  file's stem), never the title Scribe read from inside it -- a scan's title
+  can start with a library stamp (F6, Pneuma's corpus). Its extension comes
+  from the bytes that arrived (F1). It is made safe, and an existing file is
+  never overwritten -- ``Notes (2).docx``.
 * :class:`Library` remembers which Scribe document made which file, so My
   Scribe Documents can say "downloaded to ..." and Beacon can find it. It
   holds document IDs, formats and paths only: never a document's text.
@@ -48,6 +51,41 @@ def safe_file_name(name: str, *, fallback: str = "Scribe document") -> str:
     if len(stem) > _MAX_NAME:
         stem = stem[:_MAX_NAME].rstrip()
     return f"{stem}.{suffix}" if suffix else stem
+
+
+#: Added to the offline web page's name, as Pneuma's own corpus names it: it
+#: is an HTML file like the accessible HTML, and must not take its name.
+OFFLINE_SUFFIX = "-offline"
+
+
+def saved_name(
+    format_id: str,
+    downloaded: Path,
+    *,
+    stem: str = "",
+    server_name: str = "",
+    fallback: str = "",
+) -> str:
+    """The safe file name for a downloaded output.
+
+    *stem* is our name for the document; without one the server's file name
+    (or *fallback*, the document ID) gives the stem. The extension is read
+    from *downloaded*'s first bytes, so an offline web page that arrived as
+    one HTML file is never saved as ``.zip``.
+    """
+    from quill.core.scribe.model import ZIP_MAGIC, extension_for_bytes
+
+    try:
+        with downloaded.open("rb") as handle:
+            head = handle.read(len(ZIP_MAGIC))
+    except OSError:
+        head = b""
+    server = Path(safe_file_name(server_name)) if server_name else None
+    base = (stem or "").strip() or (server.stem if server else "") or fallback
+    if format_id == "offline_html" and not base.endswith(OFFLINE_SUFFIX):
+        base += OFFLINE_SUFFIX  # never "Notes (2).html" beside the accessible HTML
+    extension = extension_for_bytes(format_id, head, server.suffix if server else "")
+    return safe_file_name(f"{Path(safe_file_name(base)).name}{extension}")
 
 
 def unique_path(path: Path) -> Path:
@@ -119,6 +157,11 @@ class Library:
     def document_ids(self) -> list[str]:
         return list(self._load())
 
+    def title_for(self, document_id: str) -> str:
+        """Our own name for *document_id* (the uploaded file's stem), or ``""``."""
+        entry = self._load().get(document_id)
+        return str(entry.get("title") or "") if isinstance(entry, dict) else ""
+
 
 __all__ = [
     "Library",
@@ -126,5 +169,6 @@ __all__ = [
     "document_folder",
     "library_path",
     "safe_file_name",
+    "saved_name",
     "unique_path",
 ]

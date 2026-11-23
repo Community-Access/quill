@@ -407,13 +407,22 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
             "settings": choice.settings.to_dict(),
             "save_as_defaults": bool(choice.save_as_defaults),
             "open_as": open_as,
+            # Scribe's email goes into the account defaults only if changed (F8).
+            "defaults_leave_out": []
+            if getattr(choice, "email_changed", False)
+            else ["notify_when_complete"],
         }
         jobs: list[q.Job] = []
         if existing is not None:
+            # Our own name for it when we uploaded it: Scribe's title is read
+            # from inside the document and can be a scan's stamp (F6).
+            from quill.core.scribe.library import Library
+
+            name = Library().title_for(existing.id) or existing.display_title
             jobs.append(
                 q.Job(
-                    file_name=existing.display_title,
-                    title=existing.display_title,
+                    file_name=name,
+                    title=name,
                     document_id=existing.id,
                     reuse=True,
                     **common,

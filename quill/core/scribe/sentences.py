@@ -33,6 +33,7 @@ from quill.core.scribe.queue import (
     UPLOADING,
     Job,
 )
+from quill.core.scribe.results import default_action
 
 MILESTONES = (25, 50, 75)
 
@@ -83,15 +84,27 @@ def _join_names(names: list[str]) -> str:
 
 
 def result_sentence(
-    job: Job, *, app_name: str, opened: str = "", offer: bool = False, note: str = ""
+    job: Job,
+    *,
+    app_name: str,
+    opened: str = "",
+    offer: bool = False,
+    note: str = "",
+    after: str = "",
 ) -> str:
     """The one sentence a finished job gets (FUX-04).
 
     *opened* names what is now open ("Word is open in QUILL"); with nothing
     opened the sentence ends by saying where to open it from. *note* is what an
     app did to the result before it was said ("with 12 chapter markers"), so
-    that step never needs a second message.
+    that step never needs a second message. *after* is a whole sentence said
+    last, inside the same message (the HTML's missing pictures, F2).
     """
+    text = _result_text(job, opened=opened, offer=offer, note=note)
+    return f"{text} {after}" if after else text
+
+
+def _result_text(job: Job, *, opened: str, offer: bool, note: str) -> str:
     names = [Path(path).name for path in job.outputs.values()]
     folder = friendly_folder(job.folder) if job.folder else ""
     where = f" in {folder}" if folder else ""
@@ -100,6 +113,9 @@ def result_sentence(
     text = f"{PRODUCT_NAME} made {made}{where}{extra}."
     if opened:
         return f"{text} {opened}."
+    if names and not any(default_action(f) != "save" for f in job.outputs):
+        # Nothing made opens anywhere (a tagged PDF, a Kindle book): say where to look.
+        return f"{text} Open Folder in Scribe Conversions shows it."
     if offer or names:
         return f"{text} Open it from Scribe Conversions."
     return text
@@ -229,6 +245,10 @@ class Speaker:
             self._said_stage[job.id] = key
             if self.stages_allowed(app_in_front):
                 said = stage_sentence(job)
+                # Each stage once: the next format "waiting in Scribe's queue"
+                # again is the same words, so it is not said again (GATE-13).
+                if said and not self.once(job, f"stage:{said}"):
+                    said = ""
         before = self._progress.get(job.id, 0.0)
         self._progress[job.id] = max(before, job.progress)
         crossed = milestone_crossed(before, job.progress)
@@ -246,6 +266,12 @@ class Speaker:
 
     def forget(self, job_id: str, kind: str) -> None:
         self._said_once.discard((job_id, kind))
+
+    def forget_job(self, job_id: str) -> None:
+        """Retry: the job starts again, so each of its stages may be said again."""
+        self._said_stage.pop(job_id, None)
+        self._progress.pop(job_id, None)
+        self._said_once = {marker for marker in self._said_once if marker[0] != job_id}
 
 
 __all__ = [

@@ -105,7 +105,9 @@ class LiteScribeHost:
                     f"Open in QUILL Lite ({format_label(format_id)})",
                     lambda f=format_id: self._app.open_path(ready[f]),
                 ))
-        return steps
+        from quill.ui.scribe_entry import browser_steps
+
+        return steps + browser_steps(ready, self.scribe_announce)  # pictures and all (F2)
 
     def _to_player(self, job: Any, format_id: str, path: Path) -> None:
         if not _send_to_player(format_id, path):

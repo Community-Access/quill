@@ -13,7 +13,7 @@ Ten warning categories are covered:
 4. ``missing_form_feeds`` — form feeds expected but the file has none and is long.
 5. ``mixed_line_endings`` — CRLF and bare LF in the same file.
 6. ``non_brf_ascii`` — a byte outside printable NABCC ASCII (and not braille
-   Unicode, which is its own category).
+   Unicode, which is its own category), or a tab, which is not a braille cell.
 7. ``page_indicator`` — a page-separator line whose page anchor is missing/malformed.
 8. ``page_numbering`` — a gap or duplicate in the detected page-number sequence.
 9. ``running_head`` — running heads that disagree across pages.
@@ -165,11 +165,25 @@ def _check_line_characters(line: _Line, opts: ValidatorOptions, out: list[BRFWar
                     )
                 )
             continue
-        if code > 0x7F or (code < 0x20 and char not in "\t"):
+        if char == "\t":  # allowed in the stream, but not a braille cell
             out.append(
                 BRFWarning(
                     KIND_NON_BRF_ASCII,
-                    f"Character U+{code:04X} is not valid braille ASCII.",
+                    "Tab character: not a braille cell, so it shows as blank space of no "
+                    "fixed width. Replace it with spaces.",
+                    SEVERITY_WARNING,
+                    line.offset + column,
+                    line.number,
+                    line.page,
+                )
+            )
+            continue
+        if code >= 0x7F or code < 0x20:  # DEL and the controls too, as the open count
+            shown = f"{char} (U+{code:04X})" if char.isprintable() else f"U+{code:04X}"
+            out.append(
+                BRFWarning(
+                    KIND_NON_BRF_ASCII,
+                    f"Character {shown} is not valid braille ASCII.",
                     SEVERITY_WARNING,
                     line.offset + column,
                     line.number,

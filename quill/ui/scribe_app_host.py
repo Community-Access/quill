@@ -42,7 +42,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.scribe import PRODUCT_NAME
-from quill.ui.scribe_entry import ScribeEntryPoints, send_to_player
+from quill.ui.scribe_entry import ScribeEntryPoints, browser_steps, send_to_player
 
 #: The app's own Scribe command (Listen, Convert Documents, Narration, Convert
 #: Linked Document, Add My Scribe Documents as Places).
@@ -154,7 +154,7 @@ def elsewhere_steps(
                         )
 
                 steps.append((f"Send to Media Player ({format_label(format_id)})", to_player))
-    return steps
+    return steps + browser_steps(ready, announce)  # the offline page, pictures and all (F2)
 
 
 # -- the host ------------------------------------------------------------------

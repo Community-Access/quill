@@ -25,6 +25,7 @@ class ScribeJobCommands:
     app_name: str
     _service: Any
     _said_needs_you: set[tuple[str, str]]
+    _speaker: Any
 
     def cancel_waiting(self, job_id: str) -> None:
         job = self.queue.get(job_id)
@@ -44,6 +45,7 @@ class ScribeJobCommands:
             job_id, respect_stop=False, state=q.QUEUED, message="", error_code="", password_tries=0
         )
         self._said_needs_you = {m for m in self._said_needs_you if m[0] != job_id}
+        self._speaker.forget_job(job_id)  # its stages are said again as it runs again
         self.wake()
 
     def enter_password(self, job_id: str) -> None:

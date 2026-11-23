@@ -29,7 +29,7 @@ import logging
 import time
 import urllib.error
 import urllib.request
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from pathlib import Path
 from typing import Any, Protocol
 from urllib.parse import quote, urlencode, urlsplit
@@ -328,9 +328,13 @@ class ScribeClient:
         convert dialog's starting values (3.3). Read only, never changed here."""
         return ScribeSettings.from_mapping(self._json("GET", "/api/document_settings"))
 
-    def update_default_settings(self, settings: ScribeSettings) -> None:
-        """Changes the Scribe website's defaults too; only when the person asks."""
-        self._json("PATCH", "/api/document_settings", {"settings": settings.to_update()})
+    def update_default_settings(
+        self, settings: ScribeSettings, *, leave_out: Iterable[str] = ()
+    ) -> None:
+        """Changes the Scribe website's defaults too; only when the person asks.
+        *leave_out* names fields the person did not change, left as they are."""
+        body = {"settings": settings.to_update(leave_out=frozenset(leave_out))}
+        self._json("PATCH", "/api/document_settings", body)
 
     def languages(self) -> list[tuple[str, str]]:
         return parse_pairs(self._json("GET", "/api/settings/languages").get("languages"))
@@ -392,14 +396,20 @@ class ScribeClient:
         name_for: Callable[[str], Path] | None = None,
         on_progress: ProgressFn | None = None,
         cancel_requested: CancelFn | None = None,
+        stem: str = "",
     ) -> Path:
         """Download one output into *folder*; returns the saved file.
 
-        Resumes with ``Range`` after a drop (7.6). The server's file name is
-        used, made safe, and never overwrites a file (*name_for* picks the final
-        path, normally :func:`quill.core.scribe.library.unique_path`).
+        Resumes with ``Range`` after a drop (7.6). The file is named *stem* --
+        our own name for the document, never the title Scribe read from it,
+        which can be a scan's stamp (F6) -- or, without one, the server's file
+        name. The extension comes from the bytes that arrived
+        (:func:`quill.core.scribe.model.extension_for_bytes`: the offline web
+        page is an HTML file or a zip, F1). The name is made safe and never
+        overwrites a file (*name_for* picks the final path, normally
+        :func:`quill.core.scribe.library.unique_path`).
         """
-        from quill.core.scribe.library import safe_file_name, unique_path
+        from quill.core.scribe.library import saved_name, unique_path
 
         api = f"/api/documents/{_seg(document_id)}/outputs/{_seg(format_id)}/download"
         response = self._authed("GET", api)
@@ -460,11 +470,7 @@ class ScribeClient:
             if attempt + 1 >= _DOWNLOAD_ATTEMPTS:
                 raise ScribeOfflineError("The download was interrupted. Try again.")
             self._sleep(2.0 * (attempt + 1))
-        from quill.core.scribe.model import format_by_id
-
-        found = format_by_id(format_id)
-        fallback = f"{document_id}{found.extension if found else ''}"
-        safe = safe_file_name(file_name or fallback)
+        safe = saved_name(format_id, part, stem=stem, server_name=file_name, fallback=document_id)
         final = (name_for or (lambda n: unique_path(folder / n)))(safe)
         try:
             part.replace(final)

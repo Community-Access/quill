@@ -191,7 +191,9 @@ class QuillScribeHost:
             if format_id in ready:
                 label = f"Send to Media Player ({format_label(format_id)})"
                 steps.append((label, lambda f=format_id: self._to_player(job, f, ready[f])))
-        return steps
+        from quill.ui.scribe_entry import browser_steps
+
+        return steps + browser_steps(ready, self.scribe_announce)  # pictures and all (F2)
 
     def _beacon_steps(self, job: q.Job, ready: dict[str, Path], named: Any) -> list[Any]:
         """Save a Beacon Place, for Word and HTML, where Beacon is (8.1.7, 8.7)."""

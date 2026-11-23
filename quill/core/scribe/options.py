@@ -44,6 +44,19 @@ SPEAK_CHOICES: tuple[tuple[str, str], ...] = (
 )
 
 
+def quill_base(account_defaults: ScribeSettings | None) -> dict[str, Any]:
+    """The account defaults as a starting point for a QUILL conversion.
+
+    Every field but one: Scribe's own "Conversion is complete" email is off
+    unless the person checks it here. Its account default is on, and it sends
+    one email per format -- nine for a full run (F8, Pneuma's corpus README) --
+    while QUILL already says when each result is ready.
+    """
+    base = (account_defaults or ScribeSettings()).to_dict()
+    base["notify_when_complete"] = False
+    return base
+
+
 @dataclass(slots=True)
 class ScribeOptions:
     default_formats: list[str] = field(default_factory=lambda: ["docx"])
@@ -71,7 +84,7 @@ class ScribeOptions:
     ) -> ScribeSettings:
         """The convert dialog's starting values: the account defaults, then the
         local defaults, then this app's last choices (7.3)."""
-        merged = (account_defaults or ScribeSettings()).to_dict()
+        merged = quill_base(account_defaults)
         merged.update(self.settings)
         merged.update(self.last_settings.get(app, {}))
         return ScribeSettings.from_mapping(merged)
@@ -80,7 +93,7 @@ class ScribeOptions:
         self, app: str, chosen: ScribeSettings, account_defaults: ScribeSettings | None
     ) -> None:
         """Keep the fields of *chosen* that differ from the account defaults."""
-        base = (account_defaults or ScribeSettings()).to_dict()
+        base = quill_base(account_defaults)
         self.last_settings[app] = {
             key: value for key, value in chosen.to_dict().items() if base.get(key) != value
         }
@@ -148,5 +161,6 @@ __all__ = [
     "ScribeOptions",
     "load_options",
     "options_path",
+    "quill_base",
     "save_options",
 ]
