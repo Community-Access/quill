@@ -611,6 +611,8 @@ All the Quill apps are published from one place, and each one recognizes its own
 | View menu | Alt+V |
 | Help menu | Alt+H |
 | What's New (the changelog, in your browser) | Ctrl+Shift+F1 |
+| Activity: this session's results, with Open Folder (Help menu) | Shift+F9 |
+| Repeat Last Result (Help menu) | F9 |
 | Build From Recordings button (main window) | Alt+R |
 | Your books list (main window) | Alt+Y |
 | Capture menu (screenshots, recording, mixer, broadcasting) | Alt+C |

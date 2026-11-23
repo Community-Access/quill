@@ -1670,6 +1670,8 @@ In the QUILL Transcribe window:
 | Tutorials | Ctrl+Alt+F1 |
 | Set up QUILL Transcribe | Ctrl+Alt+S |
 | What's new | Ctrl+Shift+F1 |
+| Activity: this session's results, with Open Folder (Help menu) | Shift+F9 |
+| Repeat Last Result (Help menu) | F9 |
 | Check for updates | Ctrl+Alt+U |
 | About QUILL Transcribe | Ctrl+Alt+I |
 | Ask | Ctrl+Shift+8 |

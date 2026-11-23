@@ -16,6 +16,7 @@ Testing build: **2.0.0 (build 2)**. Builds since the first have not been publish
 
 - **A run ends with a sentence.** Audio Studio runs used to end on a status line nobody heard. Now you hear what was made and where ("Made audio for 10 documents in Reports."), with skipped and failed documents counted. A book's check is its own sentence after the build, and a cancelled run says how many are kept, how many have no audio yet, and how to make the rest. The translated speech export ends the same way. Both stay in Activity (Shift+F9) with Open Folder; F9 says them again.
 - **Saves say the file and its folder**, after the write: the Chapter Workbench, the Tag Editor, Copy Sections, Generate Captions, Save Diagnostics and screenshot reports. Each is kept in Activity with Open Folder. Captions made beside a recording name each file.
+- **Help > Activity...** (Shift+F9) and **Help > Repeat Last Result** (F9) are on the Help menu. Before, no menu carried them.
 - **A screenshot, a broadcast's saved copy and a checked demonstration** stay in Activity after their sentence or window is gone. A screenshot is still shown, not spoken.
 
 ### Narration from Scribe for Documents (2026-11-21)

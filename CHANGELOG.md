@@ -28,6 +28,9 @@ already have it.
 - **Results you might miss stay reachable.** A screenshot (shown, never
   spoken over what you are capturing), a broadcast's saved copy and a checked
   demonstration are kept in Activity after their sentence or window is gone.
+- **Activity and Repeat Last Result are on the Help menu** of QUILL Studio
+  and QUILL Transcribe (Shift+F9 and F9), where the results above are kept.
+  Before, no menu in either app carried them.
 - **QUILL Transcribe's Save As** in Review Transcript says the file and its
   folder and keeps it in Activity.
 - **Stopping a recording's transcription says what is left**: "Stopped

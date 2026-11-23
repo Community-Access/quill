@@ -1082,6 +1082,9 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         help_menu.Append(whats_new_id, "&What's New\tCtrl+Shift+F1")
         help_menu.AppendSeparator()
         help_menu.Append(palette_id, "&Command Palette...\tCtrl+Shift+P")
+        from quill.apps.studio_results import append_result_items  # FUX-04: Activity, F9
+
+        result_items = append_result_items(self, help_menu)
         help_menu.AppendSeparator()
         help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
         help_menu.Append(bug_id, "Get Help from &Support...\tCtrl+Alt+F2")
@@ -1128,6 +1131,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
             (notes_id, lambda: self._open_studio_doc("release-notes-1.0")),
             (whats_new_id, lambda: open_whats_new("studio", _TITLE, self._announce)),
             (palette_id, self.open_command_palette),
+            *result_items,
             (updates_id, self.check_updates_manual),
             (bug_id, lambda: self.report_app_bug(source_app=_TITLE, app_version=_VERSION)),
             (log_id, self._view_log),
@@ -2104,14 +2108,11 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
                 logs_path=log_file if log_file.exists() else None,
             )
 
-        def _done(_result: object) -> None:
-            from quill.core.action_feedback import written_result  # FUX-04: file and folder
-            from quill.ui.outcome_report import report_outcome
+        from quill.apps.studio_results import diagnostics_saved  # file and folder (FUX-04)
 
-            said = written_result("Diagnostics bundle saved", target)
-            report_outcome(self, "Save Diagnostics", said, object_name=target.name, path=target)
-
-        self._run_background_task("Building diagnostics bundle", _build, _done)
+        self._run_background_task(
+            "Building diagnostics bundle", _build, lambda _r: diagnostics_saved(self, target)
+        )
 
     # -- background tasks (MainFrame protocol, on the shell's own thread model) ---
 

@@ -266,3 +266,20 @@ def test_transcribe_save_as_names_the_file_and_folder_and_keeps_it(monkeypatch, 
     assert target.read_text(encoding="utf-8") == "Hello."
     assert spoken == ["Saved meeting.txt in Notes."]
     assert _kept().summary == "Saved meeting.txt in Notes." and _opens_folder(_kept())
+
+
+def test_studio_help_offers_activity_and_repeat_last_result_on_their_keys(wx_session_app):
+    from quill.apps.studio_results import append_result_items
+
+    menu = wx.Menu()
+    host = SimpleNamespace(
+        _menu_label=lambda title, command: (
+            f"{title}\t{ {'app.activity': 'Shift+F9'}.get(command, 'F9') }"
+        ),
+        open_activity=lambda: None,
+        repeat_last_result=lambda: None,
+    )
+    pairs = append_result_items(host, menu)
+    labels = [item.GetItemLabel() for item in menu.GetMenuItems()]
+    assert labels == ["Activit&y...\tShift+F9", "Repeat Last Resul&t\tF9"]
+    assert [handler for _id, handler in pairs] == [host.open_activity, host.repeat_last_result]
