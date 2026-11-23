@@ -537,8 +537,10 @@ def _finish(entry: _Entry, transcript: Any, error: BaseException | None) -> None
                 ),
                 f"The canceled transcription of {name} could not be kept in Notifications.",
             )
-        keep_outcome(_ACTION, f"Stopped transcribing {name}.", object_name=name)
-        sentence = f"Stopped transcribing {name}."
+        # FUX-04: what exists after a stop, and what to do about it.
+        sentence = f"Stopped transcribing {name}. No transcript was kept; "
+        sentence += "transcribe it again to start over."
+        keep_outcome(_ACTION, sentence, object_name=name)
         if result.notice_error:
             sentence += f" It could not be kept in Notifications. {result.notice_error}"
         host._dictation_say(sentence)

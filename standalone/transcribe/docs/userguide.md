@@ -1350,14 +1350,19 @@ unavailable.
 
 When it finishes, you hear how long the recording was and how many words came
 out. Open **Notifications** (Ctrl+Shift+N) and press Enter on the transcript to
-review it. The **Review Transcript** window shows it read-only, with:
+review it. If you stop it, you hear "Stopped transcribing meeting.mp3. No
+transcript was kept; transcribe it again to start over." The **Review
+Transcript** window shows it read-only, with:
 
 - **Type into a Field** - types the transcript, or only the part you
   selected, into another program. QUILL Transcribe says "Switch to the field
   you want. The phrase is typed there.", and types it once you are there, with
   the same checks as dictation;
 - **Copy All** - puts the whole transcript on the clipboard;
-- **Save As** - saves it as a text file where you choose;
+- **Save As** - saves it as a text file where you choose. You hear the file
+  and its folder, for example "Saved meeting.txt in Documents.", and the same
+  sentence stays in **Activity** (Shift+F9), where **Open Folder** shows you
+  the file. **Repeat Last Result** (F9) says it again;
 - **Open in QUILL** - opens it in QUILL to edit.
 
 Nothing is typed, copied or saved unless you choose it.

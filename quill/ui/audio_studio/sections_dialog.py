@@ -328,9 +328,13 @@ class CopySectionsDialog:
         except Exception as error:  # noqa: BLE001 - reported, never raised at a listener
             self._announce(f"The sections could not be saved. {error}")
             return
-        self._announce(
+        from quill.core.action_feedback import place_of
+        from quill.ui.outcome_report import report_outcome
+
+        said = (
             f"{len(self._collection.sections)} section"
             f"{'' if len(self._collection.sections) == 1 else 's'} "
-            f"{'added to' if append else 'saved as'} {written.name}. "
+            f"{'added to' if append else 'saved as'} {place_of(written)}. "  # and where (FUX-04)
             "The original file is unchanged."
         )
+        report_outcome(self, "Save Sections", said, object_name=written.name, path=written)

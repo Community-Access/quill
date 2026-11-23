@@ -617,6 +617,18 @@ half-written audio file, and nothing new is started after it. The
 diagnostics log records the same chunk-by-chunk detail the progress
 dialog shows, so reading the log after a run tells you as much as
 watching it did.</p>
+<p>When the run ends, the Studio says once what it made and where, for
+example “Made audio for 10 documents in Reports.” Anything skipped or
+failed is counted, and a failure points you to the run’s log. A book’s
+own check is said as its own sentence after the build, for example
+“Built the audiobook Reports.m4b in Reports. Its check found all 12
+chapters.”, so a book that was built but did not check out never sounds
+finished. If you cancelled, you hear how many documents’ audio is kept,
+how many have none yet, and how to make the rest. The same sentence
+stays in <strong>Activity</strong> (Shift+F9), where <strong>Open
+Folder</strong> opens that folder, and <strong>Repeat Last
+Result</strong> (F9) says it again. No window opens, so whatever you
+were doing keeps the focus.</p>
 <h2 id="journey-2-build-from-recordings">Journey 2: Build From
 Recordings</h2>
 <p>Four steps: Start, Where are the recordings?, Tell me about the book,
@@ -809,7 +821,12 @@ untouched. <strong>Save As…</strong> writes an edited copy instead.</li>
 button is disabled and <strong>Save As…</strong> performs a lossless
 re-mux (no re-encode, no quality loss) into a new file.</li>
 </ul>
-<p>Long saves run in the background so the window stays responsive.</p>
+<p>Long saves run in the background so the window stays responsive. When
+the write has finished, you hear the file and its folder, for example
+“Saved Long Walk.mp3 in Books.” Export chapters, Split into files, the
+Tag Editor and Copy Sections say the same about what they wrote. Each
+stays in <strong>Activity</strong> (Shift+F9), with <strong>Open
+Folder</strong>.</p>
 <h3 id="publish">Publish…</h3>
 <p>Opens the Publish dialog for this book - save your chapter edits
 first. See “Publishing” below.</p>
@@ -945,7 +962,9 @@ Choose Yes, download Whisper.cpp’s Small model, close the window, and
 press Ctrl+Shift+C again.</li>
 <li>Choose the audio or video file, such as chapter 3 of your book.</li>
 <li>Wait while it works. The Studio tells you how it is getting on, and
-says when it has finished.</li>
+says when it has finished. Captions made beside a recording are named
+one by one, with their folder, for example “Saved Chapter 3.srt, Chapter
+3.vtt and Chapter 3.transcript.txt in Book.”</li>
 <li>Choose the caption format, <strong>SubRip captions (.srt)</strong>
 or <strong>WebVTT captions (.vtt)</strong>, then choose where to save.
 The file is named after the recording to begin with.</li>
@@ -2589,7 +2608,9 @@ left out.”</p>
 spoiled, or <strong>Failed</strong> when a stream is missing or it does
 not decode, in which case the recorded pieces are kept so nothing is
 lost.</p>
-<p>The result window lists every check, and has buttons to:</p>
+<p>The result window lists every check, and has buttons to (after you
+close it, the sentence and <strong>Open Folder</strong> are still in
+<strong>Activity</strong>, Shift+F9):</p>
 <ul>
 <li>play the file, open its folder, or copy its path;</li>
 <li><strong>Inspect a frame…</strong> in the Screenshot Inspector;</li>
@@ -3395,7 +3416,9 @@ the sound back. Use it for a cough, a phone call, or anything you do not
 want broadcast.</li>
 <li><strong>Stop broadcasting</strong> (Ctrl+Alt+Shift+E) ends the show.
 You hear “Broadcast ended”, and “A copy was saved” when one was; the
-saved copy’s full path is in the status bar rather than read aloud.</li>
+saved copy’s full path is in the status bar rather than read aloud, and
+<strong>Activity</strong> (Shift+F9) keeps its name and folder with
+<strong>Open Folder</strong>.</li>
 </ul>
 <p>Both keys work while Studio has focus. Give them system-wide keys in
 <strong>Capture &gt; Capture global hotkeys…</strong> so they work from

@@ -22,6 +22,7 @@ from pathlib import Path
 
 import wx
 
+from quill.core.action_feedback import saved_result, written_result
 from quill.core.i18n import _
 from quill.core.speech.book_file import BookFile, save_m4b_book_as, save_mp3_book
 from quill.core.speech.chapter_io import (
@@ -605,11 +606,7 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
         except OSError as exc:
             self._error(str(_("Could not write that file: {error}").format(error=exc)))
             return
-        self._announce(
-            _("Exported {count} chapters to {name}").format(
-                count=len(self._book.chapters), name=out.name
-            )
-        )
+        self._say_saved(written_result(f"Exported {len(self._book.chapters)} chapters", out), out)
 
     # -- saving ---------------------------------------------------------------------
 
@@ -621,7 +618,15 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
         self._book.tags.genre = self._tag_genre.GetValue().strip()
         self._book.tags.year = self._tag_year.GetValue().strip()
 
-    def _run_save(self, title: str, work: Callable[[], object], done_message: str) -> None:
+    def _say_saved(self, done_message: str, where: Path) -> None:
+        """Said once, after the write, and kept in Activity with Open Folder (FUX-04)."""
+        from quill.ui.outcome_report import report_outcome
+
+        report_outcome(self, "Chapter Workbench", done_message, object_name=where.name, path=where)
+
+    def _run_save(
+        self, title: str, work: Callable[[], object], done_message: str, where: Path
+    ) -> None:
         """Run a save on the background pool when available, else inline."""
         if self._run_background is not None:
 
@@ -629,7 +634,7 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
                 self._chapters_dirty = False
                 self._tags_dirty = False
                 self._sync_save_button()
-                self._announce(done_message)
+                self._say_saved(done_message, where)
 
             self._run_background(title, work, on_success)
             return
@@ -641,7 +646,7 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
         self._chapters_dirty = False
         self._tags_dirty = False
         self._sync_save_button()
-        self._announce(done_message)
+        self._say_saved(done_message, where)
 
     def _on_save(self) -> None:
         self._collect_tags()
@@ -659,7 +664,8 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
             self._run_save(
                 str(_("Saving audiobook tags")),
                 lambda: self._write_all_tags(book.path, tags, book),
-                str(_("Saved {name}").format(name=book.path.name)),
+                saved_result(book.path),
+                book.path,
             )
             return
         # The player holds the file open; release it for the in-place rewrite.
@@ -667,7 +673,8 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
         self._run_save(
             str(_("Saving audiobook tags")),
             lambda: self._save_mp3_with_tags(book, tags),
-            str(_("Saved {name}").format(name=book.path.name)),
+            saved_result(book.path),
+            book.path,
         )
 
     def _on_save_as(self) -> None:
@@ -707,7 +714,8 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
         self._run_save(
             str(_("Saving audiobook")),
             work,
-            str(_("Saved {name}").format(name=out.name)),
+            saved_result(out),
+            out,
         )
 
     def _on_split_into_files(self) -> None:
@@ -727,11 +735,8 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
         self._run_save(
             str(_("Splitting into chapter files")),
             work,
-            str(
-                _("Wrote {count} chapter file(s) to {folder}").format(
-                    count=len(book.chapters), folder=out_dir.name
-                )
-            ),
+            written_result(f"Wrote {len(book.chapters)} chapter files", out_dir),
+            out_dir,
         )
 
     def _on_publish(self) -> None:

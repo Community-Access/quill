@@ -2105,7 +2105,11 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
             )
 
         def _done(_result: object) -> None:
-            self._announce(f"Diagnostics bundle saved to {target}")
+            from quill.core.action_feedback import written_result  # FUX-04: file and folder
+            from quill.ui.outcome_report import report_outcome
+
+            said = written_result("Diagnostics bundle saved", target)
+            report_outcome(self, "Save Diagnostics", said, object_name=target.name, path=target)
 
         self._run_background_task("Building diagnostics bundle", _build, _done)
 

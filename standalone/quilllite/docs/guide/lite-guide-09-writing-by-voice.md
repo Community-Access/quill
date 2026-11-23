@@ -2418,7 +2418,9 @@ in this list: it is made for a microphone, not a file.
 - **"... could not be loaded, so this used the built-in engine."** A
   downloaded model would not load, so Moonshine did the work instead.
   Removing and downloading the model again in Speech Models may help.
-- **"Stopped transcribing meeting.mp3."** You pressed Stop Transcribing.
+- **"Stopped transcribing meeting.mp3. No transcript was kept; transcribe it
+  again to start over."** You pressed Stop Transcribing. Nothing was written,
+  and the recording is unchanged.
 - **"Could not transcribe meeting.mp3"**, followed by the reason, for
   anything else. You hear the error tone, and the reason stays in Activity.
 
