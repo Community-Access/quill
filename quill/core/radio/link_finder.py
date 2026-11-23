@@ -141,6 +141,10 @@ class PageScanResult:
     #: which Find Streams does not read (quill.core.net_public): left out too,
     #: but counted apart, because "not audio" would be untrue of them.
     not_public: int = 0
+    #: Live numbered mirrors (ice1, ice2...) shown as one row: how many copies,
+    #: in how many groups (quill.core.radio.stream_mirrors).
+    mirror_copies: int = 0
+    mirror_groups: int = 0
     #: The most links this scan would check (16, or 48 with a server listing
     #: or the soundmap), and how many of the listed links QUILL never
     #: contacted because of that limit or the 20-second deadline.
@@ -356,7 +360,8 @@ def scan_page_for_streams(
     limit = _LISTING_CHECKS if listed else live_check.MAX_CHECKS
     if check_live and kept:
         kept, left_out, not_public = _apply_live_check(kept, limit)
-    kept = stream_mirrors.collapse_mirrors(_prefer_https(kept))
+    collapsed = stream_mirrors.collapse_mirrors(_prefer_https(kept))
+    kept = collapsed.rows
     # #5 observability: which links were kept, and why -- the argv-style
     # redaction masks any token a candidate URL might carry.
     if logger.isEnabledFor(logging.DEBUG):
@@ -375,6 +380,8 @@ def scan_page_for_streams(
         checked=check_live,
         left_out=left_out,
         not_public=not_public,
+        mirror_copies=collapsed.copies,
+        mirror_groups=collapsed.groups,
         check_limit=limit if check_live else 0,
         skipped=sum(1 for c in kept if c.check_note in _NEVER_ASKED),
     )

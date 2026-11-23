@@ -15,9 +15,19 @@ written in QUILL's own code.
   is never remembered, because it may carry a token, and neither is one on
   your own network. The list is kept in `radio_history.json` with the recent
   searches.
-- **Numbered mirrors are one row.** `ice1`, `ice2` and `ice3` of the same
-  host, with the same path, are one stream, and the best-checked copy is
-  kept, https first.
+- **Numbered mirrors are one row.** Live copies of one stream on `ice1`,
+  `ice2` and `ice3` of the same host, with the same path and the same stream
+  name and format, are one row, the https copy first. A link that could not
+  be checked is never merged. The status line (not spoken) says "Showed 3
+  numbered copies of the same stream as one."
+- **Clear Recent Searches...**, new in Quill Radio's Station menu
+  (Ctrl+Alt+Shift+Backspace) and QUILL's Internet Radio menu, right after
+  Find Streams from a Website, forgets the remembered station searches and
+  websites. It asks first, naming only the lists that have entries ("Clear 15
+  recent station searches and 10 recent websites? No station or favorite is
+  removed."), with No as the default, then says "Cleared 15 recent searches
+  and 10 recent websites." With nothing to clear it says so. An open Find
+  Stations window's search list empties too and keeps your text.
 - **Listen links in other languages.** Paths such as `/en-direct/`,
   `/en-vivo/`, `/ao-vivo/`, `/direkt/` and `/ways-to-listen/` (whole path
   segments only), and links reading "Écouter en direct", "Escuchar en vivo",

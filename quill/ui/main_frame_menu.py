@@ -2310,6 +2310,7 @@ class MenuBuilderMixin:
                 id_radio_find_streams,
                 self._menu_label(_("&Find Streams from a Website..."), "radio.find_streams"),
             )
+            self._radio_add_clear_recent_item(media_menu)  # ui/radio/clear_recent.py
             media_menu.Append(
                 id_radio_manage_favorites,
                 self._menu_label(_("Manage Fa&vorites..."), "radio.manage_favorites"),

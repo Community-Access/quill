@@ -69,27 +69,57 @@ def test_a_stored_address_that_should_not_be_there_is_dropped() -> None:
 # -- numbered mirrors ----------------------------------------------------------------
 
 
-def _c(url: str, check: str = "live") -> PageStreamCandidate:
-    return PageStreamCandidate(url=url, reason="audio tag", check=check)
+def _c(
+    url: str, check: str = "live", name: str = "WXYZ", codec: str = "MP3"
+) -> PageStreamCandidate:
+    return PageStreamCandidate(
+        url=url, reason="audio tag", check=check, stream_name=name, codec=codec
+    )
 
 
-def test_numbered_mirrors_are_one_stream_and_the_best_is_kept() -> None:
+def test_live_numbered_mirrors_of_one_stream_are_one_row_https_first() -> None:
     rows = [
-        _c("http://ice1.example.org/live", "not checked"),
         _c("http://ice2.example.org/live"),
-        _c("https://ice3.example.org/live"),
+        _c("https://ice3.example.org/live", name="wxyz"),  # the name casefolded
         _c("http://ice4.example.org/live"),
         _c("http://ice1.example.org/other"),  # another path: another stream
         _c("http://ice1.example.org:8000/live"),  # another port
         _c("http://ice.example.org/live"),  # no number: not a mirror
     ]
-    kept = [c.url for c in collapse_mirrors(rows)]
-    assert kept == [
+    collapsed = collapse_mirrors(rows)
+    assert [c.url for c in collapsed.rows] == [
         "https://ice3.example.org/live",
         "http://ice1.example.org/other",
         "http://ice1.example.org:8000/live",
         "http://ice.example.org/live",
     ]
+    assert (collapsed.copies, collapsed.groups) == (3, 1)
+
+
+def test_rows_not_heard_to_be_the_same_stream_are_never_merged() -> None:
+    rows = [
+        _c("http://ice1.example.org/live", "not checked"),
+        _c("http://ice2.example.org/live", "not checked"),
+        _c("http://ice3.example.org/live", name="Other FM"),  # another name
+        _c("http://ice4.example.org/live", codec="AAC"),  # another codec
+        _c("http://ice5.example.org/live"),
+    ]
+    collapsed = collapse_mirrors(rows)
+    assert len(collapsed.rows) == 5
+    assert (collapsed.copies, collapsed.groups) == (0, 0)
+
+
+def test_the_mirror_note_is_in_the_status_line_only() -> None:
+    from quill.core.radio.find_streams_text import status_label, summary_sentence
+    from quill.core.radio.stream_mirrors import mirrors_sentence
+
+    rows = [_c("https://ice1.example.org/live")]
+    counts = {"checked": True, "mirror_copies": 3, "mirror_groups": 1}
+    assert status_label(rows, **counts).endswith(
+        "Showed 3 numbered copies of the same stream as one."
+    )
+    assert "numbered" not in summary_sentence(rows, **counts)
+    assert mirrors_sentence(5, 2) == "Showed 5 numbered copies of 2 streams as one row each."
 
 
 def test_only_the_number_may_differ() -> None:
@@ -102,15 +132,25 @@ def test_only_the_number_may_differ() -> None:
     )
 
 
-def test_the_scan_collapses_mirrors(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_the_scan_collapses_live_mirrors(monkeypatch: pytest.MonkeyPatch) -> None:
+    from quill.core.radio import live_check
+
     page = (
         '<audio src="https://ice1.radio.example/live.mp3"></audio>'
         '<audio src="https://ice2.radio.example/live.mp3"></audio>'
         '<audio src="https://ice3.radio.example/live.mp3"></audio>'
     )
     monkeypatch.setattr(link_finder, "_fetch_html", lambda url: page)
-    result = link_finder.scan_page_for_streams("https://station.example/")
+    monkeypatch.setattr(
+        link_finder.live_check,
+        "check_urls",
+        lambda urls, get, **k: {
+            u: live_check.Verdict(live_check.LIVE, codec="MP3", name="WXYZ") for u in urls
+        },
+    )
+    result = link_finder.scan_page_for_streams("https://station.example/", check_live=True)
     assert [c.url for c in result.candidates] == ["https://ice1.radio.example/live.mp3"]
+    assert (result.mirror_copies, result.mirror_groups) == (3, 1)
 
 
 # -- listen links in other languages --------------------------------------------------

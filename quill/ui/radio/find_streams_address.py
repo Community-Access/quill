@@ -46,7 +46,8 @@ class AddressBox:
         set_spoken_name(self.ctrl, "Website address")
         self.ctrl.SetHelpText(
             "Type a station's website address, or press Alt+Down to choose one of the "
-            "last ten addresses that found a live stream. Press Enter or Scan to scan it."
+            "last ten addresses that found a live stream. Press Enter or Scan to scan it. "
+            "The list is empty until a scan finds a live stream."
         )
         self.ctrl.Bind(wx.EVT_COMBOBOX_DROPDOWN, self._on_dropdown)
         self.ctrl.Bind(wx.EVT_COMBOBOX_CLOSEUP, self._on_closeup)

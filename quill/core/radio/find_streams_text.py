@@ -27,12 +27,14 @@ import ssl
 import urllib.error
 import urllib.parse
 from collections.abc import Sequence
+from typing import Any
 
 from quill.core.radio import live_check
 from quill.core.radio.page_links import PageStreamCandidate
 
 __all__ = [
     "NOT_PUBLIC_SENTENCE",
+    "scan_counts",
     "failure_sentence",
     "row_status",
     "status_label",
@@ -119,6 +121,8 @@ def summary_sentence(
     left_out: int = 0,
     check_limit: int = 0,
     not_public: int = 0,
+    mirror_copies: int = 0,
+    mirror_groups: int = 0,
 ) -> str:
     """The single sentence said when a scan finishes.
 
@@ -178,9 +182,26 @@ def status_label(
     left_out: int = 0,
     check_limit: int = 0,
     not_public: int = 0,
+    mirror_copies: int = 0,
+    mirror_groups: int = 0,
 ) -> str:
     """The status line: the spoken sentence, plus how many links were left out
-    when there are rows (diagnostic, so shown but not spoken)."""
+    and how many mirrors were shown as one when there are rows (diagnostic, so
+    shown but not spoken)."""
+    from quill.core.radio.stream_mirrors import mirrors_sentence
+
+    mirrors = mirrors_sentence(mirror_copies, mirror_groups) if candidates else ""
+    line = _left_out_line(candidates, checked, left_out, check_limit, not_public)
+    return f"{line} {mirrors}" if mirrors else line
+
+
+def _left_out_line(
+    candidates: Sequence[PageStreamCandidate],
+    checked: bool,
+    left_out: int,
+    check_limit: int,
+    not_public: int,
+) -> str:
     sentence = summary_sentence(
         candidates,
         checked=checked,
@@ -197,6 +218,26 @@ def status_label(
     noun = "link that was" if left_out == 1 else "links that were"
     tail = f", and {local}" if not_public else ""
     return f"{sentence} Left out {left_out:,} {noun} not audio or no longer there{tail}."
+
+
+#: What a PageScanResult carries for the two sentences below, and its default.
+_COUNTS = {
+    "checked": False,
+    "left_out": 0,
+    "check_limit": 0,
+    "not_public": 0,
+    "mirror_copies": 0,
+    "mirror_groups": 0,
+}
+
+
+def scan_counts(result: object) -> dict[str, Any]:
+    """The keyword arguments :func:`summary_sentence` and :func:`status_label`
+    take, read from a scan result (missing ones at their defaults)."""
+    return {
+        name: type(default)(getattr(result, name, default) or default)
+        for name, default in _COUNTS.items()
+    }
 
 
 def _root_cause(error: BaseException) -> BaseException:

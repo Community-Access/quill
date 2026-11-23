@@ -17,7 +17,9 @@ Rules that keep the list safe and worth opening:
   the list keeps at most :data:`MAX_RECENT_WEBSITES`.
 
 It rides ``radio_history.json`` with the recent searches, on the listener's own
-computer, and is never sent anywhere. Remembering addresses that worked is an
+computer, and is never sent anywhere. **Clear Recent Searches...** (Quill
+Radio's Station menu, QUILL's Internet Radio menu; ``quill/ui/radio/
+clear_recent.py``) empties it together with the searches. Remembering addresses that worked is an
 idea from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),
 written here in QUILL's own code.
 

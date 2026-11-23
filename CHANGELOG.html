@@ -259,10 +259,21 @@ row only fills the field; Enter or Scan scans it. An address with a
 query, a fragment or a user name is never remembered, because it may
 carry a token, and neither is one on your own network. The list is kept
 in <code>radio_history.json</code> with the recent searches.</li>
-<li><strong>Numbered mirrors are one row.</strong> <code>ice1</code>,
-<code>ice2</code> and <code>ice3</code> of the same host, with the same
-path, are one stream, and the best-checked copy is kept, https
-first.</li>
+<li><strong>Numbered mirrors are one row.</strong> Live copies of one
+stream on <code>ice1</code>, <code>ice2</code> and <code>ice3</code> of
+the same host, with the same path and the same stream name and format,
+are one row, the https copy first. A link that could not be checked is
+never merged. The status line (not spoken) says “Showed 3 numbered
+copies of the same stream as one.”</li>
+<li><strong>Clear Recent Searches…</strong>, new in Quill Radio’s
+Station menu (Ctrl+Alt+Shift+Backspace) and QUILL’s Internet Radio menu,
+right after Find Streams from a Website, forgets the remembered station
+searches and websites. It asks first, naming only the lists that have
+entries (“Clear 15 recent station searches and 10 recent websites? No
+station or favorite is removed.”), with No as the default, then says
+“Cleared 15 recent searches and 10 recent websites.” With nothing to
+clear it says so. An open Find Stations window’s search list empties too
+and keeps your text.</li>
 <li><strong>Listen links in other languages.</strong> Paths such as
 <code>/en-direct/</code>, <code>/en-vivo/</code>,
 <code>/ao-vivo/</code>, <code>/direkt/</code> and

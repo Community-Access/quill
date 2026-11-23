@@ -2156,6 +2156,14 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
 
         add_custom_station.open_add_custom(self, prefill)
 
+    def _radio_add_clear_recent_item(self, menu: object) -> None:
+        """Clear Recent Searches..., after Find Streams in Internet Radio."""
+        from quill.ui.radio import clear_recent
+
+        self._radio_clear_recent_id = clear_recent.add_menu_item(
+            self, menu, self._wx, clear_recent.QUILL_LABEL
+        )
+
     def _radio_open_link_finder(self) -> None:
         if self._safe_mode:
             self._show_message_box(
