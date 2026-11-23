@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Scribe for Documents: the one-command check and the live
+regression run</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="scribe-for-documents-the-one-command-check-and-the-live-regression-run">Scribe
+for Documents: the one-command check and the live regression run</h1>
+<h2 id="the-one-command">The one command</h2>
+<p>From the repository root:</p>
+<pre><code>python -m quill.tools.scribe_check</code></pre>
+<p>Or double-click <code>scripts\scribe-check.bat</code>, which runs the
+same thing and keeps the window open.</p>
+<p>It checks Scribe for Documents in every QUILL app, offline: no
+network, no sign-in, no credit. The first line it says is the result
+(“Scribe check passed, offline with Pneuma’s corpus: all 305 tests
+passed, 5 skipped.”), then the result for each app and each format, then
+any failure by name.</p>
+<ul>
+<li><strong>Offline (the default):</strong> our own fixtures and the
+fake Scribe server (every app’s entry point, the F1 to F8 shapes, the
+sentences), and, when Pneuma’s corpus is on this computer at
+<code>D:\scribe-corpus\corpus\scribe-test-corpus-2026-11</code>, its
+replays and the opens-and-reads table. About 3 minutes.</li>
+<li><strong><code>--live quick</code> or
+<code>--live full</code>:</strong> a live run first, on Jeff’s own
+Scribe account (below), then the same suite on the files it collected.
+Uses credit, and asks first.</li>
+<li><strong><code>--replay &lt;run folder&gt;</code>:</strong> the same
+suite on an earlier run’s files. No network.</li>
+</ul>
+<h2 id="what-it-tests-and-what-it-does-not">What it tests, and what it
+does not</h2>
+<p>It tests QUILL, not Scribe (<code>scribe-test-plan.md</code>). Scribe
+is assumed to convert documents and send them back. The check proves
+that QUILL:</p>
+<ol type="1">
+<li>sends each document with the settings asked for, and refuses what
+Scribe would refuse before uploading;</li>
+<li>collects every file that comes back, whole, once, with our name, the
+right extension and folder;</li>
+<li>can use each file in every app that receives it (the opens-and-reads
+table below);</li>
+<li>says each thing once;</li>
+<li>copes with whatever shape comes back.</li>
+</ol>
+<p>It never grades the conversion: not OCR accuracy, braille
+translation, voices, picture descriptions or epubcheck.</p>
+<h3 id="the-opens-and-reads-table">The opens-and-reads table</h3>
+<p><code>tests/unit/core/scribe/test_scribe_opens_and_reads.py</code>
+holds one table: each format, the QUILL products that receive it, and
+what “reads” means there. Every file of that format in the corpus or run
+folder goes through every receiver.</p>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Received by</th>
+<th>Reads means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accessible HTML</td>
+<td>QUILL, QUILL Lite, Beacon</td>
+<td>text present, every heading kept; Beacon finds the headings</td>
+</tr>
+<tr>
+<td>Offline web page</td>
+<td>the browser from Next Steps, Beacon</td>
+<td>Next Steps can open it, no picture missing (or a zip with a page
+inside)</td>
+</tr>
+<tr>
+<td>Word</td>
+<td>QUILL, QUILL Lite, Beacon</td>
+<td>text present, headings arrive as headings</td>
+</tr>
+<tr>
+<td>Tagged PDF</td>
+<td>QUILL, QUILL Lite</td>
+<td>text present (skipped without the PDF extraction pack)</td>
+</tr>
+<tr>
+<td>EPUB</td>
+<td>QUILL</td>
+<td>text and chapters</td>
+</tr>
+<tr>
+<td>MOBI</td>
+<td>kept for a Kindle</td>
+<td>it is a MOBI book</td>
+</tr>
+<tr>
+<td>BRF</td>
+<td>QUILL’s braille view, QUILL Lite</td>
+<td>opens at the file’s cell width, every form feed a page, every byte
+kept</td>
+</tr>
+<tr>
+<td>MP3</td>
+<td>Media Player, Studio</td>
+<td>has its length</td>
+</tr>
+<tr>
+<td>DAISY</td>
+<td>Media Player, Studio</td>
+<td>unpacks into its own folder, opens from <code>dtb.ncx</code>,
+chapters with their audio</td>
+</tr>
+</tbody>
+</table>
+<p>Each case records its app and format, which is how the summary says
+pass and fail per app and format.</p>
+<h3 id="adding-a-test-to-the-suite">Adding a test to the suite</h3>
+<p>Mark the module with <code>pytestmark = corpus.needs_corpus</code>
+(from <code>tests/unit/core/scribe/corpus.py</code>). That marks it
+<code>scribe_corpus</code> and skips it without a corpus; the check runs
+every test so marked, wherever it lives, with no list to update. Record
+<code>scribe_app</code> and <code>scribe_format</code> with
+<code>record_property</code> to have it counted under the right app and
+format.</p>
+<h2 id="the-live-regression-run">The live regression run</h2>
+<p>Sign in first: in QUILL, Tools, Scribe for Documents, Sign In. The
+run uses that stored sign-in and never reads, prints or keeps a token or
+a password. It never runs in GitHub’s checks.</p>
+<p>Then:</p>
+<pre><code>python -m quill.tools.scribe_check --live quick</code></pre>
+<p>That prints the plan, asks you to type yes, sends the documents,
+collects everything, deletes the test documents from the account, runs
+the suite on the files and compares them with the previous run. The same
+run is also
+<code>python -m quill.tools.scribe_live_run --profile quick</code>,
+which has more options:</p>
+<ul>
+<li><code>--dry-run</code> prints the plan and sends nothing; add
+<code>--list</code> for every upload.</li>
+<li><code>--yes</code> starts without asking; <code>--cap N</code> sends
+at most N conversions (whole uploads, in plan order).</li>
+<li><code>--out DIR</code> is the runs folder (default
+<code>D:\scribe-corpus\runs</code>); it must be outside the
+repository.</li>
+<li><code>--keep-in-account</code> leaves the test documents in the
+account.</li>
+<li><code>--resume &lt;run folder&gt;</code> continues a run that
+stopped, without uploading anything again.</li>
+<li><code>--clean-up &lt;run folder&gt;</code> deletes a run’s documents
+from the account, if that step failed.</li>
+<li><code>--compare-only &lt;run folder&gt;</code> and
+<code>--replay-only &lt;run folder&gt;</code> redo those steps with no
+network.</li>
+</ul>
+<h3 id="what-it-sends">What it sends</h3>
+<ul>
+<li><strong>Sources:</strong> our own 30 documents in
+<code>tests/corpus/scribe_live/</code> (one for each of the 23 input
+types Scribe takes, plus a long report, tables, pictures with and
+without alt text, Spanish, mathematics, a password-protected PDF, a web
+page QUILL refuses before uploading, and a <code>.pdf</code> that is not
+a PDF), and Pneuma’s four sources from their corpus folder when it is on
+this computer. Pneuma’s files are read there and never copied into the
+repository.</li>
+<li><strong>Settings:</strong> every upload sends the full set, starting
+from the account defaults Pneuma recorded and with Scribe’s own email
+off. A setting is varied only against the formats it can change: large
+print against Word and PDF; braille table, cells, lines and page breaks
+against BRF; voice and speed against MP3 and DAISY; math, picture
+descriptions and language against everything.</li>
+<li><strong>Quick:</strong> Pneuma’s four in all nine formats, their
+large-print and math variants under their names, and eight hard cases:
+13 uploads and 52 conversions, about 53 pages.</li>
+<li><strong>Full:</strong> every source in every format, every math and
+picture-description combination, and the braille and voice grids: 581
+uploads and 2,092 conversions, about 1,433 pages, and at least five and
+a half hours at Scribe’s pace (audio takes longer).</li>
+</ul>
+<h3 id="what-it-costs">What it costs</h3>
+<p>Before anything is sent the plan says the cost both ways, because it
+is not certain how the company credit is counted: one per uploaded
+document, or one per format made. It also says the pages the uploads
+come to (Scribe charges pages once per upload; a second format of the
+same upload costs no more). After the run it says what was used:
+documents uploaded, files collected, and the account’s pages left before
+and after.</p>
+<h3 id="where-the-files-go">Where the files go</h3>
+<p><code>D:\scribe-corpus\runs\&lt;YYYY-MM-DD-HHMM&gt;\</code>, in the
+same layout as Pneuma’s corpus, so the replay tests read it
+unchanged:</p>
+<ul>
+<li><code>html/</code>, <code>offline-html/</code>, <code>docx/</code>,
+<code>pdf/</code>, <code>epub/</code>, <code>mobi/</code>,
+<code>brf/</code>, <code>mp3/</code>, <code>daisy/</code> and
+<code>sources/</code>;</li>
+<li><code>README.md</code>: what was sent and with which settings;</li>
+<li><code>validation.json</code>: the facts about each file;</li>
+<li><code>run.json</code>: the plan, each upload’s outcome, the credit
+used and which documents were deleted;</li>
+<li><code>comparison.md</code>: the comparison with the previous
+run;</li>
+<li><code>replay.xml</code>: the suite’s results.</li>
+</ul>
+<p>A variant’s files carry its settings in their names:
+<code>-large-print</code>, <code>-math-on</code>,
+<code>-no-descriptions</code>, <code>-lang-es</code>,
+<code>-brf-en-ueb-g2-32x20</code>, <code>-female-2x</code>. Nothing from
+a run is ever committed.</p>
+<h3 id="reading-the-comparison">Reading the comparison</h3>
+<p>The run is compared with the newest earlier run in the runs folder,
+or with Pneuma’s corpus the first time. The comparison looks only at
+what could break collecting or using the files:</p>
+<p><strong>Could break</strong> (the run fails on any):</p>
+<ul>
+<li>a planned file that never arrived, or a format missing since last
+time;</li>
+<li>a different kind of file: a zip that became a single HTML file (as
+the offline page did once, F1), or the reverse;</li>
+<li>a file QUILL opened last time and cannot open now;</li>
+<li>structure QUILL relies on that is gone: headings in Word or HTML,
+DAISY’s <code>dtb.ncx</code> or chapters, BRF form feeds, a different
+BRF cell width.</li>
+</ul>
+<p><strong>For information only:</strong></p>
+<ul>
+<li>sizes that changed by more than a quarter;</li>
+<li>language tags;</li>
+<li>pictures embedded or referenced;</li>
+<li>page, chapter and table counts;</li>
+<li>new files.</li>
+</ul>
+<p>Write anything that looks like a Scribe quality problem down for
+Pneuma (<code>scribe-test-plan.md</code> section 6) rather than working
+around it.</p>
+</main>
+</body>
+</html>

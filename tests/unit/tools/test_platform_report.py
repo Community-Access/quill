@@ -41,6 +41,9 @@ def test_known_gate_modules_are_on_the_roster() -> None:
         # exit code are two jobs. Exempting the walker is right; what must
         # stay rostered is something that can go red, which the cli can.
         "network_egress_audit",
+        # Not a gate: the Scribe suite on demand (docs/qa/scribe-live-regression.md),
+        # whose tests already run in CI; "check" is only in its name.
+        "scribe_check",
     }
     missing = {m for m in gate_modules if m not in exempt and m not in rostered}
     assert missing == set(), (
