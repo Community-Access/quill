@@ -84,6 +84,27 @@ More ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift
 - **IPRD is asked about the site.** If IPRD's station list is already on your computer, because you opened or searched IPRD before, the stations IPRD lists for that website are added and checked too. A scan never downloads the IPRD list itself.
 - **Locus Sonus Soundmap (Open Microphones).** Browse Stations has a new branch of open microphones streaming live sound from places around the world: a hydrophone in an Amsterdam canal, a farm in New York state. Each is named with its place and plays, records and saves like any station. The list is the soundmap's own list of microphones on air now, so it changes through the day. When none are on air, the branch says so and Refresh looks again. Find Streams from a Website lists them too when you give it the soundmap page, https://locusonus.org/soundmap/.
 
+#### Working with the list
+
+More ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift), written in QUILL's own code. A server listing can give 30 to 100 rows, so the list can be sorted, filtered, searched and acted on several rows at a time. The list changes only when you ask, and you stay on the same stream when it is still shown.
+
+- **Sort and Filter** (Alt+O) opens a menu: Scan order, Name A to Z, Bitrate highest first, and Listeners most first when the page gave listener counts; Live streams only; and All formats or one format the list holds (MP3, AAC, Ogg, HLS, Opus). Live streams stay first whatever the order. One sentence says what changed, such as "Sorted by bitrate, highest first." or "Showing 4 of 31 links: MP3 only." A filter that would leave nothing is refused ("No links are live AAC streams, so the list is unchanged."). A new scan clears the filter, so nothing hides its results, and keeps the order; its sentence says both.
+- **Test** and **Use This Link...** act on the focused row. **Add to Favorites** and **Save as Playlist...** act on the selected rows, or on the focused row when none is selected, and their names say how many: "Add 3 to Favorites". One stream goes straight into Favorites; two or more ask for a folder, named after the page to start with. A playlist can be M3U, PLS, XSPF or ASX. Each result says the count: "Added 3 streams to Favorites, in the folder WXYZ; 1 was already there." "Saved 3 streams to WXYZ.m3u."
+- **Stream details**, the field after the list, shows the focused stream one fact per line: Name, Status, Format, Listeners, Link, Server, Found by. It is read only, and nothing is said as it changes.
+- **Scan This Stream's Server**, in the list's menu, puts the stream's own server address in the Website address field, where you hear it, and scans it, so one stream can show everything the server carries. It is offered only when it could list something new: not for the page's own site, your own network, or the big streaming networks.
+- To pick rows that are not next to each other, filter first and then press Ctrl+A. Ctrl+Up and Ctrl+Down stay the volume keys.
+
+| Key, in the list | What it does |
+|---|---|
+| Shift+Up, Shift+Down | Select several rows |
+| Ctrl+A | Select every row shown |
+| Ctrl+C | Copy the stream links of the selected rows |
+| Ctrl+F | Find a stream by name, link, format, bitrate, listeners or how it was found |
+| F3, Shift+F3 | Find the next or previous match, wrapping |
+| Ctrl+S | Save the selected rows as a playlist |
+| Enter | Test the focused stream; on another row while one plays, test that one instead; on the same row, stop |
+| Applications key, Shift+F10 | The list's menu |
+
 ### What's playing
 
 QUILL reports the current track — artist and title — from the stream's own broadcast metadata, and can announce it automatically each time the song changes. When a stream sends no title of its own and the player has none to offer, QUILL now falls back to the station server's own now-playing information (its Icecast or Shoutcast status page, on the same host you're already streaming), so more stations tell you what's on.

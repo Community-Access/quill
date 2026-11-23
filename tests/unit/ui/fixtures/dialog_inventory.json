@@ -909,6 +909,8 @@
   "quill/ui/radio/favorites_delete.py::confirm_folder_delete::wx.MessageBox": "native",
   "quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog._on_rename_folder::wx.TextEntryDialog": "native",
+  "quill/ui/radio/find_streams_actions.py::prompt_text::wx.TextEntryDialog": "native",
+  "quill/ui/radio/find_streams_actions.py::save_as_playlist::wx.FileDialog": "native",
   "quill/ui/radio/first_run_dialog.py::RadioFirstRunDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/go_to_dialog.py::open_popup::wx.Dialog": "hardened_custom",
   "quill/ui/radio/go_to_settings_dialog.py::edit::wx.Dialog": "hardened_custom",

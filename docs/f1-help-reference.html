@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 341 audited sites (227 helped, 114 named-help).</p>
+<p>Control coverage: 343 audited sites (230 helped, 113 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -388,7 +388,10 @@ share or to use on another computer.</p>
 <p><strong>Find Streams from a Website.</strong> Point Quill Radio at a
 web page you know carries a stream, and it scans the page for playable
 stream links. Useful for the station whose website plays fine in a
-browser but appears in no directory.</p>
+browser but appears in no directory. In the list, Shift and the arrow
+keys or Ctrl+A select several, Ctrl+F finds a stream, and the
+Applications key opens a menu to sort, filter, copy links, or add them
+all to Favorites.</p>
 <p><strong>Find something to listen to.</strong> The second first-run
 screen: the two doors to stations – Browse Stations for wandering by
 category, Find Stations for searching by name – and the button that
@@ -819,6 +822,20 @@ files stay on disk.</li>
 anything still going. Saved files are kept.</li>
 <li><code>close_btn</code>: Closes the queue window. Whether downloads
 keep going is the background-downloads preference.</li>
+</ul>
+<h4 id="findstreamslist-quilluiradiofind_streams_listpy">FindStreamsList
+(<code>quill/ui/radio/find_streams_list.py</code>)</h4>
+<ul>
+<li><code>self.ctrl</code>: The stream links found on the page, live
+streams first. Enter tests the focused link. Select several with Shift
+and the arrow keys, or press Ctrl+A for every row shown; to pick rows
+far apart, filter the list first, then press Ctrl+A. Add to Favorites,
+Save as Playlist (Ctrl+S) and Copy (Ctrl+C) then act on all of them.
+Ctrl+F finds a row, F3 and Shift+F3 find the next and previous, and the
+Applications key opens the list’s menu.</li>
+<li><code>self.details</code>: What QUILL knows about the focused
+stream, one fact per line: its name, whether it is live, its format,
+listeners, link, server, and how it was found. Read only.</li>
 </ul>
 <h4
 id="radiofirstrundialog-quilluiradiofirst_run_dialogpy">RadioFirstRunDialog

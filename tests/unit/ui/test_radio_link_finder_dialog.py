@@ -41,22 +41,24 @@ class _Controller:
 
 
 @pytest.fixture
-def dialog(wx_session_app: Any) -> Any:
+def dialog(wx_session_app: Any, wx_call_after: Any) -> Any:
     import wx
 
+    wx_call_after()  # the result sentence follows the focus change, inline here
     frame = wx.Frame(None)
     said: list[str] = []
     used: list[Any] = []
     tasks = _Tasks()
     controller = _Controller()
-    dlg = LinkFinderDialog(
-        frame,
-        controller=controller,
-        task_manager=None,
-        safe_mode=False,
-        announce_cb=said.append,
-        on_use_link=used.append,
+    host = SimpleNamespace(
+        frame=frame,
+        _radio_controller=controller,
+        _task_manager=None,
+        _safe_mode=False,
+        _announce=lambda text, **_k: said.append(text),
+        _radio_open_add_custom=used.append,
     )
+    dlg = LinkFinderDialog(host)
     # Bypass the lifetime wrapper: deliver straight to the dialog.
     dlg._task_manager = tasks
     yield SimpleNamespace(dlg=dlg, said=said, used=used, tasks=tasks, controller=controller)
@@ -154,10 +156,10 @@ def test_test_and_use_act_on_the_row_the_listener_chose(dialog: Any) -> None:
             _cand("https://s.example/first-on-page", "not checked"),
         ),
     )
-    dialog.dlg._results.Select(1)
+    dialog.dlg._results.Focus(1)
     dialog.dlg._on_use(None)
     assert dialog.used[-1].stream_url == "https://s.example/first-on-page"
-    dialog.dlg._results.Select(0)
+    dialog.dlg._results.Focus(0)
     dialog.dlg._on_use(None)
     assert dialog.used[-1].stream_url == "https://s.example/live"
     assert dialog.used[-1].name == "KXYZ Live"
