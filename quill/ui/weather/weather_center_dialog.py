@@ -19,6 +19,7 @@ from datetime import UTC
 from pathlib import Path
 from typing import Any
 
+from quill.core.list_follow import gone_sentence
 from quill.core.weather import locations as loc_store
 from quill.core.weather import nws, render
 from quill.core.weather import settings as settings_mod
@@ -27,6 +28,7 @@ from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import surface_tasks
+from quill.ui.weather import center_follow as follow
 from quill.ui.weather.center_text import (
     _alert_detail_text,
     _alert_list_label,
@@ -371,11 +373,11 @@ class WeatherCenterDialog:
     # -- location chooser -------------------------------------------------------
 
     def _reload_location_choice(self) -> None:
-        self._location_choice.Set([loc.label for loc in self._store.locations])
         primary = self._store.primary()
-        if primary is not None:
-            index = self._store.locations.index(primary)
-            self._location_choice.SetSelection(index)
+        index = self._store.locations.index(primary) if primary is not None else -1
+        follow.sync_choice(
+            self._location_choice, [loc.label for loc in self._store.locations], index
+        )
 
     def _current_location(self) -> WeatherLocation | None:
         index = self._location_choice.GetSelection()
@@ -398,6 +400,9 @@ class WeatherCenterDialog:
             return
         self._status.SetValue(f"Loading weather for {location.label}...")
         self._announce(f"Loading weather for {location.label}.")
+        # Only the newest fetch may fill the window: a slow answer for the
+        # place chosen before must not replace this one (FUX-06).
+        self._fetch_request = request = getattr(self, "_fetch_request", 0) + 1
 
         def _work(**_kwargs: Any) -> object:
             try:
@@ -411,12 +416,20 @@ class WeatherCenterDialog:
             except nws.WeatherError as exc:
                 return exc
 
+        def _landed(result: object) -> None:
+            if request == self._fetch_request:
+                self._render_report(location, result)
+
         def _ok(_op: str, result: object) -> None:
-            self._wx.CallAfter(self._render_report, location, result)
+            self._wx.CallAfter(_landed, result)
 
         self._task_manager.submit("weather-fetch", _work, on_success=_ok, on_failure=None)
 
-    def _render_report(self, location: WeatherLocation, result: object) -> None:
+    def _render_report(
+        self, location: WeatherLocation, result: object, *, fetched: bool = True
+    ) -> None:
+        """Show *result*. *fetched* is False for a redraw of the same report
+        (after Settings), which says the summary only if what it says changed."""
         if isinstance(result, nws.WeatherError):
             self._status.SetValue(f"Could not load weather: {result}")
             self._announce(f"Could not load weather. {result}")
@@ -427,12 +440,19 @@ class WeatherCenterDialog:
         self._reload_location_choice()  # a resolved name may have filled in
 
         alerts = render.filtered_alerts(result, self._settings)
+        before = {alert.id: alert for alert in getattr(self, "_shown_alerts", [])}
+        place_key = (location.id, location.label)
+        if place_key != getattr(self, "_shown_location", place_key):
+            before = {}  # another place: its alerts did not expire, they are elsewhere
+            self._follow_keys_alerts: list[str] = []
+        self._shown_location = place_key
         self._shown_alerts = alerts
-        self._alerts_list.Set([_alert_list_label(a) for a in alerts] or ["No active alerts."])
+        rows = [(a.id, _alert_list_label(a)) for a in alerts]
+        at, gone = follow.fill_list(self, "alerts", self._alerts_list, rows, "No active alerts.")
         self._alerts_label.SetLabel(
             f"Active &Alerts ({len(alerts)}):" if alerts else "Active &Alerts (none):"
         )
-        self._alert_detail.SetValue(_alert_detail_text(alerts[0]) if alerts else "")
+        follow.set_text(self._alert_detail, _alert_detail_text(alerts[at]) if alerts else "")
         # Skip an empty read-only field in the tab order (no alert -> no box).
         self._show_field(self._alert_detail_label, self._alert_detail, bool(alerts))
 
@@ -454,29 +474,32 @@ class WeatherCenterDialog:
             if result.current.observed_at:
                 observed = render.friendly_datetime(result.current.observed_at, result.time_zone)
                 when = f" Observed {observed}."
-            self._current.SetValue(f"Weather for {place}. {lead}{block}{when}")
+            follow.set_text(self._current, f"Weather for {place}. {lead}{block}{when}")
         else:
-            self._current.SetValue(
-                f"Weather for {place}. {lead}Current conditions are unavailable right now."
+            follow.set_text(
+                self._current,
+                f"Weather for {place}. {lead}Current conditions are unavailable right now.",
             )
 
         periods = result.periods[: self._settings.forecast_period_count]
-        self._forecast_list.Set(
-            [f"{p.name}: {_temp_words(p)}, {p.short_forecast}" for p in periods]
-            or ["Forecast unavailable."]
+        rows = [(p.name, f"{p.name}: {_temp_words(p)}, {p.short_forecast}") for p in periods]
+        at, _ = follow.fill_list(
+            self, "periods", self._forecast_list, rows, "Forecast unavailable."
         )
-        self._period_detail.SetValue(_period_detail_text(periods[0]) if periods else "")
+        follow.set_text(self._period_detail, _period_detail_text(periods[at]) if periods else "")
         self._show_field(self._period_detail_label, self._period_detail, bool(periods))
 
         hourly = result.hourly
-        self._hourly_list.Set([h.line for h in hourly] or ["Hourly forecast unavailable."])
-        self._hourly_detail.SetValue(hourly[0].line if hourly else "")
+        rows = [(h.start or h.time, h.line) for h in hourly]
+        empty = "Hourly forecast unavailable."
+        at, _ = follow.fill_list(self, "hourly", self._hourly_list, rows, empty)
+        follow.set_text(self._hourly_detail, hourly[at].line if hourly else "")
         self._show_field(self._hourly_detail_label, self._hourly_detail, bool(hourly))
 
-        self._daily_list.Set(
-            [day.line for day in result.daily] or ["Extended daily outlook unavailable."]
-        )
-        self._daily_detail.SetValue(result.daily[0].line if result.daily else "")
+        rows = [(str(day.date), day.line) for day in result.daily]
+        empty = "Extended daily outlook unavailable."
+        at, _ = follow.fill_list(self, "daily", self._daily_list, rows, empty)
+        follow.set_text(self._daily_detail, result.daily[at].line if result.daily else "")
         self._show_field(self._daily_detail_label, self._daily_detail, bool(result.daily))
 
         self._status.SetValue(self._status_line(result))
@@ -494,8 +517,25 @@ class WeatherCenterDialog:
         )
         if result.current is not None and result.current.temperature_f is not None:
             summary += render.current_conditions_line(result.current, self._settings) + "."
-        if self._settings.announce_alert_count_on_open:
-            self._announce(summary)
+        # Said for a fetch the person asked for; a redraw says it only when
+        # what it says changed. An alert the reader was on that has gone is
+        # said once, with it (FUX-06).
+        said = (location.id, tuple(a.id for a in alerts))
+        went = gone_sentence(f"The {before[gone].event}") if gone in before else ""
+        speak = ""
+        if self._settings.announce_alert_count_on_open and (
+            fetched or said != getattr(self, "_said_summary", None) or went
+        ):
+            speak = f"{summary} {went}".strip()
+        elif went:
+            speak = went  # the summary is off, but the reader moved: say why
+        if speak and went:
+            # After the screen reader has read the alert the reader landed on:
+            # a focus change would cut the sentence off.
+            self._wx.CallLater(400, lambda: self._announce(speak) if self else None)
+        elif speak:
+            self._announce(speak)
+        self._said_summary = said
 
     def _show_field(self, label: Any, field: Any, visible: bool) -> None:
         """Show or hide a label+field pair; hidden controls leave the tab order,
@@ -565,6 +605,8 @@ class WeatherCenterDialog:
             self._refresh()
             return
         self._report = None
+        # A fetch still on its way for the place just removed must not refill.
+        self._fetch_request = getattr(self, "_fetch_request", 0) + 1
         for listbox in (
             self._alerts_list,
             self._forecast_list,
@@ -620,4 +662,5 @@ class WeatherCenterDialog:
         if dlg.show():
             self._settings = settings_mod.load_settings(self._data_dir)
             if self._report is not None:
-                self._render_report(self._current_location() or self._report.location, self._report)
+                location = self._current_location() or self._report.location
+                self._render_report(location, self._report, fetched=False)

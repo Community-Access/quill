@@ -411,13 +411,16 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         except Exception:  # noqa: BLE001 - an unreadable MRU is an empty library
             return []
 
-    def _reload_library_tree(self) -> None:
+    def _reload_library_tree(self, tree: wx.TreeCtrl | None = None) -> None:
         """Rebuild the library tree from the persisted state + recent files.
 
         Kept under the original list name so the many call sites that refresh
         after a mutation (open, narrate, publish, delete) still work unchanged.
+        *tree* is the new Library Window's tree, filled before it is remembered;
+        the window used to pass it to a method that took none, so opening the
+        Library Window failed.
         """
-        tree = getattr(self, "_library_tree", None)
+        tree = tree if tree is not None else getattr(self, "_library_tree", None)
         if tree is None:
             return
         keep = selected_key(tree)

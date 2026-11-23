@@ -245,6 +245,26 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="weather-studio-and-the-watch-folder-queue-lists-that-stay-still-fux-06-2026-11-23">Weather,
+Studio and the Watch Folder queue: lists that stay still (FUX-06,
+2026-11-23)</h3>
+<p>Third of the M2 changes; the rule and the audit of every live list
+are in <code>docs/design/fux-06-adoption.md</code>.</p>
+<ul>
+<li><strong>Weather Center.</strong> Refresh keeps your alert, forecast
+period, hour and day in all four lists, and their details; an expired
+alert you were on is named once; a late answer for the place you chose
+before is ignored; a redraw after Settings repeats the summary only when
+it changed.</li>
+<li><strong>Studio’s Library Window</strong> opens again (it failed on
+opening), keeps the same copy of a book shown twice, lands on the next
+book when yours was removed, and is not redrawn when a job finishes and
+nothing changed.</li>
+<li><strong>Watch Folder Queue</strong> (QUILL’s transcription and
+conversion queue) keeps your file through every queue change. After
+Clear Finished, Retry and Open used to act on another file.</li>
+</ul>
+<h3
 id="shared-runtime-the-practice-sites-wordpress-playground-ships-again-2026-11-23">Shared
 runtime: the Practice Site’s WordPress Playground ships again
 (2026-11-23)</h3>

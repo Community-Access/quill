@@ -2,6 +2,22 @@
 
 ## 1.0.0
 
+### Weather, Studio and the Watch Folder queue: lists that stay still (FUX-06, 2026-11-23)
+
+Third of the M2 changes; the rule and the audit of every live list are in
+`docs/design/fux-06-adoption.md`.
+
+- **Weather Center.** Refresh keeps your alert, forecast period, hour and day
+  in all four lists, and their details; an expired alert you were on is named
+  once; a late answer for the place you chose before is ignored; a redraw
+  after Settings repeats the summary only when it changed.
+- **Studio's Library Window** opens again (it failed on opening), keeps the
+  same copy of a book shown twice, lands on the next book when yours was
+  removed, and is not redrawn when a job finishes and nothing changed.
+- **Watch Folder Queue** (QUILL's transcription and conversion queue) keeps
+  your file through every queue change. After Clear Finished, Retry and Open
+  used to act on another file.
+
 ### Shared runtime: the Practice Site's WordPress Playground ships again (2026-11-23)
 
 - **The cause.** The WordPress Playground tool behind the Practice Site
