@@ -20,7 +20,11 @@ checked row can say what it is. The checks run a few at a time
 (:data:`MAX_WORKERS`) under one overall deadline (:data:`TOTAL_SECONDS`).
 
 There is no request code here. The caller passes its own reviewed egress
-function (``link_finder._http_get``), so this module adds no network site.
+function (``link_finder._probe``, which reads through
+:func:`quill.core.net_public.fetch`), so this module adds no network site. An
+address that is not on the public internet -- the page named a router, a NAS,
+this computer -- is left out ("not on the public internet"), never listed,
+because Test would otherwise hand it to the player.
 
 The idea of proving a candidate is live audio before listing it is from Andre
 Louis's StreamSift (https://github.com/OnjLouis/StreamSift); this is QUILL's
@@ -40,6 +44,7 @@ import urllib.parse
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 
+from quill.core.net_public import HttpReply, NotPublicAddress, RefusedAddress
 from quill.core.radio.audio_sniff import read_hls, sniff_codec
 
 __all__ = [
@@ -79,16 +84,6 @@ _NAME_LIMIT = 60
 _PLACEHOLDER_NAMES = frozenset({"", "unnamed server", "no name", "stream", "unknown", "untitled"})
 _CONTROL_RE = re.compile(r"[\x00-\x1f\x7f-\x9f]+")
 _PLAYLIST_TYPES = ("mpegurl", "scpls", "xspf", "x-ms-asf", "ms-asx")
-
-
-@dataclass(frozen=True, slots=True)
-class HttpReply:
-    """What the egress function hands back: status, headers, the first bytes."""
-
-    status: int
-    headers: Mapping[str, str]
-    body: bytes
-    final_url: str = ""
 
 
 #: ``get(url, timeout) -> HttpReply``; raises on network failure.
@@ -213,7 +208,15 @@ def _icy_status(error: BaseException) -> bool:
     return isinstance(error, http.client.BadStatusLine) and "ICY 200" in str(error)
 
 
+#: Why a link is left out when it is not on the public internet.
+NOT_PUBLIC = "not on the public internet"
+
+
 def _failure(error: BaseException) -> Verdict:
+    if isinstance(error, NotPublicAddress):
+        return Verdict(NOT_AUDIO, note=NOT_PUBLIC)
+    if isinstance(error, RefusedAddress):
+        return Verdict(NOT_AUDIO, note="an address QUILL does not read")
     if isinstance(error, urllib.error.HTTPError):
         return verdict_from_reply(
             HttpReply(error.code, dict(error.headers or {}), b""), error.geturl() or ""

@@ -31,7 +31,20 @@ from collections.abc import Sequence
 from quill.core.radio import live_check
 from quill.core.radio.page_links import PageStreamCandidate
 
-__all__ = ["failure_sentence", "row_status", "status_label", "summary_sentence"]
+__all__ = [
+    "NOT_PUBLIC_SENTENCE",
+    "failure_sentence",
+    "row_status",
+    "status_label",
+    "summary_sentence",
+]
+
+#: Find Streams reads only the public internet (quill.core.net_public); this
+#: is what it says when the address typed, or one it led to, is not on it.
+NOT_PUBLIC_SENTENCE = (
+    "That address is on this computer or your own network, which Find Streams does not scan. "
+    "To list a server on your network, add it under My Servers in Browse Stations."
+)
 
 
 def _plural(count: int, one: str, many: str) -> str:
@@ -166,9 +179,14 @@ def failure_sentence(error: BaseException | None) -> str:
     spoken rather than merely shown."""
     if error is None:
         return "Could not scan that page."
+    from quill.core.net_public import NotPublicAddress, RefusedAddress
     from quill.core.radio.link_finder import LinkFinderError
 
     cause = _root_cause(error)
+    if isinstance(cause, NotPublicAddress):
+        return NOT_PUBLIC_SENTENCE
+    if isinstance(cause, RefusedAddress) and cause.args and isinstance(cause.args[0], str):
+        return f"Could not scan that page. {cause.args[0]}"
     own = error.args[0] if error.args and isinstance(error.args[0], str) else ""
     if isinstance(error, LinkFinderError) and error.__cause__ is None and own:
         # A sentence QUILL wrote itself ("Type a website address to scan."),

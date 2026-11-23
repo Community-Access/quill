@@ -18,9 +18,11 @@ sentence, and pressing the button again uses the address as typed.
 
 from __future__ import annotations
 
+import urllib.parse
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.net_public import host_is_refused
 from quill.core.radio.address_kind import is_web_page_address
 from quill.core.radio.live365 import normalize_live365
 from quill.core.radio.models import RadioStation
@@ -200,6 +202,10 @@ class AddStationDialog:
             or not url
             or url == self._kept_page_url
             or not is_web_page_address(url)
+            # A server on this computer or your own network is saved as typed:
+            # Find Streams reads only the public internet, so looking would only
+            # end in "could not reach that page".
+            or host_is_refused(urllib.parse.urlsplit(url).hostname or "")
         ):
             return False
         self._resolving = True

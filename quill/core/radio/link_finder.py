@@ -38,8 +38,11 @@ Icecast and SHOUTcast server listings, Global Player pages, the soundmap and
 the directory match are ideas from Andre Louis's StreamSift
 (https://github.com/OnjLouis/StreamSift), written here in QUILL's own code.
 
-Every request funnels through the single reviewed egress site
-(:func:`_http_get` -- see ``quill/tools/network_egress_audit.py``), reached by
+Every request funnels through the single reviewed egress site,
+:func:`quill.core.net_public.fetch`, which reads only the public internet: an
+address on this computer or the listener's own network is refused before
+anything is sent, every redirect is checked again, and the connection goes to
+the address that was checked (an idea from StreamSift too). It is reached by
 the explicit Scan button in the Find Streams from a Website dialog and by
 stream recovery, and disabled in Safe Mode via :func:`refuse_in_safe_mode`.
 wx-free, strict-typed.
@@ -52,12 +55,10 @@ import logging
 import ssl
 import urllib.error
 import urllib.parse
-import urllib.request
 from dataclasses import dataclass, replace
 
-from quill.core import http_client
+from quill.core import http_client, net_public
 from quill.core.error_codes import CodedError
-from quill.core.net import verified_ssl_context
 from quill.core.radio import global_player, live_check, server_listings
 from quill.core.radio.address_kind import is_help_page_url, same_page
 from quill.core.radio.address_kind import is_player_page_url as _is_player_page_url
@@ -155,19 +156,21 @@ _FETCH_ERRORS = (
 def _http_get(
     url: str, *, max_bytes: int = _MAX_BYTES, timeout: float = _TIMEOUT_SECONDS
 ) -> HttpReply:
-    """One GET -- the reviewed egress site. Certificates are always verified.
+    """One GET of a public address, through :func:`quill.core.net_public.fetch`.
 
     Reads at most *max_bytes* of the body: a whole page for the scan, the first
     4 KB of a candidate for the live check. Raises on failure, including
-    ``HTTPError`` for a 4xx/5xx answer, which the live check reads.
+    ``HTTPError`` for a 4xx/5xx answer, which the live check reads, and
+    :class:`~quill.core.net_public.NotPublicAddress` for an address on this
+    computer or the listener's own network, which is never read.
     """
-    if not url.startswith(("https://", "http://")):
-        raise LinkFinderError("Only http(s):// addresses can be read.")
-    request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
-    context = verified_ssl_context()
-    with urllib.request.urlopen(request, timeout=timeout, context=context) as resp:  # noqa: S310
-        body: bytes = resp.read(max_bytes)
-        return HttpReply(int(resp.status), dict(resp.headers.items()), body, str(resp.geturl()))
+    return net_public.fetch(
+        url,
+        max_bytes=max_bytes,
+        timeout=timeout,
+        deadline_seconds=timeout * 2,
+        headers={"User-Agent": http_client.user_agent()},
+    )
 
 
 def _http_get_text(url: str) -> str:
@@ -178,7 +181,13 @@ def _http_get_text(url: str) -> str:
 def _probe(url: str, timeout: float) -> HttpReply:
     """The live check's read of one candidate: headers and the first 4 KB."""
     budget = max(1.0, min(_TIMEOUT_SECONDS, timeout))
-    return _http_get(url, max_bytes=live_check.PROBE_BYTES, timeout=budget)
+    return net_public.fetch(
+        url,
+        max_bytes=live_check.PROBE_BYTES,
+        timeout=budget,
+        deadline_seconds=budget,
+        headers={"User-Agent": http_client.user_agent()},
+    )
 
 
 def _is_cert_verification_failure(error: BaseException) -> bool:

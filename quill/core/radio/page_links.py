@@ -49,9 +49,13 @@ STREAM_PATH_HINTS = ("/stream", "/listen", "/live", "icecast", "shoutcast", ";st
 #: Quoted string literals inside script text that look like a stream URL.
 _SCRIPT_STRING_URL_RE = re.compile(r"""['"]((?:https?:)?//[^'"\s]+)['"]""")
 #: ``streamUrl: "..."``, ``"hls_url":"..."``, ``mount = '...'``: a key that names
-#: a stream, then the quoted address it is given.
+#: a stream, then the quoted address it is given. Every repeat is bounded:
+#: Python's regular expressions have no time limit, and an unbounded key
+#: (``\w*?...\w*``) backtracks quadratically over a long run of word
+#: characters -- minutes on 2 MB of hostile text (a test pins every pattern).
 _ASSIGNED_URL_RE = re.compile(
-    r"""\b(\w*?(?:stream|audio|mount|hls)\w*)["']?\s*[:=]\s*["']([^"'\s<>]{4,2048})["']""",
+    r"""\b(\w{0,40}?(?:stream|audio|mount|hls)\w{0,40})["']?\s{0,20}[:=]\s{0,20}["']"""
+    r"""([^"'\s<>]{4,2048})["']""",
     re.IGNORECASE,
 )
 _WINDOW_OPEN_RE = re.compile(r"""window\.open\(\s*["']([^"'\s<>]{4,1024})["']""")
