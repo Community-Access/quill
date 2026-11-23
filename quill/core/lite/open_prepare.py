@@ -50,6 +50,7 @@ from pathlib import Path
 from quill.core.docx_open import fidelity_findings, is_rich_word_path, read_docx_as_rtf
 from quill.core.lite.textfile import decode_text
 from quill.core.pdf_open import PdfOpen, is_pdf_path, read_pdf_for_open
+from quill.io.mobi_open import is_mobi_path
 from quill.io.rtf_safety import scan_rtf_safety
 
 __all__ = [
@@ -61,6 +62,7 @@ __all__ = [
     "is_office_open_path",
     "prepare",
     "prepare_in_background",
+    "prepare_mobi",
     "prepare_word",
     "read_office_for_open",
 ]
@@ -99,6 +101,9 @@ class PreparedDocument:
     word_findings: tuple[str, ...] = ()
     #: Said after the commit when the rich read failed and the text opened.
     word_note: str = ""
+    #: The reader's one note about the file, said once after the commit (a
+    #: Kindle book's inferred headings), the sentence QUILL says too.
+    open_note: str = ""
 
 
 #: The Office formats QUILL Lite opens as text: exactly the ones QUILL's own
@@ -162,6 +167,8 @@ def prepare(path: Path, mode: str, *, password: str | None = None) -> PreparedDo
         return prepare_word(Path(path))
     if is_office_open_path(path):
         return PreparedDocument(mode=PLAIN, text=read_office_for_open(Path(path)))
+    if is_mobi_path(path):
+        return prepare_mobi(Path(path))
     if mode == RICH:
         # Latin-1 both ways, because it maps every byte to one character and
         # back: an RTF file is 7-bit by the spec, and the 8-bit bytes some
@@ -201,6 +208,25 @@ def prepare_word(path: Path) -> PreparedDocument:
     return PreparedDocument(mode=RICH, rtf=rtf, text=text, word=True, word_findings=findings)
 
 
+def prepare_mobi(path: Path) -> PreparedDocument:
+    """A Kindle book as Markdown, through QUILL's reader (quill.io.mobi_open).
+
+    ``OSError`` with the reader's sentence when it is refused (DRM, HUFF/CDIC,
+    KF8 only, damaged), as for any other file that cannot be read.
+    """
+    from quill.io.mobi_open import read_mobi_document
+    from quill.io.mobi_read import MobiReadError
+
+    if not path.is_file():
+        raise FileNotFoundError(f"{path.name} is no longer there.")
+    try:
+        document = read_mobi_document(path)
+    except MobiReadError as exc:
+        raise OSError(str(exc)) from exc
+    note = str(document.source_metadata.get("open_note") or "")
+    return PreparedDocument(mode=PLAIN, text=document.text, open_note=note)
+
+
 def prepare_in_background(path: Path) -> bool:
     """Whether opening *path* should read it off the UI thread.
 
@@ -213,8 +239,8 @@ def prepare_in_background(path: Path) -> bool:
     text = str(path)
     if text.startswith("\\\\") or text.startswith("//") or is_pdf_path(path):
         return True
-    if is_office_open_path(path):
-        return True  # unzipping and walking XML is not instant, whatever the size
+    if is_office_open_path(path) or is_mobi_path(path):
+        return True  # unzipping, or decompressing a book, is not instant at any size
     try:
         return Path(path).stat().st_size >= BACKGROUND_THRESHOLD_BYTES
     except OSError:

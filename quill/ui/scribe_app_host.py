@@ -61,7 +61,7 @@ COMMON_ROWS: tuple[tuple[str, str, str, str], ...] = (
 #: handed over on a command line, QUILL and QUILL Lite would show its markup,
 #: so it opens in the browser, readable (see :func:`open_elsewhere`). EPUB only
 #: QUILL reads.
-_EDITOR_FORMATS = ("docx", "pdf", "epub", "brf")
+_EDITOR_FORMATS = ("docx", "pdf", "epub", "brf", "mobi")
 _QUILL_ONLY = ("epub",)
 #: Said once in the result sentence when an EPUB was made and only QUILL Lite is here.
 NO_EPUB_READER = "QUILL Lite does not open EPUB books. QUILL does."
@@ -159,6 +159,7 @@ def elsewhere_steps(
     """Next Steps that open a result in another app: Open in QUILL (Word),
     Send to Media Player (MP3 audio). Each says so when it could not."""
     from quill.core.scribe.model import format_label
+    from quill.core.scribe.results import open_step
 
     steps: list[tuple[str, Callable[[], None]]] = []
     name = editor_name() if editor else ""
@@ -170,7 +171,7 @@ def elsewhere_steps(
                     if not open_in_editor(path):
                         announce(f"{name} could not be opened. {path.name} is saved in its folder.")
 
-                steps.append((f"Open in {name} ({format_label(format_id)})", to_editor))
+                steps.append((open_step(name, format_id), to_editor))
     if "html" in ready and "offline_html" not in ready:
 
         def html_page(path: Path = ready["html"]) -> None:

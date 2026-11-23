@@ -189,6 +189,8 @@ class DocumentFileMixin(DocumentWordMixin):
             self._announce(READ_ONLY_NOTICE)
         self.note_pdf_source(prepared.pdf)
         self.note_word_source(path, prepared)
+        if prepared.open_note:  # a Kindle book's inferred headings, once
+            self._announce(prepared.open_note)
         return True
 
     def _commit_rich(self, prepared: PreparedDocument) -> None:

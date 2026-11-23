@@ -7,7 +7,8 @@
 | Tagged PDF | open in the editor as text, on the person's command only | ``editor`` |
 | BRF | open in QUILL's braille view (QUILL opens a .brf as braille) | ``braille`` |
 | MP3, DAISY | open in Media Player | ``player`` |
-| MOBI, offline web page | saved; the sentence says where | ``save`` |
+| MOBI | open in the editor as a readable document (``quill.io.mobi_open``) | ``editor`` |
+| Offline web page | saved; the sentence says where | ``save`` |
 
 The offline web page is the accessible HTML with its pictures inside. It is
 saved and offered in the browser, never in an editor, where each picture
@@ -34,7 +35,7 @@ DEFAULT_ACTION: dict[str, str] = {
     "mp3": "player",
     "daisy": "player",
     "pdf": "editor",
-    "mobi": "save",
+    "mobi": "editor",  # QUILL and QUILL Lite read a Kindle book (2026-11-23)
     "offline_html": "save",
 }
 
@@ -48,10 +49,22 @@ OPENED_NAME: dict[str, str] = {
     "docx": "Word",
     "pdf": "The tagged PDF",
     "epub": "The EPUB",
+    "mobi": "The Kindle book",
     "brf": "The braille",
     "mp3": "The MP3 audio",
     "daisy": "The DAISY book",
 }
+
+
+def open_step(editor: str, format_id: str) -> str:
+    """The Next Step that opens a result in *editor*: "Open in QUILL (Word)", and
+    for the Kindle book, whose label has brackets of its own, "Open the Kindle
+    Book in QUILL" (nested brackets read badly aloud)."""
+    from quill.core.scribe.model import format_label
+
+    if format_id == "mobi":
+        return f"Open the Kindle Book in {editor}"
+    return f"Open in {editor} ({format_label(format_id)})"
 
 
 def default_action(format_id: str) -> str:
@@ -80,8 +93,7 @@ OFFLINE_PICTURES_NOTE = (
 #: Said once when a Kindle book was made: where it can be read.
 MOBI_NOTE = (
     "A Kindle (MOBI) book is for older Kindles: copy it to the Kindle's documents "
-    "folder over USB, or read it on this computer in Calibre's free e-book viewer. "
-    "Send to Kindle takes the EPUB instead."
+    "folder over USB. Amazon's Send to Kindle takes the EPUB instead."
 )
 #: The Next Step that shows the offline web page, pictures and all.
 BROWSER_STEP = "Open in Your Browser (Web page for offline reading)"
@@ -224,6 +236,7 @@ __all__ = [
     "library_order",
     "missing_pictures",
     "open_order",
+    "open_step",
     "opened_phrase",
     "pictures_note",
     "place_order",

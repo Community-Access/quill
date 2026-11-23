@@ -75,7 +75,12 @@ _OFFICE = "*.docx;*.docm;*.doc;*.odt;*.xlsx;*.xls;*.pptx;*.ppt"
 _OFFICE_AS_TEXT = "*.docm;*.doc;*.odt;*.xlsx;*.xls;*.pptx;*.ppt"
 #: ``.qaf`` joined on 2026-11-05: a form document (QUILL Accessible Forms,
 #: wordpress.md 17a.17), plain text that the Forms commands work in.
-_TEXT_LIKE = f"*.txt;*.rtf;*.md;*.log;*.csv;*.json;*.py;*.html;*.htm;*.pdf;*.qaf;{_OFFICE}"
+#: ``.mobi`` and ``.prc`` joined on 2026-11-23: a Kindle book opens as Markdown,
+#: read by QUILL's reader (quill.io.mobi_open), and is never written back.
+_KINDLE = "*.mobi;*.prc"
+_TEXT_LIKE = (
+    f"*.txt;*.rtf;*.md;*.log;*.csv;*.json;*.py;*.html;*.htm;*.pdf;*.qaf;{_OFFICE};{_KINDLE}"
+)
 
 OPEN_WILDCARD = (
     f"All supported files ({_TEXT_LIKE})|{_TEXT_LIKE}|"
@@ -85,6 +90,7 @@ OPEN_WILDCARD = (
     "Markdown (*.md;*.markdown)|*.md;*.markdown|"
     "HTML (*.html;*.htm)|*.html;*.htm|"
     "PDF documents, opened as text (*.pdf)|*.pdf|"
+    f"Kindle books, opened as Markdown ({_KINDLE})|{_KINDLE}|"
     f"Older Word, Excel and PowerPoint, opened as text ({_OFFICE_AS_TEXT})|{_OFFICE_AS_TEXT}|"
     "Forms (*.qaf)|*.qaf|"
     "All files (*.*)|*.*"
@@ -201,6 +207,10 @@ MARKDOWN_SUFFIXES = frozenset({".md", ".markdown", ".mdown", ".mkd", ".mdx"})
 #: difference to the person typing into it.
 HTML_SUFFIXES = frozenset({".html", ".htm", ".xhtml", ".xht"})
 
+#: Files QUILL Lite reads *into* Markdown: a Kindle book's text arrives as
+#: Markdown (its headings are ``#`` lines), so its name says Markdown too.
+MARKDOWN_READ_SUFFIXES = frozenset({".mobi", ".prc"})
+
 
 def markup_language_for(name: str | None) -> str:
     """The markup a document of this name is written in.
@@ -225,7 +235,7 @@ def markup_language_for(name: str | None) -> str:
     lowered = str(name or "").lower()
     if any(lowered.endswith(suffix) for suffix in HTML_SUFFIXES):
         return "html"
-    if any(lowered.endswith(suffix) for suffix in MARKDOWN_SUFFIXES):
+    if any(lowered.endswith(suffix) for suffix in MARKDOWN_SUFFIXES | MARKDOWN_READ_SUFFIXES):
         return "markdown"
     return "plain"
 

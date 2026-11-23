@@ -259,7 +259,8 @@ class DocumentModeMixin:
             from quill.apps.lite_window_pdf import is_read_only_source
 
             saves_word = getattr(self, "saves_as_word", lambda _p: False)(self.path)
-            if is_read_only_source(self.path) and not saves_word:  # a PDF as text: never .pdf
-                return self.path.with_suffix(save_suffix_for_language("plain")).name
+            if is_read_only_source(self.path) and not saves_word:  # never .pdf; a .mobi is .md
+                language = self.document_language()
+                return self.path.with_suffix(save_suffix_for_language(language)).name
             return self.path.name
         return self.path.with_suffix(self._pending_suffix).name

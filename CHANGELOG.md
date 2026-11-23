@@ -2,6 +2,29 @@
 
 ## 1.0.0
 
+### Kindle (MOBI) books open in QUILL and QUILL Lite (2026-11-23)
+
+A Kindle book Scribe for Documents makes now opens as a document you can
+read, instead of only being saved. So does any other Kindle book without DRM,
+from **File > Open** in either editor ("Kindle books" in the file type list).
+QUILL reads it with its own reader.
+
+- **The text** comes through as Markdown: paragraphs, lists, tables and links.
+- **Pictures** are saved in a folder beside the book (`<book>_pictures`) and
+  sit in the text where they were, as "Picture 1" and so on.
+- **Headings.** A Kindle book has none, only larger, bolder text, so QUILL
+  makes them from that, and the heading keys and the outline work. It says
+  so once as the book opens, because one may be at the wrong level.
+- **What does not open**, each with one sentence saying why: a book locked
+  with DRM, one compressed in a way QUILL does not read, a newer AZW3 book,
+  and a damaged file. For the two that can be converted, the sentence says to
+  convert to Word first.
+- **Scribe's result.** Open Result opens the Kindle book in QUILL or QUILL
+  Lite, Next Steps has **Open the Kindle Book**, and the other QuillVille apps
+  offer **Open the Kindle Book in QUILL**.
+- A Kindle book is never saved over. `Ctrl+S` goes to Save As, which in QUILL
+  Lite offers a Markdown file.
+
 ### Scribe for Documents: follow-ups from the corpus tests (2026-11-23)
 
 - **Braille page counts.** A BRF that ends with a form feed, as every

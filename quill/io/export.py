@@ -52,6 +52,8 @@ EXPORT_ONLY_SUFFIXES: frozenset[str] = frozenset({
     ".doc",
     ".odt",
     ".epub",
+    ".mobi",
+    ".prc",
     ".pages",
     ".ppt",
     ".pptx",

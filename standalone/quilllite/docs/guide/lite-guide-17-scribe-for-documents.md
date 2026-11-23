@@ -124,7 +124,7 @@ MOBI. It does not take web pages. A link must point straight at a file.
 | Word | Reading and editing. Can be large print | Opens it in a new QUILL Lite window |
 | Tagged PDF | A PDF screen readers can read. Can be large print | Saves it. **Open Result** and Next Steps open it in a new QUILL Lite window, as text; it never opens by itself |
 | EPUB | Ebook readers | QUILL Lite does not read EPUB. When QUILL is installed, it opens there. Otherwise it is saved, and the result sentence says once: "QUILL Lite does not open EPUB books. QUILL does." |
-| Kindle (MOBI) | Older Kindle devices, and Calibre | Saves it, and says where |
+| Kindle (MOBI) | Older Kindle devices | Opens it in a new QUILL Lite window, with its pictures, and headings made from its large text |
 | DAISY (text and audio) | Talking-book players, and Quill Media Player with chapters | Opens it in Quill Media Player |
 | MP3 audio | Any audio player | Opens it in Quill Media Player |
 | Braille (BRF) | Braille displays and embossers | Opens it as text in a new QUILL Lite window |

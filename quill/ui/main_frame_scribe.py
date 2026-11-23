@@ -199,6 +199,8 @@ class QuillScribeHost:
             steps.append((f"Open in QUILL ({format_label('pdf')})", self._then(ready["pdf"], "")))
         if "brf" in ready:
             steps.append(("Open in the Braille View", self._then(ready["brf"], "")))
+        if "mobi" in ready:
+            steps.append(("Open the Kindle Book (MOBI)", self._then(ready["mobi"], "")))
         for format_id in ("mp3", "daisy"):
             if format_id in ready:
                 label = f"Send to Media Player ({format_label(format_id)})"

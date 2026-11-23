@@ -10,6 +10,8 @@ def infer_markup_kind(path: Path | None) -> str:
     suffix = path.suffix.lower()
     if suffix in {".md", ".markdown", ".mdx"}:
         return "markdown"
+    if suffix in {".mobi", ".prc"}:
+        return "markdown"  # a Kindle book opens as Markdown (quill.io.mobi_open)
     if suffix in {".html", ".htm", ".xhtml"}:
         return "html"
     if suffix in {".yaml", ".yml"}:
