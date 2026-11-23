@@ -307,7 +307,7 @@ RADIO_EGRESS: dict[str, str] = {
         "the scan found is opened once (one more for a playlist or HLS master) "
         "and only its headers and first 4 KB are read (live_check.PROBE_BYTES), "
         "to tell live audio from a web page or a podcast file. At most 16 "
-        "candidates (48 when a server listing is in the results), 4 at a time, "
+        "candidates (48 with a server listing or the soundmap), 4 at a time, "
         "under one 20-second overall deadline, each "
         "request inside the same 12 s timeout; a GET with QUILL's User-Agent "
         "and nothing else -- no cookie, no credential. These go to the stream "

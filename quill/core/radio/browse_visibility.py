@@ -168,7 +168,7 @@ BROWSE_SOURCES: tuple[BrowseSourceInfo, ...] = (
     ),
     BrowseSourceInfo(
         "locussonus",
-        "Locus Sonus Soundmap",
+        "Locus Sonus Soundmap (Open Microphones)",
         "Open microphones streaming live sound from places around the world.",
     ),
     BrowseSourceInfo(

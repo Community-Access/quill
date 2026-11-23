@@ -107,6 +107,10 @@ class PageStreamCandidate:
     check_note: str = ""
     #: How many were listening, when a server's own listing said (else ``None``).
     listeners: int | None = None
+    #: True when ``label`` is the station's name as a directory or a server
+    #: listing gives it (IPRD, the soundmap, Global Player, an Icecast or
+    #: SHOUTcast listing), so a row may say it when the stream sends no name.
+    label_is_name: bool = False
 
     @property
     def live(self) -> bool:

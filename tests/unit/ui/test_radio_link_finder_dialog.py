@@ -118,12 +118,29 @@ def test_the_result_is_said_once_and_rows_lead_with_the_verdict(dialog: Any) -> 
             left_out=2,
         ),
     )
-    assert dialog.said == ["Found 1 live stream and 1 not checked."]
+    assert dialog.said == ["Found 1 live stream and 1 link not checked."]
     assert "Left out 2 links" in dialog.dlg._status.GetLabel()
     results = dialog.dlg._results
     assert results.GetItemText(0, 0) == "Live: KXYZ, MP3, 128 kbps"
     assert results.GetItemText(0, 1) == "https://s.example/live"
-    assert results.GetItemText(1, 0) == "Not checked: it took too long to answer"
+    assert results.GetItemText(1, 0) == "Not checked: slow on s.example, it took too long to answer"
+
+
+def test_the_sentence_names_the_scans_own_limit(dialog: Any) -> None:
+    _scan(dialog)
+    result = _checked(
+        _cand("https://s.example/live", "live", stream_name="KXYZ"),
+        _cand(
+            "https://s.example/more",
+            "not checked",
+            check_note="there were too many links to check them all",
+        ),
+    )
+    result.check_limit = 48
+    _deliver(dialog, result)
+    assert dialog.said == [
+        "Found 1 live stream and 1 link not checked, because one scan checks at most 48 links."
+    ]
 
 
 def test_test_and_use_act_on_the_row_the_listener_chose(dialog: Any) -> None:

@@ -662,7 +662,7 @@ class BrowseTreeDialog:
             # per thread, so reading it later from the UI-thread callback would
             # read the UI thread's own, always-empty slot -- and a branch that
             # failed on the network would be marked loaded and never retried.
-            return (children, *browse_feedback.empty_verdict(children))
+            return (children, *browse_feedback.empty_verdict(children, node_id))
 
         def _ok(_op: str, raw: object) -> None:
             # Already on the UI thread (call_ui_safely marshals + guards this);

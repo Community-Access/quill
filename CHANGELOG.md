@@ -16,13 +16,19 @@ written in QUILL's own code.
   and the server's own admin pages are left out.
 - **Listener counts.** When the server says how many are listening, the row
   ends with it: "Live: WABC Community Radio, MP3, 128 kbps, 12 listeners".
-  Nothing else in the row moves, and nothing more is said.
+  The rest of the row is unchanged, and nothing extra is said. A row with no
+  name of its own now says the station's name from the directory or listing,
+  or the last part of its address ("jazz on radio.example.org"), and a link
+  that was not checked keeps its name: "Not checked: Capital UK, there were
+  too many links to check them all". When the scan's own limits left links
+  unchecked, the result sentence says why: "...because one scan checks at
+  most 48 links."
 - **Global's stations.** A Global Player station page
   (`globalplayer.com/live/...`), or a station site that links to one, gives the
   stream Global lets everyone play, and never the ones kept for signed-in or
   paying listeners. Global's catalogue, `media-ssl.musicradio.com`, lists every
   Global station.
-- **Locus Sonus Soundmap**, new in Browse Stations: open microphones streaming
+- **Locus Sonus Soundmap (Open Microphones)**, new in Browse Stations: open microphones streaming
   live sound from places around the world, such as a hydrophone in an
   Amsterdam canal. Find Streams reads it too when given the soundmap page.
 - **IPRD is asked about the website.** When the IPRD catalogue is already on
@@ -31,6 +37,7 @@ written in QUILL's own code.
 - Triton players that name their station only in the page's app name, and
   SecureNet's `cirruscontent` player pages, are read too.
 
+### Quill Radio: Find Streams checks each link is live audio (2026-11-21)
 
 Ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),
 written in QUILL's own code.

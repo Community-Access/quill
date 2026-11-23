@@ -47,6 +47,8 @@ __all__ = [
     "FILE",
     "NOT_AUDIO",
     "UNCHECKED",
+    "OUT_OF_TIME",
+    "TOO_MANY",
     "HttpReply",
     "Verdict",
     "check_urls",
@@ -65,6 +67,12 @@ MAX_WORKERS = 4
 MAX_CHECKS = 16
 #: The whole check, start to finish. What is unanswered by then is "not checked".
 TOTAL_SECONDS = 20.0
+
+#: Why a link QUILL never contacted is "not checked": the scan's own limits,
+#: not the server's fault. "it took too long to answer" is kept for a link
+#: that was asked and timed out.
+TOO_MANY = "there were too many links to check them all"
+OUT_OF_TIME = "QUILL ran out of time before checking it"
 
 _NAME_LIMIT = 60
 #: What a server says when nobody named the stream; the host is used instead.
@@ -225,7 +233,7 @@ def check_url(url: str, get: Getter, deadline: float) -> Verdict:
     for _depth in range(2):
         remaining = deadline - time.monotonic()
         if remaining <= 0.5:
-            return Verdict(UNCHECKED, note="there was not time to check it")
+            return Verdict(UNCHECKED, note=OUT_OF_TIME)
         try:
             reply = get(url, remaining)
         except Exception as error:  # noqa: BLE001 - every failure is "not checked"
@@ -252,10 +260,7 @@ def check_urls(
     unchecked, rather than dropped.
     """
     deadline = time.monotonic() + total_seconds
-    verdicts: dict[str, Verdict] = {
-        url: Verdict(UNCHECKED, note="there were too many links to check them all")
-        for url in urls[limit:]
-    }
+    verdicts: dict[str, Verdict] = {url: Verdict(UNCHECKED, note=TOO_MANY) for url in urls[limit:]}
     to_check = list(dict.fromkeys(urls[:limit]))
     if not to_check:
         return verdicts
@@ -271,7 +276,7 @@ def check_urls(
             if future in done and future.exception() is None:
                 verdicts[url] = future.result()
             else:
-                verdicts[url] = Verdict(UNCHECKED, note="it took too long to answer")
+                verdicts[url] = Verdict(UNCHECKED, note=OUT_OF_TIME)
     finally:
         # Do not wait for stragglers: each is bounded by its own socket timeout.
         pool.shutdown(wait=False, cancel_futures=True)

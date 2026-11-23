@@ -9,9 +9,9 @@ address, the city and country, and the person who set it up.
 
 So Browse Stations > Locus Sonus Soundmap lists every open microphone on air,
 A to Z, each a station that plays, records and saves like any other, named as
-the soundmap names it with its place after ("amsterdam -- hydrophile 1,
-Netherlands"). Find Streams from a Website reads the same list when it is given
-the soundmap's own page.
+the soundmap names it, with its country after it once ("amsterdam, hydrophile
+1 (Netherlands)"). Find Streams from a Website reads the same list when it is
+given the soundmap's own page.
 
 The idea of offering the soundmap's active list is from Andre Louis's
 StreamSift (https://github.com/OnjLouis/StreamSift); this is QUILL's own code.
@@ -39,6 +39,7 @@ from quill.core.radio import directory_cache
 from quill.core.radio.models import RadioStation
 
 __all__ = [
+    "EMPTY_NOTE",
     "LIST_URL",
     "SOURCE",
     "LocusSonusError",
@@ -56,6 +57,8 @@ _CACHE_KEY = "locussonus:active"
 _CACHE_MAX_AGE_SECONDS = 30 * 60
 _MAX_STATIONS = 500
 _HOSTS = ("locusonus.org", "www.locusonus.org")
+#: What the branch says when the soundmap answered with no microphones on air.
+EMPTY_NOTE = "No open microphones are on air right now. Refresh to look again."
 
 
 class LocusSonusError(CodedError):
@@ -69,7 +72,7 @@ def refuse_in_safe_mode(safe_mode: bool) -> None:
     if safe_mode:
         raise LocusSonusError(
             "The Locus Sonus Soundmap is disabled in Safe Mode. "
-            "Restart QUILL normally to browse it."
+            "Restart Quill Radio normally to browse it."
         )
 
 
@@ -86,13 +89,20 @@ def _text(value: object) -> str:
 
 
 def _name(entry: dict[str, object]) -> str:
-    """The soundmap's name for a microphone, with its country after it."""
-    name = _text(entry.get("name")).replace("—", "--")
+    """The soundmap's name for a microphone, cleaned: its dash read as a comma
+    (an em dash between place and microphone becomes ", "), spaces single."""
+    name = _text(entry.get("name")).replace("—", ",").replace("–", ",")
+    name = " ".join(name.split()).replace(" ,", ",")
+    return name.strip(" ,")
+
+
+def _country(entry: dict[str, object], name: str) -> str:
+    """The country, title-cased, or "" when the name already says it -- the
+    row adds "(country)" itself, so it must not be said twice."""
     country = _text(entry.get("country"))
-    if country and country.casefold() not in name.casefold():
-        country = country[:1].upper() + country[1:]
-        return f"{name}, {country}" if name else country
-    return name
+    if not country or country.casefold() in name.casefold():
+        return ""
+    return country.title()
 
 
 def parse_active_list(payload: str) -> list[RadioStation]:
@@ -120,7 +130,7 @@ def parse_active_list(payload: str) -> list[RadioStation]:
                 name=name,
                 stream_url=url,
                 homepage=_text(entry.get("link")) or "https://locusonus.org/soundmap/",
-                country=_text(entry.get("country")).title(),
+                country=_country(entry, name),
                 tags=tuple(t for t in ("Open microphone", artist) if t),
                 codec=_text(entry.get("ext")).upper(),
                 source=SOURCE,
@@ -144,12 +154,19 @@ def _fetch(url: str) -> str:
     except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:
         raise LocusSonusError(f"Could not reach the Locus Sonus Soundmap: {error}") from error
     if len(payload) > _MAX_BYTES:
-        raise LocusSonusError("The Locus Sonus Soundmap sent far more than its list.")
+        raise LocusSonusError(
+            "The Locus Sonus Soundmap sent a reply larger than 1 MB, so it was not read."
+        )
     return payload.decode("utf-8", errors="replace")
 
 
 def fetch_stations(*, safe_mode: bool = False, refresh: bool = False) -> list[RadioStation]:
-    """Every open microphone on air, A to Z; the last good list if the fetch fails."""
+    """Every open microphone on air, A to Z; the last good list if the fetch fails.
+
+    Raises :class:`LocusSonusError` when there is neither an answer nor a
+    cached list, so the branch can tell "could not be reached" from an
+    answer that really has no microphones on air (see :data:`EMPTY_NOTE`).
+    """
     refuse_in_safe_mode(safe_mode)
     payload, _age = directory_cache.resolve(
         _CACHE_KEY,
@@ -158,4 +175,9 @@ def fetch_stations(*, safe_mode: bool = False, refresh: bool = False) -> list[Ra
         refresh=refresh,
         empty="",
     )
-    return parse_active_list(str(payload or ""))
+    if not payload:
+        error = LocusSonusError("The Locus Sonus Soundmap could not be reached.")
+        # Read by browse_failure: unreachable, not "nothing on air".
+        error.service_unreachable = True  # type: ignore[attr-defined]
+        raise error
+    return parse_active_list(str(payload))

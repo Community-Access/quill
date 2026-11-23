@@ -255,7 +255,7 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("iprd", "IPRD (Public Radio Directory)"),
     ("quillins", "Quillin Sources"),
     ("radioparadise", "Radio Paradise"),
-    ("locussonus", "Locus Sonus Soundmap"),
+    ("locussonus", "Locus Sonus Soundmap (Open Microphones)"),
     ("apple", "Podcasts (Apple)"),
     ("podcastindex", "Podcast Index"),
     ("archive", "Internet Archive"),

@@ -29,7 +29,7 @@ from quill.core.radio import (
 )
 from quill.core.radio.models import RadioStation
 
-__all__ = ["FLAT", "LOCAL_SOURCES"]
+__all__ = ["EMPTY_NOTES", "FLAT", "LOCAL_SOURCES", "empty_note"]
 
 #: Branches that work with no network at all, so Safe Mode leaves them alone.
 LOCAL_SOURCES = frozenset({
@@ -60,3 +60,14 @@ FLAT: dict[str, Callable[[bool], list[RadioStation]]] = {
     "radioparadise": lambda safe: radio_paradise.fetch_stations(safe_mode=safe),
     "locussonus": lambda safe: locus_sonus.fetch_stations(safe_mode=safe),
 }
+
+#: What a flat branch says when its source answered and the answer was empty,
+#: where that is worth saying in its own words (a failure has its own sentence).
+EMPTY_NOTES: dict[str, str] = {
+    "locussonus": locus_sonus.EMPTY_NOTE,
+}
+
+
+def empty_note(node_id: str) -> str:
+    """The sentence for *node_id* answering with nothing, or "" for the generic one."""
+    return EMPTY_NOTES.get(node_id, "")

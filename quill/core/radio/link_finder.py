@@ -53,7 +53,7 @@ import ssl
 import urllib.error
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
@@ -100,6 +100,8 @@ _MAX_STATUS_SERVERS = 2
 #: Checks when a server listing is in the results: a whole catalogue, so more
 #: than a page's handful, under the same overall deadline.
 _LISTING_CHECKS = 48
+#: Notes for a listed link QUILL never contacted (the scan's limits).
+_NEVER_ASKED = (live_check.TOO_MANY, live_check.OUT_OF_TIME)
 _CHECK_RANK = {live_check.LIVE: 0, live_check.UNCHECKED: 1, "": 1, live_check.FILE: 2}
 
 
@@ -134,6 +136,11 @@ class PageScanResult:
     #: something that is not audio (a web page, a 404) and are not listed.
     checked: bool = False
     left_out: int = 0
+    #: The most links this scan would check (16, or 48 with a server listing
+    #: or the soundmap), and how many of the listed links QUILL never
+    #: contacted because of that limit or the 20-second deadline.
+    check_limit: int = 0
+    skipped: int = 0
 
 
 _FETCH_ERRORS = (
@@ -273,10 +280,15 @@ def scan_page_for_streams(
     # generic parser's picks off the same page are only stream-*shaped*.
     all_candidates = _securenet_candidates(normalized, html_text)
     all_candidates.extend(_global_candidates(normalized, html_text))
-    all_candidates.extend(_soundmap_candidates(normalized, safe_mode=safe_mode))
-    listed = _server_candidates(_status_pages(normalized, html_text, parser), html_text)
+    # The soundmap is a listing too: a whole catalogue, checked as one.
+    listed = _soundmap_candidates(normalized, safe_mode=safe_mode)
+    status_pages = _status_pages(normalized, html_text, parser)
+    listed.extend(_server_candidates(status_pages, html_text))
     all_candidates.extend(listed)
-    all_candidates.extend(_own_links(normalized, parser))
+    # A server page that listed its mounts says nothing more: its own links are
+    # the same mounts again as ".m3u" files, rows that would only be repeats.
+    if not (listed and status_pages and status_pages[0][0] == normalized):
+        all_candidates.extend(_own_links(normalized, parser))
     all_candidates.extend(
         _follow_pages(parser.iframe_urls, _MAX_IFRAMES_TO_FOLLOW, "embedded iframe")
     )
@@ -328,8 +340,8 @@ def scan_page_for_streams(
         seen.setdefault(candidate.url, candidate)
     kept = list(seen.values())
     left_out = 0
+    limit = _LISTING_CHECKS if listed else live_check.MAX_CHECKS
     if check_live and kept:
-        limit = _LISTING_CHECKS if listed else live_check.MAX_CHECKS
         kept, left_out = _apply_live_check(kept, limit)
     kept = _prefer_https(kept)
     # #5 observability: which links were kept, and why -- the argv-style
@@ -349,6 +361,8 @@ def scan_page_for_streams(
         candidates=kept,
         checked=check_live,
         left_out=left_out,
+        check_limit=limit if check_live else 0,
+        skipped=sum(1 for c in kept if c.check_note in _NEVER_ASKED),
     )
 
 
@@ -435,6 +449,7 @@ def _listed(mounts: list[server_listings.ServerMount], reason: str) -> list[Page
             reason=reason,
             label=mount.name,
             stream_name=mount.name,
+            label_is_name=bool(mount.name),
             bitrate_kbps=mount.bitrate_kbps,
             listeners=mount.listeners,
         )
@@ -542,11 +557,5 @@ def _follow_pages(
             page_candidates.extend(_global_candidates(sub_url, sub_html))
         page_candidates.extend(_own_links(sub_url, sub_parser))
         for candidate in page_candidates:
-            out.append(
-                PageStreamCandidate(
-                    url=candidate.url,
-                    reason=f"{candidate.reason} (found via {reason_suffix})",
-                    label=candidate.label,
-                )
-            )
+            out.append(replace(candidate, reason=f"{candidate.reason} (found via {reason_suffix})"))
     return out

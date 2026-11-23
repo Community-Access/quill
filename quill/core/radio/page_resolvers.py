@@ -121,6 +121,7 @@ def global_player_candidates(url: str, html: str) -> list[PageStreamCandidate]:
             url=stream_url,
             reason="stream from the Global Player station page",
             label=title,
+            label_is_name=bool(title),
         )
         for stream_url in global_player.stream_urls_from_page(html)
     ]
@@ -140,7 +141,8 @@ def soundmap_candidates(url: str, *, safe_mode: bool) -> list[PageStreamCandidat
         PageStreamCandidate(
             url=station.stream_url,
             reason="open microphone on the Locus Sonus Soundmap",
-            label=station.name,
+            label=station.display_name,
+            label_is_name=True,
         )
         for station in stations
     ]
@@ -159,6 +161,7 @@ def directory_candidates(url: str, *, safe_mode: bool) -> list[PageStreamCandida
             url=station.stream_url,
             reason="listed for this website in IPRD (Public Radio Directory)",
             label=station.name,
+            label_is_name=True,
         )
         for station in iprd.stations_for_website(url, safe_mode=safe_mode)
     ]

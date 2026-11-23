@@ -231,14 +231,36 @@ def test_a_station_site_linking_to_global_player_is_followed(
 
 def test_the_soundmap_list_becomes_named_stations_a_to_z() -> None:
     stations = locus_sonus.parse_active_list(_text("locus_active.json"))
-    assert [s.name for s in stations] == [
-        "acra -- wave farm, United States",
-        "amsterdam -- hydrophile 1, Netherlands",
-        "amsterdam -- hydrophile 5, Netherlands",
+    # The country is said once, by the row itself, after the cleaned name.
+    assert [s.display_name for s in stations] == [
+        "acra, wave farm (United States)",
+        "amsterdam, hydrophile 1 (Netherlands)",
+        "amsterdam, hydrophile 5 (Netherlands)",
     ]
     assert stations[0].stream_url == "https://locus.creacast.com:9443/acra_wave_farm.mp3"
     assert stations[0].source == "Locus Sonus" and stations[0].codec == "MP3"
     assert locus_sonus.parse_active_list("not json") == []
+    said_twice = (
+        '[{"name": "lisbon \u2014  rooftop, portugal", "url": "https://m.example/a.mp3",'
+        ' "country": "portugal"}]'
+    )
+    (one,) = locus_sonus.parse_active_list(said_twice)
+    assert one.display_name == "lisbon, rooftop, portugal"
+
+
+def test_an_unreachable_soundmap_is_not_an_empty_one(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(locus_sonus.directory_cache, "resolve", lambda *a, **k: ("", None))
+    with pytest.raises(locus_sonus.LocusSonusError) as raised:
+        locus_sonus.fetch_stations()
+    from quill.core.radio.browse_failure import last_error_was_network
+
+    assert last_error_was_network(raised.value)
+    monkeypatch.setattr(locus_sonus.directory_cache, "resolve", lambda *a, **k: ("[]", None))
+    assert locus_sonus.fetch_stations() == []
+    assert browse_flat.empty_note("locussonus") == (
+        "No open microphones are on air right now. Refresh to look again."
+    )
+    assert browse_flat.empty_note("radioparadise") == ""
 
 
 def test_the_soundmap_is_refused_in_safe_mode() -> None:
@@ -254,7 +276,24 @@ def test_the_soundmap_page_lists_its_open_microphones(monkeypatch: pytest.Monkey
     monkeypatch.setattr(locus_sonus, "fetch_stations", lambda safe_mode: stations)
     result = lf.scan_page_for_streams(page)
     assert [c.url for c in result.candidates] == [s.stream_url for s in stations]
-    assert result.candidates[0].label == "acra -- wave farm, United States"
+    assert result.candidates[0].label == "acra, wave farm (United States)"
+    assert row_status(result.candidates[0]) == "Not checked: acra, wave farm (United States)"
+
+
+def test_the_soundmap_is_checked_like_a_listing(monkeypatch: pytest.MonkeyPatch) -> None:
+    page = "https://locusonus.org/soundmap/"
+    _serve(monkeypatch, {page: "<html><title>Locus Sonus soundmap</title></html>"})
+    stations = locus_sonus.parse_active_list(_text("locus_active.json"))
+    monkeypatch.setattr(locus_sonus, "fetch_stations", lambda safe_mode: stations)
+    seen: list[int] = []
+
+    def check(urls: list[str], get: object, *, limit: int) -> dict[str, object]:
+        seen.append(limit)
+        return {}
+
+    monkeypatch.setattr(lf.live_check, "check_urls", check)
+    result = lf.scan_page_for_streams(page, check_live=True)
+    assert seen == [lf._LISTING_CHECKS] and result.check_limit == lf._LISTING_CHECKS
 
 
 def test_the_soundmap_is_a_browse_branch_shown_to_existing_profiles() -> None:
@@ -346,7 +385,22 @@ def test_a_cirruscontent_page_names_its_callsign() -> None:
 
 
 def test_a_row_without_a_listener_count_is_unchanged() -> None:
-    row = PageStreamCandidate(url="https://k.example/live", reason="r", check="live", codec="MP3")
+    row = PageStreamCandidate(url="https://k.example/", reason="r", check="live", codec="MP3")
     assert row_status(row) == "Live: k.example, MP3"
-    one = PageStreamCandidate(url="https://k.example/live", reason="r", check="live", listeners=1)
+    one = PageStreamCandidate(url="https://k.example/", reason="r", check="live", listeners=1)
     assert row_status(one) == "Live: k.example, 1 listener"
+
+
+def test_a_scan_counts_the_links_it_never_contacted(monkeypatch: pytest.MonkeyPatch) -> None:
+    page = "https://media-ssl.musicradio.com/"
+    _serve(monkeypatch, {page: _text("global_catalogue.html")})
+    live = HttpReply(200, {"Content-Type": "audio/mpeg"}, _MP3)
+    monkeypatch.setattr(lf, "_LISTING_CHECKS", 1)
+    monkeypatch.setattr(lf, "_probe", lambda url, timeout: live)
+    result = lf.scan_page_for_streams(page, check_live=True)
+    assert result.check_limit == 1 and result.skipped == 2
+    unchecked = [c for c in result.candidates if c.check == "not checked"]
+    # Named from the listing, not "BigTop40MP3 on media-ssl.musicradio.com".
+    assert row_status(unchecked[0]) == (
+        "Not checked: The Big Top 40 Show, there were too many links to check them all"
+    )

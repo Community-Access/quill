@@ -147,7 +147,7 @@ def empty_row_text(*, unreachable: bool, override: str = "", note: str = "") -> 
     return f"{says} {note}" if (note and unreachable) else says
 
 
-def empty_verdict(children: list[Any]) -> tuple[bool, str]:
+def empty_verdict(children: list[Any], node_id: str = "") -> tuple[bool, str]:
     """``(network_failed, reason)`` for one browse, asked on the thread that browsed.
 
     The failure record is per thread, so this must run inside the background
@@ -155,6 +155,8 @@ def empty_verdict(children: list[Any]) -> tuple[bool, str]:
     that came back with rows has no verdict. ``reason`` is a sentence written
     for the listener -- "the Podcast Index needs a free key..." -- and is only
     given when the failure was *not* the network, which has its own sentence.
+    A source that answered with nothing may have its own words for that
+    (:func:`quill.core.radio.browse_flat.empty_note`, keyed by *node_id*).
     """
     if children:
         return False, ""
@@ -165,7 +167,9 @@ def empty_verdict(children: list[Any]) -> tuple[bool, str]:
         # do about it, so it is said as a reason rather than "unreachable".
         certificate = listener_reason()
         return (False, certificate) if certificate else (True, "")
-    return False, listener_reason()
+    from quill.core.radio.browse_flat import empty_note
+
+    return False, listener_reason() or empty_note(node_id)
 
 
 def fill_rows(host: Any, node: Any, children: list[Any]) -> None:
