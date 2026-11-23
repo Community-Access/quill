@@ -48,6 +48,7 @@ from quill.core.expansion.settings import (
 )
 from quill.core.net import configure_ssl_trust
 from quill.ui import app_sounds
+from quill.ui.activity_menu_rows import append_activity_rows
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dpi import dip, dip_size
 from quill.ui.inkwell_expansion import InkwellExpansionMixin
@@ -260,6 +261,7 @@ class QuillInkwellFrame(
         from quill.ui.whats_new import append_whats_new_item
 
         append_whats_new_item(self, help_menu, "inkwell", _TITLE)  # the changelog
+        append_activity_rows(self, help_menu)  # F9, Shift+F9: kept results (FUX-04)
         help_menu.Append(about_id, "&About Quill Inkwell\tCtrl+Alt+I")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)
         menu_bar.Append(help_menu, "&Help")
@@ -401,7 +403,7 @@ class QuillInkwellFrame(
     def open_manager(self) -> None:
         from quill.ui.abbreviation_manager_dialog import AbbreviationManagerDialog
 
-        dlg = AbbreviationManagerDialog(self.frame, self._library)
+        dlg = AbbreviationManagerDialog(self.frame, self._library, self)
         self._show_modal_dialog(dlg.dialog, "Manage Abbreviations")
         dlg.close()
         self._library = load_abbreviation_library(self._data_dir)

@@ -349,6 +349,14 @@ The manager's **Import...** and **Export...** buttons read and write the shared
 library as JSON. Export is the honest backup of everything, including every
 per-entry setting; import merges entries in.
 
+Each says what it did, and where, instead of showing a box: "Exported 42
+abbreviations to abbreviations.json in Documents." An import says how many it
+added from which file, how many were already in your list, and how many entries
+it could not use because they had no abbreviation or no text. If you missed it,
+**Help > Repeat Last Result** (`F9`) says it again, and **Help > Activity...**
+(`Shift+F9`) keeps it with an **Open Folder** button. A file that cannot be read or written still
+gets a box, because nothing changed and it needs your attention.
+
 ## 14. Settings reference
 
 Inkwell's own preferences live in `inkwell.json` beside the library:
@@ -418,6 +426,8 @@ Which sounds you hear comes from the family's sound scheme, and two come with it
 | Use My Own AI Key | Alt+F2 |
 | AI Usage | Ctrl+Alt+Shift+F2 |
 | AI Privacy Agreement | Alt+Shift+F2 |
+| Repeat Last Result: hear the last result again | F9 |
+| Activity: this session's results, with Open Folder | Shift+F9 |
 
 Every dialog follows QUILL's dialog conventions: Escape cancels, Enter activates
 the default button, every control has a name your screen reader announces, and

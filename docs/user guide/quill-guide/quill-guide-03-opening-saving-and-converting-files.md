@@ -198,7 +198,19 @@ Saving is three commands on the **File** menu:
 - **Save** writes the current document.
 - **Save As...** writes it to a new name or place, and converts it to the file
   type you choose in the dialog.
-- **Save All** writes every open document that has changes.
+- **Save All** writes every open document that has changes, then takes you
+  back to the document you were in. It says what it saved: "Saved 2
+  documents: notes.md and plan.md." If two have the same name, it adds each
+  one's folder. If it stops part way, because you cancelled a Save As for a
+  new document or a save failed, it says which document it stopped at and
+  how many are still not saved. With nothing changed, it says "Nothing
+  needed saving."
+
+Save As, Export, Convert File and Batch Conversion say the file and the
+folder it went to, for example "Exported to minutes.docx in Documents."
+Export, Convert File and Batch Conversion also keep that result: if you
+missed it, **Help > Repeat Last Result** (`F9`) says it again, and
+**Help > Activity** (`Shift+F9`) lists it with an **Open Folder** button.
 
 **Save As...** really converts. QUILL keeps your text as portable Markdown-style
 markup, so choosing **Rich Text Format (\*.rtf)** writes real RTF, **HTML
@@ -1030,16 +1042,22 @@ Downloads tab shows a row for it as it works. The first row is
 `Batch conversion: scanning <folder>`, followed by one row per file.
 
 When the batch is done, QUILL says one line, through the announcement backend
-you have set up, with the converted, skipped and failed counts and how long it
-took:
+you have set up: how many files converted, where they are, which files failed,
+and how many were skipped:
 
-> "Batch conversion complete. 12 of 14 files converted in 4.2 seconds. 2
-> skipped."
+> "Converted 12 of 14 files. They are in Output in Reports. 1 failed:
+> budget.md. 1 skipped, because the converted file was already there."
+
+Two failed files with the same name are told apart by their folders. Nothing
+opens when the batch finishes, so you can keep writing while it runs. If you
+missed the line, press `F9` (**Help > Repeat Last Result**) to hear it again.
+**Help > Activity** (`Shift+F9`) keeps it too: its details list every file with
+its full path and, for each one that did not convert, the exact reason, and
+**Open Folder** takes you to the converted files.
 
 That line follows your verbosity settings under **Settings > Accessibility and Announcements**.
 The Status Page row updates either way, so sighted and low-vision users see the
-same result. A short report then lists every file that gave a warning or failed,
-with the exact error.
+same result.
 
 #### Batch settings
 

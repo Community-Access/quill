@@ -6,6 +6,19 @@ Quill Inkwell 1.0.0 is its first public release, and it has not been published
 yet. The testing build is **1.0.0 (build 2)**. First, the work since the first
 build, grouped by subject; then the first build itself.
 
+### The actual result, said once (2026-11-23)
+
+- **Import and Export in Manage Abbreviations say where, and no box.** Export
+  says "Exported 42 abbreviations to abbreviations.json in Documents."
+  instead of a box with only a count. Import says how many it added from
+  which file, how many were already in your list, and how many entries it
+  could not use because they had no abbreviation or no text; it used to call
+  all of those "duplicate IDs". A file that cannot be read or written still
+  gets a box.
+- **Help > Activity... (Shift+F9) and Help > Repeat Last Result (F9).** A
+  result you missed can be heard again, and Activity keeps it with an Open
+  Folder button.
+
 ### Settings that stick, and a damaged settings file (2026-11-20)
 
 A preference you changed from the Options menu could be saved after a newer

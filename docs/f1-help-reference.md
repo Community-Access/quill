@@ -1778,7 +1778,7 @@ Control coverage: 5 audited sites (5 helped).
 
 **Find a Setting or Command.** Every menu command in this app, searchable by name. Type part of a name; Down moves into the matches; Enter does the highlighted one, exactly as choosing it from its menu would. An option says whether it is on, and doing it switches it and says the new state.
 
-**Manage Abbreviations.** Your whole abbreviation library in one place: create, edit, delete, and switch entries on or off, with search and a category filter to find the one you mean. Import and Export move the library as a file. Every change saves immediately and reaches QUILL's editor too, because both apps read the same library.
+**Manage Abbreviations.** Your whole abbreviation library in one place: create, edit, delete, and switch entries on or off, with search and a category filter to find the one you mean. Import and Export move the library as a file and say which file and folder; F9 says it again. Every change saves immediately and reaches QUILL's editor too, because both apps read the same library.
 
 **New Abbreviation.** Create one abbreviation: the trigger word you will type, and the expansion that replaces it. The expansion may carry placeholders -- ${cursor} for where the caret lands, ${date}, ${time}, and ${clipboard} -- and Expand after chooses which keys fire it, including never, for Quick Insert only. OK saves it into the shared library at once.
 

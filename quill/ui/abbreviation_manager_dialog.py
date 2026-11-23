@@ -6,8 +6,6 @@ ShowModal or Destroy directly on the inner wx.Dialog.
 
 from __future__ import annotations
 
-import json
-
 import wx
 
 from quill.core.abbreviations import (
@@ -16,7 +14,7 @@ from quill.core.abbreviations import (
     save_abbreviation_library,
 )
 from quill.core.list_search import SearchTerms
-from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.virtual_report_list import VirtualReportList
 
@@ -191,7 +189,9 @@ class _AbbreviationEditDialog:
 class AbbreviationManagerDialog:
     """Browse, create, edit, and delete abbreviations."""
 
-    def __init__(self, parent: object, library: AbbreviationLibrary) -> None:
+    def __init__(self, parent: object, library: AbbreviationLibrary, host: object = None) -> None:
+        #: Speaks and keeps Import/Export results (FUX-04); None shows them in a box.
+        self._host = host
         self._library = library
         self._search_query = ""
         self.dialog = wx.Dialog(
@@ -401,106 +401,12 @@ class AbbreviationManagerDialog:
         self._rebuild_list()
 
     def _on_import(self, _event: object) -> None:
-        dlg = wx.FileDialog(
-            self.dialog,
-            "Import Abbreviations",
-            wildcard="JSON files (*.json)|*.json|All files (*.*)|*.*",
-            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-        )
-        if dlg.ShowModal() != wx.ID_OK:
-            dlg.Destroy()
-            return
-        path = dlg.GetPath()
-        dlg.Destroy()
-        try:
-            raw = json.loads(open(path, encoding="utf-8").read())
-            incoming = raw.get("abbreviations", [])
-        except Exception as exc:
-            show_message_box(
-                f"Could not read file: {exc}",
-                "Import Failed",
-                wx.OK | wx.ICON_ERROR,
-                self.dialog,
-            )
-            return
-        existing_ids = {a.id for a in self._library.abbreviations}
-        added = 0
-        skipped = 0
-        for item in incoming:
-            if not isinstance(item, dict):
-                continue
-            if item.get("id") in existing_ids:
-                skipped += 1
-                continue
-            try:
-                import uuid
+        from quill.ui.abbreviation_transfer import import_abbreviations
 
-                new_a = Abbreviation(
-                    id=str(item.get("id") or uuid.uuid4()),
-                    abbreviation=str(item.get("abbreviation", "")),
-                    expansion=str(item.get("expansion", "")),
-                    case_sensitive=bool(item.get("case_sensitive", False)),
-                    enabled=bool(item.get("enabled", True)),
-                    description=str(item.get("description", "")),
-                )
-                if new_a.abbreviation and new_a.expansion:
-                    self._library.abbreviations.append(new_a)
-                    existing_ids.add(new_a.id)
-                    added += 1
-            except Exception:  # noqa: BLE001
-                skipped += 1
-        if added:
-            self._library.abbreviations.sort(key=lambda a: a.abbreviation.lower())
-            save_abbreviation_library(self._library)
-        show_message_box(
-            f"Imported {added} abbreviation(s). {skipped} skipped (duplicate IDs).",
-            "Import Complete",
-            wx.OK | wx.ICON_INFORMATION,
-            self.dialog,
-        )
+        import_abbreviations(self.dialog, self._library, self._host)
         self._rebuild_list()
 
     def _on_export(self, _event: object) -> None:
-        dlg = wx.FileDialog(
-            self.dialog,
-            "Export Abbreviations",
-            defaultFile="abbreviations.json",
-            wildcard="JSON files (*.json)|*.json|All files (*.*)|*.*",
-            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
-        )
-        if dlg.ShowModal() != wx.ID_OK:
-            dlg.Destroy()
-            return
-        path = dlg.GetPath()
-        dlg.Destroy()
-        try:
-            data = {
-                "version": self._library.version,
-                "abbreviations": [
-                    {
-                        "id": a.id,
-                        "abbreviation": a.abbreviation,
-                        "expansion": a.expansion,
-                        "case_sensitive": a.case_sensitive,
-                        "enabled": a.enabled,
-                        "description": a.description,
-                    }
-                    for a in self._library.abbreviations
-                ],
-            }
-            with open(path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
-        except Exception as exc:
-            show_message_box(
-                f"Could not write file: {exc}",
-                "Export Failed",
-                wx.OK | wx.ICON_ERROR,
-                self.dialog,
-            )
-            return
-        show_message_box(
-            f"Exported {len(self._library.abbreviations)} abbreviation(s).",
-            "Export Complete",
-            wx.OK | wx.ICON_INFORMATION,
-            self.dialog,
-        )
+        from quill.ui.abbreviation_transfer import export_abbreviations
+
+        export_abbreviations(self.dialog, self._library, self._host)

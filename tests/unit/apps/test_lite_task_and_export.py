@@ -66,7 +66,13 @@ def test_export_html_writes_a_page_and_keeps_the_document(
         "This document has 1 note written into it. Include them in the page, marked as notes?"
     ]
     assert win.control.GetValue() == text
-    assert win.announcements[-1] == "Exported plan.html"
+    # The page and its folder (FUX-04), and kept for Repeat Last Result.
+    said = f"Exported to plan.html in {tmp_path.name}."
+    assert win.announcements[-1] == said
+    from quill.core import activity
+
+    kept = activity.LOG.latest_important()
+    assert kept is not None and kept.summary == said and kept.has(activity.OPEN_FOLDER.id)
 
 
 def test_export_html_can_include_notes(lite_window, fake_wx_dialog, tmp_path) -> None:

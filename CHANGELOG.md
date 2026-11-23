@@ -19,6 +19,47 @@
 - **Removing an old copy works.** Staging retries the removal with `rd /s /q`
   when PowerShell leaves folders behind.
 
+### QUILL and Quill Inkwell: the actual result, said once (2026-11-23)
+
+Part of the family's "say what is now true, and where" work (FUX-04), which
+Quill Cast and QUILL Lite had first. The audit, app by app, is in
+`docs/design/fux-04-adoption.md`.
+
+- **QUILL: Save All says what it saved.** It used to say "Saved all
+  documents" even when nothing had changed, and "Save all cancelled" when it
+  stopped part way. Now it names the documents it saved ("Saved 2 documents:
+  notes.md and plan.md."), adds the folder when two have the same name, and
+  when it stops at a new document whose Save As you cancelled, or a save that
+  failed, it says which one and how many are still not saved. With nothing
+  changed it says "Nothing needed saving." It also takes you back to the
+  document you were in, instead of leaving you on the last one it saved.
+- **QUILL: Batch Conversion no longer opens a window when it finishes.** The
+  Application Status window opened over whatever you were writing every time
+  a batch ended. Now QUILL says one line: how many files converted, which
+  folder they are in, which files failed and how many were skipped ("Converted
+  12 of 14 files. They are in Output in Reports. 1 failed: budget.md. 1
+  skipped, because the converted file was already there."). Help > Repeat Last
+  Result (F9) says it again, and Help > Activity (Shift+F9) keeps every file
+  with its full path, why each one that did not convert failed, and an Open
+  Folder button.
+- **QUILL: exports and conversions say the folder.** File > Export, Export as
+  DAISY, Export as HTML and Convert File now say "Exported to minutes.docx in
+  Documents." rather than the file name alone, and keep the result in Activity
+  with Open Folder. Save As and Save as Plain Text name the folder too.
+- **QUILL Lite: Export as HTML** says the folder and keeps the result the same
+  way, because the command is shared.
+- **Manage Abbreviations (Inkwell, QUILL and QUILL Lite): Import and Export
+  say where, and no box.** Export said "Exported 42 abbreviation(s)." in a box
+  with no file or folder. Now it says "Exported 42 abbreviations to
+  abbreviations.json in Documents." and keeps it in Activity with Open Folder.
+  Import said every entry it left out was a "duplicate ID"; now it says how
+  many were already in your list and, separately, how many it could not use
+  because they had no abbreviation or no text. A file that cannot be read or
+  written still gets a box.
+- **Quill Inkwell: Help > Activity... and Help > Repeat Last Result.** Inkwell
+  kept its results but had no way in to them. Both rows are on the Help menu
+  now, on Shift+F9 and F9 as in the rest of the family.
+
 ### Quill Radio: Find Streams remembers, and reads more sites (2026-11-22)
 
 Ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),

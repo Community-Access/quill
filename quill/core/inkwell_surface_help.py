@@ -70,7 +70,8 @@ PURPOSES: dict[str, str] = {
         "Your whole abbreviation library in one place: create, edit, delete, "
         "and switch entries on or off, with search and a category filter to "
         "find the one you mean. Import and Export move the library as a "
-        "file. Every change saves immediately and reaches QUILL's editor "
+        "file and say which file and folder; F9 says it again. Every change "
+        "saves immediately and reaches QUILL's editor "
         "too, because both apps read the same library."
     ),
     "New Abbreviation": (
