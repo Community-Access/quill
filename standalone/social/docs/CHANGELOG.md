@@ -2,6 +2,12 @@
 
 ## 0.3.0
 
+- **Exports say where the file went** (2026-11-23). Feeds > Export OPML...
+  ends with how many feeds went to which file in which folder ("Exported 12
+  feeds to quill-social-feeds.opml in Downloads."). Item > Send to QUILL says
+  "Saved the thread for QUILL in exports." instead of reading the whole path
+  aloud, and says so when the file could not be written, where it used to say
+  nothing.
 - **Scribe for Documents** (2026-11-21). Item > Convert Linked Document with
   Scribe for Documents... (Alt+Shift+F6) converts a document a post links;
   Tools holds Scribe Conversions and the other Scribe rows, on Alt+Shift+F7 to

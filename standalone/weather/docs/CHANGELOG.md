@@ -11,6 +11,12 @@ adds the work marked "build 2" below, together with everything recorded since
 (the Command Palette and Product Requirements doors, What's New, QUILL
 Transcribe on the QuillVille menu, and the user guide corrections).
 
+### Settings that could not be saved say so (2026-11-23)
+
+- If Weather Settings cannot write its file, Save now says "Weather settings
+  were not saved: the data folder could not be written. Your choices are
+  still in this window." and leaves the window open. It used to say nothing.
+
 ### Weather Center's Settings keep your tray choices (2026-11-20)
 
 - Saving Weather Center's Settings no longer puts back a Close to Tray or

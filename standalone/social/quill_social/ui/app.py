@@ -1534,12 +1534,21 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         ) as fd:
             if fd.ShowModal() != wx.ID_OK:
                 return
-            try:
-                Path(fd.GetPath()).write_text(xml, encoding="utf-8")
-            except OSError as exc:
-                self.announcer.error(f"Could not write OPML: {exc}")
-                return
-        self.announcer.say(f"Exported {len(entries)} feed(s) to OPML.", "normal")
+            target = fd.GetPath()
+        self._write_opml(target, xml, len(entries))
+
+    def _write_opml(self, target: str, xml: str, count: int) -> bool:
+        """Write the OPML; say how many feeds went to which file in which folder (FUX-04)."""
+        from quill.core.action_feedback import written_result
+
+        try:
+            Path(target).write_text(xml, encoding="utf-8")
+        except OSError as exc:
+            self.announcer.error(f"Could not write OPML: {exc}")
+            return False
+        noun = "feed" if count == 1 else "feeds"
+        self.announcer.say(written_result(f"Exported {count} {noun}", target), "normal")
+        return True
 
     def cmd_configure_feed(self) -> None:
         """Open per-feed settings (cadence, retention, toggles, keyword rules)."""
@@ -1793,8 +1802,15 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         export_dir = self.data_dir / "exports"
         export_dir.mkdir(exist_ok=True)
         path = export_dir / f"{item.item_id}.md"
-        path.write_text(intent.markdown, encoding="utf-8")
-        self.announcer.say(f"{intent.describe()} Saved to {path}.", "normal")
+        try:
+            path.write_text(intent.markdown, encoding="utf-8")
+        except OSError as exc:
+            self.announcer.error(f"Could not save the thread for QUILL: {exc.strerror or exc}.")
+            return
+        # Said once the file is written, by folder rather than a whole path read
+        # aloud (FUX-04); the file's own name is an id, so the window that
+        # follows carries it and the full path for anyone who needs them.
+        self.announcer.say(f"Saved the thread for QUILL in {path.parent.name}.", "normal")
         self._show_text(
             "Send to QUILL", f"{intent.describe()}\n\nSaved to:\n{path}\n\n" + intent.markdown
         )
