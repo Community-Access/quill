@@ -2,6 +2,36 @@
 
 ## 1.0.0
 
+### Quill Inkwell and QUILL Transcribe: text goes only where you started (2026-11-23)
+
+Text typed into another program now goes into the field it was meant for, or
+nowhere. If that field cannot be confirmed, the text is kept, not typed
+somewhere else, and it is never read aloud.
+
+- **Inkwell's expansions work again.** Every system-wide expansion failed
+  inside Inkwell and typed nothing, because the expansion asked for the
+  window it was typed in and that was never recorded. Each expansion now
+  carries its window, and is typed there or not at all.
+- **Quick Insert and fields check the field.** Quick Insert's picker and an
+  expansion's fill-in form take the focus, so Inkwell now remembers the field
+  you were in (its program, window and the field itself) before they open,
+  and checks it again just before typing. Before, Quick Insert typed into
+  whatever was in front once its window closed. If the focus came back
+  somewhere else, or the program was closed and opened again, nothing is
+  typed: a small window, Text Not Typed, says why in one sentence and offers
+  Insert (go back to that field and type it there) or Copy. A field Windows
+  reports as a password field offers Copy only.
+- **Taking an expansion back** with Backspace now types only in the window it
+  expanded in, and says "Not undone" with the reason otherwise.
+- **Plain words for a refusal.** An expansion that cannot be typed now says
+  "Not expanded, because the focus is not where you started." (or the
+  other reason) instead of an internal message.
+- **Dictation tells two boxes apart.** QUILL Transcribe and Inkwell's
+  Dictate Anywhere know the field you started in by its program, window and
+  control. When Windows could not name the control, they compared its kind
+  of window, which two edit boxes in one dialog share, so moving from one
+  to the other kept typing. They now compare the box's own window, and a
+  moment when Windows cannot say which window is in front holds the words.
 ### Shared runtime: the Practice Site's WordPress Playground ships again (2026-11-23)
 
 - **The cause.** The WordPress Playground tool behind the Practice Site

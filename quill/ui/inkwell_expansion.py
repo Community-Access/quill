@@ -11,7 +11,9 @@ The host must supply ``self.frame``, ``self._safe_mode``, ``self._data_dir``,
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import replace
+from typing import Any
 
 import wx
 
@@ -29,8 +31,23 @@ from quill.core.snippets import SnippetLibrary, load_snippet_library, snippet_li
 USAGE_SAVE_EVERY = 10
 
 
+def _caret_from_end(match: GlobalMatch) -> int:
+    """How far back from the end of the expansion the caret should finish."""
+    return len(match.text) - match.cursor_offset if match.has_cursor else 0
+
+
+def _tail(match: GlobalMatch) -> str:
+    """What follows the expansion: the trigger character and any space."""
+    return match.trigger_char + (" " if match.trailing_space else "")
+
+
 class InkwellExpansionMixin:
     """Installs the keyboard hook and performs expansions."""
+
+    # From InkwellDestinationMixin (inkwell_destination.py), on the same frame.
+    _text_runtime: Callable[[], Any]
+    _destination_now: Callable[[], Any]
+    _insert_held: Callable[..., None]
 
     # -- expansion service -------------------------------------------------------
 
@@ -181,16 +198,25 @@ class InkwellExpansionMixin:
 
         Runs on the hook's worker thread, like the expansion it reverses.
         """
-        from quill.platform.windows import text_injector
+        from quill.core.expansion.destination import refusal_sentence
+        from quill.core.external_text import OperationStatus
 
         backspaces = int(getattr(plan, "backspaces", 0))
         text = str(getattr(plan, "text", ""))
         if backspaces <= 0 or not text:
             return
         # The Backspace the user pressed has already removed one character, so
-        # only the rest of the expansion needs erasing.
-        text_injector.inject_expansion(text, backspace_count=max(0, backspaces - 1))
-        wx.CallAfter(self._announce, f"Undone. {text} is back.")
+        # only the rest of the expansion needs erasing -- and only in the window
+        # it expanded in, checked again now (FUX-07), never wherever is in front.
+        result = self._text_runtime().replace_typed_text(
+            text,
+            backspace_count=max(0, backspaces - 1),
+            expected_window=int(getattr(plan, "window_handle", 0) or 0),
+        )
+        if result.status is OperationStatus.APPLIED:
+            wx.CallAfter(self._announce, f"Undone. {text} is back.")
+        else:
+            wx.CallAfter(self._announce, refusal_sentence(result, action="undone"))
 
     def _on_unreachable_window(self) -> None:
         """Explain, once per window, why nothing expands in an elevated app."""
@@ -230,10 +256,20 @@ class InkwellExpansionMixin:
     def _expand_with_fields(self, match: GlobalMatch) -> None:
         """Ask for the fields, restore focus, then expand. UI thread."""
         from quill.core.abbreviations import resolve_expansion
+        from quill.core.expansion.destination import MOVED_REASON, UNREADABLE_REASON, HeldText
         from quill.core.snippets import render_snippet
         from quill.ui.fill_in_dialog import prompt_for_fields
 
-        target = self._foreground_before_dialog()
+        # The field the abbreviation was typed in, before the form takes the
+        # focus (FUX-07). Already somewhere else: nothing was erased, so the
+        # abbreviation simply stays as typed.
+        start = self._destination_now()
+        if start is None:
+            self._announce(f"Not expanded, because {UNREADABLE_REASON}.")
+            return
+        if match.target_window and start.window_handle != match.target_window:
+            self._announce(f"Not expanded, because {MOVED_REASON}.")
+            return
         title = (
             match.abbreviation.abbreviation
             if match.abbreviation is not None
@@ -255,31 +291,38 @@ class InkwellExpansionMixin:
             cursor_offset = rendered.cursor
             has_cursor = "${cursor}" in filled
         resolved = replace(match, text=text, cursor_offset=cursor_offset, has_cursor=has_cursor)
-        if target:
-            from quill.platform.windows.foreground import force_foreground_window
-
-            force_foreground_window(target)
-        # A moment for focus to actually land before typing into it.
-        wx.CallLater(150, lambda: self._inject(resolved))
+        # Give the focus back, then type only if it is that same field; if not,
+        # the filled-in text is kept and offered (inkwell_destination.py).
+        held = HeldText(
+            resolved.text,
+            start,
+            caret_from_end=_caret_from_end(resolved),
+            backspace_count=resolved.backspace_count,
+            trailing_text=_tail(resolved),
+        )
+        self._insert_held(held, lambda: self._expanded(resolved))
 
     def _inject(self, match: GlobalMatch) -> None:
         """Erase the abbreviation and type the expansion in the focused window."""
+        from quill.core.expansion.destination import refusal_sentence
         from quill.core.external_text import OperationStatus
-        from quill.platform.windows.text_runtime import InkwellTextRuntime
 
-        caret_from_end = len(match.text) - match.cursor_offset if match.has_cursor else 0
-        tail = match.trigger_char + (" " if match.trailing_space else "")
-        result = InkwellTextRuntime().replace_typed_text(
+        result = self._text_runtime().replace_typed_text(
             match.text,
             backspace_count=match.backspace_count,
             expected_window=match.target_window,
-            trailing_text=tail,
+            trailing_text=_tail(match),
             use_clipboard=self._injection_mode_now() == "paste",
-            caret_from_end=caret_from_end,
+            caret_from_end=_caret_from_end(match),
         )
         if result.status is not OperationStatus.APPLIED:
-            wx.CallAfter(self._announce, result.message)
+            # Nothing was erased: the abbreviation stays as typed.
+            wx.CallAfter(self._announce, refusal_sentence(result, action="expanded"))
             return
+        self._expanded(match)
+
+    def _expanded(self, match: GlobalMatch) -> None:
+        """After an expansion landed: arm the undo, then count, speak and sound."""
         # Arm the undo: a Backspace now puts the abbreviation back.
         hook = self._hook
         if hook is not None:

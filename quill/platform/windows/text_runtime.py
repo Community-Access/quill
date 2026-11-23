@@ -13,7 +13,9 @@ from collections.abc import Callable
 from dataclasses import replace
 
 from quill.core.external_text import (
+    ExternalTextReason,
     OperationResult,
+    OperationStatus,
     SelectionSnapshot,
     TargetSnapshot,
     TargetState,
@@ -66,11 +68,20 @@ class InkwellTextRuntime:
         text: str,
         *,
         expected_window: int = 0,
+        expected_target: TargetSnapshot | None = None,
         use_clipboard: bool = False,
         caret_from_end: int = 0,
     ) -> OperationResult:
-        """Insert into the currently focused, optionally expected window."""
-        transaction = self._transaction(expected_window)
+        """Insert into the currently focused, optionally expected window.
+
+        *expected_target* is the control the text was meant for, captured when
+        the input began (FUX-07): anything else in front -- another control,
+        another window, the same program restarted -- types nothing.
+        """
+        moved = self._moved_from(expected_target)
+        if moved is not None:
+            return moved
+        transaction = self._transaction(expected_window, expected_target)
         return transaction.insert_text(
             text,
             use_clipboard=use_clipboard,
@@ -112,12 +123,17 @@ class InkwellTextRuntime:
         *,
         backspace_count: int,
         expected_window: int = 0,
+        expected_target: TargetSnapshot | None = None,
         trailing_text: str = "",
         use_clipboard: bool = False,
         caret_from_end: int = 0,
     ) -> OperationResult:
-        """Replace a typed prefix after binding the expected target window."""
-        transaction = self._transaction(expected_window)
+        """Replace a typed prefix after binding the expected target window
+        (and, when given, the expected control: see :meth:`insert_text`)."""
+        moved = self._moved_from(expected_target)
+        if moved is not None:
+            return moved
+        transaction = self._transaction(expected_window, expected_target)
         return transaction.replace_typed_text(
             text,
             backspace_count=backspace_count,
@@ -126,10 +142,39 @@ class InkwellTextRuntime:
             caret_from_end=caret_from_end,
         )
 
-    def _transaction(self, expected_window: int) -> TextTransaction:
+    def _moved_from(self, expected: TargetSnapshot | None) -> OperationResult | None:
+        """A refusal when the control in front is not *expected*, else None.
+
+        Asked once before the transaction so the reason is "the focus moved";
+        the transaction's own probe enforces the same identity again at the
+        moment of typing (:meth:`_transaction`).
+        """
+        if expected is None:
+            return None
+        try:
+            current = self._target_probe()
+        except Exception:  # noqa: BLE001 - "cannot tell" is never "same place"
+            return OperationResult(
+                OperationStatus.FAILED,
+                ExternalTextReason.ADAPTER_UNAVAILABLE,
+                "The focused target could not be inspected.",
+            )
+        if expected.same_identity(current):
+            return None
+        return OperationResult(
+            OperationStatus.STALE,
+            ExternalTextReason.STALE_TARGET,
+            "The focused target is not the one the text was meant for.",
+            target_id=expected.target_id,
+        )
+
+    def _transaction(
+        self, expected_window: int, expected_target: TargetSnapshot | None = None
+    ) -> TextTransaction:
         def probe_expected_window() -> TargetSnapshot:
             target = self._target_probe()
-            if expected_window and target.window_handle != expected_window:
+            moved = expected_target is not None and not expected_target.same_identity(target)
+            if moved or (expected_window and target.window_handle != expected_window):
                 return replace(
                     target,
                     target_id="",

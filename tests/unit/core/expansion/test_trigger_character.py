@@ -76,7 +76,7 @@ def test_the_injector_types_the_trigger_back_after_the_expansion() -> None:
 
 def test_automatic_expansion_uses_the_target_bound_runtime() -> None:
     source = (_ROOT / "quill" / "ui" / "inkwell_expansion.py").read_text(encoding="utf-8")
-    assert "InkwellTextRuntime().replace_typed_text(" in source
+    assert "self._text_runtime().replace_typed_text(" in source
     assert "expected_window=match.target_window" in source
 
 

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FUX-07 adoption: dictated and expanded text goes only to the
+intended place</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="fux-07-adoption-dictated-and-expanded-text-goes-only-to-the-intended-place">FUX-07
+adoption: dictated and expanded text goes only to the intended
+place</h1>
+<p>Date: 2026-11-23. Scope: every path in the QUILL family that types
+into another program’s window. Earshot and macOS are out of scope.</p>
+<p>The rule, from <a href="2026-11-19-family-ux-pilots.md">the family UX
+pilots, section 4</a>: text is inserted only into the target that was
+current when the input began. If the target’s identity changes, or
+cannot be confirmed, the text is kept and offered as Insert or Copy. It
+is never typed somewhere else, and never read aloud unasked. A secure or
+password field is refused only where the platform can tell, and nothing
+claims to detect one where it cannot.</p>
+<h2 id="how-a-target-is-identified">How a target is identified</h2>
+<p>Two identities exist, and both are now built from the same three
+facts: the foreground window handle, its process id, and the focused
+control.</p>
+<ul>
+<li><strong>Dictation</strong> (<code>focus_identity</code> in
+<code>quill/ui/windows_dictation_external.py</code>):
+<code>(window, process, control)</code>, where the control is UI
+Automation’s runtime id, else UI Automation’s native window handle, else
+the focused window handle Windows reports for the foreground thread
+(<code>focused_window_handle</code> in
+<code>quill/platform/windows/text_target.py</code>). No window in front
+gives <code>None</code>, which never equals a locked field.</li>
+<li><strong>Inkwell’s text runtime</strong>
+(<code>TargetSnapshot.same_identity</code> in
+<code>quill/core/external_text.py</code>, built by
+<code>probe_focused_target</code> in
+<code>quill/platform/windows/external_target.py</code>): target id,
+window, process and control id. The control id now falls back to the
+focused window handle before the class name.</li>
+</ul>
+<p>Before this change both fell back to the focused window’s <em>class
+name</em> when UI Automation had nothing, and two edit boxes in one
+dialog share a class.</p>
+<p>A restarted program gets a new process id (and normally a new window
+handle), so it is never the same target. A password field is refused
+when UI Automation’s <code>IsPassword</code> says so, and by the
+deny-list of password managers and sign-in windows
+(<code>quill/core/expansion/targets.py</code>). Neither is described to
+the user as a general password detector.</p>
+<h2 id="the-insertion-paths">The insertion paths</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>App</th>
+<th>Path (file)</th>
+<th>How it picks the target</th>
+<th>Re-checked before typing? (before)</th>
+<th>Gap</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Transcribe, Inkwell</td>
+<td>Live dictation: <code>locked_external_document</code> wrapping
+<code>ExternalDocument</code> in <code>LockedTarget</code>
+(<code>quill/ui/windows_dictation_external.py</code>,
+<code>quill/core/windows_dictation/target_lock.py</code>)</td>
+<td>Field in front when the session starts</td>
+<td>Yes: before every phrase and again inside <code>insert</code>; a
+mismatch pauses and holds (<code>target_hold.py</code>)</td>
+<td>Identity fell back to the control’s class name, so two edit boxes
+without UI Automation were “the same field”; Windows unable to name the
+window gave an identity that could match</td>
+<td>Control falls back to the focused window handle; no foreground
+window gives <code>None</code> (never a match). Tests:
+<code>tests/unit/core/test_dictation_destination.py</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Transcribe, Inkwell</td>
+<td>Resume / Resume in This Field / Discard Held Words
+(<code>target_hold.py</code>,
+<code>quill/ui/dictation_field_hold.py</code>)</td>
+<td>Resume: the locked field; Resume in This Field: relocks after the
+start checks</td>
+<td>Yes</td>
+<td>None found</td>
+<td>Covered by the identity fix in row 1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Transcribe</td>
+<td>Review Dictation’s Insert
+(<code>quill/apps/transcribe_review.py</code>)</td>
+<td>Brings the locked window forward, then writes through the locked
+document</td>
+<td>Yes (the lock), and a refusal leaves the words in Recent Phrases for
+Insert Again or Copy</td>
+<td>None found</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Transcribe, Inkwell</td>
+<td>Recent Phrases’ Insert Again, Review Transcript’s Type into a Field
+(<code>quill/apps/transcribe_recent.py</code>,
+<code>quill/ui/windows_dictation_tools.py</code>)</td>
+<td>A one-shot <code>LockedTarget</code> on the program you switch to
+after choosing it</td>
+<td>Yes</td>
+<td>None found: the person chooses the target at the moment of
+insertion</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Transcribe</td>
+<td>Starting from the tray (arming,
+<code>quill/core/transcribe/arming.py</code>)</td>
+<td>The next program you return to</td>
+<td>Yes, as row 1</td>
+<td>None found</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Inkwell</td>
+<td>System-wide expansion
+(<code>quill/platform/windows/expansion_hook.py</code> then
+<code>InkwellExpansionMixin._inject</code> in
+<code>quill/ui/inkwell_expansion.py</code>)</td>
+<td>Should be the window the abbreviation was typed in</td>
+<td>Intended (<code>expected_window=match.target_window</code>), but
+<code>GlobalMatch</code> had no <code>target_window</code> field, so
+every expansion raised in the worker and typed nothing</td>
+<td><strong>Broken</strong>: no expansion reached any program; no target
+recorded at input start</td>
+<td><code>GlobalMatch.target_window</code> set by the hook when the
+abbreviation completes (and by Expand Word); the runtime re-checks it at
+typing time; a refusal says “Not expanded, because …” and the
+abbreviation stays as typed</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Inkwell</td>
+<td>Expansion with fields (<code>_expand_with_fields</code>)</td>
+<td>Foreground window before the fill-in form</td>
+<td>Window only; the focused control was not compared, and a refusal
+lost the filled-in answers</td>
+<td>Focus restored to another control in the same window, or not
+restored, typed nowhere and lost the text; nothing captured the
+control</td>
+<td>The focused control is captured before the form
+(<code>_destination_now</code>), the window must still match the hook’s,
+and typing goes through
+<code>InkwellDestinationMixin._insert_held</code> with
+<code>expected_target</code>; on mismatch the text is kept and Text Not
+Typed offers Insert or Copy</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Inkwell</td>
+<td>Quick Insert (<code>open_quick_insert</code>, moved from
+<code>quill/apps/inkwell.py</code> to
+<code>quill/ui/inkwell_destination.py</code>)</td>
+<td>Foreground window handle before the picker</td>
+<td><strong>No</strong>: forced the window forward and typed 150 ms
+later with unchecked <code>inject_expansion</code> into whatever was in
+front; no password, administrator or partial-delivery check</td>
+<td>Text could be typed into the wrong program if bringing the window
+back failed</td>
+<td>Same as row 7: captured before the picker, checked by
+<code>InkwellTextRuntime</code> with <code>expected_target</code>, kept
+and offered on mismatch</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Inkwell</td>
+<td>Undo after an expansion (Backspace,
+<code>_on_global_undo</code>)</td>
+<td>Hook checks the Backspace came in the same window</td>
+<td><strong>No</strong> at typing time: unchecked
+<code>inject_expansion</code> on the worker</td>
+<td>Small window, but typed blind</td>
+<td><code>UndoPlan.window_handle</code> carries the window; the undo
+types through the checked runtime with <code>expected_window</code>, and
+says “Not undone, because …” otherwise</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Cast, Radio (via Transcribe)</td>
+<td>Edit &gt; Dictate Here
+(<code>quill/core/windows_dictation/dictate_here.py</code>,
+<code>quill/ui/dictate_here_ui.py</code>)</td>
+<td>The <code>start</code> request carries no target; Transcribe locks
+whatever is in front when it answers (under a second when running,
+several seconds when it has to start)</td>
+<td>No</td>
+<td>If the focus moved before Transcribe answered, dictation started
+somewhere else, while Cast or Radio had said “Dictation starts
+here”</td>
+<td>Second PR: the request carries the field it was pressed in, and
+Transcribe starts only if that field is still in front</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Inkwell</td>
+<td>AI rewrite of a selection in another program
+(<code>InkwellTextRuntime.replace_selection</code>,
+<code>quill/apps/inkwell_ai.py</code>)</td>
+<td>The focused target at capture</td>
+<td>Yes: compare-before-write of target and selection
+(<code>text_transaction.py</code>)</td>
+<td>None found</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>12</td>
+<td>QUILL, QUILL Lite</td>
+<td>Dictation and expansion inside the editor</td>
+<td>The editor’s own document</td>
+<td>Not cross-window</td>
+<td>Out of FUX-07’s scope</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-offer-insert-or-copy-looks-like">What “offer Insert or
+Copy” looks like</h2>
+<ul>
+<li><strong>Dictation</strong> keeps its existing pause: Resume, Resume
+in This Field and Discard Held Words, in the tray menu and the Dictation
+menu, with held words also kept sealed on disk for Recent Phrases
+(Insert Again, Copy).</li>
+<li><strong>Inkwell’s one-shot insertions</strong> (rows 7 and 8) show
+<strong>Text Not Typed</strong>
+(<code>quill/ui/held_text_dialog.py</code>): one sentence from
+<code>quill/core/expansion/destination.py</code>, which names the reason
+and the choices and never contains the text; <strong>Insert</strong>
+(Alt+I, offered only where trying again can work: the focus moved or
+Windows could not answer), <strong>Copy</strong> (Alt+C), and Cancel
+(Escape). The window’s sentence is read with its title when it opens,
+and nothing else announces it (GATE-13). Insert goes back to the
+<em>same</em> target and checks it again; it never types into a new
+one.</li>
+<li><strong>Inkwell’s typed-as-you-go expansions and undo</strong> (rows
+6 and 9) have nothing to keep: nothing was erased, the abbreviation is
+still on screen. They say one sentence with the reason.</li>
+</ul>
+<h2 id="acceptance-items-from-the-plan">Acceptance items from the
+plan</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Where it is met</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The user can determine the current target and whether insertion is
+live or pending</td>
+<td>Dictation Status (Transcribe, Alt+F9 and its key) names the locked
+program and the held count; Inkwell’s Text Not Typed window is the
+pending state of a one-shot insertion</td>
+</tr>
+<tr>
+<td>Alt+Tab, dialogs, closed controls and restart cannot redirect a
+pending insertion silently</td>
+<td>Identity of window, process and control, re-checked at typing time
+on every path in the table; tests fake each change</td>
+</tr>
+<tr>
+<td>Ambiguous targets preserve text instead of losing it</td>
+<td>Dictation holds; Inkwell keeps the text in Text Not Typed; an
+unreadable focus is never the same target</td>
+</tr>
+<tr>
+<td>Literal/escape path and usable undo where the target allows it</td>
+<td>Unchanged: the literal path is the trigger mode and Expand Word; the
+Backspace undo now types only in its own window</td>
+</tr>
+<tr>
+<td>Password/secure controls follow explicit platform-supported
+restrictions</td>
+<td>UI Automation <code>IsPassword</code> and the deny-list only; the
+user guide says Inkwell cannot tell a password field that does not say
+so to Windows</td>
+</tr>
+<tr>
+<td>Explain target failures without reading private text aloud</td>
+<td>Every sentence is built from a reason code;
+<code>HeldText.__repr__</code> hides the words; tests assert the text is
+absent</td>
+</tr>
+<tr>
+<td>Test with actual supported receiving applications and assistive
+tools</td>
+<td>Not done here: see below</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-only-a-live-check-can-show">What only a live check can
+show</h2>
+<p>Unit tests fake the target identity; they cannot show what real
+programs report. These need a person at a Windows machine with NVDA and
+JAWS, on a source run and on the frozen build:</p>
+<ul>
+<li>Inkwell expansions type again in Notepad, Word, Outlook, Chrome,
+Edge, Firefox and an Electron app (for example Teams or VS Code), after
+this fix.</li>
+<li>Quick Insert and a fields snippet type into the same field after the
+picker or form closes, in each of those, including Outlook’s To and
+Subject boxes and a browser form with several text fields.</li>
+<li>That Windows’ focus-stealing prevention does not stop Inkwell
+bringing the window back from the tray-launched picker; when it does,
+Text Not Typed appears and Insert succeeds once the person returns.</li>
+<li>That UI Automation runtime ids stay stable while a field keeps the
+focus in Chrome, Edge, Firefox, Word and Outlook; if one changes on its
+own, dictation would pause there with no move.</li>
+<li>A browser password field and a Windows sign-in prompt are refused,
+and Text Not Typed offers Copy only.</li>
+<li>NVDA and JAWS read Text Not Typed’s sentence once, with its title,
+and do not read the text.</li>
+<li>Cast’s and Radio’s Dictate Here with QUILL Transcribe both running
+and starting from closed, moving the focus in between.</li>
+</ul>
+</main>
+</body>
+</html>

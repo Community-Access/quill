@@ -31,6 +31,8 @@ class UndoPlan:
     backspaces: int
     #: The text to type in its place -- the abbreviation as they typed it.
     text: str
+    #: The window it expanded in: the undo is typed there or not at all (FUX-07).
+    window_handle: int = 0
 
 
 @dataclass(slots=True)
@@ -47,6 +49,7 @@ class PendingExpansion:
         return UndoPlan(
             backspaces=len(self.expanded_text) + (1 if self.trailing_space else 0),
             text=self.abbreviation,
+            window_handle=self.window_handle,
         )
 
 

@@ -28,6 +28,7 @@ from quill.core.external_text import (
 from quill.platform.windows.foreground import ForegroundWindow, foreground_window_info
 from quill.platform.windows.text_target import (
     focused_class_name,
+    focused_window_handle,
     is_elevated_window,
     self_is_elevated,
 )
@@ -182,7 +183,9 @@ def capture_uia_focus() -> UIAElementSnapshot | None:
         return None
 
 
-def _control_identity(element: UIAElementSnapshot | None, control_class: str) -> str:
+def _control_identity(
+    element: UIAElementSnapshot | None, control_class: str, focused_handle: int = 0
+) -> str:
     if element is not None and element.automation_id:
         return f"automation:{element.automation_id}"
     if element is not None and element.native_window_handle:
@@ -190,6 +193,10 @@ def _control_identity(element: UIAElementSnapshot | None, control_class: str) ->
     if element is not None and element.runtime_id:
         values = ".".join(str(value) for value in element.runtime_id)
         return f"runtime:{values}"
+    if focused_handle:
+        # The focused child window: an identity, where a class name is shared
+        # by every edit box in a dialog (FUX-07).
+        return f"hwnd:{focused_handle}"
     if control_class:
         return f"class:{control_class.lower()}"
     return ""
@@ -281,6 +288,7 @@ def snapshot_from_foreground(
     *,
     element: UIAElementSnapshot | None = None,
     focused_control_class: str = "",
+    focused_control_handle: int = 0,
     target_elevated: bool = False,
     own_process_elevated: bool = False,
     captured_at: float = 0.0,
@@ -291,7 +299,7 @@ def snapshot_from_foreground(
         or focused_control_class.strip()
         or foreground.window_class.strip()
     )
-    control_id = _control_identity(element, control_class)
+    control_id = _control_identity(element, control_class, focused_control_handle)
     target_id = _target_identity(foreground, element, control_id)
     process_id = foreground.process_id or (element.process_id if element is not None else 0)
     privilege_match = not target_elevated or own_process_elevated
@@ -420,6 +428,7 @@ def probe_focused_target(
         foreground,
         element=element,
         focused_control_class=focused_class_name(),
+        focused_control_handle=focused_window_handle(),
         target_elevated=target_elevated,
         own_process_elevated=own_process_elevated,
         captured_at=captured_at,

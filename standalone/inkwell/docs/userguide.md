@@ -225,7 +225,9 @@ Kind regards to ${field:Name}.
 A small form appears with one labelled box per field, in the order the template
 asks for them. Tab moves between them, Enter moves to the next one, Enter on the
 last accepts, and Escape cancels -- and cancelling leaves whatever you typed
-exactly as it was, because nothing is erased until you accept.
+exactly as it was, because nothing is erased until you accept. If the focus does
+not come back to the field you typed the abbreviation in, your answers are kept,
+not typed elsewhere (see "Text goes only where you started" in section 9).
 
 `${cursor}` still works alongside fields: the caret lands where the template put
 it, after the answers are in.
@@ -274,6 +276,35 @@ a trailing space, or for an abbreviation you have set never to expand on its own
 **Backspace immediately afterwards** and Inkwell puts your original abbreviation
 back. The offer lasts a few seconds and only in the window where it expanded --
 after that, or after any other keystroke, Backspace does what it always does.
+
+### Text goes only where you started
+
+Quick Insert and an expansion with fields open a small Inkwell window before
+anything is typed. So Inkwell remembers the field you were in first -- the
+program, its window and the field itself -- gives the focus back when you are
+done, and checks again just before typing. If the focus came back somewhere
+else -- another field, another program, or the same program after it was closed
+and opened again -- nothing is typed. A small window called **Text Not Typed**
+says why in one sentence, without reading your text aloud, and offers:
+
+- **Insert** (Alt+I) -- go back to that field and type it there, after the same
+  check. Offered only when trying again can work.
+- **Copy** (Alt+C) -- put the text on the clipboard, to paste where you choose.
+- **Cancel** or Escape -- let it go.
+
+After Copy or Cancel, the focus goes back to the program you were in, so a
+paste is one key away. To hear or read the reason again while the window is
+open, press NVDA+B (JAWS: Insert+B), or reach it with object navigation.
+
+A field Windows reports as a password field is refused, and Text Not Typed
+offers Copy only. Inkwell also never types into the password managers and
+sign-in windows it recognises (section 11). It cannot tell a password field
+that does not say so to Windows, and does not claim to.
+
+An ordinary expansion, and taking one back with Backspace, follow the same
+rule: they are typed only in the window you typed the abbreviation in. If the
+focus has already moved on, Inkwell says "Not expanded" or "Not undone" with
+the reason, and your abbreviation stays exactly as you typed it.
 
 ## 10. Sharing one library with QUILL
 
