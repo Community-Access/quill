@@ -123,29 +123,20 @@ Get-ChildItem $internal -Directory -Filter "h2-*.dist-info" -ErrorAction Silentl
 & $Python (Join-Path $quillRepo "scripts\prune_enchant_payload.py") $dist
 if ($LASTEXITCODE -ne 0) { throw "enchant payload prune failed (see above)." }
 
-# -- the AI engines every app shares -------------------------------------------
+# -- the tools every app shares ------------------------------------------------
 # The Copilot SDK native runtime (tools\copilot) and OpenAI Codex app-server
 # (tools\codex) ship once, in every shared runtime, so no app downloads an
-# engine on first use (codex.md section 9, decisions 1 and 8). Unlike the media
-# tools they are not per app, so the runtime build stages them itself -- from
-# the pinned, SHA-256-verified cache, never from PATH. Copilot is the SDK's
-# runtime.node and its licence; Codex is one exe. Both are vendor-signed
-# binaries, copied unmodified (scripts\code_signing.py skips them).
-& $Python (Join-Path $quillRepo "scripts\fetch_build_deps.py") --only copilot --only codex
-if ($LASTEXITCODE -ne 0) { throw "Could not stage the AI engines (see scripts/fetch_build_deps.py)." }
-# IntelliSense and the WordPress Workbench's Practice Site are bundled in the
-# shared runtime. Playground's CLI, PHP.wasm and WordPress core are pinned and
-# staged together so the local site never downloads a runtime on first use.
-& $Python (Join-Path $quillRepo "scripts\fetch_build_deps.py") --only nodejs --only language-servers --only ripgrep --only wp-playground-cli
-if ($LASTEXITCODE -ne 0) { throw "Could not stage the language servers and WordPress Playground (see scripts/fetch_language_servers.py)." }
-. (Join-Path $quillRepo "scripts\StageMediaTools.ps1")
-Stage-QuillMediaTools -RuntimeDist $dist `
-    -CopilotDir (Join-Path $quillRepo "build\deps\copilot") `
-    -CodexDir (Join-Path $quillRepo "build\deps\codex") `
-    -NodeDir (Join-Path $quillRepo "build\deps\nodejs") `
-    -LanguageServersDir (Join-Path $quillRepo "build\deps\language-servers") `
-    -RipgrepDir (Join-Path $quillRepo "build\deps\ripgrep") `
-    -WpPlaygroundDir (Join-Path $quillRepo "build\deps\wp-playground-cli")
+# engine on first use (codex.md section 9, decisions 1 and 8). IntelliSense
+# (Node.js, the language servers, ripgrep) and the WordPress Workbench's
+# Practice Site (Playground's CLI, PHP.wasm and WordPress core) ride beside
+# them, so the local site never downloads a runtime on first use. Unlike the
+# media tools they are not per app, so the runtime build stages them itself --
+# from the pinned, SHA-256-verified cache, never from PATH. The vendor-signed
+# binaries are copied unmodified (scripts\code_signing.py skips them).
+# stage_runtime_tools.ps1 holds the list; run on its own, it restages an
+# existing dist without a rebuild.
+& (Join-Path $repoRoot "stage_runtime_tools.ps1") -Python $Python -QuillRepo $quillRepo `
+    -RuntimeDist $dist -SkipInventoryCheck
 
 
 # -- stamp the version marker (installer's skip-if-present check reads this) ---
