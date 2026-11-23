@@ -20,6 +20,7 @@ apps. See `docs/design/fux-04-adoption.md`.
 - **Quill Media Player.** Bookmark exports say where they went.
 - Converter and Media Player now have Activity (Shift+F9) and Repeat Last
   Result (F9) on the Help menu, as Radio and Cast do.
+
 ### Shared runtime: the Practice Site's WordPress Playground ships again (2026-11-23)
 
 - **The cause.** The WordPress Playground tool behind the Practice Site
