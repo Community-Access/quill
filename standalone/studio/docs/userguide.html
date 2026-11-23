@@ -2771,15 +2771,15 @@ doing. So the result is always one sentence, and you open it when you
 are ready.</p>
 <h3 id="when-there-are-no-chapter-markers">When there are no chapter
 markers</h3>
-<p>Studio writes markers only when it can trust them: the DAISY book has
-one audio file, and it is as long as the MP3. Otherwise the sentence
-says why, inside the same result sentence, for example “with no chapter
-markers, because the DAISY book has 4 audio files”. The MP3 still opens
-as one chapter, and the Workbench can propose chapters from its
-silences.</p>
-<p>Today Scribe’s DAISY books keep a separate audio file for each part
-of the document (Pneuma’s test corpus, November 2026), so for now a
-narration usually comes without markers, and the sentence says so.</p>
+<p>Scribe’s DAISY book keeps a separate audio file for each part of the
+document, and the MP3 is those parts one after another. Studio adds up
+the parts’ lengths to find where each heading starts in the MP3, and
+puts a chapter marker there.</p>
+<p>Studio writes markers only when it can trust them: the DAISY audio,
+added up, is as long as the MP3. Otherwise the sentence says why, inside
+the same result sentence, for example “with no chapter markers, because
+the DAISY timings do not match the MP3”. The MP3 still opens as one
+chapter, and the Workbench can propose chapters from its silences.</p>
 <p>When you open the narration from Scribe Conversions, you hear
 “Opening the Chapter Workbench.” and the Workbench opens straight away,
 with focus in it.</p>

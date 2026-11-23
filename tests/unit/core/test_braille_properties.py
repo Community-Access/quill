@@ -60,7 +60,11 @@ def test_the_page_map_covers_every_character_once_in_order(
     pages = build_page_map(doc, mode=mode).pages  # type: ignore[arg-type]
     assert pages, "even an empty file is one page"
     assert pages[0].start_offset == 0
-    assert pages[-1].end_offset == len(text)
+    # The last page runs to the end, except that blank space after a final
+    # form feed is no page of its own (a BRF that ends with its form feed).
+    last = pages[-1]
+    tail = text[last.end_offset + (1 if last.has_form_feed else 0) :]
+    assert last.end_offset == len(text) or (last.has_form_feed and not tail.strip())
     # A form feed ends its page and belongs to neither side (brf_page_map:
     # "the FF is the terminator; exclusive end"), so it is the one character
     # between two pages; every other character is on exactly one page.
@@ -69,7 +73,7 @@ def test_the_page_map_covers_every_character_once_in_order(
     rebuilt = "".join(
         text[p.start_offset : p.end_offset] + ("" if p.has_form_feed else "") for p in pages
     )
-    assert rebuilt == text
+    assert rebuilt + tail == text
     assert [p.index for p in pages] == list(range(len(pages)))
 
 

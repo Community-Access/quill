@@ -220,8 +220,100 @@ def test_no_markers_say_why_in_the_one_sentence(
     assert (
         markers.phrase == "with no chapter markers, because the DAISY timings do not match the MP3"
     )
+    # Split audio whose lengths cannot be read: no markers rather than wrong ones.
     several = mark_narration(tmp_path / "Notes.mp3", _daisy(tmp_path / "e", second="b2.mp3"))
-    assert several.phrase == "with no chapter markers, because the DAISY book has 2 audio files"
+    assert (
+        several.phrase == "with no chapter markers, because the DAISY timings do not match the MP3"
+    )
+
+
+_SPLIT_NCX = """<?xml version="1.0"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"><navMap>
+  <navPoint id="n0" playOrder="1"><navLabel><text>Notes</text></navLabel>
+    <content src="0.smil#t"/></navPoint>
+  <navPoint id="n1" playOrder="2"><navLabel><text>Intro</text></navLabel>
+    <content src="0.smil#a"/></navPoint>
+  <navPoint id="n2" playOrder="3"><navLabel><text>Methods</text></navLabel>
+    <content src="1.smil#c"/></navPoint>
+  <navPoint id="n3" playOrder="4"><navLabel><text>Results</text></navLabel>
+    <content src="1.smil#e"/></navPoint>
+</navMap></ncx>"""
+
+_SPLIT_SMILS = {
+    "0.smil": [("t", "0.mp3", "0:00:02.000"), ("a", "1.mp3", "0:00:10.000"),
+               ("b", "2.mp3", "0:00:20.000")],
+    "1.smil": [("c", "3.mp3", "0:00:05.000"), ("d", "4.mp3", "0:00:15.000"),
+               ("e", "5.mp3", "0:00:08.000")],
+}  # fmt: skip
+
+
+def _split_daisy(folder: Path, *, spine: tuple[str, ...] = ("0.smil", "1.smil")) -> Path:
+    """Scribe's shape: one MP3 per paragraph, a spoken title first (F3)."""
+    folder.mkdir(parents=True, exist_ok=True)
+    for name, clips in _SPLIT_SMILS.items():
+        pars = "".join(
+            f'<par id="{par}"><audio src="{src}" clipBegin="0:00:00.000" clipEnd="{end}"/></par>'
+            for par, src, end in clips
+        )
+        smil = f'<smil xmlns="http://www.w3.org/2001/SMIL20/"><body><seq>{pars}</seq></body></smil>'
+        (folder / name).write_text(smil, encoding="utf-8")
+    items = "".join(f'<item id="s{i}" href="{n}" media-type="application/smil"/>'
+                    for i, n in enumerate(spine))  # fmt: skip
+    refs = "".join(f'<itemref idref="s{i}"/>' for i in range(len(spine)))
+    (folder / "dtb.opf").write_text(
+        f'<package xmlns="http://openebook.org/namespaces/oeb-package/1.0/"><manifest>{items}'
+        f"</manifest><spine>{refs}</spine></package>",
+        encoding="utf-8",
+    )
+    ncx = folder / "dtb.ncx"
+    ncx.write_text(_SPLIT_NCX, encoding="utf-8")
+    return ncx
+
+
+@pytest.mark.parametrize(
+    ("total_ms", "title_ms"),
+    [(58_000, 0), (60_000, 2_000)],  # the MP3 without the spoken title, then with it
+)
+def test_split_daisy_audio_places_a_marker_at_each_section_start(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, total_ms: int, title_ms: int
+) -> None:
+    """Each heading starts after every audio file before its own (F3 follow-up)."""
+    from quill.core.scribe.narration import mark_narration
+
+    saved = _fake_book(monkeypatch, total_ms=total_ms, daisy_ms=0)
+    markers = mark_narration(tmp_path / "Notes.mp3", _split_daisy(tmp_path / "d"))
+    # Without the spoken title, the title and Intro start together: one chapter,
+    # named by Intro. With it, the title is a chapter of its own.
+    title = [("Notes", 0, title_ms)] if title_ms else []
+    assert markers.count == len(title) + 3
+    assert [(c.title, c.start_ms, c.end_ms) for c in saved[0].chapters] == [
+        *title,
+        ("Intro", title_ms, title_ms + 30_000),
+        ("Methods", title_ms + 30_000, title_ms + 50_000),
+        ("Results", title_ms + 50_000, total_ms),
+    ]
+
+
+def test_split_daisy_audio_that_does_not_add_up_writes_no_markers(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core.scribe.narration import mark_narration
+
+    saved = _fake_book(monkeypatch, total_ms=90_000, daisy_ms=0)
+    markers = mark_narration(tmp_path / "Notes.mp3", _split_daisy(tmp_path / "d"))
+    assert saved == []
+    assert (
+        markers.phrase == "with no chapter markers, because the DAISY timings do not match the MP3"
+    )
+
+
+def test_split_daisy_audio_follows_the_spine_not_the_file_names(tmp_path: Path) -> None:
+    from quill.core.scribe.narration import _timed_headings, split_offsets
+
+    ncx = _split_daisy(tmp_path / "d", spine=("1.smil", "0.smil"))
+    offsets = split_offsets(ncx, _timed_headings(ncx), 60_000)
+    assert offsets is not None
+    assert offsets["3.mp3"] == 0 and offsets["0.mp3"] == 28_000
 
 
 def test_the_result_sentence_carries_the_note_before_the_folder() -> None:

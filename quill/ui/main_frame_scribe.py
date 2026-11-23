@@ -46,7 +46,7 @@ from typing import Any
 from quill.core.scribe import PRODUCT_NAME
 from quill.core.scribe import queue as q
 from quill.ui.main_frame_scribe_stream import ScribeStreamMixin
-from quill.ui.scribe_entry import SENDABLE, ScribeEntryPoints
+from quill.ui.scribe_entry import SENDABLE, ScribeEntryPoints, player_target
 from quill.ui.scribe_entry import send_to_player as _send_to_player
 
 #: (command id, title, handler, place). Places: tools (the submenu), file,
@@ -116,7 +116,11 @@ class QuillScribeHost:
     app_name = "QUILL"
 
     def __init__(self, frame_owner: Any) -> None:
+        from quill.ui.scribe_after_sentence import AfterSentence
+
         self._mf = frame_owner
+        #: Media Player coming to the front waits for the result sentence.
+        self._after = AfterSentence(still_here=lambda: self.scribe_in_front())
 
     def scribe_parent(self) -> Any:
         """The active window (Conversions, My Scribe Documents...) so a nested
@@ -127,6 +131,7 @@ class QuillScribeHost:
 
     def scribe_announce(self, text: str) -> None:
         self._mf._announce(text)
+        self._after.said(text)
 
     def scribe_in_front(self) -> bool:
         import wx
@@ -142,14 +147,19 @@ class QuillScribeHost:
         from quill.core.scribe.results import default_action, opened_phrase
 
         action = default_action(format_id)
-        if job.open_as == "import" and format_id in {"docx", "html", "epub"}:
+        # The accessible HTML is read as a document (headings, lists, tables,
+        # links), converted as Import does, never shown as its markup.
+        if format_id == "html" or (job.open_as == "import" and format_id in {"docx", "epub"}):
             self._mf._scribe_open_as_import(job, path)
             return opened_phrase(format_id, "a new tab")
         if action in {"editor", "braille"}:
             self._mf.open_file(path)
             return opened_phrase(format_id, "QUILL")
-        if action == "player" and _send_to_player(format_id, path):
-            return opened_phrase(format_id, "Media Player")
+        if action == "player" and player_target(format_id, path) is not None:
+            # Media Player comes to the front: after the sentence, not under it.
+            phrase = opened_phrase(format_id, "Media Player")
+            self._after.hold(lambda: self._to_player(job, format_id, path), phrase)
+            return phrase
         return ""
 
     # -- the streaming tab (main_frame_scribe_stream, 8.1.3) -----------------
@@ -183,8 +193,10 @@ class QuillScribeHost:
             if not self.scribe_ai_off():  # a command that would only refuse is not offered
                 commands.append(("Summarize with Your AI...", "open_ai_summarize_selection"))
             for label, command in commands:
-                steps.append((named(label, format_id), self._then(path, command)))
+                steps.append((named(label, format_id), self._then(path, command, job)))
         steps += self._beacon_steps(job, ready, named)
+        if "pdf" in ready:
+            steps.append((f"Open in QUILL ({format_label('pdf')})", self._then(ready["pdf"], "")))
         if "brf" in ready:
             steps.append(("Open in the Braille View", self._then(ready["brf"], "")))
         for format_id in ("mp3", "daisy"):
@@ -222,15 +234,19 @@ class QuillScribeHost:
                 f"Media Player could not be opened. {job.display_name} is saved in its folder."
             )
 
-    def _then(self, path: Path, command: str) -> Any:
+    def _then(self, path: Path, command: str, job: q.Job | None = None) -> Any:
         """Open *path* in QUILL (or go to its tab), then run QUILL's *command*.
+        The accessible HTML opens as a readable document, never its markup.
         Nothing is said about the opening: the reader says the tab, and the
         command speaks for itself (review 2026-11-21)."""
 
         def run() -> None:
             import wx
 
-            self._mf.open_file(path)
+            if path.suffix.lower() in {".html", ".htm"} and job is not None:
+                self._mf._scribe_open_as_import(job, path)
+            else:
+                self._mf.open_file(path)
             if command:
                 wx.CallAfter(getattr(self._mf, command))
 

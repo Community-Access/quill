@@ -412,7 +412,8 @@ a file.</p>
 <tr>
 <td>Accessible HTML</td>
 <td>Reading with real headings</td>
-<td>Opens it in a new QUILL Lite window</td>
+<td>Opens it in a new QUILL Lite window as a readable document, with its
+headings, lists, tables and links, never as HTML markup</td>
 </tr>
 <tr>
 <td>Word</td>
@@ -422,12 +423,15 @@ a file.</p>
 <tr>
 <td>Tagged PDF</td>
 <td>A PDF screen readers can read. Can be large print</td>
-<td>Saves it, and says where</td>
+<td>Saves it. <strong>Open Result</strong> and Next Steps open it in a
+new QUILL Lite window, as text; it never opens by itself</td>
 </tr>
 <tr>
 <td>EPUB</td>
 <td>Ebook readers</td>
-<td>Saves it, and says where</td>
+<td>QUILL Lite does not read EPUB. When QUILL is installed, it opens
+there. Otherwise it is saved, and the result sentence says once: “QUILL
+Lite does not open EPUB books. QUILL does.”</td>
 </tr>
 <tr>
 <td>Kindle (MOBI)</td>
@@ -460,6 +464,21 @@ zip)</td>
 <p>Results go in <strong>Documents\Scribe for Documents</strong>, in a
 folder for each document. QUILL Lite never writes over a file: it adds
 “(2)” instead.</p>
+<p><strong>A result opens after its sentence.</strong> A new QUILL Lite
+window, or Quill Media Player, comes to the front only once QUILL Lite
+has said what it made, between 1.5 and 6 seconds later depending on how
+long the sentence is. That way your screen reader’s announcement of the
+new window does not cut the sentence off. If you move to another program
+while it waits, the result does not open; use <strong>Open
+Result</strong> in Scribe Conversions when you are ready.</p>
+<p><strong>The Web page for offline reading never opens as
+text.</strong> Every picture is inside it, so in an editor each one
+would be a single very long line. Next Steps opens it in your browser;
+so does <strong>Open Result</strong>, and <strong>Open</strong> in My
+Scribe Documents, when it is the only thing there is to open. “Opening
+the Web page for offline reading in your browser.” <strong>Open</strong>
+in My Scribe Documents opens what Open Result would, Word before the
+Kindle book, not just the file downloaded last.</p>
 <h2 id="the-scribe-commands">The Scribe commands</h2>
 <ul>
 <li><strong>Convert a File…</strong> opens a file picker that shows only

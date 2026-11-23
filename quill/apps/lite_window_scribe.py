@@ -16,27 +16,61 @@ away, keys and Command Palette rows included. It is offered on first need:
 when an imported PDF has little or no text, the question includes "Turn on
 Scribe for Documents and convert", straight after the person's own command.
 
-**Where results open** (section 9, as QUILL Lite can): Word, HTML and a BRF
-in a new QUILL Lite window; MP3 and DAISY in Quill Media Player; the rest
-are saved and the result sentence says where. Lite has no braille view, no
-read aloud and no chained AI (8.2: "Not in Lite"), so its Next Steps are
-Send to Media Player and Open in QUILL Lite.
+**Where results open** (section 9, as QUILL Lite can):
+
+* Word, a BRF and the tagged PDF in a new QUILL Lite window, as Lite opens
+  any such file.
+* The accessible HTML **as a readable document** in a new window -- headings,
+  lists, tables and links, converted as Import / Convert converts any HTML --
+  never as its markup, and named "<stem> (Scribe)", unsaved.
+* EPUB in QUILL when QUILL is installed (Lite does not read EPUB). Without
+  QUILL it is only saved, and the result sentence says so once.
+* MP3 and DAISY in Quill Media Player. The rest are saved, and the result
+  sentence says where.
+
+**After the sentence, never under it** (:mod:`quill.ui.scribe_after_sentence`):
+every one of those is a window coming to the front, so it opens once the
+sentence that names it has been said.
+
+Lite has no braille view, no read aloud and no chained AI (8.2: "Not in
+Lite"), so its Next Steps are Send to Media Player and Open in QUILL Lite.
 """
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 from quill.core.scribe import PRODUCT_NAME
+from quill.ui.scribe_after_sentence import AfterSentence
+from quill.ui.scribe_after_sentence import wait_for_sentence as wait_for_sentence
 from quill.ui.scribe_entry import ScribeEntryPoints
 from quill.ui.scribe_entry import send_to_player as _send_to_player
+
+
+def _player_target(format_id: str, path: Path) -> Path | None:
+    """What Media Player would open for this result, or ``None``."""
+    from quill.ui.scribe_entry import player_target
+
+    return player_target(format_id, path)
+
 
 __all__ = ["DocumentScribeMixin", "LiteScribeHost"]
 
 AREA = "scribe"
 #: What a Lite window opens itself, of Scribe's formats.
-_OPENS_HERE = ("docx", "html", "brf")
+_OPENS_HERE = ("docx", "html", "pdf", "brf")
+#: What QUILL Lite cannot read, and QUILL can (handed to QUILL when it is there).
+_QUILL_ONLY = ("epub",)
+#: Said once in the result sentence when an EPUB was made and QUILL is not here.
+NO_EPUB_READER = "QUILL Lite does not open EPUB books. QUILL does."
+
+
+def _quill_installed() -> bool:
+    from quill.core.app_launcher import build_launch_argv
+
+    return build_launch_argv("quill") is not None
 
 
 class LiteScribeHost:
@@ -46,6 +80,8 @@ class LiteScribeHost:
 
     def __init__(self, app: Any) -> None:
         self._app = app
+        #: The result window, held until its sentence has been said.
+        self._after = AfterSentence(still_here=lambda: self.scribe_in_front())
 
     def _window(self) -> Any:
         frame = getattr(self._app, "active_frame", None)
@@ -63,10 +99,14 @@ class LiteScribeHost:
         window = self._window()
         if window is not None:
             window._announce(text)
-            return
-        voice = getattr(self._app, "voice", None)
-        if voice is not None:
-            voice.speak(text)
+        else:
+            voice = getattr(self._app, "voice", None)
+            if voice is not None:
+                voice.speak(text)
+        self._after.said(text)
+
+    def _hold(self, opening: Callable[[], None], phrase: str) -> None:
+        self._after.hold(opening, phrase)
 
     def scribe_in_front(self) -> bool:
         import wx
@@ -81,12 +121,76 @@ class LiteScribeHost:
     def scribe_open_result(self, job: Any, format_id: str, path: Path) -> str:
         from quill.core.scribe.results import opened_phrase
 
+        if format_id == "html":
+            text = self._readable(path)  # converted now, so a failure is never "open"
+            if text is None:
+                return ""
+            phrase = opened_phrase(format_id, "QUILL Lite")
+            self._hold(lambda: self._show_readable(job, path, text), phrase)
+            return phrase
         if format_id in _OPENS_HERE:
-            self._app.open_path(path)
-            return opened_phrase(format_id, "QUILL Lite")
-        if format_id in ("mp3", "daisy") and _send_to_player(format_id, path):
-            return opened_phrase(format_id, "Media Player")
+            phrase = opened_phrase(format_id, "QUILL Lite")
+            self._hold(lambda: self._app.open_path(path), phrase)
+            return phrase
+        if format_id in _QUILL_ONLY and _quill_installed():
+            phrase = opened_phrase(format_id, "QUILL")
+            self._hold(lambda: self._to_quill(path), phrase)
+            return phrase
+        if format_id in ("mp3", "daisy") and _player_target(format_id, path) is not None:
+            phrase = opened_phrase(format_id, "Media Player")
+            self._hold(lambda: self._to_player(job, format_id, path), phrase)
+            return phrase
         return ""
+
+    def scribe_result_note(self, job: Any) -> str:
+        """Said once, at the end of the result sentence: an EPUB nothing here reads."""
+        made = getattr(job, "outputs", {}) or {}
+        return NO_EPUB_READER if "epub" in made and not _quill_installed() else ""
+
+    def _open_here(self, job: Any, format_id: str, path: Path) -> None:
+        """A Lite window: the accessible HTML readable, the rest as Lite opens them."""
+        if format_id == "html":
+            self._open_readable(job, path)
+        else:
+            self._app.open_path(path)
+
+    def _open_readable(self, job: Any, path: Path) -> None:
+        """A Next Step: the accessible HTML, readable, at once (a step speaks for itself)."""
+        text = self._readable(path)
+        if text is None:
+            self.scribe_announce(
+                f"QUILL Lite could not read {path.name}. It is saved in its folder."
+            )
+            return
+        self._show_readable(job, path, text)
+
+    @staticmethod
+    def _readable(path: Path) -> str | None:
+        """The accessible HTML converted as Import / Convert converts any HTML
+        (headings, lists, tables, links), never its markup; ``None`` if it cannot be."""
+        from quill.io.docconvert import convert_document
+
+        try:
+            return str(convert_document(path).text)
+        except Exception:  # noqa: BLE001 - the caller says it, never raised into the queue
+            return None
+
+    def _show_readable(self, job: Any, path: Path, text: str) -> None:
+        """A new unsaved window named "<stem> (Scribe)", as Import names one."""
+        from quill.core.import_convert import scribe_name
+        from quill.core.lite.open_prepare import PLAIN, PreparedDocument
+
+        window = self._app.new_window(PLAIN)
+        if window is None:
+            return
+        stem = Path(getattr(job, "file_name", "") or path.name).stem or path.stem
+        window._commit_download(PreparedDocument(mode=PLAIN, text=text), scribe_name(stem))
+
+    def _to_quill(self, path: Path) -> None:
+        from quill.core.app_launcher import launch_app
+
+        if not launch_app("quill", extra_args=(str(path),)):
+            self.scribe_announce(f"QUILL could not be opened. {path.name} is saved in its folder.")
 
     def scribe_next_steps(self, job: Any, ready: dict[str, Path]) -> list[tuple[str, Any]]:
         """Send to Media Player first, then Open in QUILL Lite (8.1.7, 8.2)."""
@@ -103,8 +207,13 @@ class LiteScribeHost:
             if format_id in ready:
                 steps.append((
                     f"Open in QUILL Lite ({format_label(format_id)})",
-                    lambda f=format_id: self._app.open_path(ready[f]),
+                    lambda f=format_id: self._open_here(job, f, ready[f]),
                 ))
+        if "epub" in ready and _quill_installed():
+            steps.append((
+                f"Open in QUILL ({format_label('epub')})",
+                lambda: self._to_quill(ready["epub"]),
+            ))
         from quill.ui.scribe_entry import browser_steps
 
         return steps + browser_steps(ready, self.scribe_announce)  # pictures and all (F2)

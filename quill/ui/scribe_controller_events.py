@@ -164,7 +164,8 @@ class ScribeEventsMixin:
                 opened=opened,
                 offer=options.open_results == "offer",
                 note=note,
-                after=result_notes(job.outputs),  # the pictures, a Kindle book: once
+                # the pictures, a Kindle book, an EPUB nothing here reads: once
+                after=" ".join(n for n in (result_notes(job.outputs), self._host_note(job)) if n),
             )
         )
 
@@ -175,30 +176,60 @@ class ScribeEventsMixin:
         may = getattr(self.host, "scribe_may_open_now", None)
         return bool(may()) if callable(may) else True
 
-    def open_job_result(self, job: q.Job, *, speak: bool = True) -> str:
+    def open_job_result(
+        self, job: q.Job, *, speak: bool = True, browser: bool | None = None
+    ) -> str:
         """Open Result: the first output that opens somewhere, in the tool where it
         is used (section 9). A tagged PDF, MOBI or offline page is only saved, so
         a BRF or MP3 made with it still opens. The accessible HTML is what opens
-        in the editor; the offline page is a Next Step, in the browser (F2)."""
-        from quill.core.scribe.results import open_order
+        in the editor; the offline page is a Next Step, in the browser (F2).
+
+        The tagged PDF, and the offline page when it is all that opens, open
+        only on a command the person chose (*browser*, which is *speak*
+        unless given); the offline page opens in the browser:
+        never in the editor, where each embedded picture would be one long
+        line of base64. A result opened by itself never starts the browser."""
+        from quill.core.scribe.results import ON_COMMAND_ONLY, browser_page, open_order
         from quill.core.scribe.sentences import friendly_folder
 
+        chosen = speak if browser is None else browser
         saved = False
         for format_id, path in open_order(job.outputs):
             if not path.exists():
                 continue
             saved = True
+            if format_id in ON_COMMAND_ONLY and not chosen:
+                continue  # the tagged PDF opens on the person's command only
             said = self.host.scribe_open_result(job, format_id, path)
             if said:
                 if speak:
                     self._say(said + ".")
                 return said
+        page = browser_page(job.outputs)
+        if page is not None and chosen:
+            from quill.ui import scribe_entry
+
+            if scribe_entry.open_in_browser(page):
+                said = "Opening the Web page for offline reading in your browser"
+                if speak:
+                    self._say(said + ".")
+                return said
         if speak and saved:
             where = friendly_folder(job.folder) if job.folder else "its folder"
-            self._say(f"{job.display_name} was saved in {where}. Open Folder shows it.")
+            note = self._host_note(job)
+            self._say(
+                f"{job.display_name} was saved in {where}. Open Folder shows it."
+                + (f" {note}" if note else "")
+            )
         elif speak:
             self._say(f"{job.display_name} has no result to open yet.")
         return ""
+
+    def _host_note(self, job: q.Job) -> str:
+        """What the app alone knows about a result it cannot open (QUILL Lite
+        and an EPUB), said once inside the result sentence."""
+        note = getattr(self.host, "scribe_result_note", None)
+        return str(note(job) or "") if callable(note) else ""
 
     # ---------------------------------------------------------- next steps
 

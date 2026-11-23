@@ -171,13 +171,14 @@ class BeaconScribeMixin(AppScribeMixin):
         def done(documents: Any) -> None:
             self.__dict__["_scribe_adding"] = False
             from quill.core.scribe.library import Library
+            from quill.core.scribe.results import place_order
 
             library = Library()
             files: dict[str, tuple[str, Path]] = {}
             for document in documents:
-                found = library.files_for(document.id)
+                found = place_order(library.files_for(document.id))
                 if found:
-                    files[document.id] = found[-1]
+                    files[document.id] = found[0]  # a document, not the last downloaded
             # Our own name where we uploaded it, not Scribe's title from inside (F6).
             pairs = [(d.id, library.title_for(d.id) or d.display_title) for d in documents]
             added, already = add_library(self.store, pairs, files)  # type: ignore[attr-defined]
@@ -202,6 +203,9 @@ class BeaconScribeMixin(AppScribeMixin):
             self.announcer.say("No openable address for this bookmark")  # type: ignore[attr-defined]
             return
         uri = res.primary_uri
+        if is_scribe(res) and Path(uri).exists():
+            self._scribe_open_place(b, res)
+            return
         if res.type in ("file", "folder", "document") and not uri.startswith(("http:", "https:")):
             if not Path(uri).exists():
                 self.announcer.say("File or folder not found. Marked as broken.")  # type: ignore[attr-defined]
@@ -222,14 +226,42 @@ class BeaconScribeMixin(AppScribeMixin):
         self.store.record_open(b.beacon_id)  # type: ignore[attr-defined]
         self.announcer.say(f"Opened {b.title}")  # type: ignore[attr-defined]
 
+    def _scribe_open_place(self, b: Any, res: Any) -> None:
+        """A Scribe place opens in the family app for its format: a document in
+        QUILL (or QUILL Lite), the accessible HTML readable in the browser,
+        audio in Media Player -- never the shell's zip viewer for a DAISY book,
+        or nothing at all for a BRF (phase-one audit, gap 4)."""
+        from quill.ui import scribe_app_host
+
+        path = Path(res.primary_uri)
+        format_id = str((res.metadata or {}).get("scribe_format") or "")
+        said = scribe_app_host.open_elsewhere(format_id, path) if format_id else ""
+        if not said and format_id == "epub" and scribe_app_host.editor_name() != "QUILL":
+            self._scribe_say(
+                f"{scribe_app_host.NO_EPUB_READER} {path.name} is saved in its folder."
+            )
+            return
+        if not said and format_id not in ("mobi", "offline_html"):
+            self._scribe_say(f"{b.title} could not be opened. {path.name} is saved in its folder.")
+            return
+        if not said:
+            try:
+                os.startfile(str(path))  # type: ignore[attr-defined]  # noqa: S606 - its own app
+            except (OSError, AttributeError):
+                self._scribe_say(f"No app here opens {path.name}. It is saved in its folder.")
+                return
+        self.store.record_open(b.beacon_id)  # type: ignore[attr-defined]
+        self.announcer.say(f"Opened {b.title}")  # type: ignore[attr-defined]
+
     def _scribe_follow_library(self, res: Any) -> bool:
         """The file was downloaded again since: point the place at it."""
         from quill.core.scribe.library import Library
+        from quill.core.scribe.results import place_order
 
-        found = Library().files_for(document_id_of(res))
+        found = place_order(Library().files_for(document_id_of(res)))
         if not found:
             return False
-        format_id, path = found[-1]
+        format_id, path = found[0]  # a document, not the last downloaded
         res.primary_uri = str(path)
         res.metadata = {**res.metadata, "scribe_format": format_id}
         self.store.put_resource(res)  # type: ignore[attr-defined]

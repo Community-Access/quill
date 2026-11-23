@@ -524,7 +524,10 @@ several at once.</p>
 <td>Accessible HTML</td>
 <td>Reading in QUILL or a browser, with real headings. Its pictures are
 not included</td>
-<td>Opens it in QUILL. Its pictures are in the Web page for offline
+<td>Opens it in a new tab as a readable document, with its headings,
+lists, tables and links, never as HTML markup. The tab is named after
+the document, such as “Notes (Scribe)” for Notes.pdf, and is not saved
+until you save it. Its pictures are in the Web page for offline
 reading</td>
 </tr>
 <tr>
@@ -535,7 +538,8 @@ reading</td>
 <tr>
 <td>Tagged PDF</td>
 <td>Sharing a PDF that screen readers can read. Can be large print</td>
-<td>Saves it, and says where</td>
+<td>Saves it. <strong>Open Result</strong> and Next Steps open it in
+QUILL, as text; it never opens by itself</td>
 </tr>
 <tr>
 <td>EPUB</td>
@@ -595,6 +599,14 @@ browser.” When you ask for the accessible HTML alone, the sentence ends:
 “The accessible HTML came without its pictures; Download Formats in My
 Scribe Documents can add the Web page for offline reading, which has
 them.”</p>
+<p>The Web page for offline reading never opens in QUILL as text: every
+picture is inside it, so each would be a single very long line. When it
+is the only thing there is to open, <strong>Open Result</strong>, and
+<strong>Open</strong> in My Scribe Documents, open it in your browser:
+“Opening the Web page for offline reading in your browser.”
+<strong>Open</strong> in My Scribe Documents opens what Open Result
+would, Word before the Kindle book, not just the file downloaded
+last.</p>
 <p><strong>A Kindle (MOBI) book</strong> is for older Kindles. The
 result sentence says so: “A Kindle (MOBI) book is for older Kindles:
 copy it to the Kindle’s documents folder over USB, or read it on this
@@ -1446,8 +1458,10 @@ and audio can go on through Converter</td>
 <tr>
 <td>QUILL Studio</td>
 <td>Studio, Narration from Scribe for Documents</td>
-<td>A document read aloud, with chapter markers from its headings,
-opened in the Chapter Workbench</td>
+<td>A document read aloud, with a chapter marker at each heading, opened
+in the Chapter Workbench. Scribe’s DAISY book splits its audio into many
+files; Studio adds up their lengths to find where each heading starts in
+the MP3</td>
 </tr>
 <tr>
 <td>QUILL Cast</td>
@@ -1477,7 +1491,13 @@ its Scribe for Documents section, with the steps and what you hear.</p>
 Converter opening in QUILL, never opens by itself: the result sentence
 ends “Open it from Scribe Conversions.”, and <strong>Open
 Result</strong> or <strong>Next Steps…</strong> opens it when you
-choose.</p>
+choose. From those apps the accessible HTML opens readable in your
+browser (the Web page for offline reading, when it was made, because it
+has the pictures), an EPUB opens only in QUILL, and a Scribe place in
+Beacon opens its document in QUILL, its audio in Media Player.</p>
+<p>When QUILL sends an MP3 or a DAISY book to Media Player, the Player
+comes to the front once the result sentence has been said, so the
+sentence is not cut off.</p>
 <h2 id="walkthroughs">Walkthroughs</h2>
 <p>Each walkthrough says what to press and what you hear. Your file
 names and numbers will be different.</p>

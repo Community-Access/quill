@@ -179,9 +179,9 @@ once.
 
 | Format | Good for | What QUILL does with it |
 |---|---|---|
-| Accessible HTML | Reading in QUILL or a browser, with real headings. Its pictures are not included | Opens it in QUILL. Its pictures are in the Web page for offline reading |
+| Accessible HTML | Reading in QUILL or a browser, with real headings. Its pictures are not included | Opens it in a new tab as a readable document, with its headings, lists, tables and links, never as HTML markup. The tab is named after the document, such as "Notes (Scribe)" for Notes.pdf, and is not saved until you save it. Its pictures are in the Web page for offline reading |
 | Word | Reading and editing in QUILL or Word. Can be large print | Opens it in QUILL |
-| Tagged PDF | Sharing a PDF that screen readers can read. Can be large print | Saves it, and says where |
+| Tagged PDF | Sharing a PDF that screen readers can read. Can be large print | Saves it. **Open Result** and Next Steps open it in QUILL, as text; it never opens by itself |
 | EPUB | Ebook readers and QUILL's own EPUB reading | Opens it in QUILL |
 | Kindle (MOBI) | Older Kindle devices, and Calibre | Saves it, and says where |
 | DAISY (text and audio) | Talking-book players, and Quill Media Player with chapters | Opens it in Quill Media Player |
@@ -212,6 +212,13 @@ are in the Web page for offline reading; Next Steps opens that in your
 browser." When you ask for the accessible HTML alone, the sentence ends: "The
 accessible HTML came without its pictures; Download Formats in My Scribe
 Documents can add the Web page for offline reading, which has them."
+
+The Web page for offline reading never opens in QUILL as text: every picture
+is inside it, so each would be a single very long line. When it is the only
+thing there is to open, **Open Result**, and **Open** in My Scribe Documents,
+open it in your browser: "Opening the Web page for offline reading in your
+browser." **Open** in My Scribe Documents opens what Open Result would, Word
+before the Kindle book, not just the file downloaded last.
 
 **A Kindle (MOBI) book** is for older Kindles. The result sentence says so:
 "A Kindle (MOBI) book is for older Kindles: copy it to the Kindle's documents
@@ -817,7 +824,7 @@ it speaks.
 |---|---|---|
 | Quill Media Player | File, Listen to a Document with Scribe for Documents | A document comes back as a DAISY book and MP3 audio, and opens as a book to listen to |
 | Quill Converter | File, Convert Documents with Scribe for Documents | Documents as a source type; results go to Converter's output folder, and audio can go on through Converter |
-| QUILL Studio | Studio, Narration from Scribe for Documents | A document read aloud, with chapter markers from its headings, opened in the Chapter Workbench |
+| QUILL Studio | Studio, Narration from Scribe for Documents | A document read aloud, with a chapter marker at each heading, opened in the Chapter Workbench. Scribe's DAISY book splits its audio into many files; Studio adds up their lengths to find where each heading starts in the MP3 |
 | QUILL Cast | Episode, Convert Linked Document with Scribe for Documents | A document the episode's show notes link |
 | QUILL Social | Item, Convert Linked Document with Scribe for Documents | A document a post links |
 | Quill Beacon | Tools, Scribe for Documents | Places in Scribe results, and your Scribe library as places |
@@ -833,7 +840,14 @@ section, with the steps and what you hear.
 A result that would open in another app, such as Word from Quill Converter
 opening in QUILL, never opens by itself: the result sentence ends "Open it
 from Scribe Conversions.", and **Open Result** or **Next Steps...** opens it
-when you choose.
+when you choose. From those apps the accessible HTML opens readable in your
+browser (the Web page for offline reading, when it was made, because it has
+the pictures), an EPUB opens only in QUILL, and a Scribe place in Beacon opens
+its document in QUILL, its audio in Media Player.
+
+When QUILL sends an MP3 or a DAISY book to Media Player, the Player comes to
+the front once the result sentence has been said, so the sentence is not
+cut off.
 
 ## Walkthroughs
 

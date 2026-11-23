@@ -142,8 +142,12 @@ def _split_on_form_feeds(doc: BRFDocument) -> list[BRFPage]:
         page_index += 1
         cursor = ff_offset + 1
     # Trailing page: anything after the last FF, if any. Empty files
-    # produce a single zero-length page so callers always have one.
-    if cursor <= len(text):
+    # produce a single zero-length page so callers always have one. A file
+    # that ends with its last FF (every Scribe BRF, and most embossed
+    # ones), or with only blank space after it, has no page after it: that
+    # would be counted as one page too many.
+    trailing = text[cursor:]
+    if not pages or trailing.strip():
         page = _build_page(doc, page_index, cursor, len(text), has_form_feed=False)
         pages.append(page)
     return pages

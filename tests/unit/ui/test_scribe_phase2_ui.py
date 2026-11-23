@@ -86,6 +86,46 @@ def test_open_result_skips_a_format_that_is_only_saved(controller: Any, tmp_path
     assert "was saved in" in host.said[-1]
 
 
+def test_a_lone_offline_page_opens_in_the_browser_never_the_editor(
+    controller: Any, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Item 5: the offline page has every picture inline as base64, so in the
+    editor each is one very long line. Open Result opens it in the browser when
+    it is all there is; a result opened by itself never starts the browser."""
+    from quill.ui import scribe_entry
+
+    page = tmp_path / "N-offline.html"
+    page.write_text('<img src="data:image/png;base64,AAAA">', encoding="utf-8")
+    shown: list[Path] = []
+    monkeypatch.setattr(scribe_entry, "open_in_browser", lambda path: shown.append(path) or True)
+    host = controller.host
+    editor: list[str] = []
+    host.scribe_open_result = lambda job, fmt, path: editor.append(fmt) or ""
+    job = q.Job(file_name="N.pdf", outputs={"offline_html": str(page)}, folder=str(tmp_path))
+    assert controller.open_job_result(job, speak=False) == ""  # opened by itself: no browser
+    assert shown == []
+    assert controller.open_job_result(job) == (
+        "Opening the Web page for offline reading in your browser"
+    )
+    assert shown == [page] and host.said[-1].endswith("in your browser.")
+    assert editor == ["offline_html", "offline_html"]  # offered to the host, which declined
+
+
+def test_my_scribe_documents_opens_what_opens_not_the_last_download(tmp_path: Path) -> None:
+    from quill.core.scribe.results import library_order
+
+    files = [
+        ("docx", tmp_path / "old.docx"),
+        ("brf", tmp_path / "N.brf"),
+        ("docx", tmp_path / "N.docx"),
+        ("mobi", tmp_path / "N.mobi"),
+        ("offline_html", tmp_path / "N-offline.html"),
+    ]
+    order = library_order(files)
+    assert [f for f, _p in order] == ["docx", "mobi", "brf", "offline_html"]
+    assert order[0][1] == tmp_path / "N.docx"  # the newest of a format
+
+
 def test_next_steps_come_from_the_app_for_finished_outputs_only(
     controller: Any, tmp_path: Path
 ) -> None:
@@ -143,7 +183,9 @@ def test_lite_next_steps_put_the_media_player_first(tmp_path: Path) -> None:
     host.scribe_next_steps(q.Job(), ready)[1][1]()
     assert opened == [ready["docx"]]
     assert host.scribe_open_result(q.Job(), "brf", tmp_path / "N.brf").endswith("QUILL Lite")
-    assert host.scribe_open_result(q.Job(), "pdf", tmp_path / "N.pdf") == ""
+    # The tagged PDF opens in Lite, which reads PDFs (phase-one audit, gap 2).
+    assert host.scribe_open_result(q.Job(), "pdf", tmp_path / "N.pdf").endswith("QUILL Lite")
+    assert host.scribe_open_result(q.Job(), "mobi", tmp_path / "N.mobi") == ""
 
 
 def test_next_steps_on_an_unfinished_job_say_so(controller: Any) -> None:

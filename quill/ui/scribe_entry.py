@@ -275,12 +275,24 @@ class ScribeEntryPoints:
             dialog.Destroy()
 
 
+def player_target(format_id: str, path: Path) -> Path | None:
+    """What Media Player opens for a result: the MP3, or a DAISY 3 book's
+    ``.ncx`` (the zip unpacked beside itself). ``None`` if nothing: the Player
+    reads DAISY 3 only, so a DAISY 2.02 ``ncc.html`` is never handed over and
+    reported as open (Open Result goes on to the MP3)."""
+    from quill.core.scribe.results import daisy_entry
+
+    if format_id == "daisy":
+        entry = daisy_entry(path)
+        return entry if entry is not None and entry.suffix.lower() == ".ncx" else None
+    return path if format_id == "mp3" else None
+
+
 def send_to_player(format_id: str, path: Path) -> bool:
     """Open an MP3 or a DAISY book (its navigation file) in Quill Media Player."""
     from quill.core.app_launcher import launch_app
-    from quill.core.scribe.results import daisy_entry
 
-    target = daisy_entry(path) if format_id == "daisy" else path
+    target = player_target(format_id, path)
     return bool(target is not None and launch_app("player", extra_args=(str(target),)))
 
 
@@ -309,4 +321,11 @@ def browser_steps(
     return [(BROWSER_STEP, show)]
 
 
-__all__ = ["SENDABLE", "ScribeEntryPoints", "browser_steps", "open_in_browser", "send_to_player"]
+__all__ = [
+    "SENDABLE",
+    "ScribeEntryPoints",
+    "browser_steps",
+    "open_in_browser",
+    "player_target",
+    "send_to_player",
+]

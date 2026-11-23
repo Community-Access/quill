@@ -62,6 +62,8 @@ def test_form_feeds_end_the_pages(stem: str) -> None:
     page_map = build_page_map(BRFDocument.from_text_and_suffix(text, "brf"), mode="form_feed")
     with_text = [p for p in page_map.pages if text[p.start_offset : p.end_offset].strip()]
     assert len(with_text) == corpus.validation("brf", stem)["form_feeds"]
+    # Every Scribe BRF ends with its form feed: no empty page is counted after it.
+    assert text.endswith("\x0c") and page_map.page_count == len(with_text)
     assert all(p.has_form_feed for p in with_text)
     lines = [len(text[p.start_offset : p.end_offset].split("\r\n")) - 1 for p in with_text]
     assert max(lines) <= 25
@@ -196,22 +198,34 @@ def test_the_daisy_book_opens_from_its_ncx_with_chapters(stem: str, tmp_path: Pa
 
 
 @pytest.mark.parametrize("stem", corpus.SOURCES)
-def test_studio_says_why_scribes_split_book_gives_no_markers(stem: str, tmp_path: Path) -> None:
-    """Scribe's DAISY audio is split, one MP3 per section, so its times cannot
-    be laid on the one MP3 as they are: Studio writes no markers and the
-    result sentence says why, rather than writing wrong ones."""
-    from quill.core.scribe.narration import Markers, daisy_chapters
+def test_studio_marks_chapters_across_scribes_split_audio(stem: str, tmp_path: Path) -> None:
+    """Scribe's DAISY audio is split, one MP3 per section (F3), and the MP3 is
+    those files one after another, without the spoken title. Each heading's
+    marker is the length of every file before its own: it lands where that
+    heading's audio starts in the MP3, and the result sentence counts them."""
+    from quill.core.scribe.narration import _timed_headings, mark_narration, split_offsets
     from quill.core.scribe.results import daisy_entry
+    from quill.core.speech.book_file import read_book
 
     folder = corpus.require_full()
     book = tmp_path / f"{stem}.zip"
     shutil.copyfile(folder / "daisy" / f"{stem}-daisy3.zip", book)
+    mp3 = tmp_path / f"{stem}.mp3"
+    shutil.copyfile(folder / "mp3" / f"{stem}.mp3", mp3)
     ncx = daisy_entry(book)
     assert ncx is not None
-    chapters, files = daisy_chapters(ncx)
-    assert chapters == [] and len(files) > 1
-    phrase = Markers(reason=f"the DAISY book has {len(files)} audio files").phrase
-    assert phrase == f"with no chapter markers, because the DAISY book has {len(files)} audio files"
+    total = read_book(mp3).total_ms
+    timed = _timed_headings(ncx)
+    offsets = split_offsets(ncx, timed, total)
+    assert offsets is not None and len(offsets) > 1
+    assert offsets[timed[0].audio_src] == 0  # the spoken title Scribe's MP3 leaves out
+    markers = mark_narration(mp3, ncx)
+    chapters = read_book(mp3).chapters
+    assert markers.count == len(chapters) >= 2
+    assert markers.phrase == f"with {len(chapters)} chapter markers"
+    starts = [c.start_ms for c in chapters]
+    assert starts == sorted(set(starts)) and starts[0] == 0 and chapters[-1].end_ms == total
+    assert mark_narration(mp3, ncx).count == markers.count  # idempotent
 
 
 def test_a_daisy_zip_never_unpacks_outside_its_folder(tmp_path: Path) -> None:
