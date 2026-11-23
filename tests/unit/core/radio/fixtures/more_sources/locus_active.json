@@ -1,0 +1,41 @@
+[
+ {
+  "id": "1010",
+  "name": "acra — wave farm",
+  "url": "https://locus.creacast.com:9443/acra_wave_farm.mp3",
+  "ext": "mp3",
+  "artist": "grant",
+  "source": "locusonus",
+  "lat": "42.3191",
+  "lng": "-74.0766",
+  "link": "https://locusonus.org/soundmap/",
+  "city": "acra",
+  "country": "United States"
+ },
+ {
+  "id": "2588",
+  "name": "amsterdam — hydrophile 1",
+  "url": "https://locus.creacast.com:9443/amsterdam_hydrophile_1.mp3",
+  "ext": "mp3",
+  "artist": "lia mazzari",
+  "source": "locusonus",
+  "lat": "52.3676",
+  "lng": "4.90414",
+  "link": "https://locusonus.org/soundmap/",
+  "city": "amsterdam",
+  "country": "Netherlands"
+ },
+ {
+  "id": "2592",
+  "name": "amsterdam — hydrophile 5",
+  "url": "https://locus.creacast.com:9443/amsterdam_hydrophile_5.mp3",
+  "ext": "mp3",
+  "artist": "lia mazzari",
+  "source": "locusonus",
+  "lat": "52.3477",
+  "lng": "4.91272",
+  "link": "https://locusonus.org/soundmap/",
+  "city": "amsterdam",
+  "country": "netherlands"
+ }
+]

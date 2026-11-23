@@ -25,8 +25,17 @@ headers and first 4 KB read, and judged by :mod:`quill.core.radio.live_check`,
 so the list says which links are live audio and which could not be checked,
 and leaves out the ones that answered with a web page.
 
-The HTTP fallback, the live check, the extra places a page is read and the
-Icecast status pages are ideas from Andre Louis's StreamSift
+**Server listings and directories.** Given a streaming server itself (an
+Icecast front page, Global's ``media-ssl.musicradio.com`` catalogue), or a page
+linking to a server's status page, every stream the server lists is offered,
+with its listener count: Icecast's ``status-json.xsl`` or its HTML status page,
+and SHOUTcast v2's ``/statistics?json=1`` (:mod:`server_listings`). A Global
+Player station page, the Locus Sonus Soundmap page, and the stations IPRD lists
+for the website (from the catalogue already cached) are added too.
+
+The HTTP fallback, the live check, the extra places a page is read, the
+Icecast and SHOUTcast server listings, Global Player pages, the soundmap and
+the directory match are ideas from Andre Louis's StreamSift
 (https://github.com/OnjLouis/StreamSift), written here in QUILL's own code.
 
 Every request funnels through the single reviewed egress site
@@ -44,20 +53,23 @@ import ssl
 import urllib.error
 import urllib.parse
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.net import verified_ssl_context
-from quill.core.radio import live_check
+from quill.core.radio import global_player, live_check, server_listings
 from quill.core.radio.address_kind import is_help_page_url, same_page
 from quill.core.radio.address_kind import is_player_page_url as _is_player_page_url
 from quill.core.radio.live_check import HttpReply
-from quill.core.radio.page_links import PageStreamCandidate, StreamLinkParser, is_status_page
+from quill.core.radio.page_links import PageStreamCandidate, StreamLinkParser
 from quill.core.radio.page_links import (  # noqa: F401 - kept reachable here for callers
     looks_like_listen_link as _looks_like_listen_link,
 )
+from quill.core.radio.page_resolvers import directory_candidates as _directory_candidates
+from quill.core.radio.page_resolvers import global_player_candidates as _global_candidates
 from quill.core.radio.page_resolvers import securenet_candidates as _securenet_candidates
+from quill.core.radio.page_resolvers import soundmap_candidates as _soundmap_candidates
 from quill.core.radio.page_resolvers import triton_candidates as _triton_candidates
 from quill.core.radio.page_resolvers import tunein_candidates as _tunein_candidates
 from quill.core.radio.page_url import normalize_page_url
@@ -85,6 +97,11 @@ _MAX_POPUPS_TO_FOLLOW = 2
 #: The site's own player scripts read per scan, and Icecast servers listed.
 _MAX_SCRIPTS_TO_READ = 3
 _MAX_STATUS_SERVERS = 2
+#: Checks when a server listing is in the results: a whole catalogue, so more
+#: than a page's handful, under the same overall deadline.
+_LISTING_CHECKS = 48
+#: Notes for a listed link QUILL never contacted (the scan's limits).
+_NEVER_ASKED = (live_check.TOO_MANY, live_check.OUT_OF_TIME)
 _CHECK_RANK = {live_check.LIVE: 0, live_check.UNCHECKED: 1, "": 1, live_check.FILE: 2}
 
 
@@ -119,6 +136,11 @@ class PageScanResult:
     #: something that is not audio (a web page, a 404) and are not listed.
     checked: bool = False
     left_out: int = 0
+    #: The most links this scan would check (16, or 48 with a server listing
+    #: or the soundmap), and how many of the listed links QUILL never
+    #: contacted because of that limit or the 20-second deadline.
+    check_limit: int = 0
+    skipped: int = 0
 
 
 _FETCH_ERRORS = (
@@ -257,15 +279,23 @@ def scan_page_for_streams(
     # SecureNet first: its mount is a real, page-advertised stream, while the
     # generic parser's picks off the same page are only stream-*shaped*.
     all_candidates = _securenet_candidates(normalized, html_text)
-    all_candidates.extend(parser.candidates)
+    all_candidates.extend(_global_candidates(normalized, html_text))
+    # The soundmap is a listing too: a whole catalogue, checked as one.
+    listed = _soundmap_candidates(normalized, safe_mode=safe_mode)
+    status_pages = _status_pages(normalized, html_text, parser)
+    listed.extend(_server_candidates(status_pages, html_text))
+    all_candidates.extend(listed)
+    # A server page that listed its mounts says nothing more: its own links are
+    # the same mounts again as ".m3u" files, rows that would only be repeats.
+    if not (listed and status_pages and status_pages[0][0] == normalized):
+        all_candidates.extend(_own_links(normalized, parser))
     all_candidates.extend(
         _follow_pages(parser.iframe_urls, _MAX_IFRAMES_TO_FOLLOW, "embedded iframe")
     )
     all_candidates.extend(_follow_pages(parser.popup_urls, _MAX_POPUPS_TO_FOLLOW, "pop-up player"))
-    status_pages = parser.status_urls + ([normalized] if is_status_page(normalized) else [])
-    all_candidates.extend(_icecast_candidates(status_pages))
     all_candidates.extend(_triton_candidates(normalized, html_text, safe_mode=safe_mode))
     all_candidates.extend(_tunein_candidates(normalized, html_text, safe_mode=safe_mode))
+    all_candidates.extend(_directory_candidates(normalized, safe_mode=safe_mode))
 
     # Also follow any player page that reached the candidate list some other
     # way than an <a href> -- a front-end host quoted in the player's own inline
@@ -310,8 +340,9 @@ def scan_page_for_streams(
         seen.setdefault(candidate.url, candidate)
     kept = list(seen.values())
     left_out = 0
+    limit = _LISTING_CHECKS if listed else live_check.MAX_CHECKS
     if check_live and kept:
-        kept, left_out = _apply_live_check(kept)
+        kept, left_out = _apply_live_check(kept, limit)
     kept = _prefer_https(kept)
     # #5 observability: which links were kept, and why -- the argv-style
     # redaction masks any token a candidate URL might carry.
@@ -330,14 +361,16 @@ def scan_page_for_streams(
         candidates=kept,
         checked=check_live,
         left_out=left_out,
+        check_limit=limit if check_live else 0,
+        skipped=sum(1 for c in kept if c.check_note in _NEVER_ASKED),
     )
 
 
 def _apply_live_check(
-    candidates: list[PageStreamCandidate],
+    candidates: list[PageStreamCandidate], limit: int = live_check.MAX_CHECKS
 ) -> tuple[list[PageStreamCandidate], int]:
     """Check each candidate; leave out what is not audio; live ones first."""
-    verdicts = live_check.check_urls([c.url for c in candidates], _probe)
+    verdicts = live_check.check_urls([c.url for c in candidates], _probe, limit=limit)
     kept: list[PageStreamCandidate] = []
     left_out = 0
     for candidate in candidates:
@@ -347,8 +380,8 @@ def _apply_live_check(
             continue
         candidate.check = verdict.state
         candidate.codec = verdict.codec
-        candidate.bitrate_kbps = verdict.bitrate_kbps
-        candidate.stream_name = verdict.name
+        candidate.bitrate_kbps = verdict.bitrate_kbps or candidate.bitrate_kbps
+        candidate.stream_name = verdict.name or candidate.stream_name
         candidate.genre = verdict.genre
         candidate.check_note = verdict.note
         kept.append(candidate)
@@ -387,46 +420,106 @@ def _read_site_scripts(parser: StreamLinkParser) -> None:
         parser.read_script(text, "the site's own script")
 
 
-def _icecast_candidates(status_urls: list[str]) -> list[PageStreamCandidate]:
-    """Every mount an Icecast server lists on its status page.
+def _own_links(url: str, parser: StreamLinkParser) -> list[PageStreamCandidate]:
+    """The page's own stream-shaped links -- none on a Global Player station
+    page, whose page state also names the streams kept for subscribers."""
+    return [] if global_player.is_station_page(url) else parser.candidates
 
-    Read with :func:`quill.core.radio.my_servers.parse_icecast` from the
-    server's ``status-json.xsl``. When that gives nothing -- a mount hidden
-    behind a proxy, or the JSON turned off -- the HTML ``status.xsl`` page is
-    read for its ``.m3u`` links instead.
+
+def _status_pages(url: str, html_text: str, parser: StreamLinkParser) -> list[tuple[str, str]]:
+    """``(status page, server kind)`` for the scanned page and what it links to.
+
+    The scanned page counts when it is a status address, or a server's front
+    page that names Icecast or SHOUTcast in its title or shows Icecast's
+    "Mount Point" cards (Global's catalogue names neither).
     """
-    from quill.core.radio.my_servers import parse_icecast
+    here = server_listings.status_kind(url) or server_listings.server_kind(url, parser.title)
+    if not here and server_listings.is_front_page(url):
+        if server_listings.parse_icecast_html(html_text, url):
+            here = server_listings.ICECAST
+    pages = [(url, here)] if here else []
+    pages.extend((u, server_listings.status_kind(u)) for u in parser.status_urls)
+    return pages
 
-    by_root: dict[str, str] = {}
-    for status_url in status_urls:
-        parts = urllib.parse.urlsplit(status_url)
-        by_root.setdefault(f"{parts.scheme}://{parts.netloc}", status_url)
-    out: list[PageStreamCandidate] = []
-    for root, status_url in list(by_root.items())[:_MAX_STATUS_SERVERS]:
-        try:
-            stations = parse_icecast(_fetch_html(f"{root}/status-json.xsl"), root)
-        except LinkFinderError:
-            stations = []
-        out.extend(
-            PageStreamCandidate(
-                url=_public_listen_url(station.stream_url, root),
-                reason="mount listed on the server's Icecast status page",
-                label=station.name,
-            )
-            for station in stations
+
+def _listed(mounts: list[server_listings.ServerMount], reason: str) -> list[PageStreamCandidate]:
+    return [
+        PageStreamCandidate(
+            url=mount.url,
+            reason=reason,
+            label=mount.name,
+            stream_name=mount.name,
+            label_is_name=bool(mount.name),
+            bitrate_kbps=mount.bitrate_kbps,
+            listeners=mount.listeners,
         )
-        if not stations and status_url.lower().endswith("/status.xsl"):
-            out.extend(_follow_pages([status_url], 1, "Icecast status page"))
+        for mount in mounts
+    ]
+
+
+def _server_candidates(pages: list[tuple[str, str]], page_html: str) -> list[PageStreamCandidate]:
+    """Every stream the first :data:`_MAX_STATUS_SERVERS` servers list.
+
+    Icecast: ``status-json.xsl``; when that gives nothing -- the JSON turned
+    off, or a mount hidden behind a proxy -- the HTML status page's "Mount
+    Point" cards, and failing those its ``.m3u`` links. SHOUTcast v2:
+    ``/statistics?json=1``. Every mount is built on the server that answered,
+    never on a backend host the statistics name. *page_html* is the scanned
+    page, read again for nothing when it is itself the status page.
+    """
+    by_root: dict[str, tuple[str, str]] = {}
+    for status_url, kind in pages:
+        root = server_listings.server_root(status_url)
+        if root and kind:
+            by_root.setdefault(root, (status_url, kind))
+    scanned = pages[0][0] if pages else ""
+    out: list[PageStreamCandidate] = []
+    for root, (status_url, kind) in list(by_root.items())[:_MAX_STATUS_SERVERS]:
+        if kind == server_listings.SHOUTCAST:
+            mounts = _read_listing(root + server_listings.SHOUTCAST_JSON, root, kind)
+            out.extend(_listed(mounts, "stream listed by the SHOUTcast server"))
+            continue
+        reason = "mount listed on the server's Icecast status page"
+        mounts = _read_listing(root + server_listings.ICECAST_JSON, root, kind)
+        if mounts:
+            out.extend(_listed(mounts, reason))
+        elif not status_url.lower().endswith(server_listings.ICECAST_JSON):
+            html_text = page_html if status_url == scanned else ""
+            out.extend(_icecast_html_candidates(status_url, html_text, reason))
     return out
 
 
-def _public_listen_url(listen: str, root: str) -> str:
-    """Icecast behind a proxy reports ``http://localhost:8000/mount``; the
-    listener can only reach that mount through the server they asked."""
-    parts = urllib.parse.urlsplit(listen)
-    if (parts.hostname or "").lower() in ("localhost", "127.0.0.1", "0.0.0.0"):
-        return urllib.parse.urljoin(root + "/", parts.path.lstrip("/"))
-    return listen
+def _read_listing(address: str, root: str, kind: str) -> list[server_listings.ServerMount]:
+    """One server's JSON listing, read and parsed; ``[]`` when it does not answer."""
+    try:
+        text = _fetch_html(address)
+    except LinkFinderError:
+        return []
+    if kind == server_listings.SHOUTCAST:
+        return server_listings.parse_shoutcast_json(text, root)
+    return server_listings.parse_icecast_json(text, root)
+
+
+def _icecast_html_candidates(
+    status_url: str, html_text: str, reason: str
+) -> list[PageStreamCandidate]:
+    """An Icecast HTML status page's mounts, or its ``.m3u`` links if it shows none."""
+    if not html_text:
+        try:
+            html_text = _fetch_html(status_url)
+        except LinkFinderError:
+            return []
+    mounts = server_listings.parse_icecast_html(html_text, status_url)
+    if mounts:
+        return _listed(mounts, reason)
+    sub_parser = StreamLinkParser(status_url)
+    sub_parser.feed(html_text)
+    return [
+        PageStreamCandidate(
+            url=c.url, reason=f"{c.reason} (found via Icecast status page)", label=c.label
+        )
+        for c in sub_parser.candidates
+    ]
 
 
 def _follow_pages(
@@ -442,7 +535,7 @@ def _follow_pages(
 
     Used for embedded ``<iframe>`` pages, pop-up players and followed "Listen
     Live" links. For the latter, each sub-page is *also* run through the
-    Triton, TuneIn and SecureNet resolvers (``base`` non-empty), since a
+    Triton, TuneIn, SecureNet and Global Player resolvers (``base`` non-empty), since a
     station's linked player page is exactly where such a player tends to live.
     A failed sub-fetch is skipped.
     """
@@ -461,13 +554,8 @@ def _follow_pages(
             page_candidates.extend(_triton_candidates(sub_url, sub_html, safe_mode=safe_mode))
             page_candidates.extend(_tunein_candidates(sub_url, sub_html, safe_mode=safe_mode))
             page_candidates.extend(_securenet_candidates(sub_url, sub_html))
-        page_candidates.extend(sub_parser.candidates)
+            page_candidates.extend(_global_candidates(sub_url, sub_html))
+        page_candidates.extend(_own_links(sub_url, sub_parser))
         for candidate in page_candidates:
-            out.append(
-                PageStreamCandidate(
-                    url=candidate.url,
-                    reason=f"{candidate.reason} (found via {reason_suffix})",
-                    label=candidate.label,
-                )
-            )
+            out.append(replace(candidate, reason=f"{candidate.reason} (found via {reason_suffix})"))
     return out

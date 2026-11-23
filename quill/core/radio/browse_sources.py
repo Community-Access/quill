@@ -43,6 +43,7 @@ Node id grammar, all opaque to the caller (see :mod:`browse_nodes`)::
                                     Television (iptv.org); "antennaweb" is a
                                     browser link-out for over-the-air coverage
     radioparadise                   Radio Paradise, every channel at every quality
+    locussonus                      Locus Sonus Soundmap, open microphones on air
     one81 | one81:<genre>           181.FM, the whole network by its own genres
     lautfm | lautfm:<genre>         laut.fm, by its most-listened genres
     apple | apple:<storefront>      Apple Podcasts, keyless
@@ -254,6 +255,7 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("iprd", "IPRD (Public Radio Directory)"),
     ("quillins", "Quillin Sources"),
     ("radioparadise", "Radio Paradise"),
+    ("locussonus", "Locus Sonus Soundmap (Open Microphones)"),
     ("apple", "Podcasts (Apple)"),
     ("podcastindex", "Podcast Index"),
     ("archive", "Internet Archive"),

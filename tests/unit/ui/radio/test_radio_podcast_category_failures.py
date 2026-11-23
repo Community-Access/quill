@@ -120,3 +120,13 @@ def test_an_ordinary_error_has_no_listener_sentence() -> None:
 def test_rows_mean_no_verdict_at_all() -> None:
     browse_failure.remember_failure(podcast_index.PodcastIndexError("stale"))
     assert browse_feedback.empty_verdict([object()]) == (False, "")
+
+
+def test_an_empty_soundmap_says_no_microphones_are_on_air() -> None:
+    """Reached and empty is its own sentence; reached and failed keeps its own."""
+    from quill.core.radio import locus_sonus
+
+    assert browse_feedback.empty_verdict([], "locussonus") == (False, locus_sonus.EMPTY_NOTE)
+    assert browse_feedback.empty_verdict([], "radioparadise") == (False, "")
+    browse_failure.remember_failure(TimeoutError())
+    assert browse_feedback.empty_verdict([], "locussonus") == (True, "")

@@ -167,6 +167,11 @@ BROWSE_SOURCES: tuple[BrowseSourceInfo, ...] = (
         "Hand-curated, listener-supported radio -- every channel from 32 kbps to FLAC.",
     ),
     BrowseSourceInfo(
+        "locussonus",
+        "Locus Sonus Soundmap (Open Microphones)",
+        "Open microphones streaming live sound from places around the world.",
+    ),
+    BrowseSourceInfo(
         "myservers",
         "My Servers",
         "Icecast and SHOUTcast servers you add yourself.",
@@ -272,11 +277,13 @@ INTRODUCED_BY_EPOCH: dict[int, tuple[str, ...]] = {
     5: ("one81", "lautfm"),
     # 2026-11-07: IPRD, the open public radio directory.
     6: ("iprd",),
+    # 2026-11-22: the Locus Sonus Soundmap, an idea from StreamSift.
+    7: ("locussonus",),
 }
 
 #: The highest epoch this build knows. A profile stamped with a lower one is
 #: shown the branches introduced since, once, and then stamped with this.
-SOURCES_EPOCH = 6
+SOURCES_EPOCH = 7
 
 
 def introduced_since(epoch: int) -> tuple[str, ...]:

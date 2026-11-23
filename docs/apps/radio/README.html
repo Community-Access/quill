@@ -484,23 +484,30 @@ it.</li>
 <li><strong>How the list reads.</strong> Live streams come first. Each
 row starts with what it is, so it is the first thing you hear on the
 row: for example “Live: WXYZ FM, MP3, 128 kbps”, using the name the
-stream sends or, if it sends none, the server’s name. Next come the
-links that could not be checked, each saying why: “Not checked: it took
-too long to answer”, “Not checked: the server refused to let QUILL check
-(403)”. They stay in the list because a busy server is not a broken one;
-Test them yourself. Audio files come last. The Link and Found by columns
-follow.</li>
+stream sends or, if it sends none, the station’s name from the directory
+or server that listed it, or else the server’s web address. Next come
+the links that could not be checked, each with its name and why: “Not
+checked: Capital UK, there were too many links to check them all”, “Not
+checked: live on stream.example.org, the server refused to let QUILL
+check (403)”. They stay in the list because a busy server is not a
+broken one; Test them yourself. Audio files come last. The Link and
+Found by columns follow.</li>
 <li><strong>What is left out.</strong> A link that answers with a web
 page, or that the server says is gone, is not audio, so it is not
 listed. The status line says how many were left out. If every link was
 left out, that is what you hear.</li>
 <li><strong>What you hear.</strong> One sentence when the scan finishes,
-such as “Found 3 live streams and 2 not checked.” Nothing is said for
-each row, and the list does not change after it appears. Checking takes
-a few seconds, at most 20, so if nothing has happened after 8 seconds
-QUILL says once “Still scanning the page and checking its links.” Press
-Scan again during a scan to hear that sentence again; it does not start
-a second scan.</li>
+such as “Found 3 live streams and 2 links not checked.” When it was the
+scan’s own limit that left links unchecked, the sentence says so: “Found
+12 live streams and 36 links not checked, because one scan checks at
+most 48 links.” One scan checks at most 16 links, or 48 when a server
+lists its streams. Any links beyond that, and any still waiting when the
+20 seconds are up, stay in the list as Not checked, and the row says
+which. Nothing is said for each row, and the list does not change after
+it appears. Checking takes a few seconds, at most 20, so if nothing has
+happened after 8 seconds QUILL says once “Still scanning the page and
+checking its links.” Press Scan again during a scan to hear that
+sentence again; it does not start a second scan.</li>
 <li><strong>Sites without HTTPS.</strong> QUILL always tries the secure
 address first. If the site refuses it, does not answer, or its secure
 connection fails, QUILL reads the plain <code>http://</code> page
@@ -521,6 +528,46 @@ page, which lists every mount by name.</li>
 new address on its website, and when you paste a station’s web page into
 Add Custom Station, so a link heard playing is preferred over one that
 only looks right.</li>
+</ul>
+<h4 id="streaming-servers-global-player-and-directories">Streaming
+servers, Global Player and directories</h4>
+<p>More ideas from Andre Louis’s StreamSift (<a
+href="https://github.com/OnjLouis/StreamSift">https://github.com/OnjLouis/StreamSift</a>),
+written in QUILL’s own code.</p>
+<ul>
+<li><strong>A whole server at once.</strong> Type the address of an
+Icecast or SHOUTcast server, such as
+<code>http://radio.example.org:8000/</code>, or scan a station site that
+links to the server’s status page, and Find Streams lists every stream
+the server carries, by the name the server gives it. Icecast is asked
+through its status list, or its status page when the list is turned off;
+SHOUTcast through its statistics, so a server carrying several stations
+shows them all. Streams that are off air, video, and the server’s own
+admin pages are left out. Each stream is still checked before it is
+listed.</li>
+<li><strong>How many are listening.</strong> When the server says, the
+row ends with the count, for example “Live: WABC Community Radio, MP3,
+128 kbps, 12 listeners”. The name, format and bitrate still come first,
+and nothing extra is said.</li>
+<li><strong>Global’s stations.</strong> A Global Player page, such as
+<code>https://www.globalplayer.com/live/capital/uk/</code>, or a station
+site that links to one, gives the stream Global lets everyone play.
+Streams Global keeps for signed-in or paying listeners are never listed.
+Global’s own list of every station,
+<code>https://media-ssl.musicradio.com/</code>, works too.</li>
+<li><strong>IPRD is asked about the site.</strong> If IPRD’s station
+list is already on your computer, because you opened or searched IPRD
+before, the stations IPRD lists for that website are added and checked
+too. A scan never downloads the IPRD list itself.</li>
+<li><strong>Locus Sonus Soundmap (Open Microphones).</strong> Browse
+Stations has a new branch of open microphones streaming live sound from
+places around the world: a hydrophone in an Amsterdam canal, a farm in
+New York state. Each is named with its place and plays, records and
+saves like any station. The list is the soundmap’s own list of
+microphones on air now, so it changes through the day. When none are on
+air, the branch says so and Refresh looks again. Find Streams from a
+Website lists them too when you give it the soundmap page, <a
+href="https://locusonus.org/soundmap/">https://locusonus.org/soundmap/</a>.</li>
 </ul>
 <h3 id="whats-playing">What’s playing</h3>
 <p>QUILL reports the current track — artist and title — from the

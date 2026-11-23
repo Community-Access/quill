@@ -1,9 +1,11 @@
-"""Quill Radio's reviewed call sites for scrobbling and AudD song recognition.
+"""Quill Radio's reviewed call sites for scrobbling, AudD song recognition
+and the Locus Sonus Soundmap.
 
 Beside :mod:`quill.tools.network_egress_entries_radio` rather than inside it,
 because that module is near its GATE-11 ceiling. Both features are ideas from
 BlindRadio by serrebidev (MIT); both are off until the listener turns them on
-and supplies their own sign-in or token.
+and supplies their own sign-in or token. The Locus Sonus Soundmap is an idea
+from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift).
 """
 
 from __future__ import annotations
@@ -39,6 +41,19 @@ RADIO_LISTENING_EGRESS: dict[str, str] = {
         "automatic recognition. The sample is capped at AudD's 10 MB limit and "
         "deleted after the request. HTTPS-only over a verified TLS context with "
         "a bounded timeout and answer size; refused in Safe Mode."
+    ),
+    "core/radio/locus_sonus.py::_fetch": (
+        "Quill Radio's Locus Sonus Soundmap source (2026-11-22): one GET of "
+        "locusonus.org/soundmap/list/active/json/name, the sound-art lab's "
+        "own public list of the open microphones on air now (~14 KB): name, "
+        "stream address, city, country. Nothing is sent but the request; no "
+        "account, no key, no identifier. Reached by opening or refreshing the "
+        "Locus Sonus Soundmap branch in Browse Stations, or by Find Streams "
+        "from a Website given the soundmap page (locusonus.org/soundmap/); "
+        "cached for 30 minutes. The microphones themselves stream from their "
+        "own hosts (locus.creacast.com and others), opened only by Play or the "
+        "live check. HTTPS-only over a verified TLS context, 15 s timeout, "
+        "1 MB cap. Refused in Safe Mode via locus_sonus.refuse_in_safe_mode."
     ),
 }
 

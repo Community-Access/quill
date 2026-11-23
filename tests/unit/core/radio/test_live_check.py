@@ -137,6 +137,22 @@ def test_check_urls_follows_a_playlist_and_reports_every_address() -> None:
     assert verdicts["https://k.example/refused"].note == "the server refused the connection"
 
 
+def test_a_link_never_contacted_is_not_said_to_be_slow() -> None:
+    asked: list[str] = []
+
+    def get(url: str, timeout: float) -> HttpReply:
+        asked.append(url)
+        return HttpReply(200, {"Content-Type": "audio/mpeg"}, b"")
+
+    urls = ["https://k.example/a", "https://k.example/b", "https://k.example/c"]
+    verdicts = check_urls(urls, get, limit=1)
+    assert asked == ["https://k.example/a"]
+    assert verdicts["https://k.example/b"].note == "there were too many links to check them all"
+    # Past the deadline before it started: QUILL's limit, not the server's fault.
+    late = check_urls(["https://k.example/a"], get, total_seconds=0.0)
+    assert late["https://k.example/a"].note == "QUILL ran out of time before checking it"
+
+
 def test_an_http_error_is_read_for_its_status() -> None:
     error = urllib.error.HTTPError("https://k.example/x", 404, "Not Found", {}, None)  # type: ignore[arg-type]
     assert (

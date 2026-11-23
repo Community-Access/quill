@@ -12,7 +12,7 @@ Andre Louis's StreamSift, https://github.com/OnjLouis/StreamSift). The checks
 finish inside the scan, so the list is filled once, when everything is known,
 and never changes under the listener (FUX-06). Its first column, which a
 screen reader reads first, says what each row is ("Live: WXYZ FM, MP3, 128
-kbps" or "Not checked: it took too long to answer"), and one sentence says the
+kbps" or "Not checked: Capital UK, it took too long to answer"), and one sentence says the
 result (FUX-04). A scan can now take a while, so Scan stays enabled --
 disabling the focused button would drop focus out of the window -- and a press
 during a scan, or eight seconds of silence, says once that it is still going.
@@ -227,6 +227,7 @@ class LinkFinderDialog:
         candidates: list[PageStreamCandidate] = list(result.candidates)
         checked = bool(getattr(result, "checked", False))
         left_out = int(getattr(result, "left_out", 0) or 0)
+        limit = int(getattr(result, "check_limit", 0) or 0)
         # One list, in one order, for the rows and for what Test and Use act
         # on: the scan already sorted it (live first) and left out non-audio.
         self._candidates = candidates
@@ -235,9 +236,10 @@ class LinkFinderDialog:
             self._results.InsertItem(row, row_status(candidate))
             self._results.SetItem(row, 1, candidate.url)
             self._results.SetItem(row, 2, candidate.reason)
-        self._status.SetLabel(status_label(candidates, checked=checked, left_out=left_out))
+        counts = {"checked": checked, "left_out": left_out, "check_limit": limit}
+        self._status.SetLabel(status_label(candidates, **counts))
         # The sentence once (FUX-04); the "left out" count stays in the label.
-        self._announce(summary_sentence(candidates, checked=checked, left_out=left_out))
+        self._announce(summary_sentence(candidates, **counts))
         if candidates:
             self._select_first_quietly()
         else:

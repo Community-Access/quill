@@ -5887,6 +5887,54 @@ fallback). Not done: UK and Nordic platform handlers (Global Player, Radioplayer
 Sveriges Radio, radio.garden), a ranked crawl queue, and any browser-assisted
 mode.
 
+**Server listings, Global Player, the soundmap and IPRD in Find Streams
+(2026-11-22; `core/radio/server_listings.py`, `core/radio/global_player.py`,
+`core/radio/locus_sonus.py`, `core/radio/page_resolvers.py`).** More ideas from
+Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift, read at
+`c7ac649`), re-implemented in QUILL's own code; nothing was copied. A scanned
+page that is a streaming server's front page (`/`, `/index.html`,
+`/status.xsl`) whose title names Icecast or SHOUTcast, or that shows Icecast
+"Mount Point" cards, or any linked `status.xsl`, `status-json.xsl`,
+`/statistics` or `/index.html?sid=N` address, has its server asked what it
+serves -- at most two servers per scan, through `link_finder._http_get`:
+Icecast `status-json.xsl`, then the HTML status page's cards (the current and
+older layouts alike, by their "Mount Point" heading and two-column fact table),
+then its `.m3u` links; SHOUTcast v2 `/statistics?json=1`, every stream with
+`streamstatus` 1. Only `audio/*` and `application/ogg` (never a playlist type)
+are kept; every mount is built on the scheme, host and port that answered and
+never on a `listenurl` host, so a backend behind a proxy is never contacted;
+`admin`, `.`/`..`, `//` and status routes are refused; 400 mounts at most. When
+a listing contributed, the live check covers 48 candidates instead of 16, under
+the same 20-second deadline. `PageStreamCandidate.listeners` carries the
+server's count, and `find_streams_text.row_status` appends "N listeners" after
+name, codec and bitrate, so the row stays one line led by what tells rows
+apart; the summary sentence is unchanged (GATE-13). The listing's mount name
+seeds `stream_name`, which `icy-name` still overrides. Global Player
+(`www.globalplayer.com/live/<brand>/...`) joins the portal hosts in
+`address_kind`, so a link to one is followed and dropped; its
+`__NEXT_DATA__` `props.pageProps.playable.playback` entries are offered only
+where `canUse` is exactly `"true"`, and the page's other stream-shaped links
+are not read, because they include the HLS, Alexa and HD streams Global keeps
+for licensed or signed-in listeners. Global's `media-ssl.musicradio.com`
+catalogue is an Icecast status page with neither JSON nor "Icecast" in its
+title, which is why the card test exists. Locus Sonus Soundmap is a flat Browse
+branch (`browse_flat.FLAT["locussonus"]`, `SOURCES_EPOCH` 7) from
+`locusonus.org/soundmap/list/active/json/name`, cached 30 minutes, with its own
+egress entry and Safe Mode refusal (`QUILL-RADIO-LOCUSSONUS-REQUEST`); the
+soundmap page itself scans to the same list. `iprd.stations_for_website`
+matches the scanned website's host (`www.` either way, and its path when it
+has one) against IPRD homepages in the catalogue already in memory or in the
+directory cache at any age, never starting the download, at most eight, each
+then checked like every other candidate. Triton's `callsign_from_page` falls
+back to `<meta name="application-name">` on `player.listenlive.co` pages only;
+SecureNet's `/cirruscontent/<CALL>` path names its callsign. Not done: a Radio
+Browser homepage match (its API has no homepage search, and StreamSift's
+answer is a 70,000-station download), StreamSift's search by name, call sign
+or frequency (Find Stations already parses all three, `station_query.py`), the
+UK Radioplayer widget (`radioplayer.musicradio.com` pages now answer 404), the
+DI.fm subscriber filter, automatic fallback to browser mode, and browser mode
+itself.
+
 **A capture that recorded nothing is a failure, not a recording (Quill Radio
 3.0; `core/radio/recording_outcome.py`).** ffmpeg writes the output container the
 instant it opens the file, so file existence was never evidence that audio

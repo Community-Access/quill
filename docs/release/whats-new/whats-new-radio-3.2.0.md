@@ -33,10 +33,10 @@ You can now ask the radio about what you are hearing, keep your own music and au
 
 ## Your stations and settings
 
-- **181.FM and laut.fm** are new in Browse Stations (Ctrl+B), and Networks > Music adds 181.FM, Big R Radio and 1.FM.
+- **181.FM, laut.fm and the Locus Sonus Soundmap** are new in Browse Stations (Ctrl+B), and Networks > Music adds 181.FM, Big R Radio and 1.FM.
 - **Double Tap Live**, a new station made for this community.
 - **Note to Self** on any station (Shift+F10): you hear it when you arrow onto the station. Add your own tags, and find a station by the team it carries.
-- **Find Streams from a Website checks each link before listing it.** Live streams come first, with their name, format and bitrate; links it could not check say why; web pages and dead links are left out. Sites without HTTPS work now too. Ideas from Andre Louis's StreamSift.
+- **Find Streams from a Website checks each link before listing it.** Live streams come first, with their name, format and bitrate; links it could not check say why; web pages and dead links are left out. Sites without HTTPS work, a SHOUTcast or Icecast server lists every stream and how many are listening, and Global Player and IPRD are read too. Ideas from Andre Louis's StreamSift.
 - **Find a setting** in Preferences (Ctrl+,) as you type. Radio's own sounds can play on the same sound card as the station; Alt+Shift+M turns them off and on.
 - **Slider Keys** in Preferences: Up is more, with Home as 100 percent, or the Windows slider keys. One choice for every Quill app.
 - **Help > What's New** (Ctrl+Shift+F1) opens the full list of changes.

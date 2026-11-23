@@ -46,8 +46,9 @@ __all__ = [
 _PLAYER_DOMAIN = "securenetsystems.net"
 
 #: ``/v5/<CALLSIGN>`` (also ``/v4/``, ``/v6/`` as the platform versions its
-#: player) is the player page path.
-_PLAYER_PATH_RE = re.compile(r"^/v\d+/([A-Za-z0-9_\-]{2,32})/?$")
+#: player) is the player page path, and so is ``/cirruscontent/<CALLSIGN>``
+#: (an idea from Andre Louis's StreamSift, https://github.com/OnjLouis/StreamSift).
+_PLAYER_PATH_RE = re.compile(r"^/(?:v\d+|cirruscontent)/([A-Za-z0-9_\-]{2,32})/?$")
 
 #: The one kind of ``securenetsystems.net`` host that serves audio rather than
 #: HTML: the Icecast mount (``ice42.securenetsystems.net/WWOJ``). Everything
