@@ -2,6 +2,31 @@
 
 ## 1.0.0
 
+### Quill Radio: Find Streams remembers, and reads more sites (2026-11-22)
+
+Ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),
+written in QUILL's own code.
+
+- **The last ten sites that worked.** The Website address field is now a
+  combo box: Alt+Down lists the last ten addresses that found at least one
+  live stream, newest first. Nothing is said when the list changes, the list
+  never changes while it is open, and choosing a row only fills the field;
+  Enter or Scan scans it. An address with a query, a fragment or a user name
+  is never remembered, because it may carry a token, and neither is one on
+  your own network. The list is kept in `radio_history.json` with the recent
+  searches.
+- **Numbered mirrors are one row.** `ice1`, `ice2` and `ice3` of the same
+  host, with the same path, are one stream, and the best-checked copy is
+  kept, https first.
+- **Listen links in other languages.** Paths such as `/en-direct/`,
+  `/en-vivo/`, `/ao-vivo/`, `/direkt/` and `/ways-to-listen/` (whole path
+  segments only), and links reading "Écouter en direct", "Escuchar en vivo",
+  "Ouvir ao vivo", "Live hören", "Lyssna live", "Ascolta in diretta" or
+  "Luister live", are followed like "Listen Live".
+- **Listen subdomains.** A link to `listen.`, `play.`, `player.`, `radio.`,
+  `stream.` or `streams.` of the site's own host is followed as its player
+  page, within the usual limits. A sister site's domain is never followed.
+
 ### Quill Radio: a Find Streams list you can work with (2026-11-22)
 
 Ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),

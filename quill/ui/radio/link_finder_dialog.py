@@ -38,6 +38,7 @@ from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.radio import find_streams_actions as actions
 from quill.ui.radio import find_streams_menus as menus
+from quill.ui.radio.find_streams_address import AddressBox
 from quill.ui.radio.find_streams_list import FindStreamsList
 from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import stop_timer_on_destroy, surface_tasks
@@ -115,8 +116,9 @@ class LinkFinderDialog:
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
         )
-        self._url_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
-        self._url_ctrl.SetName("The website address to scan for stream links")
+        # A combo box of the last ten sites that found a live stream.
+        self._address = AddressBox(self.dialog, wx, host)
+        self._url_ctrl = self._address.ctrl
         url_row.Add(self._url_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
         self._scan_btn = wx.Button(self.dialog, label="&Scan")
         self._scan_btn.SetName("Fetch the typed page and scan it for stream links")
@@ -318,6 +320,8 @@ class LinkFinderDialog:
         self._candidates = candidates
         self._rows = view.distinct_rows(candidates)
         self._refill(sentence, keep="", keep_selected=False, show=False)
+        # Remembered after the refill, so the list is read first (FUX-04).
+        self._address.remember(self._page_url, candidates)
 
     def _refill(
         self, sentence: str, *, keep: str, keep_selected: bool = True, show: bool = True

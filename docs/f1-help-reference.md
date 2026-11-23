@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 343 audited sites (230 helped, 113 named-help).
+Control coverage: 343 audited sites (231 helped, 112 named-help).
 
 ### Every window, and what it is for
 
@@ -290,6 +290,9 @@ Control coverage: 343 audited sites (230 helped, 113 named-help).
 - `self._clear_btn`: Removes every finished row; the saved files stay on disk.
 - `self._clear_all_btn`: Empties the whole list, stopping anything still going. Saved files are kept.
 - `close_btn`: Closes the queue window. Whether downloads keep going is the background-downloads preference.
+#### AddressBox (`quill/ui/radio/find_streams_address.py`)
+
+- `self.ctrl`: Type a station's website address, or press Alt+Down to choose one of the last ten addresses that found a live stream. Press Enter or Scan to scan it.
 #### FindStreamsList (`quill/ui/radio/find_streams_list.py`)
 
 - `self.ctrl`: The stream links found on the page, live streams first. Enter tests the focused link. Select several with Shift and the arrow keys, or press Ctrl+A for every row shown; to pick rows far apart, filter the list first, then press Ctrl+A. Add to Favorites, Save as Playlist (Ctrl+S) and Copy (Ctrl+C) then act on all of them. Ctrl+F finds a row, F3 and Shift+F3 find the next and previous, and the Applications key opens the list's menu.

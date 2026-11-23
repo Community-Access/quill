@@ -59,7 +59,7 @@ from dataclasses import dataclass, replace
 
 from quill.core import http_client, net_public
 from quill.core.error_codes import CodedError
-from quill.core.radio import global_player, live_check, server_listings
+from quill.core.radio import global_player, live_check, server_listings, stream_mirrors
 from quill.core.radio.address_kind import is_help_page_url, same_page
 from quill.core.radio.address_kind import is_player_page_url as _is_player_page_url
 from quill.core.radio.live_check import HttpReply
@@ -356,7 +356,7 @@ def scan_page_for_streams(
     limit = _LISTING_CHECKS if listed else live_check.MAX_CHECKS
     if check_live and kept:
         kept, left_out, not_public = _apply_live_check(kept, limit)
-    kept = _prefer_https(kept)
+    kept = stream_mirrors.collapse_mirrors(_prefer_https(kept))
     # #5 observability: which links were kept, and why -- the argv-style
     # redaction masks any token a candidate URL might carry.
     if logger.isEnabledFor(logging.DEBUG):

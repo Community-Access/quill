@@ -23,7 +23,7 @@ from pathlib import Path
 
 from quill.core.audio_enhance import EQ_PRESETS
 from quill.core.podcasts import transcript_export
-from quill.core.radio import browse_visibility, timeshift, website_overrides
+from quill.core.radio import browse_visibility, recent_websites, timeshift, website_overrides
 from quill.core.radio import search_sources as search_sources_model
 from quill.core.radio.history import (
     _FILE_NAME,
@@ -139,6 +139,7 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.source_options = source_options_model.set_current(raw.get("source_options"))
         history.search_source_facet = str(raw.get("search_source_facet", "") or "")
         history.recent_searches = search_history_from_json(raw.get("recent_searches"))
+        history.recent_websites = recent_websites.from_json(raw.get("recent_websites"))
         # Present-vs-absent is load-bearing: absent stays None ("never set").
         if "browse_sources_enabled" in raw:
             stored_epoch = raw.get("browse_sources_epoch")
@@ -346,6 +347,7 @@ def snapshot_history(history: RadioHistory) -> dict[str, object]:
         "source_options": dict(history.source_options),
         "search_source_facet": history.search_source_facet,
         "recent_searches": search_history_to_json(history.recent_searches),
+        "recent_websites": recent_websites.to_json(history.recent_websites),
         **(
             {
                 "browse_sources_enabled": list(history.browse_sources_enabled),

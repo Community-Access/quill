@@ -93,6 +93,9 @@ More ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift
 - **Stream details**, the field after the list, shows the focused stream one fact per line: Name, Status, Format, Listeners, Link, Server, Found by. It is read only, and nothing is said as it changes.
 - **Scan This Stream's Server**, in the list's menu, puts the stream's own server address in the Website address field, where you hear it, and scans it, so one stream can show everything the server carries. It is offered only when it could list something new: not for the page's own site, your own network, or the big streaming networks.
 - To pick rows that are not next to each other, filter first and then press Ctrl+A. Ctrl+Up and Ctrl+Down stay the volume keys.
+- **The last ten sites that worked.** The Website address field remembers the last ten addresses that found at least one live stream, newest first: press Alt+Down to choose one, then Enter or Scan. Arrowing through the closed field only changes its text and never starts a scan, and nothing is said when the list changes. An address with a query (`?`), a fragment (`#`) or a user name is never remembered, because it may carry a sign-in token, and neither is one on your own network. The list is kept with your recent searches in `radio_history.json`.
+- **Mirrors count once.** When a station serves one stream from numbered hosts such as `ice1`, `ice2` and `ice3`, you get one row, the best-checked copy, https first.
+- **More sites are read.** Find Streams follows "Listen Live" links written in French, Spanish, Portuguese, German, the Nordic languages, Italian and Dutch, such as "Écouter en direct", "Ouvir ao vivo" or a `/direkt/` page, and a player on the site's own `listen.`, `play.`, `player.`, `radio.`, `stream.` or `streams.` address. A different site's address is never followed.
 
 | Key, in the list | What it does |
 |---|---|
