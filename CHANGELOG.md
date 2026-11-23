@@ -2,6 +2,23 @@
 
 ## 1.0.0
 
+### Shared runtime: the Practice Site's WordPress Playground ships again (2026-11-23)
+
+- **The cause.** The WordPress Playground tool behind the Practice Site
+  (`tools/wp-playground-cli`) joined the runtime build on 2026-11-15, but a
+  runtime built before then has no copy, so the runtime-inventory gate failed
+  on it. Restaging the tools also failed at random, at a different folder
+  each time, with "The directory is not empty".
+- **Restage without a rebuild.** `standalone/runtime/stage_runtime_tools.ps1`
+  copies all six runtime tools from the pinned `build/deps` cache into an
+  existing runtime, then checks the inventory. `build_runtime.ps1` now calls
+  it, so the tool list lives in one place, and a test keeps that list equal
+  to the inventory's.
+- **A clear next step.** When a tool is missing, the inventory gate now names
+  the restage script and the full rebuild, rather than only pip advice.
+- **Removing an old copy works.** Staging retries the removal with `rd /s /q`
+  when PowerShell leaves folders behind.
+
 ### Quill Radio: Find Streams remembers, and reads more sites (2026-11-22)
 
 Ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),

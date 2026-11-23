@@ -34,6 +34,25 @@
 # malicious local file and would then be planted, unverified, into the runtime
 # every QuillVille app on the machine shares.
 
+function Remove-QuillStagedTree {
+    # Remove-Item -Recurse on a deep node_modules tree fails at random with "The
+    # directory is not empty": Windows deletes asynchronously, and an indexer or
+    # virus scanner holding a folder for a moment leaves it behind. Restaging an
+    # existing runtime (stage_runtime_tools.ps1) hit it on every run, at a
+    # different folder each time, and retrying Remove-Item alone did not clear
+    # it. rd /s /q does, so it follows each failed pass.
+    param([Parameter(Mandatory = $true)][string]$Path)
+    for ($attempt = 1; $attempt -le 5; $attempt++) {
+        if (-not (Test-Path -LiteralPath $Path)) { return }
+        Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction SilentlyContinue
+        if (-not (Test-Path -LiteralPath $Path)) { return }
+        & cmd.exe /d /c "rd /s /q `"$Path`"" 2>$null
+        if (-not (Test-Path -LiteralPath $Path)) { return }
+        Start-Sleep -Milliseconds (250 * $attempt)
+    }
+    throw "Could not remove the old staged copy at '$Path' -- close anything using it and retry."
+}
+
 function Stage-QuillMediaTools {
     [CmdletBinding()]
     param(
@@ -167,7 +186,7 @@ function Stage-QuillMediaTools {
         }
         $target = Join-Path $RuntimeDist "tools\$($engine.Name)"
         if ($engine.Copy -eq "tree") {
-            if (Test-Path -LiteralPath $target) { Remove-Item -LiteralPath $target -Recurse -Force }
+            if (Test-Path -LiteralPath $target) { Remove-QuillStagedTree $target }
             New-Item -ItemType Directory -Force $target | Out-Null
             # -Force so the dot-named marker is listed and copied too.
             Get-ChildItem -LiteralPath $engine.Dir -Force |

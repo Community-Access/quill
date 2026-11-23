@@ -135,6 +135,16 @@ def duplicate_dist_infos(packages_dir: Path) -> list[str]:
     return sorted(name for name, count in seen.items() if count > 1)
 
 
+#: A missing tool is not a pip package: build_runtime.ps1 stages tools/ from the
+#: pinned build/deps cache. A dist built before a tool joined the list (the
+#: Practice Site's wp-playground-cli, 2026-11-15) lacks it until restaged.
+_MISSING_TOOL_HINT = (
+    "A missing tool: most often, this runtime predates the tool joining the build.\n"
+    "Restage the tools without a rebuild (standalone/runtime/stage_runtime_tools.ps1),\n"
+    "or rebuild the runtime (standalone/runtime/build_runtime.ps1)."
+)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n", 1)[0])
     parser.add_argument("dist_dir", type=Path, help="the built dist directory")
@@ -199,6 +209,7 @@ def main() -> int:
     # by design), so neither its presence nor its absence is drift.
     optional = set(declared.get("optional", []))
     failures = 0
+    missing_tools = False
     for area, _rel in _LAYOUTS[args.layout]:
         have = set(current.get(area, []))
         want = set(declared.get(area, [])) - optional
@@ -211,6 +222,7 @@ def main() -> int:
         for name in sorted(want - have):
             print(f"  missing from {area}: {name} (declared, but this build did not produce it)")
             failures += 1
+            missing_tools |= area == "tools"
 
     if failures:
         print(
@@ -220,6 +232,8 @@ def main() -> int:
             "[runtime] expects (scripts/check_build_env.py names it), or rebaseline if the\n"
             "removal is intentional."
         )
+        if missing_tools and args.layout == "runtime":
+            print(_MISSING_TOOL_HINT)
         return 1
     print(f"Runtime inventory matches {args.manifest.name}.")
     return 0

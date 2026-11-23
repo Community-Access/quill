@@ -191,3 +191,41 @@ def test_youtube_portable_inventories_require_colorlogs_windows_dependency(app: 
     assert "colorlog" in manifest["site-packages"]
     assert "colorama" in manifest["site-packages"]
     assert "colorama" not in manifest.get("optional", [])
+
+
+# -- the runtime's tools ------------------------------------------------------
+
+_RUNTIME = _SCRIPT.parents[1] / "standalone" / "runtime"
+
+
+def test_a_missing_tool_says_how_to_restage_it(tmp_path: Path, capsys) -> None:
+    """A runtime built before wp-playground-cli joined the build (defect G)."""
+    dist = _make_dist(tmp_path, ["wx"], tools=["nodejs", "wp-playground-cli"])
+    manifest = tmp_path / "inventory.json"
+    assert _run([str(dist), "--manifest", str(manifest), "--write"]) == 0
+    (dist / "tools" / "wp-playground-cli").rmdir()
+    assert _run([str(dist), "--manifest", str(manifest)]) == 1
+    out = capsys.readouterr().out
+    assert "missing from tools: wp-playground-cli" in out
+    assert "stage_runtime_tools.ps1" in out
+
+
+def test_a_missing_package_does_not_mention_restaging_tools(tmp_path: Path, capsys) -> None:
+    dist = _make_dist(tmp_path, ["wx", "winrt"])
+    manifest = tmp_path / "inventory.json"
+    assert _run([str(dist), "--manifest", str(manifest), "--write"]) == 0
+    (dist / "_internal" / "winrt").rmdir()
+    assert _run([str(dist), "--manifest", str(manifest)]) == 1
+    assert "stage_runtime_tools.ps1" not in capsys.readouterr().out
+
+
+def test_the_runtime_build_stages_every_declared_tool() -> None:
+    """stage_runtime_tools.ps1 stages exactly the tools the inventory expects."""
+    declared = json.loads((_RUNTIME / "runtime-inventory.json").read_text(encoding="utf-8"))
+    script = (_RUNTIME / "stage_runtime_tools.ps1").read_text(encoding="utf-8")
+    line = next(ln for ln in script.splitlines() if ln.startswith("$tools = @("))
+    staged = [part.strip().strip('"') for part in line.split("(", 1)[1].rstrip(")").split(",")]
+    assert sorted(staged) == sorted(declared["tools"])
+    build = (_RUNTIME / "build_runtime.ps1").read_text(encoding="utf-8")
+    assert "stage_runtime_tools.ps1" in build
+    assert "-SkipInventoryCheck" in build
