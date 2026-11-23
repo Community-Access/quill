@@ -98,7 +98,8 @@ PURPOSES: dict[str, str] = {
     "Search Stations": (
         "Field-based station search across every enabled directory at once. "
         "Type a name, narrow by country, language or genre, and play or save "
-        "what comes back."
+        "what comes back. Clear Recent Searches... in the Station menu forgets "
+        "the searches remembered in the name box."
     ),
     "Manage Favorite Stations": (
         "Your whole favorites collection in one place: search it, play from "
@@ -239,7 +240,9 @@ PURPOSES: dict[str, str] = {
         "whose website plays fine in a browser but appears in no directory. "
         "In the list, Shift and the arrow keys or Ctrl+A select several, Ctrl+F "
         "finds a stream, and the Applications key opens a menu to sort, filter, "
-        "copy links, or add them all to Favorites."
+        "copy links, or add them all to Favorites. The address box remembers "
+        "the last ten sites that found a live stream; Clear Recent Searches... "
+        "in the Station menu forgets them."
     ),
     "Go To": (
         "Every place in Quill Radio, one keystroke away: a numbered list of "

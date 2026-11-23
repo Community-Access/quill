@@ -35,11 +35,12 @@ only one written somewhere in the text. wx-free, strict-typed.
 from __future__ import annotations
 
 import re
+import unicodedata
 import urllib.parse
 from dataclasses import dataclass
 from html.parser import HTMLParser
 
-from quill.core.radio.address_kind import is_player_page_url
+from quill.core.radio.address_kind import is_listen_subdomain, is_player_page_url
 from quill.core.radio.server_listings import status_kind
 
 #: File extensions that are almost always a direct audio stream/playlist.
@@ -122,10 +123,88 @@ class PageStreamCandidate:
         return self.check == "live"
 
 
+#: Listen paths in other languages, matched as whole path segments only, so
+#: ``/en-direct/`` counts and ``/ventes-en-directory`` does not (ideas from
+#: Andre Louis's StreamSift, https://github.com/OnjLouis/StreamSift).
+LISTEN_PATH_SEGMENTS = frozenset({
+    "en-direct",
+    "endirect",
+    "direct",
+    "ecouter",
+    "ecoute",  # French
+    "en-vivo",
+    "envivo",
+    "en-directo",
+    "escuchar",
+    "escucha",  # Spanish
+    "ao-vivo",
+    "aovivo",
+    "ouvir",
+    "ouca",  # Portuguese
+    "direkt",
+    "livestream",
+    "hoeren",
+    "horen",
+    "radio-hoeren",  # German
+    "lyssna",
+    "lytt",
+    "lyt",
+    "kuuntele",
+    "suora",  # Nordic
+    "ascolta",
+    "diretta",
+    "in-diretta",  # Italian
+    "luister",
+    "luisteren",
+    "luister-live",  # Dutch
+    "ways-to-listen",
+    "how-to-listen",
+    "listen-now",
+    "listen-online",
+})
+
+#: Anchor text that means "listen live" in other languages, compared with
+#: case and accents ignored.
+LISTEN_PHRASES = (
+    "ecouter en direct",
+    "ecoutez en direct",
+    "escuchar en vivo",
+    "escuchar en directo",
+    "escucha en vivo",
+    "ouvir ao vivo",
+    "ouca ao vivo",
+    "live horen",
+    "live hoeren",
+    "jetzt horen",
+    "lyssna live",
+    "lyssna direkt",
+    "lytt live",
+    "lyt live",
+    "kuuntele suorana",
+    "ascolta in diretta",
+    "ascolta la diretta",
+    "luister live",
+    "luister nu",
+)
+
+
+def _fold(text: str) -> str:
+    decomposed = unicodedata.normalize("NFKD", text)
+    return "".join(ch for ch in decomposed if not unicodedata.combining(ch)).casefold()
+
+
 def looks_like_listen_link(lowered_href: str, label: str) -> bool:
-    """True when an ``<a>`` is a "Listen Live"/"Play"/"Tune In" entry point."""
+    """True when an ``<a>`` is a "Listen Live"/"Play"/"Tune In" entry point,
+    in English or, by whole path segment or anchor phrase, in another language."""
     haystack = f"{label.lower()} {lowered_href}"
-    return any(hint in haystack for hint in LISTEN_LINK_HINTS)
+    if any(hint in haystack for hint in LISTEN_LINK_HINTS):
+        return True
+    path = urllib.parse.urlsplit(lowered_href).path
+    segments = {_fold(urllib.parse.unquote(part)) for part in path.split("/") if part}
+    if segments & LISTEN_PATH_SEGMENTS:
+        return True
+    folded = " ".join(_fold(label).split())
+    return any(phrase in folded for phrase in LISTEN_PHRASES)
 
 
 def is_stream_shaped(url: str) -> bool:
@@ -356,6 +435,10 @@ class StreamLinkParser(HTMLParser):
             self._add(joined, "playlist/stream link", label)
         elif radio_co_stream(joined):
             self._add(joined, "link to an embedded player", label)
+        elif is_listen_subdomain(joined, self._page_url):
+            # listen.<this site>/ and the like: the station's own player page,
+            # followed within the usual limits. Never a sibling domain.
+            self.portal_urls.append(joined)
         elif any(hint in lowered for hint in STREAM_PATH_HINTS):
             self._add(joined, "stream-shaped link", label)
         elif looks_like_listen_link(lowered, label):

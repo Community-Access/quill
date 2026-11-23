@@ -17,12 +17,9 @@ hides its results, while keeping the order, which its sentence names.
 Every refill runs in one order: frozen while focus is on the button, refilled
 with focus and selection kept by address, thawed, focus moved to the list,
 and only then the sentence, with ``wx.CallAfter``, so the row is read first
-and the sentence is not cut off. Keys go through the dialog's key hook rather
-than an accelerator table, which would replace the transport keys, and act
-only in the list. The list and its details field are
-:mod:`quill.ui.radio.find_streams_list`; the actions are
-:mod:`quill.ui.radio.find_streams_actions`; what is shown and said is
-:mod:`quill.core.radio.find_streams_view`.
+and the sentence is not cut off. Keys go through the dialog's key hook (an
+accelerator table would replace the transport keys) and act only in the list.
+See find_streams_list, find_streams_actions and core find_streams_view.
 """
 
 from __future__ import annotations
@@ -31,13 +28,19 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio import find_streams_view as view
-from quill.core.radio.find_streams_text import failure_sentence, status_label, summary_sentence
+from quill.core.radio.find_streams_text import (
+    failure_sentence,
+    scan_counts,
+    status_label,
+    summary_sentence,
+)
 from quill.core.radio.link_finder import PageStreamCandidate, scan_page_for_streams
 from quill.core.radio.page_url import normalize_page_url
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.radio import find_streams_actions as actions
 from quill.ui.radio import find_streams_menus as menus
+from quill.ui.radio.find_streams_address import AddressBox
 from quill.ui.radio.find_streams_list import FindStreamsList
 from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import stop_timer_on_destroy, surface_tasks
@@ -115,8 +118,9 @@ class LinkFinderDialog:
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
         )
-        self._url_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
-        self._url_ctrl.SetName("The website address to scan for stream links")
+        # A combo box of the last ten sites that found a live stream.
+        self._address = AddressBox(self.dialog, wx, host)
+        self._url_ctrl = self._address.ctrl
         url_row.Add(self._url_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
         self._scan_btn = wx.Button(self.dialog, label="&Scan")
         self._scan_btn.SetName("Fetch the typed page and scan it for stream links")
@@ -260,9 +264,7 @@ class LinkFinderDialog:
             self._announce(STILL_SCANNING)
 
     def _keep_focus_through_refill(self) -> None:
-        """Emptying the list disables the row buttons. If one of them has
-        focus, that would drop focus out of the window, so move it to the list
-        first (the spoken result explains what is, or is not, in it)."""
+        """Emptying the list disables the row buttons; move focus off them first."""
         focused = self._wx.Window.FindFocus()
         row_buttons = (self._use_btn, self._add_btn, self._save_btn, self._sort_btn)
         if focused in row_buttons or (focused is self._test_btn and not self._testing):
@@ -284,12 +286,7 @@ class LinkFinderDialog:
         self._page_title = result.page_title
         self._favicon_url = result.favicon_url
         candidates: list[PageStreamCandidate] = list(result.candidates)
-        counts = {
-            "checked": bool(getattr(result, "checked", False)),
-            "left_out": int(getattr(result, "left_out", 0) or 0),
-            "check_limit": int(getattr(result, "check_limit", 0) or 0),
-            "not_public": int(getattr(result, "not_public", 0) or 0),
-        }
+        counts = scan_counts(result)
         # A new scan clears the filter, so nothing hides its results, and keeps
         # the order, which the sentence then names.
         was_filtered = self._state.filtered
@@ -318,6 +315,8 @@ class LinkFinderDialog:
         self._candidates = candidates
         self._rows = view.distinct_rows(candidates)
         self._refill(sentence, keep="", keep_selected=False, show=False)
+        # Remembered after the refill, so the list is read first (FUX-04).
+        self._address.remember(self._page_url, candidates)
 
     def _refill(
         self, sentence: str, *, keep: str, keep_selected: bool = True, show: bool = True

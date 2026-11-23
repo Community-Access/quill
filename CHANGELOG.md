@@ -2,6 +2,41 @@
 
 ## 1.0.0
 
+### Quill Radio: Find Streams remembers, and reads more sites (2026-11-22)
+
+Ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),
+written in QUILL's own code.
+
+- **The last ten sites that worked.** The Website address field is now a
+  combo box: Alt+Down lists the last ten addresses that found at least one
+  live stream, newest first. Nothing is said when the list changes, the list
+  never changes while it is open, and choosing a row only fills the field;
+  Enter or Scan scans it. An address with a query, a fragment or a user name
+  is never remembered, because it may carry a token, and neither is one on
+  your own network. The list is kept in `radio_history.json` with the recent
+  searches.
+- **Numbered mirrors are one row.** Live copies of one stream on `ice1`,
+  `ice2` and `ice3` of the same host, with the same path and the same stream
+  name and format, are one row, the https copy first. A link that could not
+  be checked is never merged. The status line (not spoken) says "Showed 3
+  numbered copies of the same stream as one."
+- **Clear Recent Searches...**, new in Quill Radio's Station menu
+  (Ctrl+Alt+Shift+Backspace) and QUILL's Internet Radio menu, right after
+  Find Streams from a Website, forgets the remembered station searches and
+  websites. It asks first, naming only the lists that have entries ("Clear 15
+  recent station searches and 10 recent websites? No station or favorite is
+  removed."), with No as the default, then says "Cleared 15 recent searches
+  and 10 recent websites." With nothing to clear it says so. An open Find
+  Stations window's search list empties too and keeps your text.
+- **Listen links in other languages.** Paths such as `/en-direct/`,
+  `/en-vivo/`, `/ao-vivo/`, `/direkt/` and `/ways-to-listen/` (whole path
+  segments only), and links reading "Écouter en direct", "Escuchar en vivo",
+  "Ouvir ao vivo", "Live hören", "Lyssna live", "Ascolta in diretta" or
+  "Luister live", are followed like "Listen Live".
+- **Listen subdomains.** A link to `listen.`, `play.`, `player.`, `radio.`,
+  `stream.` or `streams.` of the site's own host is followed as its player
+  page, within the usual limits. A sister site's domain is never followed.
+
 ### Quill Radio: a Find Streams list you can work with (2026-11-22)
 
 Ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),

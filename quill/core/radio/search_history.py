@@ -31,7 +31,9 @@ PRIVACY
 This is a list of what somebody has been searching for, kept on their own
 machine in their own data folder alongside the stations they played. It is
 never sent anywhere -- there is no network call in this module and nothing
-reads it but the dialog -- and ``Clear Recent Searches`` empties it outright.
+reads it but the dialog -- and **Clear Recent Searches...** (Quill Radio's
+Station menu, QUILL's Internet Radio menu; ``quill/ui/radio/clear_recent.py``)
+empties it, with the recent websites, after one question.
 It rides ``radio_history.json``, which is the file that already holds the
 recently-played list, so a listener clearing that file clears this too rather
 than discovering a second history they did not know about.

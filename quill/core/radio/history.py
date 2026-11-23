@@ -131,6 +131,11 @@ class RadioHistory:
     #: it rides this file deliberately, so clearing the recently-played history
     #: clears this too rather than leaving a second history nobody knew about.
     recent_searches: tuple[SearchQuery, ...] = ()
+    #: The last ten website addresses Find Streams found a live stream on,
+    #: newest first, for its Website address box. Never one with a query, a
+    #: fragment or a user name (quill.core.radio.recent_websites). Rides this
+    #: file beside the searches for the same reason they do.
+    recent_websites: tuple[str, ...] = ()
     #: Which branches Browse Stations shows. ``None`` means "never set", which
     #: matters: it lets a branch added in a later release appear for people who
     #: never touched the setting, instead of being frozen out by a stored list

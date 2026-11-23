@@ -22,6 +22,12 @@ def build_settings_items(app: Any, station_menu: Any, wx: Any) -> tuple[Any, ...
     menu id ref that is garbage-collected can be reissued to a different item,
     and the symptom is a random menu entry firing the wrong command.
     """
+    # Forget the remembered searches and websites (ui/radio/clear_recent.py),
+    # directly after Find Streams from a Website..., which fills one of them.
+    from quill.ui.radio import clear_recent
+
+    clear_id = clear_recent.add_menu_item(app, station_menu, wx, clear_recent.LABEL)
+    app._keep_menu_ids(clear_id)
     # Which directories a search covers. Remembered, and a source that is off
     # is never contacted -- see core/radio/search_sources.py.
     sources_id = wx.NewIdRef()

@@ -33,6 +33,10 @@ class RecentSearchesMixin:
         and two searches that differ only by country would otherwise read as
         the same row twice.
         """
+        from quill.ui.radio import clear_recent
+
+        # Clear Recent Searches... empties this box too while the window is open.
+        clear_recent.register_find_stations(self)
         try:
             self._name_ctrl.Set([query.label() for query in self._recent_searches])
         except RuntimeError:  # the dialog is being torn down

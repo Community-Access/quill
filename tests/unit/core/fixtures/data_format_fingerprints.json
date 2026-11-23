@@ -1435,6 +1435,7 @@
             "source_options": "dict[str, str]",
             "search_source_facet": "str",
             "recent_searches": "tuple[SearchQuery, ...]",
+            "recent_websites": "tuple[str, ...]",
             "browse_sources_enabled": "tuple[str, ...] | None",
             "browse_sources_epoch": "int",
             "show_status_bar": "bool",
@@ -1546,7 +1547,7 @@
         "function:quill.core.radio.history_store:save_history": "sha256:ab4ddc8289ea7635"
       },
       "classification": "additive, compatible",
-      "note": "Seven new optional keys for dial tuning (dial_*); older builds ignore unknown keys, and the defaults leave it off."
+      "note": "One new optional key, recent_websites (Find Streams' last ten sites that worked); older builds ignore unknown keys, and the default is empty."
     },
     "shared.listens": {
       "current": 1,

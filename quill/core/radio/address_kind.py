@@ -16,6 +16,12 @@ Four pure predicates:
   and whose URL can look stream-shaped (#36).
 * :func:`is_web_page_address` -- the wider question Add Custom Station asks:
   a player page, or a site's own home page / ``.html`` page.
+* :func:`is_listen_subdomain` -- ``listen.``, ``play.``, ``player.``,
+  ``radio.``, ``stream.`` or ``streams.`` of the scanned site's own host,
+  which Find Streams follows as a player page (an idea from Andre Louis's
+  StreamSift, https://github.com/OnjLouis/StreamSift). A sibling domain never
+  counts: ``listen.example.com`` belongs to ``example.com``, and
+  ``listen.example.net`` does not.
 
 wx-free, network-free, strict-typed.
 """
@@ -28,6 +34,7 @@ from quill.core.radio import securenet, triton
 
 __all__ = [
     "is_help_page_url",
+    "is_listen_subdomain",
     "is_player_page_url",
     "is_portal_page_url",
     "is_web_page_address",
@@ -132,3 +139,21 @@ def same_page(first: str, second: str) -> bool:
         return ((parsed.hostname or "").lower(), "/".join(parts))
 
     return key(first) == key(second)
+
+
+#: The first labels a station gives the host its player lives on.
+LISTEN_SUBDOMAINS = ("listen", "play", "player", "radio", "stream", "streams")
+
+
+def is_listen_subdomain(url: str, page_url: str) -> bool:
+    """True when *url* is a listen-type subdomain of *page_url*'s own site.
+
+    ``https://listen.example.com/`` from ``https://www.example.com/`` is; the
+    same label on a sibling domain, or the page's own host, is not.
+    """
+    host = _host(url)
+    site = _host(page_url).removeprefix("www.")
+    first, _, rest = host.partition(".")
+    if not site or "." not in site or first not in LISTEN_SUBDOMAINS:
+        return False
+    return rest == site and host != _host(page_url)

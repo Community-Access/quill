@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 343 audited sites (230 helped, 113 named-help).
+Control coverage: 343 audited sites (231 helped, 112 named-help).
 
 ### Every window, and what it is for
 
@@ -80,7 +80,7 @@ Control coverage: 343 audited sites (230 helped, 113 named-help).
 
 **Export Rules.** Save this lineup's rules to a file, to share or to use on another computer.
 
-**Find Streams from a Website.** Point Quill Radio at a web page you know carries a stream, and it scans the page for playable stream links. Useful for the station whose website plays fine in a browser but appears in no directory. In the list, Shift and the arrow keys or Ctrl+A select several, Ctrl+F finds a stream, and the Applications key opens a menu to sort, filter, copy links, or add them all to Favorites.
+**Find Streams from a Website.** Point Quill Radio at a web page you know carries a stream, and it scans the page for playable stream links. Useful for the station whose website plays fine in a browser but appears in no directory. In the list, Shift and the arrow keys or Ctrl+A select several, Ctrl+F finds a stream, and the Applications key opens a menu to sort, filter, copy links, or add them all to Favorites. The address box remembers the last ten sites that found a live stream; Clear Recent Searches... in the Station menu forgets them.
 
 **Find something to listen to.** The second first-run screen: the two doors to stations -- Browse Stations for wandering by category, Find Stations for searching by name -- and the button that opens Browse right now.
 
@@ -170,7 +170,7 @@ Control coverage: 343 audited sites (230 helped, 113 named-help).
 
 **Search Sources.** Choose which directories Find Stations asks. Fewer sources answer faster; a source that is off is never contacted.
 
-**Search Stations.** Field-based station search across every enabled directory at once. Type a name, narrow by country, language or genre, and play or save what comes back.
+**Search Stations.** Field-based station search across every enabled directory at once. Type a name, narrow by country, language or genre, and play or save what comes back. Clear Recent Searches... in the Station menu forgets the searches remembered in the name box.
 
 **Search YouTube with Filters.** Search YouTube with the filters YouTube's own Filters menu offers -- type, upload date, length and sort order -- or search YouTube Music's songs. The answers land in Browse Stations' Search Results.
 
@@ -290,6 +290,9 @@ Control coverage: 343 audited sites (230 helped, 113 named-help).
 - `self._clear_btn`: Removes every finished row; the saved files stay on disk.
 - `self._clear_all_btn`: Empties the whole list, stopping anything still going. Saved files are kept.
 - `close_btn`: Closes the queue window. Whether downloads keep going is the background-downloads preference.
+#### AddressBox (`quill/ui/radio/find_streams_address.py`)
+
+- `self.ctrl`: Type a station's website address, or press Alt+Down to choose one of the last ten addresses that found a live stream. Press Enter or Scan to scan it. The list is empty until a scan finds a live stream.
 #### FindStreamsList (`quill/ui/radio/find_streams_list.py`)
 
 - `self.ctrl`: The stream links found on the page, live streams first. Enter tests the focused link. Select several with Shift and the arrow keys, or press Ctrl+A for every row shown; to pick rows far apart, filter the list first, then press Ctrl+A. Add to Favorites, Save as Playlist (Ctrl+S) and Copy (Ctrl+C) then act on all of them. Ctrl+F finds a row, F3 and Shift+F3 find the next and previous, and the Applications key opens the list's menu.

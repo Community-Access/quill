@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 343 audited sites (230 helped, 113 named-help).</p>
+<p>Control coverage: 343 audited sites (231 helped, 112 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -391,7 +391,9 @@ stream links. Useful for the station whose website plays fine in a
 browser but appears in no directory. In the list, Shift and the arrow
 keys or Ctrl+A select several, Ctrl+F finds a stream, and the
 Applications key opens a menu to sort, filter, copy links, or add them
-all to Favorites.</p>
+all to Favorites. The address box remembers the last ten sites that
+found a live stream; Clear Recent Searches… in the Station menu forgets
+them.</p>
 <p><strong>Find something to listen to.</strong> The second first-run
 screen: the two doors to stations – Browse Stations for wandering by
 category, Find Stations for searching by name – and the button that
@@ -563,7 +565,9 @@ Stations asks. Fewer sources answer faster; a source that is off is
 never contacted.</p>
 <p><strong>Search Stations.</strong> Field-based station search across
 every enabled directory at once. Type a name, narrow by country,
-language or genre, and play or save what comes back.</p>
+language or genre, and play or save what comes back. Clear Recent
+Searches… in the Station menu forgets the searches remembered in the
+name box.</p>
 <p><strong>Search YouTube with Filters.</strong> Search YouTube with the
 filters YouTube’s own Filters menu offers – type, upload date, length
 and sort order – or search YouTube Music’s songs. The answers land in
@@ -822,6 +826,14 @@ files stay on disk.</li>
 anything still going. Saved files are kept.</li>
 <li><code>close_btn</code>: Closes the queue window. Whether downloads
 keep going is the background-downloads preference.</li>
+</ul>
+<h4 id="addressbox-quilluiradiofind_streams_addresspy">AddressBox
+(<code>quill/ui/radio/find_streams_address.py</code>)</h4>
+<ul>
+<li><code>self.ctrl</code>: Type a station’s website address, or press
+Alt+Down to choose one of the last ten addresses that found a live
+stream. Press Enter or Scan to scan it. The list is empty until a scan
+finds a live stream.</li>
 </ul>
 <h4 id="findstreamslist-quilluiradiofind_streams_listpy">FindStreamsList
 (<code>quill/ui/radio/find_streams_list.py</code>)</h4>

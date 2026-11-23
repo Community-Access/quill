@@ -917,6 +917,9 @@ rather than something to learn.
   newest YouTube helper.
 - **Find Streams from a Website...** (Ctrl+Alt+S): look through a station's web
   page for its stream.
+- **Clear Recent Searches...** (Ctrl+Alt+Shift+Backspace): forget the station
+  searches and the websites Quill Radio remembers. It asks first, and No is the
+  default; no station or favorite is removed.
 - **Search Sources...** (Ctrl+Alt+Shift+U): choose which directories Search
   Stations asks.
 - **Choose Browse Sources...** (Ctrl+Shift+Alt+O): choose which sources Browse
