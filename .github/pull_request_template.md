@@ -51,6 +51,10 @@ change).
 - [ ] Check boxes are "checked", never "ticked"; plain language, with abbreviations spelled out on first use
 - [ ] Keys and menu paths the text teaches are the ones the app binds
 
+### Family features (a FUX proposal or a family journey)
+
+- [ ] Meets the [family interaction contracts](https://github.com/Community-Access/quill/blob/main/docs/design/family-interaction-contracts.md); each item is met, covered by its gate, or N/A with a reason
+
 ### Dependencies
 
 - [ ] A new dependency that users meet has a short accessibility review below, and is added to "Dependencies and upstream blockers" in `docs/ACCESSIBILITY.md`
