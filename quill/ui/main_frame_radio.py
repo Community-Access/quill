@@ -2162,15 +2162,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
                 _SAFE_MODE_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
             )
             return
-        dlg = LinkFinderDialog(
-            self.frame,
-            controller=self._radio_controller,
-            task_manager=self._task_manager,
-            safe_mode=self._safe_mode,
-            announce_cb=self._announce,
-            on_use_link=self._radio_open_add_custom,
-        )
-        dlg.show()
+        LinkFinderDialog(self).show()
 
     # -- command palette registration ----------------------------------------
 

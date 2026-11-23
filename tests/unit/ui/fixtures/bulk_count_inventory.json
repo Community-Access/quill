@@ -56,6 +56,8 @@
   "quill/ui/radio/favorite_hotkeys_ui.py::register_all": "no-announce",
   "quill/ui/radio/favorite_hotkeys_ui.py::unregister_all": "no-announce",
   "quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog._on_remove_all": "counts-elsewhere",
+  "quill/ui/radio/find_streams_list.py::FindStreamsList.select_all": "no-announce",
+  "quill/ui/radio/link_finder_dialog.py::LinkFinderDialog._select_all": "counts-elsewhere",
   "quill/ui/radio/local_media_window_commands.py::LocalMediaCommandsMixin.cmd_select_all": "counted",
   "quill/ui/radio/opened_files_ui.py::_batch": "no-announce",
   "quill/ui/radio/radio_ai_host.py::RadioAiHost.rebuild_all_menus": "single-row",

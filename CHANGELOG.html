@@ -245,6 +245,47 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="quill-radio-a-find-streams-list-you-can-work-with-2026-11-22">Quill
+Radio: a Find Streams list you can work with (2026-11-22)</h3>
+<p>Ideas from Andre Louis’s StreamSift (<a
+href="https://github.com/OnjLouis/StreamSift">https://github.com/OnjLouis/StreamSift</a>),
+written in QUILL’s own code.</p>
+<ul>
+<li><strong>Sort and filter.</strong> The new <strong>Sort and
+Filter</strong> button (Alt+O) offers scan order, name A to Z, bitrate
+highest first, and listeners most first when the page gave counts; live
+streams only; and each format the list holds. The groups stay as they
+were, live first. You stay on the same stream, and one sentence says
+what changed: “Sorted by bitrate, highest first.” “Showing 4 of 31
+links: MP3 only.” A filter that would leave nothing says so and leaves
+the list alone. A new scan clears the filter and keeps the order, and
+its sentence says both.</li>
+<li><strong>Find.</strong> In the list, Ctrl+F finds a stream by its
+name, link, format, bitrate, listeners or how it was found, ignoring
+case and accents; F3 and Shift+F3 find the next and previous,
+wrapping.</li>
+<li><strong>Several at once.</strong> Select rows with Shift and the
+arrow keys, or Ctrl+A for every row shown. <strong>Add to
+Favorites</strong> (Alt+F) adds one with no question, and asks for a
+folder, named after the page, for two or more. <strong>Save as
+Playlist…</strong> (Alt+L, or Ctrl+S in the list) writes M3U, PLS, XSPF
+or ASX. Ctrl+C copies the stream links. The buttons say how many: “Add 3
+to Favorites”. With nothing selected they act on the focused row. Every
+result says the count: “Added 3 streams to Favorites, in the folder
+WXYZ.” “Copied 3 stream links.”</li>
+<li><strong>The list’s menu</strong> (Applications key or Shift+F10) has
+Test, Use This Link, Add, Save, Copy, Find, Find Next, Find Previous,
+Select All, Sort and Filter, and <strong>Scan This Stream’s
+Server</strong>, which puts a stream’s own server in the address field
+and scans it, so one stream can show the whole server.</li>
+<li><strong>Stream details</strong>, a read-only field after the list,
+shows the focused stream’s name, status, format, listeners, link, server
+and how it was found, one per line. Nothing is spoken as it
+changes.</li>
+<li>Rows that would read the same now end with their host and path.</li>
+<li>Enter on a row tests it.</li>
+</ul>
+<h3
 id="quill-radio-find-streams-reads-only-the-public-internet-2026-11-22">Quill
 Radio: Find Streams reads only the public internet (2026-11-22)</h3>
 <p>An idea from Andre Louis’s StreamSift (<a

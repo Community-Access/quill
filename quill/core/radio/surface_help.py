@@ -236,7 +236,10 @@ PURPOSES: dict[str, str] = {
     "Find Streams from a Website": (
         "Point Quill Radio at a web page you know carries a stream, and it "
         "scans the page for playable stream links. Useful for the station "
-        "whose website plays fine in a browser but appears in no directory."
+        "whose website plays fine in a browser but appears in no directory. "
+        "In the list, Shift and the arrow keys or Ctrl+A select several, Ctrl+F "
+        "finds a stream, and the Applications key opens a menu to sort, filter, "
+        "copy links, or add them all to Favorites."
     ),
     "Go To": (
         "Every place in Quill Radio, one keystroke away: a numbered list of "

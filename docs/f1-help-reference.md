@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 341 audited sites (227 helped, 114 named-help).
+Control coverage: 343 audited sites (230 helped, 113 named-help).
 
 ### Every window, and what it is for
 
@@ -80,7 +80,7 @@ Control coverage: 341 audited sites (227 helped, 114 named-help).
 
 **Export Rules.** Save this lineup's rules to a file, to share or to use on another computer.
 
-**Find Streams from a Website.** Point Quill Radio at a web page you know carries a stream, and it scans the page for playable stream links. Useful for the station whose website plays fine in a browser but appears in no directory.
+**Find Streams from a Website.** Point Quill Radio at a web page you know carries a stream, and it scans the page for playable stream links. Useful for the station whose website plays fine in a browser but appears in no directory. In the list, Shift and the arrow keys or Ctrl+A select several, Ctrl+F finds a stream, and the Applications key opens a menu to sort, filter, copy links, or add them all to Favorites.
 
 **Find something to listen to.** The second first-run screen: the two doors to stations -- Browse Stations for wandering by category, Find Stations for searching by name -- and the button that opens Browse right now.
 
@@ -290,6 +290,10 @@ Control coverage: 341 audited sites (227 helped, 114 named-help).
 - `self._clear_btn`: Removes every finished row; the saved files stay on disk.
 - `self._clear_all_btn`: Empties the whole list, stopping anything still going. Saved files are kept.
 - `close_btn`: Closes the queue window. Whether downloads keep going is the background-downloads preference.
+#### FindStreamsList (`quill/ui/radio/find_streams_list.py`)
+
+- `self.ctrl`: The stream links found on the page. Live streams come first. Select several with Shift and the arrow keys, or Ctrl+A for every row shown, then Add to Favorites, Save as Playlist or Ctrl+C acts on them all. Ctrl+F finds a row, F3 and Shift+F3 find the next and previous, and the Applications key opens the list's menu.
+- `self.details`: What QUILL knows about the focused stream, one fact per line: its name, whether it is live, its format, listeners, link, server, and how it was found. Read only.
 #### RadioFirstRunDialog (`quill/ui/radio/first_run_dialog.py`)
 
 - `self._back_btn`: Returns to the previous screen of the tour.

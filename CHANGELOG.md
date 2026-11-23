@@ -2,6 +2,40 @@
 
 ## 1.0.0
 
+### Quill Radio: a Find Streams list you can work with (2026-11-22)
+
+Ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),
+written in QUILL's own code.
+
+- **Sort and filter.** The new **Sort and Filter** button (Alt+O) offers scan
+  order, name A to Z, bitrate highest first, and listeners most first when
+  the page gave counts; live streams only; and each format the list holds.
+  The groups stay as they were, live first. You stay on the same stream, and
+  one sentence says what changed: "Sorted by bitrate, highest first."
+  "Showing 4 of 31 links: MP3 only." A filter that would leave nothing says
+  so and leaves the list alone. A new scan clears the filter and keeps the
+  order, and its sentence says both.
+- **Find.** In the list, Ctrl+F finds a stream by its name, link, format,
+  bitrate, listeners or how it was found, ignoring case and accents; F3 and
+  Shift+F3 find the next and previous, wrapping.
+- **Several at once.** Select rows with Shift and the arrow keys, or Ctrl+A
+  for every row shown. **Add to Favorites** (Alt+F) adds one with no
+  question, and asks for a folder, named after the page, for two or more.
+  **Save as Playlist...** (Alt+L, or Ctrl+S in the list) writes M3U, PLS,
+  XSPF or ASX. Ctrl+C copies the stream links. The buttons say how many:
+  "Add 3 to Favorites". With nothing selected they act on the focused row.
+  Every result says the count: "Added 3 streams to Favorites, in the folder
+  WXYZ." "Copied 3 stream links."
+- **The list's menu** (Applications key or Shift+F10) has Test, Use This
+  Link, Add, Save, Copy, Find, Find Next, Find Previous, Select All, Sort and
+  Filter, and **Scan This Stream's Server**, which puts a stream's own server
+  in the address field and scans it, so one stream can show the whole server.
+- **Stream details**, a read-only field after the list, shows the focused
+  stream's name, status, format, listeners, link, server and how it was
+  found, one per line. Nothing is spoken as it changes.
+- Rows that would read the same now end with their host and path.
+- Enter on a row tests it.
+
 ### Quill Radio: Find Streams reads only the public internet (2026-11-22)
 
 An idea from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),
