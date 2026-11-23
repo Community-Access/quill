@@ -213,6 +213,13 @@ browser." When you ask for the accessible HTML alone, the sentence ends: "The
 accessible HTML came without its pictures; Download Formats in My Scribe
 Documents can add the Web page for offline reading, which has them."
 
+The Web page for offline reading never opens in QUILL as text: every picture
+is inside it, so each would be a single very long line. When it is the only
+thing there is to open, **Open Result**, and **Open** in My Scribe Documents,
+open it in your browser: "Opening the Web page for offline reading in your
+browser." **Open** in My Scribe Documents opens what Open Result would, Word
+before the Kindle book, not just the file downloaded last.
+
 **A Kindle (MOBI) book** is for older Kindles. The result sentence says so:
 "A Kindle (MOBI) book is for older Kindles: copy it to the Kindle's documents
 folder over USB, or read it on this computer in Calibre's free e-book viewer.
@@ -817,7 +824,7 @@ it speaks.
 |---|---|---|
 | Quill Media Player | File, Listen to a Document with Scribe for Documents | A document comes back as a DAISY book and MP3 audio, and opens as a book to listen to |
 | Quill Converter | File, Convert Documents with Scribe for Documents | Documents as a source type; results go to Converter's output folder, and audio can go on through Converter |
-| QUILL Studio | Studio, Narration from Scribe for Documents | A document read aloud, with chapter markers from its headings, opened in the Chapter Workbench |
+| QUILL Studio | Studio, Narration from Scribe for Documents | A document read aloud, with a chapter marker at each heading, opened in the Chapter Workbench. Scribe's DAISY book splits its audio into many files; Studio adds up their lengths to find where each heading starts in the MP3 |
 | QUILL Cast | Episode, Convert Linked Document with Scribe for Documents | A document the episode's show notes link |
 | QUILL Social | Item, Convert Linked Document with Scribe for Documents | A document a post links |
 | Quill Beacon | Tools, Scribe for Documents | Places in Scribe results, and your Scribe library as places |

@@ -426,8 +426,8 @@ with one sentence saying where documents go.</li>
 <li><strong>Studio (8.5):</strong> Studio has no File menu, so the row
 is Studio &gt; Narration from Scribe for Documents…; it opens in the
 Chapter Workbench on the person’s command, never by itself, because the
-Workbench is modal. Markers are written only when the DAISY book has one
-audio file as long as the MP3.</li>
+Workbench is modal. Markers are written when the DAISY audio, one file
+or many added up, is as long as the MP3.</li>
 <li><strong>Cast (8.6) and Social (8.8):</strong> “the episode menu” and
 “the post menu” are the Episode and Item menus. Several linked documents
 are chosen from a standard list, “Choose a Linked Document”.</li>
@@ -466,9 +466,13 @@ offline page, or, when it was not made, added by Download Formats in My
 Scribe Documents (accessibility review, 2026-11-22).</li>
 <li><strong>F3.</strong> DAISY 3 with pictures missing from the zip and
 an OPF that says Z39.86-2002 opens from <code>dtb.ncx</code> with its
-headings. Its audio is split, one MP3 per section, so Studio’s narration
-writes no chapter markers from it and says why (a follow-up can sum the
-section lengths).</li>
+headings. Its audio is split, one MP3 per paragraph or section. Studio’s
+narration adds up the files’ lengths (the end of each file’s last clip,
+in spine order) to put a chapter marker at each heading in the MP3.
+Scribe’s MP3 leaves out the spoken title the DAISY book starts with (its
+first audio file; measured on all four books), so both readings are
+tried and the one whose length matches the MP3 is used
+(2026-11-23).</li>
 <li><strong>F4.</strong> The BRF is EBAE grade 2
 (<code>en-us-g2.ctb</code>). A tab, and the UTF-8 bytes C2 B4, are kept
 byte for byte, flagged by Validate BRF Layout, and counted once in the
@@ -500,6 +504,15 @@ sentence ends “Open Folder in Scribe Conversions shows it.” “Also save
 as my Scribe account defaults” changes the account’s email setting only
 when the person changed it in the dialog.</li>
 </ul></li>
+<li><strong>Follow-ups (2026-11-23).</strong> A BRF that ends with its
+form feed (every Scribe BRF) is no longer counted one page too many.
+QUILL Lite opens a result window, or Media Player, only after the
+sentence that names it (a delay from the sentence’s length, 1.5 to 6
+seconds), so the screen reader’s window announcement does not cut it
+off. The offline web page never opens in an editor as text: when it is
+all there is, Open Result and My Scribe Documents’ Open show it in the
+browser. My Scribe Documents’ Open, and Beacon’s places, take the file
+that opens first, not the one downloaded last.</li>
 <li><strong>Not built yet.</strong> QUILL Lite’s Send To item and its
 command line (8.10). Live testing against scribeit.io comes once the
 code is merged, and every new surface still needs its NVDA, JAWS and

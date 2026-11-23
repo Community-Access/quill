@@ -317,16 +317,28 @@ class ScribeDocumentsDialog(wx.Dialog):
             )
             return
         from quill.core.scribe.queue import Job
+        from quill.core.scribe.results import library_order
 
-        format_id, path = files[-1]
-        said = self._controller.host.scribe_open_result(
-            Job(document_id=doc.id, title=doc.display_title, app=self._controller.app_name),
-            format_id,
-            path,
+        # As Open Result: the first file that opens somewhere, in open order,
+        # never just the one downloaded last (a Kindle book or the offline
+        # page, which open nowhere). The offline page, when it is all there
+        # is, opens in the browser, never as source in the editor.
+        ordered = library_order(files)
+        outputs = {format_id: str(path) for format_id, path in ordered}
+        job = Job(
+            document_id=doc.id,
+            title=doc.display_title,
+            app=self._controller.app_name,
+            outputs=outputs,
         )
-        if said:
-            self.EndModal(wx.ID_OK)
-            wx.CallLater(300, self._controller.host.scribe_announce, f"{said}.")
+        said = self._controller.open_job_result(job, speak=False, browser=True)
+        if not said:
+            from quill.core.scribe.sentences import friendly_folder
+
+            where = friendly_folder(str(ordered[0][1].parent)) if ordered else "its folder"
+            said = f"{doc.display_title} was saved in {where}. Nothing in it opens here"
+        self.EndModal(wx.ID_OK)
+        wx.CallLater(300, self._controller.host.scribe_announce, f"{said}.")
 
 
 def _select_all(dialog: Any) -> None:

@@ -175,12 +175,19 @@ class ScribeEventsMixin:
         may = getattr(self.host, "scribe_may_open_now", None)
         return bool(may()) if callable(may) else True
 
-    def open_job_result(self, job: q.Job, *, speak: bool = True) -> str:
+    def open_job_result(
+        self, job: q.Job, *, speak: bool = True, browser: bool | None = None
+    ) -> str:
         """Open Result: the first output that opens somewhere, in the tool where it
         is used (section 9). A tagged PDF, MOBI or offline page is only saved, so
         a BRF or MP3 made with it still opens. The accessible HTML is what opens
-        in the editor; the offline page is a Next Step, in the browser (F2)."""
-        from quill.core.scribe.results import open_order
+        in the editor; the offline page is a Next Step, in the browser (F2).
+
+        When the offline page is all that opens, a command the person chose
+        (*browser*, which is *speak* unless given) opens it in the browser:
+        never in the editor, where each embedded picture would be one long
+        line of base64. A result opened by itself never starts the browser."""
+        from quill.core.scribe.results import browser_page, open_order
         from quill.core.scribe.sentences import friendly_folder
 
         saved = False
@@ -190,6 +197,15 @@ class ScribeEventsMixin:
             saved = True
             said = self.host.scribe_open_result(job, format_id, path)
             if said:
+                if speak:
+                    self._say(said + ".")
+                return said
+        page = browser_page(job.outputs)
+        if page is not None and (speak if browser is None else browser):
+            from quill.ui import scribe_entry
+
+            if scribe_entry.open_in_browser(page):
+                said = "Opening the Web page for offline reading in your browser"
                 if speak:
                     self._say(said + ".")
                 return said

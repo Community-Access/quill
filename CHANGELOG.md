@@ -2,6 +2,29 @@
 
 ## 1.0.0
 
+### Scribe for Documents: follow-ups from the corpus tests (2026-11-23)
+
+- **Braille page counts.** A BRF that ends with a form feed, as every
+  Scribe BRF does, was counted as one page too many, in the open sentence
+  and the page map. The page after the last form feed now counts only when
+  it has something in it, not just blank space.
+- **QUILL Lite says the result before opening it.** A result that opens in a
+  new QUILL Lite window, or in Quill Media Player, now opens once the result
+  sentence has been said (1.5 to 6 seconds, from the sentence's length), so
+  the screen reader's announcement of the new window no longer cuts it off.
+- **The offline web page never opens as text.** Every picture is inside it,
+  so in an editor each one was a single very long line. When it is the only
+  thing to open, Open Result and Open in My Scribe Documents now show it in
+  your browser.
+- **Open in My Scribe Documents opens the right file.** It opened whatever
+  was downloaded last, which could be a Kindle book or the offline page, and
+  then said nothing. It now opens what Open Result would, and says where
+  the file is when nothing opens. Beacon's Scribe places pick the same way.
+- **Studio's chapter markers from Scribe's DAISY book.** Scribe splits the
+  DAISY audio into many files, so Studio wrote no markers. It now adds up
+  the files' lengths and puts a marker at each heading in the MP3 (checked
+  on all four books of Pneuma's corpus, within 30 milliseconds).
+
 ### GitHub Workbench: every change in one repository now works across many (2026-11-23)
 
 Across Repositories could already change labels, milestones, tags, webhooks and

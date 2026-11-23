@@ -286,10 +286,17 @@ def test_send_to_gathers_the_files_into_one_job_batch(world: World, monkeypatch:
 # ----------------------------------------------------------------- Lite
 
 
-def test_lite_opens_word_html_and_braille_in_its_own_window(world: World) -> None:
-    from quill.apps.lite_window_scribe import LiteScribeHost
+def test_lite_opens_word_html_and_braille_in_its_own_window(
+    world: World, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.apps.lite_window_scribe import LiteScribeHost, wait_for_sentence
+    from quill.stability import wx_dispatch
     from quill.ui.scribe_controller import controller_for
 
+    timers: list[tuple[int, Any]] = []
+    monkeypatch.setattr(
+        wx_dispatch, "call_later_safely", lambda ms, fn, *a, **k: timers.append((ms, fn))
+    )
     window = _QuillFrame()
     opened: list[Path] = []
     app = type("App", (), {"frames": [window], "active_frame": window,
@@ -299,8 +306,14 @@ def test_lite_opens_word_html_and_braille_in_its_own_window(world: World) -> Non
     controller.convert_files([world.source])
     job = _run(controller, world)
     result = _check_speech(window.said, job)
-    assert opened == [Path(job.outputs["brf"])]  # the PDF is only saved
     assert result.endswith("The braille is open in QUILL Lite.")
+    # The new window would cut the sentence off: it opens after it, once.
+    assert opened == []
+    waits = [ms for ms, _fn in timers]
+    assert wait_for_sentence(result) in waits
+    for _ms, fn in timers:
+        fn()
+    assert opened == [Path(job.outputs["brf"])]  # the PDF is only saved
 
 
 # -------------------------------------------- the apps that are not editors

@@ -110,6 +110,17 @@ def open_order(outputs: dict[str, str]) -> list[tuple[str, Path]]:
     return [(f, Path(outputs[f])) for f in valid_formats(list(outputs))]
 
 
+def library_order(files: list[tuple[str, Path]]) -> list[tuple[str, Path]]:
+    """A document's downloaded files (the library's ``(format, path)``) in the
+    order Open Result tries them, the newest of each format: what My Scribe
+    Documents and Beacon open, rather than whichever was downloaded last (a
+    Kindle book or the offline page, which open nowhere)."""
+    newest: dict[str, str] = {}
+    for format_id, path in files:
+        newest[format_id] = str(path)
+    return open_order(newest)
+
+
 def browser_page(outputs: dict[str, str]) -> Path | None:
     """The offline web page when it is one HTML file that exists, else ``None``."""
     offline = outputs.get("offline_html")
@@ -174,6 +185,7 @@ __all__ = [
     "browser_page",
     "daisy_entry",
     "default_action",
+    "library_order",
     "missing_pictures",
     "open_order",
     "opened_phrase",

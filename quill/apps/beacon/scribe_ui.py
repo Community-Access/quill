@@ -171,13 +171,14 @@ class BeaconScribeMixin(AppScribeMixin):
         def done(documents: Any) -> None:
             self.__dict__["_scribe_adding"] = False
             from quill.core.scribe.library import Library
+            from quill.core.scribe.results import library_order
 
             library = Library()
             files: dict[str, tuple[str, Path]] = {}
             for document in documents:
-                found = library.files_for(document.id)
+                found = library_order(library.files_for(document.id))
                 if found:
-                    files[document.id] = found[-1]
+                    files[document.id] = found[0]  # what opens first, not the last downloaded
             # Our own name where we uploaded it, not Scribe's title from inside (F6).
             pairs = [(d.id, library.title_for(d.id) or d.display_title) for d in documents]
             added, already = add_library(self.store, pairs, files)  # type: ignore[attr-defined]
@@ -225,11 +226,12 @@ class BeaconScribeMixin(AppScribeMixin):
     def _scribe_follow_library(self, res: Any) -> bool:
         """The file was downloaded again since: point the place at it."""
         from quill.core.scribe.library import Library
+        from quill.core.scribe.results import library_order
 
-        found = Library().files_for(document_id_of(res))
+        found = library_order(Library().files_for(document_id_of(res)))
         if not found:
             return False
-        format_id, path = found[-1]
+        format_id, path = found[0]  # what opens first, not the last downloaded
         res.primary_uri = str(path)
         res.metadata = {**res.metadata, "scribe_format": format_id}
         self.store.put_resource(res)  # type: ignore[attr-defined]

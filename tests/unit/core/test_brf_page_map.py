@@ -87,17 +87,37 @@ def test_page_map_form_feed_aware_with_corpus_fixture() -> None:
     text = fixture.read_text(encoding="ascii")
     doc = BRFDocument.from_text_and_suffix(text, "brf")
     page_map = build_page_map(doc, mode="form_feed")
-    # The corpus has 69 FFs, so the page map should have 70 pages
-    # (every FF ends one page, the trailing content is page 70).
-    assert page_map.page_count == 70
-    ffs = page_map.pages[:-1]  # all but the trailing page ended on FF
-    assert all(p.has_form_feed for p in ffs)
-    assert page_map.pages[-1].has_form_feed is False
+    # The corpus has 69 FFs and ends with one, so it has 69 pages: every FF
+    # ends a page, and nothing comes after the last.
+    assert text.endswith("\x0c")
+    assert page_map.page_count == 69
+    assert all(p.has_form_feed for p in page_map.pages)
     # All page starts must be in strictly ascending order.
     starts = [p.start_offset for p in page_map.pages]
     assert starts == sorted(set(starts))
     assert starts[0] == 0
-    assert page_map.pages[-1].end_offset == len(text)
+    assert page_map.pages[-1].end_offset == len(text) - 1
+
+
+@pytest.mark.parametrize(
+    ("text", "pages"),
+    [
+        ("AAA\x0cBBB", 2),  # no trailing FF: the text after the last FF is a page
+        ("AAA\x0cBBB\x0c", 2),  # a trailing FF ends the last page; no page after it
+        ("AAA\r\n\x0cBBB\r\n\x0c\r\n", 2),  # only a line ending after it
+        ("AAA\x0cBBB\x0c  \r\n \r\n", 2),  # only blank space after it
+        ("AAA\x0cBBB\x0c  C", 3),  # a cell after it is a page
+        ("\x0c", 1),
+        ("", 1),
+    ],
+)
+def test_a_trailing_form_feed_adds_no_page(text: str, pages: int) -> None:
+    doc = BRFDocument.from_text_and_suffix(text, "brf")
+    for mode in ("form_feed", "hybrid"):
+        page_map = build_page_map(doc, mode=mode)  # type: ignore[arg-type]
+        assert page_map.page_count == pages
+        # The caret at the very end is on the last page.
+        assert page_map.page_containing(len(text)) is page_map.pages[-1]
 
 
 def test_page_map_form_feed_mode_matches_hybrid_when_ffs_present() -> None:

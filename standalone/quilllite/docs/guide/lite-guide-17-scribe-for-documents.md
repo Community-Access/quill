@@ -133,6 +133,20 @@ MOBI. It does not take web pages. A link must point straight at a file.
 Results go in **Documents\Scribe for Documents**, in a folder for each
 document. QUILL Lite never writes over a file: it adds "(2)" instead.
 
+**A result opens after its sentence.** A new QUILL Lite window, or Quill
+Media Player, comes to the front only once QUILL Lite has said what it made,
+between 1.5 and 6 seconds later depending on how long the sentence is. That
+way your screen reader's announcement of the new window does not cut the
+sentence off.
+
+**The Web page for offline reading never opens as text.** Every picture is
+inside it, so in an editor each one would be a single very long line. Next
+Steps opens it in your browser; so does **Open Result**, and **Open** in My
+Scribe Documents, when it is the only thing there is to open. "Opening the Web
+page for offline reading in your browser." **Open** in My Scribe Documents
+opens what Open Result would, Word before the Kindle book, not just the file
+downloaded last.
+
 ## The Scribe commands
 
 - **Convert a File...** opens a file picker that shows only what Scribe

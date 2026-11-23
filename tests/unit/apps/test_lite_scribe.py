@@ -155,3 +155,51 @@ def test_the_import_question_turns_scribe_on_on_first_need(
     assert win.controller.calls[0][0] == "convert_files"
     assert win.controller.calls[0][2]["open_as"] == "import"
     assert win.announcements[-1] == "Scribe for Documents is on. It is in the File menu."
+
+
+# ------------------------------------- a result opens after its sentence
+
+
+def test_a_result_window_waits_for_its_sentence(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A new window (Lite's or Media Player's) takes focus and the reader says
+    it, which would cut the result sentence off: it opens after the sentence,
+    once, or after a second when no sentence follows."""
+    from quill.apps import lite_window_scribe
+    from quill.apps.lite_window_scribe import LiteScribeHost, wait_for_sentence
+    from quill.core.scribe import queue as q
+    from quill.stability import wx_dispatch
+
+    timers: list[tuple[int, Any]] = []
+    monkeypatch.setattr(
+        wx_dispatch, "call_later_safely", lambda ms, fn, *a, **k: timers.append((ms, fn))
+    )
+    sent: list[tuple[str, Path]] = []
+    monkeypatch.setattr(
+        lite_window_scribe, "_send_to_player", lambda f, p: sent.append((f, p)) or True
+    )
+    said: list[str] = []
+    window = type("W", (), {"_announce": lambda _s, text: said.append(text)})()
+    opened: list[Path] = []
+    app = type("App", (), {"frames": [window], "active_frame": window,
+                           "open_path": lambda _s, p: opened.append(Path(p))})()  # fmt: skip
+    host = LiteScribeHost(app)
+    mp3 = tmp_path / "Notes.mp3"
+    mp3.write_bytes(b"ID3")
+
+    assert host.scribe_open_result(q.Job(), "mp3", mp3) == "The MP3 audio is open in Media Player"
+    assert sent == []  # not yet: the sentence comes first
+    host.scribe_announce("The MP3 audio is open in Media Player.")
+    assert sorted(ms for ms, _fn in timers) == [1_000, wait_for_sentence(said[0])]
+    for _ms, fn in timers:
+        fn()
+    assert sent == [("mp3", mp3)]  # once, not once per timer
+
+    # No sentence at all: it still opens, after a second.
+    timers.clear()
+    host.scribe_open_result(q.Job(), "docx", tmp_path / "Notes.docx")
+    assert [ms for ms, _fn in timers] == [1_000]
+    timers[0][1]()
+    assert opened == [tmp_path / "Notes.docx"]
+    assert 1_500 <= wait_for_sentence("x") and wait_for_sentence("x" * 1000) == 6_000
