@@ -138,7 +138,12 @@ Media Player, comes to the front only once QUILL Lite has said what it made,
 between 1.5 and 6 seconds later depending on how long the sentence is. That
 way your screen reader's announcement of the new window does not cut the
 sentence off. If you move to another program while it waits, the result does
-not open; use **Open Result** in Scribe Conversions when you are ready.
+not open; use **Open Result** in Scribe Conversions when you are ready. The
+same goes for a result that opens in your browser.
+
+The accessible HTML opens once. Ask for it again while its "Notes (Scribe)"
+window is open and QUILL Lite brings that window forward instead, saying
+"The accessible HTML is already open."
 
 **The Web page for offline reading never opens as text.** Every picture is
 inside it, so in an editor each one would be a single very long line. Next

@@ -67,6 +67,17 @@ _QUILL_ONLY = ("epub",)
 NO_EPUB_READER = "QUILL Lite does not open EPUB books. QUILL does."
 
 
+#: Said once when the converted HTML is asked for again while its window is open.
+ALREADY_OPEN_SENTENCE = "The accessible HTML is already open"
+
+
+def _readable_name(job: Any, path: Path) -> str:
+    """ "Notes (Scribe)": the converted window's name, as Import names one."""
+    from quill.core.import_convert import scribe_name
+
+    return scribe_name(Path(getattr(job, "file_name", "") or path.name).stem or path.stem)
+
+
 def _quill_installed() -> bool:
     from quill.core.app_launcher import build_launch_argv
 
@@ -82,6 +93,8 @@ class LiteScribeHost:
         self._app = app
         #: The result window, held until its sentence has been said.
         self._after = AfterSentence(still_here=lambda: self.scribe_in_front())
+        #: The accessible HTML's converted windows, by file: reused while open.
+        self._readable_windows: dict[str, Any] = {}
 
     def _window(self) -> Any:
         frame = getattr(self._app, "active_frame", None)
@@ -108,6 +121,10 @@ class LiteScribeHost:
     def _hold(self, opening: Callable[[], None], phrase: str) -> None:
         self._after.hold(opening, phrase)
 
+    def scribe_hold(self, opening: Callable[[], None], phrase: str) -> None:
+        """Open after the sentence carrying *phrase* (the browser, for the controller)."""
+        self._after.hold(opening, phrase)
+
     def scribe_in_front(self) -> bool:
         import wx
 
@@ -122,6 +139,11 @@ class LiteScribeHost:
         from quill.core.scribe.results import opened_phrase
 
         if format_id == "html":
+            shown = self._readable_window(path)
+            if shown is not None:  # still open: brought forward, never a second copy
+                phrase = ALREADY_OPEN_SENTENCE  # the reader says the window's name
+                self._hold(lambda: self._app.focus_frame(shown), phrase)
+                return phrase
             text = self._readable(path)  # converted now, so a failure is never "open"
             if text is None:
                 return ""
@@ -154,8 +176,23 @@ class LiteScribeHost:
         else:
             self._app.open_path(path)
 
+    def _readable_window(self, path: Path) -> Any:
+        """The window already showing *path* converted, if it is still open."""
+        window = self._readable_windows.get(str(path))
+        if window is not None and window in getattr(self._app, "frames", []):
+            return window
+        self._readable_windows.pop(str(path), None)
+        return None
+
     def _open_readable(self, job: Any, path: Path) -> None:
-        """A Next Step: the accessible HTML, readable, at once (a step speaks for itself)."""
+        """A Next Step: the accessible HTML, readable, at once (a step speaks for
+        itself). Already open, its window comes forward after one sentence."""
+        shown = self._readable_window(path)
+        if shown is not None:
+            sentence = f"{ALREADY_OPEN_SENTENCE}."  # the reader says the window's name
+            self._hold(lambda: self._app.focus_frame(shown), sentence)
+            self.scribe_announce(sentence)
+            return
         text = self._readable(path)
         if text is None:
             self.scribe_announce(
@@ -177,14 +214,13 @@ class LiteScribeHost:
 
     def _show_readable(self, job: Any, path: Path, text: str) -> None:
         """A new unsaved window named "<stem> (Scribe)", as Import names one."""
-        from quill.core.import_convert import scribe_name
         from quill.core.lite.open_prepare import PLAIN, PreparedDocument
 
         window = self._app.new_window(PLAIN)
         if window is None:
             return
-        stem = Path(getattr(job, "file_name", "") or path.name).stem or path.stem
-        window._commit_download(PreparedDocument(mode=PLAIN, text=text), scribe_name(stem))
+        window._commit_download(PreparedDocument(mode=PLAIN, text=text), _readable_name(job, path))
+        self._readable_windows[str(path)] = window
 
     def _to_quill(self, path: Path) -> None:
         from quill.core.app_launcher import launch_app

@@ -331,3 +331,152 @@ def test_a_held_window_waits_for_its_own_sentence_and_for_the_person(
     here[0] = False  # the person went to another program meanwhile
     _fire(timers)
     assert opened == []  # not over their work; Open Result is still there
+
+
+# ------------------------------------- Jeff's answers (2026-11-23), follow-up
+
+
+def test_open_result_holds_the_browser_until_its_sentence_is_said(
+    tmp_path: Path, timers: list[tuple[int, Any]], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The browser comes to the front after "Opening ... in your browser.",
+    and not at all if the person has gone to another program."""
+    import wx
+
+    from quill.ui import scribe_entry
+    from quill.ui.scribe_app_host import AppScribeHost
+    from quill.ui.scribe_controller import controller_for
+
+    shown: list[str] = []
+    monkeypatch.setattr(scribe_entry, "open_in_browser", lambda p: shown.append(p.name) or True)
+    page = tmp_path / "N-offline.html"
+    page.write_text("<p>x</p>", encoding="utf-8")
+    said: list[str] = []
+    owner = type("Owner", (), {"_announce": lambda _s, text: said.append(text)})()
+    controller = controller_for(AppScribeHost(owner, "QUILL Test App"))
+    job = q.Job(file_name="N.pdf", outputs={"offline_html": str(page)}, folder=str(tmp_path))
+    assert controller.open_job_result(job) == (
+        "Opening the Web page for offline reading in your browser"
+    )
+    assert said == ["Opening the Web page for offline reading in your browser."]
+    assert shown == []  # not under the sentence
+    _fire(timers)
+    assert shown == ["N-offline.html"]
+
+    controller.open_job_result(job)
+    monkeypatch.setattr(wx, "GetActiveWindow", lambda: None)  # gone to another program
+    _fire(timers)
+    assert shown == ["N-offline.html"]  # not opened over their work
+
+
+def test_the_accessible_html_browser_waits_in_the_other_apps(
+    tmp_path: Path, timers: list[tuple[int, Any]], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.ui import scribe_entry
+    from quill.ui.scribe_app_host import AppScribeHost
+
+    shown: list[str] = []
+    monkeypatch.setattr(scribe_entry, "open_in_browser", lambda p: shown.append(p.name) or True)
+    owner = type("Owner", (), {"_announce": lambda _s, text: None})()
+    host = AppScribeHost(owner, "QUILL Test App")
+    html = tmp_path / "N.html"
+    assert host.scribe_open_result(q.Job(), "html", html) == (
+        "Opening the accessible HTML in your browser"
+    )
+    assert shown == []
+    host.scribe_announce("Opening the accessible HTML in your browser.")
+    _fire(timers)
+    assert shown == ["N.html"]
+
+
+def test_lite_brings_the_converted_html_forward_instead_of_a_second_copy(
+    tmp_path: Path, timers: list[tuple[int, Any]]
+) -> None:
+    from quill.apps.lite_window_scribe import LiteScribeHost
+
+    html = tmp_path / "Garden.html"
+    html.write_text(_HTML, encoding="utf-8")
+    made: list[_LiteWindow] = []
+    focused: list[Any] = []
+    window = _LiteWindow()
+
+    def new_window(_app: Any, _mode: str) -> _LiteWindow:
+        made.append(_LiteWindow())
+        app.frames.append(made[-1])
+        return made[-1]
+
+    app = type(
+        "App",
+        (),
+        {
+            "frames": [window],
+            "active_frame": window,
+            "new_window": new_window,
+            "focus_frame": lambda _s, frame: focused.append(frame),
+        },
+    )()
+    host = LiteScribeHost(app)
+    job = q.Job(file_name="Garden.pdf")
+    host.scribe_open_result(job, "html", html)
+    _fire(timers)
+    assert len(made) == 1
+    again = host.scribe_open_result(job, "html", html)
+    assert again == "The accessible HTML is already open"
+    host.scribe_announce(again + ".")
+    _fire(timers)
+    assert len(made) == 1 and focused == [made[0]]
+    # A Next Step says it once, then brings the window forward.
+    window.said.clear()
+    host._open_readable(job, html)
+    assert window.said == ["The accessible HTML is already open."]
+    _fire(timers)
+    assert len(made) == 1 and focused == [made[0], made[0]]
+    # Closed: a new one is made.
+    app.frames.remove(made[0])
+    host.scribe_open_result(job, "html", html)
+    _fire(timers)
+    assert len(made) == 2
+
+
+def test_quill_goes_to_the_converted_tab_instead_of_a_second_copy(tmp_path: Path) -> None:
+    from quill.ui.main_frame_scribe import ALREADY_OPEN, QuillScribeHost, ScribeMixin
+
+    html = tmp_path / "Garden.html"
+    html.write_text(_HTML, encoding="utf-8")
+
+    class Tab:
+        def __init__(self, document: Any) -> None:
+            self.document = document
+
+    class Frame(ScribeMixin):
+        def __init__(self) -> None:
+            self._document_tabs: list[Tab] = []
+            self.selected: list[int] = []
+            self.said: list[str] = []
+
+        def _create_document_tab(self, document: Any, select: bool = True) -> int:
+            self._document_tabs.append(Tab(document))
+            return len(self._document_tabs) - 1
+
+        def _select_tab(self, index: int) -> None:
+            self.selected.append(index)
+
+        def _set_tab_page_text(self, index: int, title: str) -> None:
+            pass
+
+        def _set_status(self, text: str) -> None:
+            pass
+
+        def _announce(self, text: str) -> None:
+            self.said.append(text)
+
+    frame = Frame()
+    host = QuillScribeHost(frame)
+    job = q.Job(file_name="Garden.pdf")
+    assert host.scribe_open_result(job, "html", html) == "The accessible HTML is open in a new tab"
+    assert host.scribe_open_result(job, "html", html) == ("The accessible HTML is already open")
+    assert len(frame._document_tabs) == 1 and frame.selected == [0]
+    assert frame._scribe_open_as_import(job, html) == ALREADY_OPEN
+    frame._document_tabs.clear()  # the tab was closed
+    assert frame._scribe_open_as_import(job, html) == "opened"
+    assert len(frame._document_tabs) == 1

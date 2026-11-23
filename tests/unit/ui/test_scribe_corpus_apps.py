@@ -468,9 +468,17 @@ def test_cast_converts_an_episodes_linked_document(world: World) -> None:
 
 
 @pytest.mark.usefixtures("worktree_quill_social")
-def test_social_converts_a_posts_linked_document(world: World) -> None:
+def test_social_converts_a_posts_linked_document(
+    world: World, monkeypatch: pytest.MonkeyPatch
+) -> None:
     from quill_social.ui.scribe import SocialScribeMixin
 
+    from quill.stability import wx_dispatch
+
+    timers: list[Any] = []
+    monkeypatch.setattr(
+        wx_dispatch, "call_later_safely", lambda _ms, fn, *a, **k: timers.append(fn)
+    )
     said: list[str] = []
 
     class Frame(SocialScribeMixin):
@@ -489,9 +497,12 @@ def test_social_converts_a_posts_linked_document(world: World) -> None:
     controller.open_job_result(job)
     # Handed to an editor on its command line, the accessible HTML would be
     # markup: it opens readable in the browser, as the offline page beside it,
-    # which has the pictures (phase-one audit, gap 1).
-    assert world.opened_elsewhere == [("browser", f"{GARDEN}-offline.html")]
+    # which has the pictures (phase-one audit, gap 1), once its sentence is said.
     assert said[-1] == "Opening the accessible HTML in your browser."
+    assert world.opened_elsewhere == []
+    for fn in timers:
+        fn()
+    assert world.opened_elsewhere == [("browser", f"{GARDEN}-offline.html")]
     steps = dict(controller.next_steps(job))
     assert not any(label.startswith("Open in QUILL") for label in steps)
     steps["Open in Your Browser (Web page for offline reading)"]()

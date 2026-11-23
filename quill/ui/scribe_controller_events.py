@@ -208,9 +208,15 @@ class ScribeEventsMixin:
         page = browser_page(job.outputs)
         if page is not None and chosen:
             from quill.ui import scribe_entry
+            from quill.ui.scribe_after_sentence import browser_opening
 
-            if scribe_entry.open_in_browser(page):
-                said = "Opening the Web page for offline reading in your browser"
+            said = "Opening the Web page for offline reading in your browser"
+            hold = getattr(self.host, "scribe_hold", None)
+            if callable(hold):  # the browser comes to the front after the sentence
+                hold(browser_opening(page, self.host.scribe_announce), said)
+            elif not scribe_entry.open_in_browser(page):
+                said = ""
+            if said:
                 if speak:
                     self._say(said + ".")
                 return said

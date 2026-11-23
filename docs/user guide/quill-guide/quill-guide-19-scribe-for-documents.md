@@ -712,6 +712,14 @@ result opens by itself, but only in the app that asked for it, and only if
 that app is in front. With **Ask me first**, nothing opens, and the result
 sentence ends "Open it from Scribe Conversions." With **Don't open**, the
 result is only saved. You can always open it later with **Open Result**.
+The tagged PDF never opens by itself, whichever you choose: it opens when
+you use **Open Result** or Next Steps.
+
+The accessible HTML opens once. Use **Open Result** again while its
+"Notes (Scribe)" tab is open and QUILL goes to that tab, saying "The
+accessible HTML is already open." A result that opens in your
+browser waits until QUILL has said "Opening ... in your browser.", and does
+not open if you have moved to another program.
 
 ## Reading while it converts
 

@@ -86,6 +86,7 @@ class SocialScribeHost(AppScribeHost):
 
     def scribe_announce(self, text: str) -> None:
         self._owner.announcer.say(text, "normal")
+        self.scribe_said(text)
 
 
 class SocialScribeMixin(AppScribeMixin):
