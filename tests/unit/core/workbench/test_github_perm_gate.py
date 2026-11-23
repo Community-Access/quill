@@ -105,6 +105,8 @@ def test_every_declared_command_is_a_real_row() -> None:
         "new_webhook",  # New Here in Settings > Webhooks
         "new_deploy_key",  # New Here in Settings > Deploy Keys
         "new_autolink",  # New Here in Settings > Autolinks
+        "new_environment",  # New Here in Settings > Environments
+        "new_ruleset",  # New Here in Settings > Rulesets
         "restore_package",  # New Here in a list of packages
         "new_runner",  # New Here in Runners
         "resource_new",  # New Here in every list of the resource engine

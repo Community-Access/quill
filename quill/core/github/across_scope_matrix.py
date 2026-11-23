@@ -161,13 +161,19 @@ _BY_NAME: Mapping[str, Mapping[str, Support]] = {
         "copy_missing": _yes("across_add_missing", "Created where missing, with the winner."),
         "close": _yes("across_close_milestone", "Every open copy closed, after the preview."),
         "find_uses": _yes("across_find_uses", "One issue search over every repository in the set."),
-        "rename": _later("renaming a milestone everywhere", "milestone sheet's title"),
+        "rename": _yes(
+            "across_rename_name", "Renamed everywhere; a clash is shown, and Undo puts it back."
+        ),
         "merge": _yes(
             "across_move_open",
             "Each repository's open items move to another milestone of its own; one without "
             "that milestone is blocked, so no item is left without one.",
         ),
-        "delete": _later("deleting a milestone everywhere", "milestone deletion"),
+        "delete": _yes(
+            "across_delete_name",
+            "Deleted everywhere after a preview that starts on Cancel; its items stay, with no "
+            "milestone.",
+        ),
     },
     "topics": {
         "list": _yes("across_variants", "Every topic in the set and where it is."),
@@ -226,7 +232,11 @@ _BY_NAME: Mapping[str, Mapping[str, Support]] = {
             "Release Train, on a Tags by Name row, makes the release in each repository that "
             "lacks the tag; a repository that has it is skipped.",
         ),
-        "make_same": _later("editing notes together", "release sheet"),
+        "make_same": _yes(
+            "across_draft_releases",
+            "Draft Releases Together, on a Tags by Name row: one draft release per repository "
+            "from notes written once; one that has a release or draft for the tag is skipped.",
+        ),
     },
     "issue_types": {
         "list": _no(
@@ -247,7 +257,12 @@ _BY_NAME: Mapping[str, Mapping[str, Support]] = {
             "GitHub's rename in each: the preview says where it is the default, where its "
             "protection moves with it and how many open pull requests are retargeted.",
         ),
-        "delete": _later("deleting merged branches of one name", "Delete Branch batch"),
+        "delete": _yes(
+            "across_delete_merged",
+            "Delete Where Merged: only where everything on it is in the default branch, or a "
+            "merged pull request took its last commit; a default, protected or unmerged copy is "
+            "kept.",
+        ),
     },
     "environments": {
         "list": _yes("across_variants", "Environments by Name, with where they differ."),
@@ -258,7 +273,11 @@ _BY_NAME: Mapping[str, Mapping[str, Support]] = {
             "The winner's wait timer, reviewers, self-review and branch rule; custom branch "
             "patterns and another owner's teams are not copied.",
         ),
-        "copy_missing": _later("adding an environment to many", "New Environment command"),
+        "copy_missing": _yes(
+            "across_add_missing",
+            "Made where missing, as the winner; custom branch patterns and another owner's "
+            "teams are not copied.",
+        ),
         "delete": _yes("across_delete_name", "Deleted everywhere, after the preview."),
         "promote_org": _no(
             "GitHub has no organization environments: each belongs to one repository."
@@ -351,7 +370,12 @@ _BY_NAME: Mapping[str, Mapping[str, Support]] = {
     },
     "alerts": {
         "list": _yes("load_across", "Security Alerts is a category list (GX16)."),
-        "make_same": _later("dismissing an alert everywhere", "Dismiss Alert batch"),
+        "make_same": _yes(
+            "across_dismiss_alerts",
+            "Dismiss Everywhere, on a Security Alerts row: every open copy of the advisory or "
+            "code scanning rule, one reason and comment; Undo reopens each. Secret scanning "
+            "alerts are each their own and are resolved one at a time.",
+        ),
     },
     "packages_pages": {
         "list": _no(
@@ -375,6 +399,8 @@ SINGLE_REPOSITORY: Mapping[tuple[str, str], tuple[str, ...]] = {
     ("milestones", "copy_missing"): (f"{_W}milestone",),
     ("milestones", "close"): ("sheet:milestone.state",),
     ("milestones", "merge"): (f"{_W}milestone",),
+    ("milestones", "rename"): ("sheet:milestone.title",),
+    ("milestones", "delete"): (f"{_W}delete_milestone",),
     ("topics", "copy_missing"): ("sheet:repository.topics",),
     ("topics", "delete"): ("sheet:repository.topics",),
     ("rules", "make_same"): (
@@ -382,10 +408,13 @@ SINGLE_REPOSITORY: Mapping[tuple[str, str], tuple[str, ...]] = {
         "command:github.configure_branch_protection",
     ),
     ("rules", "promote_org"): (f"{_W}org_rulesets",),
+    ("rules", "copy_missing"): (f"{_W}new_ruleset",),
     ("tags", "copy_missing"): (f"{_W}new_tag", "command:github.create_release"),
     ("tags", "delete"): (f"{_W}delete_tag",),
     ("releases", "copy_missing"): ("command:github.create_release",),
+    ("releases", "make_same"): ("command:github.create_release",),
     ("branches", "rename"): ("sheet:branch.name",),
+    ("branches", "delete"): (f"{_W}delete_branch",),
     ("environments", "make_same"): (
         "sheet:environment.wait_timer",
         "sheet:environment.reviewers",
@@ -393,6 +422,7 @@ SINGLE_REPOSITORY: Mapping[tuple[str, str], tuple[str, ...]] = {
         "sheet:environment.branches",
     ),
     ("environments", "delete"): (f"{_W}environment_delete",),
+    ("environments", "copy_missing"): (f"{_W}new_environment",),
     ("secrets", "make_same"): ("sheet:secret.secret_value",),
     ("secrets", "copy_missing"): (f"{_W}resource_new",),
     ("secrets", "delete"): (f"{_W}resource_delete",),
@@ -413,17 +443,13 @@ SINGLE_REPOSITORY: Mapping[tuple[str, str], tuple[str, ...]] = {
     ("deploy_keys", "delete"): (f"{_W}delete_deploy_key",),
     ("autolinks", "copy_missing"): (f"{_W}new_autolink",),
     ("autolinks", "delete"): (f"{_W}delete_autolink",),
+    ("alerts", "make_same"): (f"{_W}dismiss_alert", "sheet:security_alert.state"),
 }
 
 #: Writes the window can do but the single-repository rule does not count as
-#: done yet, each with what is missing. May only shrink.
-HELD_BACK: Mapping[tuple[str, str], str] = {
-    ("rules", "copy_missing"): (
-        "Not counted as done: Add to Missing on a ruleset row runs, but the Workbench has no "
-        "New Ruleset in one repository yet, and the single-repository rule (complete.md 1.3) "
-        "counts a write across repositories only when the one-repository write exists."
-    ),
-}
+#: done yet, each with what is missing. May only shrink; empty since GH-R-151
+#: (New Ruleset in one repository made ruleset Add to Missing count).
+HELD_BACK: Mapping[tuple[str, str], str] = {}
 
 _SCOPE_NOTES = {
     "repository_set": "",

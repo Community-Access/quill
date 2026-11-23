@@ -120,17 +120,18 @@ class PreviewDialog(wx.Dialog):
         lines: Sequence[str],
         yes: str,
         destructive: bool = False,
+        undoable: bool = False,
     ) -> None:
         super().__init__(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.destructive = destructive
+        careful = (
+            " Change History can undo it, but Enter is Cancel: press the button itself."
+            if undoable
+            else " This cannot be undone, so Enter is Cancel: press the button itself."
+        )
         self.SetHelpText(
             "What the change will do, before anything is sent. The button names the change; "
-            "Cancel sends nothing."
-            + (
-                " This cannot be undone, so Enter is Cancel: press the button itself."
-                if destructive
-                else ""
-            )
+            "Cancel sends nothing." + (careful if destructive else "")
         )
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.summary = wx.TextCtrl(self, value=summary, style=wx.TE_MULTILINE | wx.TE_READONLY)
@@ -147,6 +148,9 @@ class PreviewDialog(wx.Dialog):
             cancel = self.FindWindow(wx.ID_CANCEL)
             if isinstance(cancel, wx.Button):
                 cancel.SetDefault()
+            button = self.FindWindow(wx.ID_OK)
+            if isinstance(button, wx.Button):
+                button.SetHelpText(f"{yes} now. Enter is Cancel here, so press this button itself.")
         self.SetSizerAndFit(sizer)
         apply_modal_ids(self)
 
@@ -160,16 +164,24 @@ def ask_preview(
     lines: Sequence[str],
     yes: str,
     destructive: bool | None = None,
+    undoable: bool = False,
 ) -> bool:
     """True when the person presses the button that names the change.
 
-    *destructive* (a change nothing takes back) starts the dialog on Cancel;
-    left as ``None``, the running command's tier and the button's words decide.
+    *destructive* (a change nothing takes back, or one that reaches many places
+    at once) starts the dialog on Cancel; left as ``None``, the running command's
+    tier and the button's words decide. *undoable* says Change History can undo it.
     """
     if destructive is None:
         destructive = _destructive_now() or yes in IRREVERSIBLE
     dialog = PreviewDialog(
-        parent, title=title, summary=summary, lines=lines, yes=yes, destructive=destructive
+        parent,
+        title=title,
+        summary=summary,
+        lines=lines,
+        yes=yes,
+        destructive=destructive,
+        undoable=undoable,
     )
     try:
         return bool(show_modal(dialog, title) == wx.ID_OK)

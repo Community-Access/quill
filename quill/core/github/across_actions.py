@@ -12,6 +12,8 @@ help reference read them like every other row. Five row types:
 - ``repository_set``: a named set under Repository Sets.
 - ``by_name``: a label, milestone, topic, rule set, tag, branch, environment,
   secret, variable, webhook, deploy key or autolink by name across the set.
+  Delete Where Merged and Draft Releases Together are here too; Dismiss
+  Everywhere is on an ``across_item`` alert row.
 - ``fleet``: one repository's line in the Fleet.
 
 :data:`KEYLESS` is family rule 8 for these commands: every one has a key in
@@ -95,6 +97,15 @@ ACROSS_ROWS: dict[str, tuple[ActionRow, ...]] = {
             "Releases shows each repository's latest release; this shows every release, or "
             "the latest only again.",
         ),
+        _a(
+            "across_dismiss_alerts",
+            "Dismiss Everywhere...",
+            _W,
+            "push",
+            "Dismiss every open alert in the set for this Dependabot advisory or code scanning "
+            "rule, with one reason and an optional comment, after the preview. Undo in Change "
+            "History reopens each.",
+        ),
         _OPEN_WEB,
         _COPY_LINK,
         _PROPERTIES,
@@ -171,8 +182,9 @@ ACROSS_ROWS: dict[str, tuple[ActionRow, ...]] = {
             "Rename Everywhere...",
             _W,
             "push",
-            "Rename the label or branch in every repository; a clash is shown, not merged, "
-            "and a branch's preview says what follows from GitHub's rename.",
+            "Rename the label, milestone or branch in every repository; a clash is shown, not "
+            "merged, and a branch's preview says what follows from GitHub's rename. Undo puts a "
+            "label's or milestone's name back.",
         ),
         _a(
             "across_merge_label",
@@ -226,11 +238,29 @@ ACROSS_ROWS: dict[str, tuple[ActionRow, ...]] = {
             "Turn the webhook on or off in every repository that has it, after the preview.",
         ),
         _a(
+            "across_draft_releases",
+            "Draft Releases Together...",
+            _W,
+            "push",
+            "One draft release of this tag in each repository you choose, from notes written "
+            "once, after the preview; {repository} and {tag} are filled in for each.",
+        ),
+        _a(
+            "across_delete_merged",
+            "Delete Where Merged...",
+            _D,
+            "push",
+            "After the preview, delete this branch in each repository where its work is already "
+            "in the default branch; a copy that is the default branch, protected, unmerged, or "
+            "has an open pull request is kept.",
+        ),
+        _a(
             "across_delete_name",
             "Delete Everywhere...",
             _D,
             "push",
-            "Delete it, or remove the topic, in every repository that has it, after the preview.",
+            "Delete it, or remove the topic, in every repository that has it, after the preview; "
+            "a milestone's items stay, with no milestone.",
         ),
         _PROPERTIES,
     ),
@@ -279,6 +309,9 @@ KEYLESS: dict[str, str] = {
     f"{_P}across_release_train": _RARE,
     f"{_P}across_set_secret": _RARE,
     f"{_P}across_hooks_on_off": _RARE,
+    f"{_P}across_draft_releases": _RARE,
+    f"{_P}across_delete_merged": _RARE + "; never Delete, which must not reach many repositories",
+    f"{_P}across_dismiss_alerts": _RARE,
     f"{_P}across_delete_name": _RARE + "; never Delete, which must not reach many repositories",
     f"{_P}across_open_repository": "Enter, the row's default, does it.",
 }

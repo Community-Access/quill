@@ -65,7 +65,8 @@ ADMIN_SPECS: tuple[ResourceSpec, ...] = (
         sentence=_ruleset,
         help="Rulesets: every ruleset on this repository, its own and the organization's. "
         "Alt+Enter opens one's sheet: its target, every rule and setting, who may bypass it, "
-        "and a Summary in plain words. Delete removes one after its name is typed.",
+        "and a Summary in plain words. Ctrl+N makes one; Delete removes one after its name "
+        "is typed.",
         page="https://github.com/{target}/rules",
         typed_delete=True,
     ),

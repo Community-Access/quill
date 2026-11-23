@@ -50,7 +50,8 @@ def test_every_supported_verb_has_a_handler() -> None:
         ("by_name", "labels", "organization", "promote_org", False),
         ("by_name", "milestones", "filter_set", "close", True),
         ("by_name", "milestones", "repository_set", "merge", True),
-        ("by_name", "milestones", "repository_set", "rename", False),
+        ("by_name", "milestones", "repository_set", "rename", True),
+        ("by_name", "milestones", "organization", "delete", True),
         ("by_name", "topics", "repository_set", "copy_missing", True),
         ("by_name", "topics", "repository_set", "make_same", False),
         ("by_name", "rules", "repository_set", "make_same", True),
@@ -64,14 +65,17 @@ def test_every_supported_verb_has_a_handler() -> None:
         ("by_name", "webhooks", "every_permitted", "promote_org", False),
         ("by_name", "environments", "repository_set", "make_same", True),
         ("by_name", "environments", "repository_set", "promote_org", False),
-        ("by_name", "environments", "repository_set", "copy_missing", False),
+        ("by_name", "environments", "repository_set", "copy_missing", True),
         ("by_name", "deploy_keys", "repository_set", "copy_missing", False),
         ("by_name", "deploy_keys", "repository_set", "promote_org", False),
         ("by_name", "autolinks", "repository_set", "promote_org", False),
         ("by_name", "tags", "repository_set", "copy_missing", True),
         ("by_name", "tags", "repository_set", "compare", True),
         ("by_name", "branches", "repository_set", "rename", True),
-        ("by_name", "rules", "repository_set", "copy_missing", False),
+        ("by_name", "rules", "repository_set", "copy_missing", True),
+        ("by_name", "branches", "filter_set", "delete", True),
+        ("by_name", "releases", "repository_set", "make_same", True),
+        ("by_name", "alerts", "every_permitted", "make_same", True),
         ("category", "issues", "repository_set", "list", True),
         ("category", "issues", "repository_set", "delete", False),
         ("category", "alerts", "every_permitted", "list", True),
@@ -145,7 +149,7 @@ def test_every_single_repository_home_is_for_a_cell_that_is_done() -> None:
 def test_held_back_writes_say_why_and_are_not_done() -> None:
     from quill.core.github.across_scope_matrix import HELD_BACK
 
-    assert set(HELD_BACK) == {("rules", "copy_missing")}  # may only shrink
+    assert set(HELD_BACK) == set()  # may only shrink; GH-R-151 emptied it
     for (kind, op), reason in HELD_BACK.items():
         assert not classify("by_name", kind, "repository_set", op).supported
         assert "single-repository rule" in reason

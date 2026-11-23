@@ -73,5 +73,7 @@ NEW_HERE.update(_resource_new_here())
 NEW_HERE["code_scanning_analyses"] = "github.workbench.upload_sarif"
 NEW_HERE["repo_codespaces"] = "github.workbench.codespace_new"
 NEW_HERE["pages"] = "github.workbench.pages_turn_on"
+NEW_HERE["environments"] = "github.workbench.new_environment"
+NEW_HERE["repo_rulesets"] = "github.workbench.new_ruleset"
 DELETE_COMMANDS["codespace"] = "github.workbench.codespace_delete"
 DELETE_COMMANDS["environment"] = "github.workbench.environment_delete"

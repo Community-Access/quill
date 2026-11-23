@@ -273,7 +273,9 @@ def test_labels_by_name_make_the_same_with_a_preview_and_a_result_each(bench, mo
     assert "Variant 1" in row.detail and "Missing From: none of them" in row.detail
     shown: list[Any] = []
     monkeypatch.setattr(provider, "_choose", lambda *_a: 0)
-    monkeypatch.setattr(provider, "_preview", lambda _t, plan, _y: shown.append(plan) or True)
+    monkeypatch.setattr(
+        provider, "_across_preview", lambda _t, plan, _y: shown.append(plan) or True
+    )
     provider._do_across_make_same(None, row)
     assert shown and len(shown[0].runnable) == 1
     assert [s[0] for s in api.sent] == ["PATCH"]
@@ -392,7 +394,7 @@ def test_across_writes_go_to_change_history_with_undo_where_a_sheet_can(bench, m
     monkeypatch.setattr(provider, "change_log", lambda: log)
     _go(bench, NodeRef("", "across_by_labels"))
     monkeypatch.setattr(provider, "_choose", lambda *_a: 0)
-    monkeypatch.setattr(provider, "_preview", lambda *_a: True)
+    monkeypatch.setattr(provider, "_across_preview", lambda *_a: True)
     provider._do_across_make_same(None, bench.rows[0])
     (entry,) = log.entries
     assert entry.kind == "label" and dict(entry.ident) == {"repo": "o/two", "name": "bug"}

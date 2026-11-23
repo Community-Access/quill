@@ -208,7 +208,7 @@ def test_a_change_previews_permission_and_conflict_then_reports_each_repository(
     # a/two changed on GitHub since the survey (00ff00), so it is skipped, not overwritten.
     assert by_repo["a/two"].said == "it was changed on GitHub since you looked"
     assert not by_repo["a/ro"].ok and by_repo["a/one"].ok
-    assert results_summary(results).startswith("0 of 3 repositories changed. 1 already right.")
+    assert results_summary(results).startswith("0 of 3 repositories changed. 1 needed no change.")
     assert not [s for s in api.sent if s[0] == "PATCH"]
 
 

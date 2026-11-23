@@ -1301,7 +1301,8 @@ each, or every release from the row’s menu.</td>
 <td>Security Alerts (<code>:across_alerts</code>)</td>
 <td>across</td>
 <td>Security alerts from every repository in the set you may read them
-in.</td>
+in. Dismiss Everywhere on a Dependabot or code scanning alert dismisses
+every open copy of it in the set, with one reason.</td>
 </tr>
 <tr>
 <td>Help and Learning (<code>:help</code>)</td>
@@ -1375,9 +1376,9 @@ preview and a result per repository.</td>
 <td>Milestones by Name (<code>:across_by_milestones</code>)</td>
 <td>across_planning</td>
 <td>Milestones by Name: each milestone title across the set, its due
-dates, descriptions and progress. Make them the same, close them
-everywhere, move their open work to another milestone or add the missing
-ones, each with a preview and a result per repository.</td>
+dates, descriptions and progress. Make them the same, close, rename or
+delete them everywhere, move their open work to another milestone or add
+the missing ones, each with a preview and a result per repository.</td>
 </tr>
 <tr>
 <td>Topics by Name (<code>:across_by_topics</code>)</td>
@@ -1398,8 +1399,9 @@ by name across the set.</td>
 <td>across_code</td>
 <td>Tags by Name: each tag across the set and the commit it is on in
 each repository. Release Train makes it, or it and a release, where it
-is missing, and never moves an existing tag; Delete Everywhere keeps a
-tag a release is built on.</td>
+is missing, and never moves an existing tag; Draft Releases Together
+makes one draft release of it in each repository from notes written
+once; Delete Everywhere keeps a tag a release is built on.</td>
 </tr>
 <tr>
 <td>Branches by Name (<code>:across_by_branches</code>)</td>
@@ -1407,7 +1409,9 @@ tag a release is built on.</td>
 <td>Branches by Name: each branch across the set, where it is the
 default and where it is protected. Rename Everywhere uses GitHub’s
 rename; its preview says where the default changes, where protection
-moves and how many open pull requests are retargeted.</td>
+moves and how many open pull requests are retargeted. Delete Where
+Merged deletes it only where everything on it is in the default
+branch.</td>
 </tr>
 <tr>
 <td>Rules and Branch Protection (<code>:across_by_rules</code>)</td>
@@ -1429,8 +1433,8 @@ across the set. Reading them needs admin access in each repository.</td>
 <td>across_actions</td>
 <td>Environments by Name: wait timer, reviewers, self-review and which
 branches may deploy, compared across the set. Make them the same as the
-winner, or delete one everywhere. GitHub has no organization
-environments.</td>
+winner, add it where missing, or delete one everywhere. GitHub has no
+organization environments.</td>
 </tr>
 <tr>
 <td>Secrets by Name (<code>:across_by_secrets</code>)</td>
@@ -1877,8 +1881,8 @@ Ctrl+N adds one.</td>
 <td>Environments (<code>repository:environments</code>)</td>
 <td>repository, settings</td>
 <td>Environments: where this repository’s workflows deploy, each with
-its protection rules. Secrets… and Variables… on a row are that
-environment’s own.</td>
+its protection rules. Ctrl+N makes one. Secrets… and Variables… on a row
+are that environment’s own.</td>
 </tr>
 <tr>
 <td>Codespaces (<code>repository:repo_codespaces</code>)</td>
@@ -2038,8 +2042,8 @@ here.</td>
 <td>repository, settings</td>
 <td>Rulesets: every ruleset on this repository, its own and the
 organization’s. Alt+Enter opens one’s sheet: its target, every rule and
-setting, who may bypass it, and a Summary in plain words. Delete removes
-one after its name is typed.</td>
+setting, who may bypass it, and a Summary in plain words. Ctrl+N makes
+one; Delete removes one after its name is typed.</td>
 </tr>
 <tr>
 <td>person (<code>person:person</code>)</td>
@@ -3594,8 +3598,8 @@ Patreon Sponsorships…, My Agent Tasks, My Automations, Prompt Files…;
 Properties…</li>
 <li><strong>across_item</strong>: Open in Its Repository, Next
 Repository, Previous Repository, View More from This Repository, Read
-Issue Type and Fields, Every Release or Latest Only; More: Open on
-GitHub, Copy Link; Properties…</li>
+Issue Type and Fields, Every Release or Latest Only; More: Dismiss
+Everywhere…, Open on GitHub, Copy Link; Properties…</li>
 <li><strong>across_status</strong>: Open, Next Repository, Previous
 Repository, View More from This Repository, Open on GitHub;
 Properties…</li>
@@ -3605,7 +3609,8 @@ Set Filter…, New Set…, Rename Set…, Delete Set…; Properties…</li>
 Same…, Add to Missing…, Find Uses, Rename Everywhere…, Merge Into…;
 More: Close Everywhere…, Move Open Work To…, Promote to Organization…,
 Release Train…, Set Secret Everywhere…, Turn On or Off Everywhere…,
-Delete Everywhere…; Properties…</li>
+Draft Releases Together…, Delete Where Merged…, Delete Everywhere…;
+Properties…</li>
 <li><strong>fleet</strong>: Open Repository, Open on GitHub, Copy Link;
 Properties…</li>
 <li><strong>release_asset</strong>: Download, Copy Link, Attestations…,
@@ -12257,7 +12262,8 @@ Rulesets</td>
 <td>Create a repository ruleset</td>
 <td><code>POST /repos/{owner}/{repo}/rulesets</code></td>
 <td>Yes</td>
-<td>context menu &gt; Add to Missing…</td>
+<td>Navigator: Repository &gt; owner/name &gt; Settings &gt;
+Rulesets</td>
 </tr>
 <tr>
 <td>List repository rule suites</td>

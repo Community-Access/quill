@@ -101,6 +101,11 @@ from quill.ui.github_workbench_merge import (
     MERGE_VERBS,
     GitHubWorkbenchMergeMixin,
 )
+from quill.ui.github_workbench_new_ruleset import (
+    NEW_RULESET_REASONS,
+    NEW_RULESET_VERBS,
+    GitHubWorkbenchNewRulesetMixin,
+)
 from quill.ui.github_workbench_org_admin import (
     ORG_ADMIN_REASONS,
     ORG_ADMIN_VERBS,
@@ -239,6 +244,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **CODESPACE_VERBS,
     **RUN_MORE_VERBS,
     **ENVIRONMENT_VERBS,
+    **NEW_RULESET_VERBS,
     **PULL_REVIEW_VERBS,
     **PAGES_VERBS,
     **PROJECT_ADMIN_VERBS,
@@ -281,6 +287,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **CODESPACE_REASONS,
     **RUN_MORE_REASONS,
     **ENVIRONMENT_REASONS,
+    **NEW_RULESET_REASONS,
     **PULL_REVIEW_REASONS,
     **PAGES_REASONS,
     **PROJECT_ADMIN_REASONS,
@@ -321,6 +328,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchCodespacesMixin,
     GitHubWorkbenchRunMoreMixin,
     GitHubWorkbenchEnvironmentsMixin,
+    GitHubWorkbenchNewRulesetMixin,
     GitHubWorkbenchPullReviewsMixin,
     GitHubWorkbenchPagesMixin,
     GitHubWorkbenchProjectAdminMixin,

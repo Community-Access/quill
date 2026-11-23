@@ -1,4 +1,8 @@
-"""A repository's environments: their secrets and variables, and deleting one (PRD section 19).
+"""A repository's environments: making one, their secrets and variables, and deleting one.
+
+PRD section 19. New Environment (Ctrl+N in Environments) asks for the name,
+which branches may deploy and how long a deployment waits; reviewers and a
+custom branch list are on the environment's sheet afterwards.
 
 Secrets and variables go through the resource engine, with the environment
 as its target; this mixin lists them in a chooser with "Add one" first, then
@@ -17,6 +21,7 @@ __all__ = ["ENVIRONMENT_REASONS", "ENVIRONMENT_VERBS", "GitHubWorkbenchEnvironme
 _ROW = frozenset({"environment"})
 
 ENVIRONMENT_VERBS: dict[str, frozenset[str]] = {
+    "new_environment": frozenset({"view"}),
     "environment_secrets": _ROW,
     "environment_variables": _ROW,
     "environment_branch_policies": _ROW,
@@ -25,6 +30,7 @@ ENVIRONMENT_VERBS: dict[str, frozenset[str]] = {
 }
 
 ENVIRONMENT_REASONS: dict[str, str] = {
+    "new_environment": "New Here in Environments makes one, for the repository's administrators.",
     "environment_secrets": "Secrets is for an environment, while you are signed in.",
     "environment_variables": "Variables is for an environment, while you are signed in.",
     "environment_branch_policies": "Branch Policies is for an environment, while signed in.",
@@ -40,6 +46,7 @@ class GitHubWorkbenchEnvironmentsMixin:
     _background: Callable[[str, Callable[[], Any], Callable[[Any], None]], None]
     _choose: Callable[[str, str, list[str]], int]
     _confirm: Callable[[str, str], bool]
+    _ask_text: Callable[..., str]
     _ask_fields: Callable[[str, tuple[Any, ...]], dict[str, str] | None]
 
     def github_api(self) -> Any:
@@ -53,6 +60,45 @@ class GitHubWorkbenchEnvironmentsMixin:
 
     def _fits_environment(self, row: object) -> bool:
         return self.signed_in and self._environment(row) is not None
+
+    def _fits_new_environment(self, _row: object) -> bool:
+        current = getattr(self.frame, "current", None)
+        return self.signed_in and getattr(current, "key", "") == "environments"
+
+    def _do_new_environment(self, ref: Any, _row: object) -> None:
+        from quill.core.github.environments import MAX_WAIT_MINUTES, create_environment
+
+        title = "New Environment"
+        name = self._ask_text(title, "Name of the new environment, such as production:")
+        if not name:
+            return
+        who = self._choose(
+            title,
+            f"Which branches may deploy to {name}?",
+            ["Any branch", "Protected branches only"],
+        )
+        if who < 0:
+            return
+        wait = self._ask_text(
+            title,
+            f"Minutes each deployment waits before it starts, 0 to {MAX_WAIT_MINUTES} (30 days):",
+            value="0",
+        )
+        if not wait:  # Cancel, which this dialog also answers with nothing
+            return
+        if not wait.isdigit() or int(wait) > MAX_WAIT_MINUTES:
+            self._say(
+                f"The wait is a whole number of minutes, 0 to {MAX_WAIT_MINUTES}. Nothing was made."
+            )
+            return
+        api, repository, minutes = self.github_api(), ref.instance, int(wait)
+        self._background(
+            f"make the environment {name}",
+            lambda: create_environment(
+                api, repository, name, protected_only=who == 1, wait_minutes=minutes
+            ),
+            lambda said: (self._say(str(said)), self.frame.reload()),
+        )
 
     _fits_environment_secrets = _fits_environment
     _fits_environment_variables = _fits_environment

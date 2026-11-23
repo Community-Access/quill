@@ -1237,7 +1237,8 @@ def across_rename_name(run: Any) -> str:
     found = _survey(run, "labels")
     _expect(found.row(new) is not None, "not renamed")
     _apply(run, plan_rename(found, found.row(new), LABELS[0]))
-    return "renamed in both, then back"
+    across_rename_milestone(run)
+    return "a label and a milestone renamed in both, then back"
 
 
 def across_close_milestone(run: Any) -> str:
@@ -1295,7 +1296,8 @@ def across_delete_name(run: Any) -> str:
             )
     found = _survey(run, "labels")
     results = _apply(run, plan_delete(found, found.row("quill-live-delete-across")))
-    return f"deleted from {len(results)}"
+    across_delete_milestone(run)
+    return f"a label deleted from {len(results)}, and a milestone from both"
 
 
 def across_move_open(run: Any) -> str:
@@ -1353,6 +1355,124 @@ def across_set_secret(run: Any) -> str:
     _expect(row is not None and len(row.copies) == 2, "the secret is not in both")
     apply_more(run.api, plan_more_delete(found, row))
     return "sealed and set in both, then deleted"
+
+
+def across_rename_milestone(run: Any) -> None:
+    """A milestone renamed in both test repositories, then back (GH-R-151)."""
+    from quill.core.github.across_changes import plan_rename
+
+    title, new = f"{TAG} rename", f"{TAG} renamed"
+    for repo in (run.repo, run.second):
+        titles = {m["title"] for m in run.rest("GET", f"/repos/{repo}/milestones", state="all")}
+        if title not in titles:
+            run.rest("POST", f"/repos/{repo}/milestones", {"title": title})
+    found = _survey(run, "milestones")
+    _apply(run, plan_rename(found, found.row(title), new))
+    found = _survey(run, "milestones")
+    _expect(found.row(new) is not None and len(found.row(new).copies) == 2, "not renamed in both")
+    _apply(run, plan_rename(found, found.row(new), title))
+
+
+def across_delete_milestone(run: Any) -> None:
+    """A throwaway milestone deleted from both test repositories (GH-R-151)."""
+    from quill.core.github.across_changes import plan_delete
+
+    title = f"{TAG} delete across"
+    for repo in (run.repo, run.second):
+        titles = {m["title"] for m in run.rest("GET", f"/repos/{repo}/milestones", state="all")}
+        if title not in titles:
+            run.rest("POST", f"/repos/{repo}/milestones", {"title": title})
+    found = _survey(run, "milestones")
+    _apply(run, plan_delete(found, found.row(title)))
+    _expect(_survey(run, "milestones").row(title) is None, "the milestone is still there")
+
+
+def new_environment(run: Any) -> str:
+    """New Environment in one repository, then Add to Missing in the other; both deleted."""
+    from quill.core.github.across_more_changes import apply_more, plan_more_add
+    from quill.core.github.environments import create_environment, delete_environment
+
+    name = f"quill-live-{int(time.time())}"
+    said = create_environment(run.api, run.repo, name, protected_only=True)
+    try:
+        found = _survey(run, "environments")
+        row = found.row(name)
+        _expect(row is not None and row.missing == (run.second,), "not made in one only")
+        results = apply_more(run.api, plan_more_add(found, row, row.copies[0].props))
+        _expect(all(r.ok for r in results), "; ".join(r.said for r in results))
+    finally:
+        for repo in (run.repo, run.second):
+            if run.exists(f"/repos/{repo}/environments/{name}") is not None:
+                delete_environment(run.api, repo, name)
+    return f"{said} Added to the other, then deleted from both."
+
+
+def new_ruleset(run: Any) -> str:
+    """New Ruleset (off) in one repository, then Add to Missing in the other; both deleted."""
+    from quill.core.github.across_admin_changes import apply_admin, plan_rules_add_missing
+    from quill.core.github.ruleset_new import create_ruleset, ruleset_request
+
+    name = f"quill-live-{int(time.time())}"
+    body = ruleset_request(
+        name, "branch", "quill-live-none/*", ["deletion"], enforcement="disabled"
+    )
+    said = create_ruleset(run.api, run.repo, body)
+    try:
+        found = _survey(run, "rules")
+        row = found.row(name)
+        _expect(row is not None and row.missing == (run.second,), "not made in one only")
+        results = apply_admin(run.api, plan_rules_add_missing(found, row, row.copies[0].props))
+        _expect(all(r.ok for r in results), "; ".join(r.said for r in results))
+    finally:
+        for repo in (run.repo, run.second):
+            for entry in run.rest("GET", f"/repos/{repo}/rulesets"):
+                if entry.get("name") == name:
+                    run.rest("DELETE", f"/repos/{repo}/rulesets/{entry['id']}")
+    return f"{said} Added to the other, then deleted from both."
+
+
+def across_delete_merged(run: Any) -> str:
+    """A branch with nothing of its own, made in both test repositories, deleted where merged."""
+    from quill.core.github.across_branch_release import apply_merged_delete, plan_merged_delete
+
+    branch = f"quill-live-merged-{int(time.time())}"
+    for repo in (run.repo, run.second):
+        default = run.rest("GET", f"/repos/{repo}")["default_branch"]
+        sha = run.rest("GET", f"/repos/{repo}/git/ref/heads/{default}")["object"]["sha"]
+        run.rest("POST", f"/repos/{repo}/git/refs", {"ref": f"refs/heads/{branch}", "sha": sha})
+    found = _survey(run, "branches")
+    plan = plan_merged_delete(run.api, found, found.row(branch))
+    _expect(len(plan.runnable) == 2, plan.preview())
+    results = apply_merged_delete(run.api, plan)
+    _expect(all(r.ok for r in results), "; ".join(r.said for r in results))
+    for repo in (run.repo, run.second):
+        _expect(run.exists(f"/repos/{repo}/branches/{branch}") is None, f"still in {repo}")
+    return "merged in both, so deleted from both"
+
+
+def across_draft_releases(run: Any) -> str:
+    """One draft release per test repository from shared notes, then the drafts deleted."""
+    from quill.core.github.across_branch_release import apply_draft_releases, plan_draft_releases
+
+    tag = f"quill-live-notes-{int(time.time())}"
+    found = _survey(run, "tags")
+    plan = plan_draft_releases(
+        run.api, found, tag, [run.repo, run.second], "Notes for {repository} at {tag}."
+    )
+    results = apply_draft_releases(run.api, plan)
+    bodies = []
+    for repo in (run.repo, run.second):
+        for release in run.rest("GET", f"/repos/{repo}/releases"):
+            if release.get("tag_name") == tag:
+                bodies.append((release.get("draft"), release.get("body")))
+                run.rest("DELETE", f"/repos/{repo}/releases/{release['id']}")
+    _expect(all(r.ok for r in results), "; ".join(r.said for r in results))
+    _expect(
+        sorted(bodies)
+        == sorted((True, f"Notes for {r} at {tag}.") for r in (run.repo, run.second)),
+        f"the drafts were {bodies}",
+    )
+    return "a draft in each, its notes filled in for each, then deleted"
 
 
 # -- the table -----------------------------------------------------------------------
@@ -1560,6 +1680,11 @@ VERBS: dict[str, Scenario | str] = {
     "across_release_train": across_release_train,
     "across_set_secret": across_set_secret,
     "across_hooks_on_off": "needs Jeff: a webhook on both test repositories",
+    "new_environment": new_environment,
+    "new_ruleset": new_ruleset,
+    "across_delete_merged": across_delete_merged,
+    "across_draft_releases": across_draft_releases,
+    "across_dismiss_alerts": "not here: the test repositories have no security alert",
 }
 
 

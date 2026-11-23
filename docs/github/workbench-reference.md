@@ -581,7 +581,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Tags (`:across_tags`) | across | Tags from every repository in the set. |
 | Milestones (`:across_milestones`) | across | Milestones from every repository in the set. |
 | Discussions (`:across_discussions`) | across | Discussions from every repository in the set that has them on. |
-| Security Alerts (`:across_alerts`) | across | Security alerts from every repository in the set you may read them in. |
+| Security Alerts (`:across_alerts`) | across | Security alerts from every repository in the set you may read them in. Dismiss Everywhere on a Dependabot or code scanning alert dismisses every open copy of it in the set, with one reason. |
 | Help and Learning (`:help`) | the top | Help and Learning: the guide, the GitHub words, the keys, what changed, and tasks in plain words that take you to the place. |
 | Do Something (`:help_tasks`) | help | Do Something: tasks in plain words. Enter reads one; Take Me There, on its context menu, goes to the place it is about. |
 | The Guide (`:help_guide`) | help | The Guide: the GitHub Workbench Guide's chapters. Ctrl+F1 opens the guide at the chapter for where you are. |
@@ -593,14 +593,14 @@ Everything below is generated from the tables the window is built from. The GitH
 | Ask a Person (`:help_ask`) | help | Ask a Person: write to support@community-access.org. Nothing is sent until you send it from your own email. |
 | Planning by Name (`:across_planning`) | across | Planning by Name: labels, milestones and topics, each by name across the set. |
 | Labels by Name (`:across_by_labels`) | across_planning | Labels by Name: each label name across the set, where its colour and description differ and where it is missing. Make the copies the same, add it where missing, rename, merge or delete it everywhere, each with a preview and a result per repository. |
-| Milestones by Name (`:across_by_milestones`) | across_planning | Milestones by Name: each milestone title across the set, its due dates, descriptions and progress. Make them the same, close them everywhere, move their open work to another milestone or add the missing ones, each with a preview and a result per repository. |
+| Milestones by Name (`:across_by_milestones`) | across_planning | Milestones by Name: each milestone title across the set, its due dates, descriptions and progress. Make them the same, close, rename or delete them everywhere, move their open work to another milestone or add the missing ones, each with a preview and a result per repository. |
 | Topics by Name (`:across_by_topics`) | across_planning | Topics by Name: each topic across the set and the repositories that lack it. Add it to the missing or remove it everywhere, with a preview and a result per repository; each repository's other topics are kept. |
 | Code by Name (`:across_code`) | across | Code by Name: tags, branches, and rules and branch protection, each by name across the set. |
-| Tags by Name (`:across_by_tags`) | across_code | Tags by Name: each tag across the set and the commit it is on in each repository. Release Train makes it, or it and a release, where it is missing, and never moves an existing tag; Delete Everywhere keeps a tag a release is built on. |
-| Branches by Name (`:across_by_branches`) | across_code | Branches by Name: each branch across the set, where it is the default and where it is protected. Rename Everywhere uses GitHub's rename; its preview says where the default changes, where protection moves and how many open pull requests are retargeted. |
+| Tags by Name (`:across_by_tags`) | across_code | Tags by Name: each tag across the set and the commit it is on in each repository. Release Train makes it, or it and a release, where it is missing, and never moves an existing tag; Draft Releases Together makes one draft release of it in each repository from notes written once; Delete Everywhere keeps a tag a release is built on. |
+| Branches by Name (`:across_by_branches`) | across_code | Branches by Name: each branch across the set, where it is the default and where it is protected. Rename Everywhere uses GitHub's rename; its preview says where the default changes, where protection moves and how many open pull requests are retargeted. Delete Where Merged deletes it only where everything on it is in the default branch. |
 | Rules and Branch Protection (`:across_by_rules`) | across_code | Rules and Branch Protection: each ruleset by name, and each default branch's protection, compared across the set. Make them the same as the winner, add a ruleset where it is missing, or promote one to an organization ruleset; each needs admin access and shows a preview first. |
 | Actions by Name (`:across_actions`) | across | Actions by Name: environments, secrets and variables, each by name across the set. Reading them needs admin access in each repository. |
-| Environments by Name (`:across_by_environments`) | across_actions | Environments by Name: wait timer, reviewers, self-review and which branches may deploy, compared across the set. Make them the same as the winner, or delete one everywhere. GitHub has no organization environments. |
+| Environments by Name (`:across_by_environments`) | across_actions | Environments by Name: wait timer, reviewers, self-review and which branches may deploy, compared across the set. Make them the same as the winner, add it where missing, or delete one everywhere. GitHub has no organization environments. |
 | Secrets by Name (`:across_by_secrets`) | across_actions | Secrets by Name: each Actions secret across the set, by name only, because GitHub never shows a secret's value. Set Secret Everywhere takes one new value, typed once and sealed for each repository; Promote to Organization makes one organization secret for those repositories. |
 | Variables by Name (`:across_by_variables`) | across_actions | Variables by Name: each Actions variable and its values across the set. Make them the same, add the missing, delete everywhere, or promote to one organization variable for those repositories. |
 | Settings by Name (`:across_settings`) | across | Settings by Name: webhooks, deploy keys and autolinks, each by name across the set. Reading them needs admin access in each repository. |
@@ -675,7 +675,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Webhooks (`repository:webhooks`) | repository, settings | Webhooks: the addresses GitHub tells about events here. Ctrl+N adds one; Recent Deliveries on a webhook says what was sent and redelivers it. |
 | Deploy Keys (`repository:deploy_keys`) | repository, settings | Deploy Keys: SSH keys that let a server clone, pull or push this one repository. Ctrl+N adds one. |
 | Autolinks (`repository:autolinks`) | repository, settings | Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one. |
-| Environments (`repository:environments`) | repository, settings | Environments: where this repository's workflows deploy, each with its protection rules. Secrets... and Variables... on a row are that environment's own. |
+| Environments (`repository:environments`) | repository, settings | Environments: where this repository's workflows deploy, each with its protection rules. Ctrl+N makes one. Secrets... and Variables... on a row are that environment's own. |
 | Codespaces (`repository:repo_codespaces`) | repository, code | Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose. |
 | Pinned (spotlight) (`repository:discussions_pinned`) | repository, discussions | Pinned (spotlight): the discussions pinned at the top of Discussions, in GitHub's order. Read only: GitHub's API cannot pin, unpin or reorder one. |
 | Categories (`repository:discussion_categories`) | repository, discussions | Categories: the repository's discussion categories, grouped by section where GitHub gives sections; Enter lists a category's discussions. |
@@ -700,7 +700,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Rule Insights (`repository:repo_rule_insights`) | repository, settings | Rule Insights: recent pushes the rulesets here passed, blocked or let through. |
 | My Notifications Here (`repository:repo_my_notifications`) | repository, activity | My Notifications Here: your notifications from this repository only. |
 | Custom Property Values (`repository:repo_property_values`) | repository, settings | Custom Property Values: the organization's custom properties, as set here. |
-| Rulesets (`repository:repo_rulesets`) | repository, settings | Rulesets: every ruleset on this repository, its own and the organization's. Alt+Enter opens one's sheet: its target, every rule and setting, who may bypass it, and a Summary in plain words. Delete removes one after its name is typed. |
+| Rulesets (`repository:repo_rulesets`) | repository, settings | Rulesets: every ruleset on this repository, its own and the organization's. Alt+Enter opens one's sheet: its target, every rule and setting, who may bypass it, and a Summary in plain words. Ctrl+N makes one; Delete removes one after its name is typed. |
 | person (`person:person`) | person | A person: their repositories, activity, followers and who they follow. |
 | Profile (`person:person_profile`) | person, person | Profile: who this person is, their year of contributions as numbers, and what they pinned. |
 | Sponsor (`person:person_sponsor`) | person, person | Sponsor: whether this person takes sponsorships, and each tier with its price. |
@@ -1016,10 +1016,10 @@ Keys the window answers that are not menu rows:
 - **watch**: Edit Watch..., Pause or Resume Watch, Check Watches Now, Remove Watch, Why?, Open on GitHub; Properties...
 - **help_topic**: Open, Take Me There, Walk Me Through It, Do It; Properties...
 - **node**: Refresh, Open on GitHub, Help for This View, Why?, New Organization Runner..., Just-in-Time Runner...; More: Just-in-Time Runner..., Is a Runner Version Retiring?..., Is a Runner Version Retiring?..., Email Visibility..., Interaction Limits, Limit Interactions..., Lift Interaction Limits, Set Up a Sponsors Profile..., New Sponsor Tier..., Patreon Sponsorships..., My Agent Tasks, My Automations, Prompt Files...; Properties...
-- **across_item**: Open in Its Repository, Next Repository, Previous Repository, View More from This Repository, Read Issue Type and Fields, Every Release or Latest Only; More: Open on GitHub, Copy Link; Properties...
+- **across_item**: Open in Its Repository, Next Repository, Previous Repository, View More from This Repository, Read Issue Type and Fields, Every Release or Latest Only; More: Dismiss Everywhere..., Open on GitHub, Copy Link; Properties...
 - **across_status**: Open, Next Repository, Previous Repository, View More from This Repository, Open on GitHub; Properties...
 - **repository_set**: Use This Set, Edit Repositories..., Set Filter..., New Set..., Rename Set..., Delete Set...; Properties...
-- **by_name**: Variants and Missing From, Make Them the Same..., Add to Missing..., Find Uses, Rename Everywhere..., Merge Into...; More: Close Everywhere..., Move Open Work To..., Promote to Organization..., Release Train..., Set Secret Everywhere..., Turn On or Off Everywhere..., Delete Everywhere...; Properties...
+- **by_name**: Variants and Missing From, Make Them the Same..., Add to Missing..., Find Uses, Rename Everywhere..., Merge Into...; More: Close Everywhere..., Move Open Work To..., Promote to Organization..., Release Train..., Set Secret Everywhere..., Turn On or Off Everywhere..., Draft Releases Together..., Delete Where Merged..., Delete Everywhere...; Properties...
 - **fleet**: Open Repository, Open on GitHub, Copy Link; Properties...
 - **release_asset**: Download, Copy Link, Attestations..., Check Download..., Delete Asset...; Properties...
 - **deployment**: Open, Delete Deployment..., Copy Link, Open on GitHub; Properties...
@@ -2615,7 +2615,7 @@ In all: 868 yes, 0 planned, 285 not needed and 854 left to GitHub.
 | Get a repository README for a directory | `GET /repos/{owner}/{repo}/readme/{dir}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Get rules for a branch | `GET /repos/{owner}/{repo}/rules/branches/{branch}` | Yes | Properties (Alt+Enter) on Branch |
 | Get all repository rulesets | `GET /repos/{owner}/{repo}/rulesets` | Yes | Navigator: Repository > owner/name > Settings > Rulesets |
-| Create a repository ruleset | `POST /repos/{owner}/{repo}/rulesets` | Yes | context menu > Add to Missing... |
+| Create a repository ruleset | `POST /repos/{owner}/{repo}/rulesets` | Yes | Navigator: Repository > owner/name > Settings > Rulesets |
 | List repository rule suites | `GET /repos/{owner}/{repo}/rulesets/rule-suites` | Yes | Navigator: Repository > owner/name > Settings > Rule Insights |
 | Get a repository rule suite | `GET /repos/{owner}/{repo}/rulesets/rule-suites/{rule_suite_id}` | Not needed | Reads one item that its list already shows in full; the Workbench reads the list. |
 | Delete a repository ruleset | `DELETE /repos/{owner}/{repo}/rulesets/{ruleset_id}` | Yes | context menu > Promote to Organization... |
