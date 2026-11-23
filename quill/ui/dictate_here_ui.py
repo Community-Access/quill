@@ -139,8 +139,11 @@ class DictateHereMixin:
     def dictate_here(self) -> None:
         """Ctrl+F11: QUILL Transcribe dictates into the field you are in."""
         from quill.core.windows_dictation.dictate_here import dictate_here
+        from quill.ui.windows_dictation_external import focus_place
 
-        outcome = dictate_here(self._dictate_here_sender())
+        # The field you pressed it in, so QUILL Transcribe starts there or
+        # nowhere (FUX-07): it answers a moment later, and the focus may move.
+        outcome = dictate_here(self._dictate_here_sender(), place=focus_place())
         if outcome.sentence:
             announce: Any = getattr(self, "_announce", None)
             if callable(announce):

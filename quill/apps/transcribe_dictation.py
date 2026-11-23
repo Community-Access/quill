@@ -436,7 +436,7 @@ class TranscribeDictationMixin(TranscribeTalkMixin, FieldHoldMixin):
             if request.command == "toggle":
                 self.toggle_dictation()
             elif request.command == "start" and not self.dictation_active():
-                self.start_dictation()
+                self._start_in_place(request.place, request.sender)
             elif request.command == "stop":
                 self.stop_dictation()
             elif request.command == "show":
@@ -450,7 +450,32 @@ class TranscribeDictationMixin(TranscribeTalkMixin, FieldHoldMixin):
         if self._safe_mode or self.frame.IsShown() or not self._own_dictate_anywhere():
             return
         if not self.dictation_active():
-            self.start_dictation()
+            import sys
+
+            from quill.core.windows_dictation.dictate_here import place_from_argv
+
+            self._start_in_place(place_from_argv(sys.argv), "")
+
+    def _start_in_place(self, place: Any, sender: str) -> None:
+        """Start Dictate Here only in the field it was pressed in (FUX-07): if
+        the focus has gone elsewhere while this was getting ready, say so and
+        start nothing. A request that names no field starts as before."""
+        from quill.core.windows_dictation.dictate_here import left_sentence, still_there
+        from quill.ui.windows_dictation_external import focus_place
+
+        now = focus_place()
+        if not still_there(place, now):
+            import logging
+
+            # Numbers only (window, process, control window), never text: so a
+            # refusal when nothing moved -- something of Transcribe's taking the
+            # foreground on a cold launch -- can be told from a real move.
+            logging.getLogger(__name__).info(
+                "Dictate Here from %s not started: pressed in %s, now %s", sender, place, now
+            )
+            self._announce(left_sentence(), force=True)  # type: ignore[attr-defined]
+            return
+        self.start_dictation()
 
     def _microphone_gate(self) -> Any:
         """The family's one microphone (D-11): held only while dictation listens,

@@ -343,21 +343,36 @@ def busy_sentence(
 
 @dataclass(frozen=True, slots=True)
 class Request:
-    """One request to the owner: what to do, and which app asked."""
+    """One request to the owner: what to do, and which app asked.
+
+    *place* is the field Dictate Here was pressed in -- window, process and
+    focused control window, never its text -- so the owner starts there or
+    nowhere (FUX-07; :mod:`quill.core.windows_dictation.dictate_here`).
+    """
 
     command: str
     sender: str
+    place: tuple[int, int, int] | None = None
 
 
-def send_request(command: str, *, sender: str, folder: Path | None = None) -> bool:
+def send_request(
+    command: str,
+    *,
+    sender: str,
+    folder: Path | None = None,
+    place: tuple[int, int, int] | None = None,
+) -> bool:
     """Ask the owner to do *command*. ``False`` when it could not be asked."""
     if command not in COMMANDS or sender not in SENDERS:
         return False
+    record: dict[str, object] = {"command": command, "sender": sender}
+    if place is not None:
+        record["place"] = [int(part) for part in place]
     where = _folder(folder)
     try:
         where.mkdir(parents=True, exist_ok=True)
         with (where / _REQUESTS_NAME).open("a", encoding="utf-8", newline="\n") as handle:
-            handle.write(json.dumps({"command": command, "sender": sender}) + "\n")
+            handle.write(json.dumps(record) + "\n")
     except OSError:
         return False
     return True
@@ -384,5 +399,8 @@ def take_requests(*, folder: Path | None = None) -> list[Request]:
             continue
         command, sender = raw.get("command"), raw.get("sender")
         if command in COMMANDS and sender in SENDERS:
-            requests.append(Request(str(command), str(sender)))
+            from quill.core.windows_dictation.dictate_here import parse_place
+
+            place = parse_place(raw.get("place")) if "place" in raw else None
+            requests.append(Request(str(command), str(sender), place))
     return requests

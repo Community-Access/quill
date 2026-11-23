@@ -1835,6 +1835,10 @@ types wherever the focus is.
   once it is ready. The very first time, QUILL Transcribe opens its own window
   instead, to set itself up. Finish that, come back to Cast, and press
   Ctrl+F11 again.
+- **You leave the box before QUILL Transcribe is ready.** Dictation does not
+  start anywhere else. QUILL Transcribe says "Dictation did not start, because
+  you moved away from the box you pressed Dictate Here in; go back to that box
+  and press Dictate Here again."
 - **Quill Inkwell is dictating.** Nothing starts, and Cast says "Quill
   Inkwell is dictating. Stop it there, then try again." Only one program uses
   the microphone at a time.

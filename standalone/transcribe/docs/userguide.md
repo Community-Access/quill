@@ -1396,6 +1396,12 @@ are in, such as Cast's Add Podcast box or Radio's Search Stations box.
   and press Ctrl+F11 again.
 - If Quill Inkwell is dictating, you hear that Inkwell is dictating, and
   nothing starts.
+- If you move away from the box before QUILL Transcribe is ready -- to
+  another box or another program -- dictation does not start anywhere else.
+  You hear "Dictation did not start, because you moved away from the box you
+  pressed Dictate Here in; go back to that box and press Dictate Here again."
+  The box is known by its program, its window and the box itself, never by
+  what it says.
 
 Your words, commands and never-type list all work as usual, because it is
 QUILL Transcribe doing the dictating. Stop with your start and stop key, or say

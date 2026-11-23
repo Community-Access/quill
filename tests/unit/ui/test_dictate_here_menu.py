@@ -198,6 +198,13 @@ def test_transcribe_started_by_dictate_here(
         _own_dictate_anywhere=lambda: owner,
         dictation_active=lambda: active,
         start_dictation=lambda: started.append(True),
+        _announce=lambda *_a, **_k: None,
+    )
+    # No place on the command line (an older Quill Cast or Quill Radio): starts as before.
+    host._start_in_place = lambda place, sender: TranscribeDictationMixin._start_in_place(
+        host,  # type: ignore[arg-type]
+        place,
+        sender,
     )
     TranscribeDictationMixin.dictate_here_at_launch(host)  # type: ignore[arg-type]
     assert started == ([True] if starts else [])
