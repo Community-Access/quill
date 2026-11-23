@@ -29,6 +29,8 @@ STRUCTURED_EXTENSIONS = {
     ".pdf",
     ".pages",
     ".epub",
+    ".mobi",
+    ".prc",
     ".doc",
     ".docx",
     ".ppt",

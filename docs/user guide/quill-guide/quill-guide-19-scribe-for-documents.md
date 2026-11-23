@@ -183,7 +183,7 @@ once.
 | Word | Reading and editing in QUILL or Word. Can be large print | Opens it in QUILL |
 | Tagged PDF | Sharing a PDF that screen readers can read. Can be large print | Saves it. **Open Result** and Next Steps open it in QUILL, as text; it never opens by itself |
 | EPUB | Ebook readers and QUILL's own EPUB reading | Opens it in QUILL |
-| Kindle (MOBI) | Older Kindle devices, and Calibre | Saves it, and says where |
+| Kindle (MOBI) | Older Kindle devices | Opens it in QUILL, with its pictures, and headings made from its large text |
 | DAISY (text and audio) | Talking-book players, and Quill Media Player with chapters | Opens it in Quill Media Player |
 | MP3 audio | Any audio player, or your phone | Opens it in Quill Media Player |
 | Braille (BRF) | Braille displays, embossers and braille notetakers | Opens it in QUILL's braille view |
@@ -222,9 +222,11 @@ before the Kindle book, not just the file downloaded last.
 
 **A Kindle (MOBI) book** is for older Kindles. The result sentence says so:
 "A Kindle (MOBI) book is for older Kindles: copy it to the Kindle's documents
-folder over USB, or read it on this computer in Calibre's free e-book viewer.
-Send to Kindle takes the EPUB instead." When nothing that was made opens by
-itself, the sentence ends "Open Folder in Scribe Conversions shows it."
+folder over USB. Amazon's Send to Kindle takes the EPUB instead." QUILL opens it too,
+as a document you can read here and save as Markdown, HTML, Word or EPUB: see
+*Kindle books* in *Opening, saving and
+converting files*. When nothing that was made opens by itself, the sentence
+ends "Open Folder in Scribe Conversions shows it."
 
 **The braille Scribe makes** is American English Braille (EBAE) grade 2, not
 UEB, unless you choose another table. If a BRF has characters that are not
@@ -603,6 +605,7 @@ one is a separate choice.
 |---|---|
 | Word, Accessible HTML or EPUB | **Read Aloud with QUILL's Voices**, **Check Accessibility (GLOW Audit)** and **Summarize with Your AI...** |
 | Braille (BRF) | **Open in the Braille View** |
+| Kindle (MOBI) | **Open the Kindle Book (MOBI)** |
 | MP3 audio or DAISY | **Send to Media Player** |
 | Word or Accessible HTML, where Quill Beacon is installed | **Save a Beacon Place...** |
 
@@ -1260,7 +1263,7 @@ running the job speaks.
 ### Why did nothing open?
 
 A result opens by itself only when Options says
-**Open it**, and the app that asked is in front. Tagged PDF, Kindle and the
+**Open it**, and the app that asked is in front. Tagged PDF and the
 offline web page are only saved. Use **Open Result** or **Next Steps...**.
 
 ### What happens if QUILL closes during a conversion?

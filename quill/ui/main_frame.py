@@ -5198,6 +5198,7 @@ class MainFrame(
         """
 
         from quill.core import pandoc_formats
+        from quill.io.export import pandoc_export_source
         from quill.ui.single_convert_dialog import prompt_open_in_new_window
 
         wx = self._wx
@@ -5243,7 +5244,8 @@ class MainFrame(
             # wrap — would join the user's lines into one paragraph in every
             # exported format.
             convert_file_with_pandoc(
-                self.document.path or Path(""),
+                # A Kindle book, PDF or EPUB: its text, not its file (quill.io.export).
+                pandoc_export_source(self.document),
                 target,
                 from_format="gfm+hard_line_breaks",
                 to_format=format_name,

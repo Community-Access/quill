@@ -60,7 +60,7 @@ __all__ = ["DocumentScribeMixin", "LiteScribeHost"]
 
 AREA = "scribe"
 #: What a Lite window opens itself, of Scribe's formats.
-_OPENS_HERE = ("docx", "html", "pdf", "brf")
+_OPENS_HERE = ("docx", "html", "pdf", "brf", "mobi")
 #: What QUILL Lite cannot read, and QUILL can (handed to QUILL when it is there).
 _QUILL_ONLY = ("epub",)
 #: Said once in the result sentence when an EPUB was made and QUILL is not here.
@@ -231,6 +231,7 @@ class LiteScribeHost:
     def scribe_next_steps(self, job: Any, ready: dict[str, Path]) -> list[tuple[str, Any]]:
         """Send to Media Player first, then Open in QUILL Lite (8.1.7, 8.2)."""
         from quill.core.scribe.model import format_label
+        from quill.core.scribe.results import open_step
 
         steps: list[tuple[str, Any]] = []
         for format_id in ("mp3", "daisy"):
@@ -242,7 +243,7 @@ class LiteScribeHost:
         for format_id in _OPENS_HERE:
             if format_id in ready:
                 steps.append((
-                    f"Open in QUILL Lite ({format_label(format_id)})",
+                    open_step("QUILL Lite", format_id),
                     lambda f=format_id: self._open_here(job, f, ready[f]),
                 ))
         if "epub" in ready and _quill_installed():

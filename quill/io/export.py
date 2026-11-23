@@ -52,6 +52,8 @@ EXPORT_ONLY_SUFFIXES: frozenset[str] = frozenset({
     ".doc",
     ".odt",
     ".epub",
+    ".mobi",
+    ".prc",
     ".pages",
     ".ppt",
     ".pptx",
@@ -417,6 +419,13 @@ def write_document_as(
         # plain text, or mint a Markdown file wearing a .pdf name that other
         # apps cannot open.
         raise UnsupportedSaveFormatError(suffix)
+    # A Kindle book's pictures sit in a folder beside it: a copy saved elsewhere
+    # takes the folder along, so its picture links still work (quill.io.mobi_open).
+    from quill.io.mobi_open import carry_pictures
+
+    warning = carry_pictures(document.text, document.path, Path(target))
+    if warning:
+        _emit_save_warning(warning)
     if suffix in _RTF_SUFFIXES:
         return write_rtf_document(document, target)
     if suffix in _DOCX_SUFFIXES:
@@ -429,6 +438,27 @@ def write_document_as(
     # still routes through write_plain_text_document for users who want their
     # Markdown markup flattened.
     return write_text_document(document, target)
+
+
+def pandoc_export_source(document: Document) -> Path:
+    """The file File > Export hands to Pandoc for *document*.
+
+    Its own file, normally. A document opened as extracted text (a Kindle book,
+    a PDF, an EPUB) has a file Pandoc cannot read as Markdown, so its text is
+    written to a temporary Markdown file instead, with its pictures' links made
+    absolute so Pandoc still finds them from there.
+    """
+    path = document.path
+    if path is None or path.suffix.lower() not in EXPORT_ONLY_SUFFIXES:
+        return path or Path("")
+    import tempfile
+
+    from quill.io.mobi_open import absolute_pictures
+
+    folder = Path(tempfile.mkdtemp(prefix="quill-export-"))
+    source = folder / f"{path.stem}.md"
+    source.write_text(absolute_pictures(document.text, path.parent), encoding="utf-8")
+    return source
 
 
 def format_label_for_path(path: Path) -> str:

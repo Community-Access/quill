@@ -189,6 +189,8 @@ class DocumentFileMixin(DocumentWordMixin):
             self._announce(READ_ONLY_NOTICE)
         self.note_pdf_source(prepared.pdf)
         self.note_word_source(path, prepared)
+        if prepared.open_note:  # a Kindle book's inferred headings, once
+            self._announce(prepared.open_note)
         return True
 
     def _commit_rich(self, prepared: PreparedDocument) -> None:
@@ -418,7 +420,10 @@ class DocumentFileMixin(DocumentWordMixin):
             self._write_rtf(destination)
         else:
             from quill.core.encoding_tools import save_encoding
+            from quill.io.mobi_open import carry_pictures
 
+            if warning := carry_pictures(body, self.path, destination):  # a Kindle book's
+                self._announce(warning)
             # A batch file never keeps a UTF-8 byte-order mark (cmd.exe reads
             # it as part of the first command): the same rule as QUILL's save.
             self.encoding = save_encoding(destination, self.encoding)

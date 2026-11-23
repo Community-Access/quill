@@ -185,7 +185,8 @@ def test_lite_next_steps_put_the_media_player_first(tmp_path: Path) -> None:
     assert host.scribe_open_result(q.Job(), "brf", tmp_path / "N.brf").endswith("QUILL Lite")
     # The tagged PDF opens in Lite, which reads PDFs (phase-one audit, gap 2).
     assert host.scribe_open_result(q.Job(), "pdf", tmp_path / "N.pdf").endswith("QUILL Lite")
-    assert host.scribe_open_result(q.Job(), "mobi", tmp_path / "N.mobi") == ""
+    # A Kindle book opens in Lite too, which reads MOBI (2026-11-23).
+    assert host.scribe_open_result(q.Job(), "mobi", tmp_path / "N.mobi").endswith("QUILL Lite")
 
 
 def test_next_steps_on_an_unfinished_job_say_so(controller: Any) -> None:

@@ -38,6 +38,7 @@ from quill.core.scribe.results import (
     default_action,
     missing_pictures,
     open_order,
+    opened_phrase,
     pictures_note,
     result_notes,
 )
@@ -409,21 +410,26 @@ def test_a_language_is_only_kept_when_it_is_one() -> None:
     assert book_language("und", ['<html xml:lang="de">']) == "de"
 
 
-def test_mobi_is_saved_and_said_where(tmp_path: Path) -> None:
+def test_mobi_opens_in_the_editor_and_says_where_else_it_goes(tmp_path: Path) -> None:
     _server, job, _events = _run(tmp_path, corpus.MATH, ["mobi"])
     saved = Path(job.outputs["mobi"])
     assert saved.read_bytes()[60:68] == b"BOOKMOBI" and saved.suffix == ".mobi"
-    assert default_action("mobi") == "save"
-    # Nothing made opens anywhere: the sentence says where to look, then how to read it.
-    sentence = say.result_sentence(job, app_name="QUILL", after=result_notes(job.outputs))
+    # QUILL and QUILL Lite read a Kindle book (2026-11-23): Open Result opens it.
+    assert default_action("mobi") == "editor"
+    assert opened_phrase("mobi", "QUILL") == "The Kindle book is open in QUILL"
+    sentence = say.result_sentence(
+        job,
+        app_name="QUILL",
+        opened=opened_phrase("mobi", "QUILL"),
+        after=result_notes(job.outputs),
+    )
     assert sentence == (
         f"Scribe for Documents made {corpus.MATH}.mobi in {say.friendly_folder(job.folder)}. "
-        f"Open Folder in Scribe Conversions shows it. {MOBI_NOTE}"
+        f"The Kindle book is open in QUILL. {MOBI_NOTE}"
     )
     assert MOBI_NOTE == (
         "A Kindle (MOBI) book is for older Kindles: copy it to the Kindle's documents folder "
-        "over USB, or read it on this computer in Calibre's free e-book viewer. Send to Kindle "
-        "takes the EPUB instead."
+        "over USB. Amazon's Send to Kindle takes the EPUB instead."
     )
 
 

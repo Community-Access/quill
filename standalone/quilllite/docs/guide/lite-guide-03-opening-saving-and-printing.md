@@ -292,6 +292,30 @@ Convert when you want a copy of the text to work on, or for a file Ctrl+O
 cannot open, such as a `.xlsm`, an e-book or a picture of a page. See
 *Importing and converting a document* below.
 
+## Opening Kindle books
+
+QUILL Lite opens a Kindle book (`.mobi`, or a `.prc` made the same way) as a
+Markdown document you can read, search and copy from, with QUILL's own reader.
+Scribe for Documents makes one when you ask for Kindle, and any other Kindle
+book without DRM opens the same way. Press **Ctrl+O** and choose "Kindle
+books, opened as Markdown" in the file type list, or pick it from "All supported files".
+
+Its pictures are saved in a folder beside the book, named after it with
+`_pictures` on the end, and each one is in the text where it was, as "Picture
+1" and so on. A Kindle book has no real headings, so QUILL Lite makes them from
+its larger, bolder text, and the heading keys move between them. When it does,
+it says once, as the book opens: "This book has no real headings, so they were
+made from its large or bold text; some may be at the wrong level or missing."
+
+A book locked with DRM, a book compressed in a way QUILL Lite does not read, a
+newer AZW3 book, or a damaged file does not open; QUILL Lite says which in one
+sentence, and for the compressed and newer books, how to convert it to Word.
+Like a PDF, a Kindle book is never saved over: **Ctrl+S** opens **Save As**,
+ready for Markdown, and you can choose text there instead. Saved in another
+folder, the `_pictures` folder is copied beside the new file, so the picture
+links still work. For Word, HTML or EPUB, open the book in QUILL and use its
+Save As or **File > Export**.
+
 ## Opening Word, Excel and PowerPoint files
 
 QUILL Lite opens Excel and PowerPoint files, Word files with macros, older Word
