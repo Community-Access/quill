@@ -462,18 +462,18 @@ class BrailleCommandsMixin:
     def _brf_open_message(self, loaded: object, path: object) -> str:
         """Open announcement, restoring the caret for braille files (BR-016, #239).
 
-        For a braille file with a saved sidecar position (and sidecar saving on,
-        not in safe mode) this moves the caret to the last offset and announces
-        the restored braille page/line/cell. For any other document it returns
-        the generic "Opened <name>" message. Never raises: a missing or malformed
-        sidecar simply means no restore.
+        A braille file with a saved sidecar position (sidecar saving on, not in safe
+        mode) gets its caret back and its braille page, line and cell said; any other
+        document gets "Opened <name>" and its reader's note. Never raises.
         """
         from pathlib import Path
+
+        from quill.io.open_read import opened_sentence
 
         meta = getattr(loaded, "source_metadata", {}) or {}
         name = getattr(loaded, "name", "") or Path(str(path)).name
         if meta.get("source_kind") != "brf":
-            return f"Opened {name}"
+            return opened_sentence(name, meta)
 
         from quill.core.brf_progress import format_open_announcement, restore_offset, unshown_count
         from quill.core.brf_sidecar import BRFSidecarError, read_sidecar

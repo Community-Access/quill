@@ -60,8 +60,14 @@ def require_full() -> Path:
     return folder
 
 
-#: Skips a whole test module when the corpus is not at hand.
-needs_corpus = pytest.mark.skipif(full_corpus() is None, reason=SKIP_REASON)
+#: The marker the live regression tool selects (``pytest -m scribe_corpus``)
+#: to replay a run's folder: a module marked with it is picked up without
+#: being named anywhere (docs/qa/scribe-live-regression.md).
+replay = pytest.mark.scribe_corpus
+
+#: A whole replay module: selected by the marker, skipped when the corpus is
+#: not at hand. ``pytestmark = corpus.needs_corpus`` (or ``[*corpus.needs_corpus, ...]``).
+needs_corpus = [replay, pytest.mark.skipif(full_corpus() is None, reason=SKIP_REASON)]
 
 
 def output(format_id: str, stem: str) -> Path | None:

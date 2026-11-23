@@ -573,6 +573,44 @@ pages, because every page is read for its text.
 
 EPUB books get the navigator and reading chapter by chapter.
 
+### Kindle books (MOBI)
+
+A Kindle book (`.mobi`, or a `.prc` made the same way) opens as a document
+you can read, search and copy from. Scribe for Documents makes one when you
+ask for Kindle, and any other Kindle book without DRM opens the same way. In
+the Open dialog it is under "Kindle books", and in "Supported files".
+
+- **Paragraphs, lists, tables and links** come through as Markdown.
+- **Pictures** are saved in a folder beside the book, named after it with
+  `_pictures` on the end, and each one is in the text where it was, as
+  "Picture 1", "Picture 2" and so on, unless the book gave it a description.
+  When that folder cannot be written, QUILL keeps them in its own data folder.
+- **Headings.** A Kindle book has no real headings, only larger, bolder text.
+  QUILL makes headings from that, so **Next Heading** (`Ctrl+Alt+H`) and the
+  outline work. The largest text is heading 1, the next size heading 2, and so
+  on; a long line, a line in a list or a table, or a size most of the book uses
+  is never made a heading. When it does this, QUILL says once, as the book
+  opens: "This book has no real headings, so they were made from its large or
+  bold text; some may be at the wrong level or missing."
+
+**Saving it as something else.** The book itself is never saved over: `Ctrl+S`
+opens Save As. Save it as Markdown, HTML, Word, rich text or plain text there,
+or use **File > Export** for EPUB and the other formats Pandoc writes. The
+headings and the pictures' descriptions go with it. Saved as Markdown or HTML
+in another folder, the `_pictures` folder is copied beside the new file, so its
+pictures still show; an EPUB from File > Export has the pictures inside it.
+Word from Save As keeps each picture's description but not the picture itself;
+**File > Export > Word Document** puts the pictures in.
+
+Some Kindle books cannot be opened, and QUILL says which in one sentence: a
+book locked with DRM (it can only be read in the Kindle app or on the Kindle it
+was bought for), a book compressed in a way QUILL does not read, a newer AZW3
+book, and a damaged file. The code at the start says which:
+QUILL-IO-MOBI-DRM, QUILL-IO-MOBI-COMPRESSION, QUILL-IO-MOBI-KF8 or
+QUILL-IO-MOBI-CORRUPT. For the compressed and newer books, the sentence says
+the way round: convert the book to Word with an e-book converter, then open
+that.
+
 ### PowerPoint (.pptx and .ppt)
 
 QUILL keeps a presentation's structure when it brings it in. Every slide starts
@@ -724,8 +762,8 @@ save: "Saved as report.docx, Word format. You are still editing QUILL text; each
 save converts it to Word." The window title and tab title change to the new name
 straight away, and from then on `Ctrl+S` saves quietly to the same file.
 
-**Your originals are protected.** If you opened a PDF, EPUB, spreadsheet or
-presentation, what you are editing is text taken out of it, and the original
+**Your originals are protected.** If you opened a PDF, EPUB, Kindle book,
+spreadsheet or presentation, what you are editing is text taken out of it, and the original
 file cannot hold your changes. Pressing `Ctrl+S` on one of these never
 overwrites the original. QUILL explains why and opens Save As, so your edits go
 into a new file in a format that can hold them.

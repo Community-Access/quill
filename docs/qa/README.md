@@ -32,6 +32,10 @@ nothing looks broken.
 
 ## References
 
+- [scribe-live-regression.md](scribe-live-regression.md) -- Scribe for Documents in
+  every app with one command (`python -m quill.tools.scribe_check`, offline), and
+  the live regression run on Jeff's Scribe account: what it sends, what it costs,
+  where its files go and how to read its comparison.
 - [transcribe-targets.json](transcribe-targets.json) -- the results of QUILL
   Transcribe's tested-programs harness (`tests/integration/test_transcribe_targets.py`),
   which `scripts/build_transcribe_compatibility.py` turns into the table in

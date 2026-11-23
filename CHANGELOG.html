@@ -244,6 +244,107 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="scribe-for-documents-jeffs-three-answers-2026-11-23">Scribe for
+Documents: Jeff’s three answers (2026-11-23)</h3>
+<ul>
+<li><strong>The browser waits for its sentence.</strong> When Open
+Result shows the offline web page or the accessible HTML in your
+browser, the browser now comes to the front after “Opening … in your
+browser.” has been said, and not at all if you have moved to another
+program.</li>
+<li><strong>The accessible HTML opens once.</strong> Open Result or a
+Next Step on it again, while its “Notes (Scribe)” tab or window is open,
+goes to that tab or window instead of making another copy, and says once
+that it is already open.</li>
+<li><strong>The tagged PDF opens only when you ask.</strong> It never
+opens by itself; the PRD’s table of what happens to each result now says
+so.</li>
+</ul>
+<h3
+id="kindle-mobi-books-open-in-quill-and-quill-lite-2026-11-23">Kindle
+(MOBI) books open in QUILL and QUILL Lite (2026-11-23)</h3>
+<p>A Kindle book Scribe for Documents makes now opens as a document you
+can read, instead of only being saved. So does any other Kindle book
+without DRM, from <strong>File &gt; Open</strong> in either editor
+(“Kindle books” in the file type list). QUILL reads it with its own
+reader.</p>
+<ul>
+<li><strong>The text</strong> comes through as Markdown: paragraphs,
+lists, tables and links.</li>
+<li><strong>Pictures</strong> are saved in a folder beside the book
+(<code>&lt;book&gt;_pictures</code>) and sit in the text where they
+were, as “Picture 1” and so on.</li>
+<li><strong>Headings.</strong> A Kindle book has none, only larger,
+bolder text, so QUILL makes them from that, and the heading keys and the
+outline work. It says so once as the book opens, because one may be at
+the wrong level.</li>
+<li><strong>What does not open</strong>, each with one sentence saying
+why: a book locked with DRM, one compressed in a way QUILL does not
+read, a newer AZW3 book, and a damaged file. For the two that can be
+converted, the sentence says to convert to Word first.</li>
+<li><strong>Scribe’s result.</strong> Open Result opens the Kindle book
+in QUILL or QUILL Lite, Next Steps has <strong>Open the Kindle
+Book</strong>, and the other QuillVille apps offer <strong>Open the
+Kindle Book in QUILL</strong>.</li>
+<li><strong>Saving it as something else.</strong> A Kindle book is never
+saved over: <code>Ctrl+S</code> goes to Save As (Markdown, HTML, Word,
+rich text or text in QUILL; Markdown or text in QUILL Lite). Saved in
+another folder, its <code>_pictures</code> folder goes along.
+<strong>File &gt; Export</strong> (EPUB, Word and the rest) now exports
+the book’s text with its pictures inside; before, it handed Pandoc the
+original file, which for a Kindle book, a PDF or an EPUB was not
+Markdown at all.</li>
+</ul>
+<h3
+id="scribe-for-documents-follow-ups-from-the-corpus-tests-2026-11-23">Scribe
+for Documents: follow-ups from the corpus tests (2026-11-23)</h3>
+<ul>
+<li><strong>Braille page counts.</strong> A BRF that ends with a form
+feed, as every Scribe BRF does, was counted as one page too many, in the
+open sentence and the page map. The page after the last form feed now
+counts only when it has something in it, not just blank space.</li>
+<li><strong>QUILL Lite says the result before opening it.</strong> A
+result that opens in a new QUILL Lite window, or in Quill Media Player,
+now opens once the result sentence has been said (1.5 to 6 seconds, from
+the sentence’s length), so the screen reader’s announcement of the new
+window no longer cuts it off.</li>
+<li><strong>The offline web page never opens as text.</strong> Every
+picture is inside it, so in an editor each one was a single very long
+line. When it is the only thing to open, Open Result and Open in My
+Scribe Documents now show it in your browser.</li>
+<li><strong>Open in My Scribe Documents opens the right file.</strong>
+It opened whatever was downloaded last, which could be a Kindle book or
+the offline page, and then said nothing. It now opens what Open Result
+would, and says where the file is when nothing opens. Beacon’s Scribe
+places pick the same way.</li>
+<li><strong>The accessible HTML reads as a document.</strong> QUILL and
+QUILL Lite showed it as HTML markup. They now convert it as Import does,
+with its headings, lists, tables and links, into a new unsaved tab or
+window named “Notes (Scribe)”. The other apps open it in your browser,
+as the offline page when there is one, because that has the
+pictures.</li>
+<li><strong>The tagged PDF opens.</strong> It was only saved. Open
+Result and Next Steps now open it in QUILL or QUILL Lite, as text; it
+never opens by itself.</li>
+<li><strong>No EPUB in QUILL Lite.</strong> Lite does not read EPUB, and
+an app handing it to Lite showed zip bytes. It now goes to QUILL when
+QUILL is installed; otherwise it is saved, and the result sentence says
+once “QUILL Lite does not open EPUB books. QUILL does.”</li>
+<li><strong>Media Player.</strong> When the DAISY book does not load,
+the MP3 opens instead of nothing. A DAISY 2.02 book is no longer handed
+to the Player and called open. When QUILL sends audio to the Player, the
+Player comes to the front after QUILL’s result sentence.</li>
+<li><strong>Beacon’s Scribe places</strong> point at the document (Word
+first), not the last file downloaded, and open in QUILL or Media Player
+rather than whatever Windows chooses; one that cannot open says so.</li>
+<li><strong>The right app named.</strong> A failed Open in QUILL Lite
+said “QUILL could not be opened”.</li>
+<li><strong>Studio’s chapter markers from Scribe’s DAISY book.</strong>
+Scribe splits the DAISY audio into many files, so Studio wrote no
+markers. It now adds up the files’ lengths and puts a marker at each
+heading in the MP3 (checked on all four books of Pneuma’s corpus, within
+30 milliseconds).</li>
+</ul>
 <h3
 id="github-workbench-every-change-in-one-repository-now-works-across-many-2026-11-23">GitHub
 Workbench: every change in one repository now works across many

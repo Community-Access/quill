@@ -15,6 +15,7 @@ from pathlib import Path
 
 from quill.core.document import Document
 from quill.core.error_codes import CodedError
+from quill.io.mobi_open import MOBI_SUFFIXES
 from quill.io.text import read_text_document
 
 
@@ -57,6 +58,8 @@ OFFICE_STREAM_SUFFIXES: frozenset[str] = frozenset({
     ".odt",
     ".rtf",
     ".epub",
+    ".mobi",  # a Kindle book (quill.io.mobi_open); .prc is the same database
+    ".prc",
     ".pages",
 })
 
@@ -80,6 +83,13 @@ _CSV_SUFFIXES: frozenset[str] = frozenset({".csv", ".tsv"})
 # preserved. Detection is by extension; see ``quill/core/brf_ascii.py`` for the
 # character set, BOM handling, and the non-BRF-ASCII guard.
 BRF_SUFFIXES: frozenset[str] = frozenset({".brf", ".brl", ".pef", ".ueb"})
+
+
+def opened_sentence(name: str, metadata: dict[str, object]) -> str:
+    """What is said as a file opens: "Opened <name>", and the reader's one note
+    about it when it has one (a Kindle book's inferred headings), said once."""
+    note = str(metadata.get("open_note") or "")
+    return f"Opened {name}. {note}" if note else f"Opened {name}"
 
 
 def read_open_document(
@@ -106,6 +116,11 @@ def read_open_document(
     handler (#1423).
     """
     _require_readable(selected_path)
+    if suffix in MOBI_SUFFIXES:
+        # A Kindle book: Markdown with its pictures beside it (quill.io.mobi_open).
+        from quill.io.mobi_open import read_mobi_document
+
+        return read_mobi_document(selected_path), None
     if suffix in _CSV_SUFFIXES:
         loaded = read_text_document(selected_path)
         engine = "csv grid" if csv_mode == "grid" else "csv text"

@@ -37,4 +37,8 @@ FAMILY_ENTRIES: dict[str, str] = {
     "core/scribe/library.py::record": "content",
     "core/scribe/queue.py::_write": "content",
     "core/scribe/queue.py::try_acquire": "marker",
+    # The Scribe live regression run's own record (run.json), written into the
+    # run's dated folder outside the repository: a QA output the tool makes for
+    # the person who ran it, never read by an app (2026-11-23).
+    "tools/scribe_live/layout.py::save_record": "export",
 }

@@ -114,7 +114,7 @@ def _result_text(job: Job, *, opened: str, offer: bool, note: str) -> str:
     if opened:
         return f"{text} {opened}."
     if names and not any(default_action(f) != "save" for f in job.outputs):
-        # Nothing made opens anywhere (a Kindle book, the offline page): say where to look.
+        # Nothing made opens anywhere (the offline page): say where to look.
         return f"{text} Open Folder in Scribe Conversions shows it."
     if offer or names:
         return f"{text} Open it from Scribe Conversions."
