@@ -423,7 +423,9 @@ def write_document_as(
     # takes the folder along, so its picture links still work (quill.io.mobi_open).
     from quill.io.mobi_open import carry_pictures
 
-    warning = carry_pictures(document.text, document.path, Path(target))
+    warning = carry_pictures(
+        getattr(document, "text", "") or "", getattr(document, "path", None), Path(target)
+    )
     if warning:
         _emit_save_warning(warning)
     if suffix in _RTF_SUFFIXES:
