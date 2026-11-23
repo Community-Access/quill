@@ -72,12 +72,12 @@ def change_rows(
     old, new = list(old), list(new)
     if pin is not None and old.count(pin) == 1 and new.count(pin) == 1:
         at_old, at_new = old.index(pin), new.index(pin)
-        rest = {"delete": delete, "insert": insert, "update": update}
-        _match(old[at_old + 1 :], new[at_new + 1 :], at_old + 1, at_new + 1, **rest)
+        after_old, after_new = old[at_old + 1 :], new[at_new + 1 :]
+        _match(after_old, after_new, at_old + 1, at_new + 1, delete, insert, update)
         update(at_old, at_new)
-        _match(old[:at_old], new[:at_new], 0, 0, **rest)
+        _match(old[:at_old], new[:at_new], 0, 0, delete, insert, update)
         return
-    _match(old, new, 0, 0, delete=delete, insert=insert, update=update)
+    _match(old, new, 0, 0, delete, insert, update)
 
 
 def _match(
@@ -85,7 +85,6 @@ def _match(
     new: list[str],
     row0: int,
     new0: int,
-    *,
     delete: Callable[[int], None],
     insert: Callable[[int, int], None],
     update: Callable[[int, int], None],
