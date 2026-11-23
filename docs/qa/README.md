@@ -49,6 +49,7 @@ nothing looks broken.
   `tests/unit/docs/test_github_live_run_coverage.py` fails when a command or
   sheet is added without a scenario or a reason in the run.
 - [github-journeys.md](github-journeys.md) -- the GitHub roadmap's journeys
+- [github-help-sessions.md](github-help-sessions.md) -- the timed find-the-answer-in-help sessions with people (GH-R-119)
   GX01 to GX08: each as a person walks it, the failure it must survive, the
   tests that show it, and the steps still to check with a screen reader.
 - [wordpress-regression-testing.md](wordpress-regression-testing.md) -- the
