@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>GitHub Workbench help sessions (GH-R-119, D20)</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="github-workbench-help-sessions-gh-r-119-d20">GitHub Workbench
+help sessions (GH-R-119, D20)</h1>
+<p>This is the kit for the timed “find the answer in help” sessions that
+close GH-R-119. The help itself is built and checked by
+GATE-GITHUB-HELP: one catalogue behind F1, Shift+F1, Alt+F1, Search Help
+and the generated reference. What is left is measuring it with people,
+as the PRD’s D20 and section 12 ask.</p>
+<p>GH-R-119 changes from Partly to Met in
+<code>github-workbench-requirement-audit-2026-11.md</code> once the five
+sessions below are recorded and every task that failed has an issue
+filed against the help.</p>
+<h2 id="who">Who</h2>
+<p>About five people, as section 12 asks. Between them, cover:</p>
+<ul>
+<li>someone new to GitHub and someone experienced;</li>
+<li>screen-reader users (NVDA and JAWS, and one using a braille display
+if possible) and at least one sighted person.</li>
+</ul>
+<p>Write each person down by a short code (P1 to P5) and what they use,
+never by name.</p>
+<h2 id="setting-up">Setting up</h2>
+<ol type="1">
+<li>An installed QUILL build from main, signed in to the test repository
+with a Read Only account, so nothing a participant does can change
+GitHub.</li>
+<li>The GitHub Workbench open on Inbox. Clear the help history and
+Search Help’s last search.</li>
+<li>A timer. Time starts when you finish reading the task aloud, and
+stops when the person says the answer or gives up.</li>
+<li>Do not show anyone where help lives. If someone asks “how do I get
+help?”, say “however you’d normally look”, and note that they
+asked.</li>
+</ol>
+<h2 id="the-tasks">The tasks</h2>
+<p>Read each task aloud exactly as written. Tasks 1 to 5 are section
+12’s; tasks 6 to 10 are “find the answer in help” tasks, which D20 asks
+to time. Stop a task at 5 minutes and mark it Gave up.</p>
+<ol type="1">
+<li>Find the pull requests waiting for your review.</li>
+<li>Re-run only the failed jobs of the latest workflow run.</li>
+<li>Draft release notes for the latest release.</li>
+<li>Find who has access to the repository.</li>
+<li>Read the issue a notification is about, then open the file it names
+in the editor and come back.</li>
+<li>Using help, find out what Type to Confirm is for, and when QUILL
+asks for it.</li>
+<li>Using help, find out how to compare a Dependabot configuration
+across repositories.</li>
+<li>Using help, find out what the GitHub Permissions shown for this
+repository mean you can do.</li>
+<li>Using help, find out how to see what failed in a workflow run
+without opening every job.</li>
+<li>Using help, find out every key the GitHub Workbench has.</li>
+</ol>
+<h2 id="what-to-record">What to record</h2>
+<p>For each task:</p>
+<ul>
+<li><strong>Time,</strong> in seconds.</li>
+<li><strong>Wrong turns:</strong> each time the person went somewhere
+that did not lead to the answer (a wrong node, a wrong menu, a help
+topic that did not answer it).</li>
+<li><strong>Help used:</strong> none, F1, Shift+F1, Alt+F1, Search Help
+or the generated reference. List them in the order used.</li>
+<li><strong>Result:</strong> Found, Found with a hint, or Gave up.</li>
+<li><strong>What they said:</strong> their words about anything
+confusing, especially a help topic’s first sentence (D20 puts the answer
+there, within a 40-cell braille line where it can).</li>
+</ul>
+<h2 id="results">Results</h2>
+<p>Copy this table once per person.</p>
+<p><strong>P_ (new or experienced; screen reader, braille display or
+sighted):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Time (s)</th>
+<th>Wrong turns</th>
+<th>Help used</th>
+<th>Result</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Pull requests waiting for review</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2. Re-run failed jobs</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>3. Draft release notes</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>4. Who has access</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>5. Notification, file and back</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6. Type to Confirm</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>7. Compare Dependabot configuration</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>8. GitHub Permissions</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>9. What Failed</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>10. Every Workbench key</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="after-the-sessions">After the sessions</h2>
+<ol type="1">
+<li>Add a short summary here: the median time and the wrong turns per
+task, and which tasks anyone gave up on.</li>
+<li>For each Gave up or Found with a hint, file an issue naming the
+task, the help surface they tried, and their words. A help fix changes
+the catalogue, so GATE-GITHUB-HELP checks it.</li>
+<li>Record any screen-reader problems in
+<code>screen-reader-checks-2026-10.md</code>.</li>
+<li>Change GH-R-119 to Met in the requirement audit and recount its
+summary table.</li>
+</ol>
+</main>
+</body>
+</html>
