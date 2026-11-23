@@ -32,7 +32,12 @@ from typing import Any
 
 __all__ = [
     "RowAnchor",
+    "NO_ANCHOR",
     "capture_report",
+    "follow_report",
+    "refill_listbox",
+    "say_when_settled",
+    "selected_rows",
     "capture_listbox",
     "restore_report",
     "restore_listbox",
@@ -76,9 +81,17 @@ def _visible(top: int, per_page: int, index: int) -> bool:
 
 
 def capture_report(control: Any) -> RowAnchor:
-    """The selected row and the first visible row of a ``wx.ListCtrl``."""
+    """The reader's row and the first visible row of a ``wx.ListCtrl``.
+
+    The reader's row is the focused item when it is selected -- in a list
+    that allows several rows, Ctrl and the arrows put the cursor on any one of
+    them -- otherwise the first selected row.
+    """
     try:
         index = int(control.GetFirstSelected())
+        focused = int(control.GetFocusedItem()) if hasattr(control, "GetFocusedItem") else -1
+        if focused >= 0 and focused in selected_rows(control):
+            index = focused
         top = int(control.GetTopItem())
         per_page = int(control.GetCountPerPage())
     except RuntimeError:  # the list is mid-teardown
@@ -88,8 +101,12 @@ def capture_report(control: Any) -> RowAnchor:
     return RowAnchor(index=index, top=top, visible=_visible(top, per_page, index))
 
 
-def restore_report(wx: Any, control: Any, anchor: RowAnchor, index: int) -> None:
+def restore_report(
+    wx: Any, control: Any, anchor: RowAnchor, index: int, also: Sequence[int] = ()
+) -> None:
     """Select and focus exactly *index*, keeping it on the line it was on.
+
+    *also* are further rows of a multiple selection that stay selected with it.
 
     Only what differs is written: re-selecting the row already selected would
     make the native list raise a selection event for a row that did not change.
@@ -99,12 +116,16 @@ def restore_report(wx: Any, control: Any, anchor: RowAnchor, index: int) -> None
     count = int(control.GetItemCount())
     if not 0 <= index < count:
         return
+    wanted = {index, *(row for row in also if 0 <= row < count)}
     selected = int(control.GetFirstSelected())
     while selected != -1:
         following = int(control.GetNextSelected(selected))
-        if selected != index:
+        if selected not in wanted:
             control.Select(selected, on=False)
         selected = following
+    for row in sorted(wanted - {index}):
+        if not int(control.GetItemState(row, wx.LIST_STATE_SELECTED)) & wx.LIST_STATE_SELECTED:
+            control.Select(row)
     focused = wx.LIST_STATE_FOCUSED
     state = int(control.GetItemState(index, wx.LIST_STATE_SELECTED | focused))
     if not state & wx.LIST_STATE_SELECTED:
@@ -120,6 +141,61 @@ def restore_report(wx: Any, control: Any, anchor: RowAnchor, index: int) -> None
     per_page = int(control.GetCountPerPage())
     if anchor.visible and not _visible(int(control.GetTopItem()), per_page, index):
         control.EnsureVisible(index)
+
+
+def selected_rows(control: Any) -> list[int]:
+    """Every selected row of a ``wx.ListCtrl``, top to bottom."""
+    rows: list[int] = []
+    row = int(control.GetFirstSelected())
+    while row != -1:
+        rows.append(row)
+        row = int(control.GetNextSelected(row))
+    return rows
+
+
+def say_when_settled(wx: Any, control: Any, say: Any, text: str) -> None:
+    """Say *text* after the screen reader has read the row it landed on.
+
+    A focus change cancels speech in NVDA and JAWS, so a sentence said in the
+    same handler as the selection change is swallowed, or cuts the row's name
+    off. Said a moment later instead, and only when the person is in this
+    list's window -- a list refreshing behind another window, or a second
+    copy of the window, keeps quiet.
+    """
+
+    def _say() -> None:
+        try:
+            if not control:
+                return
+            frame = wx.GetTopLevelParent(control)
+            if frame is None or not frame.IsActive():
+                return
+        except RuntimeError:  # closed meanwhile
+            return
+        say(text)
+
+    wx.CallLater(400, _say)
+
+
+def follow_report(
+    wx: Any, control: Any, anchor: RowAnchor, keys: Sequence[str], wanted: str | None
+) -> bool:
+    """Put the reader back on *wanted* after a refill; False when it has gone.
+
+    *anchor* is what :func:`capture_report` saw before the refill and *keys*
+    the refilled rows' identities. When *wanted* is gone the reader lands on
+    the row that moved into its place (:func:`quill.core.list_follow.land`);
+    the caller says :func:`~quill.core.list_follow.gone_sentence` when this
+    returns False. Nothing is selected when the reader was on nothing.
+    """
+    from quill.core.list_follow import land
+
+    if wanted is None or anchor.index < 0:
+        return True
+    landing = land(keys, wanted, anchor.index)
+    if landing.index >= 0:
+        restore_report(wx, control, anchor, landing.index)
+    return landing.kept
 
 
 def _scroll_report_to(control: Any, top: int) -> None:
@@ -166,6 +242,48 @@ def restore_listbox(control: Any, anchor: RowAnchor, rows: Sequence[int], caret:
         top = kept_top(anchor, caret, count)
         if top >= 0 and int(control.GetTopItem()) != top:
             control.SetFirstItem(top)
+
+
+def refill_listbox(
+    control: Any,
+    old_keys: Sequence[str],
+    new_keys: Sequence[str],
+    labels: Sequence[str],
+    wanted: str | None,
+) -> bool:
+    """Refill a single-selection ``wx.ListBox`` row by row, keeping the reader.
+
+    Only rows that left are deleted, only arrivals inserted, and a row whose
+    words changed is rewritten (:func:`quill.core.list_follow.change_rows`),
+    so the reader's row is never cleared out from under them and the list does
+    not jump to the top. The selection is then put on *wanted*, or when that
+    has gone on the row that moved into its place, and written only when it
+    differs. False when *wanted* has gone: the caller may say so.
+    """
+    from quill.core.list_follow import change_rows, land
+
+    previous = int(control.GetSelection())
+
+    def _update(row: int, new_index: int) -> None:
+        if control.GetString(row) != labels[new_index]:
+            control.SetString(row, labels[new_index])
+
+    change_rows(
+        old_keys,
+        new_keys,
+        delete=control.Delete,
+        insert=lambda row, new_index: control.Insert(labels[new_index], row),
+        update=_update,
+        pin=wanted,
+    )
+    if wanted is None and previous < 0:
+        return True  # the reader was on nothing, and stays on nothing
+    landing = land(new_keys, wanted, previous)
+    if landing.index < 0:
+        return landing.kept
+    if int(control.GetSelection()) != landing.index:
+        control.SetSelection(landing.index)
+    return landing.kept
 
 
 def _set_listbox_caret(control: Any, row: int) -> None:

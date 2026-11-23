@@ -129,6 +129,15 @@ def set_row(
     The in-place counterpart of :func:`fill_row`, for the lists that refresh on
     a tick and must not rebuild (a rebuild moves the cursor out from under
     somebody reading a row).
+
+    Only a cell whose text changed is written (FUX-06): rewriting an unchanged
+    cell on every tick makes a screen reader say the row again for nothing.
     """
     for index, column in enumerate(columns):
-        list_ctrl.SetItem(row, index, values.get(column.id, ""))
+        value = values.get(column.id, "")
+        try:
+            if list_ctrl.GetItemText(row, index) == value:
+                continue
+        except (AttributeError, TypeError, RuntimeError):
+            pass  # a control that cannot say its cell text is simply written
+        list_ctrl.SetItem(row, index, value)
