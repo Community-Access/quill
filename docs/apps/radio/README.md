@@ -102,7 +102,7 @@ More ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift
 | Ctrl+F | Find a stream by name, link, format, bitrate, listeners or how it was found |
 | F3, Shift+F3 | Find the next or previous match, wrapping |
 | Ctrl+S | Save the selected rows as a playlist |
-| Enter | Test the focused stream |
+| Enter | Test the focused stream; on another row while one plays, test that one instead; on the same row, stop |
 | Applications key, Shift+F10 | The list's menu |
 
 ### What's playing

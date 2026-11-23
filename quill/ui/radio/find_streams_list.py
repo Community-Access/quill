@@ -86,16 +86,20 @@ class FindStreamsList:
         self._on_context_menu = on_context_menu
         self._candidates: list[PageStreamCandidate] = []
         self._shown: list[int] = []
+        #: True while Select All or Find changes many rows at once: the dialog's
+        #: selection handler skips its work then, and runs it once afterwards.
+        self.quiet = False
 
         sizer.Add(wx.StaticText(parent, label="St&reams found"), 0, wx.LEFT | wx.TOP, 10)
         self.ctrl = wx.ListCtrl(parent, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         set_spoken_name(self.ctrl, "Streams found")
         self.ctrl.SetHelpText(
-            "The stream links found on the page. Live streams come first. Select several "
-            "with Shift and the arrow keys, or Ctrl+A for every row shown, then Add to "
-            "Favorites, Save as Playlist or Ctrl+C acts on them all. Ctrl+F finds a row, "
-            "F3 and Shift+F3 find the next and previous, and the Applications key opens "
-            "the list's menu."
+            "The stream links found on the page, live streams first. Enter tests the "
+            "focused link. Select several with Shift and the arrow keys, or press Ctrl+A "
+            "for every row shown; to pick rows far apart, filter the list first, then "
+            "press Ctrl+A. Add to Favorites, Save as Playlist (Ctrl+S) and Copy (Ctrl+C) "
+            "then act on all of them. Ctrl+F finds a row, F3 and Shift+F3 find the next "
+            "and previous, and the Applications key opens the list's menu."
         )
         # The verdict first: it is what a screen reader reads first, and in
         # JAWS's first-column mode the only thing it reads.
@@ -198,19 +202,39 @@ class FindStreamsList:
         return [focused] if focused is not None else []
 
     def go_to(self, position: int) -> None:
-        """Select and focus one shown row (Find), nothing else selected."""
-        for row in range(self.ctrl.GetItemCount()):
-            self.ctrl.Select(row, row == position)
-        self.ctrl.Focus(position)
-        self.ctrl.EnsureVisible(position)
+        """Select and focus one shown row (Find), nothing else selected.
+
+        Only the rows that are selected are deselected, quietly, so a long
+        list does not send an event per row."""
+        self.quiet = True
+        try:
+            selected = []
+            row = int(self.ctrl.GetFirstSelected())
+            while row >= 0:
+                selected.append(row)
+                row = int(self.ctrl.GetNextSelected(row))
+            for row in selected:
+                if row != position:
+                    self.ctrl.Select(row, False)
+            self.ctrl.Select(position, True)
+            self.ctrl.Focus(position)
+            self.ctrl.EnsureVisible(position)
+        finally:
+            self.quiet = False
         self._show_details()
 
     def select_all(self) -> bool:
-        """Select every row shown; True when they all already were."""
+        """Select every row shown, quietly; True when they all already were."""
         count = self.ctrl.GetItemCount()
         already = count > 0 and self.ctrl.GetSelectedItemCount() == count
-        for row in range(count):
-            self.ctrl.Select(row, True)
+        if already:
+            return True
+        self.quiet = True
+        try:
+            for row in range(count):
+                self.ctrl.Select(row, True)
+        finally:
+            self.quiet = False
         return already
 
     def focused_rect(self) -> Any:

@@ -7,8 +7,9 @@ Two menus, built fresh each time they open, and one key table:
   (only when a row has a count); &Live streams only; &All formats; &MP3 only;
   AA&C only; &Ogg only; &HLS only; O&pus only (only the formats present). The
   current choice is checked explicitly.
-* **The list's context menu** mirrors the buttons: &Test; &Use This Link...;
-  Add to &Favorites; Save as Play&list...; &Copy Stream Link(s) with Ctrl+C;
+* **The list's context menu** mirrors the buttons and shows their keys:
+  &Test (Enter); &Use This Link...; Add to &Favorites; Save as Play&list...
+  (Ctrl+S); &Copy Stream Link(s) (Ctrl+C);
   &Scan This Stream's Server (only when it applies); then F&ind... (Ctrl+F),
   Find &Next (F3), Find &Previous (Shift+F3), Select &All (Ctrl+A); then the
   S&ort and Filter submenu.
@@ -125,10 +126,10 @@ def context_menu(
 ) -> Any:
     """The list's context menu; *submenu* is a fresh Sort and Filter menu."""
     menu = wx.Menu()
-    menu.Append(ids["test"], "S&top Test" if testing else "&Test")
+    menu.Append(ids["test"], "S&top Test" if testing else "&Test	Enter")
     menu.Append(ids["use"], "&Use This Link...")
     menu.Append(ids["add"], add_label(count))
-    menu.Append(ids["save"], save_label(count))
+    menu.Append(ids["save"], save_label(count) + "	Ctrl+S")
     menu.Append(ids["copy"], copy_label(count))
     if server:
         menu.Append(ids["server"], "&Scan This Stream's Server")

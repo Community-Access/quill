@@ -34,7 +34,10 @@ written in QUILL's own code.
   stream's name, status, format, listeners, link, server and how it was
   found, one per line. Nothing is spoken as it changes.
 - Rows that would read the same now end with their host and path.
-- Enter on a row tests it.
+- Enter on a row tests it; Enter on another row while one plays tests that
+  one instead, and Enter on the same row, or the Stop Test button, stops.
+  The list's menu shows Enter, Ctrl+S, Ctrl+C, Ctrl+F, F3, Shift+F3 and
+  Ctrl+A beside their commands.
 
 ### Quill Radio: Find Streams reads only the public internet (2026-11-22)
 

@@ -72,23 +72,38 @@ def station_for(candidate: PageStreamCandidate, page_title: str, favicon: str = 
     )
 
 
-def _ask_folder(wx: Any, parent: Any, count: int, value: str, announce: Announce) -> str | None:
+def prompt_text(
+    wx: Any,
+    parent: Any,
+    title: str,
+    message: str,
+    value: str,
+    announce: Announce,
+    use: Callable[[str], str] = lambda text: text,
+) -> str | None:
+    """One line from the platform's own prompt, through the dialog contract.
+
+    *use* runs on the answer **before** the prompt is destroyed, so Find can
+    land on its match first and the row is read once. ``None`` on Cancel.
+    """
     from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
-    title = "Add to Favorites"
-    entry = wx.TextEntryDialog(
-        parent,
-        f"Add {count} streams to which Favorites folder? Leave it empty for no folder.",
-        title,
-        value=value,
-    )
+    entry = wx.TextEntryDialog(parent, message, title, value=value)
     try:
-        apply_modal_ids(entry, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+        # The platform's own prompt carries its OK and Cancel buttons.
+        apply_modal_ids(  # dialog_button_contract: exempt
+            entry, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL
+        )
         if show_modal_dialog(entry, title, announce=announce) != wx.ID_OK:
             return None
-        return str(entry.GetValue()).strip()
+        return use(str(entry.GetValue()).strip())
     finally:
         entry.Destroy()
+
+
+def _ask_folder(wx: Any, parent: Any, count: int, value: str, announce: Announce) -> str | None:
+    message = f"Add {count} streams to which Favorites folder? Leave it empty for no folder."
+    return prompt_text(wx, parent, "Add to Favorites", message, value, announce)
 
 
 def add_to_favorites(

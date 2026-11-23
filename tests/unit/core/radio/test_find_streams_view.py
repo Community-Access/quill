@@ -181,3 +181,10 @@ def test_scan_this_streams_server_only_when_it_would_list_something(
 ) -> None:
     candidate = _c(url, reason=reason)
     assert view.server_to_scan(candidate, "https://station.example/") == expected
+
+
+def test_select_all_with_one_row() -> None:
+    assert view.select_all_sentence(False, 1, 1) == "Selected the only link."
+    assert view.select_all_sentence(True, 1, 1) == "The only link is already selected."
+    assert view.select_all_sentence(False, 1, 5) == "Selected the only link shown."
+    assert view.select_all_sentence(True, 1, 5) == "The only link shown is already selected."

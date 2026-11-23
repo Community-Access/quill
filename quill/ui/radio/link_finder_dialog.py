@@ -1,18 +1,10 @@
 """Internet Radio > Find Streams from a Website... -- scan one page for links.
 
-Type a website's address; Scan fetches that one page and lists every
-candidate stream link it finds (see ``core/radio/link_finder.py`` for what
-"finds" means and why this is a fetch-and-parse rather than an embedded
-browser). Test plays the focused row through the shared player; "Use This
-Link..." hands it to Add Custom Station.
-
-Each candidate is checked before it is listed (the live check, an idea from
-Andre Louis's StreamSift, https://github.com/OnjLouis/StreamSift). The checks
-finish inside the scan, so the list is filled once, when everything is known.
-Its first column says what each row is ("Live: WXYZ FM, MP3, 128 kbps"), and
-one sentence says the result (FUX-04). Scan stays enabled -- disabling the
-focused button would drop focus out of the window -- and a press during a
-scan, or eight seconds of silence, says once that it is still going.
+Scan fetches the one page typed and lists the stream links it finds
+(``core/radio/link_finder.py``), each checked first (the live check, an idea
+from Andre Louis's StreamSift, https://github.com/OnjLouis/StreamSift), so the
+list is filled once and one sentence says the result (FUX-04). Scan stays
+enabled, as disabling the focused button would drop focus out of the window.
 
 **A list you can work with** (ideas from StreamSift too, in QUILL's own code):
 sort, filter by format or to live streams only, find, select several, add them
@@ -94,6 +86,7 @@ class LinkFinderDialog:
         self._favicon_url = ""
         self._find_term = ""
         self._testing = False
+        self._testing_url = ""
         self._scanning = False
         self._ids = {name: wx.NewIdRef() for name in menus.MENU_NAMES}
 
@@ -181,7 +174,7 @@ class LinkFinderDialog:
         self._results.Bind(wx.EVT_LIST_ITEM_FOCUSED, self._on_selection_changed)
         self._results.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._on_test)
         self._sort_btn.Bind(wx.EVT_BUTTON, self._on_sort_button)
-        self._test_btn.Bind(wx.EVT_BUTTON, self._on_test)
+        self._test_btn.Bind(wx.EVT_BUTTON, lambda e: self._on_test(e, from_button=True))
         self._use_btn.Bind(wx.EVT_BUTTON, self._on_use)
         self._add_btn.Bind(wx.EVT_BUTTON, lambda _e: self._add())
         self._save_btn.Bind(wx.EVT_BUTTON, lambda _e: self._save())
@@ -216,10 +209,13 @@ class LinkFinderDialog:
         self._status.SetLabel(text)
         self._announce(text)
 
-    def _say_after(self, text: str, sound: str = "") -> None:
-        """Say *text* once the focus change before it has been read."""
+    def _say_after(self, text: str, sound: str = "", *, show: bool = True) -> None:
+        """Say *text* once the focus change before it has been read; with
+        *show*, put it in the status line too (a scan sets its own, fuller one)."""
         if not text:
             return
+        if show:
+            self._status.SetLabel(text)
         if sound:
             self._wx.CallAfter(self._announce, text, sound=sound)
         else:
@@ -280,7 +276,10 @@ class LinkFinderDialog:
             self._candidates, self._rows = [], []
             self._list.clear()
             self._enable_row_buttons()
-            self._say(failure_sentence(error))
+            failed = failure_sentence(error)
+            self._status.SetLabel(failed)
+            # Said once focus has settled where emptying the list left it.
+            self._say_after(failed, show=False)
             return
         self._page_title = result.page_title
         self._favicon_url = result.favicon_url
@@ -302,6 +301,7 @@ class LinkFinderDialog:
             and not view.has_listeners(candidates)
         ):
             extra.append(NO_LISTENER_COUNTS)
+            self._state = view.ViewState()  # the order shown is scan order
         elif candidates and self._state.order != view.SCAN:
             extra.append(view.order_sentence(self._state.order))
         if was_filtered:
@@ -313,14 +313,20 @@ class LinkFinderDialog:
             self._candidates, self._rows = [], []
             self._list.clear()
             self._enable_row_buttons()
-            self._announce(sentence)
+            self._say_after(sentence, show=False)
             return
         self._candidates = candidates
         self._rows = view.distinct_rows(candidates)
-        self._refill(sentence, keep="", keep_selected=False)
+        self._refill(sentence, keep="", keep_selected=False, show=False)
 
-    def _refill(self, sentence: str, *, keep: str, keep_selected: bool = True) -> None:
+    def _refill(
+        self, sentence: str, *, keep: str, keep_selected: bool = True, show: bool = True
+    ) -> None:
         """Freeze, refill keeping *keep*, thaw, focus the list, then say *sentence*."""
+        if self._wx.Window.FindFocus() is self._results and self._sort_btn.IsEnabled():
+            # From the context menu: step off the list, so coming back to it
+            # reads the row once, after the refill.
+            self._sort_btn.SetFocus()
         self.dialog.Freeze()
         try:
             self._list.fill(
@@ -334,7 +340,7 @@ class LinkFinderDialog:
         finally:
             self.dialog.Thaw()
         self._results.SetFocus()
-        self._say_after(sentence)
+        self._say_after(sentence, show=show)
 
     # -- buttons that follow the rows --------------------------------------------
 
@@ -357,7 +363,8 @@ class LinkFinderDialog:
         self._use_btn.Enable(focused)
 
     def _on_selection_changed(self, event: Any) -> None:
-        self._enable_row_buttons()
+        if not self._list.quiet:  # Select All and Find run it once, after
+            self._enable_row_buttons()
         event.Skip()
 
     # -- Sort and Filter -----------------------------------------------------------
@@ -377,10 +384,10 @@ class LinkFinderDialog:
     def _apply(self, state: view.ViewState, sentence: str) -> None:
         """Show the list as *state*; a no-op choice repeats its sentence."""
         if state == self._state:
-            self._announce(sentence)
+            self._say_after(sentence)
             return
         if not view.visible(self._candidates, state):
-            self._announce(view.empty_filter_sentence(state))
+            self._say_after(view.empty_filter_sentence(state))
             return
         self._state = state
         focused = self._list.focused()
@@ -437,12 +444,12 @@ class LinkFinderDialog:
 
     def _run(self, name: str) -> None:
         commands: dict[str, Callable[[], None]] = {
-            "test": lambda: self._on_test(None),
+            "test": lambda: self._on_test(None, from_button=self._testing),
             "use": lambda: self._on_use(None),
             "add": self._add,
             "save": self._save,
             "copy": self._copy,
-            "server": self._scan_server,
+            "server": lambda: self._wx.CallAfter(self._scan_server),
             "find": self._find,
             "find_next": lambda: self._find_again(backwards=False),
             "find_previous": lambda: self._find_again(backwards=True),
@@ -466,32 +473,26 @@ class LinkFinderDialog:
     # -- Find --------------------------------------------------------------------
 
     def _find(self) -> None:
-        from quill.ui.dialog_contract import show_modal_dialog
-
-        wx = self._wx
-        title = "Find in Streams Found"
-        prompt = wx.TextEntryDialog(
-            self.dialog,
-            "Find a stream by its name, link, format or how it was found:",
-            title,
-            value=self._find_term,
-        )
-        try:
-            # The platform's own prompt carries its OK and Cancel buttons.
-            apply_modal_ids(  # dialog_button_contract: exempt
-                prompt, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL
-            )
-            if show_modal_dialog(prompt, title, announce=self._announce) != wx.ID_OK:
-                return  # Cancel does nothing
-            term = str(prompt.GetValue()).strip()
+        def land(term: str) -> str:
             if not term:
-                return
+                return ""
             self._find_term = term
             # Select and focus the match before the prompt goes, so the row is
             # read once, when focus comes back to the list.
-            sentence = self._land(backwards=False)
-        finally:
-            prompt.Destroy()
+            return self._land(backwards=False)
+
+        message = "Find a stream by its name, link, format or how it was found:"
+        sentence = actions.prompt_text(
+            self._wx,
+            self.dialog,
+            "Find in Streams Found",
+            message,
+            self._find_term,
+            self._announce,
+            land,
+        )
+        if sentence is None:
+            return  # Cancel does nothing
         self._results.SetFocus()
         self._say_after(sentence)
 
@@ -520,7 +521,7 @@ class LinkFinderDialog:
     # -- the actions -----------------------------------------------------------------
 
     def _select_all(self) -> None:
-        already = self._list.select_all()
+        already = self._list.select_all()  # quietly: the buttons follow once
         self._enable_row_buttons()
         sentence = view.select_all_sentence(already, len(self._list), len(self._candidates))
         self._say_after(sentence)
@@ -562,18 +563,22 @@ class LinkFinderDialog:
         self._url_ctrl.SetInsertionPointEnd()
         self._on_scan(None)
 
-    def _on_test(self, _event: object) -> None:
-        # Toggle: while a test plays, the same button reads Stop and stops it.
-        if self._testing:
+    def _on_test(self, _event: object, *, from_button: bool = False) -> None:
+        """Test the focused row. While a test plays, the button (or Enter on
+        the same row) stops it; Enter on another row tests that row instead."""
+        candidate = self._list.focused()
+        if self._testing and (
+            from_button or candidate is None or candidate.url == self._testing_url
+        ):
             self._controller.stop()
             self._set_testing(False)
             self._announce("Test stopped.")
             return
-        candidate = self._list.focused()
         if candidate is None:
             return
         station = actions.station_for(candidate, self._page_title)
         self._controller.play_station(station)
+        self._testing_url = candidate.url
         self._set_testing(True)
         self._announce(f"Testing {station.name}.")
 

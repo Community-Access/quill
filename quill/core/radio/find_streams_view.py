@@ -286,7 +286,13 @@ def find(
 
 def select_all_sentence(already: bool, shown: int, total: int) -> str:
     """Ctrl+A: "Selected all 31 links." / "Selected all 4 links shown." """
-    if shown < total:
+    filtered = shown < total
+    if shown == 1:
+        where = "The only link shown" if filtered else "The only link"
+        if already:
+            return f"{where} is already selected."
+        return f"Selected the only link{' shown' if filtered else ''}."
+    if filtered:
         if already:
             return f"All {_plural(shown, 'link', 'links')} shown are already selected."
         return f"Selected all {_plural(shown, 'link', 'links')} shown."

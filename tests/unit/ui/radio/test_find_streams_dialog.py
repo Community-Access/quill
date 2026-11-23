@@ -555,10 +555,10 @@ def test_the_context_menu_letters_and_keys(d: Any) -> None:
     finally:
         menu.Destroy()
     assert labels == [
-        "&Test",
+        "&Test\tEnter",
         "&Use This Link...",
         "Add to &Favorites",
-        "Save as Play&list...",
+        "Save as Play&list...\tCtrl+S",
         "&Copy Stream Link\tCtrl+C",
         "&Scan This Stream's Server",
         "",
