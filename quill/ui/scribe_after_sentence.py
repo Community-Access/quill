@@ -1,7 +1,8 @@
 """Open a Scribe result's window after the sentence that names it (GATE-13).
 
 When a result opens in a new window -- a QUILL Lite window, Quill Media
-Player, QUILL handed an EPUB from QUILL Lite -- that window comes to the
+Player, QUILL handed an EPUB from QUILL Lite, the person's browser -- that
+window comes to the
 front and the screen reader says it as focus lands there, cutting off
 whatever was being said. The result sentence is said once and must be heard,
 so the opening waits for it.
@@ -22,6 +23,7 @@ first was released replaces it; the person asked for the later one.
 from __future__ import annotations
 
 from collections.abc import Callable
+from pathlib import Path
 
 #: How long a sentence takes to say, at a brisk screen-reader rate, and the
 #: bounds on waiting for it before the window opens.
@@ -73,4 +75,16 @@ class AfterSentence:
         call_later_safely(delay_ms, go, name="Open the Scribe result after its sentence")
 
 
-__all__ = ["UNSAID_WAIT_MS", "AfterSentence", "wait_for_sentence"]
+def browser_opening(page: Path, announce: Callable[[str], None]) -> Callable[[], None]:
+    """Show *page* in the person's browser; say so once if the browser would not start."""
+
+    def show() -> None:
+        from quill.ui import scribe_entry
+
+        if not scribe_entry.open_in_browser(page):
+            announce(f"Your browser could not be opened. {page.name} is saved in its folder.")
+
+    return show
+
+
+__all__ = ["UNSAID_WAIT_MS", "AfterSentence", "browser_opening", "wait_for_sentence"]

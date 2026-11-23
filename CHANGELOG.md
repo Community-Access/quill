@@ -2,6 +2,19 @@
 
 ## 1.0.0
 
+### Scribe for Documents: Jeff's three answers (2026-11-23)
+
+- **The browser waits for its sentence.** When Open Result shows the offline
+  web page or the accessible HTML in your browser, the browser now comes to
+  the front after "Opening ... in your browser." has been said, and not at
+  all if you have moved to another program.
+- **The accessible HTML opens once.** Open Result or a Next Step on it again,
+  while its "Notes (Scribe)" tab or window is open, goes to that tab or
+  window instead of making another copy, and says once that it is already
+  open.
+- **The tagged PDF opens only when you ask.** It never opens by itself; the
+  PRD's table of what happens to each result now says so.
+
 ### Scribe for Documents: follow-ups from the corpus tests (2026-11-23)
 
 - **Braille page counts.** A BRF that ends with a form feed, as every

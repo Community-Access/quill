@@ -4,7 +4,7 @@
 |---|---|---|
 | Word, EPUB | open in the editor | ``editor`` |
 | HTML | open in the editor as a readable document (converted, never markup) | ``editor`` |
-| Tagged PDF | open in the editor as text, on the person's command only | ``editor`` |
+| Tagged PDF | saved; in the editor as text only on request, never by itself | ``editor`` |
 | BRF | open in QUILL's braille view (QUILL opens a .brf as braille) | ``braille`` |
 | MP3, DAISY | open in Media Player | ``player`` |
 | MOBI, offline web page | saved; the sentence says where | ``save`` |

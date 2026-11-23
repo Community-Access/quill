@@ -467,14 +467,14 @@ Under family rule 10, Lite gets nothing QUILL does not have. Every Lite command 
 | HTML | Open in QUILL or Lite as a readable document (converted as Import does, never as markup); from the other apps, in the browser | Open in browser, Save |
 | Offline web page | Save | Open in browser |
 | Word | Open in QUILL or Lite as rich text | Open in Word, Save |
-| Tagged PDF | Save; Open Result and Next Steps open it in QUILL or Lite (text), never by itself | Open in the default PDF reader |
+| Tagged PDF | Save. It never opens by itself, whatever "Open each result when it is ready" says | Open Result and Next Steps open it in QUILL or Lite, as text; open in the default PDF reader |
 | EPUB | Open in QUILL. Never in Lite, which does not read EPUB: from Lite, or with only Lite installed, it goes to QUILL if installed, else it is saved and the sentence says once that QUILL reads it | Open in the default ebook reader |
 | MOBI | Save | Send to Kindle is not offered; QUILL says where the file is |
 | DAISY | Open in Media Player | Save, Open folder |
 | MP3 | Open in Media Player | Open in Studio, Save |
 | BRF | Open in QUILL's braille view | Save, emboss, send to a display through the existing braille commands |
 
-Each app's "Open each result when it is ready" choice decides whether the default action runs or is only offered.
+Each app's "Open each result when it is ready" choice decides whether the default action runs or is only offered. The tagged PDF is saved and opens only on request (Jeff, 2026-11-23). An accessible HTML already open as "<stem> (Scribe)" is brought forward, not converted again, and the sentence says it is already open; a result that opens in the browser waits for its sentence, like every other window.
 
 ## 10. Privacy, consent and safety
 

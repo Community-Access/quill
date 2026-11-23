@@ -49,6 +49,10 @@ from quill.ui.main_frame_scribe_stream import ScribeStreamMixin
 from quill.ui.scribe_entry import SENDABLE, ScribeEntryPoints, player_target
 from quill.ui.scribe_entry import send_to_player as _send_to_player
 
+#: What :meth:`ScribeMixin._scribe_open_as_import` returns when the converted
+#: tab was still open and was brought forward rather than made again.
+ALREADY_OPEN = "already open"
+
 #: (command id, title, handler, place). Places: tools (the submenu), file,
 #: import, export, braille, window.
 ROWS: tuple[tuple[str, str, str, str], ...] = (
@@ -133,6 +137,10 @@ class QuillScribeHost:
         self._mf._announce(text)
         self._after.said(text)
 
+    def scribe_hold(self, opening: Any, phrase: str) -> None:
+        """Open after the sentence carrying *phrase* (the browser, Media Player)."""
+        self._after.hold(opening, phrase)
+
     def scribe_in_front(self) -> bool:
         import wx
 
@@ -144,13 +152,15 @@ class QuillScribeHost:
 
     def scribe_open_result(self, job: q.Job, format_id: str, path: Path) -> str:
         """Section 9: open the output in the tool where it is used."""
-        from quill.core.scribe.results import default_action, opened_phrase
+        from quill.core.scribe.results import OPENED_NAME, default_action, opened_phrase
 
         action = default_action(format_id)
         # The accessible HTML is read as a document (headings, lists, tables,
         # links), converted as Import does, never shown as its markup.
         if format_id == "html" or (job.open_as == "import" and format_id in {"docx", "epub"}):
-            self._mf._scribe_open_as_import(job, path)
+            if self._mf._scribe_open_as_import(job, path) == ALREADY_OPEN:
+                # The reader says the tab's name as it is selected: not repeated here.
+                return f"{OPENED_NAME.get(format_id, 'The result')} is already open"
             return opened_phrase(format_id, "a new tab")
         if action in {"editor", "braille"}:
             self._mf.open_file(path)
@@ -265,24 +275,38 @@ class ScribeMixin(ScribeStreamMixin, ScribeEntryPoints):
             self._scribe_host = host
         return controller_for(host)
 
-    def _scribe_open_as_import(self, job: q.Job, path: Path) -> None:
-        """Import / Convert's Scribe tier: a new unsaved tab "<stem> (Scribe)"."""
+    def _scribe_open_as_import(self, job: q.Job, path: Path) -> str:
+        """Import / Convert's Scribe tier: a new unsaved tab "<stem> (Scribe)".
+
+        The same file converted again while its tab is still open goes to that
+        tab instead of making a second copy: returns :data:`ALREADY_OPEN`, and
+        the caller says so once. ``"opened"``, or ``""`` when it could not be read.
+        """
         from quill.core.document import Document
         from quill.core.import_convert import opened_sentence, scribe_name
         from quill.io.docconvert import TIER_SCRIBE, convert_document
 
+        shown: dict[str, Any] = self.__dict__.setdefault("_scribe_readable", {})
+        earlier = shown.get(str(path))
+        tabs = list(getattr(self, "_document_tabs", []))
+        for index, tab in enumerate(tabs):
+            if earlier is not None and getattr(tab, "document", None) is earlier:
+                self._select_tab(index)  # type: ignore[attr-defined]
+                return ALREADY_OPEN
+        shown.pop(str(path), None)
         try:
             outcome = convert_document(path)
         except Exception as error:  # noqa: BLE001 - said, never raised into the queue
             self._announce(f"{PRODUCT_NAME} made {path.name}, but QUILL could not read it: {error}")  # type: ignore[attr-defined]
-            return
+            return ""
         outcome.tier = TIER_SCRIBE
-        index = self._create_document_tab(  # type: ignore[attr-defined]
-            Document(text=outcome.text, path=None, modified=True), select=True
-        )
+        document = Document(text=outcome.text, path=None, modified=True)
+        index = self._create_document_tab(document, select=True)  # type: ignore[attr-defined]
+        shown[str(path)] = document
         stem = Path(job.file_name).stem or path.stem
         self._set_tab_page_text(index, scribe_name(stem))  # type: ignore[attr-defined]
         self._set_status(opened_sentence(job.file_name or path.name, outcome))  # type: ignore[attr-defined]
+        return "opened"
 
     # ------------------------------------------------------------- the menus
 
@@ -434,4 +458,4 @@ class ScribeMixin(ScribeStreamMixin, ScribeEntryPoints):
         self._scribe().start_if_jobs_waiting()
 
 
-__all__ = ["ROWS", "SENDABLE", "QuillScribeHost", "ScribeMixin"]
+__all__ = ["ALREADY_OPEN", "ROWS", "SENDABLE", "QuillScribeHost", "ScribeMixin"]

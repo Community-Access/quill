@@ -203,8 +203,12 @@ class AppScribeHost:
     scribe_opens_on_its_own = False
 
     def __init__(self, owner: Any, app_name: str) -> None:
+        from quill.ui.scribe_after_sentence import AfterSentence
+
         self._owner = owner
         self.app_name = app_name
+        #: The browser, held until its sentence has been said.
+        self._after = AfterSentence(still_here=lambda: self.scribe_in_front())
 
     def scribe_parent(self) -> Any:
         import wx
@@ -213,6 +217,16 @@ class AppScribeHost:
 
     def scribe_announce(self, text: str) -> None:
         self._owner._announce(text)
+        self.scribe_said(text)
+
+    def scribe_said(self, text: str) -> None:
+        """A sentence was said: a held window may go now. An app with its own
+        ``scribe_announce`` calls this after speaking."""
+        self._after.said(text)
+
+    def scribe_hold(self, opening: Callable[[], None], phrase: str) -> None:
+        """Open after the sentence carrying *phrase*, if the person is still here."""
+        self._after.hold(opening, phrase)
 
     def scribe_in_front(self) -> bool:
         import wx
@@ -223,6 +237,17 @@ class AppScribeHost:
         return False
 
     def scribe_open_result(self, job: Any, format_id: str, path: Path) -> str:
+        if format_id == "html":  # the browser, after the sentence that says so
+            phrase = "Opening the accessible HTML in your browser"
+
+            def show() -> None:
+                if not _html_in_browser(path):
+                    self.scribe_announce(
+                        f"Your browser could not be opened. {path.name} is saved in its folder."
+                    )
+
+            self.scribe_hold(show, phrase)
+            return phrase
         return open_elsewhere(format_id, path)
 
     def scribe_next_steps(self, job: Any, ready: dict[str, Path]) -> list[tuple[str, Any]]:
