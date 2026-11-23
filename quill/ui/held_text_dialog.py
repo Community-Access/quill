@@ -32,11 +32,11 @@ COPY = "copy"
 def ask_held_text(
     parent: Any,
     offer: HeldOffer,
-    run_modal: Callable[[Any, str], int],
+    show_modal: Callable[[Any, str], int],
 ) -> str | None:
     """Ask what to do with held text: :data:`INSERT`, :data:`COPY`, or ``None``.
 
-    *run_modal* is the app's modal contract, ``run_modal(dialog, title)``.
+    *show_modal* is the app's modal contract, ``show_modal(dialog, title)``.
     """
     import wx
 
@@ -77,7 +77,7 @@ def ask_held_text(
         # Windows' foreground lock may leave it flashing on the taskbar,
         # unheard: bring it forward once it is showing.
         wx.CallAfter(_to_front, dialog)
-        answer = run_modal(dialog, TITLE)
+        answer = show_modal(dialog, TITLE)
     finally:
         dialog.Destroy()
     if offer.can_insert and answer == int(insert_id):
