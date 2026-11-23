@@ -593,6 +593,15 @@ the Open dialog it is under "Kindle books", and in "Supported files".
   opens: "This book has no real headings, so they were made from its large or
   bold text; some may be at the wrong level or missing."
 
+**Saving it as something else.** The book itself is never saved over: `Ctrl+S`
+opens Save As. Save it as Markdown, HTML, Word, rich text or plain text there,
+or use **File > Export** for EPUB and the other formats Pandoc writes. The
+headings and the pictures' descriptions go with it. Saved as Markdown or HTML
+in another folder, the `_pictures` folder is copied beside the new file, so its
+pictures still show; an EPUB from File > Export has the pictures inside it.
+Word from Save As keeps each picture's description but not the picture itself;
+**File > Export > Word Document** puts the pictures in.
+
 Some Kindle books cannot be opened, and QUILL says which in one sentence: a
 book locked with DRM (it can only be read in the Kindle app or on the Kindle it
 was bought for), a book compressed in a way QUILL does not read, a newer AZW3

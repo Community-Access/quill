@@ -45,3 +45,12 @@ def test_save_goes_to_save_as_with_a_markdown_name(
     assert said.startswith(
         "garden.mobi was opened as extracted text. QUILL Lite cannot write .mobi"
     )
+
+
+def test_saving_elsewhere_takes_the_pictures_along(lite_window: Any, tmp_path: Path) -> None:
+    window, _path = _opened(lite_window, tmp_path)
+    target = tmp_path / "elsewhere" / "garden.md"
+    target.parent.mkdir()
+    window._write_to(target, window.control.GetValue(), as_rich=False)
+    assert "![Picture 1](garden_pictures/picture-1.png)" in target.read_text(encoding="utf-8")
+    assert (target.parent / "garden_pictures" / "picture-1.png").read_bytes() == PNG_PIXEL

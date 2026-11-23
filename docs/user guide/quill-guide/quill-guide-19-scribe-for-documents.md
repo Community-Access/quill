@@ -223,7 +223,8 @@ before the Kindle book, not just the file downloaded last.
 **A Kindle (MOBI) book** is for older Kindles. The result sentence says so:
 "A Kindle (MOBI) book is for older Kindles: copy it to the Kindle's documents
 folder over USB. Amazon's Send to Kindle takes the EPUB instead." QUILL opens it too,
-as a document you can read here: see *Kindle books* in *Opening, saving and
+as a document you can read here and save as Markdown, HTML, Word or EPUB: see
+*Kindle books* in *Opening, saving and
 converting files*. When nothing that was made opens by itself, the sentence
 ends "Open Folder in Scribe Conversions shows it."
 

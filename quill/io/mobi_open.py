@@ -22,15 +22,24 @@ wx-free; strict-typed.
 from __future__ import annotations
 
 import hashlib
+import re
+import shutil
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 from quill.core.document import Document
 from quill.core.epub import book_language
 from quill.io.mobi_html import HEADINGS_INFERRED_NOTE, kindle_html_to_markdown
 from quill.io.mobi_read import MobiBook, MobiPicture, read_mobi
 
-__all__ = ["MOBI_SUFFIXES", "is_mobi_path", "mobi_metadata", "read_mobi_document"]
+__all__ = [
+    "MOBI_SUFFIXES",
+    "absolute_pictures",
+    "carry_pictures",
+    "is_mobi_path",
+    "mobi_metadata",
+    "read_mobi_document",
+]
 
 #: A ``.prc`` from a Kindle source is the same Palm database (``BOOKMOBI``).
 #: ``.azw3`` is not: it is KF8, which this reader refuses.
@@ -132,3 +141,40 @@ class _PictureSaver:
 
             root = app_data_dir() / "mobi-pictures"
         return [(beside, True), (root / digest, False)]
+
+
+# -- the pictures, when the document is saved or exported elsewhere ----------
+
+#: A picture link into a ``<book>_pictures`` folder, as this module writes them.
+_PICTURE_LINK = re.compile(r"!\[([^\]]*)\]\(([^)\s/]+_pictures)/([^)\s]+)\)")
+
+
+def carry_pictures(text: str, source: Path | None, target: Path) -> str:
+    """Copy the ``<book>_pictures`` folders *text* links to from beside *source*
+    to beside *target*, so a Markdown or HTML copy saved elsewhere keeps its
+    pictures. Returns ``""``, or one sentence when a folder could not be copied."""
+    if source is None or source.parent.resolve() == target.parent.resolve():
+        return ""
+    for name in sorted({unquote(m.group(2)) for m in _PICTURE_LINK.finditer(text)}):
+        folder = source.parent / name
+        if not folder.is_dir():
+            continue
+        try:
+            shutil.copytree(folder, target.parent / name, dirs_exist_ok=True)
+        except OSError:
+            return (
+                f"The pictures could not be copied beside {target.name}; "
+                f"they are still in {folder}."
+            )
+    return ""
+
+
+def absolute_pictures(text: str, base: Path) -> str:
+    """*text* with each ``<book>_pictures`` link made absolute against *base*, for
+    a converter that reads a copy of the text from somewhere else (Pandoc)."""
+
+    def absolute(match: re.Match[str]) -> str:
+        path = base / unquote(match.group(2)) / unquote(match.group(3))
+        return f"![{match.group(1)}](<{path.resolve().as_posix()}>)"
+
+    return _PICTURE_LINK.sub(absolute, text)

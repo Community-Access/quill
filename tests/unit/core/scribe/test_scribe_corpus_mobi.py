@@ -71,3 +71,36 @@ def test_each_book_opens_with_its_text_headings_and_pictures(tmp_path: Path, ste
         assert picture.is_file() and picture.read_bytes()[:3] == b"\xff\xd8\xff"
     assert "language" not in meta  # Scribe says "C", which is no language (F5)
     assert "mbp:" not in text and "filepos" not in text and "recindex" not in text
+
+
+@pytest.mark.parametrize("stem", corpus.SOURCES)
+def test_each_book_saves_and_exports_with_headings_and_pictures(tmp_path: Path, stem: str) -> None:
+    from quill.io.export import pandoc_export_source, write_document_as
+    from quill.io.pandoc import PandocUnavailableError, convert_file_with_pandoc
+
+    copy, text, meta = _opened(tmp_path, stem)
+    first_heading = next(line for line in text.splitlines() if line.startswith("# "))[2:]
+    out = tmp_path / "saved"
+    out.mkdir()
+    for suffix in (".md", ".html", ".txt", ".rtf", ".docx"):
+        saved = write_document_as(read_mobi_document(copy), out / f"{stem}{suffix}")
+        assert saved.stat().st_size > 0
+    page = (out / f"{stem}.html").read_text(encoding="utf-8")
+    assert "<h1 " in page and page.count("<img ") == meta["picture_count"]
+    assert 'alt="Picture 1"' in page
+    for link in re.findall(r'<img src="([^"]+)"', page):
+        assert (out / link).is_file()  # the pictures came along
+    assert first_heading.split()[0] in (out / f"{stem}.rtf").read_text(encoding="latin-1")
+    try:
+        convert_file_with_pandoc(
+            pandoc_export_source(read_mobi_document(copy)),
+            out / f"{stem}.epub",
+            from_format="gfm+hard_line_breaks",
+            to_format="epub",
+        )
+    except PandocUnavailableError:
+        return
+    import zipfile
+
+    media = [n for n in zipfile.ZipFile(out / f"{stem}.epub").namelist() if "/media/" in n]
+    assert len(media) == meta["picture_count"]

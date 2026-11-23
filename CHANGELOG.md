@@ -22,8 +22,12 @@ QUILL reads it with its own reader.
 - **Scribe's result.** Open Result opens the Kindle book in QUILL or QUILL
   Lite, Next Steps has **Open the Kindle Book**, and the other QuillVille apps
   offer **Open the Kindle Book in QUILL**.
-- A Kindle book is never saved over. `Ctrl+S` goes to Save As, which in QUILL
-  Lite offers a Markdown file.
+- **Saving it as something else.** A Kindle book is never saved over: `Ctrl+S`
+  goes to Save As (Markdown, HTML, Word, rich text or text in QUILL; Markdown
+  or text in QUILL Lite). Saved in another folder, its `_pictures` folder goes
+  along. **File > Export** (EPUB, Word and the rest) now exports the book's
+  text with its pictures inside; before, it handed Pandoc the original file,
+  which for a Kindle book, a PDF or an EPUB was not Markdown at all.
 
 ### Scribe for Documents: follow-ups from the corpus tests (2026-11-23)
 

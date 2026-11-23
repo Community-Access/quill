@@ -311,7 +311,10 @@ A book locked with DRM, a book compressed in a way QUILL Lite does not read, a
 newer AZW3 book, or a damaged file does not open; QUILL Lite says which in one
 sentence, and for the compressed and newer books, how to convert it to Word.
 Like a PDF, a Kindle book is never saved over: **Ctrl+S** opens **Save As**,
-ready for Markdown.
+ready for Markdown, and you can choose text there instead. Saved in another
+folder, the `_pictures` folder is copied beside the new file, so the picture
+links still work. For Word, HTML or EPUB, open the book in QUILL and use its
+Save As or **File > Export**.
 
 ## Opening Word, Excel and PowerPoint files
 
