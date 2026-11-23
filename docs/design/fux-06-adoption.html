@@ -291,7 +291,7 @@ a multiple selection too (<code>also=</code>).
 <code>follow_report</code> and <code>refill_listbox</code> (new) put
 both halves together for a report list and a list box.</li>
 <li><strong><code>quill/ui/media/list_columns_view.set_row</code></strong>
-now writes only the cells whose text changed, so a two-second tick no
+now writes only the cells whose text changed, so a two-second update no
 longer rewrites an unchanged row.</li>
 </ul>
 <p><strong>What “the person decides when arrivals join” means
@@ -321,12 +321,12 @@ feat/m2-radio)</h2>
 <code>_refresh</code></td>
 <td>2-second timer; rows rewritten in place by position; old row
 reselected by id</td>
-<td>No-op tick when nothing changed; no SetFocus</td>
+<td>No-op update when nothing changed; no SetFocus</td>
 <td>When a recording started above the reader, the old row stayed
 selected <em>and</em> the reader’s moved row was selected, so Remove,
 Play and Open acted on the wrong recording. Every cell rewritten every
-tick while recording. A row removed elsewhere left a stale selection,
-unexplained</td>
+two seconds while recording. A row removed elsewhere left a stale
+selection, unexplained</td>
 <td><code>follow_report</code> keeps exactly one row;
 <code>set_row</code> writes changed cells only; a fired schedule follows
 to its Recording row; a recording gone from disk is said once on the
@@ -502,7 +502,7 @@ feat/m2-social-beacon)</h2>
 <td>Every refresh is a full scope load: clear, refill, restore the saved
 reading position</td>
 <td>No SetFocus; reading position by item id</td>
-<td>Each scheduler tick and refresh says the scope and count again; the
+<td>Each scheduler run and refresh says the scope and count again; the
 restored row is marked read again by the selection event; a vanished
 post sends the reader to the first unread, not a neighbour; new posts
 jump in at the top</td>
@@ -516,7 +516,7 @@ jump in at the top</td>
 <td>—</td>
 <td>Selection is left at the old index, so after a capture or sync it
 points at another beacon; details show row 0; the count is said on every
-sync tick</td>
+automatic sync</td>
 <td>See the Beacon PR</td>
 </tr>
 </tbody>
