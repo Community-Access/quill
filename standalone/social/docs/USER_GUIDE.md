@@ -29,6 +29,7 @@ Navigate your social world without switching apps:
 - **Network-Specific Views**: Access Home, Local, Federated, and Hashtag timelines for Mastodon, or Custom Feeds and Starter Packs for Bluesky.
 - **Unified Attention**: One place for all Mentions, Replies, and Notifications across all networks.
 - **Customizable Rows**: Configure exactly which fields are spoken or displayed (e.g., Author, Network, Visibility, Engagement) and save these profiles.
+- **A timeline that stays still**: When posts arrive in the background, or the scheduler publishes, the list changes around you without moving you. You stay on the same post, on the same line, and it is not marked read again. New posts wait: you hear "3 new posts. Press F5 to show them." once, and they join the list when you press **F5** (**Tools > Refresh**), which then says how many arrived. If the post you were on has gone, you hear "The post by ... is no longer in the list." and you are on the post that took its place. A post you have just read stays where it is in the Unread view until you leave it.
 
 ### The "Catch-Up" Experience
 Manage social overload with precision:
@@ -37,7 +38,7 @@ Manage social overload with precision:
 - **Gap Detection**: The system detects if posts were missed during a session and offers to load the missing range.
 
 ### Conversations and Threads
-- **Thread Navigation**: Move through complex conversations with a clear sense of hierarchy and thread position.
+- **Thread Navigation**: Move through complex conversations with a clear sense of hierarchy and thread position. A refresh in the background never takes you out of a conversation you have open.
 - **Conversation Tools**: Save entire threads to your library, export them as Markdown, or turn a conversation into a GitHub issue.
 
 ---

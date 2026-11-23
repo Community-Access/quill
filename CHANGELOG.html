@@ -245,6 +245,24 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="quill-social-and-quillbeacon-lists-that-stay-still-fux-06-2026-11-23">QUILL
+Social and QuillBeacon: lists that stay still (FUX-06, 2026-11-23)</h3>
+<p>Second of the M2 changes; the rule and the audit of every live list
+are in <code>docs/design/fux-06-adoption.md</code>.</p>
+<ul>
+<li><strong>QUILL Social’s timeline</strong> refreshes around the post
+you are on instead of rebuilding: no repeated “Home. 120 items”
+sentence, no second mark-read, and new posts wait behind a count (“3 new
+posts. Press F5 to show them.”) until you press F5. A post that has gone
+is said once and you land on its neighbour. A refresh no longer closes
+an open conversation.</li>
+<li><strong>QuillBeacon’s results</strong> keep you on your own beacon
+after a capture or a sync. The selection used to stay on the old row
+number, which was another beacon, while the details showed the first
+row. The count is said only when you change the search, sort or
+destination, and an auto-sync that changed nothing is silent.</li>
+</ul>
+<h3
 id="shared-runtime-the-practice-sites-wordpress-playground-ships-again-2026-11-23">Shared
 runtime: the Practice Site’s WordPress Playground ships again
 (2026-11-23)</h3>

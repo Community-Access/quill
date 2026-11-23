@@ -24,6 +24,7 @@ from quill.apps.beacon import (
     exporters,
     external_player,
     importers,
+    results_follow,
     routing,
     search,
     uld,
@@ -773,7 +774,9 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
 
         # Bindings
         self.search_box.Bind(wx.EVT_TEXT, self._on_search_text)
-        self.search_box.Bind(wx.EVT_SEARCHCTRL_SEARCH_BTN, lambda _e: self._refresh_results())
+        self.search_box.Bind(
+            wx.EVT_SEARCHCTRL_SEARCH_BTN, lambda _e: self._refresh_results(say_count=True)
+        )
         self.search_box.Bind(wx.EVT_KEY_DOWN, self._on_search_key)
         self.sort_combo.Bind(wx.EVT_COMBOBOX, lambda _e: self._on_sort_change())
         self.dest_list.Bind(wx.EVT_LISTBOX, self._on_destination)
@@ -823,7 +826,7 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
             if 0 <= idx < len(trails):
                 self._open_trail(trails[idx])
                 return
-        self._refresh_results()
+        self._refresh_results(say_count=True)
 
     def _open_trail(self, trail) -> None:
         """Open the step-through view for a trail (PRD 17.4)."""
@@ -856,12 +859,11 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
 
     def _on_search_text(self, _e) -> None:
         self.last_query = self.search_box.GetValue()
-        self._refresh_results()
+        self._refresh_results(say_count=True)
 
     def _on_search_key(self, event: wx.KeyEvent) -> None:
         if event.GetKeyCode() == wx.WXK_ESCAPE:
-            self.search_box.Clear()
-            self._refresh_results()
+            self.search_box.Clear()  # its EVT_TEXT refreshes, and says the count once
             return
         if event.GetKeyCode() == wx.WXK_DOWN:
             self.results.SetFocus()
@@ -872,7 +874,7 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
 
     def _on_sort_change(self) -> None:
         self.current_sort = self.sort_combo.GetValue()
-        self._refresh_results()
+        self._refresh_results(say_count=True)
 
     def _scope_filter(self) -> str:
         """Fold the destination scope into the query string."""
@@ -894,9 +896,15 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
             return (self.last_query + f' collection:"{col}"').strip()
         return self.last_query
 
-    def _refresh_results(self) -> None:
-        if self._scribe_scope_results():  # the Scribe Documents destination
-            return
+    def _refresh_results(self, *, say_count: bool = False) -> str:
+        """Refill the results; the reader stays on their beacon (FUX-06).
+
+        *say_count* when the reader changed what is shown. Returns the
+        sentence to add when the reader's beacon has gone, for a caller whose
+        news it is (a sync); everyone else already said what they did.
+        """
+        if self._scribe_scope_results(say_count):  # the Scribe Documents destination
+            return ""
         # Smart Collections evaluate their saved grammar live (PRD 15.6).
         if self.current_scope.startswith("smart:"):
             sid = self.current_scope.split(":", 1)[1]
@@ -905,20 +913,13 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
                 self._results_cache = []
                 self.results.SetItemCount(0)
                 self.announcer.say("Smart collection not found")
-                return
+                return ""
             try:
                 results = search.evaluate_saved_search(self.store, ss, limit=2000)
             except Exception as ex:
                 self.announcer.say(f"Smart collection error: {ex}")
                 results = []
-            self._results_cache = results
-            self.results.SetItemCount(len(results))
-            if results:
-                self.results.RefreshItem(0)
-            self.announcer.announce_count(len(results), filtered=True)
-            if results:
-                self._show_details(results[0])
-            return
+            return results_follow.show(self, results, say_count=say_count, filtered=True)
 
         query = self._scope_filter()
         try:
@@ -926,13 +927,8 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
         except Exception as ex:  # never let a bad query crash the UI
             self.announcer.say(f"Search error: {ex}")
             results = []
-        self._results_cache = results
-        self.results.SetItemCount(len(results))
-        if results:
-            self.results.RefreshItem(0)
-        self.announcer.announce_count(len(results), filtered=bool(query.strip()))
-        if results:
-            self._show_details(results[0])
+        filtered = bool(query.strip())
+        return results_follow.show(self, results, say_count=say_count, filtered=filtered)
 
     def OnGetItemText(self, item: int, column: int) -> str:  # noqa: N802 (wx virtual)
         if item >= len(self._results_cache):
@@ -956,6 +952,8 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
         return ""
 
     def _on_select(self, _e) -> None:
+        if getattr(self, "_following", False):
+            return  # a refill putting the reader back: results_follow shows the details
         sel = self.results.GetFirstSelected()
         if 0 <= sel < len(self._results_cache):
             self._show_details(self._results_cache[sel])
@@ -1699,8 +1697,8 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
         msg = f"Synced. Pushed {res.get('pushed', 0)}, pulled {res.get('pulled', 0)}."
         if conflicts:
             msg += f" {len(conflicts)} conflict(s) need review in Sync History."
-        self._refresh_results()
-        self.announcer.say(msg, sound=SoundEvent.BEACON_SYNC_COMPLETE)
+        gone = self._refresh_results()
+        results_follow.say_with(self, msg, gone, sound=SoundEvent.BEACON_SYNC_COMPLETE)
 
     # -- auto-sync timer (PRD 45.10; off by default) -------------------------
 
@@ -1739,12 +1737,15 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
         if "error" in res:
             self.announcer.say(f"Auto-sync failed: {res['error']}", "minimal")
             return
-        self._refresh_results()
+        gone = self._refresh_results()
         conflicts = res.get("conflicts") or []
+        if not (res.get("pushed") or res.get("pulled") or conflicts):
+            return  # an automatic sync that changed nothing is not news (FUX-06)
         msg = f"Auto-synced. Pushed {res.get('pushed', 0)}, pulled {res.get('pulled', 0)}."
         if conflicts:
             msg += f" {len(conflicts)} conflict(s) need review."
-        self.announcer.say(msg, "minimal", sound=SoundEvent.BEACON_SYNC_COMPLETE)
+        sound = SoundEvent.BEACON_SYNC_COMPLETE
+        results_follow.say_with(self, msg, gone, level="minimal", sound=sound)
 
     def _on_auto_sync(self, _e) -> None:
         """Choose an automatic sync interval (off by default)."""
