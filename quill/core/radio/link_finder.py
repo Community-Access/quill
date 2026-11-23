@@ -38,8 +38,11 @@ Icecast and SHOUTcast server listings, Global Player pages, the soundmap and
 the directory match are ideas from Andre Louis's StreamSift
 (https://github.com/OnjLouis/StreamSift), written here in QUILL's own code.
 
-Every request funnels through the single reviewed egress site
-(:func:`_http_get` -- see ``quill/tools/network_egress_audit.py``), reached by
+Every request funnels through the single reviewed egress site,
+:func:`quill.core.net_public.fetch`, which reads only the public internet: an
+address on this computer or the listener's own network is refused before
+anything is sent, every redirect is checked again, and the connection goes to
+the address that was checked (an idea from StreamSift too). It is reached by
 the explicit Scan button in the Find Streams from a Website dialog and by
 stream recovery, and disabled in Safe Mode via :func:`refuse_in_safe_mode`.
 wx-free, strict-typed.
@@ -52,12 +55,10 @@ import logging
 import ssl
 import urllib.error
 import urllib.parse
-import urllib.request
 from dataclasses import dataclass, replace
 
-from quill.core import http_client
+from quill.core import http_client, net_public
 from quill.core.error_codes import CodedError
-from quill.core.net import verified_ssl_context
 from quill.core.radio import global_player, live_check, server_listings
 from quill.core.radio.address_kind import is_help_page_url, same_page
 from quill.core.radio.address_kind import is_player_page_url as _is_player_page_url
@@ -136,6 +137,10 @@ class PageScanResult:
     #: something that is not audio (a web page, a 404) and are not listed.
     checked: bool = False
     left_out: int = 0
+    #: Links the page named on this computer or the listener's own network,
+    #: which Find Streams does not read (quill.core.net_public): left out too,
+    #: but counted apart, because "not audio" would be untrue of them.
+    not_public: int = 0
     #: The most links this scan would check (16, or 48 with a server listing
     #: or the soundmap), and how many of the listed links QUILL never
     #: contacted because of that limit or the 20-second deadline.
@@ -155,19 +160,21 @@ _FETCH_ERRORS = (
 def _http_get(
     url: str, *, max_bytes: int = _MAX_BYTES, timeout: float = _TIMEOUT_SECONDS
 ) -> HttpReply:
-    """One GET -- the reviewed egress site. Certificates are always verified.
+    """One GET of a public address, through :func:`quill.core.net_public.fetch`.
 
     Reads at most *max_bytes* of the body: a whole page for the scan, the first
     4 KB of a candidate for the live check. Raises on failure, including
-    ``HTTPError`` for a 4xx/5xx answer, which the live check reads.
+    ``HTTPError`` for a 4xx/5xx answer, which the live check reads, and
+    :class:`~quill.core.net_public.NotPublicAddress` for an address on this
+    computer or the listener's own network, which is never read.
     """
-    if not url.startswith(("https://", "http://")):
-        raise LinkFinderError("Only http(s):// addresses can be read.")
-    request = urllib.request.Request(url, headers={"User-Agent": http_client.user_agent()})
-    context = verified_ssl_context()
-    with urllib.request.urlopen(request, timeout=timeout, context=context) as resp:  # noqa: S310
-        body: bytes = resp.read(max_bytes)
-        return HttpReply(int(resp.status), dict(resp.headers.items()), body, str(resp.geturl()))
+    return net_public.fetch(
+        url,
+        max_bytes=max_bytes,
+        timeout=timeout,
+        deadline_seconds=timeout * 2,
+        headers={"User-Agent": http_client.user_agent()},
+    )
 
 
 def _http_get_text(url: str) -> str:
@@ -178,7 +185,13 @@ def _http_get_text(url: str) -> str:
 def _probe(url: str, timeout: float) -> HttpReply:
     """The live check's read of one candidate: headers and the first 4 KB."""
     budget = max(1.0, min(_TIMEOUT_SECONDS, timeout))
-    return _http_get(url, max_bytes=live_check.PROBE_BYTES, timeout=budget)
+    return net_public.fetch(
+        url,
+        max_bytes=live_check.PROBE_BYTES,
+        timeout=budget,
+        deadline_seconds=budget,
+        headers={"User-Agent": http_client.user_agent()},
+    )
 
 
 def _is_cert_verification_failure(error: BaseException) -> bool:
@@ -339,10 +352,10 @@ def scan_page_for_streams(
             continue
         seen.setdefault(candidate.url, candidate)
     kept = list(seen.values())
-    left_out = 0
+    left_out = not_public = 0
     limit = _LISTING_CHECKS if listed else live_check.MAX_CHECKS
     if check_live and kept:
-        kept, left_out = _apply_live_check(kept, limit)
+        kept, left_out, not_public = _apply_live_check(kept, limit)
     kept = _prefer_https(kept)
     # #5 observability: which links were kept, and why -- the argv-style
     # redaction masks any token a candidate URL might carry.
@@ -361,6 +374,7 @@ def scan_page_for_streams(
         candidates=kept,
         checked=check_live,
         left_out=left_out,
+        not_public=not_public,
         check_limit=limit if check_live else 0,
         skipped=sum(1 for c in kept if c.check_note in _NEVER_ASKED),
     )
@@ -368,15 +382,22 @@ def scan_page_for_streams(
 
 def _apply_live_check(
     candidates: list[PageStreamCandidate], limit: int = live_check.MAX_CHECKS
-) -> tuple[list[PageStreamCandidate], int]:
-    """Check each candidate; leave out what is not audio; live ones first."""
+) -> tuple[list[PageStreamCandidate], int, int]:
+    """Check each candidate; leave out what is not audio; live ones first.
+
+    Returns the kept rows, how many were not audio, and how many were on this
+    computer or the listener's own network (never read, so never "not audio").
+    """
     verdicts = live_check.check_urls([c.url for c in candidates], _probe, limit=limit)
     kept: list[PageStreamCandidate] = []
-    left_out = 0
+    left_out = not_public = 0
     for candidate in candidates:
         verdict = verdicts.get(candidate.url) or live_check.Verdict(live_check.UNCHECKED)
         if verdict.state == live_check.NOT_AUDIO:
-            left_out += 1
+            if verdict.note == live_check.NOT_PUBLIC:
+                not_public += 1
+            else:
+                left_out += 1
             continue
         candidate.check = verdict.state
         candidate.codec = verdict.codec
@@ -386,7 +407,7 @@ def _apply_live_check(
         candidate.check_note = verdict.note
         kept.append(candidate)
     kept.sort(key=lambda c: _CHECK_RANK.get(c.check, 1))  # stable: page order within a rank
-    return kept, left_out
+    return kept, left_out, not_public
 
 
 def _prefer_https(candidates: list[PageStreamCandidate]) -> list[PageStreamCandidate]:

@@ -167,6 +167,30 @@ def test_a_real_stream_address_is_never_sent_to_the_resolver() -> None:
         frame.Destroy()
 
 
+@pytest.mark.parametrize(
+    "local",
+    ["http://192.168.1.10/", "http://nas.local/", "http://localhost:8000/live.mp3"],
+)
+def test_a_local_address_is_kept_as_typed_and_never_looked_behind(local: str) -> None:
+    """Find Streams reads only the public internet; a server on your own
+    network is saved exactly as typed, with no lookup and nothing said."""
+    frame = wx.Frame(None)
+    resolver = _Resolver(_scan())
+    dialog, controller, said = _dialog(frame, resolver)
+    try:
+        dialog._name_ctrl.ChangeValue("My NAS")
+        dialog._url_ctrl.ChangeValue(local)
+
+        dialog._on_test(None)
+
+        assert resolver.asked == []
+        assert [s.stream_url for s in controller.played] == [local]
+        assert said == ["Testing My NAS."]
+    finally:
+        dialog.dialog.Destroy()
+        frame.Destroy()
+
+
 def test_safe_mode_and_a_host_without_a_task_manager_get_no_resolver() -> None:
     assert add_custom_station.page_resolver(SimpleNamespace(_safe_mode=True)) is None
     assert add_custom_station.page_resolver(SimpleNamespace(_safe_mode=False)) is None
@@ -193,3 +217,27 @@ def test_the_resolver_runs_the_scan_on_the_task_manager(monkeypatch) -> None:
     assert submitted == ["radio-add-station-resolve"]
     assert got[0][0].candidates[0].url == "https://station.example.com/#scanned"
     assert got[0][1] is None
+
+
+def test_a_name_that_turns_out_to_be_local_is_saved_as_typed_at_once() -> None:
+    """Caught only after the lookup: saved on the first press, nothing untrue said."""
+    from quill.core.net_public import NotPublicAddress
+    from quill.core.radio.link_finder import LinkFinderError
+
+    error = LinkFinderError("Could not reach that page: x")
+    error.__cause__ = NotPublicAddress("x")
+    frame = wx.Frame(None)
+    resolver = _Resolver(error=error)
+    dialog, controller, said = _dialog(frame, resolver)
+    try:
+        dialog._name_ctrl.ChangeValue("Home server")
+        dialog._url_ctrl.ChangeValue("https://radio.myhouse.example/")
+
+        dialog._on_test(None)
+
+        assert resolver.asked == ["https://radio.myhouse.example/"]
+        assert [s.stream_url for s in controller.played] == ["https://radio.myhouse.example/"]
+        assert said == ["Looking for the stream behind that web page...", "Testing Home server."]
+    finally:
+        dialog.dialog.Destroy()
+        frame.Destroy()

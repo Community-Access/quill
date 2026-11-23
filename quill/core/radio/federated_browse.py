@@ -242,7 +242,10 @@ def _website(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
     try:
         found = link_finder.scan_page_for_streams(query, safe_mode=safe_mode, check_live=True)
     except link_finder.LinkFinderError as error:
-        return [], str(error) or "could not be reached"
+        from quill.core.radio.find_streams_text import failure_sentence
+
+        # Plain words, never the support code str() puts in front.
+        return [], failure_sentence(error)
     rows = [
         leaf(
             RadioStation(

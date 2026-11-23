@@ -750,7 +750,9 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
     ) -> None:
         self._search_btn.Enable(True)
         if error is not None:
-            self._status.SetLabel(f"Website scan failed: {error}")
+            from quill.core.radio.find_streams_text import failure_sentence
+
+            self._status.SetLabel(failure_sentence(error))
             return
         self._search_rb = []
         self._search_extras = stations

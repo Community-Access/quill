@@ -2,6 +2,37 @@
 
 ## 1.0.0
 
+### Quill Radio: Find Streams reads only the public internet (2026-11-22)
+
+An idea from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),
+written in QUILL's own code (`quill/core/net_public.py`).
+
+- **Nothing on your own network is read.** Find Streams from a Website, the
+  live check, stream recovery and pasting a web page into Add Custom Station
+  used to open whatever address a page or a directory entry named, including
+  your router, a NAS, a printer or a service on this computer, without you
+  choosing it. They now read only the public internet. A link a page names on
+  your own network is left out of the list, never offered for Test.
+- **Typing such an address says why:** "That address is on this computer or
+  your own network, which Find Streams does not scan. To list a server on
+  your network, add it under My Servers in Browse Stations." A page whose
+  only links are on your own network says that, not "none of them were
+  audio", and the status line counts those links apart: "Left out 3 links
+  that were not audio or no longer there, and 2 on your own network." Search
+  All Sources and Find Stations say the same plain sentence, never a support
+  code.
+- **Still works:** Add Custom Station with a stream on your own network
+  (saved as typed, with no lookup, or at once when only the lookup shows it
+  is local), playing any address you chose, My
+  Servers, and the now-playing checks.
+- **How:** every address and every redirect (at most five) is checked; a name
+  is refused if any address it resolves to is not public; the connection goes
+  to the address that was checked, so a name cannot be switched to a private
+  one in between; only http and https are read; a page that trickles in is cut
+  off at an overall deadline. A configured proxy is still used. One pattern
+  that could take minutes on a hostile page now has bounded repeats, and a
+  test runs every page-reading pattern over 2 MB of hostile text.
+
 ### Quill Radio: Find Streams reads streaming servers, Global Player and IPRD (2026-11-22)
 
 More ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),
