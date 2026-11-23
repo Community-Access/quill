@@ -578,20 +578,31 @@ alone and named.
   webhooks): choose the winning variant. An environment's custom branch list,
   and a team reviewer from another owner, are not copied. A webhook keeps its
   secret.
-- **Add to Missing** (labels, milestones, topics, rulesets, variables,
-  webhooks, autolinks). A deploy key cannot be added to more: GitHub accepts
-  one key in one repository only.
+- **Add to Missing** (labels, milestones, topics, rulesets, environments,
+  variables, webhooks, autolinks). An environment's custom list of branches,
+  and a team reviewer from another owner, are not copied. A deploy key cannot
+  be added to more: GitHub accepts one key in one repository only.
 - **Release Train** (tags): make the tag, the tag's draft release, or the tag
   and a published release, on the default branch of each repository you
   choose. A repository that already has the tag is skipped, and its tag is
   never moved.
+- **Draft Releases Together** (tags): one draft release of the tag in each
+  repository you choose, those that have the tag checked first. Write the
+  notes once; `{repository}` and `{tag}` in them become each repository's
+  own, and GitHub's generated notes for each repository can follow yours. A
+  repository that already has a release or a draft for the tag is left
+  alone. A draft is seen only by people who may push, until somebody
+  publishes it.
 - **Set Secret Everywhere** (secrets): type the new value once. It is sealed
   for each repository before it leaves your computer, and it is never shown,
   kept in Change History or written to the details. No secret's old value can
   be read, by anyone.
-- **Rename Everywhere** (labels, branches). For a branch the preview says
-  where it is the default branch, where its protection moves with it, and how
-  many open pull requests GitHub retargets.
+- **Rename Everywhere** (labels, milestones, branches). For a branch the
+  preview says where it is the default branch, where its protection moves
+  with it, and how many open pull requests GitHub retargets. A repository
+  that already has a milestone of the new name is skipped, with the reason.
+  Undo GitHub Change (`Ctrl+Z`) puts a label's or a milestone's old name back,
+  one repository at a time.
 - **Merge Into** (labels): move every item to another label, then delete
   this one.
 - **Close Everywhere** and **Move Open Work To** (milestones): close every
@@ -600,9 +611,18 @@ alone and named.
 - **Find Uses** searches every issue and pull request that has it, across the
   set.
 - **Turn On or Off Everywhere** (webhooks).
-- **Delete Everywhere** (labels, topics, tags, environments, secrets,
-  variables, webhooks, deploy keys, autolinks). A tag with a release built on
-  it is kept, with the reason.
+- **Delete Everywhere** (labels, milestones, topics, tags, environments,
+  secrets, variables, webhooks, deploy keys, autolinks). A tag with a release
+  built on it is kept, with the reason. A milestone's issues and pull
+  requests stay, with no milestone, and the preview says how many.
+- **Delete Where Merged** (branches): the branch is deleted only in the
+  repositories where everything on it is already in the default branch, or
+  where a merged pull request took its last commit, as a squash merge does.
+  A copy that is the default branch, is protected, has open pull requests
+  based on it or from it, or has commits found nowhere else is kept, with the
+  reason, and so is one that gains a commit after the preview. Each result
+  names the branch's last commit, so it can be made again by hand if it is
+  ever wanted.
 - **Promote to Organization** (rulesets, secrets, variables, webhooks): one
   organization ruleset, secret or variable for the set's repositories in that
   organization, or one organization webhook. GitHub sends an organization
@@ -612,9 +632,28 @@ alone and named.
   organization's. Labels, environments, deploy keys and autolinks have no
   organization form in GitHub, so they are not promoted.
 
+A preview that deletes, or that dismisses alerts, starts on Cancel, so Enter
+sends nothing: press the button that names the change. Its summary says how
+many repositories will change and names each one.
+
 Secrets, environments, webhooks, deploy keys and rules decide who may deploy,
 what is kept secret or where data is sent, so changing them across
 repositories needs Full in the Workbench.
+
+### Dismissing one alert everywhere
+
+On a Dependabot or code scanning alert in **Security Alerts**, **Dismiss
+Everywhere...** dismisses every open copy of it in the set at once: the same
+advisory for Dependabot, whatever manifest it is in, or the same rule of the
+same tool for code scanning, wherever in the code it is. Choose one of
+GitHub's reasons and, if you like, one comment of up to 280 characters. The
+preview names every repository, with the alert numbers it will dismiss there,
+or says that it has none open or could not be read. Each repository's alerts
+are read again just before the change, so one closed meanwhile is left out
+and named. Each dismissed alert is its own row in Change History, so Undo
+GitHub Change reopens it, as **Dismiss or Reopen Alert...** does in one
+repository. A secret scanning alert is never dismissed this way: each leaked
+secret is its own, so each is resolved in its own repository.
 
 ## Doing things to what is selected
 
