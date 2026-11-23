@@ -2737,7 +2737,7 @@ Control coverage: 408 audited sites (408 helped).
 
 **Discussions.** Discussions from every repository in the set that has them on.
 
-**Security Alerts.** Security alerts from every repository in the set you may read them in.
+**Security Alerts.** Security alerts from every repository in the set you may read them in. Dismiss Everywhere on a Dependabot or code scanning alert dismisses every open copy of it in the set, with one reason.
 
 **Help and Learning.** Help and Learning: the guide, the GitHub words, the keys, what changed, and tasks in plain words that take you to the place.
 
@@ -2761,21 +2761,21 @@ Control coverage: 408 audited sites (408 helped).
 
 **Labels by Name.** Labels by Name: each label name across the set, where its colour and description differ and where it is missing. Make the copies the same, add it where missing, rename, merge or delete it everywhere, each with a preview and a result per repository.
 
-**Milestones by Name.** Milestones by Name: each milestone title across the set, its due dates, descriptions and progress. Make them the same, close them everywhere, move their open work to another milestone or add the missing ones, each with a preview and a result per repository.
+**Milestones by Name.** Milestones by Name: each milestone title across the set, its due dates, descriptions and progress. Make them the same, close, rename or delete them everywhere, move their open work to another milestone or add the missing ones, each with a preview and a result per repository.
 
 **Topics by Name.** Topics by Name: each topic across the set and the repositories that lack it. Add it to the missing or remove it everywhere, with a preview and a result per repository; each repository's other topics are kept.
 
 **Code by Name.** Code by Name: tags, branches, and rules and branch protection, each by name across the set.
 
-**Tags by Name.** Tags by Name: each tag across the set and the commit it is on in each repository. Release Train makes it, or it and a release, where it is missing, and never moves an existing tag; Delete Everywhere keeps a tag a release is built on.
+**Tags by Name.** Tags by Name: each tag across the set and the commit it is on in each repository. Release Train makes it, or it and a release, where it is missing, and never moves an existing tag; Draft Releases Together makes one draft release of it in each repository from notes written once; Delete Everywhere keeps a tag a release is built on.
 
-**Branches by Name.** Branches by Name: each branch across the set, where it is the default and where it is protected. Rename Everywhere uses GitHub's rename; its preview says where the default changes, where protection moves and how many open pull requests are retargeted.
+**Branches by Name.** Branches by Name: each branch across the set, where it is the default and where it is protected. Rename Everywhere uses GitHub's rename; its preview says where the default changes, where protection moves and how many open pull requests are retargeted. Delete Where Merged deletes it only where everything on it is in the default branch.
 
 **Rules and Branch Protection.** Rules and Branch Protection: each ruleset by name, and each default branch's protection, compared across the set. Make them the same as the winner, add a ruleset where it is missing, or promote one to an organization ruleset; each needs admin access and shows a preview first.
 
 **Actions by Name.** Actions by Name: environments, secrets and variables, each by name across the set. Reading them needs admin access in each repository.
 
-**Environments by Name.** Environments by Name: wait timer, reviewers, self-review and which branches may deploy, compared across the set. Make them the same as the winner, or delete one everywhere. GitHub has no organization environments.
+**Environments by Name.** Environments by Name: wait timer, reviewers, self-review and which branches may deploy, compared across the set. Make them the same as the winner, add it where missing, or delete one everywhere. GitHub has no organization environments.
 
 **Secrets by Name.** Secrets by Name: each Actions secret across the set, by name only, because GitHub never shows a secret's value. Set Secret Everywhere takes one new value, typed once and sealed for each repository; Promote to Organization makes one organization secret for those repositories.
 
@@ -2925,7 +2925,7 @@ Control coverage: 408 audited sites (408 helped).
 
 **repository: Autolinks.** Autolinks: prefixes such as BUG- that GitHub turns into links. Ctrl+N adds one.
 
-**repository: Environments.** Environments: where this repository's workflows deploy, each with its protection rules. Secrets... and Variables... on a row are that environment's own.
+**repository: Environments.** Environments: where this repository's workflows deploy, each with its protection rules. Ctrl+N makes one. Secrets... and Variables... on a row are that environment's own.
 
 **repository: Codespaces.** Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you name, with the machine and dev container you choose.
 
@@ -2975,7 +2975,7 @@ Control coverage: 408 audited sites (408 helped).
 
 **repository: Custom Property Values.** Custom Property Values: the organization's custom properties, as set here.
 
-**repository: Rulesets.** Rulesets: every ruleset on this repository, its own and the organization's. Alt+Enter opens one's sheet: its target, every rule and setting, who may bypass it, and a Summary in plain words. Delete removes one after its name is typed.
+**repository: Rulesets.** Rulesets: every ruleset on this repository, its own and the organization's. Alt+Enter opens one's sheet: its target, every rule and setting, who may bypass it, and a Summary in plain words. Ctrl+N makes one; Delete removes one after its name is typed.
 
 **person: person.** A person: their repositories, activity, followers and who they follow.
 
@@ -4007,6 +4007,8 @@ Control coverage: 408 audited sites (408 helped).
 
 **Every Release or Latest Only.** Releases shows each repository's latest release; this shows every release, or the latest only again.
 
+**Dismiss Everywhere.** Dismiss every open alert in the set for this Dependabot advisory or code scanning rule, with one reason and an optional comment, after the preview. Undo in Change History reopens each.
+
 **Use This Set.** Every Across Repositories list and by-name sheet reads this set from now on.
 
 **Edit Repositories.** The set's repositories, one per line. Adding one already listed keeps one copy.
@@ -4027,7 +4029,7 @@ Control coverage: 408 audited sites (408 helped).
 
 **Find Uses.** Search every issue and pull request with it, across the set.
 
-**Rename Everywhere.** Rename the label or branch in every repository; a clash is shown, not merged, and a branch's preview says what follows from GitHub's rename.
+**Rename Everywhere.** Rename the label, milestone or branch in every repository; a clash is shown, not merged, and a branch's preview says what follows from GitHub's rename. Undo puts a label's or milestone's name back.
 
 **Merge Into.** Move every item to another label, then delete this one, after the preview.
 
@@ -4043,7 +4045,11 @@ Control coverage: 408 audited sites (408 helped).
 
 **Turn On or Off Everywhere.** Turn the webhook on or off in every repository that has it, after the preview.
 
-**Delete Everywhere.** Delete it, or remove the topic, in every repository that has it, after the preview.
+**Draft Releases Together.** One draft release of this tag in each repository you choose, from notes written once, after the preview; {repository} and {tag} are filled in for each.
+
+**Delete Where Merged.** After the preview, delete this branch in each repository where its work is already in the default branch; a copy that is the default branch, protected, unmerged, or has an open pull request is kept.
+
+**Delete Everywhere.** Delete it, or remove the topic, in every repository that has it, after the preview; a milestone's items stay, with no milestone.
 
 **Open Repository.** Select the repository's node in the tree.
 

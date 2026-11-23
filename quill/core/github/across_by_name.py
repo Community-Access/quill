@@ -60,6 +60,9 @@ KINDS: dict[str, tuple[str, tuple[str, ...]]] = {
     "webhooks": ("webhook", ("events", "active", "content_type")),
     "deploy_keys": ("deploy key", ("key", "access")),
     "autolinks": ("autolink", ("url_template", "alphanumeric")),
+    # Never surveyed by name: the Security Alerts list finds them, and
+    # quill.core.github.across_alerts dismisses them.
+    "alerts": ("security alert", ()),
 }
 WRITABLE_KINDS = frozenset(KINDS)
 _WORKERS = 6
@@ -353,7 +356,7 @@ def survey(
     read_at: str = "",
 ) -> Survey:
     """Read *kind* from every repository; each answers for itself. Runs off the UI thread."""
-    if kind not in KINDS:
+    if kind not in KINDS or kind == "alerts":
         raise ValueError(f"Unknown kind {kind!r}.")
     chosen = list(dict.fromkeys(r for r in (s.strip() for s in repositories) if r))
 

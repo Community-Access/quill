@@ -542,9 +542,14 @@ GitHub approved or rejected. If nothing is waiting, the window says
 approved or rejected its deployments afterwards.</p>
 <h3 id="an-environments-rules">An environment’s rules</h3>
 <p>A repository’s environments are listed under <strong>Settings &gt;
-Environments</strong>. An environment’s row has these on its context
-menu, beside <strong>Secrets…</strong> and <strong>Variables…</strong>,
-which are that environment’s own:</p>
+Environments</strong>. <code>Ctrl+N</code> there makes one: it asks for
+the name, whether any branch or only protected branches may deploy to
+it, and how many minutes each deployment waits (0 for none). An
+environment that already has the name is never replaced; QUILL says so
+instead. Reviewers and a chosen list of branches are set on its sheet
+afterwards. An environment’s row has these on its context menu, beside
+<strong>Secrets…</strong> and <strong>Variables…</strong>, which are
+that environment’s own:</p>
 <ul>
 <li><strong>Branch Policies…:</strong> which branches and tags may
 deploy to it, when it allows chosen ones only. Add one by name or with a
@@ -573,9 +578,10 @@ ones listed; how many secrets and variables it has, with their names;
 and its newest deployments. The protection, the wait timer and the
 branch choice can be changed there; the lists are read only, and the
 commands above change them.</p>
-<p>To compare an environment’s rules across many repositories, or make
-them the same, use <strong>Across Repositories &gt; Actions by Name &gt;
-Environments by Name</strong> (Chapter 12).</p>
+<p>To compare an environment’s rules across many repositories, make them
+the same, or add an environment to the repositories that lack it, use
+<strong>Across Repositories &gt; Actions by Name &gt; Environments by
+Name</strong> (Chapter 12).</p>
 <h3 id="deleting-a-deployment">Deleting a deployment</h3>
 <p>The repository’s <strong>Deployments and Environments</strong> place
 lists where the code was deployed. A deployment’s context menu has

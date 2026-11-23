@@ -305,7 +305,8 @@ NODE_HELP: dict[str, str] = {
     ),
     "repository:environments": (
         "Environments: where this repository's workflows deploy, each with its protection "
-        "rules. Secrets... and Variables... on a row are that environment's own."
+        "rules. Ctrl+N makes one. Secrets... and Variables... on a row are that "
+        "environment's own."
     ),
     "repository:repo_codespaces": (
         "Codespaces: your codespaces for this repository. Ctrl+N makes one on a branch you "

@@ -174,17 +174,43 @@ def plan_rename(survey: Survey, row: ByNameRow, new_name: str) -> Plan:
         clash = survey.has(copy.repository, new_name)
         blocked = _blocked(survey, copy.repository)
         if not blocked and clash is not None and clash.name.casefold() != row.name.casefold():
-            blocked = f"it already has {new_name}; Merge Into joins the two instead"
+            blocked = f"it already has {new_name}; " + (
+                "Move Open Work To... moves its open items into that one instead"
+                if survey.kind == "milestones"
+                else "Merge Into joins the two instead"
+            )
         steps.append(Step(copy.repository, "rename", copy.name, new_name, blocked, copy))
     return Plan(survey.kind, row.name, "Rename", tuple(steps))
 
 
 def plan_delete(survey: Survey, row: ByNameRow) -> Plan:
+    if survey.kind == "milestones":  # the preview says what is left behind
+        steps = tuple(
+            Step(c.repository, "delete", "", _milestone_left(c), _blocked(survey, c.repository), c)
+            for c in row.copies
+        )
+        return Plan(survey.kind, row.name, "Delete", steps)
     steps = tuple(
         Step(c.repository, "delete", c.name, "deleted", _blocked(survey, c.repository), c)
         for c in row.copies
     )
     return Plan(survey.kind, row.name, "Delete", steps)
+
+
+def _milestone_left(copy: Copy, opened: object = None, closed: object = None) -> str:
+    """What a deleted milestone leaves: its items, which stay with no milestone."""
+    extra = dict(copy.extra)
+    counts = [
+        int(str(extra.get("open", "0") if opened is None else opened) or 0),
+        int(str(extra.get("closed", "0") if closed is None else closed) or 0),
+    ]
+    if not any(counts):
+        return f"{copy.name}, which has no items"
+    words = [
+        f"{n} {kind} item" + ("" if n == 1 else "s")
+        for n, kind in zip(counts, ("open", "closed"), strict=True)
+    ]
+    return f"{copy.name}; its {words[0]} and {words[1]} stay, with no milestone"
 
 
 def plan_merge(survey: Survey, row: ByNameRow, into: str) -> Plan:
@@ -267,6 +293,9 @@ class Result:
     ok: bool
     said: str
     log: LogEntry | None = None
+    #: Further history entries, when one repository's step changed several things
+    #: (each dismissed alert is undone on its own).
+    more: tuple[LogEntry, ...] = ()
 
 
 Outcome = tuple[str, "LogEntry | None"]
@@ -279,7 +308,7 @@ def results_summary(results: Sequence[Result]) -> str:
     done = sum(1 for r in results if r.ok) - same
     head = f"{done} of {len(results)} repositories changed."
     if same:
-        head += f" {same} already right."
+        head += f" {same} needed no change."
     failed = [f"{r.repository}: {r.said}" for r in results if not r.ok]
     return head + (" Not changed: " + "; ".join(failed) + "." if failed else "")
 
@@ -468,6 +497,8 @@ def _run_milestones(api: Any, plan: Plan, step: Step) -> Outcome:
         return "added", LogEntry(
             "milestone", (("repo", repo), ("title", plan.name)), target, "added"
         )
+    if step.action in ("rename", "delete") and copy is not None:
+        return _milestone_rename_or_delete(api, plan, step, copy, target)
     if step.action == "move" and copy is not None:
         into = dict(step.body).get("into_number", "")
         numbers, complete = _each_item(api, repo, {"milestone": copy.ident, "state": "open"})
@@ -482,6 +513,36 @@ def _run_milestones(api: Any, plan: Plan, step: Step) -> Outcome:
             raise RuntimeError(said)
         return said, log
     raise ValueError(f"milestones cannot {step.action}.")
+
+
+def _milestone_rename_or_delete(
+    api: Any, plan: Plan, step: Step, copy: Copy, target: str
+) -> Outcome:
+    """Rename (undoable, as the milestone sheet's Title) or delete one repository's copy."""
+    repo = step.repository
+    path = f"/repos/{repo}/milestones/{seg(copy.ident)}"
+    now = api.rest("GET", path).data
+    title = str(now.get("title") or "") if isinstance(now, Mapping) else ""
+    if title != copy.name:
+        raise RuntimeError(f"it was renamed {title or 'something else'} on GitHub since you looked")
+    ident = (("repo", repo), ("number", copy.ident))
+    if step.action == "delete":
+        api.rest("DELETE", path)
+        data = now if isinstance(now, Mapping) else {}
+        left = _milestone_left(copy, data.get("open_issues", 0), data.get("closed_issues", 0))
+        said = "deleted " + left
+        return said, LogEntry("milestone", ident, target, said)
+    api.rest("PATCH", path, body={"title": step.after})
+    after = api.rest("GET", path).data
+    proven = isinstance(after, Mapping) and after.get("title") == step.after
+    shown = after.get("title") if isinstance(after, Mapping) else ""
+    said = (
+        f"renamed to {step.after}"
+        if proven
+        else f"sent the rename to {step.after}, but GitHub still shows {shown or 'the old name'}"
+    )
+    changes = (("title", "Title", copy.name, step.after),)
+    return said, LogEntry("milestone", ident, target, said, changes, True, proven)
 
 
 def _run(api: Any, plan: Plan, step: Step) -> Outcome:

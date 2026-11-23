@@ -1028,7 +1028,7 @@
   "DELETE /repos/{owner}/{repo}/releases/{release_id}/reactions/{reaction_id}": {"status": "covered", "home": "command:github.workbench.react_release", "via": "quill/core/github/reactions.py"},
   "GET /repos/{owner}/{repo}/rules/branches/{branch}": {"status": "covered", "home": "sheet:branch", "via": "quill/core/github/sheets_code.py"},
   "GET /repos/{owner}/{repo}/rulesets": {"status": "covered", "home": "node:repository:repo_rulesets", "via": "quill/core/github/resource_engine.py"},
-  "POST /repos/{owner}/{repo}/rulesets": {"status": "covered", "home": "command:github.workbench.across_add_missing", "via": "quill/core/github/across_admin_changes.py"},
+  "POST /repos/{owner}/{repo}/rulesets": {"status": "covered", "home": "node:repository:repo_rulesets", "via": "quill/core/github/ruleset_new.py"},
   "GET /repos/{owner}/{repo}/rulesets/rule-suites": {"status": "covered", "home": "node:repository:repo_rule_insights", "via": "quill/core/github/resource_engine.py"},
   "GET /repos/{owner}/{repo}/rulesets/rule-suites/{rule_suite_id}": {"status": "no_api_needed", "home": "None", "reason": "Reads one item that its list already shows in full; the Workbench reads the list."},
   "DELETE /repos/{owner}/{repo}/rulesets/{ruleset_id}": {"status": "covered", "home": "command:github.workbench.across_promote_org", "via": "quill/core/github/across_admin_changes.py"},

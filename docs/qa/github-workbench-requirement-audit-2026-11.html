@@ -250,14 +250,14 @@ GH-R-086 and GH-R-157, and for GH-R-068, GH-R-105, GH-R-143 and the
 Command Key in the Workbench windows (GH-R-086); and on 2026-11-20 for
 GH-R-069 (#1965), and for GH-R-036, 109, 114, 115, 116 and 118 (#1975);
 and on 2026-11-21 for GH-R-088, 105, 153, 154 and 157 (the Protect a
-branch lesson), when the tallies were recounted from the rows below.
-This is the record of the complete.md 1.3 requirement audit: every id in
-Part E of <a
+branch lesson), when the tallies were recounted from the rows below; and
+on 2026-11-23 for GH-R-151, recounted again. This is the record of the
+complete.md 1.3 requirement audit: every id in Part E of <a
 href="../Product Requirement Documents and Specifications/github-workbench-prd.md">the
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 97 are met and 3 are partly met.
+<p>Of the 100 live requirements, 98 are met and 2 are partly met.
 GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -272,8 +272,8 @@ GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>72</td>
-<td>3</td>
+<td>73</td>
+<td>2</td>
 <td>0</td>
 <td>75</td>
 </tr>
@@ -333,21 +333,6 @@ Autolinks by name, grouped category first, and the Fleet
 workflows, templates, Dependabot and CODEOWNERS, people, settings and
 packages remain decided “not yet” cells in
 <code>across_scope_matrix.py</code>.</td>
-</tr>
-<tr>
-<td>GH-R-151</td>
-<td>Must</td>
-<td>Every operation a kind allows in one repository is offered across a
-scope, with the preview and a result…</td>
-<td>Preview and a result per repository for every by-name kind
-(<code>test_environments_are_made_the_same_but_custom_branches_and_foreign_teams_are_not</code>,
-<code>test_a_secret_is_typed_once_sealed_per_repository_and_never_kept</code>,
-<code>test_a_branch_rename_previews_default_protection_and_retargeted_pull_requests</code>);
-a write counts only when its single-repository form exists
-(<code>test_a_write_across_repositories_is_done_only_when_the_single_repository_one_is</code>);
-held back: ruleset Add to Missing, environment Add to Missing, milestone
-rename and delete, merged-branch delete, release notes together, alert
-dismissal.</td>
 </tr>
 </tbody>
 </table>
@@ -1652,7 +1637,7 @@ packages remain decided “not yet” cells in
 <tr>
 <td>GH-R-151</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Every operation a kind allows in one repository is offered across a
 scope, with the preview and a result…</td>
 <td>Preview and a result per repository for every by-name kind
@@ -1660,10 +1645,27 @@ scope, with the preview and a result…</td>
 <code>test_a_secret_is_typed_once_sealed_per_repository_and_never_kept</code>,
 <code>test_a_branch_rename_previews_default_protection_and_retargeted_pull_requests</code>);
 a write counts only when its single-repository form exists
-(<code>test_a_write_across_repositories_is_done_only_when_the_single_repository_one_is</code>);
-held back: ruleset Add to Missing, environment Add to Missing, milestone
-rename and delete, merged-branch delete, release notes together, alert
-dismissal.</td>
+(<code>test_a_write_across_repositories_is_done_only_when_the_single_repository_one_is</code>),
+and nothing is held back
+(<code>test_held_back_writes_say_why_and_are_not_done</code>). GH-R-151
+built the six that were: ruleset Add to Missing on New Ruleset
+(<code>test_new_ruleset_asks_says_the_whole_ruleset_then_makes_it</code>),
+environment Add to Missing on New Environment
+(<code>test_an_environment_is_added_where_missing_as_the_winner</code>,
+<code>test_new_environment_never_replaces_one_and_says_what_github_made</code>),
+milestone rename and delete
+(<code>test_a_milestone_renamed_everywhere_is_undoable_and_a_clash_points_to_move_open_work</code>,
+<code>test_a_milestone_deleted_everywhere_says_its_items_stay</code>),
+Delete Where Merged
+(<code>test_delete_where_merged_keeps_what_is_not_merged_and_says_why</code>),
+Draft Releases Together
+(<code>test_draft_releases_together_fill_the_notes_and_skip_a_release_already_there</code>)
+and Dismiss Everywhere
+(<code>test_dismiss_everywhere_matches_the_advisory_and_says_each_repository</code>,
+<code>test_a_dismissed_alert_is_undone_by_reopening_it_on_its_sheet</code>);
+destructive previews start on Cancel and name every repository
+(<code>test_the_destructive_preview_names_the_count_and_every_repository</code>).
+Secret scanning alerts are resolved one at a time by design.</td>
 </tr>
 <tr>
 <td>GH-R-152</td>

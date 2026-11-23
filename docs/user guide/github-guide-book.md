@@ -2796,8 +2796,13 @@ deployments afterwards.
 ### An environment's rules
 
 A repository's environments are listed under **Settings > Environments**.
-An environment's row has these on its context menu, beside **Secrets...** and
-**Variables...**, which are that environment's own:
+`Ctrl+N` there makes one: it asks for the name, whether any branch or only
+protected branches may deploy to it, and how many minutes each deployment
+waits (0 for none). An environment that already has the name is never
+replaced; QUILL says so instead. Reviewers and a chosen list of branches are
+set on its sheet afterwards. An environment's row has these on its context
+menu, beside **Secrets...** and **Variables...**, which are that
+environment's own:
 
 - **Branch Policies...:** which branches and tags may deploy to it, when it
   allows chosen ones only. Add one by name or with a wildcard, such as
@@ -2822,9 +2827,9 @@ how many secrets and variables it has, with their names; and its newest
 deployments. The protection, the wait timer and the branch choice can be
 changed there; the lists are read only, and the commands above change them.
 
-To compare an environment's rules across many repositories, or make them the
-same, use **Across Repositories > Actions by Name > Environments by Name**
-(Chapter 12).
+To compare an environment's rules across many repositories, make them the
+same, or add an environment to the repositories that lack it, use **Across
+Repositories > Actions by Name > Environments by Name** (Chapter 12).
 
 ### Deleting a deployment
 
@@ -6084,20 +6089,31 @@ alone and named.
   webhooks): choose the winning variant. An environment's custom branch list,
   and a team reviewer from another owner, are not copied. A webhook keeps its
   secret.
-- **Add to Missing** (labels, milestones, topics, rulesets, variables,
-  webhooks, autolinks). A deploy key cannot be added to more: GitHub accepts
-  one key in one repository only.
+- **Add to Missing** (labels, milestones, topics, rulesets, environments,
+  variables, webhooks, autolinks). An environment's custom list of branches,
+  and a team reviewer from another owner, are not copied. A deploy key cannot
+  be added to more: GitHub accepts one key in one repository only.
 - **Release Train** (tags): make the tag, the tag's draft release, or the tag
   and a published release, on the default branch of each repository you
   choose. A repository that already has the tag is skipped, and its tag is
   never moved.
+- **Draft Releases Together** (tags): one draft release of the tag in each
+  repository you choose, those that have the tag checked first. Write the
+  notes once; `{repository}` and `{tag}` in them become each repository's
+  own, and GitHub's generated notes for each repository can follow yours. A
+  repository that already has a release or a draft for the tag is left
+  alone. A draft is seen only by people who may push, until somebody
+  publishes it.
 - **Set Secret Everywhere** (secrets): type the new value once. It is sealed
   for each repository before it leaves your computer, and it is never shown,
   kept in Change History or written to the details. No secret's old value can
   be read, by anyone.
-- **Rename Everywhere** (labels, branches). For a branch the preview says
-  where it is the default branch, where its protection moves with it, and how
-  many open pull requests GitHub retargets.
+- **Rename Everywhere** (labels, milestones, branches). For a branch the
+  preview says where it is the default branch, where its protection moves
+  with it, and how many open pull requests GitHub retargets. A repository
+  that already has a milestone of the new name is skipped, with the reason.
+  Undo GitHub Change (`Ctrl+Z`) puts a label's or a milestone's old name back,
+  one repository at a time.
 - **Merge Into** (labels): move every item to another label, then delete
   this one.
 - **Close Everywhere** and **Move Open Work To** (milestones): close every
@@ -6106,9 +6122,18 @@ alone and named.
 - **Find Uses** searches every issue and pull request that has it, across the
   set.
 - **Turn On or Off Everywhere** (webhooks).
-- **Delete Everywhere** (labels, topics, tags, environments, secrets,
-  variables, webhooks, deploy keys, autolinks). A tag with a release built on
-  it is kept, with the reason.
+- **Delete Everywhere** (labels, milestones, topics, tags, environments,
+  secrets, variables, webhooks, deploy keys, autolinks). A tag with a release
+  built on it is kept, with the reason. A milestone's issues and pull
+  requests stay, with no milestone, and the preview says how many.
+- **Delete Where Merged** (branches): the branch is deleted only in the
+  repositories where everything on it is already in the default branch, or
+  where a merged pull request took its last commit, as a squash merge does.
+  A copy that is the default branch, is protected, has open pull requests
+  based on it or from it, or has commits found nowhere else is kept, with the
+  reason, and so is one that gains a commit after the preview. Each result
+  names the branch's last commit, so it can be made again by hand if it is
+  ever wanted.
 - **Promote to Organization** (rulesets, secrets, variables, webhooks): one
   organization ruleset, secret or variable for the set's repositories in that
   organization, or one organization webhook. GitHub sends an organization
@@ -6118,9 +6143,28 @@ alone and named.
   organization's. Labels, environments, deploy keys and autolinks have no
   organization form in GitHub, so they are not promoted.
 
+A preview that deletes, or that dismisses alerts, starts on Cancel, so Enter
+sends nothing: press the button that names the change. Its summary says how
+many repositories will change and names each one.
+
 Secrets, environments, webhooks, deploy keys and rules decide who may deploy,
 what is kept secret or where data is sent, so changing them across
 repositories needs Full in the Workbench.
+
+### Dismissing one alert everywhere
+
+On a Dependabot or code scanning alert in **Security Alerts**, **Dismiss
+Everywhere...** dismisses every open copy of it in the set at once: the same
+advisory for Dependabot, whatever manifest it is in, or the same rule of the
+same tool for code scanning, wherever in the code it is. Choose one of
+GitHub's reasons and, if you like, one comment of up to 280 characters. The
+preview names every repository, with the alert numbers it will dismiss there,
+or says that it has none open or could not be read. Each repository's alerts
+are read again just before the change, so one closed meanwhile is left out
+and named. Each dismissed alert is its own row in Change History, so Undo
+GitHub Change reopens it, as **Dismiss or Reopen Alert...** does in one
+repository. A secret scanning alert is never dismissed this way: each leaked
+secret is its own, so each is resolved in its own repository.
 
 ## Doing things to what is selected
 
@@ -7252,6 +7296,19 @@ that page first.
 A repository's **Settings > Rulesets** list, and an organization's
 **Rulesets**, show each ruleset as a sentence; Alt+Enter opens its sheet, and
 Delete removes it after you type its name.
+
+`Ctrl+N` in a repository's **Settings > Rulesets** makes a new ruleset. It
+asks, one question at a time, for its name; whether it guards branches or
+tags; which ones (the default branch, every one, or names matching a pattern
+such as `release/*`); its rules, as a check list (a pull request before
+merging, no force pushes, no deletion, linear history, signed commits, no
+creating, no updating); how many approvals a pull request needs, when that
+rule is checked; and whether it is on now or made off and turned on later.
+Then it reads the whole ruleset back to you in one sentence and asks before
+anything is sent, with No as the default. Its other rules and settings are on
+its sheet afterwards. GitHub's Evaluate mode is not offered, because GitHub
+keeps it for Enterprise organizations. To copy a ruleset to other
+repositories, use Add to Missing under Across Repositories (Chapter 12).
 
 - The **Rules** page also has **Every rule and its settings**, a line a rule
   with every setting GitHub sent: file paths, file sizes, patterns, workflows,

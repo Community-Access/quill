@@ -252,6 +252,11 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}across_release_train": ("repo:write", _V),
     f"{_P}across_set_secret": ("repo:admin", _A),
     f"{_P}across_hooks_on_off": ("repo:admin", _V),
+    f"{_P}across_delete_merged": ("repo:write", _D),
+    f"{_P}across_draft_releases": ("repo:write", _V),
+    f"{_P}across_dismiss_alerts": ("repo:write+scope:security_events", _V),
+    f"{_P}new_environment": ("repo:admin", _A),
+    f"{_P}new_ruleset": ("repo:admin", _A),
 }
 
 

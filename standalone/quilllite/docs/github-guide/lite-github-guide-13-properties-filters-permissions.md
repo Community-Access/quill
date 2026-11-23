@@ -559,6 +559,19 @@ A repository's **Settings > Rulesets** list, and an organization's
 **Rulesets**, show each ruleset as a sentence; Alt+Enter opens its sheet, and
 Delete removes it after you type its name.
 
+`Ctrl+N` in a repository's **Settings > Rulesets** makes a new ruleset. It
+asks, one question at a time, for its name; whether it guards branches or
+tags; which ones (the default branch, every one, or names matching a pattern
+such as `release/*`); its rules, as a check list (a pull request before
+merging, no force pushes, no deletion, linear history, signed commits, no
+creating, no updating); how many approvals a pull request needs, when that
+rule is checked; and whether it is on now or made off and turned on later.
+Then it reads the whole ruleset back to you in one sentence and asks before
+anything is sent, with No as the default. Its other rules and settings are on
+its sheet afterwards. GitHub's Evaluate mode is not offered, because GitHub
+keeps it for Enterprise organizations. To copy a ruleset to other
+repositories, use Add to Missing under Across Repositories (Chapter 12).
+
 - The **Rules** page also has **Every rule and its settings**, a line a rule
   with every setting GitHub sent: file paths, file sizes, patterns, workflows,
   code scanning tools, and any rule type QUILL has no check box for yet.

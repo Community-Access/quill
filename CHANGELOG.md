@@ -2,6 +2,56 @@
 
 ## 1.0.0
 
+### GitHub Workbench: every change in one repository now works across many (2026-11-23)
+
+Across Repositories could already change labels, milestones, tags, webhooks and
+more in many repositories at once. Six changes were held back because they
+did not yet work in one repository, or had no form across many. They are now
+done, each with a preview naming every repository and what changes there, and
+then one result per repository.
+
+- **New Ruleset.** `Ctrl+N` in a repository's Settings > Rulesets makes a
+  ruleset from a few plain questions: its name, branches or tags, which ones,
+  its rules as a check list, the approvals a pull request needs, and whether
+  it is on. It reads the whole ruleset back in one sentence and asks before
+  sending, with No as the default. Add to Missing on a ruleset's row under
+  Rules and Branch Protection now counts as done, because the one-repository
+  form exists.
+- **New Environment.** `Ctrl+N` in Settings > Environments makes one: the
+  name, any branch or protected branches only, and the wait in minutes. An
+  environment that already exists is never replaced. Add to Missing now works
+  on a row of Environments by Name.
+- **Milestones: Rename Everywhere and Delete Everywhere.** A repository that
+  already has the new name is skipped, with the reason, and Undo puts a
+  renamed milestone's title back. Delete says how many items in each
+  repository are left with no milestone.
+- **Delete Where Merged**, on a Branches by Name row, deletes the branch only
+  where everything on it is in the default branch, or a merged pull request
+  took its last commit. The default branch, a protected branch, one with open
+  pull requests, one with unmerged commits and one that changed after the
+  preview are kept, each with the reason. Each result names the last commit.
+- **Draft Releases Together**, on a Tags by Name row, makes one draft release
+  of the tag in each repository you choose, from notes written once, with
+  `{repository}` and `{tag}` filled in for each and GitHub's generated notes
+  after them if you like. A repository that already has a release or draft
+  for the tag is left alone.
+- **Dismiss Everywhere**, on a Dependabot or code scanning alert under
+  Security Alerts, dismisses every open copy of the same advisory or rule in
+  the set, with one reason and one comment. Each dismissed alert can be
+  reopened from Change History. Secret scanning alerts are still resolved one
+  at a time, because each leaked secret is its own.
+- Deleting and dismissing across repositories start their preview on Cancel,
+  and the preview's summary names the count and every repository.
+- The list of repositories a change reaches (Add to Missing, Release Train,
+  Set Secret Everywhere, Draft Releases Together) is now made of real check
+  boxes, so a screen reader says whether each repository is checked.
+- Each repository's result line says what happened there, without "done" in
+  front, and a repository with nothing to change is counted as "needed no
+  change".
+- Fixed: every change under Across Repositories stopped before its preview,
+  because the window used another command's preview by mistake. The preview
+  now opens.
+
 ### Shared runtime: the Practice Site's WordPress Playground ships again (2026-11-23)
 
 - **The cause.** The WordPress Playground tool behind the Practice Site
@@ -18,6 +68,7 @@
   the restage script and the full rebuild, rather than only pip advice.
 - **Removing an old copy works.** Staging retries the removal with `rd /s /q`
   when PowerShell leaves folders behind.
+
 
 ### Quill Radio: Find Streams remembers, and reads more sites (2026-11-22)
 

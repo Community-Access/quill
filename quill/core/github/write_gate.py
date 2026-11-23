@@ -125,6 +125,8 @@ _OWN_TITLES: dict[str, str] = {
             ("new_webhook", "New Webhook"),
             ("new_deploy_key", "New Deploy Key"),
             ("new_autolink", "New Autolink"),
+            ("new_environment", "New Environment"),
+            ("new_ruleset", "New Ruleset"),
             ("restore_package", "Restore Package"),
             ("new_runner", "New Runner"),
             ("resource_new", "New Here"),

@@ -42,6 +42,11 @@ from quill.ui.github_workbench_across_more import (
     GitHubWorkbenchAcrossMoreMixin,
     kind_of,
 )
+from quill.ui.github_workbench_across_ops import (
+    OPS_REASONS,
+    OPS_VERBS,
+    GitHubWorkbenchAcrossOpsMixin,
+)
 
 __all__ = ["NAME_LOADERS", "NAME_REASONS", "NAME_VERBS", "GitHubWorkbenchAcrossNamesMixin"]
 
@@ -63,12 +68,13 @@ _FITS: dict[str, frozenset[str]] = {
         "milestones",
         "topics",
         "rules",
+        "environments",
         "variables",
         "webhooks",
         "autolinks",
     }),
-    "rename": frozenset({"labels", "branches"}),
-    "delete": frozenset({"labels", "topics", *MORE_KINDS} - {"branches"}),
+    "rename": frozenset({"labels", "milestones", "branches"}),
+    "delete": frozenset({"labels", "milestones", "topics", *MORE_KINDS} - {"branches"}),
     "promote": frozenset({"secrets", "variables", "webhooks"}),
 }
 #: Kinds whose writes decide who may change code or deploy, hold secrets, or send
@@ -88,22 +94,25 @@ NAME_VERBS: dict[str, frozenset[str]] = {
     "across_move_open": frozenset({"by_name"}),
     "across_promote_org": frozenset({"by_name"}),
     **MORE_VERBS,
+    **OPS_VERBS,
 }
 NAME_REASONS: dict[str, str] = {
     **MORE_REASONS,
+    **OPS_REASONS,
     "across_make_same": (
         "Not for this kind: a topic, tag, branch or deploy key has nothing to make the same, "
         "a secret is set with Set Secret Everywhere, and GitHub cannot change an autolink."
     ),
     "across_add_missing": (
         "Not for this kind: branch protection is per branch, a tag is made by Release Train, "
-        "a secret by Set Secret Everywhere, GitHub takes a deploy key in one repository only, "
-        "and an environment waits for New Environment in one repository."
+        "a secret by Set Secret Everywhere, and GitHub takes a deploy key in one repository "
+        "only."
     ),
-    "across_rename_name": "Only a label or a branch is renamed everywhere so far.",
+    "across_rename_name": "Only a label, a milestone or a branch is renamed everywhere.",
     "across_merge_label": "Only labels are merged.",
     "across_delete_name": (
-        "Not for this kind: a milestone, rule set or branch is deleted in its own repository."
+        "Not for this kind: a rule set is deleted in its own repository, and a branch with "
+        "Delete Where Merged."
     ),
     "across_close_milestone": "Only a milestone can be closed.",
     "across_find_uses": "Only labels and milestones are on issues to find.",
@@ -120,7 +129,9 @@ _SEARCH_MAX = 250  # GitHub's search box takes 256 characters
 _kind_of = kind_of
 
 
-class GitHubWorkbenchAcrossNamesMixin(GitHubWorkbenchAcrossMoreMixin):
+class GitHubWorkbenchAcrossNamesMixin(
+    GitHubWorkbenchAcrossMoreMixin, GitHubWorkbenchAcrossOpsMixin
+):
     """The by-name sheets and the Fleet over the Repository Set in use."""
 
     items: Any
@@ -366,6 +377,8 @@ class GitHubWorkbenchAcrossNamesMixin(GitHubWorkbenchAcrossMoreMixin):
             self._run_plan("across_delete_name", plan_more_delete(*pair), "Delete")
         elif pair[0].kind == "topics":
             self._run_plan("across_delete_name", plan_topic_remove(*pair), "Remove")
+        elif pair[0].kind == "milestones":
+            self._run_plan("across_delete_name", plan_delete(*pair), "Delete", destructive=True)
         else:
             self._run_plan("across_delete_name", plan_delete(*pair), "Delete")
 
@@ -415,30 +428,73 @@ class GitHubWorkbenchAcrossNamesMixin(GitHubWorkbenchAcrossMoreMixin):
     def _choose_many(
         self, title: str, prompt: str, labels: list[str], checked: list[str]
     ) -> list[str]:
-        wx = self.frame._wx
+        """Real check boxes that each say their state (A11Y-SR-1); [] on Cancel."""
         from quill.ui.dialog_contract import show_modal_dialog
+        from quill.ui.wordpress_workbench_dialogs import ask_checks
 
-        with wx.MultiChoiceDialog(self.frame.frame, prompt, title, labels) as dialog:
-            dialog.SetSelections([i for i, label in enumerate(labels) if label in checked])
-            if show_modal_dialog(dialog, title) != wx.ID_OK:
-                return []
-            return [labels[i] for i in dialog.GetSelections()]
+        chosen = ask_checks(
+            self.frame.frame,
+            show_modal_dialog,
+            title=title,
+            prompt=prompt,
+            rows=labels,
+            checked=[i for i, label in enumerate(labels) if label in checked],
+            help_text="The repositories this change reaches. The preview comes next.",
+        )
+        return [labels[i] for i in chosen or ()]
 
-    def _preview(self, title: str, plan: Any, yes: str) -> bool:
+    def _across_preview(
+        self,
+        title: str,
+        plan: Any,
+        yes: str,
+        *,
+        destructive: bool | None = None,
+        undoable: bool = False,
+    ) -> bool:
+        """The preview; a destructive one starts on Cancel and names every repository."""
         from quill.ui.dialog_contract import show_modal_dialog
-        from quill.ui.wordpress_workbench_dialogs import ask_preview
+        from quill.ui.wordpress_workbench_dialogs import (
+            IRREVERSIBLE,
+            _destructive_now,
+            ask_preview,
+        )
 
+        summary = plan.preview().splitlines()[0]
+        if destructive is None:
+            destructive = _destructive_now() or yes in IRREVERSIBLE
+        names = [step.repository for step in plan.runnable]
+        if destructive and names:  # it starts on Cancel, so it says where it reaches
+            listed = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+            summary += f" They are: {listed}."
         return ask_preview(
             self.frame.frame,
             show_modal_dialog,
             title=title,
-            summary=plan.preview().splitlines()[0],
+            summary=summary,
             lines=[step.preview() for step in plan.steps],
             yes=yes,
+            destructive=destructive,
+            undoable=undoable,
         )
 
-    def _run_plan(self, verb: str, plan: Any, yes: str, *, secret: str = "") -> None:
-        """Check the account's level, preview, then run off the UI thread; one result each."""
+    def _run_plan(
+        self,
+        verb: str,
+        plan: Any,
+        yes: str,
+        *,
+        secret: str = "",
+        engine: Callable[[Any, Any], Any] | None = None,
+        destructive: bool | None = None,
+        undoable: bool = False,
+    ) -> None:
+        """Check the account's level, preview, then run off the UI thread; one result each.
+
+        *engine* runs a plan this module does not route itself; *destructive* starts the
+        preview on Cancel, whatever the running command's tier; *undoable* says Change
+        History can undo it.
+        """
         from quill.core.github.across_admin_changes import apply_admin, apply_promote
         from quill.core.github.across_changes import apply, results_summary
         from quill.core.github.permissions import WriteTier
@@ -457,10 +513,19 @@ class GitHubWorkbenchAcrossNamesMixin(GitHubWorkbenchAcrossMoreMixin):
             self.frame.details.ChangeValue(plan.preview())
             self._say("Nothing would change. The details say why, repository by repository.")
             return
-        if not self._preview(f"{yes}: {plan.name}", plan, yes):
+        preview_title = f"{yes}: {plan.name}"
+        if destructive is None:
+            asked = self._across_preview(preview_title, plan, yes)
+        else:
+            asked = self._across_preview(
+                preview_title, plan, yes, destructive=destructive, undoable=undoable
+            )
+        if not asked:
             return
         api = self.github_api()
-        if plan.kind in MORE_KINDS:
+        if engine is not None:
+            work = lambda: engine(api, plan)  # noqa: E731
+        elif plan.kind in MORE_KINDS:
             from quill.core.github.across_more_changes import apply_more
             from quill.core.github.across_more_promote import apply_more_promote
 
@@ -476,7 +541,8 @@ class GitHubWorkbenchAcrossNamesMixin(GitHubWorkbenchAcrossMoreMixin):
         def done(results: Any) -> None:
             self._record_across(results, int(tier))
             lines = [
-                f"{r.repository}: {'done' if r.ok else 'not changed'}, {r.said}" for r in results
+                f"{r.repository}: {r.said}" if r.ok else f"{r.repository}: not changed, {r.said}"
+                for r in results
             ]
             said = results_summary(results)
             # The results stay in the details until you move; F5 reads the set again.
@@ -493,20 +559,19 @@ class GitHubWorkbenchAcrossNamesMixin(GitHubWorkbenchAcrossMoreMixin):
             log = self.change_log()  # type: ignore[attr-defined]
             account = self.account_name()  # type: ignore[attr-defined]
             for result in results:
-                entry = result.log
-                if not result.ok or entry is None:
-                    continue
-                log.record(
-                    account=account,
-                    kind=entry.kind,
-                    ident=dict(entry.ident),
-                    target=entry.target,
-                    summary=f"Across Repositories: {entry.summary}",
-                    changes=[FieldChange(k, label, b, a) for k, label, b, a in entry.changes],  # type: ignore[arg-type]
-                    tier=tier,
-                    confirmed=entry.confirmed,
-                    can_undo=entry.can_undo,
-                )
+                entries = [] if result.log is None else [result.log, *result.more]
+                for entry in entries if result.ok else ():
+                    log.record(
+                        account=account,
+                        kind=entry.kind,
+                        ident=dict(entry.ident),
+                        target=entry.target,
+                        summary=f"Across Repositories: {entry.summary}",
+                        changes=[FieldChange(k, n, b, a) for k, n, b, a in entry.changes],  # type: ignore[arg-type]
+                        tier=tier,
+                        confirmed=entry.confirmed,
+                        can_undo=entry.can_undo,
+                    )
         except OSError:
             pass  # a history that cannot be written must not hide the results
 

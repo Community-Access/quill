@@ -38,7 +38,11 @@ ACROSS_NODE_HELP: dict[str, str] = {
     ":across_tags": "Tags from every repository in the set.",
     ":across_milestones": "Milestones from every repository in the set.",
     ":across_discussions": "Discussions from every repository in the set that has them on.",
-    ":across_alerts": "Security alerts from every repository in the set you may read them in.",
+    ":across_alerts": (
+        "Security alerts from every repository in the set you may read them in. Dismiss "
+        "Everywhere on a Dependabot or code scanning alert dismisses every open copy of it "
+        "in the set, with one reason."
+    ),
     ":across_by_labels": (
         "Labels by Name: each label name across the set, where its colour and description "
         "differ and where it is missing. Make the copies the same, add it where missing, "
@@ -47,9 +51,9 @@ ACROSS_NODE_HELP: dict[str, str] = {
     ),
     ":across_by_milestones": (
         "Milestones by Name: each milestone title across the set, its due dates, "
-        "descriptions and progress. Make them the same, close them everywhere, move their "
-        "open work to another milestone or add the missing ones, each with a preview and a "
-        "result per repository."
+        "descriptions and progress. Make them the same, close, rename or delete them "
+        "everywhere, move their open work to another milestone or add the missing ones, each "
+        "with a preview and a result per repository."
     ),
     ":across_by_topics": (
         "Topics by Name: each topic across the set and the repositories that lack it. "
@@ -80,18 +84,21 @@ ACROSS_NODE_HELP: dict[str, str] = {
     ":across_by_tags": (
         "Tags by Name: each tag across the set and the commit it is on in each repository. "
         "Release Train makes it, or it and a release, where it is missing, and never moves "
-        "an existing tag; Delete Everywhere keeps a tag a release is built on."
+        "an existing tag; Draft Releases Together makes one draft release of it in each "
+        "repository from notes written once; Delete Everywhere keeps a tag a release is "
+        "built on."
     ),
     ":across_by_branches": (
         "Branches by Name: each branch across the set, where it is the default and where it "
         "is protected. Rename Everywhere uses GitHub's rename; its preview says where the "
         "default changes, where protection moves and how many open pull requests are "
-        "retargeted."
+        "retargeted. Delete Where Merged deletes it only where everything on it is in the "
+        "default branch."
     ),
     ":across_by_environments": (
         "Environments by Name: wait timer, reviewers, self-review and which branches may "
-        "deploy, compared across the set. Make them the same as the winner, or delete one "
-        "everywhere. GitHub has no organization environments."
+        "deploy, compared across the set. Make them the same as the winner, add it where "
+        "missing, or delete one everywhere. GitHub has no organization environments."
     ),
     ":across_by_secrets": (
         "Secrets by Name: each Actions secret across the set, by name only, because GitHub "

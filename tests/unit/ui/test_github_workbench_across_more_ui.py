@@ -119,7 +119,7 @@ def test_set_secret_everywhere_asks_once_and_never_shows_the_value(bench, monkey
     )
     asked: list[str] = []
     monkeypatch.setattr(provider, "_ask_secret", lambda _t, p: asked.append(p) or "s3cret")
-    monkeypatch.setattr(provider, "_preview", lambda *_a: True)
+    monkeypatch.setattr(provider, "_across_preview", lambda *_a: True)
     provider._do_across_set_secret(None, row)
     assert offered == [["o/one"]] and len(asked) == 1
     assert [p for _m, p, _b in api.sent] == [
@@ -148,7 +148,9 @@ def test_a_release_train_from_a_tag_row(bench, monkeypatch) -> None:
     monkeypatch.setattr(provider, "_choose", lambda *_a: 2)  # the tag and a published release
     monkeypatch.setattr(provider, "_choose_many", lambda _t, _p, _labels, checked: checked)
     shown: list[Any] = []
-    monkeypatch.setattr(provider, "_preview", lambda _t, plan, _y: shown.append(plan) or True)
+    monkeypatch.setattr(
+        provider, "_across_preview", lambda _t, plan, _y: shown.append(plan) or True
+    )
     provider._do_across_release_train(None, row)
     (plan,) = shown
     assert [s.repository for s in plan.runnable] == ["o/two"]

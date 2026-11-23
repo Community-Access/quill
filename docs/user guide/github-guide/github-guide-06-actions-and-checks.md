@@ -292,8 +292,13 @@ deployments afterwards.
 ### An environment's rules
 
 A repository's environments are listed under **Settings > Environments**.
-An environment's row has these on its context menu, beside **Secrets...** and
-**Variables...**, which are that environment's own:
+`Ctrl+N` there makes one: it asks for the name, whether any branch or only
+protected branches may deploy to it, and how many minutes each deployment
+waits (0 for none). An environment that already has the name is never
+replaced; QUILL says so instead. Reviewers and a chosen list of branches are
+set on its sheet afterwards. An environment's row has these on its context
+menu, beside **Secrets...** and **Variables...**, which are that
+environment's own:
 
 - **Branch Policies...:** which branches and tags may deploy to it, when it
   allows chosen ones only. Add one by name or with a wildcard, such as
@@ -318,9 +323,9 @@ how many secrets and variables it has, with their names; and its newest
 deployments. The protection, the wait timer and the branch choice can be
 changed there; the lists are read only, and the commands above change them.
 
-To compare an environment's rules across many repositories, or make them the
-same, use **Across Repositories > Actions by Name > Environments by Name**
-(Chapter 12).
+To compare an environment's rules across many repositories, make them the
+same, or add an environment to the repositories that lack it, use **Across
+Repositories > Actions by Name > Environments by Name** (Chapter 12).
 
 ### Deleting a deployment
 
