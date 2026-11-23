@@ -712,6 +712,7 @@
   ["Quill Radio", "apps/radio_video_menu.py Where Am I?", "Ctrl+Shift+W"],
   ["Quill Radio", "apps/radio_youtube_menu.py Repair YouTube Support...", "Ctrl+Alt+Y"],
   ["Quill Radio", "ui/radio/browse_tree_dialog.py Close", "Ctrl+W"],
+  ["Quill Radio", "ui/radio/clear_recent.py Clear Recent Searches...", "Ctrl+Alt+Shift+Backspace"],
   ["Quill Radio", "ui/radio/download_queue_dialog.py Close", "Ctrl+W"],
   ["Quill Radio", "ui/radio/favorites_manager_dialog.py Close", "Ctrl+W"],
   ["Quill Radio", "ui/radio/favorites_menu.py Remove...", "Delete"],
