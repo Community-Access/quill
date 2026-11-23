@@ -28,7 +28,7 @@ from tests.unit.apps.test_scribe_family_apps import worktree_quill_social  # noq
 from tests.unit.core.scribe import corpus
 from tests.unit.core.scribe.fake_scribe import BASE, FakeClock, FakeScribe, StaticTokens
 
-pytestmark = [corpus.needs_corpus, pytest.mark.usefixtures("wx_session_app")]
+pytestmark = [*corpus.needs_corpus, pytest.mark.usefixtures("wx_session_app")]
 
 GARDEN = corpus.GARDEN
 LINK = f"https://docs.example.org/files/{GARDEN}.docx"
