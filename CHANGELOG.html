@@ -259,6 +259,42 @@ finished book from the beginning instead of the closing credits. In
 QUILL Studio, leaving the Chapter Workbench with its Close button or
 Escape now keeps your place, as closing the window always did.</p>
 <h3
+id="github-workbench-workflows-templates-dependabot-codeowners-people-settings-and-packages-across-repositories-2026-11-24">GitHub
+Workbench: workflows, templates, Dependabot, CODEOWNERS, people,
+settings and packages across repositories (2026-11-24)</h3>
+<p>Across Repositories now has a place for every kind in its table
+(GH-R-150).</p>
+<ul>
+<li><strong>Workflows by Name</strong> (under Actions by Name) lists
+each workflow file and how many versions of it the set has: “ci.yml: in
+12 of 12 repositories, 3 versions of the file”.</li>
+<li><strong>Files by Name</strong> is a new group: <strong>Templates by
+Name</strong> (issue and pull request templates, discussion forms, and
+community files such as CONTRIBUTING, wherever each repository keeps
+them), <strong>Dependabot by Name</strong> (with each file’s update
+entries) and <strong>CODEOWNERS by Name</strong> (the file GitHub uses,
+with its rules and owners).</li>
+<li><strong>Compare Configuration…</strong> on any of those rows
+compares two repositories’ copies in the Compare Configuration window.
+<strong>Make Them the Same</strong> and <strong>Add to Missing</strong>
+open one pull request in each repository with the winning version.
+Nothing is pushed, and nothing changes until each pull request is
+merged.</li>
+<li><strong>Repository Settings by Name</strong> (under Settings by
+Name) lists each switch on the Repository sheet’s Features and Merging
+pages: “Allow auto-merge: on in 20, off in 8”. <strong>Make Them the
+Same</strong> sets the winning value in each repository after the
+preview. It needs Full in the Workbench and admin access in each
+repository, and Change History can put each one back.</li>
+<li><strong>People by Name</strong> (under Settings by Name) shows each
+person’s role in each repository and where it comes from. It is read
+only; Bulk Access Changes changes access in many repositories.</li>
+<li><strong>Packages by Name</strong> (under Code by Name) lists each
+package published from the set, with its type and visibility. It is read
+only, because GitHub’s API cannot change a package’s visibility or
+access.</li>
+</ul>
+<h3
 id="back-to-the-sentence-you-left-in-quill-and-quill-lite-2026-11-24">Back
 to the sentence you left, in QUILL and QUILL Lite (2026-11-24)</h3>
 <p>Reopening a saved document puts the cursor back in the sentence you

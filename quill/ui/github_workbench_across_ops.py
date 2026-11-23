@@ -15,6 +15,9 @@ level check and result per repository as every other by-name change
   Alerts (:mod:`quill.core.github.across_alerts`): one of GitHub's reasons and
   one comment; the preview starts on Cancel. Each dismissed alert can be
   reopened from Change History (Undo).
+
+The repository chooser (``_choose_many``) and the preview (``_across_preview``)
+that every by-name change shows live here too.
 """
 
 from __future__ import annotations
@@ -58,7 +61,6 @@ class GitHubWorkbenchAcrossOpsMixin:
     _choose: Callable[[str, str, list[str]], int]
     _background: Callable[[str, Callable[[], Any], Callable[[Any], None]], None]
     _survey_row: Callable[[object], tuple[Any, Any] | None]
-    _choose_many: Callable[[str, str, list[str], list[str]], list[str]]
     _run_plan: Callable[..., None]
     _answered: Callable[[Any], list[str]]
 
@@ -67,6 +69,61 @@ class GitHubWorkbenchAcrossOpsMixin:
 
     def across_scope(self) -> tuple[list[str], str]:
         raise NotImplementedError
+
+    # -- the chooser and the preview every by-name change uses (``_run_plan``) ------
+
+    def _choose_many(
+        self, title: str, prompt: str, labels: list[str], checked: list[str]
+    ) -> list[str]:
+        """Real check boxes that each say their state (A11Y-SR-1); [] on Cancel."""
+        from quill.ui.dialog_contract import show_modal_dialog
+        from quill.ui.wordpress_workbench_dialogs import ask_checks
+
+        chosen = ask_checks(
+            self.frame.frame,
+            show_modal_dialog,
+            title=title,
+            prompt=prompt,
+            rows=labels,
+            checked=[i for i, label in enumerate(labels) if label in checked],
+            help_text="The repositories this change reaches. The preview comes next.",
+        )
+        return [labels[i] for i in chosen or ()]
+
+    def _across_preview(
+        self,
+        title: str,
+        plan: Any,
+        yes: str,
+        *,
+        destructive: bool | None = None,
+        undoable: bool = False,
+    ) -> bool:
+        """The preview; a destructive one starts on Cancel and names every repository."""
+        from quill.ui.dialog_contract import show_modal_dialog
+        from quill.ui.wordpress_workbench_dialogs import (
+            IRREVERSIBLE,
+            _destructive_now,
+            ask_preview,
+        )
+
+        summary = plan.preview().splitlines()[0]
+        if destructive is None:
+            destructive = _destructive_now() or yes in IRREVERSIBLE
+        names = [step.repository for step in plan.runnable]
+        if destructive and names:  # it starts on Cancel, so it says where it reaches
+            listed = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+            summary += f" They are: {listed}."
+        return ask_preview(
+            self.frame.frame,
+            show_modal_dialog,
+            title=title,
+            summary=summary,
+            lines=[step.preview() for step in plan.steps],
+            yes=yes,
+            destructive=destructive,
+            undoable=undoable,
+        )
 
     # -- what fits which row ---------------------------------------------------------
 

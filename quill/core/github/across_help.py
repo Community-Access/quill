@@ -15,8 +15,8 @@ ACROSS_NODE_HELP: dict[str, str] = {
     ":across": (
         "Across Repositories: the Repository Set in use, and under it its named sets, "
         "one kind of thing from every repository in the set, each name across the set "
-        "grouped as Planning, Code, Actions and Settings, and the Fleet. Ctrl+N here edits "
-        "the set's repositories."
+        "grouped as Planning, Code, Actions, Files and Settings, and the Fleet. Ctrl+N here "
+        "edits the set's repositories."
     ),
     ":across_sets": (
         "Repository Sets: your named lists of repositories, each chosen from a checklist, "
@@ -70,16 +70,23 @@ ACROSS_NODE_HELP: dict[str, str] = {
         "Planning by Name: labels, milestones and topics, each by name across the set."
     ),
     ":across_code": (
-        "Code by Name: tags, branches, and rules and branch protection, each by name across "
-        "the set."
+        "Code by Name: tags, branches, rules and branch protection, and packages, each by name "
+        "across the set."
     ),
     ":across_actions": (
-        "Actions by Name: environments, secrets and variables, each by name across the set. "
-        "Reading them needs admin access in each repository."
+        "Actions by Name: environments, secrets, variables and workflows, each by name across "
+        "the set. Reading environments, secrets and variables needs admin access in each "
+        "repository."
+    ),
+    ":across_files": (
+        "Files by Name: templates and community files, Dependabot and CODEOWNERS, each by "
+        "file name across the set; workflows are under Actions by Name. A file is changed "
+        "only by a pull request in each repository, never pushed."
     ),
     ":across_settings": (
-        "Settings by Name: webhooks, deploy keys and autolinks, each by name across the set. "
-        "Reading them needs admin access in each repository."
+        "Settings by Name: webhooks, deploy keys, autolinks, repository settings and people, "
+        "each by name across the set. Webhooks, deploy keys and autolinks need admin access "
+        "to read."
     ),
     ":across_by_tags": (
         "Tags by Name: each tag across the set and the commit it is on in each repository. "
@@ -125,6 +132,42 @@ ACROSS_NODE_HELP: dict[str, str] = {
     ":across_by_autolinks": (
         "Autolinks by Name: each autolink by its prefix, with its address. Add the missing "
         "or delete everywhere; GitHub cannot change an autolink in place."
+    ),
+    ":across_by_workflows": (
+        "Workflows by Name: each workflow file across the set and its versions. Compare "
+        "Configuration shows two copies' differences; Make Them the Same and Add to Missing "
+        "propose the winning version as one pull request in each repository."
+    ),
+    ":across_by_templates": (
+        "Templates by Name: issue and pull request templates, discussion forms and community "
+        "files such as CONTRIBUTING, each by file name with its versions. Compare, make them "
+        "the same or add the missing ones, each as a pull request to review."
+    ),
+    ":across_by_dependabot": (
+        "Dependabot by Name: each repository's dependabot.yml, its versions and its update "
+        "entries. Compare, make them the same or add it where missing, each as a pull "
+        "request to review."
+    ),
+    ":across_by_codeowners": (
+        "CODEOWNERS by Name: the CODEOWNERS file GitHub uses in each repository, its versions, "
+        "rules and owners. Compare, make them the same or add it where missing, each as a "
+        "pull request to review."
+    ),
+    ":across_by_people": (
+        "People by Name: each person with access across the set, their role in each "
+        "repository and where it comes from, and where they have none. Read only; Bulk "
+        "Access Changes changes access in many repositories."
+    ),
+    ":across_by_settings": (
+        "Repository Settings by Name: each switch on the Repository sheet's Features and "
+        "Merging pages, on in how many repositories and off in how many. Make Them the Same "
+        "sets the winning value everywhere after the preview; it needs admin access in each "
+        "repository."
+    ),
+    ":across_by_packages": (
+        "Packages by Name: each package published from the set, its type, visibility and "
+        "repository. Read only, because GitHub does not let apps change a package's "
+        "visibility or access."
     ),
     ":across_fleet": (
         "Fleet: one line per repository in the set: the exact revision of its default "

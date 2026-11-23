@@ -30,6 +30,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass
 
+from quill.core.github.across_people_settings import SETTING_KEYS
+
 __all__ = [
     "BY_NAME_KINDS",
     "CATEGORY_KINDS",
@@ -136,6 +138,28 @@ def _later(what: str, single: str) -> Support:
 
 
 _MISSING = "The repositories that answered and lack it."
+
+#: Workflows, templates, Dependabot and CODEOWNERS are files: compared through
+#: Compare Configuration, changed only by a pull request in each repository.
+_FILES: Mapping[str, Support] = {
+    "variants": _yes("across_variants", "Each version of the file, with its repositories."),
+    "missing_from": _yes("across_variants", _MISSING),
+    "compare": _yes(
+        "across_compare_config",
+        "Compare two repositories' copies in Compare Configuration, then propose one as a "
+        "pull request.",
+    ),
+    "make_same": _yes(
+        "across_make_same",
+        "The winning version proposed as one pull request in each repository that differs; "
+        "nothing is pushed, and nothing changes until each is merged.",
+    ),
+    "copy_missing": _yes(
+        "across_add_missing",
+        "The winning version proposed as one pull request in each repository you choose "
+        "that lacks it.",
+    ),
+}
 
 _BY_NAME: Mapping[str, Mapping[str, Support]] = {
     "labels": {
@@ -353,14 +377,66 @@ _BY_NAME: Mapping[str, Mapping[str, Support]] = {
         "delete": _yes("across_delete_name", "Deleted everywhere, after the preview."),
         "promote_org": _no("GitHub has no organization autolinks."),
     },
-    "workflows": {"compare": _later("comparing workflow files", "file comparison")},
-    "templates": {"compare": _later("comparing community files", "template catalogue")},
-    "dependabot_codeowners": {"make_same": _later("aligning configuration", "CODEOWNERS editor")},
-    "people": {"list": _later("the access matrix from a person's side", "Access Review")},
+    "workflows": {
+        **_FILES,
+        "list": _yes("across_variants", "Workflows by Name: each workflow file and its versions."),
+        "on_off": _no(
+            "Not yet across repositories: turning a workflow on or off. Do it in each "
+            "repository's workflows list."
+        ),
+    },
+    "templates": {
+        **_FILES,
+        "list": _yes(
+            "across_variants",
+            "Templates by Name: issue and pull request templates, discussion forms and "
+            "community files, each by file name.",
+        ),
+    },
+    "dependabot_codeowners": {
+        **_FILES,
+        "list": _yes(
+            "across_variants",
+            "Dependabot by Name and CODEOWNERS by Name: each file, with its update entries "
+            "or its rules and owners.",
+        ),
+        "rename": _no(
+            "Not yet: replacing one owner in every CODEOWNERS file. Instead, fix one copy, "
+            "then use Make Them the Same to propose it everywhere."
+        ),
+    },
+    "people": {
+        "list": _yes(
+            "across_variants",
+            "People by Name: the access matrix from each person's side, each role with where "
+            "it comes from.",
+        ),
+        "variants": _yes("across_variants", "Each role and its source, with its repositories."),
+        "missing_from": _yes("across_variants", "The repositories where the person has no access."),
+        "make_same": _no(
+            "People by Name is read only. To change access, use Bulk Access Changes for many "
+            "repositories, or a repository's Access page for one."
+        ),
+    },
     "teams": {
         "list": _no("Teams are already organization-wide; Organizations > Teams lists them.")
     },
-    "settings": {"make_same": _later("making a setting the same", "repository sheet batch")},
+    "settings": {
+        "list": _yes(
+            "across_variants",
+            "Repository Settings by Name: each switch on the Repository sheet's Features and "
+            "Merging pages, on in how many and off in how many.",
+        ),
+        "variants": _yes("across_variants", "Each value, with the repositories that have it."),
+        "missing_from": _yes(
+            "across_variants", "The repositories that do not show you the setting."
+        ),
+        "make_same": _yes(
+            "across_make_same",
+            "Every repository takes the winning value, as the Repository sheet's field does "
+            "in one; admin access in each, and each can be put back from Change History.",
+        ),
+    },
     "personal_lists": {
         "list": _no(
             "Saved replies, favorites, watch levels and stars are yours, not a repository's: "
@@ -378,10 +454,17 @@ _BY_NAME: Mapping[str, Mapping[str, Support]] = {
         ),
     },
     "packages_pages": {
-        "list": _no(
-            "Not yet: packages and Pages by name across a set. Each repository's Packages "
-            "and GitHub Pages nodes, and its sheet's Pages page, do it one repository at a time."
-        )
+        "list": _yes(
+            "across_variants",
+            "Packages by Name: each package, its type and visibility, and the repository it "
+            "came from. Pages is one site per repository, on each repository's sheet.",
+        ),
+        "variants": _yes("across_variants", "Each type and visibility, with its repositories."),
+        "missing_from": _yes("across_variants", _MISSING),
+        "make_same": _no(
+            "Packages by Name is read only: GitHub does not let apps change a package's "
+            "visibility or access. Change them on github.com, one package at a time."
+        ),
     },
 }
 
@@ -444,6 +527,13 @@ SINGLE_REPOSITORY: Mapping[tuple[str, str], tuple[str, ...]] = {
     ("autolinks", "copy_missing"): (f"{_W}new_autolink",),
     ("autolinks", "delete"): (f"{_W}delete_autolink",),
     ("alerts", "make_same"): (f"{_W}dismiss_alert", "sheet:security_alert.state"),
+    ("workflows", "make_same"): (f"{_W}compare_config",),
+    ("workflows", "copy_missing"): (f"{_W}compare_config",),
+    ("templates", "make_same"): (f"{_W}compare_config",),
+    ("templates", "copy_missing"): (f"{_W}compare_config",),
+    ("dependabot_codeowners", "make_same"): (f"{_W}compare_config",),
+    ("dependabot_codeowners", "copy_missing"): (f"{_W}compare_config",),
+    ("settings", "make_same"): tuple(f"sheet:repository.{key}" for key in SETTING_KEYS),
 }
 
 #: Writes the window can do but the single-repository rule does not count as

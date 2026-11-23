@@ -94,9 +94,13 @@ class Plan:
 
     def preview(self) -> str:
         noun = KINDS[self.kind][0]
+        # A file is proposed, never pushed: nothing changes until each pull request is merged.
+        will = "will change"
+        if self.operation == "Propose":
+            will = "will get a pull request; nothing changes until it is merged"
         head = (
             f"{self.operation} the {noun} {self.name}: {len(self.runnable)} of "
-            f"{len(self.steps)} repositories will change."
+            f"{len(self.steps)} repositories {will}."
         )
         return "\n".join([head, *(s.preview() for s in self.steps)])
 

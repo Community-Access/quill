@@ -1247,8 +1247,8 @@ Delete removes. Watches never mark notifications read.</td>
 <td>the top</td>
 <td>Across Repositories: the Repository Set in use, and under it its
 named sets, one kind of thing from every repository in the set, each
-name across the set grouped as Planning, Code, Actions and Settings, and
-the Fleet. Ctrl+N here edits the set’s repositories.</td>
+name across the set grouped as Planning, Code, Actions, Files and
+Settings, and the Fleet. Ctrl+N here edits the set’s repositories.</td>
 </tr>
 <tr>
 <td>Repository Sets (<code>:across_sets</code>)</td>
@@ -1391,8 +1391,8 @@ kept.</td>
 <tr>
 <td>Code by Name (<code>:across_code</code>)</td>
 <td>across</td>
-<td>Code by Name: tags, branches, and rules and branch protection, each
-by name across the set.</td>
+<td>Code by Name: tags, branches, rules and branch protection, and
+packages, each by name across the set.</td>
 </tr>
 <tr>
 <td>Tags by Name (<code>:across_by_tags</code>)</td>
@@ -1423,10 +1423,18 @@ organization ruleset; each needs admin access and shows a preview
 first.</td>
 </tr>
 <tr>
+<td>Packages by Name (<code>:across_by_packages</code>)</td>
+<td>across_code</td>
+<td>Packages by Name: each package published from the set, its type,
+visibility and repository. Read only, because GitHub does not let apps
+change a package’s visibility or access.</td>
+</tr>
+<tr>
 <td>Actions by Name (<code>:across_actions</code>)</td>
 <td>across</td>
-<td>Actions by Name: environments, secrets and variables, each by name
-across the set. Reading them needs admin access in each repository.</td>
+<td>Actions by Name: environments, secrets, variables and workflows,
+each by name across the set. Reading environments, secrets and variables
+needs admin access in each repository.</td>
 </tr>
 <tr>
 <td>Environments by Name (<code>:across_by_environments</code>)</td>
@@ -1452,10 +1460,49 @@ set. Make them the same, add the missing, delete everywhere, or promote
 to one organization variable for those repositories.</td>
 </tr>
 <tr>
+<td>Workflows by Name (<code>:across_by_workflows</code>)</td>
+<td>across_actions</td>
+<td>Workflows by Name: each workflow file across the set and its
+versions. Compare Configuration shows two copies’ differences; Make Them
+the Same and Add to Missing propose the winning version as one pull
+request in each repository.</td>
+</tr>
+<tr>
+<td>Files by Name (<code>:across_files</code>)</td>
+<td>across</td>
+<td>Files by Name: templates and community files, Dependabot and
+CODEOWNERS, each by file name across the set; workflows are under
+Actions by Name. A file is changed only by a pull request in each
+repository, never pushed.</td>
+</tr>
+<tr>
+<td>Templates by Name (<code>:across_by_templates</code>)</td>
+<td>across_files</td>
+<td>Templates by Name: issue and pull request templates, discussion
+forms and community files such as CONTRIBUTING, each by file name with
+its versions. Compare, make them the same or add the missing ones, each
+as a pull request to review.</td>
+</tr>
+<tr>
+<td>Dependabot by Name (<code>:across_by_dependabot</code>)</td>
+<td>across_files</td>
+<td>Dependabot by Name: each repository’s dependabot.yml, its versions
+and its update entries. Compare, make them the same or add it where
+missing, each as a pull request to review.</td>
+</tr>
+<tr>
+<td>CODEOWNERS by Name (<code>:across_by_codeowners</code>)</td>
+<td>across_files</td>
+<td>CODEOWNERS by Name: the CODEOWNERS file GitHub uses in each
+repository, its versions, rules and owners. Compare, make them the same
+or add it where missing, each as a pull request to review.</td>
+</tr>
+<tr>
 <td>Settings by Name (<code>:across_settings</code>)</td>
 <td>across</td>
-<td>Settings by Name: webhooks, deploy keys and autolinks, each by name
-across the set. Reading them needs admin access in each repository.</td>
+<td>Settings by Name: webhooks, deploy keys, autolinks, repository
+settings and people, each by name across the set. Webhooks, deploy keys
+and autolinks need admin access to read.</td>
 </tr>
 <tr>
 <td>Webhooks by Name (<code>:across_by_webhooks</code>)</td>
@@ -1479,6 +1526,21 @@ one repository only, so one cannot be added to more.</td>
 <td>Autolinks by Name: each autolink by its prefix, with its address.
 Add the missing or delete everywhere; GitHub cannot change an autolink
 in place.</td>
+</tr>
+<tr>
+<td>Repository Settings by Name (<code>:across_by_settings</code>)</td>
+<td>across_settings</td>
+<td>Repository Settings by Name: each switch on the Repository sheet’s
+Features and Merging pages, on in how many repositories and off in how
+many. Make Them the Same sets the winning value everywhere after the
+preview; it needs admin access in each repository.</td>
+</tr>
+<tr>
+<td>People by Name (<code>:across_by_people</code>)</td>
+<td>across_settings</td>
+<td>People by Name: each person with access across the set, their role
+in each repository and where it comes from, and where they have none.
+Read only; Bulk Access Changes changes access in many repositories.</td>
 </tr>
 <tr>
 <td>Fleet (<code>:across_fleet</code>)</td>
@@ -3606,11 +3668,11 @@ Properties…</li>
 <li><strong>repository_set</strong>: Use This Set, Edit Repositories…,
 Set Filter…, New Set…, Rename Set…, Delete Set…; Properties…</li>
 <li><strong>by_name</strong>: Variants and Missing From, Make Them the
-Same…, Add to Missing…, Find Uses, Rename Everywhere…, Merge Into…;
-More: Close Everywhere…, Move Open Work To…, Promote to Organization…,
-Release Train…, Set Secret Everywhere…, Turn On or Off Everywhere…,
-Draft Releases Together…, Delete Where Merged…, Delete Everywhere…;
-Properties…</li>
+Same…, Add to Missing…, Compare Configuration…, Find Uses, Rename
+Everywhere…; More: Merge Into…, Close Everywhere…, Move Open Work To…,
+Promote to Organization…, Release Train…, Set Secret Everywhere…, Turn
+On or Off Everywhere…, Draft Releases Together…, Delete Where Merged…,
+Delete Everywhere…; Properties…</li>
 <li><strong>fleet</strong>: Open Repository, Open on GitHub, Copy Link;
 Properties…</li>
 <li><strong>release_asset</strong>: Download, Copy Link, Attestations…,
