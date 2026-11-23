@@ -304,6 +304,16 @@ class ConverterAuphonicMixin(ConverterAuphonicHistoryMixin):
             self._last_output = dest
         self._set_status(summary)
         self._announce(summary, force=True)
+        # Kept in Activity with Open Folder (FUX-04): said once, reachable after.
+        from quill.ui.outcome_report import keep_outcome
+
+        keep_outcome(
+            "Process with Auphonic",
+            summary,
+            path=self._last_output if saved else None,
+            failed=not saved,
+            partial=bool(saved) and len(saved) < len(result.outcomes),
+        )
         if open_now:
             self.open_output_folder()
 

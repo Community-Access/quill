@@ -202,7 +202,9 @@ class BackupReport:
 
     def outcome(self) -> str:
         """The spoken result: where it went, counted, and what was left out."""
-        lead = f"Backup saved to {self.path.name}."
+        from quill.core.action_feedback import written_result
+
+        lead = written_result("Backup saved", self.path)  # the file and its folder (FUX-04)
         if not self.skipped:
             noun = "recording was" if self.downloaded == 1 else "recordings were"
             fetched = (

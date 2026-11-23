@@ -256,7 +256,14 @@ def save_songs(app: Any, which: Which) -> None:
 
     def _done(_op: str, written: object) -> None:
         paths = written if isinstance(written, list) else []
-        app._wx.CallAfter(app._announce, describe_saved(planned, paths, folder))
+        app._wx.CallAfter(_said_and_kept, app, describe_saved(planned, paths, folder), paths)
+
+    def _said_and_kept(app: Any, said: str, paths: list[Path]) -> None:
+        app._announce(said)
+        if paths:  # kept in Activity with Open Folder (FUX-04)
+            from quill.ui.outcome_report import keep_outcome
+
+            keep_outcome("Save Songs", said, path=folder, partial=len(paths) < len(planned))
 
     def _failed(_op: str, error: BaseException) -> None:
         _log.warning("saving songs from the buffer failed: %s", error)

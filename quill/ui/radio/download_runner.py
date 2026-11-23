@@ -231,8 +231,19 @@ def _after(host: Any, queue: DownloadQueue, item: QueueItem) -> None:
         # download's only confirmation was the end-of-queue summary, which
         # says how many rather than where -- and somebody who missed it had
         # no way to tell a finished download from one that never started.
-        where = Path(item.path).parent if str(getattr(item, "path", "") or "") else item.folder
-        _announce(host, f"Saved {item.name} to {where}.")
+        # The file and its folder by name, not a whole path read out as
+        # backslashes; kept in Activity with Open Folder (FUX-04).
+        from quill.core.action_feedback import place_of
+        from quill.ui.outcome_report import keep_outcome
+
+        if str(getattr(item, "path", "") or ""):
+            made = Path(item.path)
+            said = f"Saved {item.name} as {place_of(made)}."
+        else:
+            made = Path(item.folder)
+            said = f"Saved {item.name} in {made.name or made}."
+        _announce(host, said)
+        keep_outcome("Download", said, object_name=item.name, path=made)
     if item.state == "failed":
         # Named as it happens rather than only in the end-of-queue summary: one
         # chapter failing in a forty-chapter book is worth hearing about while
@@ -260,7 +271,39 @@ def _on_queue_drained(host: Any, queue: DownloadQueue) -> None:
     if getattr(host, "_download_summary_said", None) == len(queue.items):
         return
     host._download_summary_said = len(queue.items)
-    _announce(host, queue.summary())
+    if getattr(host, "_download_batch_size", 0) == 1 and queue.items[-1].state == "done":
+        return  # one download: "Saved ... as ..." already said where it went, once (GATE-13)
+    said, folder = drained_sentence(queue)
+    _announce(host, said)
+    if len(queue.items) > 1:  # a single download was kept when it landed
+        from quill.ui.outcome_report import keep_outcome
+
+        failed = not any(item.state == "done" for item in queue.items)
+        keep_outcome(
+            "Downloads",
+            said,
+            path=folder,
+            failed=failed,
+            partial=not failed and any(item.state == FAILED for item in queue.items),
+        )
+
+
+def drained_sentence(queue: DownloadQueue) -> tuple[str, Path | None]:
+    """The end-of-queue sentence, with the folder when every saved file shares one.
+
+    "3 saved, 1 failed." said how many and never where (FUX-04); a book's
+    chapters land in one folder, which is then named. Downloads spread over
+    several folders are not, because a list of folders is not a sentence;
+    the download list names each one.
+    """
+    from quill.core.action_feedback import place_of
+
+    summary = queue.summary()
+    folders = {Path(item.path).parent for item in queue.items if item.state == "done" and item.path}
+    if len(folders) != 1:
+        return summary, None
+    folder = folders.pop()
+    return f"{summary} Saved in {place_of(folder)}.", folder
 
 
 def _refresh(host: Any) -> None:

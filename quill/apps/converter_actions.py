@@ -184,10 +184,17 @@ class ConverterActionsMixin(ConverterLifecycleMixin, ConverterScribeMixin):
         return f"{len(skipped)} file(s) skipped because a file of that name already exists."
 
     def _run_jobs(
-        self, ffmpeg: str, jobs: list[ConversionJob], label: str, dest: Path, *, notes: str = ""
+        self,
+        ffmpeg: str,
+        jobs: list[ConversionJob],
+        label: str,
+        dest: Path,
+        *,
+        notes: str = "",
+        quiet: bool = False,
     ) -> None:
         cancel = CancelToken()
-        self._begin_work(label, cancel)
+        self._begin_work(label, cancel, quiet=quiet)
         # Video encoders use every core on their own; running several at once
         # only makes each one slower and the machine unresponsive.
         workers = 1 if any(job.spec.is_video() for job in jobs) else 0
@@ -226,18 +233,54 @@ class ConverterActionsMixin(ConverterLifecycleMixin, ConverterScribeMixin):
     def _finish_batch(
         self, result: BatchResult, total: int, dest: Path, notes: str, seconds: float
     ) -> None:
+        # The actual result, said once and kept (FUX-04): where the files went,
+        # what a Stop left, and a Retry in Activity that converts only the rest.
+        from quill.apps.converter_results import batch_sentence, keep_batch, left_over
+
         self._end_work()
-        summary = result.summary(total)
-        if notes:
-            summary += f" {notes}"
-        if result.failed:
-            summary += " Press Ctrl+R for the report."
+        summary = batch_sentence(
+            result,
+            total,
+            dest,
+            notes=notes,
+            activity_key=self._binding_for("app.activity") or "",
+        )
         self._last_report = self._report_text(result, total, dest, notes, seconds)
         self._last_output = dest
         self._set_status(summary)
         self._announce(summary, force=True)
+        rest = left_over(result)
+        keep_batch(
+            summary,
+            result,
+            dest,
+            retry=lambda: self._retry_left(rest, dest),
+            open_folder=lambda: _open_folder(dest),
+        )
         if result.converted and self._settings.open_folder_when_done:
             self.open_output_folder()
+
+    def _retry_left(self, jobs: list[ConversionJob], dest: Path) -> str:
+        """Activity's Retry: convert only what a batch left, to the names it planned.
+
+        A file that has appeared at one of those names since is left alone
+        rather than overwritten. Returns the one sentence Activity says, so the
+        start of the run is not also announced (GATE-13).
+        """
+        if self._busy:
+            return "The Converter is still working. Stop it or let it finish, then retry."
+        jobs = [job for job in jobs if not job.dest.exists()]
+        if not jobs:
+            return "Nothing is left to convert: every file is already there."
+        from quill.core.speech.ffmpeg import find_ffmpeg
+
+        ffmpeg = find_ffmpeg()  # quietly: the sentence below is the whole answer
+        if ffmpeg is None:
+            return "Nothing was converted: FFmpeg was not found. Help, Get FFmpeg puts it back."
+        noun = "file" if len(jobs) == 1 else "files"
+        label = f"Converting the {len(jobs)} {noun} left"
+        self._run_jobs(str(ffmpeg), jobs, label, dest, quiet=True)
+        return f"{label}. Press Ctrl+Enter or the Stop button to stop."
 
     def _report_text(
         self, result: BatchResult, total: int, dest: Path, notes: str, seconds: float
@@ -252,11 +295,13 @@ class ConverterActionsMixin(ConverterLifecycleMixin, ConverterScribeMixin):
         if notes:
             lines.append(notes)
         lines.append("")
+        # Whole source paths, and output paths under the folder: two files
+        # called track01.wav from two discs must be told apart (FUX-04).
         for item in result.results:
             if item.skipped:
-                lines.append(f"Skipped (stopped): {item.job.source.name}")
+                lines.append(f"Not converted (stopped): {item.job.source}")
             elif item.ok:
-                lines.append(f"Converted: {item.job.source.name} -> {item.job.dest.name}")
+                lines.append(f"Converted: {item.job.source} -> {_under(item.job.dest, dest)}")
                 if item.error:  # on success, a note: where the chapters went, and so on
                     lines.append(f"  Note: {item.error}")
             else:
@@ -264,14 +309,15 @@ class ConverterActionsMixin(ConverterLifecycleMixin, ConverterScribeMixin):
                 lines.append(f"  Reason: {item.error}")
         return "\n".join(lines)
 
-    def _begin_work(self, label: str, cancel: CancelToken) -> None:
+    def _begin_work(self, label: str, cancel: CancelToken, *, quiet: bool = False) -> None:
         self._busy = True
         self._cancel = cancel
         self._milestone = 0
         self._convert_btn.SetLabel("Stop Converting")
         self._set_progress(0, 1)
         self._set_status(f"{label} started")
-        self._announce(f"{label}. Press Ctrl+Enter or the Stop button to stop.")
+        if not quiet:  # quiet: the caller says the start itself (Activity's Retry)
+            self._announce(f"{label}. Press Ctrl+Enter or the Stop button to stop.")
 
     def _end_work(self) -> None:
         self._busy = False
@@ -302,12 +348,20 @@ class ConverterActionsMixin(ConverterLifecycleMixin, ConverterScribeMixin):
             except Exception:  # noqa: BLE001 - a tooltip must never break a run
                 pass
 
-    def _finish_simple(self, message: str, folder: Path) -> None:
+    def _finish_simple(
+        self, message: str, folder: Path, *, action: str = "", made: Path | None = None
+    ) -> None:
+        """A one-file job is over. *made* is the file it wrote, kept in Activity
+        with Open Folder; without it, the job is kept as a failure (FUX-04)."""
         self._end_work()
         self._last_output = folder
         self._last_report = message
         self._set_status(message)
         self._announce(message, force=True)
+        if action:
+            from quill.ui.outcome_report import keep_outcome
+
+            keep_outcome(action, message, path=made, failed=made is None)
 
     def show_report(self) -> None:
         """The last conversion's full report (Ctrl+R)."""
@@ -407,6 +461,22 @@ class ConverterActionsMixin(ConverterLifecycleMixin, ConverterScribeMixin):
                 _TITLE,
             )
         return found
+
+
+def _under(path: Path, folder: Path) -> str:
+    """*path* as it reads under *folder* (``Disc 1\\track01.mp3``), else whole."""
+    try:
+        return str(path.relative_to(folder))
+    except ValueError:
+        return str(path)
+
+
+def _open_folder(folder: Path) -> str:
+    """Activity's Open Folder for a batch: the folder it wrote to, if it is still there."""
+    if not folder.is_dir():
+        return f"{folder} is no longer there."
+    wx.LaunchDefaultApplication(str(folder))
+    return f"Opened {folder.name}."
 
 
 def _is_under(path: Path, folder: Path) -> bool:

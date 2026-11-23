@@ -141,7 +141,18 @@ def _backup_failed(frame: Any, reason: str) -> None:
 
 
 def _backup_done(frame: Any, report: Any) -> None:
+    from quill.ui.outcome_report import keep_outcome
+
     frame._set_status(report.outcome())
+    # Kept in Activity with Open Folder (FUX-04): the one result somebody
+    # about to reset a computer goes looking for again.
+    keep_outcome(
+        "Back Up",
+        report.outcome(),
+        object_name=report.path.name,
+        path=report.path,
+        partial=bool(report.skipped),
+    )
     if not report.skipped:
         frame._announce(report.outcome())
         return

@@ -142,7 +142,7 @@ def test_report_keeps_the_note_on_a_converted_file(converter, tmp_path: Path) ->
     result = BatchResult(results=[JobResult(job=job, ok=True, error=note)])
     converter.add_paths(_files(tmp_path, "a.wav"), announce=False)
     converter._finish_batch(result, 1, tmp_path / "out", "", 1.0)
-    assert f"Converted: a.wav -> a.ogg\n  Note: {note}" in converter._last_report
+    assert f"Converted: {tmp_path / 'a.wav'} -> a.ogg\n  Note: {note}" in converter._last_report
 
 
 def test_a_download_converts_into_downloads_not_the_temp_folder(
@@ -473,7 +473,9 @@ def test_a_stopped_preview_never_plays_and_its_file_is_removed(
     played: list[object] = []
     monkeypatch.setattr(winsound, "PlaySound", lambda name, _flags: played.append(name))
     monkeypatch.setattr(converter_lifecycle.wx, "CallLater", lambda *_a: None)
-    monkeypatch.setattr(converter, "_ffmpeg", lambda: "ffmpeg")
+    import quill.core.speech.ffmpeg as ff
+
+    monkeypatch.setattr(ff, "find_ffmpeg", lambda: "ffmpeg")
     (song,) = _files(tmp_path, "song.mp3")
     converter.add_paths([song], announce=False)
     converter.preview(original=True)  # preview 1
@@ -594,3 +596,70 @@ def test_save_says_whether_it_worked(tmp_path: Path, monkeypatch: pytest.MonkeyP
         storage, "write_json_atomic", lambda *_a, **_k: (_ for _ in ()).throw(OSError(28, "full"))
     )
     assert converter_settings.save(settings, tmp_path) is False
+
+
+# -- the actual result, said once and kept (FUX-04) -----------------------------------
+
+
+def test_retry_in_activity_converts_only_what_the_batch_left(
+    converter, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core import activity
+    from quill.core.audio.convert import BatchResult, ConversionJob, ConversionSpec, JobResult
+    from quill.ui.activity_window import run_action
+
+    out = tmp_path / "out"
+    jobs = [
+        ConversionJob(tmp_path / f"{name}.wav", out / f"{name}.mp3", ConversionSpec(fmt="mp3"))
+        for name in ("a", "b", "c")
+    ]
+    result = BatchResult(
+        results=[
+            JobResult(job=jobs[0], ok=True),
+            JobResult(job=jobs[1], ok=False, error="bad header"),
+            JobResult(job=jobs[2], ok=False, skipped=True),
+        ],
+        cancelled=True,
+    )
+    converter._finish_batch(result, 3, out, "", 1.0)
+    said = converter.said[-1]
+    assert said.startswith("Stopped. Converted 1 of 3 files into the folder out in ")
+    assert "converts only the 2 files left" in said
+    kept = activity.LOG.recent()[0]
+    assert kept.summary == said and kept.has("retry")
+
+    ran: list[list[str]] = []
+    import quill.core.speech.ffmpeg as ff
+
+    monkeypatch.setattr(ff, "find_ffmpeg", lambda: "ffmpeg")
+    monkeypatch.setattr(
+        converter,
+        "_run_jobs",
+        lambda _ff, todo, label, dest, **k: ran.append([j.source.name for j in todo]),
+    )
+    before = len(converter.said)
+    assert run_action(kept, "retry") == (
+        "Converting the 2 files left. Press Ctrl+Enter or the Stop button to stop."
+    )
+    assert ran == [["b.wav", "c.wav"]]  # a.wav, which worked, is not converted again
+    assert len(converter.said) == before  # Activity says the start; nothing else does
+
+
+def test_join_names_the_file_and_its_folder_and_keeps_it(converter, tmp_path: Path) -> None:
+    from quill.core import activity
+
+    made = tmp_path / "Books" / "book.m4b"
+    converter._busy = True
+    converter._finish_simple(
+        "Joined 3 files into book.m4b in Books.", made.parent, action="Join", made=made
+    )
+    kept = activity.LOG.recent()[0]
+    assert kept.action == "Join" and kept.has("open_folder") and not kept.is_problem
+
+
+def test_help_reaches_activity_and_repeat_last_result(converter) -> None:
+    bar = converter.frame.GetMenuBar()
+    help_menu = bar.GetMenu(bar.FindMenu("Help"))
+    labels = [item.GetItemLabel() for item in help_menu.GetMenuItems()]
+    assert "Activit&y...\tShift+F9" in labels
+    assert "Re&peat Last Result\tF9" in labels

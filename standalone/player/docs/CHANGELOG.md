@@ -8,6 +8,13 @@ Quill Media Player runs the same player code as QUILL from the shared `quill` pa
 
 ## Unreleased
 
+### Exports say where (2026-11-23)
+
+- Export Bookmarks and Export Sync Bundle say the file and its folder once
+  the file is written: "Exported 4 bookmarks to marks.md in Documents." Both
+  are kept in Help > Activity... (Shift+F9, new on the Help menu with Repeat
+  Last Result, F9) with Open Folder.
+
 ### Listen to a document with Scribe for Documents (2026-11-21)
 
 - **File > Listen to a Document with Scribe for Documents...** (Alt+Shift+F6)

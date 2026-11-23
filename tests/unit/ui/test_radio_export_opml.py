@@ -91,7 +91,7 @@ def test_export_writes_the_library_and_speaks_the_count(data_dir: Path) -> None:
         "Morning Show",
         "Night Owls",
     ]
-    assert dialog.said == ["Exported 2 podcasts to mine.opml."]
+    assert dialog.said == ["Exported 2 podcasts to mine.opml in out."]
     assert dialog._wx.opened[0]["defaultFile"] == "quill-radio-podcasts.opml"
 
 
@@ -100,7 +100,7 @@ def test_one_show_is_singular(data_dir: Path) -> None:
     target = data_dir / "one.opml"
     dialog = _Dialog(str(target))
     browse_podcast_actions.export_opml(dialog)
-    assert dialog.said == ["Exported 1 podcast to one.opml."]
+    assert dialog.said == [f"Exported 1 podcast to one.opml in {data_dir.name}."]
 
 
 def test_an_empty_library_is_said_not_written(data_dir: Path) -> None:

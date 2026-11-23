@@ -311,6 +311,11 @@ Bookmarks mark a moment you want to return to, with an optional label and note.
   machines as a portable file (merged on import, never overwriting). Automatic
   server-side sync (QuilleSync) is a future item.
 
+Both exports say the file and the folder it went to, once the file is written:
+"Exported 4 bookmarks to marks.md in Documents." If you missed it, **Help >
+Repeat Last Result** (F9) says it again, and **Help > Activity...** (Shift+F9)
+keeps it with **Open Folder**.
+
 Bookmarks are saved per book and survive between sessions.
 
 ### Hearing your notes as you reach them
