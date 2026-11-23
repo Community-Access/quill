@@ -16,6 +16,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.list_follow import hidden_sentence
 from quill.core.radio import (
     acb_media,
     m3u_catalog,
@@ -663,13 +664,16 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
     # Population
 
     def _on_source_facet(self, _event: object) -> None:
-        """Re-render the current results filtered by the chosen source."""
-        self._render_results()
+        """Re-render the current results filtered by the chosen source, keeping
+        the reader's station when it is still shown and saying so when not."""
+        station, self._results_keep = self._selected_station(), self._selected_key()
+        shown = self._render_results()
         self._save_search_prefs()
-        self._announce(
-            _search_result_summary(len(self._current_results))
-            + f" -- {self._source_facet.GetStringSelection()}"
-        )
+        said = _search_result_summary(len(self._current_results))
+        said += f" -- {self._source_facet.GetStringSelection()}"
+        if not shown and station is not None:
+            said += f". {hidden_sentence(station.name)}"
+        self._announce(said)
 
     def _on_refresh_directory(self, _event: object) -> None:
         """Re-fetch the iHeart station directory (its 2-GET sitemap index) off
@@ -768,6 +772,8 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         )
 
     def _show_category(self, category: str) -> None:
+        # A late answer for the category the reader left must not fill this one.
+        self._browse_request = getattr(self, "_browse_request", 0) + 1
         index = _CATEGORIES.index(category)
         if self._category_list.GetSelection() != index:
             self._category_list.SetSelection(index)
@@ -823,6 +829,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
             self._status.SetLabel("Browsing sources is disabled in Safe Mode.")
             return
         self._status.SetLabel(loading)
+        self._browse_request = request = getattr(self, "_browse_request", 0) + 1
 
         def _work(**_kwargs: Any) -> list[RadioStation]:
             try:
@@ -830,17 +837,19 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
             except Exception:  # noqa: BLE001 - reported via the empty-list path
                 return []
 
+        def _landed(rows: list[RadioStation]) -> None:
+            if request != self._browse_request:
+                return  # the reader has chosen another category since
+            status = done(len(rows)) if rows else f"{error}, or nothing to show."
+            self._fill_results(rows, status=status)
+            self._announce(done(len(rows)) if rows else error)
+
         def _ok(_op: str, stations: object) -> None:
-            rows = stations if isinstance(stations, list) else []
-            self._wx.CallAfter(
-                self._fill_results,
-                rows,
-                status=done(len(rows)) if rows else f"{error}, or nothing to show.",
-            )
-            self._wx.CallAfter(self._announce, done(len(rows)) if rows else error)
+            self._wx.CallAfter(_landed, stations if isinstance(stations, list) else [])
 
         def _fail(_op: str, exc: BaseException) -> None:
-            self._wx.CallAfter(self._status.SetLabel, f"{error}: {exc}")
+            if request == self._browse_request:
+                self._wx.CallAfter(self._status.SetLabel, f"{error}: {exc}")
 
         self._task_manager.submit("radio-browse-source", _work, on_success=_ok, on_failure=_fail)
 
@@ -1107,6 +1116,9 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         # Remember the query so "More Stations" can page the same search.
         self._search_query, self._search_tag, self._search_country = name, tag, country
         self._search_offset = 0
+        # Only the newest search may fill the list: an older one answering late
+        # would replace it under the reader (FUX-06).
+        self._search_request = request = getattr(self, "_search_request", 0) + 1
         # ...and remember it for *next time*, but only on a deliberate commit.
         # `_focus_results_after_search` already distinguishes the two: it is
         # False exactly when this search came from arrowing a dropdown, which is
@@ -1128,8 +1140,8 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         self._task_manager.submit(
             "radio-search",
             _do_search,
-            on_success=lambda _op, payload: self._on_search_done(payload, None),
-            on_failure=lambda _op, exc: self._on_search_done(([], []), exc),
+            on_success=lambda _op, payload: self._on_search_done(payload, None, request),
+            on_failure=lambda _op, exc: self._on_search_done(([], []), exc, request),
         )
 
     def _open_url(self, url: str, *, spotify: bool = False) -> None:
@@ -1194,7 +1206,10 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         self,
         payload: tuple[list[RadioStation], list[RadioStation]],
         error: BaseException | None,
+        request: int = 0,
     ) -> None:
+        if request and request != getattr(self, "_search_request", request):
+            return  # a newer search is on its way; this answer is out of date
         self._search_btn.Enable(True)
         if error is not None:
             self._status.SetLabel(f"Search failed: {error}")
@@ -1222,19 +1237,6 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         # The libraries answer separately and append as they land, so a slow one
         # never holds up the stations. See quill/ui/radio/library_search.py.
         library_search.begin(self, self._search_query)
-
-    def _show_category_for_library_results(self) -> None:
-        """Re-render after a library's rows land, without moving the cursor.
-
-        Somebody may already be arrowing the station results by the time a
-        library answers; re-selecting row 0 under them would be worse than the
-        rows arriving late.
-        """
-        index = self._results.GetFirstSelected()
-        self._show_category(_SEARCH_RESULTS)
-        if index >= 0 and index < len(self._current_results):
-            self._results.Select(index)
-            self._results.Focus(index)
 
     def _on_more_stations(self, _event: object) -> None:
         """Fetch and append the next page of results (#1064).

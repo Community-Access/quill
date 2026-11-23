@@ -19,6 +19,42 @@
 - **Removing an old copy works.** Staging retries the removal with `rd /s /q`
   when PowerShell leaves folders behind.
 
+### Quill Radio and Media Player: lists that stay still (FUX-06, 2026-11-23)
+
+Lists that update while you read them now leave you where you were. The rule
+is the one Quill Cast and QUILL Lite already follow, and it lives in one place
+for every app (`quill/core/list_follow.py`, `quill/ui/list_stay_still.py`).
+`docs/design/fux-06-adoption.md` lists every live list in the family and what
+was done about each.
+
+- **Radio Recordings.** A recording or schedule starting above you no longer
+  leaves two rows selected. Before, Remove, Play and Open could act on the
+  wrong recording. Only the cells that changed are rewritten on each
+  two-second update. When a scheduled recording starts, your cursor follows it
+  to its Recording row. If the recording you were on goes some other way, for
+  example you delete it in File Explorer, you hear "... is no longer in the
+  list." once and land on the next one.
+- **Find Stations.** Books and podcasts arriving from the libraries, and
+  More Stations, no longer leave a second row selected (Enter used to play the
+  first row). Your row stays the same row, on the same line. An answer for a
+  search you have replaced, or a category you have left, is dropped instead of
+  replacing what you are reading. The Source filter keeps your station when it
+  still shows it, and says "... is not shown with this filter." when it does
+  not. More Stations lands on the first new station; it was one row off when
+  other directories were blended in.
+- **Downloads.** Updates no longer redraw the whole list. A removed or cleared
+  row puts you on the next one, not back at the top.
+- **Local Media.** A folder scan or a tag read keeps your selection and your
+  line on screen. A file that leaves the playlist that way is named once, and
+  you land on its neighbour.
+- **Favorites.** The main window's tree keeps a selected folder as well as a
+  station, keeps closed folders closed, and puts you on the next station when
+  yours was removed elsewhere. Browse Stations' Favorites branch keeps your
+  row too, and no longer says "N items." over "Added to Favorites."
+- **Media Player bookmarks.** Adding or editing a bookmark keeps your place,
+  and Remove moves you to the next bookmark. Before, every change cleared the
+  selection.
+
 ### Quill Radio: Find Streams remembers, and reads more sites (2026-11-22)
 
 Ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSift),

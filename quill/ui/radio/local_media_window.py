@@ -29,6 +29,8 @@ from typing import Any
 
 from quill.core.radio.local_media import Playlist
 from quill.ui.dpi import dip_size
+from quill.ui.list_stay_still import NO_ANCHOR, capture_report
+from quill.ui.radio import local_media_follow as follow
 from quill.ui.radio import local_media_playback as playback
 from quill.ui.radio import local_media_ui as ui
 from quill.ui.radio import local_media_window_menu as menus
@@ -197,7 +199,7 @@ class LocalMediaWindow(LocalMediaCommandsMixin):
 
         self._columns = columns_for("radio", SURFACE)
         build_columns(self._items, self._columns)
-        self._row_text = []
+        self._row_text, self._item_ids = [], []
 
     def _rebuild_columns(self) -> None:
         """After Choose Columns: the new layout, now, in this open window."""
@@ -241,6 +243,7 @@ class LocalMediaWindow(LocalMediaCommandsMixin):
         select_item: int = 0,
         select_rows: list[int] | None = None,
         focus: str = "",
+        say_gone: bool = False,
     ) -> None:
         """Rebuild both lists from the library, keeping the cursor by identity."""
         lib = ui.library(self._host)
@@ -250,26 +253,29 @@ class LocalMediaWindow(LocalMediaCommandsMixin):
             wanted = lib.playlists[0].id
         labels = [f"{p.name}, {_summary(p)}" for p in lib.playlists]
         ids = [p.id for p in lib.playlists]
-        if labels != [self._playlists.GetString(i) for i in range(self._playlists.GetCount())]:
-            self._playlists.Set(labels)
-        self._playlist_ids = ids
-        if wanted in ids:
-            self._playlists.SetSelection(ids.index(wanted))
+        follow.fill_playlists(self, labels, ids, wanted)
         playlist = self._playlist()
         same = playlist is not None and playlist.id == self._shown_id
         keep = same and select_rows is None and not select_item
         keep_ids = self._selected_ids() if keep else []
+        # The reader's row and its line, through a refill they did not ask for (FUX-06).
+        anchor = capture_report(self._items) if keep else NO_ANCHOR
+        titles = getattr(self, "_item_titles", [])
+        here = 0 <= anchor.index < min(len(self._item_ids), len(titles))
+        focused = (self._item_ids[anchor.index], titles[anchor.index]) if here else None
         if not same:
-            self._row_text = []
+            self._row_text, self._item_ids = [], []
             self._items.DeleteAllItems()
-        self._fill_items(playlist)
+        self._fill_items(playlist, pin=focused[0] if focused else None)
         self._shown_id = playlist.id if playlist is not None else ""
         if playlist is not None:
             if select_item:
                 select_rows = [playlist.index_of(select_item)]
-            elif select_rows is None:
-                select_rows = [playlist.index_of(i) for i in keep_ids]
-            self._select_rows([row for row in select_rows if row >= 0])
+            if select_rows is None:
+                rows = [playlist.index_of(i) for i in keep_ids]
+                follow.keep_reader(self, anchor, focused, rows, say_gone=say_gone)
+            else:
+                self._select_rows([row for row in select_rows if row >= 0])
         self._show_state(lib.total_items() == 0, bool(lib.playlists), focus)
         self._update_status(playlist)
         self._sync_checks(playlist)
@@ -277,7 +283,7 @@ class LocalMediaWindow(LocalMediaCommandsMixin):
     def _selected_ids(self) -> list[int]:
         return [self._item_ids[row] for row in self._rows() if row < len(self._item_ids)]
 
-    def _fill_items(self, playlist: Playlist | None) -> None:
+    def _fill_items(self, playlist: Playlist | None, *, pin: int | None = None) -> None:
         """Make the items list match *playlist*, touching only rows that changed."""
         items = playlist.items if playlist is not None else []
         name = playlist.name if playlist is not None else ""
@@ -298,19 +304,15 @@ class LocalMediaWindow(LocalMediaCommandsMixin):
             )
             for item in items
         ]
-        from quill.ui.media.list_columns_view import fill_row, set_row
-
-        old = len(self._row_text)
-        for row in range(min(old, len(wanted))):
-            if wanted[row] != self._row_text[row]:
-                set_row(self._items, row, self._columns, wanted[row])
-        for row in range(old, len(wanted)):
-            fill_row(self._items, row, self._columns, wanted[row])
-        for row in range(old - 1, len(wanted) - 1, -1):
-            self._items.DeleteItem(row)
+        follow.change_item_rows(self, list(getattr(self, "_item_ids", [])), items, wanted, pin)
         self._row_text = wanted
         self._item_ids = [item.id for item in items]
+        self._item_titles = [item.display_title for item in items]
         self._marker = marker
+
+    def library_changed(self) -> None:
+        """Somebody else changed the library (a scan, a tag read, a watched folder)."""
+        self.reload(say_gone=True)
 
     def _select_rows(self, rows: list[int]) -> None:
         for row in self._rows():

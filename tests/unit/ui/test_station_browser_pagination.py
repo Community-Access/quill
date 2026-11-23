@@ -124,7 +124,6 @@ def test_more_appends_next_page_before_blended_results() -> None:
     radio = [_station(f"r{i}") for i in range(_SEARCH_LIMIT)]
     extras = [_station("TuneIn News")]
     dialog._on_search_done((radio, extras), None)
-    first_new = len(dialog._search_results)
 
     page2 = [_station(f"r{i}") for i in range(_SEARCH_LIMIT, _SEARCH_LIMIT + 40)]
     dialog._on_more_done(page2, None)
@@ -136,8 +135,9 @@ def test_more_appends_next_page_before_blended_results() -> None:
     # A 40-row page is short of the cap, so there is no further page.
     assert dialog._search_more_available is False
     assert dialog._more_btn.enabled is False
-    # Focus lands on the first newly added station.
-    assert dialog._results.selected == first_new
+    # Focus lands on the first newly added station -- by identity, since the
+    # merge puts the blended rows after the new page (FUX-06).
+    assert dialog._results_keep == page2[0].stream_url
     assert "Added 40 more" in dialog._announced[-1]
 
 

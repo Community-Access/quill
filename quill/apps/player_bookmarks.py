@@ -112,8 +112,24 @@ class PlayerBookmarksMixin:
         return marks[index]
 
     def _refresh_bookmarks(self) -> None:
-        self._bookmarks_list.Clear()
-        for mark in self._bookmarks.list(self._book_key) if self._book_key else []:
+        """Row by row, keeping the reader on their bookmark (FUX-06).
+
+        Clearing the list lost the selection after every Add, Edit and Remove;
+        now an edited bookmark stays selected, a new one leaves the reader
+        where they were, and Remove lands on the bookmark after it.
+        """
+        from quill.ui.list_stay_still import refill_listbox
+
+        marks = self._bookmarks.list(self._book_key) if self._book_key else []
+        labels = []
+        for mark in marks:
             when = format_spoken(mark.position_ms)
             note = mark.note or mark.label
-            self._bookmarks_list.Append(f"{note} ({when})" if note else when)
+            labels.append(f"{note} ({when})" if note else when)
+        old = list(getattr(self, "_bookmark_keys", []))
+        index = self._bookmarks_list.GetSelection()
+        wanted = old[index] if 0 <= index < len(old) else None
+        # Scoped to the book, and numbered when two share a millisecond.
+        keys = [f"{self._book_key}:{mark.position_ms}" for mark in marks]
+        self._bookmark_keys = [f"{key}:{keys[:n].count(key)}" for n, key in enumerate(keys)]
+        refill_listbox(self._bookmarks_list, old, self._bookmark_keys, labels, wanted)

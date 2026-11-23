@@ -14,13 +14,16 @@ the no-op fast path and the fill all read the same answer.
 
 from __future__ import annotations
 
+from quill.core.list_follow import change_rows, gone_sentence, land
 from quill.core.media.list_columns import ColumnDef
 from quill.core.radio.recordings_index import (
     STATUS_RECORDING,
+    STATUS_SCHEDULED,
     RecordingEntry,
     format_elapsed,
 )
 from quill.core.radio.row_marks import marked_label
+from quill.ui.list_stay_still import RowAnchor, restore_report, say_when_settled
 from quill.ui.media.list_columns_view import build_columns, columns_for, set_row
 
 #: This list's id in Radio's column catalogue. Defined here rather than in the
@@ -70,3 +73,54 @@ class RecordingsRowViewMixin:
     def _set_row(self, row: int, entry: RecordingEntry) -> None:
         """Update row *row* in place to match *entry* (R1 -- no rebuild)."""
         set_row(self._list, row, self._columns, self._cells(entry))
+
+    def _change_rows(self, snapshot: list[RecordingEntry], pin: str | None) -> None:
+        """Make the rows match *snapshot*, inserting and deleting only what changed."""
+
+        def _insert(row: int, new: int) -> None:
+            self._list.InsertItem(row, "")
+            self._set_row(row, snapshot[new])
+
+        change_rows(
+            [entry.id for entry in self._entries],
+            [entry.id for entry in snapshot],
+            delete=self._list.DeleteItem,
+            insert=_insert,
+            update=lambda row, new: self._set_row(row, snapshot[new]),
+            pin=pin,
+        )
+
+    def _keep_reader(
+        self,
+        anchor: RowAnchor,
+        selected: RecordingEntry | None,
+        others: list[str],
+        *,
+        say_gone: bool,
+    ) -> None:
+        """Put the reader back on *selected* after a refresh (FUX-06).
+
+        By identity, on the same line of the screen, without taking keyboard
+        focus. A schedule that fires leaves the list as a Scheduled row and comes
+        back as a Recording row of the same station, so the reader follows it
+        there and nothing is said. Anything else that left -- a file removed in
+        Explorer, a schedule deleted in another window -- lands the reader on the
+        row that moved into its place, and the timer's refresh says so once.
+        """
+        if selected is None:
+            return
+        entries = list(self._entries)
+        keys = [entry.id for entry in entries]
+        wanted = selected.id
+        if wanted not in keys and selected.status == STATUS_SCHEDULED:
+            wanted = next(
+                (e.id for e in entries if e.status == STATUS_RECORDING and e.name == selected.name),
+                wanted,
+            )
+        landing = land(keys, wanted, anchor.index)
+        if landing.index < 0:
+            return
+        also = [keys.index(key) for key in others if key in keys]
+        restore_report(self._wx, self._list, anchor, landing.index, also=also)
+        if not landing.kept and say_gone:
+            say_when_settled(self._wx, self._list, self._announce, gone_sentence(selected.name))

@@ -20,57 +20,11 @@ from quill.core.radio.recording import RecordingSettings
 from quill.core.radio.recordings_index import RecordingEntry
 from quill.ui.radio.recordings_manager_dialog import RecordingsManagerDialog
 from quill.ui.radio.recordings_row_view import SURFACE
+from tests.unit.ui.report_list_fake import WX, FakeReportList
 
 
-class _FakeList:
+class _FakeList(FakeReportList):
     """Records ListCtrl mutations; rows are [name, status, size, when]."""
-
-    def __init__(self) -> None:
-        self.rows: list[list[str]] = []
-        self._selected = -1
-        self.set_calls: list[tuple[int, int, str]] = []
-        self.inserts: list[tuple[int, str]] = []
-        self.deletes: list[int] = []
-        self.selects: list[int] = []
-        self.focuses: list[int] = []
-        self.ensure_visible: list[int] = []
-        self.delete_all = 0
-
-    def GetItemCount(self) -> int:
-        return len(self.rows)
-
-    def GetFirstSelected(self) -> int:
-        return self._selected
-
-    def GetTopItem(self) -> int:
-        return 0
-
-    def SetItem(self, row: int, col: int, val: str) -> None:
-        self.set_calls.append((row, col, val))
-        while len(self.rows) <= row:
-            self.rows.append(["", "", "", ""])
-        self.rows[row][col] = val
-
-    def InsertItem(self, row: int, name: str) -> None:
-        self.inserts.append((row, name))
-        self.rows.insert(row, [name, "", "", ""])
-
-    def DeleteItem(self, row: int) -> None:
-        self.deletes.append(row)
-        del self.rows[row]
-
-    def DeleteAllItems(self) -> None:  # pragma: no cover - must never be called
-        self.delete_all += 1
-
-    def Select(self, row: int) -> None:
-        self.selects.append(row)
-        self._selected = row
-
-    def Focus(self, row: int) -> None:
-        self.focuses.append(row)
-
-    def EnsureVisible(self, row: int) -> None:
-        self.ensure_visible.append(row)
 
 
 def _entry(name: str, status: str, path: Path) -> RecordingEntry:
@@ -88,7 +42,9 @@ def _dialog(tmp_path: Path) -> tuple[RecordingsManagerDialog, _FakeList, SimpleN
     )
     scheduler = SimpleNamespace(entries=[])
     dlg = RecordingsManagerDialog.__new__(RecordingsManagerDialog)
-    dlg._wx = SimpleNamespace()  # _refresh keeps a reference but never calls it
+    dlg._wx = WX
+    dlg._said: list[str] = []
+    dlg._announce = dlg._said.append
     dlg._list = fake_list
     dlg._recorder = recorder
     dlg._settings = RecordingSettings(destination_root=str(tmp_path))
@@ -164,9 +120,10 @@ def test_selection_follows_identity_not_position(tmp_path: Path) -> None:
     recorder.current_stream_url = "https://live"
     recorder.current_started_at = datetime.now()
     dlg._refresh()
-    # The old file's selection followed it to row 1 (its identity), not row 0.
-    assert 1 in fake_list.selects
-    assert 1 in fake_list.focuses
+    # The old file's row moved down to row 1 still selected and focused -- the
+    # same native row, inserted above, not re-selected -- and row 0 is not.
+    assert fake_list.selected_rows() == [1]
+    assert fake_list.focused_row() == 1
     assert 0 not in fake_list.selects
 
 
@@ -208,7 +165,7 @@ def test_per_row_stop_and_stop_all_target_jobs(tmp_path: Path) -> None:
     recording_rows = [e for e in dlg._entries if e.status == "Recording"]
     assert [e.job_id for e in recording_rows] == ["ja", "jb"]
     # Select the second Recording row and Stop it -> stops job jb only.
-    fake_list._selected = 1
+    fake_list.Select(1)
     dlg._on_stop_recording()
     assert stopped == ["jb"]
     # Stop All stops every recording.

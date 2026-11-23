@@ -302,6 +302,8 @@ Bookmarks mark a moment you want to return to, with an optional label and note.
   List**) to land in the Bookmarks list, arrow to one, press **Enter**.
   **Ctrl+Alt+P** (**Navigation > Go to Player Controls**) takes you back.
 - **Remove** — select it and press the **Remove Bookmark** button below the list.
+  Your cursor moves to the next bookmark. Adding or editing a bookmark leaves
+  your cursor where it was.
 - **Send a bookmark into your document** — **Ctrl+Shift+C** copies a paste-ready line
   (`[1:23:45] your note — Title`) to the clipboard; paste it into your QUILL document
   or a Sticky Note. (A direct insert into a running QUILL is a future refinement.)
