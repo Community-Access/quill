@@ -124,11 +124,11 @@ MOBI. It does not take web pages. A link must point straight at a file.
 | Word | Reading and editing. Can be large print | Opens it in a new QUILL Lite window |
 | Tagged PDF | A PDF screen readers can read. Can be large print | Saves it, and says where |
 | EPUB | Ebook readers | Saves it, and says where |
-| Kindle (MOBI) | Older Kindle devices and apps | Saves it, and says where |
+| Kindle (MOBI) | Older Kindle devices, and Calibre | Saves it, and says where |
 | DAISY (text and audio) | Talking-book players, and Quill Media Player with chapters | Opens it in Quill Media Player |
 | MP3 audio | Any audio player | Opens it in Quill Media Player |
 | Braille (BRF) | Braille displays and embossers | Opens it as text in a new QUILL Lite window |
-| Web page for offline reading | Reading without the internet, as a zip | Saves it, and says where |
+| Web page for offline reading | The accessible HTML with its pictures inside, as one web page (or a zip) | Saves it, and says where. Next Steps opens it in your browser |
 
 Results go in **Documents\Scribe for Documents**, in a folder for each
 document. QUILL Lite never writes over a file: it adds "(2)" instead.
@@ -186,8 +186,10 @@ Tab order:
 5. **Braille**, when Braille (BRF) is checked: Braille table, Cells per line
    (20 to 42), Split into pages, and Lines per page (20 to 30).
 6. **Print**, when Word or Tagged PDF is checked: Large print.
-7. **Pictures and maths**: Describe the pictures, Mathematics as MathML
-   (beta), and Email me when it is finished (Scribe's own email).
+7. **Pictures and maths**: Describe the pictures, Mathematics (beta), and
+   Email me when it is finished (Scribe's own email). Mathematics does not
+   make MathML today: equations come as pictures whose alt text reads the
+   equation in words. The email, one for each format, starts unchecked unless you checked it last time.
 8. **Also save as my Scribe account defaults**, off every time.
 9. **Password for** the file, only when a PDF needs one, with **Show
    password**.

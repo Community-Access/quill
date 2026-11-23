@@ -202,6 +202,8 @@ PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
         "This is the help window itself: the purpose of the window you were "
         "in, then the control you were on. Escape returns you to it.",
     ),
+    # "Chapter Workbench: Lecture Notes" -- the title names the book it holds.
+    ("Chapter Workbench:", PURPOSES["Chapter Workbench"]),
 )
 
 #: The honest fallback for a surface the catalogue does not know. The gate

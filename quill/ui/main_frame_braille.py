@@ -475,7 +475,7 @@ class BrailleCommandsMixin:
         if meta.get("source_kind") != "brf":
             return f"Opened {name}"
 
-        from quill.core.brf_progress import format_open_announcement, restore_offset
+        from quill.core.brf_progress import format_open_announcement, restore_offset, unshown_count
         from quill.core.brf_sidecar import BRFSidecarError, read_sidecar
 
         try:
@@ -497,14 +497,14 @@ class BrailleCommandsMixin:
         if resolved is not None:
             _resolver, pos = resolved
             page_count, braille_page, line, cell = pos.page_count, pos.page, pos.line, pos.cell
-        print_page = sidecar.position.print_page if (offset is not None and sidecar) else ""
         return format_open_announcement(
             page_count=page_count,
             restored=offset is not None,
             braille_page=braille_page,
             line=line,
             cell=cell,
-            print_page=print_page,
+            print_page=sidecar.position.print_page if (offset is not None and sidecar) else "",
+            unshown=unshown_count(meta),
         )
 
     def _announce_not_braille(self) -> None:

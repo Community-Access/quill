@@ -27,10 +27,14 @@ from typing import Any
 
 from quill.ui.scribe_app_host import AppScribeHost, AppScribeMixin, elsewhere_steps
 
-__all__ = ["StudioScribeHost", "StudioScribeMixin"]
+__all__ = ["OPENS_SENTENCE", "StudioScribeHost", "StudioScribeMixin"]
 
 _TITLE = "QUILL Studio"
 NARRATION = "narration"
+#: Open Result's sentence. Never empty: an empty one would make Open Result
+#: try the next format. The Workbench opens at once after it, and its title
+#: names the book, so nothing is lost if the window cuts the sentence short.
+OPENS_SENTENCE = "Opening the Chapter Workbench"
 
 
 def _ncx_for(job: Any) -> Path | None:
@@ -97,16 +101,23 @@ class StudioScribeMixin(AppScribeMixin):
             controller.convert_files(paths, app_formats=["mp3", "daisy"], open_as=NARRATION)
 
     def _scribe_open_workbench(self, job: Any, path: Path) -> str:
-        """Open the narration in the Chapter Workbench, after the sentence."""
+        """Open the narration in the Chapter Workbench, straight away. A second
+        request while one is on its way, or while the Workbench is open, is ignored."""
         import wx
 
+        if self.__dict__.get("_scribe_workbench_busy"):
+            return "The Chapter Workbench is already opening"
         if job is not None and job.open_as == NARRATION and job.app != _TITLE:
             narration_markers(job)  # another app finished it: mark it now (idempotent)
         back = wx.GetActiveWindow()
         focus = wx.Window.FindFocus()
+        self.__dict__["_scribe_workbench_busy"] = True
 
         def open_it() -> None:
-            self.open_book(path)  # type: ignore[attr-defined]
+            try:
+                self.open_book(path)  # type: ignore[attr-defined]  # modal: returns on close
+            finally:
+                self.__dict__["_scribe_workbench_busy"] = False
             for window in (back, focus):
                 try:
                     if window and window is not getattr(self, "frame", None):
@@ -114,8 +125,5 @@ class StudioScribeMixin(AppScribeMixin):
                 except RuntimeError:  # it closed while the Workbench was open
                     pass
 
-        from quill.stability.wx_dispatch import call_later_safely
-
-        # After the sentence, so it is not cut off.
-        call_later_safely(400, open_it, name="Open the narration in the Chapter Workbench")
-        return "The narration opens in the Chapter Workbench"
+        wx.CallAfter(open_it)  # just after the short sentence is queued
+        return OPENS_SENTENCE

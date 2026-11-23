@@ -68,3 +68,12 @@ def test_the_generic_purpose_is_the_floor_not_a_ceiling() -> None:
     assert converter_surface_help.purpose_for_title("Some Quillin Window") == generic
     assert converter_surface_help.purpose_for_title("Quill Converter") != generic
     assert converter_surface_help.purpose_for_title("Convert from URL").startswith("Paste a web")
+
+
+def test_the_chapter_workbench_titled_with_its_book_still_has_its_purpose() -> None:
+    from quill.core import converter_surface_help as h
+
+    assert h.is_known_title("Chapter Workbench: Lecture Notes")
+    assert (
+        h.purpose_for_title("Chapter Workbench: Lecture Notes") == h.PURPOSES["Chapter Workbench"]
+    )

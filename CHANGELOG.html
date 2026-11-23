@@ -245,6 +245,30 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="shared-runtime-the-practice-sites-wordpress-playground-ships-again-2026-11-23">Shared
+runtime: the Practice Site’s WordPress Playground ships again
+(2026-11-23)</h3>
+<ul>
+<li><strong>The cause.</strong> The WordPress Playground tool behind the
+Practice Site (<code>tools/wp-playground-cli</code>) joined the runtime
+build on 2026-11-15, but a runtime built before then has no copy, so the
+runtime-inventory gate failed on it. Restaging the tools also failed at
+random, at a different folder each time, with “The directory is not
+empty”.</li>
+<li><strong>Restage without a rebuild.</strong>
+<code>standalone/runtime/stage_runtime_tools.ps1</code> copies all six
+runtime tools from the pinned <code>build/deps</code> cache into an
+existing runtime, then checks the inventory.
+<code>build_runtime.ps1</code> now calls it, so the tool list lives in
+one place, and a test keeps that list equal to the inventory’s.</li>
+<li><strong>A clear next step.</strong> When a tool is missing, the
+inventory gate now names the restage script and the full rebuild, rather
+than only pip advice.</li>
+<li><strong>Removing an old copy works.</strong> Staging retries the
+removal with <code>rd /s /q</code> when PowerShell leaves folders
+behind.</li>
+</ul>
+<h3
 id="quill-radio-find-streams-remembers-and-reads-more-sites-2026-11-22">Quill
 Radio: Find Streams remembers, and reads more sites (2026-11-22)</h3>
 <p>Ideas from Andre Louis’s StreamSift (<a
@@ -365,6 +389,45 @@ read; a page that trickles in is cut off at an overall deadline. A
 configured proxy is still used. One pattern that could take minutes on a
 hostile page now has bounded repeats, and a test runs every page-reading
 pattern over 2 MB of hostile text.</li>
+</ul>
+<h3
+id="scribe-for-documents-tested-on-real-scribe-output-2026-11-22">Scribe
+for Documents, tested on real Scribe output (2026-11-22)</h3>
+<p>Pneuma’s test corpus (four documents, every format, two variants) now
+runs through every app’s Scribe commands in the tests. What it turned up
+is fixed:</p>
+<ul>
+<li><strong>The offline web page is saved as a web page.</strong> Scribe
+now sends it as one HTML file with its pictures inside, and QUILL had
+saved it as a <code>.zip</code>. The name now follows what arrived:
+<code>Notes-offline.html</code>, or <code>Notes-offline.zip</code> for a
+zip.</li>
+<li><strong>Pictures.</strong> The accessible HTML comes without its
+pictures. When you also ask for the offline web page, the result
+sentence says so and Next Steps opens it in your browser; when you do
+not, the sentence says how to get it.</li>
+<li><strong>Your names, not Scribe’s.</strong> Results, their folder and
+every sentence are named after your file, never the title Scribe reads
+from inside it, which for a scan can start with a library stamp.
+Beacon’s Scribe places too.</li>
+<li><strong>Braille.</strong> A BRF’s tabs and stray accented bytes are
+kept and flagged: the open sentence says how many characters are not
+braille cells, and Validate BRF Layout lists them. A 32-cell BRF opens
+as 32 cells a line.</li>
+<li><strong>EPUB</strong> with a language of “C” opens, with the
+language its pages give.</li>
+<li><strong>Mathematics (beta)</strong>, as the check box is now called,
+says what it does today: equations come as pictures whose alt text reads
+them, not MathML.</li>
+<li><strong>No email per format.</strong> Scribe’s own “conversion is
+complete” email starts unchecked even when your Scribe account sends it
+by default, and a watch folder never turns it on.</li>
+<li><strong>Each stage is said once.</strong> “Notes.pdf, waiting in
+Scribe’s queue.” is not repeated for every format. Studio opens the
+Chapter Workbench straight away when you choose it.</li>
+<li><strong>Kindle (MOBI).</strong> The result sentence says how to read
+the book: copy it to an older Kindle over USB, or open it in Calibre’s
+free e-book viewer.</li>
 </ul>
 <h3
 id="quill-radio-find-streams-reads-streaming-servers-global-player-and-iprd-2026-11-22">Quill

@@ -41,7 +41,10 @@ FORMATS: tuple[Format, ...] = (
     Format("daisy", "DAISY (text and audio)", ".zip", audio=True),
     Format("mp3", "MP3 audio", ".mp3", audio=True),
     Format("brf", "Braille (BRF)", ".brf"),
-    Format("offline_html", "Web page for offline reading", ".zip"),
+    # Scribe sends the offline page as one HTML file with its pictures inside
+    # (Pneuma's corpus, 2026-11-21), or as a zip: the downloaded bytes decide
+    # (:func:`extension_for_bytes`).
+    Format("offline_html", "Web page for offline reading", ".html"),
 )
 FORMAT_IDS: tuple[str, ...] = tuple(item.id for item in FORMATS)
 PREVIEW_FORMAT = "html_stream"
@@ -69,6 +72,28 @@ def format_by_id(format_id: str) -> Format | None:
 def format_label(format_id: str) -> str:
     found = _BY_ID.get(format_id)
     return found.label if found else format_id
+
+
+#: The first bytes of a zip file (a local file header).
+ZIP_MAGIC = b"PK\x03\x04"
+#: Formats Scribe may send either as one file or as a zip of files.
+_ZIP_OR_FILE = frozenset({"offline_html"})
+
+
+def extension_for_bytes(format_id: str, head: bytes, fallback: str = "") -> str:
+    """The file extension for a downloaded output, from its first bytes.
+
+    The offline web page comes as a single HTML file or as a zip, and the
+    extension follows what arrived (``.zip`` for zip bytes, ``.html``
+    otherwise), so the saved file opens. Every other format has its own
+    extension; *fallback* is for a format this version does not know.
+    """
+    found = _BY_ID.get(format_id)
+    if format_id in _ZIP_OR_FILE:
+        return ".zip" if head.startswith(ZIP_MAGIC) else ".html"
+    if found is not None:
+        return found.extension
+    return fallback
 
 
 def valid_formats(format_ids: Any) -> list[str]:
@@ -469,11 +494,13 @@ __all__ = [
     "STAGES",
     "TTS_GENDERS",
     "TTS_RATES",
+    "ZIP_MAGIC",
     "Account",
     "DocumentSummary",
     "Format",
     "Output",
     "ScribeSettings",
+    "extension_for_bytes",
     "format_by_id",
     "format_label",
     "nearest_rate",

@@ -186,15 +186,19 @@ class SettingsGroups:
         )
         self.math = self._check(
             box,
-            "&Mathematics as MathML (beta)",
+            "&Mathematics (beta)",
             settings.math,
-            "Writes mathematics as MathML, which screen readers can read. Scribe calls it beta.",
+            # What it does today (F7, Pneuma's corpus): no MathML in any format yet.
+            "Scribe's beta setting for mathematics. Today it makes no MathML, on or off: "
+            "an equation comes as a picture whose alt text reads it in words.",
         )
         self.notify = self._check(
             box,
             "Email me when it is finis&hed (Scribe's own email)",
             settings.notify_when_complete,
-            "Asks Scribe to send its own notification when the conversion finishes.",
+            "Asks Scribe to email you when it finishes, one email for each format. It "
+            "starts unchecked unless you checked it last time, because "
+            f"{app_name} already tells you when each result is ready.",
         )
 
         self.touched = False
@@ -494,6 +498,10 @@ class SettingsGroups:
             self.sample.SetLabel("Play &Sample")
 
     # -------------------------------------------------------------- result
+
+    def email_changed(self) -> bool:
+        """True when the person changed Scribe's email from where it started."""
+        return bool(self.notify.GetValue()) != bool(self._settings.notify_when_complete)
 
     def settings(self) -> ScribeSettings:
         language = self._value(self.language)

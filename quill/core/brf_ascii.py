@@ -62,6 +62,61 @@ def find_non_brf_ascii_offsets(text: str) -> list[int]:
     return [index for index, ch in enumerate(text) if not is_brf_ascii_byte(ord(ch))]
 
 
+def find_tab_offsets(text: str) -> list[int]:
+    """The character offsets of every tab in ``text``.
+
+    A tab is allowed in a BRF stream but is not a braille cell: an embosser
+    or display shows it as blank space of no fixed width. Scribe's BRF can
+    carry one over from the source (Pneuma's corpus, 2026-11-21), so the
+    braille view flags it rather than letting it pass unseen; the byte itself
+    is kept (BR-012).
+    """
+    return [index for index, ch in enumerate(text) if ch == BRF_HORIZONTAL_TAB]
+
+
+def count_unshown(text: str) -> int:
+    """How many characters of ``text`` are not braille cells, counted exactly as
+    Validate BRF Layout lists them: tabs, controls and DEL, and anything above
+    ASCII, line by line with the CR of each line ending set aside. Unicode
+    braille (U+2800 to U+28FF) is its own finding there, so it is not counted."""
+    count = 0
+    for page in text.split(BRF_FORM_FEED):
+        for line in page.split("\n"):
+            for char in line.rstrip("\r"):
+                code = ord(char)
+                if 0x2800 <= code <= 0x28FF:
+                    continue
+                if code < 0x20 or code >= 0x7F:  # the tab included
+                    count += 1
+    return count
+
+
+#: Cell widths a page-numbered BRF can be laid out to.
+_CELLS_RANGE = (20, 42)
+_PAGE_NUMBER_LINE = re.compile(r"\s#[a-jA-J]+$")
+
+
+def detect_cell_width(text: str, default: int = 40) -> int:
+    """The line length a form-fed, page-numbered BRF was laid out to.
+
+    A braille page number sits at the right margin of a page's last line, so
+    that line is exactly the cell width long. When at least two pages agree
+    on it -- Scribe's 32-cell large-print braille, say -- that is the width;
+    otherwise *default*, the usual 40.
+    """
+    widths: dict[int, int] = {}
+    for page in text.split("\x0c"):
+        lines = [line for line in re.split(r"\r\n|\r|\n", page) if line.strip()]
+        if lines and _PAGE_NUMBER_LINE.search(lines[-1]):
+            width = len(lines[-1])
+            if _CELLS_RANGE[0] <= width <= _CELLS_RANGE[1]:
+                widths[width] = widths.get(width, 0) + 1
+    if not widths:
+        return default
+    width, count = max(widths.items(), key=lambda item: item[1])
+    return width if count >= 2 else default
+
+
 def looks_like_braille(text: str) -> bool:
     """Heuristically decide whether ``text`` is ASCII-braille (NABCC/BRF) content.
 

@@ -311,6 +311,8 @@ for _title in ("QUILL Studio", "QUILL Studio (Safe Mode)", "QUILL Studio Prefere
 
 #: Purposes for windows whose titles carry live data, matched by prefix.
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
+    # "Chapter Workbench: Lecture Notes" -- the title names the book it holds.
+    ("Chapter Workbench:", PURPOSES["Chapter Workbench"]),
     (
         "Demonstration",
         "The demonstration was saved and checked independently. Verified means every "

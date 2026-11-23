@@ -1338,6 +1338,8 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 
 **Turn On Scribe for Documents.** Scribe for Documents is off in QUILL Lite. Yes turns it on and opens the Convert dialog, which still says what will be sent before anything goes. You can turn it off again in Tools, Customize Features.
 
+**Windows titled "Chapter Workbench:...".** One audiobook or any recording -- a lecture, a meeting -- open for surgery: listen with the chapter-aware player, rename chapters, split at the playhead, move a start, merge, or restore the original list. Book tags are editable below the player, and chapter lists import and export in Audacity, CUE, timestamp, JSON, and CSV forms. An MP3 saves its edits in place without touching the audio; an M4B saves as a new file, losslessly.
+
 **Windows titled "Copy Sections...".** Mark pieces of the file you are listening to and collect them into one new file. Mark a start and an end at the playhead, preview exactly what you marked, add it to the list, and keep going -- then save the collection as a new file or onto an existing one. The original recording is never changed.
 
 **Windows titled "Demonstration...".** The demonstration was saved and checked independently. Verified means every check passed; Needs review means it plays but something may be spoiled; Failed means a stream is missing or it does not decode. Play it, open its folder, copy its path or inspect a frame.
@@ -2115,6 +2117,8 @@ Control coverage: 60 audited sites (60 helped).
 **Turn On Scribe for Documents.** Scribe for Documents is off in QUILL Lite. Yes turns it on and opens the Convert dialog, which still says what will be sent before anything goes. You can turn it off again in Tools, Customize Features.
 
 **Will This Play on My Device?.** First, type the device you mean, such as an iPhone, a car stereo or an Echo, or leave it empty for the usual ones; Cancel sends nothing. Then the AI's answer, from the queued files' details only: for each kind of file, yes or no and why, and what to choose in Convert to when it will not play. Copy puts the answer on the clipboard.
+
+**Windows titled "Chapter Workbench:...".** Edit the chapters of an MP3, M4B or M4A: hear it, then add, rename, move, split and merge chapters at the playhead, find them at the pauses, or import and export a chapter list. Save writes them into the file itself, and every later conversion carries them.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
 

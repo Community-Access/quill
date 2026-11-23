@@ -148,7 +148,10 @@ def read_open_document(
         # (brf_page_map, braille_position, braille_status) can consume a
         # single, typed snapshot.
         from quill.core.brf_ascii import (
+            count_unshown,
+            detect_cell_width,
             find_non_brf_ascii_offsets,
+            find_tab_offsets,
             strip_bom,
         )
         from quill.core.brf_document import BRFDocument
@@ -156,11 +159,13 @@ def read_open_document(
         raw_bytes = selected_path.read_bytes()
         text, had_bom = strip_bom(raw_bytes)
         non_ascii = find_non_brf_ascii_offsets(text)
+        tabs = find_tab_offsets(text)
         brf_doc = BRFDocument.from_text_and_suffix(
             text,
             suffix.lstrip("."),
             had_bom=had_bom,
             non_ascii_offsets=non_ascii,
+            cell_width=detect_cell_width(text),
         )
         loaded = Document(
             text=text,
@@ -176,6 +181,9 @@ def read_open_document(
                 "brf_had_bom": had_bom,
                 "brf_non_ascii_offsets": non_ascii,
                 "brf_non_ascii_count": len(non_ascii),
+                "brf_tab_offsets": tabs,
+                "brf_tab_count": len(tabs),
+                "brf_unshown_count": count_unshown(text),
                 "brf_form_feed_count": brf_doc.form_feed_count,
                 "brf_is_mixed_line_endings": brf_doc.is_mixed_line_endings,
                 "brf_profile": brf_doc.profile,

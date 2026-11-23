@@ -121,6 +121,35 @@ written in QUILL's own code (`quill/core/net_public.py`).
   off at an overall deadline. A configured proxy is still used. One pattern
   that could take minutes on a hostile page now has bounded repeats, and a
   test runs every page-reading pattern over 2 MB of hostile text.
+### Scribe for Documents, tested on real Scribe output (2026-11-22)
+
+Pneuma's test corpus (four documents, every format, two variants) now runs
+through every app's Scribe commands in the tests. What it turned up is fixed:
+
+- **The offline web page is saved as a web page.** Scribe now sends it as one HTML file with
+  its pictures inside, and QUILL had saved it as a `.zip`. The name now
+  follows what arrived: `Notes-offline.html`, or `Notes-offline.zip` for a zip.
+- **Pictures.** The accessible HTML comes without its pictures. When you
+  also ask for the offline web page, the result sentence says so and Next
+  Steps opens it in your browser; when you do not, the sentence says how to
+  get it.
+- **Your names, not Scribe's.** Results, their folder and every sentence are
+  named after your file, never the title Scribe reads from inside it, which
+  for a scan can start with a library stamp. Beacon's Scribe places too.
+- **Braille.** A BRF's tabs and stray accented bytes are kept and flagged:
+  the open sentence says how many characters are not braille cells, and
+  Validate BRF Layout lists them. A 32-cell BRF opens as 32 cells a line.
+- **EPUB** with a language of "C" opens, with the language its pages give.
+- **Mathematics (beta)**, as the check box is now called, says what it does
+  today: equations come as pictures whose alt text reads them, not MathML.
+- **No email per format.** Scribe's own "conversion is complete" email starts
+  unchecked even when your Scribe account sends it by default, and a watch
+  folder never turns it on.
+- **Each stage is said once.** "Notes.pdf, waiting in Scribe's queue." is not
+  repeated for every format. Studio opens the Chapter Workbench straight away
+  when you choose it.
+- **Kindle (MOBI).** The result sentence says how to read the book: copy it to
+  an older Kindle over USB, or open it in Calibre's free e-book viewer.
 
 ### Quill Radio: Find Streams reads streaming servers, Global Player and IPRD (2026-11-22)
 
