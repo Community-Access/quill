@@ -137,6 +137,10 @@ class PageScanResult:
     #: something that is not audio (a web page, a 404) and are not listed.
     checked: bool = False
     left_out: int = 0
+    #: Links the page named on this computer or the listener's own network,
+    #: which Find Streams does not read (quill.core.net_public): left out too,
+    #: but counted apart, because "not audio" would be untrue of them.
+    not_public: int = 0
     #: The most links this scan would check (16, or 48 with a server listing
     #: or the soundmap), and how many of the listed links QUILL never
     #: contacted because of that limit or the 20-second deadline.
@@ -348,10 +352,10 @@ def scan_page_for_streams(
             continue
         seen.setdefault(candidate.url, candidate)
     kept = list(seen.values())
-    left_out = 0
+    left_out = not_public = 0
     limit = _LISTING_CHECKS if listed else live_check.MAX_CHECKS
     if check_live and kept:
-        kept, left_out = _apply_live_check(kept, limit)
+        kept, left_out, not_public = _apply_live_check(kept, limit)
     kept = _prefer_https(kept)
     # #5 observability: which links were kept, and why -- the argv-style
     # redaction masks any token a candidate URL might carry.
@@ -370,6 +374,7 @@ def scan_page_for_streams(
         candidates=kept,
         checked=check_live,
         left_out=left_out,
+        not_public=not_public,
         check_limit=limit if check_live else 0,
         skipped=sum(1 for c in kept if c.check_note in _NEVER_ASKED),
     )
@@ -377,15 +382,22 @@ def scan_page_for_streams(
 
 def _apply_live_check(
     candidates: list[PageStreamCandidate], limit: int = live_check.MAX_CHECKS
-) -> tuple[list[PageStreamCandidate], int]:
-    """Check each candidate; leave out what is not audio; live ones first."""
+) -> tuple[list[PageStreamCandidate], int, int]:
+    """Check each candidate; leave out what is not audio; live ones first.
+
+    Returns the kept rows, how many were not audio, and how many were on this
+    computer or the listener's own network (never read, so never "not audio").
+    """
     verdicts = live_check.check_urls([c.url for c in candidates], _probe, limit=limit)
     kept: list[PageStreamCandidate] = []
-    left_out = 0
+    left_out = not_public = 0
     for candidate in candidates:
         verdict = verdicts.get(candidate.url) or live_check.Verdict(live_check.UNCHECKED)
         if verdict.state == live_check.NOT_AUDIO:
-            left_out += 1
+            if verdict.note == live_check.NOT_PUBLIC:
+                not_public += 1
+            else:
+                left_out += 1
             continue
         candidate.check = verdict.state
         candidate.codec = verdict.codec
@@ -395,7 +407,7 @@ def _apply_live_check(
         candidate.check_note = verdict.note
         kept.append(candidate)
     kept.sort(key=lambda c: _CHECK_RANK.get(c.check, 1))  # stable: page order within a rank
-    return kept, left_out
+    return kept, left_out, not_public
 
 
 def _prefer_https(candidates: list[PageStreamCandidate]) -> list[PageStreamCandidate]:

@@ -80,7 +80,7 @@ MAX_URL_CHARS = 4096
 CHUNK_BYTES = 65536
 
 NOT_PUBLIC_SENTENCE = (
-    "That address is on this computer or your own network, which QUILL does not read here."
+    "That address is on this computer or your own network, which QUILL does not scan."
 )
 
 _SCHEMES = frozenset({"http", "https"})

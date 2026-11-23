@@ -15,9 +15,15 @@ written in QUILL's own code (`quill/core/net_public.py`).
   your own network is left out of the list, never offered for Test.
 - **Typing such an address says why:** "That address is on this computer or
   your own network, which Find Streams does not scan. To list a server on
-  your network, add it under My Servers in Browse Stations."
+  your network, add it under My Servers in Browse Stations." A page whose
+  only links are on your own network says that, not "none of them were
+  audio", and the status line counts those links apart: "Left out 3 links
+  that were not audio or no longer there, and 2 on your own network." Search
+  All Sources and Find Stations say the same plain sentence, never a support
+  code.
 - **Still works:** Add Custom Station with a stream on your own network
-  (saved as typed, with no lookup), playing any address you chose, My
+  (saved as typed, with no lookup, or at once when only the lookup shows it
+  is local), playing any address you chose, My
   Servers, and the now-playing checks.
 - **How:** every address and every redirect (at most five) is checked; a name
   is refused if any address it resolves to is not public; the connection goes

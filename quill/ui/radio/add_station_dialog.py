@@ -22,13 +22,24 @@ import urllib.parse
 from collections.abc import Callable
 from typing import Any
 
-from quill.core.net_public import host_is_refused
+from quill.core.net_public import NotPublicAddress, host_is_refused
 from quill.core.radio.address_kind import is_web_page_address
 from quill.core.radio.live365 import normalize_live365
 from quill.core.radio.models import RadioStation
 from quill.core.radio.youtube import canonical_youtube_url, is_youtube_url
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
+
+
+def _caused_by(error: BaseException | None, kind: type[BaseException]) -> bool:
+    """True when *error*, or anything in its chain of causes, is a *kind*."""
+    seen: set[int] = set()
+    while error is not None and id(error) not in seen:
+        if isinstance(error, kind):
+            return True
+        seen.add(id(error))
+        error = error.__cause__ or error.__context__
+    return False
 
 
 class AddStationDialog:
@@ -226,6 +237,13 @@ class AddStationDialog:
 
         self._resolving = False
         if not self._open:
+            return
+        if _caused_by(error, NotPublicAddress):
+            # A name that turned out, on lookup, to be on this computer or your
+            # own network: saved as typed, with no second press and no
+            # "could not reach" sentence that would be untrue.
+            self._kept_page_url = page
+            then(None)
             return
         candidates = list(getattr(result, "candidates", None) or []) if error is None else []
         pick = pick_stream(candidates)

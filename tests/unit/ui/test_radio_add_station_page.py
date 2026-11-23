@@ -217,3 +217,27 @@ def test_the_resolver_runs_the_scan_on_the_task_manager(monkeypatch) -> None:
     assert submitted == ["radio-add-station-resolve"]
     assert got[0][0].candidates[0].url == "https://station.example.com/#scanned"
     assert got[0][1] is None
+
+
+def test_a_name_that_turns_out_to_be_local_is_saved_as_typed_at_once() -> None:
+    """Caught only after the lookup: saved on the first press, nothing untrue said."""
+    from quill.core.net_public import NotPublicAddress
+    from quill.core.radio.link_finder import LinkFinderError
+
+    error = LinkFinderError("Could not reach that page: x")
+    error.__cause__ = NotPublicAddress("x")
+    frame = wx.Frame(None)
+    resolver = _Resolver(error=error)
+    dialog, controller, said = _dialog(frame, resolver)
+    try:
+        dialog._name_ctrl.ChangeValue("Home server")
+        dialog._url_ctrl.ChangeValue("https://radio.myhouse.example/")
+
+        dialog._on_test(None)
+
+        assert resolver.asked == ["https://radio.myhouse.example/"]
+        assert [s.stream_url for s in controller.played] == ["https://radio.myhouse.example/"]
+        assert said == ["Looking for the stream behind that web page...", "Testing Home server."]
+    finally:
+        dialog.dialog.Destroy()
+        frame.Destroy()

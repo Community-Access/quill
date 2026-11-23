@@ -236,7 +236,12 @@ class LinkFinderDialog:
             self._results.InsertItem(row, row_status(candidate))
             self._results.SetItem(row, 1, candidate.url)
             self._results.SetItem(row, 2, candidate.reason)
-        counts = {"checked": checked, "left_out": left_out, "check_limit": limit}
+        counts = {
+            "checked": checked,
+            "left_out": left_out,
+            "check_limit": limit,
+            "not_public": int(getattr(result, "not_public", 0) or 0),
+        }
         self._status.SetLabel(status_label(candidates, **counts))
         # The sentence once (FUX-04); the "left out" count stays in the label.
         self._announce(summary_sentence(candidates, **counts))

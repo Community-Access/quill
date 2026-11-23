@@ -118,9 +118,31 @@ def summary_sentence(
     checked: bool,
     left_out: int = 0,
     check_limit: int = 0,
+    not_public: int = 0,
 ) -> str:
-    """The single sentence said when a scan finishes."""
+    """The single sentence said when a scan finishes.
+
+    *left_out* links proved not to be audio; *not_public* links were on this
+    computer or the listener's own network and were never read, so they are
+    never called "not audio".
+    """
     if not candidates:
+        if checked and not_public and left_out:
+            total = left_out + not_public
+            was = "was" if left_out == 1 else "were"
+            are = "is" if not_public == 1 else "are"
+            return (
+                f"Found {_plural(total, 'link', 'links')} on that page: {left_out:,} {was} "
+                f"not audio, and {not_public:,} {are} on your own network, which Find "
+                "Streams does not scan."
+            )
+        if checked and not_public:
+            they = "it is" if not_public == 1 else "they are"
+            return (
+                f"Found {_plural(not_public, 'link', 'links')} on that page, but {they} on "
+                "this computer or your own network, which Find Streams does not scan. To "
+                "list a server on your network, add it under My Servers in Browse Stations."
+            )
         if checked and left_out:
             return (
                 f"Found {_plural(left_out, 'link', 'links')} on that page, "
@@ -155,16 +177,26 @@ def status_label(
     checked: bool,
     left_out: int = 0,
     check_limit: int = 0,
+    not_public: int = 0,
 ) -> str:
     """The status line: the spoken sentence, plus how many links were left out
     when there are rows (diagnostic, so shown but not spoken)."""
     sentence = summary_sentence(
-        candidates, checked=checked, left_out=left_out, check_limit=check_limit
+        candidates,
+        checked=checked,
+        left_out=left_out,
+        check_limit=check_limit,
+        not_public=not_public,
     )
-    if candidates and left_out:
-        noun = "link that was" if left_out == 1 else "links that were"
-        return f"{sentence} Left out {left_out} {noun} not audio or no longer there."
-    return sentence
+    if not candidates or not (left_out or not_public):
+        return sentence
+    local = f"{not_public:,} on your own network"
+    if not left_out:
+        noun = "link" if not_public == 1 else "links"
+        return f"{sentence} Left out {not_public:,} {noun} on your own network."
+    noun = "link that was" if left_out == 1 else "links that were"
+    tail = f", and {local}" if not_public else ""
+    return f"{sentence} Left out {left_out:,} {noun} not audio or no longer there{tail}."
 
 
 def _root_cause(error: BaseException) -> BaseException:
