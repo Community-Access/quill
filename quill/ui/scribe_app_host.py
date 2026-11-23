@@ -57,8 +57,14 @@ COMMON_ROWS: tuple[tuple[str, str, str, str], ...] = (
     ("scribe.options", "Scribe for Documents &Options...", "scribe_options", "Alt+Shift+F11"),
 )
 
-#: What an editor opens, of Scribe's formats.
-_EDITOR_FORMATS = ("docx", "html", "epub", "brf")
+#: What an editor opens, of Scribe's formats. The accessible HTML is not one:
+#: handed over on a command line, QUILL and QUILL Lite would show its markup,
+#: so it opens in the browser, readable (see :func:`open_elsewhere`). EPUB only
+#: QUILL reads.
+_EDITOR_FORMATS = ("docx", "pdf", "epub", "brf")
+_QUILL_ONLY = ("epub",)
+#: Said once in the result sentence when an EPUB was made and only QUILL Lite is here.
+NO_EPUB_READER = "QUILL Lite does not open EPUB books. QUILL does."
 
 
 # -- opening a result in another app ----------------------------------------
@@ -111,12 +117,35 @@ def open_elsewhere(format_id: str, path: Path) -> str:
     from quill.core.scribe.results import default_action, opened_phrase
 
     action = default_action(format_id)
+    if format_id == "html":
+        return _html_in_browser(path)
+    if format_id in _QUILL_ONLY and editor_name() != "QUILL":
+        return ""  # QUILL Lite would show an EPUB's zip bytes; the sentence says so
     if action in ("editor", "braille"):
         where = open_in_editor(path)
         return opened_phrase(format_id, where) if where else ""
     if action == "player" and send_to_player(format_id, path):
         return opened_phrase(format_id, "Media Player")
     return ""
+
+
+def _html_in_browser(path: Path, *, offline: bool = True) -> str:
+    """The accessible HTML, readable: the offline page beside it when there is
+    one and *offline* allows it (it has the pictures), else the HTML itself,
+    in the browser."""
+    from quill.ui import scribe_entry
+
+    found = sorted(path.parent.glob(f"{path.stem}-offline*.html")) if offline else []
+    page = found[0] if found else path
+    if scribe_entry.open_in_browser(page):
+        return "Opening the accessible HTML in your browser"
+    return ""
+
+
+def epub_note(job: Any) -> str:
+    """An EPUB was made and nothing installed reads it: said once."""
+    made = getattr(job, "outputs", {}) or {}
+    return NO_EPUB_READER if "epub" in made and editor_name() != "QUILL" else ""
 
 
 def elsewhere_steps(
@@ -135,13 +164,20 @@ def elsewhere_steps(
     name = editor_name() if editor else ""
     if name:
         for format_id in _EDITOR_FORMATS:
-            if format_id in ready:
+            if format_id in ready and (format_id not in _QUILL_ONLY or name == "QUILL"):
 
-                def to_editor(path: Path = ready[format_id]) -> None:
+                def to_editor(path: Path = ready[format_id], name: str = name) -> None:
                     if not open_in_editor(path):
-                        announce(f"QUILL could not be opened. {path.name} is saved in its folder.")
+                        announce(f"{name} could not be opened. {path.name} is saved in its folder.")
 
                 steps.append((f"Open in {name} ({format_label(format_id)})", to_editor))
+    if "html" in ready and "offline_html" not in ready:
+
+        def html_page(path: Path = ready["html"]) -> None:
+            if not _html_in_browser(path, offline=False):
+                announce(f"Your browser could not be opened. {path.name} is saved in its folder.")
+
+        steps.append((f"Open in Your Browser ({format_label('html')})", html_page))
     if player:
         for format_id in ("mp3", "daisy"):
             if format_id in ready:
@@ -191,6 +227,9 @@ class AppScribeHost:
 
     def scribe_next_steps(self, job: Any, ready: dict[str, Path]) -> list[tuple[str, Any]]:
         return elsewhere_steps(job, ready, self.scribe_announce)
+
+    def scribe_result_note(self, job: Any) -> str:
+        return epub_note(job)
 
 
 # -- the menu ------------------------------------------------------------------

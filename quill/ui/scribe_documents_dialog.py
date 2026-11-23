@@ -336,7 +336,8 @@ class ScribeDocumentsDialog(wx.Dialog):
             from quill.core.scribe.sentences import friendly_folder
 
             where = friendly_folder(str(ordered[0][1].parent)) if ordered else "its folder"
-            said = f"{doc.display_title} was saved in {where}. Nothing in it opens here"
+            app = self._controller.app_name
+            said = f"{doc.display_title} is saved in {where}. None of its files opens in {app}"
         self.EndModal(wx.ID_OK)
         wx.CallLater(300, self._controller.host.scribe_announce, f"{said}.")
 

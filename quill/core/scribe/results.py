@@ -2,14 +2,18 @@
 
 | Format | Default action | Where |
 |---|---|---|
-| HTML, Word, EPUB | open in the editor (rich) | ``editor`` |
+| Word, EPUB | open in the editor | ``editor`` |
+| HTML | open in the editor as a readable document (converted, never markup) | ``editor`` |
+| Tagged PDF | open in the editor as text, on the person's command only | ``editor`` |
 | BRF | open in QUILL's braille view (QUILL opens a .brf as braille) | ``braille`` |
 | MP3, DAISY | open in Media Player | ``player`` |
-| Tagged PDF, MOBI, offline web page | saved; the sentence says where | ``save`` |
+| MOBI, offline web page | saved; the sentence says where | ``save`` |
 
 The offline web page is the accessible HTML with its pictures inside. It is
-saved and offered in the browser; the accessible HTML is what opens in the
-editor (F2).
+saved and offered in the browser, never in an editor, where each picture
+would be one long line of base64; the accessible HTML is what opens in the
+editor (F2). An app that cannot convert it there (one that hands off to
+QUILL or Lite) shows it in the browser instead.
 
 "Open each result when it is ready" decides whether the default action runs
 or is only offered (7.7). wx-free.
@@ -29,15 +33,20 @@ DEFAULT_ACTION: dict[str, str] = {
     "brf": "braille",
     "mp3": "player",
     "daisy": "player",
-    "pdf": "save",
+    "pdf": "editor",
     "mobi": "save",
     "offline_html": "save",
 }
+
+#: Opened only when the person asks (Open Result, Next Steps), never by itself:
+#: a tagged PDF is read as text, a lesser copy of what Word or the HTML gives.
+ON_COMMAND_ONLY: frozenset[str] = frozenset({"pdf"})
 
 #: The open result's name in the sentence: "Word is open in QUILL".
 OPENED_NAME: dict[str, str] = {
     "html": "The accessible HTML",
     "docx": "Word",
+    "pdf": "The tagged PDF",
     "epub": "The EPUB",
     "brf": "The braille",
     "mp3": "The MP3 audio",
@@ -121,6 +130,31 @@ def library_order(files: list[tuple[str, Path]]) -> list[tuple[str, Path]]:
     return open_order(newest)
 
 
+#: What a Beacon place points at, best first: a document to read (where a
+#: heading can be), then the rest. Never an MP3, a DAISY zip or a BRF while a
+#: document is there.
+PLACE_ORDER: tuple[str, ...] = (
+    "docx",
+    "html",
+    "epub",
+    "pdf",
+    "offline_html",
+    "brf",
+    "daisy",
+    "mp3",
+    "mobi",
+)
+
+
+def place_order(files: list[tuple[str, Path]]) -> list[tuple[str, Path]]:
+    """A document's downloaded files in :data:`PLACE_ORDER`, the newest of each."""
+    newest: dict[str, Path] = {}
+    for format_id, path in files:
+        newest[format_id] = Path(path)
+    rank = {format_id: index for index, format_id in enumerate(PLACE_ORDER)}
+    return sorted(newest.items(), key=lambda item: rank.get(item[0], len(rank)))
+
+
 def browser_page(outputs: dict[str, str]) -> Path | None:
     """The offline web page when it is one HTML file that exists, else ``None``."""
     offline = outputs.get("offline_html")
@@ -178,9 +212,11 @@ __all__ = [
     "DEFAULT_ACTION",
     "BROWSER_STEP",
     "MOBI_NOTE",
+    "ON_COMMAND_ONLY",
     "OFFLINE_PICTURES_NOTE",
     "ZIPPED_PICTURES_NOTE",
     "OPENED_NAME",
+    "PLACE_ORDER",
     "PICTURES_NOTE",
     "browser_page",
     "daisy_entry",
@@ -190,5 +226,6 @@ __all__ = [
     "open_order",
     "opened_phrase",
     "pictures_note",
+    "place_order",
     "result_notes",
 ]

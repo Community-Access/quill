@@ -105,17 +105,12 @@ class PlayerScribeHost(AppScribeHost):
         return ""
 
     def scribe_open_result(self, job: Any, format_id: str, path: Path) -> str:
-        """Open an MP3 or DAISY book here; anything else is a Next Step."""
-        if format_id == "mp3" and self._has_daisy(job):
-            return ""  # the DAISY book, with its chapters, is opened instead
+        """Open an MP3 or DAISY book here; anything else is a Next Step. The
+        DAISY book comes first (open order), with its chapters; the MP3 is
+        reached only when it did not load, and then it opens instead."""
         if format_id in ("mp3", "daisy"):
             return self._owner._scribe_load(format_id, path)
         return ""
-
-    @staticmethod
-    def _has_daisy(job: Any) -> bool:
-        daisy = job.outputs.get("daisy") if job is not None else None
-        return bool(daisy and Path(daisy).exists())
 
     def scribe_next_steps(self, job: Any, ready: dict[str, Path]) -> list[tuple[str, Any]]:
         from quill.core.scribe.model import format_label

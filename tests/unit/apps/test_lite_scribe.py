@@ -166,6 +166,8 @@ def test_a_result_window_waits_for_its_sentence(
     """A new window (Lite's or Media Player's) takes focus and the reader says
     it, which would cut the result sentence off: it opens after the sentence,
     once, or after a second when no sentence follows."""
+    import wx
+
     from quill.apps import lite_window_scribe
     from quill.apps.lite_window_scribe import LiteScribeHost, wait_for_sentence
     from quill.core.scribe import queue as q
@@ -175,6 +177,7 @@ def test_a_result_window_waits_for_its_sentence(
     monkeypatch.setattr(
         wx_dispatch, "call_later_safely", lambda ms, fn, *a, **k: timers.append((ms, fn))
     )
+    monkeypatch.setattr(wx, "GetActiveWindow", lambda: object())  # QUILL Lite is in front
     sent: list[tuple[str, Path]] = []
     monkeypatch.setattr(
         lite_window_scribe, "_send_to_player", lambda f, p: sent.append((f, p)) or True

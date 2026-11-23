@@ -89,7 +89,6 @@ def test_the_daisy_book_wins_and_opens_quietly_with_how_to_play(tmp_path: Path) 
     mp3.write_bytes(b"ID3")
     daisy = _daisy_zip(tmp_path)
     job = q.Job(outputs={"mp3": str(mp3), "daisy": str(daisy)})
-    assert host.scribe_open_result(job, "mp3", mp3) == ""
     said = host.scribe_open_result(job, "daisy", daisy)
     assert said == (
         "The DAISY book is open in Media Player, 3 headings, at the start. Press Alt+A to play"

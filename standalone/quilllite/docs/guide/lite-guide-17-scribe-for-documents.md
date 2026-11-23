@@ -120,10 +120,10 @@ MOBI. It does not take web pages. A link must point straight at a file.
 
 | Format | Good for | What QUILL Lite does with it |
 |---|---|---|
-| Accessible HTML | Reading with real headings | Opens it in a new QUILL Lite window |
+| Accessible HTML | Reading with real headings | Opens it in a new QUILL Lite window as a readable document, with its headings, lists, tables and links, never as HTML markup |
 | Word | Reading and editing. Can be large print | Opens it in a new QUILL Lite window |
-| Tagged PDF | A PDF screen readers can read. Can be large print | Saves it, and says where |
-| EPUB | Ebook readers | Saves it, and says where |
+| Tagged PDF | A PDF screen readers can read. Can be large print | Saves it. **Open Result** and Next Steps open it in a new QUILL Lite window, as text; it never opens by itself |
+| EPUB | Ebook readers | QUILL Lite does not read EPUB. When QUILL is installed, it opens there. Otherwise it is saved, and the result sentence says once: "QUILL Lite does not open EPUB books. QUILL does." |
 | Kindle (MOBI) | Older Kindle devices, and Calibre | Saves it, and says where |
 | DAISY (text and audio) | Talking-book players, and Quill Media Player with chapters | Opens it in Quill Media Player |
 | MP3 audio | Any audio player | Opens it in Quill Media Player |
@@ -137,7 +137,8 @@ document. QUILL Lite never writes over a file: it adds "(2)" instead.
 Media Player, comes to the front only once QUILL Lite has said what it made,
 between 1.5 and 6 seconds later depending on how long the sentence is. That
 way your screen reader's announcement of the new window does not cut the
-sentence off.
+sentence off. If you move to another program while it waits, the result does
+not open; use **Open Result** in Scribe Conversions when you are ready.
 
 **The Web page for offline reading never opens as text.** Every picture is
 inside it, so in an editor each one would be a single very long line. Next

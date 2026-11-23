@@ -183,7 +183,9 @@ def test_lite_next_steps_put_the_media_player_first(tmp_path: Path) -> None:
     host.scribe_next_steps(q.Job(), ready)[1][1]()
     assert opened == [ready["docx"]]
     assert host.scribe_open_result(q.Job(), "brf", tmp_path / "N.brf").endswith("QUILL Lite")
-    assert host.scribe_open_result(q.Job(), "pdf", tmp_path / "N.pdf") == ""
+    # The tagged PDF opens in Lite, which reads PDFs (phase-one audit, gap 2).
+    assert host.scribe_open_result(q.Job(), "pdf", tmp_path / "N.pdf").endswith("QUILL Lite")
+    assert host.scribe_open_result(q.Job(), "mobi", tmp_path / "N.mobi") == ""
 
 
 def test_next_steps_on_an_unfinished_job_say_so(controller: Any) -> None:

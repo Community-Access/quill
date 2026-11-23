@@ -179,9 +179,9 @@ once.
 
 | Format | Good for | What QUILL does with it |
 |---|---|---|
-| Accessible HTML | Reading in QUILL or a browser, with real headings. Its pictures are not included | Opens it in QUILL. Its pictures are in the Web page for offline reading |
+| Accessible HTML | Reading in QUILL or a browser, with real headings. Its pictures are not included | Opens it in a new tab as a readable document, with its headings, lists, tables and links, never as HTML markup. The tab is named after the document, such as "Notes (Scribe)" for Notes.pdf, and is not saved until you save it. Its pictures are in the Web page for offline reading |
 | Word | Reading and editing in QUILL or Word. Can be large print | Opens it in QUILL |
-| Tagged PDF | Sharing a PDF that screen readers can read. Can be large print | Saves it, and says where |
+| Tagged PDF | Sharing a PDF that screen readers can read. Can be large print | Saves it. **Open Result** and Next Steps open it in QUILL, as text; it never opens by itself |
 | EPUB | Ebook readers and QUILL's own EPUB reading | Opens it in QUILL |
 | Kindle (MOBI) | Older Kindle devices, and Calibre | Saves it, and says where |
 | DAISY (text and audio) | Talking-book players, and Quill Media Player with chapters | Opens it in Quill Media Player |
@@ -840,7 +840,14 @@ section, with the steps and what you hear.
 A result that would open in another app, such as Word from Quill Converter
 opening in QUILL, never opens by itself: the result sentence ends "Open it
 from Scribe Conversions.", and **Open Result** or **Next Steps...** opens it
-when you choose.
+when you choose. From those apps the accessible HTML opens readable in your
+browser (the Web page for offline reading, when it was made, because it has
+the pictures), an EPUB opens only in QUILL, and a Scribe place in Beacon opens
+its document in QUILL, its audio in Media Player.
+
+When QUILL sends an MP3 or a DAISY book to Media Player, the Player comes to
+the front once the result sentence has been said, so the sentence is not
+cut off.
 
 ## Walkthroughs
 

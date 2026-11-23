@@ -64,7 +64,7 @@ The goal is that wherever someone in the QUILL family meets an inaccessible docu
   - **F8.** Scribe's own email is never inherited from the account default (which is on, one email per format): the dialog and watch-folder jobs start with it off, and the upload sends `notify_when_complete: false` with exactly the README's eleven setting names.
   - Each stage sentence is said once per job: the next format's "waiting in Scribe's queue" is not said again (GATE-13). Retry forgets what was said about the job, so its stages are said again. Studio says "Opening the Chapter Workbench." and opens it at once, titled with the book's name; a second request while it is open is ignored.
   - A Kindle (MOBI) result's sentence says how to read it (an older Kindle over USB, or Calibre); when nothing made opens by itself, the sentence ends "Open Folder in Scribe Conversions shows it." "Also save as my Scribe account defaults" changes the account's email setting only when the person changed it in the dialog.
-- **Follow-ups (2026-11-23).** A BRF that ends with its form feed (every Scribe BRF) is no longer counted one page too many. QUILL Lite opens a result window, or Media Player, only after the sentence that names it (a delay from the sentence's length, 1.5 to 6 seconds), so the screen reader's window announcement does not cut it off. The offline web page never opens in an editor as text: when it is all there is, Open Result and My Scribe Documents' Open show it in the browser. My Scribe Documents' Open, and Beacon's places, take the file that opens first, not the one downloaded last.
+- **Follow-ups (2026-11-23).** A BRF that ends with its form feed (every Scribe BRF) is no longer counted one page too many. QUILL Lite opens a result window, or Media Player, only after the sentence that names it (a delay from the sentence's length, 1.5 to 6 seconds), so the screen reader's window announcement does not cut it off. The offline web page never opens in an editor as text: when it is all there is, Open Result and My Scribe Documents' Open show it in the browser. My Scribe Documents' Open takes the file that opens first, not the one downloaded last. Phase-one audit fixes (2026-11-23): the accessible HTML opens readable (converted in QUILL and Lite, in the browser from the other apps), the tagged PDF opens in QUILL or Lite on command, EPUB is never handed to Lite, Media Player falls back to the MP3 when the DAISY book fails and is never handed DAISY 2.02, QUILL's audio hand-off waits for its sentence, a failed hand-off names the right app, and a Beacon Scribe place points at the document and opens in the family app for its format.
 - **Not built yet.** QUILL Lite's Send To item and its command line (8.10). Live testing against scribeit.io comes once the code is merged, and every new surface still needs its NVDA, JAWS and Narrator check (12).
 
 ## 3. What Scribe provides (all of it, from the API client source)
@@ -464,11 +464,11 @@ Under family rule 10, Lite gets nothing QUILL does not have. Every Lite command 
 
 | Format | Default action when ready | Also offered |
 |---|---|---|
-| HTML | Open in QUILL (rich) or Lite | Open in browser, Save |
+| HTML | Open in QUILL or Lite as a readable document (converted as Import does, never as markup); from the other apps, in the browser | Open in browser, Save |
 | Offline web page | Save | Open in browser |
 | Word | Open in QUILL or Lite as rich text | Open in Word, Save |
-| Tagged PDF | Save | Open in the default PDF reader; open in QUILL (text) |
-| EPUB | Save | Open in QUILL; open in the default ebook reader |
+| Tagged PDF | Save; Open Result and Next Steps open it in QUILL or Lite (text), never by itself | Open in the default PDF reader |
+| EPUB | Open in QUILL. Never in Lite, which does not read EPUB: from Lite, or with only Lite installed, it goes to QUILL if installed, else it is saved and the sentence says once that QUILL reads it | Open in the default ebook reader |
 | MOBI | Save | Send to Kindle is not offered; QUILL says where the file is |
 | DAISY | Open in Media Player | Save, Open folder |
 | MP3 | Open in Media Player | Open in Studio, Save |

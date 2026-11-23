@@ -20,6 +20,26 @@
   was downloaded last, which could be a Kindle book or the offline page, and
   then said nothing. It now opens what Open Result would, and says where
   the file is when nothing opens. Beacon's Scribe places pick the same way.
+- **The accessible HTML reads as a document.** QUILL and QUILL Lite showed
+  it as HTML markup. They now convert it as Import does, with its headings,
+  lists, tables and links, into a new unsaved tab or window named
+  "Notes (Scribe)". The other apps open it in your browser, as the offline
+  page when there is one, because that has the pictures.
+- **The tagged PDF opens.** It was only saved. Open Result and Next Steps now
+  open it in QUILL or QUILL Lite, as text; it never opens by itself.
+- **No EPUB in QUILL Lite.** Lite does not read EPUB, and an app handing it
+  to Lite showed zip bytes. It now goes to QUILL when QUILL is installed;
+  otherwise it is saved, and the result sentence says once "QUILL Lite does
+  not open EPUB books. QUILL does."
+- **Media Player.** When the DAISY book does not load, the MP3 opens instead
+  of nothing. A DAISY 2.02 book is no longer handed to the Player and called
+  open. When QUILL sends audio to the Player, the Player comes to the front
+  after QUILL's result sentence.
+- **Beacon's Scribe places** point at the document (Word first), not the
+  last file downloaded, and open in QUILL or Media Player rather than
+  whatever Windows chooses; one that cannot open says so.
+- **The right app named.** A failed Open in QUILL Lite said "QUILL could not
+  be opened".
 - **Studio's chapter markers from Scribe's DAISY book.** Scribe splits the
   DAISY audio into many files, so Studio wrote no markers. It now adds up
   the files' lengths and puts a marker at each heading in the MP3 (checked

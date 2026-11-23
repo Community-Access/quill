@@ -276,12 +276,15 @@ class ScribeEntryPoints:
 
 
 def player_target(format_id: str, path: Path) -> Path | None:
-    """What Media Player opens for a result: the MP3, or a DAISY book's
-    navigation file (the zip unpacked beside itself). ``None`` if nothing."""
+    """What Media Player opens for a result: the MP3, or a DAISY 3 book's
+    ``.ncx`` (the zip unpacked beside itself). ``None`` if nothing: the Player
+    reads DAISY 3 only, so a DAISY 2.02 ``ncc.html`` is never handed over and
+    reported as open (Open Result goes on to the MP3)."""
     from quill.core.scribe.results import daisy_entry
 
     if format_id == "daisy":
-        return daisy_entry(path)
+        entry = daisy_entry(path)
+        return entry if entry is not None and entry.suffix.lower() == ".ncx" else None
     return path if format_id == "mp3" else None
 
 

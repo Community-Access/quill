@@ -511,8 +511,15 @@ sentence that names it (a delay from the sentence’s length, 1.5 to 6
 seconds), so the screen reader’s window announcement does not cut it
 off. The offline web page never opens in an editor as text: when it is
 all there is, Open Result and My Scribe Documents’ Open show it in the
-browser. My Scribe Documents’ Open, and Beacon’s places, take the file
-that opens first, not the one downloaded last.</li>
+browser. My Scribe Documents’ Open takes the file that opens first, not
+the one downloaded last. Phase-one audit fixes (2026-11-23): the
+accessible HTML opens readable (converted in QUILL and Lite, in the
+browser from the other apps), the tagged PDF opens in QUILL or Lite on
+command, EPUB is never handed to Lite, Media Player falls back to the
+MP3 when the DAISY book fails and is never handed DAISY 2.02, QUILL’s
+audio hand-off waits for its sentence, a failed hand-off names the right
+app, and a Beacon Scribe place points at the document and opens in the
+family app for its format.</li>
 <li><strong>Not built yet.</strong> QUILL Lite’s Send To item and its
 command line (8.10). Live testing against scribeit.io comes once the
 code is merged, and every new surface still needs its NVDA, JAWS and
@@ -1487,7 +1494,8 @@ output</h2>
 <tbody>
 <tr>
 <td>HTML</td>
-<td>Open in QUILL (rich) or Lite</td>
+<td>Open in QUILL or Lite as a readable document (converted as Import
+does, never as markup); from the other apps, in the browser</td>
 <td>Open in browser, Save</td>
 </tr>
 <tr>
@@ -1502,13 +1510,16 @@ output</h2>
 </tr>
 <tr>
 <td>Tagged PDF</td>
-<td>Save</td>
-<td>Open in the default PDF reader; open in QUILL (text)</td>
+<td>Save; Open Result and Next Steps open it in QUILL or Lite (text),
+never by itself</td>
+<td>Open in the default PDF reader</td>
 </tr>
 <tr>
 <td>EPUB</td>
-<td>Save</td>
-<td>Open in QUILL; open in the default ebook reader</td>
+<td>Open in QUILL. Never in Lite, which does not read EPUB: from Lite,
+or with only Lite installed, it goes to QUILL if installed, else it is
+saved and the sentence says once that QUILL reads it</td>
+<td>Open in the default ebook reader</td>
 </tr>
 <tr>
 <td>MOBI</td>

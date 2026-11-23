@@ -194,6 +194,13 @@ class _QuillFrame:
     def read_all(self) -> None:  # Read Aloud's command, run after the open
         pass
 
+    def _scribe_open_as_import(self, job: Any, path: Path) -> None:
+        """QUILL's converted tab: what it would show, recorded."""
+        from quill.io.docconvert import convert_document
+
+        self.opened.append(Path(path))
+        self.readable = str(convert_document(path).text)
+
 
 def test_quill_opens_the_accessible_html_and_offers_the_offline_page(world: World) -> None:
     from quill.ui.main_frame_scribe import QuillScribeHost
@@ -209,10 +216,12 @@ def test_quill_opens_the_accessible_html_and_offers_the_offline_page(world: Worl
     names = {f: Path(p).name for f, p in job.outputs.items()}
     assert names["offline_html"] == f"{GARDEN}-offline.html" and names["docx"] == f"{GARDEN}.docx"
     result = _check_speech(mf.said, job)
-    # The accessible HTML opens; the offline page is saved and offered (F2).
+    # The accessible HTML opens, as a readable document, never its markup;
+    # the offline page is saved and offered (F2).
     assert mf.opened == [Path(job.outputs["html"])]
+    assert "<h1" not in mf.readable and "# 1. Getting a plot" in mf.readable
     assert (
-        "The accessible HTML is open in QUILL. Its pictures are in the Web page for offline "
+        "The accessible HTML is open in a new tab. Its pictures are in the Web page for offline "
         "reading; Next Steps opens that in your browser. A Kindle (MOBI) book" in result
     )
     steps = dict(controller.next_steps(job))
@@ -227,7 +236,7 @@ def test_quill_opens_the_accessible_html_and_offers_the_offline_page(world: Worl
     # Open Result, the person's own command, says it once more on purpose.
     mf.said.clear()
     controller.open_job_result(job)
-    assert mf.said == ["The accessible HTML is open in QUILL."]
+    assert mf.said == ["The accessible HTML is open in a new tab."]
 
 
 def test_quill_html_without_the_offline_page_says_where_the_pictures_are(world: World) -> None:
@@ -241,7 +250,7 @@ def test_quill_html_without_the_offline_page_says_where_the_pictures_are(world: 
     job = _run(controller, world)
     result = _check_speech(mf.said, job)
     assert result.endswith(
-        "The accessible HTML is open in QUILL. "
+        "The accessible HTML is open in a new tab. "
         "The accessible HTML came without its pictures; Download Formats in My Scribe "
         "Documents can add the Web page for offline reading, which has them."
     )
@@ -478,9 +487,13 @@ def test_social_converts_a_posts_linked_document(world: World) -> None:
     job = _run(controller, world)
     _check_speech(said, job)
     controller.open_job_result(job)
-    # The accessible HTML goes to the editor; the offline page to the browser (F2).
-    assert world.opened_elsewhere == [("editor", f"{GARDEN}.html")]
+    # Handed to an editor on its command line, the accessible HTML would be
+    # markup: it opens readable in the browser, as the offline page beside it,
+    # which has the pictures (phase-one audit, gap 1).
+    assert world.opened_elsewhere == [("browser", f"{GARDEN}-offline.html")]
+    assert said[-1] == "Opening the accessible HTML in your browser."
     steps = dict(controller.next_steps(job))
+    assert not any(label.startswith("Open in QUILL") for label in steps)
     steps["Open in Your Browser (Web page for offline reading)"]()
     assert world.opened_elsewhere[-1] == ("browser", f"{GARDEN}-offline.html")
 
