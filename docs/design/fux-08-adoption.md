@@ -21,7 +21,7 @@ Every preview in the family, old and new, is held to the same five rules:
 - **Media Player's Audio tab** applies equaliser, boost and normalise live; there is nothing to keep or cancel.
 - **Converter's Play Preview and Hear Original** (Ctrl+P, Ctrl+Shift+P): fifteen seconds with your settings or without, the same key stops, closing the window stops.
 - **Weather's alert sound Play button**, **Studio's Preview voice**, **the Speech Hub's Preview Selected Voice**, and **Test Microphone** in Dictation Settings and Transcribe Set Up.
-- **Scribe's feedback sound preview** (#2037, not merged yet): Play Success Sound and Play Failure Sound, saying why nothing played.
+- **Scribe's feedback sound preview** (#2037, `quill/ui/scribe_feedback_settings.py`): Play Success Sound and Play Failure Sound in Scribe Options, saying why nothing played.
 
 ## The shared helper
 
@@ -31,7 +31,7 @@ Every preview in the family, old and new, is held to the same five rules:
 - `edge_step(...)` is a start or stop moment with a "play sounds" box and a "say it" box, the rule dictation's `_announce_edge` follows.
 - `PreviewSequence` plays a few steps a moment apart, once; the button again, Escape or closing the window stops it (`guard`). When every step is silent it says so in one sentence, and when the app's sounds are off it says that once.
 
-Scribe's feedback preview (#2037) says the same three reasons in its own words; it can move onto this helper once both are merged.
+Scribe's feedback preview (#2037) says the same reasons in its own words, for a single sound rather than a sequence; it can move onto this helper later without changing what it says.
 
 ## App by app
 

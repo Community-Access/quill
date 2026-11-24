@@ -299,8 +299,9 @@ key stops, closing the window stops.</li>
 Preview voice</strong>, <strong>the Speech Hub’s Preview Selected
 Voice</strong>, and <strong>Test Microphone</strong> in Dictation
 Settings and Transcribe Set Up.</li>
-<li><strong>Scribe’s feedback sound preview</strong> (#2037, not merged
-yet): Play Success Sound and Play Failure Sound, saying why nothing
+<li><strong>Scribe’s feedback sound preview</strong> (#2037,
+<code>quill/ui/scribe_feedback_settings.py</code>): Play Success Sound
+and Play Failure Sound in Scribe Options, saying why nothing
 played.</li>
 </ul>
 <h2 id="the-shared-helper">The shared helper</h2>
@@ -320,8 +321,9 @@ the button again, Escape or closing the window stops it
 (<code>guard</code>). When every step is silent it says so in one
 sentence, and when the app’s sounds are off it says that once.</li>
 </ul>
-<p>Scribe’s feedback preview (#2037) says the same three reasons in its
-own words; it can move onto this helper once both are merged.</p>
+<p>Scribe’s feedback preview (#2037) says the same reasons in its own
+words, for a single sound rather than a sequence; it can move onto this
+helper later without changing what it says.</p>
 <h2 id="app-by-app">App by app</h2>
 <table>
 <thead>
