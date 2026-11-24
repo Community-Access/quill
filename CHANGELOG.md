@@ -44,6 +44,23 @@ only way to the next change was line by line.
 Compare Configuration now marks each line in your Line marks style ("Added:",
 "Removed:"), with where each change is. Before, it showed a raw diff whose
 "+" and "-" a screen reader may not speak.
+### Studio: hear a sample before a long narration (2026-11-24)
+
+The last page of the QUILL Studio wizard, Review and start, has a new button,
+**Try a Sample** (Alt+P). It is also in QUILL's Audiobook and Batch Speech.
+It speaks about the first 30 seconds of your first document with every choice
+you made: the engine, voice, pace, gaps, chapter sound, loudness,
+pronunciation dictionaries and voice rotation. Then it plays the sample.
+
+The **Sample result** box says what was made, how long it took on this
+computer, and what the whole run should take, play for and weigh at that
+pace. It also says that one opening does not prove the rest. The sample is
+made in a temporary folder and removed when the wizard closes. Nothing is
+saved beside your documents, and no setting changes.
+
+Press the button again to stop a sample that is being made or playing, or
+to hear it again. Going back to an earlier page stops it too. If you go back and change a setting, the result starts "Out of date",
+and the next press makes a new sample.
 
 ### The first useful task has a clear beginning in Weather, Beacon and Social (2026-11-24)
 

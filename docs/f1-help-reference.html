@@ -2960,7 +2960,7 @@ with Note (Navigation menu) adds words to it.</li>
 from this book; the audio and your place stay.</li>
 </ul>
 <h2 id="quill-studio">QUILL Studio</h2>
-<p>Control coverage: 306 audited sites (11 help-elsewhere, 295
+<p>Control coverage: 308 audited sites (11 help-elsewhere, 297
 helped).</p>
 <h3 id="every-window-and-what-it-is-for-3">Every window, and what it is
 for</h3>
@@ -3865,6 +3865,19 @@ anything.</li>
 <li><code>open_studio</code>: Closes this window and opens the full
 Audio Studio wizard instead, where a whole folder can be narrated and a
 chaptered audiobook built and published.</li>
+</ul>
+<h4 id="samplecontrols-quilluiaudio_studiotry_samplepy">SampleControls
+(<code>quill/ui/audio_studio/try_sample.py</code>)</h4>
+<ul>
+<li><code>self.button</code>: Speaks about the first 30 seconds of the
+first document with every setting above, plays it, and estimates how
+long the whole run takes and how large it will be. Nothing is saved
+beside your documents. Press again to stop a sample being made or
+playing, or to hear it again.</li>
+<li><code>self.result</code>: What the last sample made, what it
+measured on this computer, what the whole run should take, and what a
+sample cannot prove. It says out of date when a setting changed after
+the sample was made.</li>
 </ul>
 <h4 id="audiostudiowizard-quilluiaudio_studiowizardpy">AudioStudioWizard
 (<code>quill/ui/audio_studio/wizard.py</code>)</h4>

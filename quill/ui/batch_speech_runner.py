@@ -698,11 +698,17 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
     from quill.core.speech.conversion_log import NullConversionLog, open_conversion_log
     from quill.core.speech.document_speech import (
         DocumentSpeechError,
-        SynthesisSpec,
         synthesize_document_to_chaptered_file,
         synthesize_document_to_separate_files,
     )
     from quill.ui.ai_transcribe_dialog import AIProgressDialog
+    from quill.ui.audio_studio.run_setup import (
+        chapter_options,
+        output_suffix,
+        shaping_settings,
+        synthesis_spec,
+    )
+    from quill.ui.audio_studio.run_setup import effective_format as effective_format_of
 
     files = discover_files(
         req.source_folder,
@@ -746,10 +752,10 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
     # In book mode each document becomes one chapter file, so force the single-file
     # path and a plain WAV per document; the book is then assembled into its format.
     book_mode = req.make_book
-    effective_format = "wav" if book_mode else req.output_format
-    suffix = {"mp3": ".mp3", "m4b": ".m4b"}.get(effective_format, ".wav")
+    effective_format = effective_format_of(req)
+    suffix = output_suffix(effective_format)
 
-    spec = SynthesisSpec(engine=req.engine, voice=req.voice, rate=req.rate, speed=req.speed)
+    spec = synthesis_spec(req)
     dictionaries = _active_pronunciation_dictionaries(frame, req.engine, req.source_folder)
     for_language = _build_translator(req)
     # Cost surfacing (roadmap §7): when cloud translated targets are configured,
@@ -780,27 +786,7 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
     from quill.core.speech.synth_cache import can_reuse, load_cache, save_cache
     from quill.core.speech.synth_cache import fingerprint as synth_fingerprint
 
-    cache_settings: dict[str, object] = {
-        "engine": req.engine,
-        "voice": req.voice,
-        "rate": req.rate,
-        "speed": req.speed,
-        "format": effective_format,
-        "sound": [
-            req.sound_enabled,
-            req.sound_volume,
-            str(getattr(getattr(frame, "settings", None), "batch_speech_chapter_sound_id", "")),
-        ],
-        "gaps": [req.article_gap_ms, req.sentence_gap_ms, req.tail_padding_ms],
-        "speak_headings": req.speak_headings,
-        "combine_headings": req.combine_headings,
-        "normalize_loudness": req.normalize_loudness,
-        "round_robin": list(req.round_robin_voices),
-        "casting": [list(rule) for rule in req.casting_rules],
-        "translations": [list(t) for t in req.translation_targets],
-        "translation_provider": req.translation_provider,
-        "dictionaries": repr(dictionaries),
-    }
+    cache_settings = shaping_settings(frame, req, dictionaries)
     reuse_enabled = (
         req.reuse_unchanged
         and req.on_existing == "overwrite"
@@ -847,27 +833,8 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
     # the progress dialog opens without the screen-reader focus landing on it.
     frame._wx.CallAfter(progress_dialog.show)
 
-    # Chunk size by engine -- single source of truth in document_speech (Kokoro's
-    # ~510 phoneme-token window means over-feeding it stalls/fails synthesis).
-    from quill.core.speech.document_speech import engine_chunk_chars
-
-    chunk_chars = engine_chunk_chars(req.engine)
-
     def opts(sound_path: Path | None = None) -> ChapterAssembleOptions:
-        return ChapterAssembleOptions(
-            article_gap_ms=req.article_gap_ms,
-            sound_enabled=req.sound_enabled,
-            sound_volume=req.sound_volume,
-            sound_path=sound_path,
-            output_format=effective_format,
-            speak_headings=req.speak_headings,
-            sentence_gap_ms=req.sentence_gap_ms,
-            tail_padding_ms=req.tail_padding_ms,
-            normalize_loudness=req.normalize_loudness,
-            # Auto-chunk very long sections so a single synthesis call never runs
-            # past the engine timeout; short sections are unaffected (one call).
-            max_chunk_chars=chunk_chars,
-        )
+        return chapter_options(req, sound_path=sound_path)
 
     total = len(files)
 

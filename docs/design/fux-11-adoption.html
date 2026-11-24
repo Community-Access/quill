@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FUX-11: try a sample before a long job</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="fux-11-try-a-sample-before-a-long-job">FUX-11: try a sample
+before a long job</h1>
+<p><strong>Date:</strong> 2026-11-24 <strong>Feature:</strong> FUX-11,
+“Rehearse the real outcome before a long job”, from the family UX plan
+(read it with <code>git show b7c6a1a04^:complete2.md</code>). It is held
+to <a
+href="family-interaction-contracts.md">family-interaction-contracts.md</a>.
+<strong>Out of scope:</strong> Earshot and the macOS apps.</p>
+<p>The moment: “I don’t want to record an hour before finding the
+microphone was wrong.” Before a long job, the person can make a small
+sample with exactly the setup the job will use, hear or read it, and get
+an estimate measured on this computer. The sample is part of the normal
+task, not another wizard. It never replaces the real result, never
+changes a setting, and never writes into the job’s output folder. It
+says what it covered and that it does not prove the rest. When a setting
+changes afterwards, the earlier result is labelled out of date.</p>
+<h2 id="1-the-shared-rule">1. The shared rule</h2>
+<p><code>quill/core/rehearsal.py</code> (wx-free, strict-typed) holds
+the honesty that every app’s sample shares, so each says the same things
+in the same words:</p>
+<ul>
+<li><code>fingerprint(settings)</code> digests every setting that shapes
+the result. A <code>SampleResult</code> is current only while the
+fingerprint of the settings chosen now matches the one it was made
+with.</li>
+<li><code>SampleResult.estimate()</code> scales what the sample took and
+made to the whole job, linearly, and refuses to guess from an empty
+sample or a job of unknown length.</li>
+<li><code>estimate_sentence</code> says what the sample took, then what
+the whole job should take, play for and weigh “at that pace on this
+computer”, and ends “This is an estimate.” It names only the figures the
+sample measured.</li>
+<li><code>limits_sentence</code> says what the sample checked “only,
+with your current settings”, and that a later part can still fail or
+sound different.</li>
+<li><code>stale_sentence</code> starts “Out of date:” and asks for
+another sample.</li>
+</ul>
+<p>Each app makes its sample with its own pipeline, because the point is
+to use the job’s own pipeline. The result is written to a read-only text
+field or the status bar where the app already shows results, and spoken
+once, briefly. Playback, where there is any, starts after the short
+spoken line, and the full detail stays in the text.</p>
+<h2 id="2-inventory-app-by-app">2. Inventory, app by app</h2>
+<p>“Try small” is what the person could already do to test the real
+outcome before this work. <strong>Gap</strong> marks a long job with no
+honest way to try it small, or no estimate.</p>
+<h3 id="quill-studio-and-audiobook-and-batch-speech-in-quill">QUILL
+Studio, and Audiobook and Batch Speech in QUILL</h3>
+<p>Both run the same wizard (<code>quill/ui/audio_studio</code>) and the
+same runner (<code>batch_speech_runner._run</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Long job</th>
+<th>Try small before this work</th>
+<th>Estimate before this work</th>
+<th>Verdict and change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Narrate documents, one chaptered file each, or a book</td>
+<td><strong>Preview voice</strong> plays a bundled clip or a fixed
+phrase with the engine and voice only; rate, gaps, sounder, loudness and
+dictionaries are not applied. <strong>Dry run</strong> writes the spoken
+text, not audio, as <code>&lt;doc&gt;.preview.txt</code> beside each
+document. <strong>Audition</strong> narrates the <em>whole</em> first
+document into the real output folder, where it can overwrite.</td>
+<td>Only a word count (“N documents, about W words”). A size estimate
+was logged after synthesis had finished.</td>
+<td><strong>Gap, fixed.</strong> The summary page has <strong>Try a
+Sample</strong> (Alt+P). It speaks the first 80 words, about 30 seconds,
+of the first document through the run’s own pipeline into a temporary
+folder, plays it, and writes the result to <strong>Sample
+result</strong>: what was made, what it took, and the whole run’s time,
+length and size at that pace. Pressing again stops a sample being made,
+replays a current one, or makes a new one when a setting changed.</td>
+</tr>
+<tr>
+<td>Book build (M4B or MP3)</td>
+<td>Audition builds a one-chapter book in the real place</td>
+<td>None</td>
+<td>Covered by the same sample. The book’s size is estimated at 96 kbps,
+the rate the assembler builds at, and the result says so.</td>
+</tr>
+<tr>
+<td>Translated editions</td>
+<td>None</td>
+<td>Cost confirmation only, for cloud translation</td>
+<td>Left: a sample would spend metered translation. The sample says that
+translated editions are not part of it.</td>
+</tr>
+<tr>
+<td>Combine recordings into a book</td>
+<td>Pre-recorded audio is already the outcome; the chapter list is
+reviewed before the build</td>
+<td>None</td>
+<td>No gap: nothing is synthesized. The button is not shown in this
+journey, nor for a dry run.</td>
+</tr>
+<tr>
+<td>Record a Demonstration</td>
+<td><strong>Test recording</strong> records a few seconds with the real
+plan into a temporary folder and shows the verification; the Check
+reports devices and free space (“room for 30 minutes at these
+settings”)</td>
+<td>Yes</td>
+<td>No gap. This is the model the rest of the family follows.</td>
+</tr>
+<tr>
+<td>Broadcast live</td>
+<td>A stream check before going live</td>
+<td>Not applicable</td>
+<td>No gap for FUX-11: a broadcast is live, not a long job with an
+outcome to preview.</td>
+</tr>
+</tbody>
+</table>
+<p>To make sure the sample proves the setup the run uses, the engine
+spec, the assembly options and the list of audio-shaping settings moved
+from the runner into <code>quill/ui/audio_studio/run_setup.py</code>,
+which both the runner and the sample call. The list of audio-shaping
+settings is the one the incremental-rebuild cache already fingerprinted,
+so a change that makes the run re-synthesize a document is the same
+change that makes a sample out of date.
+<code>synthesize_document_to_chaptered_file</code> gained
+<code>max_words</code>, which cuts the document’s own sections at a word
+boundary with <code>first_words</code>; nothing else in the pipeline
+differs. A sample never adds a voice to the failure blacklist.</p>
+<h3 id="quill-the-editor">QUILL (the editor)</h3>
+<table>
+<thead>
+<tr>
+<th>Long job</th>
+<th>Try small before this work</th>
+<th>Estimate</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Export to Speech Audio</td>
+<td>Select a passage first: only the selection is exported</td>
+<td>None</td>
+<td>No gap that needs new work: the selection is the sample, made with
+the same Read Aloud settings.</td>
+</tr>
+<tr>
+<td>Audiobook and Batch Speech</td>
+<td>As Studio above</td>
+<td>As Studio</td>
+<td>Fixed with Studio.</td>
+</tr>
+<tr>
+<td>Make a Listening Version (WordPress)</td>
+<td>None: it records the whole page and uploads it straight away</td>
+<td>“This can take a few minutes.”</td>
+<td><strong>Left.</strong> A sample would be spoken by
+<code>listen_engines.speak</code> with no upload. The command sits in
+the WordPress work’s files, which have their own plan
+(<code>docs/design/wordpress.md</code>); it is listed there as the
+follow-up.</td>
+</tr>
+<tr>
+<td>File &gt; Export to DAISY</td>
+<td>Text-only DAISY is quick</td>
+<td>Not needed</td>
+<td>No gap.</td>
+</tr>
+<tr>
+<td>Scribe conversions (audio DAISY, MP3, BRF)</td>
+<td><strong>Play Sample</strong> plays the chosen voice only</td>
+<td>Pages: “This uses about X of your N pages”</td>
+<td><strong>Left.</strong> A content sample would spend Scribe pages on
+Scribe’s server; the pages estimate is the honest figure Scribe can give
+before it starts.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="quill-converter-and-quill-transcribe">Quill Converter and QUILL
+Transcribe</h3>
+<table>
+<thead>
+<tr>
+<th>Long job</th>
+<th>Try small before this work</th>
+<th>Estimate before this work</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Converter: Convert Now (Ctrl+Enter)</td>
+<td><strong>Preview with Your Settings</strong> (Ctrl+P) encodes 15
+seconds with the real command and plays it</td>
+<td>None before starting; “about N minutes left” only while the batch
+runs</td>
+<td><strong>Gap</strong>, fixed in the Converter and Transcribe pull
+request: the preview also measures its own encode and says what the
+whole queue should take and make at that pace.</td>
+</tr>
+<tr>
+<td>Converter: Join, Split by Chapters</td>
+<td>The same 15-second preview of one file’s sound</td>
+<td>None</td>
+<td>Covered by the preview’s estimate where the settings apply; the join
+itself is a copy of what the preview checks.</td>
+</tr>
+<tr>
+<td>Converter: Process with Auphonic</td>
+<td>None</td>
+<td>Credit hours left on the account</td>
+<td><strong>Left:</strong> a sample would upload and spend Auphonic
+credit.</td>
+</tr>
+<tr>
+<td>Transcribe a Recording (Shift+F5, and QUILL Transcribe)</td>
+<td>None</td>
+<td><code>estimate_sentence</code>: a static model of the chosen model’s
+speed on this kind of computer</td>
+<td><strong>Gap</strong>, fixed in the Converter and Transcribe pull
+request: <strong>Try the First Minute</strong> transcribes the first
+minute with the chosen model, language and options, shows the words, and
+replaces the static estimate with one measured on this recording.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="quill-radio-and-quill-cast">Quill Radio and QUILL Cast</h3>
+<table>
+<thead>
+<tr>
+<th>Long job</th>
+<th>Try small before this work</th>
+<th>Estimate before this work</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Radio: Record Now, Record Station, scheduled recordings</td>
+<td>None. Record Station’s shortest length is one minute, and the
+recorder rounds anything shorter up to a minute</td>
+<td>None: the bit rate is chosen with no size per hour</td>
+<td><strong>Gap</strong>, fixed in the Radio pull request: Recording
+Settings says what an hour weighs at the chosen quality where the format
+fixes it, and a short test recording with the same station and settings,
+into a temporary folder, says what it actually measured.</td>
+</tr>
+<tr>
+<td>Radio: Download, Download Book</td>
+<td>None</td>
+<td>Counted only as it runs</td>
+<td>Left: a download’s size is the source’s, not a setting’s, so there
+is nothing to rehearse.</td>
+</tr>
+<tr>
+<td>Cast: Download Episode, Download All Episodes</td>
+<td>None</td>
+<td>None; the feed seldom gives sizes</td>
+<td>Left: a download has no settings to rehearse. A free-space check
+before Download All needs enclosure sizes that episodes do not
+store.</td>
+</tr>
+</tbody>
+</table>
+<h3
+id="quill-beacon-media-player-inkwell-weather-quill-lite-social">Quill
+Beacon, Media Player, Inkwell, Weather, QUILL Lite, Social</h3>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Long jobs found</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Beacon</td>
+<td>Import (Ctrl+I) and Sync Now (F9)</td>
+<td>Left. A “would import N, skip M duplicates” preview fits Import, but
+Beacon is not released and <code>app.py</code> is over its size budget.
+Sync already takes a snapshot first and can be rolled back from Sync
+History.</td>
+</tr>
+<tr>
+<td>Media Player</td>
+<td>Listen to a Document with Scribe</td>
+<td>As Scribe in QUILL: left.</td>
+</tr>
+<tr>
+<td>Inkwell</td>
+<td>Dictate Anywhere is live input, not a long job</td>
+<td>No gap.</td>
+</tr>
+<tr>
+<td>Weather</td>
+<td>None</td>
+<td>No gap.</td>
+</tr>
+<tr>
+<td>QUILL Lite</td>
+<td>Import or Convert Document (OCR); Scribe conversions; Make a
+Listening Version</td>
+<td>OCR runs in the background and can be closed; Scribe and Make a
+Listening Version are left for the reasons above.</td>
+</tr>
+<tr>
+<td>Social</td>
+<td>Scheduled posts are the person’s own work, not a job with an outcome
+to preview</td>
+<td>No gap.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-acceptance-from-the-proposal">3. Acceptance, from the
+proposal</h2>
+<ul>
+<li><strong>A sample does not replace the full result or alter the
+source.</strong> Samples are made in temporary folders, removed when the
+window closes, and never written beside the documents or into the output
+folder. No setting changes.</li>
+<li><strong>Devices, formats and settings match the eventual
+job.</strong> Studio’s sample uses <code>run_setup</code>, which the
+runner itself uses. The Converter preview uses the real conversion
+command. Transcribe’s first minute uses the same job the queue would
+run. Radio’s test records with the station, format, quality and filters
+the recording would use.</li>
+<li><strong>Sample limits are explicit.</strong> Every result says what
+it covered “only”, and that the rest is not proved.</li>
+<li><strong>Changed setup is labelled stale.</strong> Every kept result
+carries the fingerprint of its settings and starts “Out of date:” when
+they no longer match.</li>
+<li><strong>A nonvisual inspection path.</strong> Every result is text
+in a read-only field or the status bar, and is reachable after the sound
+has finished.</li>
+</ul>
+<h2 id="4-left-for-later">4. Left for later</h2>
+<ul>
+<li>Make a Listening Version: a sample spoken with
+<code>listen_engines.speak</code> and played without uploading. Listed
+in <code>docs/design/wordpress.md</code>.</li>
+<li>Beacon Import: a dry run that counts what would be imported and
+skipped, once Beacon’s <code>app.py</code> has been split.</li>
+<li>Scribe and Auphonic: both spend a metered allowance on someone
+else’s server, so a sample is not free. Their existing estimates (pages,
+credit hours) stay the honest figure.</li>
+<li>To be checked by hand with a screen reader: Studio’s Try a Sample
+with Kokoro and with SAPI 5, in QUILL and in Studio; that the spoken
+“Sample ready” does not talk over the start of the sample on a slow
+computer; and the Out of date label after going Back and changing the
+voice.</li>
+</ul>
+</main>
+</body>
+</html>

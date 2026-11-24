@@ -1216,7 +1216,7 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ## QUILL Studio
 
-Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
+Control coverage: 308 audited sites (11 help-elsewhere, 297 helped).
 
 ### Every window, and what it is for
 
@@ -1559,6 +1559,10 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 - `ok`: Starts the export: the document is translated into each listed language and spoken by its voice, and every edition lands beside the source, named for its language. A cost estimate is confirmed first when a metered cloud service is involved.
 - `cancel`: Closes the window without exporting anything.
 - `open_studio`: Closes this window and opens the full Audio Studio wizard instead, where a whole folder can be narrated and a chaptered audiobook built and published.
+#### SampleControls (`quill/ui/audio_studio/try_sample.py`)
+
+- `self.button`: Speaks about the first 30 seconds of the first document with every setting above, plays it, and estimates how long the whole run takes and how large it will be. Nothing is saved beside your documents. Press again to stop a sample being made or playing, or to hear it again.
+- `self.result`: What the last sample made, what it measured on this computer, what the whole run should take, and what a sample cannot prove. It says out of date when a setting changed after the sample was made.
 #### AudioStudioWizard (`quill/ui/audio_studio/wizard.py`)
 
 - `self._back_btn`: Returns to the previous step. Nothing you have answered is lost.
