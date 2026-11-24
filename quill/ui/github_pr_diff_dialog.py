@@ -25,6 +25,7 @@ from quill.core.github.diff_explanation import (
 )
 from quill.core.github.diff_hunks import find_line
 from quill.core.github.items_provider import GitHubItemsError, GitHubPullDiff
+from quill.ui.change_walk_keys import bind_change_walk
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 from quill.ui.github_items_view import pull_diff_file_label, render_pull_file_diff
@@ -100,9 +101,12 @@ class GitHubPullDiffDialog(GitHubPullDiffCommentsMixin):
             panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP | wx.TE_RICH2
         )
         self._detail.SetHelpText(
-            "The selected item in full, read-only. Arrow through it line by line."
+            "The differences of the selected file, read-only. Arrow through it line by line; "
+            "F8 and Shift+F8 move to the next and previous difference and say which one it is."
         )
         self._detail.SetName("Differences for the selected file, spoken the Compare Documents way")
+        # F8 / Shift+F8: difference by difference, as in Compare (FUX-12).
+        bind_change_walk(self._detail, self._announce)
         root.Add(self._detail, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         root.Add(wx.StaticText(panel, label="Selected review hunk"), 0, wx.LEFT | wx.TOP, 8)

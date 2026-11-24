@@ -2,6 +2,15 @@
 
 ## 2.0.0
 
+### F8 moves from one change to the next in every read-only diff (2026-11-24)
+
+The differences of a file in a pull request, Compare Branches' Changed Files,
+Compare Configuration and **File > WordPress > Compare with Site** now answer
+`F8` and `Shift+F8`. The caret moves to where the next or previous change
+starts, and QUILL Lite says which one of how many it is, such as "Change 2 of
+4. Lines 10 to 15:". Compare Configuration now marks each line in words
+("Added:", "Removed:") instead of a raw "+" and "-".
+
 ### An empty window says how to begin (2026-11-24)
 
 With every document closed, or when nothing opened at startup, the window has

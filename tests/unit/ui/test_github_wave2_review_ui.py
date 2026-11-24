@@ -459,3 +459,17 @@ def test_next_and_previous_change_say_change_n_of_m(diff_dialog) -> None:
     assert diff_dialog.spoken[-1] == "No more changes."
     diff_dialog._step_change(-1)
     assert diff_dialog.spoken[-1] == "No earlier changes."
+
+
+def test_pull_diff_f8_walks_the_differences(diff_dialog) -> None:
+    # FUX-12: the file's differences move change by change, and say which one.
+    from quill.ui.change_walk_keys import walk
+
+    diff_dialog._detail.SetValue(
+        "a.py: 2 differences.\n\nDifference 1 of 2. Text changed at line 1.\nRemoved: x\n"
+        "\nDifference 2 of 2. Text changed at line 9.\nRemoved: y\n"
+    )
+    diff_dialog._detail.SetInsertionPoint(0)
+    assert walk(diff_dialog._detail, diff_dialog._announce, forward=True)
+    assert walk(diff_dialog._detail, diff_dialog._announce, forward=True)
+    assert diff_dialog.spoken[-1] == "Difference 2 of 2. Text changed at line 9."

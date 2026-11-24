@@ -1959,7 +1959,8 @@ title.
   Select one to hear its changes.
 - **Differences** reads the changes through the same engine as QUILL's Compare
   Documents: "Difference 2 of 5. Text changed at line 41", with both sides
-  named and the changed words described.
+  named and the changed words described. `F8` and `Shift+F8` move to the next
+  and previous difference and say which one it is.
 - **Selected review hunk** shows the part of the file a thread is about, when
   you came here from a thread.
 - **Line marks:** (`Alt+M`) chooses how changed lines are marked in the patch
@@ -3473,7 +3474,9 @@ repository, or with the owner's `.github` repository, which it offers first.
 From an organization's `.github` repository its starter workflows count too.
 The window checks every file that is missing here or differs, each with the
 lines added and removed, and shows the selected file's differences to read
-line by line. Files that are the same, or only here, are counted and kept.
+line by line, each line marked in your Line marks style. `F8` and `Shift+F8`
+move to the next and previous change. Files that are the same, or only here,
+are counted and kept.
 **Propose Update** asks once more, then opens one pull request with the
 checked files and a summary of each. Nothing changes until that pull request
 is merged; QUILL never pushes these to the default branch.

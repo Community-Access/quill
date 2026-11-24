@@ -4289,13 +4289,13 @@ Control coverage: 408 audited sites (408 helped).
 - `self._commits_list`: The commits the second branch has that the first does not, newest first. GitHub gives at most 250; the tab says when there are more.
 - `self._behind_list`: The commits the first branch has that the second lacks, newest first: what it is behind by. GitHub gives at most 250; the tab says when there are more.
 - `self._files`: The changed files, one per row. Arrow to a file to read its changes below.
-- `self._detail`: The selected item in full, read-only. Arrow through it line by line.
+- `self._detail`: The differences of the selected file, read-only. Arrow through it line by line; F8 and Shift+F8 move to the next and previous difference and say which one it is.
 - `self._browser_btn`: Open this on GitHub in your browser.
 - `self._pull_btn`: Open the pull request already open between these two, in your browser. Greyed when there is none.
 - `close_btn`: Close this window. Escape does the same.
 #### ConfigCompareDialog (`quill/ui/github_config_compare_dialog.py`)
 
-- `self.diff`: A unified diff: lines starting with + come from the source, lines starting with - are what this repository has now.
+- `self.diff`: Each change in the selected file: where it is, then its lines, each marked in your Diff Line Marks style. Added lines come from the source; removed lines are what this repository has now. F8 and Shift+F8 move to the next and previous change.
 - `ok`: Ask, then open one pull request with the checked files.
 - `cancel`: Close without changing anything.
 - `box`: Checked files go into one pull request. Its differences show below while it has focus.
@@ -4554,7 +4554,7 @@ Control coverage: 408 audited sites (408 helped).
 #### GitHubPullDiffDialog (`quill/ui/github_pr_diff_dialog.py`)
 
 - `self._files`: The changed files, one per row. Arrow to a file to read its changes below.
-- `self._detail`: The selected item in full, read-only. Arrow through it line by line.
+- `self._detail`: The differences of the selected file, read-only. Arrow through it line by line; F8 and Shift+F8 move to the next and previous difference and say which one it is.
 - `self._hunk`: Read the changed line and its surrounding patch context.
 - `close_btn`: Close this window. Escape does the same.
 - `self._explain_btn`: Sends this file's changes to the AI chosen in Choose Your AI; if they are very long, only the first part is sent. Under Auto, QUILL says which AI it will use first, and it asks before a different company is used. The answer names the file and the commit it explains.
