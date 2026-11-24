@@ -13,6 +13,27 @@ in both downloads, so nothing is downloaded when you first use it.
 If FFmpeg is missing from a copy of QUILL or QUILL Lite, the command now says
 so before anything is recorded, and says how to get it back. It used to
 record the page and then fail with a file error.
+### Workbench windows stay on your screen, and so does Details (2026-11-23)
+
+In the WordPress and GitHub Workbenches, the Details box could run past what
+you could see, so the end of a line was cut off. Two things caused it, and
+both are fixed:
+
+- The window opened at a fixed size and never checked the screen. At 200
+  percent scaling, or on a smaller screen, its right side, where Details is,
+  hung off the edge. It now opens inside the screen, and a size the GitHub
+  Workbench remembered from a bigger screen is made to fit.
+- Made narrow enough, the window pushed its right side, list and Details
+  included, out of view. It now stops at a width where both sides still show.
+
+The row of status cells along the bottom also shows now as soon as it has
+something to say; it used to stay squeezed out of sight until you resized the
+window.
+
+The same fit applies to every main window that remembers its size, and to the
+Review Pull Request and List Manager windows, which were wider than a 1080p
+screen at 200 percent. A window you stretched across two screens is brought
+back onto one when it opens.
 
 ### QUILL Lite's portable copy does everything the installed one does (2026-11-23)
 

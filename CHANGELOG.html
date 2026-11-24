@@ -244,6 +244,75 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3
+id="quill-lite-makes-listening-versions-of-wordpress-pages-2026-11-23">QUILL
+Lite makes listening versions of WordPress pages (2026-11-23)</h3>
+<p><strong>Tools &gt; WordPress &gt; More Media &gt; Make a Listening
+Version</strong> now works in QUILL Lite, installed or portable. It
+reads your page aloud with your Windows voice, turns the recording into
+an MP3, uploads it and puts a player at the top of the page. QUILL Lite
+now ships FFmpeg, the part that makes the MP3, in both downloads, so
+nothing is downloaded when you first use it.</p>
+<p>If FFmpeg is missing from a copy of QUILL or QUILL Lite, the command
+now says so before anything is recorded, and says how to get it back. It
+used to record the page and then fail with a file error.</p>
+<h3
+id="workbench-windows-stay-on-your-screen-and-so-does-details-2026-11-23">Workbench
+windows stay on your screen, and so does Details (2026-11-23)</h3>
+<p>In the WordPress and GitHub Workbenches, the Details box could run
+past what you could see, so the end of a line was cut off. Two things
+caused it, and both are fixed:</p>
+<ul>
+<li>The window opened at a fixed size and never checked the screen. At
+200 percent scaling, or on a smaller screen, its right side, where
+Details is, hung off the edge. It now opens inside the screen, and a
+size the GitHub Workbench remembered from a bigger screen is made to
+fit.</li>
+<li>Made narrow enough, the window pushed its right side, list and
+Details included, out of view. It now stops at a width where both sides
+still show.</li>
+</ul>
+<p>The row of status cells along the bottom also shows now as soon as it
+has something to say; it used to stay squeezed out of sight until you
+resized the window.</p>
+<p>The same fit applies to every main window that remembers its size,
+and to the Review Pull Request and List Manager windows, which were
+wider than a 1080p screen at 200 percent. A window you stretched across
+two screens is brought back onto one when it opens.</p>
+<h3
+id="quill-lites-portable-copy-does-everything-the-installed-one-does-2026-11-23">QUILL
+Lite’s portable copy does everything the installed one does
+(2026-11-23)</h3>
+<p>The portable zip of QUILL Lite left out parts the installed copy has
+always had, so several of its menus did nothing useful when run from a
+stick. It now carries all of them:</p>
+<ul>
+<li><strong>Spell check</strong> with the full dictionaries and other
+languages, not just a word list.</li>
+<li><strong>The GitHub Workbench</strong>, Clone Repository and GitHub
+accounts.</li>
+<li><strong>AI help with GitHub Copilot or ChatGPT (Codex)</strong>, and
+project tasks in the Developer profile.</li>
+<li><strong>Language servers</strong> (Navigate &gt; Code): suggestions
+and problems for code.</li>
+<li><strong>The WordPress Practice Site</strong>, a WordPress on your
+own computer.</li>
+<li><strong>Sounds</strong> that can overlap and follow your volume
+setting, and <strong>App Sounds Play On</strong>, which now lists your
+sound cards.</li>
+<li><strong>Play Media Here</strong> for WordPress media, through
+Windows Media.</li>
+<li><strong>Equations as MathML</strong> when you export Markdown as a
+web page.</li>
+<li><strong>Ogg and Opus recordings</strong> in Transcribe a
+Recording.</li>
+</ul>
+<p>The zip is larger because of it. Nothing downloads when you first use
+any of these.</p>
+<p>When one of these parts is missing from a copy of QUILL or QUILL
+Lite, the app now says so in plain words, and says to install the app
+again or unzip a fresh portable download into a new folder. It used to
+name build scripts and <code>pip</code> commands.</p>
 <h3 id="scribe-for-documents-jeffs-three-answers-2026-11-23">Scribe for
 Documents: Jeff’s three answers (2026-11-23)</h3>
 <ul>

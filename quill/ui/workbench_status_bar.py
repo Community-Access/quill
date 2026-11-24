@@ -102,6 +102,7 @@ class WorkbenchStatusBar:
     def refresh(self) -> None:
         """Repaint every cell from live state. Never announced (GATE-13)."""
         spoken: list[str] = []
+        before = [cell.key for cell in self.visible_cells()]
         for cell in self._cells:
             button = self._buttons[cell.key]
             try:
@@ -116,6 +117,10 @@ class WorkbenchStatusBar:
                 button.SetName(words)
                 spoken.append(words)
         self._native.SetStatusText(". ".join(spoken))
+        if [cell.key for cell in self.visible_cells()] != before:
+            # The row's height can go from nothing to a line of buttons: the
+            # window lays out again, or the cells stay squeezed to no height.
+            self.panel.GetParent().Layout()
         self.panel.Layout()
 
     def has_focus(self) -> bool:

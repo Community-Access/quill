@@ -11,6 +11,10 @@ so, and binds the size and close events that keep the store current -- so no app
 has to remember to save anything, and no app can half-implement this by applying
 geometry it never records.
 
+A restored size is pulled inside the display's work area
+(:func:`quill.ui.dpi.fit_to_work_area`): the store holds pixels, and pixels
+saved on a bigger monitor, or at another scale, can be wider than this one.
+
 Two details that are easy to get wrong and both were, once:
 
 **Only record a restored size while the window is not maximized.** A maximized
@@ -67,6 +71,12 @@ def apply_window_geometry(
         frame.SetSize(geometry.restored_size(fallback))  # type: ignore[arg-type]
         if geometry.maximized:
             frame.Maximize(True)
+        else:
+            from quill.ui.dpi import fit_to_work_area
+
+            # A size remembered on a bigger display, or a default in DIPs at
+            # 200 percent, must not leave the window's right edge off the screen.
+            fit_to_work_area(frame)
         _bind_memory(frame, app_id)
     except Exception:  # noqa: BLE001
         pass

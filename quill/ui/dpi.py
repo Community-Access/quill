@@ -63,3 +63,51 @@ def dip_size(window: Any, width: int, height: int) -> wx.Size:
 
     factor = scale_factor(window)
     return wx.Size(_scale(width, factor), _scale(height, factor))
+
+
+Rect = tuple[int, int, int, int]
+
+
+def fit_rect(rect: Rect, area: Rect) -> Rect:
+    """*rect* (x, y, width, height) shrunk and moved to lie inside *area*."""
+    x, y, width, height = rect
+    ax, ay, aw, ah = area
+    width, height = min(width, aw), min(height, ah)
+    x = min(max(x, ax), ax + aw - width)
+    y = min(max(y, ay), ay + ah - height)
+    return x, y, width, height
+
+
+def work_area(window: Any = None) -> Rect:
+    """The work area (the screen less the taskbar) of the display *window* is on."""
+    import wx
+
+    index = wx.Display.GetFromWindow(window) if window is not None else wx.NOT_FOUND
+    if index == wx.NOT_FOUND:
+        index = 0  # off every display: the primary one
+    area = wx.Display(index).GetClientArea()
+    return area.x, area.y, area.width, area.height
+
+
+def fit_to_work_area(window: Any) -> bool:
+    """Keep a top-level *window* inside its display's work area; True when it changed.
+
+    A minimum size bigger than the work area is lowered to it first, since a
+    minimum the screen cannot hold would push the window straight back off it.
+    A maximized or full-screen window is left alone: Windows already fits it.
+    """
+    if window.IsMaximized() or window.IsFullScreen():
+        return False
+    import wx
+
+    area = work_area(window)
+    least = window.GetMinSize()
+    if least.width > area[2] or least.height > area[3]:
+        window.SetMinSize(wx.Size(min(least.width, area[2]), min(least.height, area[3])))
+    now = window.GetRect()
+    current = (now.x, now.y, now.width, now.height)
+    fitted = fit_rect(current, area)
+    if fitted == current:
+        return False
+    window.SetSize(wx.Rect(*fitted))
+    return True
