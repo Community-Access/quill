@@ -11,6 +11,16 @@ queue, host, options, speaker, window and ``_say``.
 * **The streaming tab** (8.1.3) gets every chunk of its job, and is told when
   the stream has ended and when the job finishes; its completion is part of
   the one result sentence, never a second message.
+* **How each moment is told is the person's choice** (:mod:`quill.core.
+  scribe.feedback`): started, each stage, finished, and failed or needs you,
+  each a sound, words, both or neither. By default nothing is spoken here --
+  progress is read in the Conversions window and Scribe Status -- and the end
+  of a job is a sound, a different one for success and for failure. Whatever
+  is chosen, the sentence is still built: it goes to the status bar (quietly)
+  and to Repeat Last Scribe Message, and a finished or failed one to
+  Notifications too, so a missed sound never loses the result (FUX-04). Words,
+  when chosen, go through the app's announcement service, so braille gets
+  them as well.
 """
 
 from __future__ import annotations
@@ -18,12 +28,25 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.scribe import PRODUCT_NAME
 from quill.core.scribe import queue as q
 from quill.core.scribe import sentences as say
+from quill.core.scribe.feedback import Moment, plan
+from quill.core.sound_events import SoundEvent
 
 #: Job ``open_as`` values with their own speakers or openers.
 WATCH = "watch"
 STREAM = "stream"
+
+#: The sounds this module plays (named here so the sound-event audit sees
+#: them posted; which one is :data:`~quill.core.scribe.feedback.MOMENT_SOUNDS`,
+#: and stages use the progress ladder).
+SOUNDS = (
+    SoundEvent.SCRIBE_STARTED,
+    SoundEvent.SCRIBE_FINISHED,
+    SoundEvent.SCRIBE_FAILED,
+    SoundEvent.PROGRESS_TICK,
+)
 
 
 class ScribeEventsMixin:
@@ -37,6 +60,106 @@ class ScribeEventsMixin:
     _window: Any
     _chunk_listeners: dict[str, Callable[[str], None]]
     _background: Callable[..., None]
+    _last_sentence: str
+
+    def _scribe_window_in_front(self) -> bool:  # the controller answers
+        return False
+
+    # ------------------------------------------------------------ telling
+
+    def _tell(
+        self,
+        moment: Moment,
+        text: str,
+        *,
+        percent: int = 0,
+        cue: bool = True,
+        stall: bool = False,
+    ) -> None:
+        """Tell *text* about *moment* the way the person chose (see the notes).
+
+        *percent* is a milestone just crossed (its step on the progress
+        ladder); *cue* False for a sentence that follows one that already had
+        its sound (the batch summary after the last file's result); *stall*
+        for busy and offline, which explain a job that is not moving and so go
+        to the status bar like a result, though they are stage moments.
+
+        **A result is not overwritten by what follows it.** In a batch the
+        next file starts the moment one finishes, so a start or a stage that
+        nobody heard must not replace the result in the status bar or in
+        Repeat Last Scribe Message: only finished and failed sentences, and
+        sentences actually spoken, become the last message.
+        """
+        if not text:
+            return
+        delivery = plan(
+            self.options().feedback,
+            moment,
+            has_sound=self._has_sound,
+            scribe_window_in_front=self._scribe_window_in_front(),
+            percent=percent,
+        )
+        ending = moment in (Moment.FINISHED, Moment.FAILED)
+        if ending or delivery.speak:
+            self._last_sentence = text
+        if ending or stall or (delivery.speak and moment is Moment.STARTED):
+            self._show_status(text)
+        if ending:
+            self._record_notice(text, failed=moment is Moment.FAILED)
+        if delivery.sound and cue:
+            self._cue(delivery.sound)
+        if delivery.speak:
+            self.host.scribe_announce(text)
+
+    def _has_sound(self, event: str) -> bool:
+        """Whether *event* can be heard now. With the app's sounds turned off
+        altogether this is False, so a "Play a sound" moment is spoken instead:
+        somebody who keeps sounds off must not get silence at the end of a
+        conversion. One event switched off in Sound Scheme is that person's
+        decision about that sound, and stays silent (the family rule)."""
+        has = getattr(self.host, "scribe_has_sound", None)
+        if callable(has):
+            return bool(has(event))
+        try:
+            from quill.ui import sound_manager
+
+            return bool(sound_manager.is_active() and sound_manager.has_sound_for(event))
+        except Exception:  # noqa: BLE001 - no sound stack means no sound
+            return False
+
+    def _cue(self, event: str) -> None:
+        """Through the app's sound scheme: its volume, its App Sounds device,
+        the sound switch and each event's own off switch all apply."""
+        play = getattr(self.host, "scribe_cue", None)
+        if callable(play):
+            play(event)
+            return
+        from quill.ui.companion_cues import post_cue
+
+        post_cue(event)
+
+    def _show_status(self, text: str) -> None:
+        """In the status bar, never spoken: the reader can arrow back to it."""
+        show = getattr(self.host, "scribe_status_text", None)
+        if callable(show):
+            try:
+                show(text)
+            except Exception:  # noqa: BLE001 - a status cell is never worth the queue
+                pass
+
+    def _record_notice(self, text: str, *, failed: bool) -> None:
+        """Kept in Notifications, where a missed sound can be read later."""
+        try:
+            from quill.core.notifications import add_notice
+
+            add_notice(
+                app=self.app_name,
+                title=PRODUCT_NAME,
+                body=text,
+                category="error" if failed else "info",
+            )
+        except (OSError, ValueError):
+            pass
 
     def add_chunk_listener(self, job_id: str, listener: Callable[[str], None]) -> None:
         """Streamed HTML for *job_id* (the read-while-it-converts tab, 8.1.3)."""
@@ -75,31 +198,30 @@ class ScribeEventsMixin:
             return
         if job.open_as == WATCH and kind != "closed_while":
             return  # the watch folder says its own results (8.1.6)
-        in_front = self.host.scribe_in_front()
         if kind == "started":
-            self._say(say.start_sentence(job))
+            self._tell(Moment.STARTED, say.start_sentence(job))
         elif kind == "changed":
-            self._say_quietly(self._speaker.on_change(job, app_in_front=in_front))
+            self._stage_changed(job)
         elif kind == "done":
             self._finished(job)
             self._batch_finished(job)
         elif kind == "error":
             if job.error_code == "QUILL-SCRIBE-PAGES":
-                self._say(say.error_sentence(job, say.pages_sentence(job.message)))
+                self._tell(Moment.FAILED, say.error_sentence(job, say.pages_sentence(job.message)))
             elif job.error_code in ("QUILL-SCRIBE-NOTDOC", "QUILL-SCRIBE-TOOBIG"):
-                self._say(job.message)  # already names Scribe and the file
+                self._tell(Moment.FAILED, job.message)  # already names Scribe and the file
             else:
-                self._say(say.error_sentence(job, job.message))
+                self._tell(Moment.FAILED, say.error_sentence(job, job.message))
             self._batch_finished(job)
         elif kind == "needs_you":
             marker = (job.id, job.state)
             if marker not in self._said_needs_you:
                 self._said_needs_you.add(marker)
-                self._say(say.needs_you_sentence(job, app_name=self.app_name))
+                self._tell(Moment.FAILED, say.needs_you_sentence(job, app_name=self.app_name))
         elif kind == "busy" and self._speaker.once(job, "busy"):
-            self._say(say.busy_sentence(self.app_name))
+            self._tell(Moment.STAGE, say.busy_sentence(self.app_name), stall=True)
         elif kind == "offline" and self._speaker.once(job, "offline"):
-            self._say(say.offline_sentence(job, app_name=self.app_name))
+            self._tell(Moment.STAGE, say.offline_sentence(job, app_name=self.app_name), stall=True)
         elif kind == "online":
             self._speaker.forget(job.id, "offline")  # recovery is silent
         elif kind == "closed_while":
@@ -108,7 +230,17 @@ class ScribeEventsMixin:
                 from quill.core.scribe.library import default_download_root
 
                 root = self.options().download_folder or str(default_download_root())
-                self._say(say.closed_while_sentence(titles, app_name=self.app_name, folder=root))
+                self._tell(
+                    Moment.FINISHED,
+                    say.closed_while_sentence(titles, app_name=self.app_name, folder=root),
+                )
+
+    def _stage_changed(self, job: q.Job) -> None:
+        """A stage or a milestone, each once (the speaker decides which); a
+        milestone plays its own step of the progress ladder."""
+        before = self._speaker.progress_of(job.id)
+        sentence = self._speaker.on_change(job, app_in_front=True)
+        self._tell(Moment.STAGE, sentence, percent=say.milestone_crossed(before, job.progress) or 0)
 
     def _batch_finished(self, job: q.Job) -> None:
         """After the last file of a batch: what was made and what was not (7.4)."""
@@ -120,11 +252,8 @@ class ScribeEventsMixin:
             return
         if len(jobs) > 1 and all(j.state in q.FINISHED for j in jobs):
             if self._speaker.once(q.Job(id=job.batch), "batch"):
-                self._say(say.batch_sentence(jobs))
-
-    def _say_quietly(self, text: str) -> None:
-        if text:
-            self._say(text)
+                # The last file's own result already had its sound.
+                self._tell(Moment.FINISHED, say.batch_sentence(jobs), cue=False)
 
     def _finished(self, job: q.Job) -> None:
         """The one result sentence; open the result only where 7.4a allows."""
@@ -157,7 +286,8 @@ class ScribeEventsMixin:
             opened = self.open_job_result(job, speak=False)
         from quill.core.scribe.results import result_notes
 
-        self._say(
+        self._tell(
+            Moment.FINISHED,
             say.result_sentence(
                 job,
                 app_name=self.app_name,
@@ -166,7 +296,7 @@ class ScribeEventsMixin:
                 note=note,
                 # the pictures, a Kindle book, an EPUB nothing here reads: once
                 after=" ".join(n for n in (result_notes(job.outputs), self._host_note(job)) if n),
-            )
+            ),
         )
 
     def _may_open_now(self) -> bool:

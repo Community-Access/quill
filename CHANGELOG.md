@@ -92,6 +92,48 @@ upgrade, about the Braille Pack and the Kokoro voices, wait the same way.
 
 An update download that breaks off part way no longer leaves a half-written
 installer behind, and never replaces a good copy that was already there.
+### Scribe for Documents is quiet while you work, and its sounds say how it went (2026-11-23)
+
+A conversion no longer talks over your document. To start with, nothing is
+said while it runs: its progress is in Scribe Conversions and Scribe Status
+when you want to look. When it finishes you hear a short success sound, and
+when it fails or needs you (your sign-in ran out, you are out of pages,
+Scribe refused the file) a different, lower failure sound. The sentence is
+still kept: it is in the status bar and in Notifications, and Repeat Last
+Scribe Message says it again.
+
+Scribe for Documents Options has a new **Progress and results** group, in
+QUILL, QUILL Lite and every app with Scribe: for when a conversion starts,
+each stage, milestone or delay, when it finishes, and when it fails or needs
+you, choose **Play a sound**, **Speak the action**, **Both a sound and
+speech** or **Neither**. Each control says its group's name after its own.
+**Stage feedback applies** chooses whether stage feedback comes only while a
+Scribe for Documents window is in front, or everywhere. **Play Success Sound**
+and **Play Failure Sound** let you hear the two sounds, at your App Sounds
+volume. The three new sounds are in the sound scheme, in the group **Scribe
+for Documents**, where you can change or silence each one. Words go to your
+screen reader and braille display, as everything else does. This replaces
+**Speak each stage**; if you had it set to **Always**, you keep words for
+everything, everywhere, with the sounds as well.
+### Scribe for Documents: a safer sign-in and a preview with no gaps (2026-11-24)
+
+In QUILL, and in QUILL Lite where it says so:
+
+- **Sign-in accepts only the sign-in QUILL started.** QUILL now checks that
+  the sign-in coming back to it is the one it started, so nobody can make
+  QUILL sign in to their account instead of yours. If the check fails, the
+  browser tab says "Sign-in did not complete", QUILL says "Scribe for
+  Documents did not sign you in. Try again.", and nothing is saved. If you
+  are still in the browser, QUILL says it when you come back to the sign-in
+  window. QUILL Lite too.
+- **Read while it converts starts at the beginning, and survives a dropped
+  connection.** The tab used to miss what Scribe sent before QUILL was
+  listening, and anything sent while the connection was down. Now Scribe
+  sends those parts again, and QUILL adds each one once, in order.
+- **Rename says when a name is too long.** Scribe takes names of up to
+  255 characters. A longer one is not sent: Rename asks again, with what you
+  typed still there, and says "This name has 300 characters, and a name can
+  have at most 255." QUILL Lite too.
 
 ### Scribe for Documents: the voices are there, and Play Sample answers (2026-11-23)
 
@@ -146,6 +188,7 @@ the Practice Site list still said it was not running until you connected it.
 
 This is the same in QUILL and QUILL Lite.
 
+
 ### Scribe for Documents: groups of options say which group they are (2026-11-23)
 
 In Scribe Options, the "Default formats" check boxes read only "Word, check
@@ -160,6 +203,7 @@ Alt+W now moves to the "Open each result when it is ready" choices. Its
 underlined letter did nothing before.
 
 Help in these dialogs says "checked", not "ticked".
+
 ### QUILL Lite makes listening versions of WordPress pages (2026-11-23)
 
 **Tools > WordPress > More Media > Make a Listening Version** now works in

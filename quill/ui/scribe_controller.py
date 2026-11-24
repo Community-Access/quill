@@ -7,7 +7,9 @@ client ID), sign-in, the convert dialog, the family queue's runner, the
 Scribe Conversions window, My Scribe Documents, the options and every
 sentence. An app adds only its own entry points (PRD goal 5).
 
-**Who speaks** (7.4a): only while this app holds the queue's runner lock.
+**Who speaks** (7.4a): only while this app holds the queue's runner lock,
+and only what the person chose to hear (:mod:`quill.core.scribe.feedback`;
+by default nothing in the main window, and a sound at the end of a job).
 **Dialogs** open only straight after the person's own command; a background
 job that needs the person waits in Scribe Conversions and says so once.
 """
@@ -68,7 +70,9 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
         self._session: Any = None
         self._queue: q.FamilyQueue | None = None
         self._service: Any = None
-        self._speaker = say.Speaker()
+        #: Builds each sentence once; whether it is heard is the feedback
+        #: choice (scribe_controller_events._tell), so it never gates here.
+        self._speaker = say.Speaker(speak_stages="always")
         self._window: Any = None
         self._last_sentence = ""
         self._chunk_listeners: dict[str, Callable[[str], None]] = {}
@@ -83,7 +87,14 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
 
     def save_options(self, options: ScribeOptions) -> None:
         save_options(options)
-        self._speaker.speak_stages = options.speak_stages
+
+    def _scribe_window_in_front(self) -> bool:
+        """A Scribe for Documents window (Conversions, Status, My Scribe
+        Documents) is the active window: where stage feedback goes by default."""
+        from quill.core.scribe.feedback import SCRIBE_WINDOW_ATTR
+
+        active = wx.GetActiveWindow()
+        return bool(active is not None and getattr(active, SCRIBE_WINDOW_ATTR, False))
 
     def unavailable(self) -> str:
         return scribe.unavailable_reason(self.app_name)
@@ -121,8 +132,6 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
             return
         from quill.core.scribe.runner import QueueService
 
-        options = self.options()
-        self._speaker.speak_stages = options.speak_stages
         self._service = QueueService(
             self.app_name,
             queue=self.queue,

@@ -220,6 +220,12 @@ class AppScribeHost:
         self._owner._announce(text)
         self.scribe_said(text)
 
+    def scribe_status_text(self, text: str) -> None:
+        """The latest Scribe sentence in the app's status bar, not spoken."""
+        show = getattr(self._owner, "_set_status", None)
+        if callable(show):
+            show(text)
+
     def scribe_said(self, text: str) -> None:
         """A sentence was said: a held window may go now. An app with its own
         ``scribe_announce`` calls this after speaking."""

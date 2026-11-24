@@ -233,6 +233,15 @@ def has_sound_for(event_id: str) -> bool:
     return str(event_id) in get_loaded_events()
 
 
+def is_event_switched_off(event_id: str) -> bool:
+    """True when *event_id* is switched off in Sound Scheme
+    (``settings.sound_events_disabled``): loaded, and never played. For a
+    preview that has to say why it made no sound."""
+    if _manager is None:
+        return False
+    return str(event_id) in getattr(_manager.player, "_disabled", frozenset())
+
+
 def load_indent_tone_pack(scale: str) -> None:
     """Overlay the bundled indent tone pack for *scale* over the primary pack.
 

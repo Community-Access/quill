@@ -123,6 +123,13 @@ sense at the time:
 - **Continue** closes the window once you are signed in.
 - **Cancel** stops waiting. You are not signed in.
 
+QUILL finishes only a sign-in it started itself. If a sign-in it did not
+start reaches it, or you leave Scribe's page without signing in, the browser
+tab says "Sign-in did not complete. Return to QUILL and try again." and
+nothing is saved. The sign-in window says "Scribe for Documents did not sign
+you in. Try again." Focus is on **Try Again**. Press it to start a new
+sign-in.
+
 One sign-in covers every QUILL app on this computer, QUILL Lite included.
 It is kept in Windows' secure store, never in a settings file.
 
@@ -486,7 +493,8 @@ image descriptions, 40 percent, about 2 minutes." With nothing running it
 says "No Scribe for Documents conversions are running."
 
 **Tools > Scribe for Documents > Repeat Last Scribe Message** says the last
-thing Scribe for Documents said again. Before anything has been said, you
+Scribe for Documents message again, whether or not it was spoken: the last
+result or problem, or the last sentence you heard. Before there is one, you
 hear "Nothing from Scribe for Documents yet."
 
 Both are good commands to give a key of your own in the Keymap Editor.
@@ -581,10 +589,27 @@ What the Stage column says:
 
 ### What you hear at each stage
 
-QUILL says each step once. You never hear a step twice, and you never hear
-a percent between the milestones.
+To start with, QUILL says nothing about a conversion while you work. Its
+progress is in Scribe Conversions and Scribe Status, for when you want to
+look. When a conversion finishes you hear a short success sound, and when
+it fails or needs you (your sign-in has run out, you are out of pages,
+Scribe refused the file) you hear a different failure sound. Nothing is
+lost if you miss a sound: the sentence is in the status bar and in
+Notifications, and **Repeat Last Scribe Message** says it again.
 
-| When | What you hear |
+You choose all of this under **Progress and results** in Scribe for
+Documents Options: for when a conversion starts, each stage, when it
+finishes, and when it fails or needs you, **Play a sound**, **Speak the
+action**, **Both a sound and speech** or **Neither**. Words go to your
+screen reader and your braille display, like everything QUILL says. If you
+keep QUILL's sounds turned off, a moment set to **Play a sound** is spoken
+instead, so the end of a conversion is never silent.
+
+When you have chosen words, QUILL says each step once. You never hear a
+step twice, and you never hear a percent between the milestones. These are
+the sentences:
+
+| When | What is said |
 |---|---|
 | A file is sent | "Scribe for Documents: sending Notes.pdf, for Word." |
 | Another format of a document in your account | "Scribe for Documents is making EPUB from Notes." |
@@ -593,11 +618,18 @@ a percent between the milestones.
 | It is finished | "Scribe for Documents made Notes.docx in Documents\Scribe for Documents\Notes. Word is open in QUILL." |
 | It is finished, and nothing opened | The same, ending "Open it from Scribe Conversions." |
 | It failed | "Scribe for Documents could not convert Notes.pdf:" and Scribe's own reason |
+| It needs you | For example "Your Scribe for Documents sign-in has ended." and what to do |
 
-Stages and the milestones follow **Speak each stage** in Options. The
-start, the result and any problem are always said. Only one QUILL app says
-these things, the one that is running the job; the others show the same
-rows quietly.
+Stages, milestones and delays are **At each stage, milestone or delay** in
+Options. To start with that is **Neither**; with a sound chosen, each stage
+plays a soft tick and each milestone its step of the progress tones. A
+delay (Scribe asking to slow down, or this computer offline) is also in the
+status bar. **Stage feedback applies** decides where: **Only while a Scribe
+for Documents window is in front** (Scribe Conversions, Scribe Status or My
+Scribe Documents, the default), or **Everywhere, even when another program
+is in front**. Only
+one QUILL app says or plays these things, the one that is running the job;
+the others show the same rows quietly.
 
 ### Several files, one after another
 
@@ -606,21 +638,25 @@ dialog, with one consent. They are sent one after another, each starting
 only when the one before has finished or failed. You are not asked again.
 Pneuma agreed to this way of working.
 
-Each file's start, result or problem is said as it happens. A file that
-fails does not stop the rest. When the last one is done you hear one
-sentence for them all, for example "Scribe for Documents finished 3 files.
-Made: Notes.pdf and Map.png. Not made: Old.doc; Scribe Conversions has the
-details."
+Each file's start, result or problem is told as it happens, the way you
+chose in Options. A file that fails does not stop the rest. When the last
+one is done there is one sentence for them all, in the status bar and
+Notifications, and said if you chose words for a finished conversion. For
+example: "Scribe for Documents finished 3 files. Made: Notes.pdf and
+Map.png. Not made: Old.doc; Scribe Conversions has the details."
 
-If Scribe asks QUILL to slow down, QUILL waits a minute and says so once:
-"Scribe for Documents asked QUILL to slow down; trying again in a minute."
+If Scribe asks QUILL to slow down, QUILL waits a minute. The status bar
+says "Scribe for Documents asked QUILL to slow down; trying again in a
+minute.", and so does your screen reader if you chose words for each stage.
 The Details box shows the time it will try again.
 
 ### Closing QUILL while a job runs
 
 Closing QUILL does not lose a job. Scribe carries on, and the job stays on
 the list. The next time a QUILL app starts, it picks the job up and
-downloads what was made. Then it says, once, for example "Scribe for
+downloads what was made. Then it tells you once, as you chose for a
+finished conversion (to start with, the success sound), and puts the
+sentence in the status bar and Notifications, for example "Scribe for
 Documents finished 2 documents while QUILL was closed: Notes and Chapter 2,
 in Documents\Scribe for Documents."
 
@@ -691,7 +727,7 @@ In Tab order:
 |---|---|
 | **Download Formats...** | The Convert dialog for this document, with nothing uploaded. Download a format already made, or make a new one |
 | **Open in QUILL** | Opens a file you already downloaded from this document |
-| **Rename...** | Changes the document's title in your Scribe account |
+| **Rename...** | Changes the document's title in your Scribe account. A name can have up to 255 characters. A longer one is not sent: Rename asks again, with what you typed still there |
 | **Move to Trash** | Moves it to the Trash. Scribe deletes it after 7 days |
 | **Recover** | In the Trash: takes it out again |
 | **Delete Forever...** | In the Trash: deletes it now |
@@ -735,9 +771,33 @@ In Tab order:
 | **Download folder** and **Browse...** | Where results are saved, one folder for each document. To start with, Documents\Scribe for Documents |
 | **Open each result when it is ready** | **Open it** (the default), **Ask me first**, or **Don't open** |
 | **Offer Scribe when a PDF has little or no text** | Adds Scribe to the scanned-PDF question. On to start with |
-| **Speak each stage** | **Only while a QUILL app is in front** (the default), **Always**, or **Never** |
+| **Progress and results** | How QUILL tells you about a conversion; see below |
 | **About** | What Scribe is, and the privacy notes, under the heading **Powered by Scribe for Documents** |
 | **Open Scribe Terms in Browser**, **Open Scribe Privacy Policy in Browser**, **Open Scribe Manual in Browser** | Scribe's own pages |
+
+**Progress and results** has these controls. The four that start "When" or
+"At" are each a choice of **Play a sound**, **Speak the action**, **Both a
+sound and speech** or **Neither**:
+
+| Control | To start with |
+|---|---|
+| **When a conversion starts** | **Neither** |
+| **At each stage, milestone or delay** | **Neither**. A delay is Scribe asking to slow down, or this computer going offline |
+| **Stage feedback applies** | **Only while a Scribe for Documents window is in front** (the default), or **Everywhere, even when another program is in front** |
+| **When a conversion finishes** | **Play a sound**: the success sound |
+| **When a conversion fails or needs you** | **Play a sound**: the failure sound |
+| **Play Success Sound** and **Play Failure Sound** | Play the two sounds, at the volume and on the device App Sounds uses |
+
+The sounds are in the sound scheme, in the group **Scribe for Documents**
+(**Conversion sent to Scribe**, **Conversion finished** and **Conversion
+failed or needs you**), so you can change or silence each one there. A
+moment set to **Play a sound** is spoken instead when QUILL's sounds are
+turned off or the scheme has no sound for it; if you switch one sound off
+in Sound Scheme, that moment makes no sound and no speech. The play buttons
+say which of these is the case when they cannot play. Whatever you choose, a finished or failed conversion's
+sentence is in the status bar and in Notifications. If you used **Speak each
+stage** before, **Always** becomes words for every moment, everywhere, with
+the sounds as well; anything else starts from the new defaults.
 
 **Open each result when it is ready** works like this. With **Open it**, a
 result opens by itself, but only in the app that asked for it, and only if
@@ -764,6 +824,10 @@ start reading at once.
 - Text is added only a whole paragraph, heading or list item at a time, at
   the end. Your place does not move, the braille line does not change under
   you, and nothing new is spoken.
+- The tab starts at the beginning of the document, even when Scribe started
+  sending before QUILL was listening. If the connection drops, QUILL picks up
+  where it stopped when it reconnects: nothing is missed, and nothing is
+  added twice.
 - When the text is all there, the tab is named "Notes (Scribe, complete)".
   If the conversion fails partway, it is named "Notes (Scribe, incomplete)"
   and keeps what arrived.
@@ -891,8 +955,10 @@ cut off.
 
 ## Walkthroughs
 
-Each walkthrough says what to press and what you hear. Your file names and
-numbers will be different.
+Each walkthrough says what to press and what you hear, with words chosen
+for every moment in **Progress and results**. With the defaults you hear
+only the success sound at the end. Your file names and numbers will be
+different.
 
 ### A scanned PDF to Word
 
@@ -1098,8 +1164,12 @@ start picks them up.
 
 ## Troubleshooting
 
-When something goes wrong, you hear one sentence that names Scribe for
-Documents and the file, and usually Scribe's own reason. Scribe writes its
+When something goes wrong, there is one sentence that names Scribe for
+Documents and the file, and usually Scribe's own reason. To start with you
+hear the failure sound, and the sentence is in the status bar, in
+Notifications and in Scribe Conversions; **Repeat Last Scribe Message**
+says it. "You hear" below is that sentence, as it is said when you choose
+words in **Progress and results**. Scribe writes its
 messages for people to read. QUILL adds a code, such as QUILL-SCRIBE-PAGES,
 which you never hear. It is in the Details box and in **Copy Details**, for
 when you ask for help.

@@ -232,14 +232,14 @@ def test_sign_in_over_the_loopback_then_refresh_and_sign_out(server: FakeScribe)
     secrets = SecretsManager(MemorySecrets())
     session = ScribeSession(secrets=secrets, poster=server.poster, client_id="cid", base_url=BASE)
     attempt = session.begin_sign_in()
-    redirect = parse_qs(urlsplit(parse_qs(urlsplit(attempt.url).query)["next"][0]).query)[
-        "redirect_uri"
-    ][0]
+    inner = parse_qs(urlsplit(parse_qs(urlsplit(attempt.url).query)["next"][0]).query)
+    redirect, state = inner["redirect_uri"][0], inner["state"][0]
     assert redirect.startswith("http://127.0.0.1:") and redirect.endswith("/scribe/callback")
     result: dict = {}
     thread = threading.Thread(target=lambda: result.update(b=attempt.wait(10)))
     thread.start()
-    with urllib.request.urlopen(f"{redirect}?code=good-code", timeout=5) as page:  # noqa: S310
+    back = f"{redirect}?code=good-code&state={state}"
+    with urllib.request.urlopen(back, timeout=5) as page:  # noqa: S310
         assert b"Signed in. You can close this tab" in page.read()
     thread.join(10)
     assert result["b"].access_token == "access-token-1" and session.is_signed_in()

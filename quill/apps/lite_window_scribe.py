@@ -43,6 +43,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.scribe import PRODUCT_NAME
+from quill.core.sound_events import SoundEvent
 from quill.ui.scribe_after_sentence import AfterSentence
 from quill.ui.scribe_after_sentence import wait_for_sentence as wait_for_sentence
 from quill.ui.scribe_entry import ScribeEntryPoints
@@ -66,6 +67,18 @@ _QUILL_ONLY = ("epub",)
 #: Said once in the result sentence when an EPUB was made and QUILL is not here.
 NO_EPUB_READER = "QUILL Lite does not open EPUB books. QUILL does."
 
+
+#: The sounds a conversion can make here (quill/core/scribe/feedback.py), in
+#: QUILL Lite's Sound Scheme window (quill/core/sound_app_events.py).
+SCRIBE_SOUNDS = (
+    SoundEvent.SCRIBE_STARTED,
+    SoundEvent.SCRIBE_FINISHED,
+    SoundEvent.SCRIBE_FAILED,
+    SoundEvent.PROGRESS_TICK,
+    SoundEvent.PROGRESS_25,
+    SoundEvent.PROGRESS_50,
+    SoundEvent.PROGRESS_75,
+)
 
 #: Said once when the converted HTML is asked for again while its window is open.
 ALREADY_OPEN_SENTENCE = "The accessible HTML is already open"
@@ -117,6 +130,20 @@ class LiteScribeHost:
             if voice is not None:
                 voice.speak(text)
         self._after.said(text)
+
+    def scribe_status_text(self, text: str) -> None:
+        """The latest Scribe sentence in the status bar's message cell, not
+        spoken: a listener arrows to it to hear it again."""
+        window = self._window()
+        show = getattr(window, "_set_status_message", None)
+        if callable(show):
+            show(text)
+
+    def scribe_cue(self, event: str) -> None:
+        """A Scribe sound (:data:`SCRIBE_SOUNDS`), through Lite's sound scheme."""
+        from quill.ui.companion_cues import post_cue
+
+        post_cue(event)
 
     def _hold(self, opening: Callable[[], None], phrase: str) -> None:
         self._after.hold(opening, phrase)

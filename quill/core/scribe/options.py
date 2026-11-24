@@ -18,6 +18,13 @@ website still shows through everywhere the person has not chosen otherwise.
 Scribe's account defaults change only when the person ticks "Also save as my
 Scribe account defaults", which is never remembered.
 
+**How progress and results are told** (:mod:`.feedback`, 2026-11-23) is
+``feedback``: a sound, words, both or neither for each of a conversion's four
+moments. It replaced "Speak each stage" (``speak_stages``), which is still
+written -- derived from ``feedback`` -- so an older build that reads this file
+keeps the nearest behaviour; a file with no ``feedback`` is migrated from it
+(:func:`.feedback.from_speak_stages`).
+
 wx-free.
 """
 
@@ -27,6 +34,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+from quill.core.scribe.feedback import FeedbackChoices, from_speak_stages, to_speak_stages
 from quill.core.scribe.model import ScribeSettings, valid_formats
 from quill.core.storage import read_json, write_json_atomic
 
@@ -36,7 +44,8 @@ OPEN_CHOICES: tuple[tuple[str, str], ...] = (
     ("offer", "Ask me first"),
     ("no", "Don't open"),
 )
-#: "Speak each stage" (7.4a). Start, finish and errors are always spoken.
+#: The retired "Speak each stage" (7.4a), still written for older builds and
+#: read once to migrate a file to ``feedback`` (:mod:`.feedback`).
 SPEAK_CHOICES: tuple[tuple[str, str], ...] = (
     ("front", "Only while a QUILL app is in front"),
     ("always", "Always"),
@@ -66,7 +75,10 @@ class ScribeOptions:
     download_folder: str = ""
     open_results: str = "yes"
     offer_low_text_pdf: bool = True
+    #: Derived from ``feedback`` on every save; read only to migrate.
     speak_stages: str = "front"
+    #: A sound, words, both or neither for each moment of a conversion.
+    feedback: FeedbackChoices = field(default_factory=FeedbackChoices)
     #: Local default settings, kept apart from Scribe's account defaults:
     #: only the fields set, never a full set that would hide the account's.
     settings: dict[str, Any] = field(default_factory=dict)
@@ -140,6 +152,9 @@ def load_options(path: Path | None = None) -> ScribeOptions:
         speak_stages=str(data.get("speak_stages"))
         if data.get("speak_stages") in speak_ids
         else "front",
+        feedback=FeedbackChoices.from_mapping(data["feedback"])
+        if isinstance(data.get("feedback"), dict)
+        else from_speak_stages(data.get("speak_stages")),
         settings=_known_fields(data.get("settings")),
         last_settings={
             str(app): _known_fields(fields)
@@ -152,7 +167,10 @@ def load_options(path: Path | None = None) -> ScribeOptions:
 
 
 def save_options(options: ScribeOptions, path: Path | None = None) -> None:
-    write_json_atomic(path or options_path(), asdict(options))
+    options.speak_stages = to_speak_stages(options.feedback)
+    data = asdict(options)
+    data["feedback"] = options.feedback.to_dict()  # validated, not as typed
+    write_json_atomic(path or options_path(), data)
 
 
 __all__ = [

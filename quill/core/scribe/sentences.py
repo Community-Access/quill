@@ -4,12 +4,13 @@ The rules:
 
 * Only the app holding the queue's runner lock speaks; the others show the
   same state silently (:class:`Speaker` is asked by that app only).
-* Start, the result and errors are always spoken and always name Scribe for
-  Documents (SCR-POL-1). Stage changes and the 25, 50 and 75 percent
-  milestones of the *whole job* follow "Speak each stage": only while a QUILL
-  app is in front (the default), always, or never. Intermediate stages may
-  drop the "Scribe for Documents:" prefix.
-* Each stage is said once; a percent between milestones is shown, never said.
+* Start, the result and errors always name Scribe for Documents (SCR-POL-1).
+  Whether each is spoken, played as a sound, both or neither is the person's
+  choice (:mod:`.feedback`; nothing is spoken by default). Stage changes and
+  the 25, 50 and 75 percent milestones of the *whole job* are the "stage"
+  moment there. Intermediate stages may drop the "Scribe for Documents:"
+  prefix.
+* Each stage is told once; a percent between milestones is shown, never said.
 * An error says the server's own sentence (Scribe writes it for people). The
   QUILL code is for Copy Details and is never spoken.
 * Messages name the running app (QUILL, QUILL Lite), never a fixed "QUILL".
@@ -255,6 +256,10 @@ class Speaker:
         if not said and crossed and self.stages_allowed(app_in_front):
             said = percent_sentence(job, crossed)
         return said
+
+    def progress_of(self, job_id: str) -> float:
+        """The furthest *job_id* has been seen to get, 0.0 to 1.0."""
+        return self._progress.get(job_id, 0.0)
 
     def once(self, job: Job, kind: str) -> bool:
         """True the first time *kind* happens for *job* (busy, offline...)."""

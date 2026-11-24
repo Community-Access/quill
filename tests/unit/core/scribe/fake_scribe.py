@@ -124,6 +124,12 @@ class FakeScribe:
         self.error_for_format: dict[str, tuple[str, str]] = {}
         self.stages = ("queue", "start", "convert", "add_image_descriptions", "complete")
         self.chunks: list[str] = []
+        #: Chunks carry ``index`` (Scribe since 2026-11-23); False is an older server.
+        self.chunk_indexes = True
+        #: Preview chunks already streamed, sent first on a join that asks for
+        #: ``replay_chunks`` (indexes 0, 1, ...); live :attr:`chunks` follow on.
+        self.streamed: list[str] = []
+        self.join_payloads: list[Any] = []
         self.drop_next_recv = 0
         self.drop_download_after: int | None = None
         self.fail_connect = 0
@@ -361,12 +367,16 @@ class FakeScribe:
         sock.topic = topic
         doc = self.documents.get(topic.split(":", 1)[1])
         if event == "phx_join":
+            self.join_payloads.append(payload)
             if doc is None:
                 sock._push(
                     ref, "phx_reply", {"status": "error", "response": {"reason": "not_found"}}
                 )
                 return
             sock._push(ref, "phx_reply", {"status": "ok", "response": {}})
+            if self.chunk_indexes and isinstance(payload, dict) and payload.get("replay_chunks"):
+                for index, chunk in enumerate(self.streamed):
+                    sock._push(None, "chunk", {"index": index, "content": chunk})
             if not doc.unlocked:
                 sock._push(None, "password_required", {})
             return
@@ -385,8 +395,12 @@ class FakeScribe:
                 "phx_reply",
                 {"status": "error", "response": {"reason": "conversion_in_progress"}},
             )
-            for chunk in self.chunks:
-                sock._push(None, "chunk", {"content": chunk})
+            start = len(self.streamed)
+            for index, chunk in enumerate(self.chunks, start):
+                frame: dict[str, Any] = {"content": chunk}
+                if self.chunk_indexes:
+                    frame["index"] = index
+                sock._push(None, "chunk", frame)
             sock._push(None, "conversion_complete", {"format": "html_stream", "output_id": "p"})
             return
         if self.rate_limited_once:

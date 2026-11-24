@@ -73,6 +73,16 @@ QUILLLITE_EVENTS: frozenset[str] = frozenset({
     SoundEvent.WINDOWS_DICTATION_COMMAND_OFF,
     # The caret arriving on a line with an inline note (quill/apps/lite_window.py).
     SoundEvent.INLINE_NOTE_LINE,
+    # Scribe for Documents (quill/apps/lite_window_scribe.py): a conversion
+    # sent, finished and failed, and its stages on the progress ladder when the
+    # person asks for stage sounds (quill/core/scribe/feedback.py).
+    SoundEvent.SCRIBE_STARTED,
+    SoundEvent.SCRIBE_FINISHED,
+    SoundEvent.SCRIBE_FAILED,
+    SoundEvent.PROGRESS_TICK,
+    SoundEvent.PROGRESS_25,
+    SoundEvent.PROGRESS_50,
+    SoundEvent.PROGRESS_75,
 })
 
 # Not here, and each absence is a decision rather than an oversight: QUILL Lite
