@@ -29,6 +29,7 @@ from quill.core.keymap import (
     save_keymap,
 )
 from quill.core.settings import save_settings
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.dialog_contract import (
     apply_modal_ids,
     set_accessible_name,
@@ -106,7 +107,7 @@ class KeymapIoMixin:
             wx.ALL | wx.EXPAND,
             8,
         )
-        kind_choice = wx.RadioBox(
+        kind_choice = GroupedRadioBox(
             dialog,
             label="What to create",
             choices=["Share a profile (privacy-clean)", "Back up everything"],

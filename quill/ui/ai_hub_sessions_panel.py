@@ -19,6 +19,7 @@ from quill.core.ai.copilot_preferences import (
     save_copilot_preferences,
 )
 from quill.core.i18n import _
+from quill.ui.accessible_group import describe_group
 
 
 class SessionsPanel:
@@ -143,6 +144,7 @@ class SessionsPanel:
         self.share_skills.SetName("Share enabled AI Library skills with Copilot")
         self.share_skills.SetValue(self._preferences.share_enabled_skills)
         options.Add(self.share_skills, 0, wx.ALL, 6)
+        describe_group(options, self.keep_sessions, self.long_context, self.share_skills)
 
         options.Add(
             wx.StaticText(
@@ -197,6 +199,7 @@ class SessionsPanel:
         )
         self.confirm_delete.SetName("Confirm permanent deletion of selected Copilot session")
         saved.Add(self.confirm_delete, 0, wx.ALL, 6)
+        describe_group(saved, self.confirm_delete)
         self.delete_session_btn = wx.Button(
             self.panel, label=str(_("&Delete selected session permanently"))
         )

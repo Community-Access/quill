@@ -20,6 +20,7 @@ from quill.core.ai.translation import (
     UNCHANGED_TRANSLATION_MESSAGE,
     translation_unchanged,
 )
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive
 from quill.ui.dpi import dip_size
 
@@ -100,6 +101,7 @@ class AITranslationDialog:
         self._provider_ai_rb.SetValue(True)
         provider_sizer.Add(self._provider_ai_rb, 0, wx.ALL, 4)
         provider_sizer.Add(self._provider_lt_rb, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 4)
+        describe_group(provider_sizer, self._provider_ai_rb, self._provider_lt_rb)
 
         lt_url_row = wx.BoxSizer(wx.HORIZONTAL)
         lt_url_label = wx.StaticText(self.dialog, label="LibreTranslate URL:")

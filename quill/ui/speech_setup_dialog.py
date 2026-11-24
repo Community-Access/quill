@@ -14,6 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control
 from quill.ui.dpi import dip_size
 
@@ -239,7 +240,7 @@ class SpeechSetupDialog:
                 choices.append(f"{d['label']} — engine file not found (ships with the app)")
             else:
                 choices.append(f"{d['label']} — not installed")
-        self._engine_radio = wx.RadioBox(
+        self._engine_radio = GroupedRadioBox(
             parent,
             label="Dictation &engine",
             choices=choices,

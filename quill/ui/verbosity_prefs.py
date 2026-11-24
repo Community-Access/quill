@@ -21,6 +21,7 @@ import wx
 from quill.core.verbosity.channels import VISUAL_ALWAYS_ON_NAME, Channel
 from quill.core.verbosity.profiles import BUILTIN_PROFILES, DEFAULT_PROFILE
 from quill.core.verbosity.registry import VerbRegistry, default_registry
+from quill.ui.accessible_group import GroupedRadioBox, describe_group
 from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 
@@ -52,7 +53,7 @@ class VerbosityPrefsPanel(wx.Panel):
         root = wx.BoxSizer(wx.VERTICAL)
 
         # Profile picker.
-        self._profile = wx.RadioBox(
+        self._profile = GroupedRadioBox(
             self, label="&Profile", choices=_PROFILE_NAMES, style=wx.RA_SPECIFY_COLS
         )
         self._profile.SetName("Verbosity profile")
@@ -64,6 +65,7 @@ class VerbosityPrefsPanel(wx.Panel):
         self._channels: dict[str, wx.CheckBox] = {}
         for name in ("Speech", "Braille", "Sound", "Visual"):
             cb = wx.CheckBox(channel_box.GetStaticBox(), label=f"&{name}")
+            describe_group(channel_box, cb)
             cb.SetValue(True)
             if name == "Visual":
                 cb.Disable()

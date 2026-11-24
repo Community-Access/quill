@@ -1,4 +1,4 @@
-"""GATE-GROUP: every check box or radio button in a static box says its group.
+"""GATE-GROUP: every check box or radio button in a static box says its group, family-wide.
 
 The scan is :mod:`quill.tools.group_caption_audit`; this test holds its scope
 to zero findings and proves the scan sees the shapes it is meant to see, so a
@@ -16,14 +16,20 @@ def _scan(source: str) -> list[str]:
     return [f.problem for f in gate.scan_source(textwrap.dedent(source), "quill/ui/x.py")]
 
 
-def test_every_scribe_group_goes_through_the_helper() -> None:
+def test_every_family_group_goes_through_the_helper() -> None:
     findings = gate.audit(gate.SCOPE)
     assert not findings, "\n".join(f"{f.path}:{f.line}: {f.problem}" for f in findings)
 
 
 def test_the_scope_is_not_empty() -> None:
-    names = {path.name for path in gate.module_paths(gate.SCOPE)}
-    assert {"scribe_options_dialog.py", "scribe_convert_dialog.py"} <= names
+    rels = {p.relative_to(gate.REPO_ROOT).as_posix() for p in gate.module_paths(gate.SCOPE)}
+    for module in (
+        "quill/ui/scribe_options_dialog.py",
+        "quill/ui/find_dialog.py",
+        "quill/apps/beacon/dialogs.py",
+        "standalone/social/quill_social/ui/app.py",
+    ):
+        assert module in rels
 
 
 def test_allowed_entries_have_reasons() -> None:

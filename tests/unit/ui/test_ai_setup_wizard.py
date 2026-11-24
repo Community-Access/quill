@@ -48,6 +48,8 @@ def _wizard(wx_app):
 
 
 def test_prose_is_readonly_edit_and_no_stray_panel(wx_app):
+    from quill.ui.accessible_group import GroupedRadioBox
+
     # Screen-reader fixes: wizard prose must be navigable read-only edit controls
     # (not StaticText), and there must be no intermediate container panel (it became
     # a stray keyboard tab stop). Controls parent directly on the dialog.
@@ -57,7 +59,12 @@ def test_prose_is_readonly_edit_and_no_stray_panel(wx_app):
             dlg._step = step
             dlg._render()
             kids = dlg.dialog.GetChildren()
-            assert not any(isinstance(c, wx.Panel) for c in kids), f"stray panel on step {step}"
+            # A GroupedRadioBox is a panel, but not a stray one: it is the
+            # choices' group, and Tab lands on its checked button, never on it.
+            stray = [
+                c for c in kids if isinstance(c, wx.Panel) and not isinstance(c, GroupedRadioBox)
+            ]
+            assert not stray, f"stray panel on step {step}"
             ro_edits = [
                 c
                 for c in kids

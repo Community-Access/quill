@@ -8,6 +8,8 @@ user interface for a screen-reader user.
 
 from __future__ import annotations
 
+import sys
+
 import pytest  # type: ignore[import-not-found]
 
 from tests.wx_session import shared_wx_app
@@ -173,7 +175,12 @@ def test_direction_group_is_a_labeled_radiobox(wx_app) -> None:
     """The report that started #1327: the group name must be announceable."""
     _buffer, dialog, frame = _make(wx_app, "text")
     try:
-        assert isinstance(dialog.direction, wx.RadioBox)
+        from quill.ui.accessible_group import GroupedRadioBox, group_description
+
+        assert isinstance(dialog.direction, GroupedRadioBox)
+        if sys.platform == "win32":
+            # The group name reaches each choice, which a wx.RadioBox could not do.
+            assert {group_description(b) for b in dialog.direction.buttons()} == {"Direction"}
         assert dialog.direction.GetLabel() == "Direction"
     finally:
         _teardown(dialog, frame)

@@ -26,6 +26,7 @@ from collections.abc import Callable
 
 from quill.core.i18n import _
 from quill.core.platform_nouns import credential_store_name
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
 from quill.ui.spin_value import spin_value
@@ -399,6 +400,7 @@ class AIHubDialog:
         )
         self._datalab_paginate_cb.SetValue(bool(getattr(stored, "datalab_paginate", True)))
         box.Add(self._datalab_paginate_cb, 0, wx.ALL, 6)
+        describe_group(box, self._datalab_enabled_cb, self._datalab_paginate_cb)
 
         consent_note = wx.StaticText(
             panel,

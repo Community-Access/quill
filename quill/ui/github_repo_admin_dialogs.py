@@ -25,6 +25,7 @@ from quill.core.github.repo_create import (
     NewRepository,
     problem,
 )
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
 from quill.ui.spin_value import spin_value
 
@@ -395,6 +396,7 @@ class BranchProtectionDialog:
         self._enforce_admins_check = wx.CheckBox(panel, label="Apply rules to administrators too")
         self._enforce_admins_check.SetName("Apply rules to administrators too")
         rules_sizer.Add(self._enforce_admins_check, flag=wx.ALL, border=8)
+        describe_group(rules_sizer, self._enforce_admins_check)
         sizer.Add(rules_sizer, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=12)
 
         btn_sizer = wx.StdDialogButtonSizer()

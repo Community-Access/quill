@@ -17,6 +17,7 @@ from quill.core.lists import (
     StructuredListSettings,
     list_studio_presets,
 )
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.dialog_contract import show_message_box
 
 _VERBOSITY = [("Concise", "concise"), ("Standard", "standard"), ("Detailed", "detailed")]
@@ -112,7 +113,7 @@ class ListStudioSettingsDialog:
 
         # Save scope (§3): only meaningful when a document is open to scope to.
         if self._document_scope_available:
-            self._scope_radio = wx.RadioBox(
+            self._scope_radio = GroupedRadioBox(
                 dlg,
                 label="Save these settings for",
                 choices=["&All documents (default)", "&This document only"],

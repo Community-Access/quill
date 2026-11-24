@@ -17,6 +17,7 @@ from collections.abc import Callable
 from typing import Any, Protocol
 
 from quill.core.speech.guided_setup import ModelChoice, OfflineSpeechEngineOption
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
 
@@ -96,12 +97,12 @@ def show_guided_speech_setup(
         8,
     )
 
-    # A wx.RadioBox is a single grouped, labelled radio control: the "Speech
-    # engine" label is the accessible group name, and each choice is a radio
-    # button within it (announced as "Speech engine grouping, <label>, radio
-    # button N of M"). One column so arrow keys move top-to-bottom predictably.
+    # A GroupedRadioBox: the "Speech engine" caption is each choice's
+    # description, so a reader says "<label>, radio button, checked, Speech
+    # engine" (a wx.RadioBox's choices did not say it, GATE-GROUP). One column
+    # so arrow keys move top-to-bottom predictably.
     engine_labels = [_engine_label(o) for o in options]
-    engine_box = wx.RadioBox(
+    engine_box = GroupedRadioBox(
         dialog,
         label="Speech engine",
         choices=engine_labels,

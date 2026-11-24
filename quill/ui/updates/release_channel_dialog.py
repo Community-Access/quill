@@ -21,6 +21,7 @@ import wx
 from quill.core.updater.channels import CHANNELS, ChannelState, channel_label, channel_meaning
 from quill.core.updater.switch import SwitchPlan
 from quill.core.updater.wording import chooser_title
+from quill.ui.accessible_group import GroupedRadioBox, describe_group
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 from quill.ui.dpi import dip_size
 
@@ -55,7 +56,7 @@ class ReleaseChannelDialog(wx.Dialog):  # type: ignore[misc]
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         labels = [channel_label(channel) for channel in CHANNELS]
-        self._choices = wx.RadioBox(
+        self._choices = GroupedRadioBox(
             self,
             label="&Choose a release channel",
             choices=labels,
@@ -94,6 +95,7 @@ class ReleaseChannelDialog(wx.Dialog):  # type: ignore[misc]
                     group.GetStaticBox(),
                     label=f"{name}, now on {channel_label(sibling_state.channel)}",
                 )
+                describe_group(group, box)
                 box.SetHelpText(
                     f"Check to move {name} to the same channel in the same step. "
                     "Apps that share the QuillVille engine are safest moved together."

@@ -22,6 +22,7 @@ from typing import Any
 import wx
 
 from quill.core.ai import onboarding as ob
+from quill.ui.accessible_group import GroupedRadioBox, describe_group
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
@@ -251,8 +252,9 @@ class AISetupWizard:
         body.SetFocus()
 
     def _render_path(self) -> None:
-        self._heading.SetLabel("How would you like AI to run?")
-        self._path_choice = wx.RadioBox(
+        question = "How would you like AI to run?"
+        self._heading.SetLabel(question)
+        self._path_choice = GroupedRadioBox(
             self._body,
             label="",
             choices=[p.title for p in ob.ONBOARDING_PATHS],
@@ -260,6 +262,8 @@ class AISetupWizard:
             style=wx.RA_SPECIFY_COLS,
         )
         self._path_choice.SetName("How AI should run — pick one; you can change it any time")
+        # No caption (the heading asks it), so the heading describes each choice.
+        describe_group(question, *self._path_choice.buttons())
         idx = next((i for i, p in enumerate(ob.ONBOARDING_PATHS) if p.id == self._path), 0)
         self._path_choice.SetSelection(idx)
         self._body_sizer.Add(self._path_choice, 0, wx.EXPAND | wx.BOTTOM, 8)

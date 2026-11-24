@@ -36,6 +36,7 @@ from quill.core.find_model import (
     find_next,
     translate_extended,
 )
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 
 _MODES = ("Normal", "Extended (special characters)")
@@ -120,7 +121,7 @@ class QuillFindDialog:
         # The group name every screen reader announces — the original report.
         # "Down" carries no mnemonic: &w collided with "Replace &with" and &n
         # with "Find &Next"; the RadioBox is arrow-navigable, so no key is lost.
-        self.direction = wx.RadioBox(
+        self.direction = GroupedRadioBox(
             self.dialog, label="Direction", choices=["&Up", "Down"], majorDimension=2
         )
         self.direction.SetSelection(1)

@@ -95,7 +95,10 @@ def describe_focused(ctrl: wx.Window | None) -> tuple[HelpTopic | None, HelpTopi
             body="Move focus to a control and press F1 for help on that item.",
         )
 
-    ctrl_name = ctrl.GetName()
+    from quill.ui.accessible_group import radio_box_of
+
+    # A GroupedRadioBox's choices answer to the box's topic, as a wx.RadioBox did.
+    ctrl_name = (radio_box_of(ctrl) or ctrl).GetName()
 
     dialog = _find_named_ancestor_dialog(ctrl)
     dialog_topic: HelpTopic | None = None

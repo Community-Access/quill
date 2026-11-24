@@ -41,6 +41,7 @@ from quill.core.lineups.rules import (
     with_scope,
 )
 from quill.core.podcasts.filter_conditions import OP_PHRASES
+from quill.ui.accessible_group import describe_group
 from quill.ui.dpi import dip_size
 from quill.ui.lineups.host import LineupsHost
 from quill.ui.spin_value import spin_value
@@ -317,6 +318,7 @@ class RuleEditor:
         )
         self._place(going, _max_kept_label, self._max_kept)
         self._enabled = wx.CheckBox(box, label="Rule &switched on")
+        describe_group(box, self._enabled)
         self._enabled.SetHelpText(
             "Off: the rule finds nothing new and lets nothing go until it is on again."
         )

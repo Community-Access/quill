@@ -38,6 +38,7 @@ from quill.core.windows_dictation.never_type import coerce_never_type
 from quill.core.windows_dictation.options import PAUSE_CHOICES, coerce_pause
 from quill.core.windows_dictation.preview import PREVIEW_CHOICES, coerce_preview
 from quill.core.windows_dictation.settings_fields import SHARE_FIELD, share_on
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.spin_value import spin_value
 
@@ -235,6 +236,7 @@ class MoreDictationDialog(wx.Dialog):
             "because the AI does not need them."
         )
         self.ai_punctuation = wx.CheckBox(ai, label="Automatic p&unctuation when talking to the AI")
+        describe_group(ai, self.ai_fillers, self.ai_punctuation)
         self.ai_punctuation.SetValue(bool(value("windows_dictation_ai_auto_punctuation", True)))
         self.ai_punctuation.SetHelpText(
             "Let the speech engine put in full stops, commas and question marks in what "
@@ -251,6 +253,7 @@ class MoreDictationDialog(wx.Dialog):
         cloud_box = wx.StaticBoxSizer(wx.VERTICAL, self, "OpenAI, with your own key")
         cloud = cloud_box.GetStaticBox()
         self.consent = wx.CheckBox(cloud, label="&Let OpenAI dictation send my speech to OpenAI")
+        describe_group(cloud, self.consent)
         self.consent.SetValue(bool(value("windows_dictation_openai_consent", False)))
         self.consent.SetHelpText(
             "Off unless you agreed when you chose OpenAI as the speech engine. While it "
@@ -425,6 +428,7 @@ class MoreDictationDialog(wx.Dialog):
         self.command_required = wx.CheckBox(
             box, label="Commands only after the command word (strict mod&e)"
         )
+        describe_group(box, self.command_required)
         self.command_required.SetValue(
             bool(value("windows_dictation_command_prefix_required", False))
         )

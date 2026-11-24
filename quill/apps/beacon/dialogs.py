@@ -11,6 +11,7 @@ from __future__ import annotations
 import wx
 
 from quill.apps.beacon.model import ALL_TYPES
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 from quill.ui.dpi import dip_size
 from quill.ui.preferences_search import install_preferences_context_help as _context_help
@@ -2477,6 +2478,7 @@ class SyncSettingsDialog(wx.Dialog):
             tbox.GetStaticBox(), label="&Folder (iCloud, OneDrive, Dropbox...)"
         )
         self.t_server = wx.RadioButton(tbox.GetStaticBox(), label="&Hosted server")
+        describe_group(tbox, self.t_off, self.t_folder, self.t_server)
         for r in (self.t_off, self.t_folder, self.t_server):
             _name(r, r.GetLabel().replace("&", ""))
             tbox.Add(r, 0, wx.ALL, 4)
