@@ -8,6 +8,13 @@ File > Export as HTML says the file and its folder, for example "Exported to
 minutes.html in Documents.", and keeps the result: F9 says it again, and
 Activity (Shift+F9) has it with an Open Folder button. Import and Export in
 Manage Abbreviations say where too, and no longer show a box when they work.
+### Updates wait for a quiet moment (2026-11-23)
+
+The daily update check no longer opens its window a few seconds after QUILL
+Lite starts. It waits until the first minute has passed, until you stop
+dictating, and until QUILL Lite is the window you are using. While it waits,
+the status bar's message cell says once what is waiting, and Update History
+keeps the line. **Ctrl+Alt+U** opens the waiting update at once.
 
 ### Scribe for Documents, off until you turn it on (2026-11-21)
 

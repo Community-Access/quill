@@ -428,6 +428,16 @@ QUILL can check for updates each time it starts:
 With automatic checks on, QUILL lets you know quietly when a new version is
 available, and you download it when it suits you.
 
+An automatic check never interrupts you. Its download is shown on the status
+bar and not spoken, and the window that offers to install it waits: never in
+the first minute after QUILL starts, never while you are dictating or Read
+Aloud is reading, never while you are typing, and never while another window or a menu is in front. It also waits a
+few more seconds after dictation or reading stops. While it waits, the status
+bar and the notifications list say once what is waiting. To have it now,
+choose **Help > Check for Updates**: the waiting update opens at once. The
+one-time questions QUILL may ask after an upgrade, about the Braille Pack or
+the Kokoro voices, wait for the same quiet moment.
+
 ### Update size and speed
 
 QUILL uses small incremental updates ("micro-updates") instead of a full

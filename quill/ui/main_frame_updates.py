@@ -5,9 +5,9 @@ release check (filtered by the release channel, ``quill.core.updater``),
 release-notes presentation, skip-version bookkeeping, the consented download of installer or
 portable builds, and post-download actions (reveal, launch installer, extract
 portable) -- plus the consented GLOW engine update check
-(``check_for_glow_updates``). Extracted verbatim from ``main_frame.py``; runs
-on ``MainFrame`` (``self``). All outbound network call sites here are covered
-by the network egress audit (see ``quill/tools/network_egress_audit.py``).
+(``check_for_glow_updates``). Runs on ``MainFrame``; every outbound call is in
+the network egress audit. The launch check's offer waits for a quiet moment
+(``main_frame_quiet_moment``, FUX-15).
 """
 
 from __future__ import annotations
@@ -33,10 +33,11 @@ from quill.core.paths import app_data_dir
 from quill.core.settings import save_settings
 from quill.core.text_utils import strip_md_to_plain as _strip_md_to_plain
 from quill.ui.dpi import dip_size
+from quill.ui.main_frame_quiet_moment import QuietMomentMixin
 from quill.ui.spoken_name import set_spoken_name
 
 
-class UpdatesMixin:
+class UpdatesMixin(QuietMomentMixin):
     def _update_check_due(self, interval_hours: int = 24) -> bool:
         """True when enough time has passed since the last startup update check.
 
@@ -62,6 +63,8 @@ class UpdatesMixin:
             running_portable,
         )
 
+        if not silent_no_update and self._run_held_update_offer():
+            return  # an update already downloaded and waiting: asked for, so now
         if getattr(self, "_update_check_in_progress", False):
             if not silent_no_update:
                 self._set_status("Update check already in progress")
@@ -234,7 +237,7 @@ class UpdatesMixin:
         if fetch_error is not None:
             if silent_no_update:
                 self._record_notification(f"Update check failed: {fetch_error}", "update")
-                self._set_status("Update check failed")
+                self._set_status_quiet("Update check failed")  # unspoken (FUX-15)
                 return
             self._html_info(
                 "Check for Updates",
@@ -278,7 +281,7 @@ class UpdatesMixin:
                 if self._hold_background_update(target, result.state):
                     return
                 self._record_notification(f"Update {target.version} found; downloading", "update")
-                self._download_update_release(target)
+                self._download_update_release(target, automatic=True)
                 return
             action = self._show_update_available_dialog(current_version, target)
             if action == "download":
@@ -302,20 +305,6 @@ class UpdatesMixin:
             "Check for Updates",
             "# You're up to date\n\n" + up_to_date_text(current_version, result.state),
         )
-
-    def _hold_background_update(self, target: object, state: object) -> bool:
-        """Beta and Dev: the automatic download waits on a metered connection, in
-        Quiet Hours, or while Quill Radio records; Stable is unchanged."""
-        from quill.core.updater import history
-        from quill.core.updater.background import background_gate, read_conditions
-
-        gate = background_gate(state, read_conditions())  # type: ignore[arg-type]
-        if not gate.reason:
-            return False
-        version = str(getattr(target, "version", ""))
-        history.record("quill", "held_back", to_version=version, detail=gate.reason)
-        self._record_notification(f"Update {version} found. {gate.reason}", "update")
-        return True
 
     def _mirror_release_channel(self, state: object) -> None:
         """Keep the old ``beta_updates`` flag in step with the channel, for one
@@ -672,12 +661,13 @@ class UpdatesMixin:
         self._record_notification(f"Update {version} skipped", "update")
         self._announce(f"Update {version} skipped")
 
-    def _download_update_release(self, release: GitHubRelease) -> None:
+    def _download_update_release(self, release: GitHubRelease, *, automatic: bool = False) -> None:
         """Auto-download the release asset to <app data>/updates, off-thread,
         with accessible progress reporting and a post-download install offer.
 
         If the release has no downloadable asset, open its page instead.
         """
+        speak, status, offer = self._update_download_voices(automatic)
 
         from quill.core.updates import download_release_asset
 
@@ -694,7 +684,7 @@ class UpdatesMixin:
         target_dir.mkdir(parents=True, exist_ok=True)
         target = target_dir / (url.rsplit("/", 1)[-1] or f"quill-{release.version}")
         self._set_status_quiet(f"Downloading update {release.version}...")
-        self._announce(f"Downloading update {release.version}")
+        speak(f"Downloading update {release.version}")
 
         # Announce progress at coarse milestones so screen readers aren't flooded.
         last_milestone = {"value": -1}
@@ -707,8 +697,8 @@ class UpdatesMixin:
             if milestone > last_milestone["value"] and milestone <= 100:
                 last_milestone["value"] = milestone
                 if milestone in (25, 50, 75):
-                    self._wx.CallAfter(self._set_status, f"Downloading update… {milestone}%")
-                    self._wx.CallAfter(self._announce, f"Update download {milestone} percent")
+                    self._wx.CallAfter(status, f"Downloading update… {milestone}%")
+                    self._wx.CallAfter(speak, f"Update download {milestone} percent")
 
         def worker() -> None:
             try:
@@ -722,16 +712,16 @@ class UpdatesMixin:
                 self._wx.CallAfter(
                     self._record_notification, f"Update download failed: {exc}", "update"
                 )
-                self._wx.CallAfter(self._set_status, "Update download failed")
+                self._wx.CallAfter(status, "Update download failed")
                 return
             self._wx.CallAfter(
                 self._record_notification,
                 f"Update {release.version} downloaded to {target}",
                 "update",
             )
-            self._wx.CallAfter(self._set_status, f"Downloaded update {release.version}")
-            self._wx.CallAfter(self._announce, f"Update {release.version} downloaded")
-            self._wx.CallAfter(self._offer_post_download_actions, release, target)
+            self._wx.CallAfter(status, f"Downloaded update {release.version}")
+            self._wx.CallAfter(speak, f"Update {release.version} downloaded")
+            self._wx.CallAfter(offer, release, target)
 
         threading.Thread(  # GATE-40-OK: update asset download worker; bounded by size.
             target=worker, daemon=True

@@ -73,6 +73,25 @@ press F1.
   place, "The news, chapter 2 of 5." The chapter list promised N and P and
   nothing was bound. Its 30 seconds forward button skipped 15; it skips 30.
 - FUX-14, app by app: `docs/design/fux-14-adoption.md`.
+### Updates wait for a quiet moment in QUILL and QUILL Lite (2026-11-23)
+
+The once-a-day update check no longer interrupts you. In QUILL it used to
+download with spoken progress and then open the "Update downloaded" window
+whenever the download finished, even in the middle of dictation or Read
+Aloud. In QUILL Lite the offer opened a few seconds after launch, while the
+screen reader was still reading the window.
+
+Now an automatic offer waits. It never opens in the first minute after the
+app starts, while you are dictating or typing, while QUILL is reading aloud,
+or while the app is not the window you are using, and it waits a few seconds more
+after dictation or reading stops. While it waits, the status bar says once
+what is waiting, and so do QUILL's notifications and QUILL Lite's Update
+History. Nothing is spoken over your work. **Help > Check for Updates**
+opens the waiting update at once. QUILL's one-time questions after an
+upgrade, about the Braille Pack and the Kokoro voices, wait the same way.
+
+An update download that breaks off part way no longer leaves a half-written
+installer behind, and never replaces a good copy that was already there.
 
 ### Scribe for Documents: the voices are there, and Play Sample answers (2026-11-23)
 

@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FUX-15: keeping maintenance away from the moment that
+matters</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="fux-15-keeping-maintenance-away-from-the-moment-that-matters">FUX-15:
+keeping maintenance away from the moment that matters</h1>
+<p><strong>Date:</strong> 2026-11-23 <strong>Feature:</strong> FUX-15,
+“Keep maintenance away from the moment that matters”, from the family UX
+plan (read it with <code>git show b7c6a1a04^:complete2.md</code>). It is
+held to <a
+href="family-interaction-contracts.md">family-interaction-contracts.md</a>.
+<strong>Out of scope:</strong> Earshot and the macOS apps.</p>
+<p>The moment: “I’m about to record. Please don’t make me manage
+software.” Maintenance means update checks and offers, model and tool
+downloads, cache and library cleanup, re-indexing, migrations and their
+notices, “what’s new”, backups, sign-in refresh, tip-of-the-day and
+consent re-prompts. It must never interrupt recording, playback,
+dictation, a live broadcast, a save, or the first minute after launch.
+It waits for a quiet moment or an explicit command, says once what is
+waiting, and stays reachable later through what each app already has
+(Notifications, Update History, the Help menu). No new notification
+centre is added.</p>
+<h2 id="1-the-one-rule">1. The one rule</h2>
+<p><code>quill/core/maintenance_moment.py</code> (wx-free, strict-typed)
+decides when an <em>automatic</em> maintenance offer may open.
+<code>quill/ui/maintenance_moment_ui.py</code> is the wx side:
+<code>offer_when_quiet</code> either opens the offer now or holds it and
+polls every 2 seconds, so a short burst of work between polls is still
+seen. <code>quill/ui/maintenance_probes.py</code> lists, for each app,
+the state it already keeps that counts as protected work.</p>
+<p>An offer is held:</p>
+<ul>
+<li>in the first 60 seconds after launch, when the screen reader is
+still reading the window;</li>
+<li>while a probe reports protected work (recording, playback,
+dictation, reading aloud, a live broadcast);</li>
+<li>while the app is not the window in front, which includes a modal on
+top of it, an open menu and an app hidden in the tray;</li>
+<li>for 20 seconds after that work stops or the app comes back to the
+front, so the offer never lands on the key that stopped a recording, or
+on somebody finding their place again;</li>
+<li>until there has been no key press or mouse movement for 10 seconds,
+so the offer never takes a keystroke meant for the document (Enter would
+press its default button).</li>
+</ul>
+<p>Held offers open one at a time; after one closes, the moment is asked
+again.</p>
+<p>While an offer is held, one sentence says what waits and how to get
+it now. When work holds it, the sentence names the work: “Update 3.4.0
+waits until the recording ends. Help, Check for Updates offers it now.”
+When only timing holds it (the first minute, typing, the window not in
+front), it says “Update 3.4.0 is ready and waits for a quiet moment.”
+The sentence goes to the status bar and to the record the app already
+keeps: Notifications in QUILL, Update History in the apps with release
+channels. It is never spoken, because speech would land on top of the
+work it is protecting. It is said once for each update, and QUILL clears
+it from the status bar as the offer opens. An explicit command, Help
+&gt; Check for Updates, never waits: it takes the held offer and opens
+it straight away.</p>
+<p>One held offer is kept for each kind, and a newer one replaces an
+older one. When the window is gone, the poll stops. A probe that raises
+an error counts as idle, so a broken probe can never block updates for
+good. When the app closes with an offer still held, nothing appears at
+close. The next launch’s check finds the update again.</p>
+<h2 id="2-inventory-app-by-app">2. Inventory, app by app</h2>
+<p>“Steals focus” means the item can open a modal window or bring a
+window forward. “Speaks” means it can announce something.
+<strong>Gap</strong> marks an item that broke the rule before this
+work.</p>
+<h3 id="quill">QUILL</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>When it fires</th>
+<th>Steals focus</th>
+<th>Speaks</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Automatic update check (<code>main_frame.py</code>,
+<code>_on_update_fetch_done</code>)</td>
+<td>End of deferred startup, at most once a day</td>
+<td>Yes: “Update downloaded” modal when the download finishes</td>
+<td>Yes: “Downloading update”, 25/50/75 percent, “downloaded”</td>
+<td><strong>Gap</strong>: on Stable nothing held it, so the modal could
+open mid-dictation, over Read Aloud or seconds after launch</td>
+<td>Download progress is written, not spoken. The modal waits for a
+quiet moment (<code>main_frame_quiet_moment.py</code>), and the first
+minute is counted from when the window appears. Check for Updates opens
+a held update at once. A failed silent check no longer speaks “Update
+check failed”.</td>
+</tr>
+<tr>
+<td>Update download
+(<code>core/updates.py download_release_asset</code>)</td>
+<td>During the download</td>
+<td>No</td>
+<td>No</td>
+<td><strong>Gap</strong>: written straight to the final file name, so a
+dropped download left a half-written installer and overwrote a good
+copy</td>
+<td>Streamed to <code>.partial</code>, checked for length and checksum,
+then moved into place. On failure the partial file is removed and any
+existing file is untouched.</td>
+</tr>
+<tr>
+<td>Braille Pack question
+(<code>_maybe_prompt_braille_pack_install</code>)</td>
+<td>Deferred startup, once after an upgrade</td>
+<td>Modal</td>
+<td>No</td>
+<td><strong>Gap</strong>: in the first seconds after launch</td>
+<td>Waits silently for a quiet moment at launch. It is still immediate
+when you turn on Braille Mode yourself.</td>
+</tr>
+<tr>
+<td>Kokoro install question
+(<code>_maybe_prompt_kokoro_package_install</code>)</td>
+<td>Deferred startup, once</td>
+<td>Modal</td>
+<td>No</td>
+<td><strong>Gap</strong>: same as above</td>
+<td>Waits silently for a quiet moment.</td>
+</tr>
+<tr>
+<td>Migration notice (<code>_surface_migration_notice</code>)</td>
+<td>Deferred startup</td>
+<td>Modal only when the person chose “prompt”; spoken by default</td>
+<td>Yes</td>
+<td>The person’s own setting decides, including “silent”</td>
+<td>Unchanged: respects the stored choice.</td>
+</tr>
+<tr>
+<td>Vosk and Sherpa retirement notices</td>
+<td>About 1.5 s and 3.5 s after launch</td>
+<td>Sherpa: a Yes/No box when old files remain</td>
+<td>Yes</td>
+<td>Already waits while any modal is open. It is a one-time notice owed
+under the deprecation policy</td>
+<td>Unchanged. A candidate for the shared rule later; see section
+4.</td>
+</tr>
+<tr>
+<td>Dictation recovery (“N recordings await review”)</td>
+<td>2 s after launch</td>
+<td>No</td>
+<td>Yes, forced</td>
+<td>It is recovery of the person’s own work, not maintenance</td>
+<td>Unchanged.</td>
+</tr>
+<tr>
+<td>Model prewarm, Scribe job resume, prompt migration, recent-files
+prune, close-time cleanup</td>
+<td>Startup and close</td>
+<td>No</td>
+<td>No</td>
+<td>Silent</td>
+<td>Unchanged.</td>
+</tr>
+<tr>
+<td>What’s New, companion offers, Pandoc download</td>
+<td>On demand only</td>
+<td>Yes, when asked</td>
+<td>Yes</td>
+<td>Correct</td>
+<td>Unchanged.</td>
+</tr>
+<tr>
+<td>Startup tip (“Ready. Tip: …”)</td>
+<td>Construction</td>
+<td>No</td>
+<td>If tips are on</td>
+<td>A setting the person controls</td>
+<td>Unchanged.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="quill-lite">QUILL Lite</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>When it fires</th>
+<th>Steals focus</th>
+<th>Speaks</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Daily update check (<code>lite_updates.check_at_launch</code>)</td>
+<td>Right after launch, once a day</td>
+<td>Yes: the update offer, parented to the active document</td>
+<td>Offer only</td>
+<td><strong>Gap</strong>: opened in the first seconds, while dictating,
+or over another app</td>
+<td>Waits for a quiet moment (probe: dictation). The status bar message
+cell and Update History say once what waits. Ctrl+Alt+U opens it at
+once. It opens over the document in use when it opens, since the one the
+check began in may have been closed.</td>
+</tr>
+<tr>
+<td>Beta/Dev background download</td>
+<td>After the check</td>
+<td>Then a modal</td>
+<td>“Update X downloaded”</td>
+<td><strong>Gap</strong>: spoke over dictation, and the modal opened at
+once</td>
+<td>“Downloaded” is written to the message cell, and the offer waits for
+a quiet moment.</td>
+</tr>
+<tr>
+<td>Pending-work recovery, screen-reader watchdog, inbox poll, prompt
+migration</td>
+<td>Startup</td>
+<td>Recovery only</td>
+<td>Recovery only</td>
+<td>Recovery is the person’s own work; the rest are silent</td>
+<td>Unchanged.</td>
+</tr>
+</tbody>
+</table>
+<h3
+id="quill-radio-quill-cast-quill-studio-shared-app_shellcheck_for_app_updates">Quill
+Radio, QUILL Cast, QUILL Studio (shared
+<code>app_shell.check_for_app_updates</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>When it fires</th>
+<th>Steals focus</th>
+<th>Speaks</th>
+<th>Before</th>
+<th>After (PR for the second group)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Silent update check, Stable</td>
+<td>Radio: right after launch, after the last station resumes. Cast:
+after the library loads and the last episode resumes. Studio: right
+after launch</td>
+<td>Yes: the update offer modal, even from the tray</td>
+<td>No</td>
+<td><strong>Gap</strong>: opened over the station or episode that had
+just resumed, during a recording, over a Studio live broadcast or demo
+recording, and over a hidden tray window</td>
+<td>Waits for a quiet moment. Probes: Radio recording and playback; Cast
+playback; Studio live broadcast, demo recording, capture, protected
+background jobs and book playback. Update History, or the status bar
+where an app has no release channel, says once what waits. Check for
+Updates opens it at once.</td>
+</tr>
+<tr>
+<td>Silent update check, Beta/Dev</td>
+<td>Same</td>
+<td>Modal after the download</td>
+<td>“Update X downloaded”</td>
+<td><strong>Gap</strong>: only a Radio <em>recording marker</em> and
+Quiet Hours held it. Live playback, Cast and Studio were not
+considered</td>
+<td>The download keeps the existing gate (metered, Quiet Hours,
+recording). The offer waits for a quiet moment, and “downloaded” is
+written rather than spoken.</td>
+</tr>
+<tr>
+<td>Radio launch tasks (catalogue refresh, reminders, feed monitor,
+missed-recordings report, resume prompt)</td>
+<td>Startup and timers</td>
+<td>The resume prompt only</td>
+<td>Yes</td>
+<td>Content and recovery of the person’s own recordings, not
+maintenance; Quiet Hours already respected</td>
+<td>Unchanged.</td>
+</tr>
+<tr>
+<td>Radio portable favourites offer</td>
+<td><code>main()</code>, before the window, portable only</td>
+<td>Modal</td>
+<td>No</td>
+<td>Before anything plays</td>
+<td>Unchanged.</td>
+</tr>
+<tr>
+<td>Cast launch digest, feed refresh, family sharing note</td>
+<td>After library load</td>
+<td>No</td>
+<td>Yes</td>
+<td>Content</td>
+<td>Unchanged.</td>
+</tr>
+<tr>
+<td>What’s New, Last.fm and YouTube sign-in, Piper/Kokoro/DECtalk
+downloads, Backup and Restore</td>
+<td>On demand only</td>
+<td>When asked</td>
+<td>When asked</td>
+<td>Correct</td>
+<td>Unchanged.</td>
+</tr>
+</tbody>
+</table>
+<h3
+id="quill-player-transcribe-converter-inkwell-weather-beacon-social">Quill
+Player, Transcribe, Converter, Inkwell, Weather, Beacon, Social</h3>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Maintenance found</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Player</td>
+<td>None automatic: Check for Updates and What’s New are on the Help
+menu only.</td>
+<td>No gap.</td>
+</tr>
+<tr>
+<td>Transcribe</td>
+<td>No automatic update check. The first-run setup dialog is not
+maintenance and never opens in the tray. Model downloads happen only
+from the Model Library. The replaced-model removal offer is already
+suppressed while busy (<code>will_offer(..., in_use=busy)</code>). The
+post-update “I started” notice speaks only after a rollback.</td>
+<td>No gap.</td>
+</tr>
+<tr>
+<td>Converter</td>
+<td>No automatic check. The FFmpeg box appears only when you convert,
+and Get FFmpeg is a menu item. The pending Auphonic note is read from a
+local file and written to the status bar.</td>
+<td>No gap.</td>
+</tr>
+<tr>
+<td>Inkwell</td>
+<td>No automatic check. The launch-heal of the start-with-Windows entry
+is silent.</td>
+<td>No gap.</td>
+</tr>
+<tr>
+<td>Weather</td>
+<td>No automatic check. Alerts are the work itself and keep their own
+policy (pilot decisions, section 4).</td>
+<td>No gap.</td>
+</tr>
+<tr>
+<td>Beacon</td>
+<td>Auto-sync, off by default, makes a database backup and syncs on a
+timer.</td>
+<td><strong>Gap</strong>: it spoke “Auto-synced. Pushed 0, pulled 0.” at
+every interval and refreshed the list under the reader even when nothing
+changed, and it ran while a dialog was open. Fixed in the third pull
+request.</td>
+</tr>
+<tr>
+<td>Social</td>
+<td>The scheduler publishes the person’s own scheduled posts, and the
+feed refresh brings new articles. Both are the work itself, not
+maintenance. No sign-in refresh prompts.</td>
+<td>No gap.</td>
+</tr>
+</tbody>
+</table>
+<p>The post-update “I started” sentence
+(<code>quill/ui/updates/started.py</code>) in every app with release
+channels is spoken 2.5 s after launch, and only when the updater had to
+<em>undo</em> an update. It is the honest result of something the person
+chose (FUX-04), it happens rarely, and it is kept.</p>
+<h2 id="3-acceptance-from-the-proposal">3. Acceptance, from the
+proposal</h2>
+<ul>
+<li><strong>Identify the app and the useful capability.</strong> Every
+offer names the app (the update window’s first line) and the version. A
+held offer’s line names what waits.</li>
+<li><strong>A failed download leaves files and the current setup
+intact.</strong> Downloads go to <code>.partial</code> and are moved
+into place only when whole and verified. Background downloads on Beta
+and Dev already resumed from <code>.partial</code>.</li>
+<li><strong>No forced restart during protected work.</strong> Nothing
+installs without the person’s button. Under this rule the button is not
+even offered during protected work.</li>
+<li><strong>Progress and a usable retry, without stealing
+focus.</strong> Automatic progress is on the status bar. Check for
+Updates is the retry, and it opens a held update straight away.</li>
+<li><strong>Shared runtime and portable copies.</strong> Unchanged: the
+same edition detection (<code>install_edition.detect</code>) chooses the
+asset.</li>
+<li><strong>Update notes emphasise changed behaviour.</strong> The offer
+window still shows the release notes. This work changes when it opens,
+not what it says.</li>
+<li><strong>Release gates, and no quiet family install.</strong>
+Unchanged: each app checks and offers only its own release.</li>
+</ul>
+<h2 id="4-left-for-later">4. Left for later</h2>
+<ul>
+<li>The Vosk and Sherpa retirement notices in QUILL could use the shared
+rule instead of their own “wait while a modal is open” retry. They are
+one-time and already deferred, so they were left alone to keep the
+change small.</li>
+<li>QUILL’s notification list gets the held line. QUILL Lite and the
+shell apps write it to Update History, which is reachable from Help &gt;
+Release Channel. Studio has no release channel, so its line goes to the
+status bar only, and Help &gt; Check for Updates is its route.</li>
+<li>The offer window itself does not yet say why it appeared later than
+the check. A line such as “held while you dictated” could be added to
+the shared update notice.</li>
+<li>A modeless QUILL tool window in front holds the offer until QUILL’s
+main window is in front again. That is intended.</li>
+<li>To be checked by hand with a screen reader in a frozen build: an
+offer arriving 20 seconds after Stop in Radio, an offer arriving when an
+app comes back from the tray, and a held Beta download offer.</li>
+</ul>
+</main>
+</body>
+</html>
