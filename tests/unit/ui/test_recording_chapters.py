@@ -239,6 +239,9 @@ def test_open_book_in_workbench_takes_studios_keys_and_can_start_proposing(
         def _cancel_silence_scan(self, *, spoken: bool) -> None:
             events.append(("cancel", spoken))
 
+        def keep_place_and_stop(self) -> None:
+            events.append("place kept")
+
         def Destroy(self) -> None:  # noqa: N802
             events.append("destroyed")
 
@@ -266,6 +269,7 @@ def test_open_book_in_workbench_takes_studios_keys_and_can_start_proposing(
         "propose",
         ("shown", "Chapter Workbench"),
         ("cancel", False),
+        "place kept",  # Close and Escape send no EVT_CLOSE (FUX-01)
         "destroyed",
     ]
 

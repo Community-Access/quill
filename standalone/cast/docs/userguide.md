@@ -952,6 +952,14 @@ in.
 2. Type 1:02:00. Typing 62:00 works too, and so does a number of seconds.
 3. Press Enter. You are there.
 
+**Going back.** Press **Alt+Left** (Episode > Back to Where I Was) to return to
+where you were before the jump. Cast says the time, for example "Back to 25
+minutes 10 seconds." Press it again to return to where you jumped to. Next
+Chapter, Previous Chapter and choosing a chapter in the Now Playing window keep
+the same place, and Alt+Left works in the Now Playing window too. Alt+Left is
+the key QUILL and QUILL Lite use to go back after a jump. Starting another
+episode forgets it.
+
 **How much is left?** You are about to set off on a twenty-minute drive and
 want to know whether this episode will fit. Press **Ctrl+Shift+T** (Episode >
 Time Remaining). Cast says something like "12:04 of 31:50, 20 minutes left".
@@ -5880,6 +5888,7 @@ Playlists, Enter opens a playlist.
 | Skip forward, skip back | Ctrl+Right, Ctrl+Left |
 | Next chapter, previous chapter | Ctrl+Alt+Right, Ctrl+Alt+Left |
 | Go to Position | Ctrl+Alt+J |
+| Back to where you were before a jump | Alt+Left |
 | Speed up, speed down | Ctrl+Shift+Up, Ctrl+Shift+Down |
 | Normal speed | Ctrl+Shift+0 |
 | Volume up, volume down | Ctrl+Up, Ctrl+Down |

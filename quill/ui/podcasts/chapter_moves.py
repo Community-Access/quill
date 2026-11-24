@@ -17,6 +17,7 @@ from typing import Any
 from quill.core.podcasts.chapter_scoring import is_estimated
 from quill.core.podcasts.chapters import next_chapter, previous_chapter
 from quill.core.structure_landing import describe_boundary, describe_landing
+from quill.ui.podcasts.jump_back_wiring import note_jump
 
 __all__ = ["CHAPTER_RESTART_MS", "step_chapter"]
 
@@ -39,6 +40,7 @@ def step_chapter(host: Any, direction: int) -> None:
     if target is None:
         host._announce(describe_boundary("chapter", forward=direction > 0))
         return
+    note_jump(host, target.start_ms)  # Back to Where I Was returns here (FUX-01)
     host._podcast_controller.seek(target.start_ms)
     host._announce(
         describe_landing(

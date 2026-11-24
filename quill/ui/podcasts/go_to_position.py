@@ -58,6 +58,9 @@ def go_to_position(host: Any) -> None:
         clamped = dialog.clamped_message()
     finally:
         dialog.Destroy()
+    from quill.ui.podcasts.jump_back_wiring import note_jump
+
+    note_jump(host, target)  # Back to Where I Was returns here (FUX-01)
     controller.seek(target)
     from quill.core.media.timecode import format_spoken
 

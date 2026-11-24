@@ -245,6 +245,10 @@ class CastMenuBarMixin(CastScribeMixin):
             goto_pos_id, self._menu_label("&Go to Position...", "podcasts.go_to_position")
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_go_to_position(), id=goto_pos_id)
+        back_id = wx.NewIdRef()  # FUX-01; this menu has no letter left (GATE-14)
+        self._keep_menu_ids(back_id)
+        episode_menu.Append(back_id, "Back to Where I Was\tAlt+Left")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_back_to_where_i_was(), id=back_id)
         self._append_episode_extras(episode_menu)  # podcasts_routes.py
         stop_after_id = wx.NewIdRef()
         episode_menu.Append(stop_after_id, "Stop &After This Episode\tCtrl+Alt+Shift+A")

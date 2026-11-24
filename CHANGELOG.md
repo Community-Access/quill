@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### Back to where you were, in QUILL Cast and Quill Media Player (2026-11-24)
+
+**Back to Where I Was** (Alt+Left, the key QUILL and QUILL Lite use to go back
+after a jump) returns to where you were before Go to Position or a chapter
+jump, says the time, and returns again if pressed twice. In Cast it is on the
+Episode menu; in Media Player, on the File menu. Media Player also keeps a
+separate place in each file of a book of several files (it used to save track
+four's time as the place in track one), picks up a DAISY book where you left
+off, and starts a finished book from the beginning instead of the closing
+credits. In QUILL Studio, leaving the Chapter Workbench with its Close button
+or Escape now keeps your place, as closing the window always did.
 ### Back to the sentence you left, in QUILL and QUILL Lite (2026-11-24)
 
 Reopening a saved document puts the cursor back in the sentence you left, even

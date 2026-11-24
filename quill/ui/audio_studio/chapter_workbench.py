@@ -893,6 +893,21 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
     # -- lifecycle --------------------------------------------------------------------
 
     def _on_close(self, evt: wx.CloseEvent) -> None:
+        self.keep_place_and_stop()
+        evt.Skip()
+
+    def keep_place_and_stop(self) -> None:
+        """Save where you are in the book, tell the host, and stop the player. Once.
+
+        Not only from ``EVT_CLOSE``: the Close button and Escape end the modal
+        loop with ``wx.ID_CANCEL`` and no close event, so until 2026-11-24
+        (FUX-01) leaving the Workbench that way kept no place, never told
+        Studio's history, and left the player running in a destroyed window.
+        ``open_book_in_workbench`` calls this after the window returns.
+        """
+        if getattr(self, "_place_kept", False):
+            return
+        self._place_kept = True
         from quill.core.paths import app_data_dir
         from quill.core.speech.listening_positions import save_position_ms
 
@@ -902,7 +917,6 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
         if self._on_closed_cb is not None:
             self._on_closed_cb(str(self._book.path), position, self.player.current_chapter_index())
         self.player.shutdown()
-        evt.Skip()
 
 
 def open_book_in_workbench(
@@ -985,4 +999,5 @@ def open_book_in_workbench(
         frame._show_modal_dialog(dlg, str(_("Chapter Workbench")))  # type: ignore[attr-defined]
     finally:
         dlg._cancel_silence_scan(spoken=False)
+        dlg.keep_place_and_stop()  # Close and Escape send no EVT_CLOSE (FUX-01)
         dlg.Destroy()

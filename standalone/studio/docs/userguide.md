@@ -228,7 +228,7 @@ The built-in player anchors everything. All controls are buttons with access key
 - **Speed** - 0.75x to 2x, pitch preserved.
 - A **Position** slider that speaks human time, and a **Volume** slider.
 - A **Mute** button (and **Ctrl+M** from the shell) - caches your current volume, drops to zero while muted, and restores it when you unmute. The button label follows the state and the change is announced.
-- The current chapter is announced as playback crosses into it, and the player **remembers where you stopped** in each book and resumes there next time.
+- The current chapter is announced as playback crosses into it, and the player **remembers where you stopped** in each book and resumes there next time, however you leave the Workbench: the Close button, Escape or closing the window.
 
 The player also **remembers your volume and mute choice per book** - turn one book down to 40% and mute another, close them, and each reopens at the level you left it.
 
