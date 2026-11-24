@@ -324,6 +324,8 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
                 ("Open co&nversation", "open_conversation"),
                 ("&Open links", "open_links"),
                 ("Mark &read", "mark_read"),
+                ("Ne&xt unread", "next_unread"),
+                ("Pre&vious unread", "previous_unread"),
                 None,
                 ("&Accessibility check", "accessibility_check"),
                 ("Send to &QUILL", "send_to_quill"),
@@ -428,6 +430,8 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
             "open_conversation": self.cmd_open_conversation,
             "open_links": self.cmd_open_links,
             "mark_read": self.cmd_mark_read,
+            "next_unread": lambda: self._move_unread(1),
+            "previous_unread": lambda: self._move_unread(-1),
             "accessibility_check": self.cmd_accessibility_check,
             "send_to_quill": self.cmd_send_to_quill,
             "play_media": self.cmd_play_media,
@@ -1185,6 +1189,34 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         item.read = True
         self._refresh_feed_counts()
         self.announcer.say("Marked read.", "normal")
+
+    def _move_unread(self, step: int) -> None:
+        """Next (1) or Previous (-1) Unread in this view, from the focused row.
+
+        Selecting the row is the whole announcement: the screen reader reads
+        it, "unread" included, so nothing is added (GATE-13). Only running out
+        is said, in the GitHub Workbench's words.
+        """
+        if not self._items:
+            self.announcer.say("Nothing here.", "normal")
+            return
+        start = self.list.GetFirstSelected()
+        if start < 0:
+            start = -1 if step > 0 else len(self._items)
+        index = start + step
+        while 0 <= index < len(self._items):
+            if not getattr(self._items[index], "read", True):
+                self.list.SetFocus()
+                if start >= 0:
+                    self.list.Select(start, on=False)
+                self.list.Select(index)
+                self.list.Focus(index)
+                self.list.EnsureVisible(index)
+                return
+            index += step
+        self.announcer.say(
+            "No more unread." if step > 0 else "No unread before this one.", "normal"
+        )
 
     def cmd_open_conversation(self) -> None:
         item = self._current_item()

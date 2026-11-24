@@ -11,6 +11,13 @@ since the first 0.3.0 build belongs to 0.3.0. In it QUILL Social became a feed
 reader as well as a social client, and grew an installer of its own. That work
 comes first, grouped by subject; the 0.3.0 build of 2026-07-19 follows it.
 
+### Next and previous unread (2026-11-23)
+
+- **Item > Next unread** (Alt+.) and **Item > Previous unread** (Alt+,)
+  move to the next or previous unread post in the view you are in, so you no
+  longer arrow past everything you have read. The screen reader reads the
+  post; past the last one you hear "No more unread."
+
 ### Scribe for Documents (2026-11-21)
 
 - **Item > Convert Linked Document with Scribe for Documents...**

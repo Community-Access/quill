@@ -2,6 +2,18 @@
 
 ## 1.0.0
 
+### Next and previous unread in Quill Social, and Beacon's chapter keys (2026-11-23)
+
+- **Quill Social: Item > Next unread** (Alt+.) and **Previous unread**
+  (Alt+,) move to the next or previous unread post in the view. Not the
+  GitHub Workbench's Ctrl+. pair: its Previous, Ctrl+Shift+., is Next Article
+  in Social's Listen menu.
+- **Quill Beacon's player** moves by chapter with Ctrl+Shift+Period and
+  Ctrl+Shift+Comma, Quill Radio's chapter keys, and says each one once with its
+  place, "The news, chapter 2 of 5." The chapter list promised N and P and
+  nothing was bound. Its 30 seconds forward button skipped 15; it skips 30.
+- FUX-14, app by app: `docs/design/fux-14-adoption.md`.
+
 ### Scribe for Documents: the voices are there, and Play Sample answers (2026-11-23)
 
 In Convert with Scribe for Documents, in QUILL and QUILL Lite:

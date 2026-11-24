@@ -2,6 +2,9 @@
 
 ## 0.3.0
 
+- **Next and previous unread** (2026-11-23). Item > Next unread (Alt+.) and
+  Item > Previous unread (Alt+,) move to the next or previous unread post
+  in the view; past the last one you hear "No more unread."
 - **Scribe for Documents** (2026-11-21). Item > Convert Linked Document with
   Scribe for Documents... (Alt+Shift+F6) converts a document a post links;
   Tools holds Scribe Conversions and the other Scribe rows, on Alt+Shift+F7 to

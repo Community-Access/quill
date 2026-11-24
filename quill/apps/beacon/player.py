@@ -1,10 +1,12 @@
 """Built-in accessible media player (PRD 11.5, 11.6, Phase 3).
 
 A small wx frame with a chapter list, a transcript view, and time-point
-capture. Keyboard-first: Space play/pause, Left/Right skip, J/L jump by skip
-interval, K add time point, N/P next/prev chapter. Every control has an
-accessible name; the status line announces chapter and time (PRD 18.4,
-A11Y-013).
+capture. Keyboard-first: Space play/pause, the skip buttons, Add Time Point,
+and Ctrl+Shift+Period and Ctrl+Shift+Comma for the next and previous chapter --
+Quill Radio's chapter keys, from anywhere in the window (FUX-14, 2026-11-23;
+the N/P this docstring promised were never bound, and plain letters would have
+taken type-ahead from the chapter list). Every control has an accessible name;
+the status line announces chapter and time (PRD 18.4, A11Y-013).
 
 Playback goes through the family's shared audio layer
 (:mod:`quill.ui.audio.audio_engine`) -- the same ``AudioEngine`` protocol
@@ -20,8 +22,48 @@ import wx
 
 from quill.apps.beacon import capture, media
 from quill.apps.beacon.announce import Announcer
+from quill.core.structure_landing import describe_boundary, describe_landing
 from quill.ui.audio.audio_engine import AudioEngine, create_engine
 from quill.ui.dpi import dip_size
+
+#: Previous Chapter more than this far into a chapter restarts it, as in Radio,
+#: Cast and the Media Player.
+_CHAPTER_RESTART_MS = 3000
+
+
+def chapter_step_target(starts: list[int], position_ms: int, direction: int) -> int | None:
+    """The chapter index Next (1) or Previous (-1) goes to, or None past an end.
+
+    Previous restarts the chapter the playhead is in, unless it is within the
+    first three seconds of it, when it goes to the one before -- or, in the
+    first chapter, says it is the first rather than replaying it.
+    """
+    current = -1
+    for index, start in enumerate(starts):
+        if start <= position_ms:
+            current = index
+    if direction > 0:
+        return current + 1 if current + 1 < len(starts) else None
+    if current < 0:
+        return 0 if starts else None
+    if position_ms - starts[current] > _CHAPTER_RESTART_MS:
+        return current
+    return current - 1 if current > 0 else None
+
+
+def chapter_key_direction(key_code: int, *, ctrl: bool, shift: bool, alt: bool) -> int:
+    """1 for Ctrl+Shift+Period, -1 for Ctrl+Shift+Comma, 0 for anything else.
+
+    Shifted, the period and comma keys report ``>`` and ``<`` on some layouts,
+    so both spellings count.
+    """
+    if not (ctrl and shift) or alt:
+        return 0
+    if key_code in (ord("."), ord(">")):
+        return 1
+    if key_code in (ord(","), ord("<")):
+        return -1
+    return 0
 
 
 def _name(ctrl: wx.Control, name: str) -> None:
@@ -40,6 +82,8 @@ class PlayerFrame(wx.Frame):
         self.announcer = Announcer(self)
         self.chapters: list = []
         self._skip_ms = 15000
+        # The forward button says 30 seconds, and skipped 15 until 2026-11-23.
+        self._forward_ms = 30000
         self.engine: AudioEngine | None = None
         self._length_ms = 0
         self._timer = wx.Timer(self)
@@ -54,6 +98,7 @@ class PlayerFrame(wx.Frame):
         self._refresh_chapter_list()
         self.Bind(wx.EVT_TIMER, self._on_timer)
         self.Bind(wx.EVT_CLOSE, self._on_close)
+        self.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self._timer.Start(500)
         self.announcer.say("Player ready. Press Space to play.", "normal")
 
@@ -95,9 +140,7 @@ class PlayerFrame(wx.Frame):
         self.back_btn.SetHelpText("Jump back 15 seconds and announce the new position.")
         self.fwd_btn = wx.Button(self, label="&30s >>")
         _name(self.fwd_btn, "Skip forward 30 seconds")
-        self.fwd_btn.SetHelpText(
-            "Jump forward by the skip interval (15 seconds) and announce the new position."
-        )
+        self.fwd_btn.SetHelpText("Jump forward 30 seconds and announce the new position.")
         self.add_point_btn = wx.Button(self, label="&Add Time Point")
         _name(self.add_point_btn, "Add a time-point bookmark at the current position")
         self.add_point_btn.SetHelpText(
@@ -124,11 +167,12 @@ class PlayerFrame(wx.Frame):
         ch_lbl = wx.StaticText(self, label="&Chapters")
         root.Add(ch_lbl, 0, wx.LEFT | wx.RIGHT, 8)
         self.chapter_list = wx.ListBox(self, style=wx.LB_SINGLE)
-        _name(self.chapter_list, "Chapters. Enter jumps to the chapter, N next, P previous.")
+        _name(self.chapter_list, "Chapters")
         self.chapter_list.SetHelpText(
             "The episode's chapters with their start times, when the feed "
             "supplies them. Selecting a chapter jumps playback to its "
-            "start."
+            "start. From anywhere in the window, Ctrl+Shift+Period goes to "
+            "the next chapter and Ctrl+Shift+Comma to the previous one."
         )
         self.chapter_list.Bind(wx.EVT_LISTBOX, self._on_chapter_select)
         root.Add(self.chapter_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
@@ -184,7 +228,41 @@ class PlayerFrame(wx.Frame):
         self._seek_delta(-self._skip_ms)
 
     def _on_fwd(self, _e=None) -> None:
-        self._seek_delta(self._skip_ms)
+        self._seek_delta(self._forward_ms)
+
+    def _on_char_hook(self, event) -> None:
+        direction = chapter_key_direction(
+            event.GetKeyCode(),
+            ctrl=event.ControlDown(),
+            shift=event.ShiftDown(),
+            alt=event.AltDown(),
+        )
+        if direction:
+            self._step_chapter(direction)
+            return
+        event.Skip()
+
+    def _step_chapter(self, direction: int) -> None:
+        """Next or Previous Chapter, said once with its place (FUX-14)."""
+        if not self.engine:
+            self.announcer.say("Media backend unavailable")
+            return
+        if not self.chapters:
+            self.announcer.say("This episode has no chapters.")
+            return
+        target = chapter_step_target(
+            [ch.start_ms for ch in self.chapters], self.engine.position_ms(), direction
+        )
+        if target is None:
+            self.announcer.say(describe_boundary("chapter", forward=direction > 0))
+            return
+        chapter = self.chapters[target]
+        self.engine.seek(chapter.start_ms)
+        if self.chapter_list.GetSelection() != target:
+            self.chapter_list.SetSelection(target)
+            if self.chapter_list.HasFocus():
+                return  # the reader says the row the list moved to; once is enough
+        self.announcer.say(describe_landing("chapter", chapter.title, target, len(self.chapters)))
 
     def _seek_delta(self, delta_ms: int) -> None:
         if not self.engine:
