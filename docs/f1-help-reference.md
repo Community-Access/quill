@@ -2231,7 +2231,7 @@ Control coverage: 60 audited sites (60 helped).
 
 ## Quill Beacon
 
-Control coverage: 127 audited sites (127 helped).
+Control coverage: 128 audited sites (128 helped).
 
 ### Every window, and what it is for
 
