@@ -53,8 +53,9 @@ def begin(host: Any, query: str) -> None:
     host._library_pending = len(sources)
     host._library_found = 0
     host._library_failed = []
+    request = getattr(host, "_search_request", 0)
     for source_id in sources:
-        _submit(host, source_id, wanted)
+        _submit(host, source_id, wanted, request)
 
 
 #: A library's id here, where it differs from its Browse branch's id.
@@ -80,7 +81,7 @@ def _browse_choice(host: Any) -> object:
     return getattr(history, "browse_sources_enabled", None)
 
 
-def _submit(host: Any, source_id: str, query: str) -> None:
+def _submit(host: Any, source_id: str, query: str, request: int = 0) -> None:
     library = federated_search.source(source_id)
     if library is None:
         return
@@ -88,11 +89,18 @@ def _submit(host: Any, source_id: str, query: str) -> None:
     def _work(**_kwargs: Any) -> list:
         return federated_search.search_source(source_id, query, safe_mode=host._safe_mode)
 
+    # A library answering for an older search is dropped: its rows belong to
+    # words the listener has since replaced (FUX-06).
+    def _current() -> bool:
+        return request == getattr(host, "_search_request", 0)
+
     def _ok(_op: str, rows: object) -> None:
-        _arrived(host, library, list(rows) if isinstance(rows, list) else [], None)
+        if _current():
+            _arrived(host, library, list(rows) if isinstance(rows, list) else [], None)
 
     def _failed(_op: str, error: BaseException) -> None:
-        _arrived(host, library, [], error)
+        if _current():
+            _arrived(host, library, [], error)
 
     host._task_manager.submit(
         f"radio-library-{source_id}", _work, on_success=_ok, on_failure=_failed

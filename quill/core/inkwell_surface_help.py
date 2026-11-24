@@ -70,7 +70,8 @@ PURPOSES: dict[str, str] = {
         "Your whole abbreviation library in one place: create, edit, delete, "
         "and switch entries on or off, with search and a category filter to "
         "find the one you mean. Import and Export move the library as a "
-        "file. Every change saves immediately and reaches QUILL's editor "
+        "file and say which file and folder; F9 says it again. Every change "
+        "saves immediately and reaches QUILL's editor "
         "too, because both apps read the same library."
     ),
     "New Abbreviation": (
@@ -92,8 +93,14 @@ PURPOSES: dict[str, str] = {
         "window you were just working in -- the way to use an entry set to "
         "expand only manually, or one whose trigger you cannot recall. "
         "Filter, choose, press Enter; focus returns to where you were and "
-        "the text is typed there. If there is nowhere to type, the "
+        "the text is typed there, and only there. If there is nowhere to type, the "
         "expansion is copied to the clipboard instead."
+    ),
+    "Text Not Typed": (
+        "The text was kept, not typed, because the focus is not in the field "
+        "you started in, or that field refused it. Insert goes back to that "
+        "field and types it there; Copy puts it on the clipboard; Escape lets "
+        "it go."
     ),
     "Excluded Applications": (
         "Programs where expansion must never run, one program file name per "

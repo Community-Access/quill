@@ -333,6 +333,139 @@ then one result per repository.
   because the window used another command's preview by mistake. The preview
   now opens.
 
+### Quill Cast and Quill Radio: Dictate Here starts only in your box (2026-11-23)
+
+- **Dictate Here remembers the box.** QUILL Transcribe answers Edit > Dictate
+  Here a moment later -- under a second when it is running, several seconds
+  when it has to start -- and until now it started in whatever was in front by
+  then. Cast and Radio now pass on the box you pressed Ctrl+F11 in (its
+  program, window and the box itself), and QUILL Transcribe starts only if that
+  box is still in front. If it is not, nothing starts, and you hear "Dictation
+  did not start, because you moved away from the box you pressed Dictate Here
+  in; go back to that box and press Dictate Here again."
+
+### Quill Inkwell and QUILL Transcribe: text goes only where you started (2026-11-23)
+
+Text typed into another program now goes into the field it was meant for, or
+nowhere. If that field cannot be confirmed, the text is kept, not typed
+somewhere else, and it is never read aloud.
+
+- **Inkwell's expansions work again.** Every system-wide expansion failed
+  inside Inkwell and typed nothing, because the expansion asked for the
+  window it was typed in and that was never recorded. Each expansion now
+  carries its window, and is typed there or not at all.
+- **Quick Insert and fields check the field.** Quick Insert's picker and an
+  expansion's fill-in form take the focus, so Inkwell now remembers the field
+  you were in (its program, window and the field itself) before they open,
+  and checks it again just before typing. Before, Quick Insert typed into
+  whatever was in front once its window closed. If the focus came back
+  somewhere else, or the program was closed and opened again, nothing is
+  typed: a small window, Text Not Typed, says why in one sentence and offers
+  Insert (go back to that field and type it there) or Copy. A field Windows
+  reports as a password field offers Copy only.
+- **Taking an expansion back** with Backspace now types only in the window it
+  expanded in, and says "Not undone" with the reason otherwise.
+- **Plain words for a refusal.** An expansion that cannot be typed now says
+  "Not expanded, because the focus is not where you started." (or the
+  other reason) instead of an internal message.
+- **Dictation tells two boxes apart.** QUILL Transcribe and Inkwell's
+  Dictate Anywhere know the field you started in by its program, window and
+  control. When Windows could not name the control, they compared its kind
+  of window, which two edit boxes in one dialog share, so moving from one
+  to the other kept typing. They now compare the box's own window, and a
+  moment when Windows cannot say which window is in front holds the words.
+- **Kept for F9 and Activity.** Text Not Typed's Copy now says "Copied the
+  text to the clipboard." instead of "Copied.", and that sentence, the
+  "Nothing to insert into" one and Transcribe's Dictate Here refusal are kept
+  like any other result, so Repeat Last Result (F9) and Activity (Shift+F9)
+  find them. The words you typed or dictated are never kept.
+
+### The actual result, said once, in Quill Radio, Media Player and Converter (2026-11-23)
+
+The family UX pilot's FUX-04, carried from Cast and QUILL Lite to three more
+apps. See `docs/design/fux-04-adoption.md`.
+
+- **Quill Converter.** A batch ends by saying the folder the files went into.
+  A Stop says what was kept, what was not converted, and that nothing
+  half-finished was left. The result is kept in Activity, and its Retry
+  converts only the files that are left; pressing Convert again converted
+  every file a second time. Join and Auphonic results are kept too, and the
+  Conversion Report shows whole paths.
+- **Quill Radio.** Exports, backups, snapshots, saved songs and downloads say
+  the file and its folder, once, and are kept in Activity with Open Folder. A
+  single download no longer reads the whole folder path aloud, and is not
+  followed by "1 saved."
+- **Quill Media Player.** Bookmark exports say where they went.
+- Converter and Media Player now have Activity (Shift+F9) and Repeat Last
+  Result (F9) on the Help menu, as Radio and Cast do.
+
+### QUILL Studio and QUILL Transcribe: the actual result, said once (2026-11-23)
+
+The family's "actual result" work (FUX-04), as Quill Cast and QUILL Lite
+already have it.
+
+- **An Audio Studio run ends with a sentence.** It used to end on a status
+  line nobody heard, and in QUILL Studio not even a notification. Now you hear
+  what was made and where: "Made audio for 10 documents in Reports." Skipped
+  and failed documents are counted, and a failure points to the run's log. A
+  book's check is its own sentence after the build ("Built the audiobook
+  Reports.m4b in Reports. Its check found all 12 chapters."), so a book that
+  did not check out never sounds finished. A cancelled run says how many are
+  kept, how many have no audio yet, and how to make the rest. The translated
+  speech export ends the same way. Both are kept in Activity (Shift+F9) with
+  Open Folder, and F9 says them again. This is the same in QUILL's Audio
+  Studio.
+- **Saves say the file and its folder, after the write.** The Chapter
+  Workbench (Save, Save As, Export chapters, Split into files), the Tag
+  Editor, Copy Sections, Generate Captions, Save Diagnostics and a screenshot
+  report now say "Saved Long Walk.mp3 in Books." rather than the name alone or
+  a whole path, and each is kept in Activity with Open Folder. Captions made
+  beside a recording name each file, so "Demo (2).srt" is not mistaken for the
+  old one.
+- **Results you might miss stay reachable.** A screenshot (shown, never
+  spoken over what you are capturing), a broadcast's saved copy and a checked
+  demonstration are kept in Activity after their sentence or window is gone.
+- **Activity and Repeat Last Result are on the Help menu** of QUILL Studio
+  and QUILL Transcribe (Shift+F9 and F9), where the results above are kept.
+  Before, no menu in either app carried them.
+- **QUILL Transcribe's Save As** in Review Transcript says the file and its
+  folder and keeps it in Activity.
+- **Stopping a recording's transcription says what is left**: "Stopped
+  transcribing meeting.mp3. No transcript was kept; transcribe it again to
+  start over." The same in QUILL and QUILL Lite.
+
+### QUILL Social and QuillBeacon: lists that stay still (FUX-06, 2026-11-23)
+
+Second of the M2 changes; the rule and the audit of every live list are in
+`docs/design/fux-06-adoption.md`.
+
+- **QUILL Social's timeline** refreshes around the post you are on instead
+  of rebuilding: no repeated "Home. 120 items" sentence, no second mark-read,
+  and new posts wait behind a count ("3 new posts. Press F5 to show them.")
+  until you press F5. A post that has gone is said once and you land on its
+  neighbour. A refresh no longer closes an open conversation.
+- **QuillBeacon's results** keep you on your own beacon after a capture or a
+  sync. The selection used to stay on the old row number, which was another
+  beacon, while the details showed the first row. The count is said only when
+  you change the search, sort or destination, and an auto-sync that changed
+  nothing is silent.
+
+### Weather, Studio and the Watch Folder queue: lists that stay still (FUX-06, 2026-11-23)
+
+Third of the M2 changes; the rule and the audit of every live list are in
+`docs/design/fux-06-adoption.md`.
+
+- **Weather Center.** Refresh keeps your alert, forecast period, hour and day
+  in all four lists, and their details; an expired alert you were on is named
+  once; a late answer for the place you chose before is ignored; a redraw
+  after Settings repeats the summary only when it changed.
+- **Studio's Library Window** opens again (it failed on opening), keeps the
+  same copy of a book shown twice, lands on the next book when yours was
+  removed, and is not redrawn when a job finishes and nothing changed.
+- **Watch Folder Queue** (QUILL's transcription and conversion queue) keeps
+  your file through every queue change. After Clear Finished, Retry and Open
+  used to act on another file.
+
 ### Shared runtime: the Practice Site's WordPress Playground ships again (2026-11-23)
 
 - **The cause.** The WordPress Playground tool behind the Practice Site
@@ -349,6 +482,99 @@ then one result per repository.
   the restage script and the full rebuild, rather than only pip advice.
 - **Removing an old copy works.** Staging retries the removal with `rd /s /q`
   when PowerShell leaves folders behind.
+
+### Beacon, Social and Weather: the actual result, said once (2026-11-23)
+
+The family's "say what actually happened" work (FUX-04) reaches three more
+apps. Each sentence is said after the write lands, never before.
+
+- **Quill Beacon.** File > Export ends with the format, the file and its
+  folder ("Exported your library as HTML bookmarks to
+  quillbeacon-export.html in Downloads.") rather than the whole path read
+  aloud. An export that could not be written now says so.
+- **QUILL Social.** Export OPML says how many feeds went to which file in
+  which folder. Send to QUILL says "Saved the thread for QUILL in exports."
+  rather than the whole path, and says so when it could not write the file.
+- **Quill Weather.** A Weather Settings save that could not write its file
+  says so and leaves the window open with your choices in it. It used to say
+  nothing at all.
+
+### QUILL and Quill Inkwell: the actual result, said once (2026-11-23)
+
+Part of the family's "say what is now true, and where" work (FUX-04), which
+Quill Cast and QUILL Lite had first. The audit, app by app, is in
+`docs/design/fux-04-adoption.md`.
+
+- **QUILL: Save All says what it saved.** It used to say "Saved all
+  documents" even when nothing had changed, and "Save all cancelled" when it
+  stopped part way. Now it names the documents it saved ("Saved 2 documents:
+  notes.md and plan.md."), adds the folder when two have the same name, and
+  when it stops at a new document whose Save As you cancelled, or a save that
+  failed, it says which one and how many are still not saved. With nothing
+  changed it says "Nothing needed saving." It also takes you back to the
+  document you were in, instead of leaving you on the last one it saved.
+- **QUILL: Batch Conversion no longer opens a window when it finishes.** The
+  Application Status window opened over whatever you were writing every time
+  a batch ended. Now QUILL says one line: how many files converted, which
+  folder they are in, which files failed and how many were skipped ("Converted
+  12 of 14 files. They are in Output in Reports. 1 failed: budget.md. 1
+  skipped, because the converted file was already there."). Help > Repeat Last
+  Result (F9) says it again, and Help > Activity (Shift+F9) keeps every file
+  with its full path, why each one that did not convert failed, and an Open
+  Folder button.
+- **QUILL: exports and conversions say the folder.** File > Export, Export as
+  DAISY, Export as HTML and Convert File now say "Exported to minutes.docx in
+  Documents." rather than the file name alone, and keep the result in Activity
+  with Open Folder. Save As and Save as Plain Text name the folder too.
+- **QUILL Lite: Export as HTML** says the folder and keeps the result the same
+  way, because the command is shared.
+- **Manage Abbreviations (Inkwell, QUILL and QUILL Lite): Import and Export
+  say where, and no box.** Export said "Exported 42 abbreviation(s)." in a box
+  with no file or folder. Now it says "Exported 42 abbreviations to
+  abbreviations.json in Documents." and keeps it in Activity with Open Folder.
+  Import said every entry it left out was a "duplicate ID"; now it says how
+  many were already in your list and, separately, how many it could not use
+  because they had no abbreviation or no text. A file that cannot be read or
+  written still gets a box.
+- **Quill Inkwell: Help > Activity... and Help > Repeat Last Result.** Inkwell
+  kept its results but had no way in to them. Both rows are on the Help menu
+  now, on Shift+F9 and F9 as in the rest of the family.
+
+### Quill Radio and Media Player: lists that stay still (FUX-06, 2026-11-23)
+
+Lists that update while you read them now leave you where you were. The rule
+is the one Quill Cast and QUILL Lite already follow, and it lives in one place
+for every app (`quill/core/list_follow.py`, `quill/ui/list_stay_still.py`).
+`docs/design/fux-06-adoption.md` lists every live list in the family and what
+was done about each.
+
+- **Radio Recordings.** A recording or schedule starting above you no longer
+  leaves two rows selected. Before, Remove, Play and Open could act on the
+  wrong recording. Only the cells that changed are rewritten on each
+  two-second update. When a scheduled recording starts, your cursor follows it
+  to its Recording row. If the recording you were on goes some other way, for
+  example you delete it in File Explorer, you hear "... is no longer in the
+  list." once and land on the next one.
+- **Find Stations.** Books and podcasts arriving from the libraries, and
+  More Stations, no longer leave a second row selected (Enter used to play the
+  first row). Your row stays the same row, on the same line. An answer for a
+  search you have replaced, or a category you have left, is dropped instead of
+  replacing what you are reading. The Source filter keeps your station when it
+  still shows it, and says "... is not shown with this filter." when it does
+  not. More Stations lands on the first new station; it was one row off when
+  other directories were blended in.
+- **Downloads.** Updates no longer redraw the whole list. A removed or cleared
+  row puts you on the next one, not back at the top.
+- **Local Media.** A folder scan or a tag read keeps your selection and your
+  line on screen. A file that leaves the playlist that way is named once, and
+  you land on its neighbour.
+- **Favorites.** The main window's tree keeps a selected folder as well as a
+  station, keeps closed folders closed, and puts you on the next station when
+  yours was removed elsewhere. Browse Stations' Favorites branch keeps your
+  row too, and no longer says "N items." over "Added to Favorites."
+- **Media Player bookmarks.** Adding or editing a bookmark keeps your place,
+  and Remove moves you to the next bookmark. Before, every change cleared the
+  selection.
 
 
 ### Quill Radio: Find Streams remembers, and reads more sites (2026-11-22)

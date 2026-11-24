@@ -432,6 +432,7 @@ def _cancel_test_frame() -> SimpleNamespace:
             work(lambda *a: None)
         ),
         frame=None,
+        announced=[],
     )
 
 
@@ -473,11 +474,21 @@ def test_cancel_finishes_the_current_file_then_stops_and_logs_it(
     monkeypatch.setattr(document_speech, "synthesize_document_to_chaptered_file", _fake_synth)
 
     frame = _cancel_test_frame()
+    frame._announce = frame.announced.append
     req = _req(tmp_path, extensions=(".md",))
     _run(frame, req)
 
     # The first file completed (its output exists); the second was never started.
     assert started == ["a.md"]
+    # FUX-04: the stop is said once -- what is kept, where, what is not, and how
+    # to make the rest -- and kept in Activity with Open Folder.
+    from quill.core import activity
+
+    assert frame.announced == [
+        f"Stopped after 1 of 2 documents. The audio for 1 document is kept in {tmp_path.name}; "
+        "the other 1 has no audio yet. Run it again to make the rest; finished ones are skipped."
+    ]
+    assert activity.LOG.recent()[0].summary == frame.announced[0]
     assert (tmp_path / "a.mp3").is_file()
     assert not (tmp_path / "b.mp3").is_file()
 

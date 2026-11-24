@@ -57,6 +57,7 @@ from quill_social.services.feed_discovery import common_feed_paths, discover_fee
 from quill_social.services.scheduler import Scheduler
 from quill_social.services.thread_publisher import publish_thread
 from quill_social.services.thread_splitter import mastodon_counter, split_thread
+from quill_social.ui import timeline_follow
 from quill_social.ui.announce import Announcer
 from quill_social.ui.commands import Command, CommandPalette
 from quill_social.ui.composer import ComposerDialog
@@ -207,7 +208,7 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         published = [r for r in results if r.published]
         if published:
             self._refresh_from_network(announce=False)
-            self._load_scope(self.current_scope, self.current_scope_label)
+            self._timeline_changed(show_arrivals=True)  # your own posts: shown at once
             self.announcer.say(f"Scheduler published {len(published)} post(s).", "normal")
         try:
             self._auto_refresh_feeds()
@@ -265,7 +266,12 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         # Tree counts always reflect the refresh; only the announcement is gated.
         self._refresh_feed_counts()
         if new_total:
-            self.announcer.say(f"{new_total} new article(s).", "normal")
+            before = int(getattr(self, "_held", 0))
+            self._timeline_changed(say_held=False)
+            if self._held > before:  # some are waiting in the list being read
+                self.announcer.say(self._held_sentence(), "normal")
+            else:
+                self.announcer.say(f"{new_total} new article(s).", "normal")
 
     # -- first run ------------------------------------------------------------
 
@@ -695,7 +701,7 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
 
     # -- data loading ---------------------------------------------------------
 
-    def _refresh_from_network(self, *, announce: bool = True) -> None:
+    def _refresh_from_network(self, *, announce: bool = True, say_total: bool = True) -> None:
         """Pull each active account's home timeline into the local store.
 
         Failures are per-account and never crash the app or block other
@@ -727,7 +733,7 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
             except Exception as exc:  # pragma: no cover - defensive
                 if announce:
                     self.announcer.say(f"{acct.label}: refresh failed ({exc})", "normal")
-        if announce:
+        if announce and say_total:
             self.announcer.say(f"Refreshed. {pulled} posts.", "normal")
 
     def _scope_items(self, scope: str) -> list:
@@ -751,6 +757,9 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
             return self.store.search_items(self.last_search) if self.last_search else []
         if scope == "discover:catchup":
             return self._catchup_items()
+        if scope.startswith("thread:"):
+            thread = self.store.list_items(thread_root=scope.split(":", 1)[1], limit=100)
+            return sorted(thread, key=lambda x: x.created_at)
         if scope.startswith("smart:"):
             folder_id = scope.split(":", 1)[1]
             folders = {f.folder_id: f for f in self.store.list_folders(kind="smart")}
@@ -786,6 +795,7 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
             self._load_github(scope, label)
             return
         self._items = self._scope_items(scope)
+        self._held = 0  # the whole scope is shown, arrivals included
         # Restore the last-read article (or first unread) for this scope.
         self._render_list(focus_index=self._reading_focus_index(scope))
         unread = sum(1 for it in self._items if not it.read)
@@ -846,22 +856,32 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
             self.list.InsertItem(i, row)
         self.announcer.say(f"{label}. {len(objs)} items.", "normal")
 
+    def _row_texts(self, items: list) -> list[str]:
+        """Each post's row, as the list reads it."""
+        accounts = {a.account_id: a for a in self.store.list_accounts()}
+        now = now_ms()
+        return [
+            render_row(
+                it, self.profile, account=accounts.get(it.account_id), settings=self.a11y, now=now
+            )
+            or "(no text)"
+            for it in items
+        ]
+
+    def _mark_unread_row(self, row: int, item) -> None:
+        # Read state is spoken, never color-only (PRD 6.5); we still bold
+        # unread rows for low-vision users as a secondary cue.
+        font = self.list.GetFont()
+        font.SetWeight(wx.FONTWEIGHT_NORMAL if item.read else wx.FONTWEIGHT_BOLD)
+        self.list.SetItemFont(row, font)
+
     def _render_list(self, *, keep_selection: bool = False, focus_index: int | None = None) -> None:
         sel = self.list.GetFirstSelected() if keep_selection else -1
         self.list.DeleteAllItems()
-        accounts = {a.account_id: a for a in self.store.list_accounts()}
-        now = now_ms()
-        for i, it in enumerate(self._items):
-            row = render_row(
-                it, self.profile, account=accounts.get(it.account_id), settings=self.a11y, now=now
-            )
-            idx = self.list.InsertItem(i, row or "(no text)")
+        for i, (it, row) in enumerate(zip(self._items, self._row_texts(self._items), strict=True)):
+            idx = self.list.InsertItem(i, row)
             if not it.read:
-                # Read state is spoken, never color-only (PRD 6.5); we still bold
-                # unread rows for low-vision users as a secondary cue.
-                font = self.list.GetFont()
-                font.SetWeight(wx.FONTWEIGHT_BOLD)
-                self.list.SetItemFont(idx, font)
+                self._mark_unread_row(idx, it)
         if self._items:
             if focus_index is not None and 0 <= focus_index < len(self._items):
                 target = focus_index
@@ -927,7 +947,9 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         item = self._current_item()
         if item is not None:
             self._show_details(item)
-            if not item.read:
+            # A refresh putting the reader on a neighbour is not the reader
+            # opening it, so it is not marked read (FUX-06).
+            if not item.read and not getattr(self, "_following", False):
                 self.store.set_read(item.item_id, True)
                 item.read = True
         if event:
@@ -1143,7 +1165,7 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
             except AdapterError as exc:
                 results.append((acct.label, f"Failed: {exc}"))
         self._refresh_from_network(announce=False)
-        self._load_scope(self.current_scope, self.current_scope_label)
+        self._timeline_changed(show_arrivals=True)  # your own post: shown at once
         msg = "; ".join(f"{label}: {status}" for label, status in results)
         self.announcer.say(msg or "Nothing published.", "normal")
 
@@ -1226,6 +1248,13 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         thread = self.store.list_items(thread_root=item.thread_root or item.remote_id, limit=100)
         if not thread:
             thread = [item]
+        # Its own scope (FUX-06): a refresh in the timeline behind it must not
+        # throw the reader out of the thread, nor save a thread post as the
+        # timeline's reading position.
+        self._save_reading_position()
+        self.current_scope = f"thread:{item.thread_root or item.remote_id}"
+        self.current_scope_label = "Conversation"
+        self._held = 0
         self._items = sorted(thread, key=lambda x: x.created_at)
         self._render_list()
         self.announcer.say(f"Conversation. {len(self._items)} posts.", "normal")
@@ -1245,9 +1274,32 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         self.announcer.say(f"Opened {len(urls)} link(s).", "normal")
 
     def cmd_refresh(self) -> None:
-        self._refresh_from_network(announce=True)
-        self._load_scope(self.current_scope, self.current_scope_label)
+        """F5: fetch, then show what arrived -- the reader asked (FUX-06)."""
+        self._refresh_from_network(say_total=False)  # failures are still said
         self._refresh_feed_counts()
+        if not timeline_follow.is_followable(self.current_scope):
+            self._load_scope(self.current_scope, self.current_scope_label)
+            return
+        arrived = timeline_follow.refresh_in_place(self, wx, show_arrivals=True)
+        noun = "post" if arrived == 1 else "posts"
+        self.announcer.say(
+            f"Refreshed. {arrived} new {noun}." if arrived else "Refreshed. Nothing new.", "normal"
+        )
+
+    def _timeline_changed(self, *, say_held: bool = True, show_arrivals: bool = False) -> None:
+        """Posts changed behind the reader: refresh in place, hold the new ones."""
+        if not timeline_follow.is_followable(self.current_scope):
+            if self.current_scope.startswith("pub:"):
+                self._load_scope(self.current_scope, self.current_scope_label)
+            return
+        before = int(getattr(self, "_held", 0))
+        timeline_follow.refresh_in_place(self, wx, show_arrivals=show_arrivals)
+        if say_held and self._held > before:
+            self.announcer.say(self._held_sentence(), "normal")
+
+    def _held_sentence(self) -> str:
+        key = self.keymap.chord_for("refresh") if hasattr(self.keymap, "chord_for") else ""
+        return timeline_follow.held_sentence(self._held, key)
 
     def cmd_focus_search(self) -> None:
         self.search.SetFocus()
@@ -1443,7 +1495,11 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
 
     def cmd_mark_all_read(self) -> None:
         """Mark every item in the current scope read; keep focus; offer undo."""
-        changed = self.store.mark_all_read(account_ids=self._scope_account_ids())
+        if self.current_scope.startswith("thread:"):  # just this conversation
+            changed = [it.item_id for it in self._items if not it.read]
+            self.store.set_read_bulk(changed, read=True)
+        else:
+            changed = self.store.mark_all_read(account_ids=self._scope_account_ids())
         self._undo_mark = changed
         for it in self._items:
             it.read = True
@@ -1566,12 +1622,21 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         ) as fd:
             if fd.ShowModal() != wx.ID_OK:
                 return
-            try:
-                Path(fd.GetPath()).write_text(xml, encoding="utf-8")
-            except OSError as exc:
-                self.announcer.error(f"Could not write OPML: {exc}")
-                return
-        self.announcer.say(f"Exported {len(entries)} feed(s) to OPML.", "normal")
+            target = fd.GetPath()
+        self._write_opml(target, xml, len(entries))
+
+    def _write_opml(self, target: str, xml: str, count: int) -> bool:
+        """Write the OPML; say how many feeds went to which file in which folder (FUX-04)."""
+        from quill.core.action_feedback import written_result
+
+        try:
+            Path(target).write_text(xml, encoding="utf-8")
+        except OSError as exc:
+            self.announcer.error(f"Could not write OPML: {exc}")
+            return False
+        noun = "feed" if count == 1 else "feeds"
+        self.announcer.say(written_result(f"Exported {count} {noun}", target), "normal")
+        return True
 
     def cmd_configure_feed(self) -> None:
         """Open per-feed settings (cadence, retention, toggles, keyword rules)."""
@@ -1825,8 +1890,15 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         export_dir = self.data_dir / "exports"
         export_dir.mkdir(exist_ok=True)
         path = export_dir / f"{item.item_id}.md"
-        path.write_text(intent.markdown, encoding="utf-8")
-        self.announcer.say(f"{intent.describe()} Saved to {path}.", "normal")
+        try:
+            path.write_text(intent.markdown, encoding="utf-8")
+        except OSError as exc:
+            self.announcer.error(f"Could not save the thread for QUILL: {exc.strerror or exc}.")
+            return
+        # Said once the file is written, by folder rather than a whole path read
+        # aloud (FUX-04); the file's own name is an id, so the window that
+        # follows carries it and the full path for anyone who needs them.
+        self.announcer.say(f"Saved the thread for QUILL in {path.parent.name}.", "normal")
         self._show_text(
             "Send to QUILL", f"{intent.describe()}\n\nSaved to:\n{path}\n\n" + intent.markdown
         )

@@ -411,7 +411,7 @@ def test_saving_each_format_reads_back(
     d.dlg._list.select_all()
     d.dlg._save()
     saved = tmp_path / f"WXYZ.{extension}"
-    assert d.said[-1] == f"Saved 4 streams to WXYZ.{extension}."
+    assert d.said[-1] == f"Saved 4 streams to WXYZ.{extension} in {tmp_path.name}."
     stations = parse_playlist(saved.read_text(encoding="utf-8"), url=str(saved))
     assert [s.stream_url for s in stations] == [c.url for c in _rows()]
 

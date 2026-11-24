@@ -112,6 +112,27 @@ def focused_class_name() -> str:
         return ""
 
 
+def focused_window_handle() -> int:
+    """The focused control's own window handle in the foreground thread, or 0.
+
+    An identity, unlike the class name: two edit boxes in one dialog share a
+    class but never a handle. Custom-drawn surfaces (browsers, Electron) report
+    their one content window here, which is still the right thing to compare.
+    """
+    try:
+        hwnd = _user32.GetForegroundWindow()
+        if not hwnd:
+            return 0
+        thread_id = _user32.GetWindowThreadProcessId(hwnd, None)
+        info = _GUITHREADINFO()
+        info.cbSize = ctypes.sizeof(_GUITHREADINFO)
+        if not _user32.GetGUIThreadInfo(thread_id, ctypes.byref(info)):
+            return 0
+        return int(info.hwndFocus or 0)
+    except Exception:  # noqa: BLE001
+        return 0
+
+
 def uia_focus_is_editable() -> bool | None:
     """Ask UI Automation whether the focused element takes text.
 

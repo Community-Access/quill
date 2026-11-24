@@ -311,6 +311,8 @@ Bookmarks mark a moment you want to return to, with an optional label and note.
   is said with the time.
   **Ctrl+Alt+P** (**Navigation > Go to Player Controls**) takes you back.
 - **Remove** — select it and press the **Remove Bookmark** button below the list.
+  Your cursor moves to the next bookmark. Adding or editing a bookmark leaves
+  your cursor where it was.
 - **Send a bookmark into your document** — **Ctrl+Shift+C** copies a paste-ready line
   (`[1:23:45] your note — Title`) to the clipboard; paste it into your QUILL document
   or a Sticky Note. (A direct insert into a running QUILL is a future refinement.)
@@ -319,6 +321,11 @@ Bookmarks mark a moment you want to return to, with an optional label and note.
 - **Sync across devices** — **Export / Import Sync Bundle** moves your bookmarks between
   machines as a portable file (merged on import, never overwriting). Automatic
   server-side sync (QuilleSync) is a future item.
+
+Both exports say the file and the folder it went to, once the file is written:
+"Exported 4 bookmarks to marks.md in Documents." If you missed it, **Help >
+Repeat Last Result** (F9) says it again, and **Help > Activity...** (Shift+F9)
+keeps it with **Open Folder**.
 
 Bookmarks are saved per book and survive between sessions.
 

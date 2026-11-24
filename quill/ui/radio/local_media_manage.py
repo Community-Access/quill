@@ -213,7 +213,13 @@ def export_playlist(host: Any, playlist_id: str) -> bool:
     except OSError as error:
         ui.announce(host, f"The playlist could not be saved: {error}.")
         return False
-    ui.announce(host, f"Exported {len(playlist.items)} items to {target.name}.")
+    from quill.core.action_feedback import written_result
+    from quill.ui.outcome_report import keep_outcome
+
+    count = len(playlist.items)
+    said = written_result(f"Exported {count} item{'' if count == 1 else 's'}", target)
+    ui.announce(host, said)  # the file and its folder, and kept with Open Folder (FUX-04)
+    keep_outcome("Export as M3U", said, object_name=playlist.name, path=target)
     return True
 
 

@@ -121,6 +121,11 @@ class StudioDemoFinishMixin:
         self._studio_last_verification = verification  # Ask's "Last recording check"
         self._restore_from_tray()
         self._announce(verification.sentence)
+        from quill.ui.outcome_report import keep_outcome  # reachable after the window (FUX-04)
+
+        keep_outcome(
+            "Record a demonstration", verification.sentence, object_name=path.name, path=path
+        )
         lines = [verification.state, "", verification.sentence, "", "Checks:"]
         lines += [
             f"- {'Passed' if check.passed else 'Problem'}: {check.name}. {check.detail}"

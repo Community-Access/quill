@@ -198,6 +198,7 @@ def hourly_from_json(data: object, *, limit: int = 24) -> list[HourlyPeriod]:
                 wind_speed=str(item.get("windSpeed", "")),
                 wind_direction=str(item.get("windDirection", "")),
                 is_daytime=bool(item.get("isDaytime", True)),
+                start=str(item.get("startTime") or ""),
             )
         )
         if len(hours) >= limit:

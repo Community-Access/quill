@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FUX-06 adoption: lists that stay still, across the
+family</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="fux-06-adoption-lists-that-stay-still-across-the-family">FUX-06
+adoption: lists that stay still, across the family</h1>
+<p><strong>Date:</strong> 2026-11-23 <strong>Item:</strong> M2 on Jeff’s
+list. FUX-06 from the family UX plan
+(<code>git show b7c6a1a04^:complete2.md</code>, section FUX-06); the
+decisions are in
+<code>docs/design/2026-11-19-family-ux-pilots.md</code>. <strong>Pilots
+already done:</strong> Quill Cast (#1958) and QUILL Lite (#1969). This
+audit carries the same contract to every other app’s live lists.</p>
+<h2 id="the-contract-and-the-one-mechanism">The contract, and the one
+mechanism</h2>
+<p>FUX-06 asks six things of a list that changes while somebody reads
+it:</p>
+<ol type="1">
+<li>A refresh does not move focus, restart the details or repeat
+unchanged data.</li>
+<li>The person decides when arrivals join the list they are
+reading.</li>
+<li>A real change to an item stays inspectable, with when it
+happened.</li>
+<li>A filter or sort keeps the selection where it is still valid, and
+says when it is not.</li>
+<li>Something that expired or was deleted stays recognisable; when the
+selected item goes, say so and land on a predictable neighbour.</li>
+<li>Slow answers arriving out of order, reconnects, paging and several
+windows are all tested.</li>
+</ol>
+<p>There is one mechanism, used everywhere, so the apps cannot drift
+apart:</p>
+<ul>
+<li><strong><code>quill/core/list_follow.py</code></strong> (new, pure).
+<code>land()</code> picks the row: the reader’s own item by identity,
+otherwise the row that moved into its place (the rule in
+<code>quill.core.activity.restore_index</code>, which the Cast pilot
+uses). <code>change_rows()</code> turns the rows on screen into the new
+rows by deleting only what left and inserting only what arrived, so the
+reader’s row stays the <em>same native item</em> and the screen reader
+has nothing to re-read. <code>gone_sentence()</code> and
+<code>hidden_sentence()</code> are the two sentences, said once.</li>
+<li><strong><code>quill/ui/list_stay_still.py</code></strong> (the Cast
+pilot’s module, extended).
+<code>capture_report</code>/<code>restore_report</code> keep the
+selection, the focused item and the line on screen without
+<code>SetFocus</code>; <code>restore_report</code> now keeps the rest of
+a multiple selection too (<code>also=</code>).
+<code>follow_report</code> and <code>refill_listbox</code> (new) put
+both halves together for a report list and a list box.</li>
+<li><strong><code>quill/ui/media/list_columns_view.set_row</code></strong>
+now writes only the cells whose text changed, so a two-second update no
+longer rewrites an unchanged row.</li>
+</ul>
+<p><strong>What “the person decides when arrivals join” means
+here.</strong> For a <em>feed</em> (Social timelines, Beacon captures)
+new items are held behind a count until the person shows them. For a
+<em>management list</em> (recordings, downloads, a queue, a playlist) an
+arrival is the thing the person just asked for, so it appears at once;
+what FUX-06 guarantees there is that the reader’s own row does not move,
+by identity and on the same line.</p>
+<h2 id="radio-media-player-pr-featm2-radio">Radio, Media Player (PR:
+feat/m2-radio)</h2>
+<table>
+<thead>
+<tr>
+<th>List</th>
+<th>File</th>
+<th>How it refilled</th>
+<th>Already met FUX-06</th>
+<th>Gap</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Recordings</td>
+<td><code>quill/ui/radio/recordings_manager_dialog.py</code>
+<code>_refresh</code></td>
+<td>2-second timer; rows rewritten in place by position; old row
+reselected by id</td>
+<td>No-op update when nothing changed; no SetFocus</td>
+<td>When a recording started above the reader, the old row stayed
+selected <em>and</em> the reader’s moved row was selected, so Remove,
+Play and Open acted on the wrong recording. Every cell rewritten every
+two seconds while recording. A row removed elsewhere left a stale
+selection, unexplained</td>
+<td><code>follow_report</code> keeps exactly one row;
+<code>set_row</code> writes changed cells only; a fired schedule follows
+to its Recording row; a recording gone from disk is said once on the
+timer (“X is no longer in the list.”) and the next row chosen</td>
+</tr>
+<tr>
+<td>Find Stations results</td>
+<td><code>quill/ui/radio/results_view.py</code>,
+<code>station_browser_dialog.py</code>, <code>library_search.py</code>,
+<code>search_paging.py</code></td>
+<td>Clear and refill, row 0 selected; libraries and More Stations
+reselected by index on top of row 0</td>
+<td>No SetFocus on dropdown searches</td>
+<td>Two rows selected after a library answered or More Stations (Enter
+played row 0). Late answers from an older search, an older category or
+an older library replaced newer results or dragged the reader back from
+Favorites. The Source filter dropped the reader’s station silently</td>
+<td>Row-by-row <code>change_rows</code> keeps the reader’s row as the
+same item; one selection; request numbers drop out-of-date searches,
+browses, library answers and pages; library rows never switch the
+category; the Source filter keeps the station or says “X is not shown
+with this filter.” More Stations lands on the first new station by
+identity (it was one row off when other sources were blended in)</td>
+</tr>
+<tr>
+<td>Download queue</td>
+<td><code>quill/ui/radio/download_queue_dialog.py</code>
+<code>refresh</code></td>
+<td><code>Set()</code> all rows, reselect by id, else the top</td>
+<td>By identity</td>
+<td>Every refresh redrew the list and reselected; a removed or cleared
+row sent the reader to the top</td>
+<td><code>refill_listbox</code>: rows change one by one, the selection
+is written only when it differs, a removed row lands on its
+neighbour</td>
+</tr>
+<tr>
+<td>Local Media items</td>
+<td><code>quill/ui/radio/local_media_window.py</code>
+<code>reload</code></td>
+<td>In-place diff, reselect by id, Focus and EnsureVisible every
+time</td>
+<td>In-place cells, by identity</td>
+<td>The line on screen jumped on every scan or tag read; a file removed
+by a scan left nothing selected</td>
+<td><code>restore_report</code> keeps the line and the whole multiple
+selection; a file gone from the library lands on its neighbour and says
+so once (background changes only, never after the reader’s own
+Remove)</td>
+</tr>
+<tr>
+<td>Favorites tree (main window)</td>
+<td><code>quill/apps/radio_favorites_tree.py</code>
+<code>_reload_favorites_tree</code></td>
+<td>DeleteAllItems, ExpandAll, reselect a station by key else the first
+row</td>
+<td>Stations by identity</td>
+<td>A selected folder went to the first row; a removed station went to
+the first row; closed folders reopened</td>
+<td>Folders and stations both by identity; a removed one lands on its
+neighbour; closed folders stay closed</td>
+</tr>
+<tr>
+<td>Browse Stations, Favorites branch</td>
+<td><code>quill/ui/radio/browse_tree_dialog.py</code>, new
+<code>browse_favorites_refresh.py</code></td>
+<td>DeleteChildren and refill; “N items.” said</td>
+<td>Not refreshed until opened</td>
+<td>The reader’s row was destroyed (left on the folder), and “N items.”
+talked over “Added X to Favorites.”</td>
+<td>The refresh is quiet and puts the reader back on their station or
+its neighbour</td>
+</tr>
+<tr>
+<td>Media Player bookmarks</td>
+<td><code>quill/apps/player_bookmarks.py</code>
+<code>_refresh_bookmarks</code></td>
+<td>Clear and append, nothing reselected</td>
+<td>—</td>
+<td>Every Add, Edit and Remove lost the selection</td>
+<td><code>refill_listbox</code>: an edited bookmark stays selected,
+Remove lands on the next one</td>
+</tr>
+<tr>
+<td>Media Player chapters</td>
+<td><code>quill/apps/player.py</code>
+<code>_refresh_chapters</code></td>
+<td>Rebuilt when a file opens</td>
+<td>Not live: the whole content changes</td>
+<td>None</td>
+<td>None</td>
+</tr>
+<tr>
+<td>YouTube live chat</td>
+<td><code>quill/ui/radio/youtube_live_chat_window.py</code></td>
+<td>Append only; Pause holds “N waiting”; Follow is opt-in</td>
+<td>Already the FUX-06 shape</td>
+<td>None for FUX-06 (rows are never trimmed; noted)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>YouTube comments</td>
+<td><code>quill/ui/radio/youtube_comments_window.py</code></td>
+<td>Generation-guarded pages, by identity</td>
+<td>Yes</td>
+<td>None</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Find Streams</td>
+<td><code>quill/ui/radio/find_streams_list.py</code> (#2007)</td>
+<td>Frozen refill by address</td>
+<td>Yes (the reference)</td>
+<td>None</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What the accessibility review changed (2026-11-23).</strong>
+The Desktop Accessibility Specialist reviewed the Radio change before it
+went up. Applied: Recordings and Local Media change rows by identity
+(<code>change_rows</code>), not by position, so a row inserted above the
+reader no longer rewrites the reader’s own row with its neighbour’s
+text; <code>change_rows</code> takes the reader’s key as a <em>pin</em>,
+so even a re-sorted list keeps their row as the same native item; the
+reader’s row is the focused item when it is selected, and the rest of a
+multiple selection survives (<code>also=</code>); the “no longer in the
+list” sentence waits 400 ms for the screen reader to read the new row,
+and is said only by the window in front (<code>say_when_settled</code>),
+so a second Local Media window or a Recordings window behind another app
+keeps quiet; Find Stations checks a browse answer when it lands, not
+when it arrives, and ignores a stale error; More Stations finds the
+first new station by key; <code>refill_listbox</code> leaves a list with
+no selection without one; bookmark keys carry the book; the Favorites
+tree is not redrawn at all when nothing in it changed (Quill Radio
+reloads it twice after some saves); the Local Media Playlists list is
+refilled row by row too; Recordings’ Delete no longer selects the
+neighbour a second time.</p>
+<p>Accepted as they are: <code>wx.ListBox.SetString</code> on Windows
+deletes and re-inserts the row, so a Downloads row the reader is on is
+read again when its state changes (once per state, and the change is
+news); the Browse Stations Favorites branch still deletes its rows when
+a favorite is added or removed, so when the reader is standing inside
+that branch the screen reader reads the row they land on, once, after
+the “Removed” sentence. Diffing tree children in place is the next step
+for both trees.</p>
+<p><strong>Left in Radio, with the reason.</strong> These are refilled
+only by the person’s own command and say what they did, so they are
+lower value than the above and each needs its own tree work: Browse
+Stations’ Refresh on a station row
+(<code>browse_refresh.refresh_selected</code> lands on the folder),
+Search All Sources and Find in this Folder (no query number; a second
+search usually waits for the first), the ACB Media schedule Refresh
+(resets its filters), the TuneIn tree. Next M2 pass.</p>
+<h2 id="social-beacon-pr-featm2-social-beacon">Social, Beacon (PR:
+feat/m2-social-beacon)</h2>
+<table>
+<thead>
+<tr>
+<th>List</th>
+<th>File</th>
+<th>How it refills</th>
+<th>Already met FUX-06</th>
+<th>Gap</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Social timeline</td>
+<td><code>standalone/social/quill_social/ui/app.py</code>
+<code>_load_scope</code> / <code>_render_list</code></td>
+<td>Every refresh is a full scope load: clear, refill, restore the saved
+reading position</td>
+<td>No SetFocus; reading position by item id</td>
+<td>Each scheduler run and refresh says the scope and count again; the
+restored row is marked read again by the selection event; a vanished
+post sends the reader to the first unread, not a neighbour; new posts
+jump in at the top</td>
+<td>See the Social PR</td>
+</tr>
+<tr>
+<td>Beacon results</td>
+<td><code>quill/apps/beacon/app.py</code>
+<code>_refresh_results</code></td>
+<td>Virtual list; new item count; details for row 0</td>
+<td>—</td>
+<td>Selection is left at the old index, so after a capture or sync it
+points at another beacon; details show row 0; the count is said on every
+automatic sync</td>
+<td>See the Beacon PR</td>
+</tr>
+</tbody>
+</table>
+<h2
+id="studio-transcribe-weather-pr-featm2-studio-transcribe-weather">Studio,
+Transcribe, Weather (PR: feat/m2-studio-transcribe-weather)</h2>
+<table>
+<thead>
+<tr>
+<th>List</th>
+<th>File</th>
+<th>How it refills</th>
+<th>Already met FUX-06</th>
+<th>Gap</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Weather Center lists</td>
+<td><code>quill/ui/weather/weather_center_dialog.py</code>
+<code>_render_report</code></td>
+<td><code>Set()</code> on four list boxes, no reselect; details forced
+to row 0</td>
+<td>No SetFocus</td>
+<td>Selection lost on every refresh; the summary said again for
+unchanged data; a slow answer for an earlier location replaces the
+current one; an expired alert vanishes unexplained</td>
+<td>See the Weather PR</td>
+</tr>
+<tr>
+<td>Studio library tree</td>
+<td><code>quill/apps/studio.py</code> <code>_reload_library_tree</code>,
+<code>quill/ui/audio_studio/library_tree.py</code></td>
+<td>DeleteAllItems and rebuild after background jobs</td>
+<td>Book by key</td>
+<td>A book shown twice (in a pinned view and its folder) lands on the
+wrong copy; a removed book goes to the first header</td>
+<td>See the Studio PR</td>
+</tr>
+<tr>
+<td>Transcribe queue</td>
+<td><code>quill/ui/windows_dictation_transcribe.py</code></td>
+<td>No list: status bar, queue sentence, Activity, Notifications</td>
+<td>Progress said in quarters</td>
+<td>None for FUX-06 (no list moves)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Model Library</td>
+<td><code>quill/ui/dictation_models_dialog.py</code></td>
+<td>Rows rewritten in place with <code>SetString</code></td>
+<td>Yes</td>
+<td>None</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<h2
+id="github-and-wordpress-workbench-pr-featm2-workbench-after-gh-r-150151">GitHub
+and WordPress Workbench (PR: feat/m2-workbench, after GH-R-150/151)</h2>
+<table>
+<thead>
+<tr>
+<th>List</th>
+<th>File</th>
+<th>How it refills</th>
+<th>Already met FUX-06</th>
+<th>Gap</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Every Workbench list</td>
+<td><code>quill/ui/workbench_frame.py</code> <code>_fill_list</code>,
+<code>workbench_frame_groups.py</code>,
+<code>quill/core/workbench/list_place.py</code></td>
+<td>DeleteAllItems and refill when any cell changed; land by
+<code>row_identity</code></td>
+<td>By identity; generation guard; no SetFocus; unchanged rows
+skipped</td>
+<td>No line kept on screen; multiple selection dropped; nothing said
+when the row went or a filter hid it; the Watches poll rewrites its
+labels every minute and so re-reads the row</td>
+<td>See the Workbench PR</td>
+</tr>
+</tbody>
+</table>
+<h2 id="tests">Tests</h2>
+<p>Each fix has a test that fails without it:
+<code>tests/unit/core/test_list_follow.py</code> (the choice of row,
+<code>change_rows</code> against random orders, the sentences),
+<code>tests/unit/ui/test_fux06_radio_lists.py</code> (recordings, Find
+Stations out-of-order and paging, the download queue, the Favorites
+tree, Media Player bookmarks), and additions to the Local Media and
+Browse Stations tests. <code>tests/unit/ui/report_list_fake.py</code> is
+a headless report list that keeps each row’s selected and focused state
+and its native identity, so a test can tell “the same row stayed” from
+“a look-alike was selected”.</p>
+</main>
+</body>
+</html>

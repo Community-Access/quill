@@ -11,6 +11,18 @@ build, grouped by subject; then the first build itself.
 F1 on an entry marked "(disabled)" in the main window's list says that typing
 it does not expand it, and that Enable/Disable (Alt+B) in Manage Abbreviations
 (Ctrl+M), or Enabled in the entry's Edit dialog, turns it back on.
+### The actual result, said once (2026-11-23)
+
+- **Import and Export in Manage Abbreviations say where, and no box.** Export
+  says "Exported 42 abbreviations to abbreviations.json in Documents."
+  instead of a box with only a count. Import says how many it added from
+  which file, how many were already in your list, and how many entries it
+  could not use because they had no abbreviation or no text; it used to call
+  all of those "duplicate IDs". A file that cannot be read or written still
+  gets a box.
+- **Help > Activity... (Shift+F9) and Help > Repeat Last Result (F9).** A
+  result you missed can be heard again, and Activity keeps it with an Open
+  Folder button.
 
 ### Settings that stick, and a damaged settings file (2026-11-20)
 

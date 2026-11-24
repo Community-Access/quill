@@ -445,6 +445,14 @@ Center. It reads top to bottom in priority order:
 Press **Refresh** at any time to pull the latest. **Close** leaves any radio
 you are playing untouched.
 
+A refresh never moves you. In each list your cursor stays on the alert,
+forecast period, hour or day you were reading, and its detail box shows that
+row. When the alert you were on has expired or been cancelled, the summary
+ends with "The ... is no longer in the list.", and you are on the alert that
+took its place. If you choose another place before the last one has finished
+loading, the late answer for the old place is ignored. After you change
+Settings, the summary is said again only if what it says has changed.
+
 ### Quick Weather
 
 **Weather menu > Quick Weather** (or **Ctrl+Shift+Q**) speaks a one-line summary

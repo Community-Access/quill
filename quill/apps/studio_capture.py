@@ -198,8 +198,14 @@ class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin, StudioAiMix
         def ready(_task_id, evidence):
             self._capture_pending = False
             self._last_capture = evidence
-            self._set_status(
-                "Screenshot saved; file decode verified. Open Screenshot Inspector to review."
+            from quill.core.action_feedback import place_of
+            from quill.ui.outcome_report import keep_outcome
+
+            # Shown and kept with Open Folder, never spoken over the capture (FUX-04).
+            said = f"Screenshot saved as {place_of(evidence.path)}; file decode verified."
+            self._set_status(f"{said} Open Screenshot Inspector to review.")
+            keep_outcome(
+                "Capture screen", said, object_name=Path(evidence.path).name, path=evidence.path
             )
             # Do not steal focus from the application the user is capturing.
             scrolling = evidence.metadata.get("scrolling", {})

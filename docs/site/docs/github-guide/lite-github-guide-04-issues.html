@@ -277,8 +277,9 @@ further down, lists both together, newest first.</p>
 <li><code>Ctrl+G</code> (<strong>File &gt; Go to Number…</strong>) goes
 to an issue or pull request in this repository by its number.</li>
 <li><code>Ctrl+L</code> (<strong>File &gt; Open GitHub
-Address…</strong>) takes <code>owner/name#42</code>, or a link pasted
-from anywhere, and goes there.</li>
+Address…</strong>) takes <code>#42</code> for this repository,
+<code>owner/name#42</code>, or a link pasted from anywhere, and goes
+there.</li>
 <li><code>Ctrl+E</code> moves to the filter box. Plain words narrow the
 list you are looking at; GitHub’s own words, such as
 <code>is:open label:bug</code>, ask GitHub.</li>
@@ -304,9 +305,13 @@ comments;</li>
 <p>Shortcodes such as <code>:tada:</code> are read by their names,
 “party popper”, so you do not hear colons spelled out.</p>
 <h3 id="reading-the-comments">Reading the comments</h3>
-<p>The details pane holds the description, and says how many comments
-there are. To read the whole conversation, choose <strong>Read as
-Document…</strong> (<code>Ctrl+Shift+I</code>). It asks how you want
+<p>The details pane holds the description, then the comments, oldest
+first, each starting “Comment 1 of 3”, its author and its date. QUILL
+reads them the first time you select the issue; until they arrive the
+pane ends “Reading the comments…”. If you are in the pane when they
+land, you hear “3 comments read; they follow the description.” To read
+the whole conversation with a heading for each post, choose <strong>Read
+as Document…</strong> (<code>Ctrl+Shift+I</code>). It asks how you want
 it:</p>
 <ul>
 <li><strong>Open in Editor</strong> opens the thread as one document, a

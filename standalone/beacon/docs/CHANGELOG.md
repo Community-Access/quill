@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- **Export says where the file went** (2026-11-23). File > Export now ends
+  with the format, the file and its folder, for example "Exported your library
+  as HTML bookmarks to quillbeacon-export.html in Downloads.", instead of
+  reading the whole path aloud. An export that could not be written says so,
+  where it used to say nothing.
+- **The results list stays still** (FUX-06, 2026-11-23). The list is virtual,
+  so after a capture from the browser or a sync the selection used to stay on
+  the old row number, which was now another beacon, while the details showed
+  the first row; Delete or Rename could act on a beacon you never chose. Now
+  you stay on your own beacon, with the rest of your selection, on the same
+  line, and the details follow it. The result count is said when you change
+  the search, the sort or the destination, not on every refill or auto-sync.
+  An auto-sync that pushed and pulled nothing says nothing. A beacon a sync
+  removed is said once ("... is no longer in the list."), and you land on its
+  neighbour.
 - **Places in Scribe for Documents results** (2026-11-21). A Scribe
   Documents destination lists places in what Scribe for Documents made.
   Tools > Scribe for Documents > Add My Scribe Documents as Places

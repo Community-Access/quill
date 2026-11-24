@@ -19,6 +19,12 @@ Quill Media Player runs the same player code as QUILL from the shared `quill` pa
   the chapter now.
 - **The arrow keys say the new position once.** They said the time twice, once
   as a timestamp and once as elapsed or remaining.
+### Exports say where (2026-11-23)
+
+- Export Bookmarks and Export Sync Bundle say the file and its folder once
+  the file is written: "Exported 4 bookmarks to marks.md in Documents." Both
+  are kept in Help > Activity... (Shift+F9, new on the Help menu with Repeat
+  Last Result, F9) with Open Folder.
 
 ### Listen to a document with Scribe for Documents (2026-11-21)
 

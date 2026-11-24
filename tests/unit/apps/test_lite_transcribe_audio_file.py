@@ -333,13 +333,19 @@ def test_a_failure_is_said_with_its_reason_and_kept_in_activity(transcribe):
     assert "could not be read" in notice.body
 
 
+#: FUX-04: a stop says what exists (nothing) and what to do about it.
+_STOPPED = (
+    "Stopped transcribing meeting.mp3. No transcript was kept; transcribe it again to start over."
+)
+
+
 def test_stopping_is_retained_as_a_notification(transcribe):
     win, recording, opened = transcribe
     _FakeTranscriber.outcome = TranscriptionCancelled("Transcription stopped.")
     _choose(recording)
     win.cmd_transcribe_audio_file()
     assert opened == []
-    assert "Stopped transcribing meeting.mp3." in win.announcements
+    assert _STOPPED in win.announcements
     notice = _stored_notices(win)[0]
     assert notice.category == "warning"
     assert notice.title == "Transcription canceled: meeting.mp3"
@@ -351,7 +357,7 @@ def test_a_cancelled_task_token_stops_without_writing(transcribe):
     _choose(recording)
     win.cmd_transcribe_audio_file()
     assert opened == []
-    assert "Stopped transcribing meeting.mp3." in win.announcements
+    assert _STOPPED in win.announcements
     assert runner._QUEUE.current is None
 
 

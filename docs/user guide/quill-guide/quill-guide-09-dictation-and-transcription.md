@@ -2770,7 +2770,9 @@ in this list: it is made for a microphone, not a file.
 - **"... could not be loaded, so this used the built-in engine."** A
   downloaded model would not load, so Moonshine did the work instead.
   Removing and downloading the model again in Speech Models may help.
-- **"Stopped transcribing meeting.mp3."** You pressed Stop Transcribing.
+- **"Stopped transcribing meeting.mp3. No transcript was kept; transcribe it
+  again to start over."** You pressed Stop Transcribing. Nothing was written,
+  and the recording is unchanged.
 - **"Could not transcribe meeting.mp3"**, followed by the reason, for
   anything else. You hear the error tone, and the reason stays in Activity.
 
@@ -2906,7 +2908,9 @@ deals with it. You will find the commands on **Tools > Watch Folder**.
 - **Watch Folder Profiles...** sets the folder path, whether subfolders count,
   what happens at startup, and how often the folder is checked.
 - **Watch Folder Queue...** shows what is happening right now and the settings
-  in use.
+  in use. The list updates as each file is queued, transcribed or converted,
+  and your cursor stays on the file you are on, even when Clear Finished
+  removes rows above it, so Retry and Open always act on the file you chose.
 
 Watch folders are good for "drop and open" work: copy supported files into one
 folder and let QUILL open them in the background. They respect Do Not Disturb

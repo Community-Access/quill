@@ -548,7 +548,8 @@ def test_captions_and_transcript_are_saved_beside_a_recording(tmp_path):
     assert (tmp_path / "Demo.transcript.txt").read_text(encoding="utf-8") == (
         "Hello and welcome.\nThis is the demo.\n"
     )
-    assert spoken == ["Captions and a transcript saved beside Demo.mp4."]
+    # Each file by the name it was given, and the folder (FUX-04).
+    assert spoken == [f"Saved Demo (2).srt, Demo.vtt and Demo.transcript.txt in {tmp_path.name}."]
 
 
 def test_picture_maker_keeps_every_turn_and_version(parent, tmp_path):
@@ -812,3 +813,58 @@ def test_a_failed_screen_capture_is_spoken(parent, tmp_path):
     host._task_manager.jobs[-1][2]["on_failure"](None, OSError("display gone"))
     assert host.spoken[-1] == "Capture did not complete: display gone"
     assert not host._capture_pending
+
+
+# -- the actual result, kept (FUX-04) -------------------------------------------------
+
+
+def test_a_screenshot_is_shown_and_kept_with_its_folder_never_spoken(parent, tmp_path):
+    from quill.core import activity
+
+    activity.LOG.clear()
+    shot = tmp_path / "Captures" / "shot.png"
+    host = Host(parent)
+    host._start_capture(DESKTOP, tmp_path, 0)
+    host._task_manager.jobs[-1][2]["on_success"](None, SimpleNamespace(path=shot, metadata={}))
+    said = "Screenshot saved as shot.png in Captures; file decode verified."
+    assert host.status[-1] == f"{said} Open Screenshot Inspector to review."
+    assert host.spoken == []  # focus and speech stay with what is being captured
+    assert activity.LOG.recent()[0].summary == said
+
+
+def test_a_broadcast_copy_stays_findable_after_the_spoken_end(parent, monkeypatch, tmp_path):
+    from quill.core import activity
+
+    activity.LOG.clear()
+    host = _LiveHost(parent)
+    stream = _FakeStream(archive_path=str(tmp_path / "Shows" / "live.mkv"))
+    host._live = stream
+    host.stop_broadcast()
+    _name, _work, kwargs = host._task_manager.jobs[-1]
+    kwargs["on_success"](None, None)
+    assert host.spoken[-1] == "Broadcast ended. A copy was saved."
+    kept = activity.LOG.recent()[0]
+    assert kept.summary == "Broadcast ended. Copy saved as live.mkv in Shows."
+    assert kept.has(activity.OPEN_FOLDER.id)
+
+
+def test_a_demonstration_result_stays_reachable_after_its_window(parent, monkeypatch, tmp_path):
+    from quill.core import activity
+    from quill.ui import studio_demo_result
+
+    activity.LOG.clear()
+    monkeypatch.setattr(
+        studio_demo_result,
+        "DemoResultDialog",
+        lambda *_a, **_k: SimpleNamespace(GetTitle=lambda: "Demo", Destroy=lambda: None),
+    )
+    host = Host(parent)
+    host._show_modal_dialog = lambda *_a: wx.ID_OK
+    video = tmp_path / "Demos" / "demo.mp4"
+    verification = SimpleNamespace(
+        path=str(video), state="Verified", sentence="Saved demo.mp4. Verified.", checks=(),
+        sha256="0",
+    )  # fmt: skip
+    host._show_demo_result(verification)
+    kept = activity.LOG.recent()[0]
+    assert kept.summary == "Saved demo.mp4. Verified." and kept.has(activity.OPEN_FOLDER.id)

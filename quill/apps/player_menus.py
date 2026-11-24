@@ -235,6 +235,15 @@ class MediaPlayerMenuMixin(PlayerScribeMixin):
         from quill.ui.whats_new import append_whats_new_item
 
         append_whats_new_item(self, help_menu, "player", _TITLE)  # the changelog
+        # Activity and Repeat Last Result (qc.md F-10, FUX-04): an exported
+        # file's result is kept with Open Folder; these are the way back to it.
+        activity_id, repeat_id = wx.NewIdRef(), wx.NewIdRef()
+        help_menu.Append(activity_id, self._menu_label("Activit&y...", "app.activity"))
+        help_menu.Append(
+            repeat_id, self._menu_label("Re&peat Last Result", "app.repeat_last_result")
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_activity(), id=activity_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.repeat_last_result(), id=repeat_id)
         help_menu.Append(about_id, "&About Quill Media Player\tCtrl+Alt+A")
         self.frame.Bind(
             wx.EVT_MENU,
@@ -261,6 +270,8 @@ class MediaPlayerMenuMixin(PlayerScribeMixin):
             focus_bm_id,
             focus_player_id,
             updates_id,
+            activity_id,
+            repeat_id,
             about_id,
         )
 

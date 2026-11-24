@@ -43,9 +43,11 @@ def export_bookmarks_markdown(host: Any, book_title: str, marks: list[MediaBookm
         return
     try:
         Path(path).write_text(bookmarks_to_markdown(book_title, marks), encoding="utf-8")
-        host._announce(f"Exported {len(marks)} bookmark(s).")
     except OSError as error:
         host._show_message_box(f"Could not export bookmarks.\n\n{error}", "Export Bookmarks")
+        return
+    noun = "bookmark" if len(marks) == 1 else "bookmarks"
+    _said_and_kept(host, "Export Bookmarks", f"Exported {len(marks)} {noun}", path)
 
 
 def export_sync_bundle(host: Any, store: BookmarkStore) -> None:
@@ -55,9 +57,10 @@ def export_sync_bundle(host: Any, store: BookmarkStore) -> None:
         return
     try:
         Path(path).write_text(json.dumps(store.export_bundle(), indent=2), encoding="utf-8")
-        host._announce("Bookmark sync bundle exported.")
     except OSError as error:
         host._show_message_box(f"Could not export the bundle.\n\n{error}", "Export Sync Bundle")
+        return
+    _said_and_kept(host, "Export Sync Bundle", "Exported the bookmark sync bundle", path)
 
 
 def import_sync_bundle(host: Any, store: BookmarkStore, on_done: Any) -> None:
@@ -79,6 +82,15 @@ def import_sync_bundle(host: Any, store: BookmarkStore, on_done: Any) -> None:
     added = store.merge_bundle(bundle if isinstance(bundle, dict) else {})
     host._announce(f"Imported {added} new bookmark(s).")
     on_done()
+
+
+def _said_and_kept(host: Any, action: str, done: str, path: str) -> None:
+    """Said only after the write landed: the file and its folder, kept in
+    Activity with Open Folder (FUX-04), so a missed sentence can be found again."""
+    from quill.core.action_feedback import written_result
+    from quill.ui.outcome_report import report_outcome
+
+    report_outcome(host, action, written_result(done, path), path=path)
 
 
 def _save_path(host: Any, title: str, wildcard: str) -> str | None:

@@ -33,3 +33,14 @@ def install(host: Any) -> None:
     from quill.ui import app_context_help
 
     app_context_help.set_selection_help(host._list, lambda: describe_selected_row(host))
+
+
+def fill_list(host: Any) -> None:
+    """Fill Inkwell's abbreviation list, and keep F1 on a row saying its situation."""
+    install(host)  # F1 says why a disabled entry will not expand
+    host._list.DeleteAllItems()
+    for i, entry in enumerate(host._library.abbreviations):
+        label = entry.abbreviation if entry.enabled else f"{entry.abbreviation} (disabled)"
+        host._list.InsertItem(i, label)
+        host._list.SetItem(i, 1, entry.expansion.replace("\n", " ")[:60])
+        host._list.SetItem(i, 2, entry.category)

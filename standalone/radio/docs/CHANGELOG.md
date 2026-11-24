@@ -24,6 +24,18 @@ it plays nothing. It also names a station marked for move and reads your note.
   are none. Worked-out chapters are said with "estimated".
 - "This has no chapters." replaces "This video has no chapters.", which was
   said for podcast episodes, recordings and files too.
+### Saves and exports say where, once (2026-11-23)
+
+- Exports name the file and its folder: "Exported 42 stations to
+  quill-radio-favorites.m3u in Music." The same goes for a favorites folder, a
+  Local Media playlist, podcasts to OPML, Find Streams' Save as Playlist, the
+  calendar, listening statistics, a backup and a snapshot. Each is kept in
+  Activity (Shift+F9) with Open Folder.
+- A single download says "Saved Chapter 1 as chapter-01.mp3 in Middlemarch."
+  rather than reading out the whole folder path, and the queue no longer adds
+  "1 saved." after it. A batch says how many saved and failed, and the folder
+  when they all went into one, and is kept in Activity.
+- Songs saved from the time-shift buffer are kept in Activity with Open Folder.
 
 ### Infinity or NaN in the settings file no longer stops Radio (2026-11-20)
 

@@ -208,6 +208,10 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
     from quill.ui.support_menu import append_get_help_item
 
     append_palette_row(host, help_menu)
+    # Where a result said while you were elsewhere is found again (FUX-04).
+    _add(host, help_menu, host._menu_label("Activit&y...", "app.activity"), host.open_activity)
+    repeat = host._menu_label("Re&peat Last Result", "app.repeat_last_result")
+    _add(host, help_menu, repeat, host.repeat_last_result)
     append_get_help_item(host, help_menu, wx, source_app=title, app_version=version)
     _add(host, help_menu, f"&About {title}\tCtrl+Alt+I", host._show_about)
     bar.Append(help_menu, "&Help")

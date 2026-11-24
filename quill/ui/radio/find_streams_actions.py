@@ -183,7 +183,11 @@ def save_as_playlist(
         destination.write_text(writer(favorites), encoding="utf-8")
     except OSError:
         return Outcome(f"Could not save {destination.name}: that folder could not be written to.")
-    return Outcome(view.saved_sentence(len(candidates), destination.name))
+    said = view.saved_sentence(len(candidates), destination)
+    from quill.ui.outcome_report import keep_outcome
+
+    keep_outcome("Save as Playlist", said, object_name=destination.name, path=destination)
+    return Outcome(said)
 
 
 def copy_links(candidates: Sequence[PageStreamCandidate], copy: Callable[[str], bool]) -> Outcome:

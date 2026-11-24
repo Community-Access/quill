@@ -438,22 +438,18 @@ context menu too.</p>
 <p>Some workflows are set up to be started by hand. Choose <strong>Run
 Workflow on Branch…</strong> (<code>Ctrl+Shift+R</code>) from the
 Repository menu, or from a workflow’s context menu in
-<strong>Workflows</strong>. QUILL asks three things: the repository, as
-<code>owner/name</code>, filled in with the repository of the document
-you are editing; the workflow’s file name, such as <code>ci.yml</code>;
-and the branch or tag, starting with <code>main</code>. Then it asks
-“Dispatch” the workflow “on” the branch “in” the repository, and the
-editor’s status bar says “Dispatched” and the workflow and branch.</p>
-<p>It does not yet take the workflow or the repository from the row you
-selected, so type them as the workflow’s file name says. QUILL asks only
-for the branch, not for a workflow’s other inputs; a workflow that needs
-those before it can start has to be run from GitHub’s own page.</p>
-<p><strong>Run Workflow on Branch…</strong> is the editor’s
-<strong>Dispatch Workflow…</strong>, which is also in the Workbench’s
-<strong>Repository Actions…</strong> (<code>Ctrl+Shift+G</code>), and in
-QUILL’s <strong>Tools &gt; Git and GitHub &gt; GitHub</strong> submenu.
-<strong>In QUILL Lite</strong>, which has no such command, the row is
-greyed and says the editor that opened the window does not have it.</p>
+<strong>Workflows</strong>. It runs the workflow you selected, in that
+repository. QUILL asks for the branch or tag, starting with
+<code>main</code>, then asks “Run the workflow CI on main in
+owner/name?”, and you hear that GitHub accepted it and that its run
+appears in Runs shortly. QUILL asks only for the branch, not for a
+workflow’s other inputs; a workflow that needs those before it can start
+has to be run from GitHub’s own page.</p>
+<p>It works the same in QUILL and QUILL Lite. QUILL’s editor also has
+<strong>Dispatch Workflow…</strong>, in the Workbench’s
+<strong>Repository Actions…</strong> (<code>Ctrl+Shift+G</code>) and in
+<strong>Tools &gt; Git and GitHub &gt; GitHub</strong>, which asks for
+the repository and the workflow’s file name as well.</p>
 <h3 id="starting-workflows-from-outside">Starting workflows from
 outside</h3>
 <p>A workflow can start on <code>repository_dispatch</code>, an event
@@ -546,9 +542,14 @@ GitHub approved or rejected. If nothing is waiting, the window says
 approved or rejected its deployments afterwards.</p>
 <h3 id="an-environments-rules">An environment’s rules</h3>
 <p>A repository’s environments are listed under <strong>Settings &gt;
-Environments</strong>. An environment’s row has these on its context
-menu, beside <strong>Secrets…</strong> and <strong>Variables…</strong>,
-which are that environment’s own:</p>
+Environments</strong>. <code>Ctrl+N</code> there makes one: it asks for
+the name, whether any branch or only protected branches may deploy to
+it, and how many minutes each deployment waits (0 for none). An
+environment that already has the name is never replaced; QUILL says so
+instead. Reviewers and a chosen list of branches are set on its sheet
+afterwards. An environment’s row has these on its context menu, beside
+<strong>Secrets…</strong> and <strong>Variables…</strong>, which are
+that environment’s own:</p>
 <ul>
 <li><strong>Branch Policies…:</strong> which branches and tags may
 deploy to it, when it allows chosen ones only. Add one by name or with a
@@ -577,9 +578,10 @@ ones listed; how many secrets and variables it has, with their names;
 and its newest deployments. The protection, the wait timer and the
 branch choice can be changed there; the lists are read only, and the
 commands above change them.</p>
-<p>To compare an environment’s rules across many repositories, or make
-them the same, use <strong>Across Repositories &gt; Actions by Name &gt;
-Environments by Name</strong> (Chapter 12).</p>
+<p>To compare an environment’s rules across many repositories, make them
+the same, or add an environment to the repositories that lack it, use
+<strong>Across Repositories &gt; Actions by Name &gt; Environments by
+Name</strong> (Chapter 12).</p>
 <h3 id="deleting-a-deployment">Deleting a deployment</h3>
 <p>The repository’s <strong>Deployments and Environments</strong> place
 lists where the code was deployed. A deployment’s context menu has

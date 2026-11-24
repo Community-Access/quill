@@ -90,11 +90,19 @@ def test_converter_f1_counts_a_folders_files() -> None:
     )
 
 
-def test_converter_keeps_the_results_when_a_run_finishes() -> None:
+def test_converter_keeps_the_results_when_a_run_finishes(monkeypatch) -> None:
+    import quill.apps.converter_results as results
     from quill.apps.converter_actions import ConverterActionsMixin
+
+    # The run's spoken result and Activity row are FUX-04's (tested there); keep
+    # this test on what F1 says about the row afterwards.
+    monkeypatch.setattr(results, "batch_sentence", lambda *_a, **_k: "Done.")
+    monkeypatch.setattr(results, "keep_batch", lambda *_a, **_k: None)
+    monkeypatch.setattr(results, "left_over", lambda *_a, **_k: [])
 
     host = _queue(["C:/a/talk.wav"], 0)
     host._end_work = lambda: None
+    host._binding_for = lambda _command: ""
     host._report_text = lambda *_a: "report"
     host._set_status = host._announce = lambda *_a, **_k: None
     host._settings = SimpleNamespace(open_folder_when_done=False)
@@ -227,6 +235,7 @@ def test_studio_library_window_is_filled_once_its_tree_is_known(monkeypatch) -> 
         return "frame", "tree"
 
     monkeypatch.setattr(studio_library_window, "ensure_library_window", fake_ensure)
+    monkeypatch.setattr("quill.apps.studio.ensure_library_window", fake_ensure)
     host = SimpleNamespace(
         frame=None,
         _on_tree_activate=None,

@@ -535,7 +535,9 @@ everywhere, so the name in the greeting also lands in the sign-off.</li>
 the template asks for them. Tab moves between them, Enter moves to the
 next one, Enter on the last accepts, and Escape cancels – and cancelling
 leaves whatever you typed exactly as it was, because nothing is erased
-until you accept.</p>
+until you accept. If the focus does not come back to the field you typed
+the abbreviation in, your answers are kept, not typed elsewhere (see
+“Text goes only where you started” in section 9).</p>
 <p><code>${cursor}</code> still works alongside fields: the caret lands
 where the template put it, after the answers are in.</p>
 <h2 id="7-case-follows-your-typing">7. Case follows your typing</h2>
@@ -584,6 +586,38 @@ did not want it, press <strong>Backspace immediately afterwards</strong>
 and Inkwell puts your original abbreviation back. The offer lasts a few
 seconds and only in the window where it expanded – after that, or after
 any other keystroke, Backspace does what it always does.</p>
+<h3 id="text-goes-only-where-you-started">Text goes only where you
+started</h3>
+<p>Quick Insert and an expansion with fields open a small Inkwell window
+before anything is typed. So Inkwell remembers the field you were in
+first – the program, its window and the field itself – gives the focus
+back when you are done, and checks again just before typing. If the
+focus came back somewhere else – another field, another program, or the
+same program after it was closed and opened again – nothing is typed. A
+small window called <strong>Text Not Typed</strong> says why in one
+sentence, without reading your text aloud, and offers:</p>
+<ul>
+<li><strong>Insert</strong> (Alt+I) – go back to that field and type it
+there, after the same check. Offered only when trying again can
+work.</li>
+<li><strong>Copy</strong> (Alt+C) – put the text on the clipboard, to
+paste where you choose.</li>
+<li><strong>Cancel</strong> or Escape – let it go.</li>
+</ul>
+<p>After Copy or Cancel, the focus goes back to the program you were in,
+so a paste is one key away. To hear or read the reason again while the
+window is open, press NVDA+B (JAWS: Insert+B), or reach it with object
+navigation.</p>
+<p>A field Windows reports as a password field is refused, and Text Not
+Typed offers Copy only. Inkwell also never types into the password
+managers and sign-in windows it recognises (section 11). It cannot tell
+a password field that does not say so to Windows, and does not claim
+to.</p>
+<p>An ordinary expansion, and taking one back with Backspace, follow the
+same rule: they are typed only in the window you typed the abbreviation
+in. If the focus has already moved on, Inkwell says “Not expanded” or
+“Not undone” with the reason, and your abbreviation stays exactly as you
+typed it.</p>
 <h2 id="10-sharing-one-library-with-quill">10. Sharing one library with
 QUILL</h2>
 <p>Inkwell and QUILL use the same <code>abbreviations.json</code> in the
@@ -652,6 +686,15 @@ route.</p>
 buttons read and write the shared library as JSON. Export is the honest
 backup of everything, including every per-entry setting; import merges
 entries in.</p>
+<p>Each says what it did, and where, instead of showing a box: “Exported
+42 abbreviations to abbreviations.json in Documents.” An import says how
+many it added from which file, how many were already in your list, and
+how many entries it could not use because they had no abbreviation or no
+text. If you missed it, <strong>Help &gt; Repeat Last Result</strong>
+(<code>F9</code>) says it again, and <strong>Help &gt;
+Activity…</strong> (<code>Shift+F9</code>) keeps it with an <strong>Open
+Folder</strong> button. A file that cannot be read or written still gets
+a box, because nothing changed and it needs your attention.</p>
 <h2 id="14-settings-reference">14. Settings reference</h2>
 <p>Inkwell’s own preferences live in <code>inkwell.json</code> beside
 the library:</p>
@@ -879,6 +922,14 @@ spoken instead.</p>
 <tr>
 <td>AI Privacy Agreement</td>
 <td>Alt+Shift+F2</td>
+</tr>
+<tr>
+<td>Repeat Last Result: hear the last result again</td>
+<td>F9</td>
+</tr>
+<tr>
+<td>Activity: this session’s results, with Open Folder</td>
+<td>Shift+F9</td>
 </tr>
 </tbody>
 </table>

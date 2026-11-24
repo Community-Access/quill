@@ -390,7 +390,16 @@ class WeatherSettingsDialog:
         s.alert_sound_enabled = self._alert_sound.GetValue()
         s.alert_sound_path = self._alert_sound_value
         s.alert_sound_repeat = spin_value(self._alert_sound_repeat)
-        settings_mod.save_settings(self._data_dir, s)
+        try:
+            settings_mod.save_settings(self._data_dir, s)
+        except OSError:
+            # Said, and the window stays open with the choices in it (FUX-04):
+            # an unwritten file must not end in silence or in "saved".
+            self._announce(
+                "Weather settings were not saved: the data folder could not be written. "
+                "Your choices are still in this window."
+            )
+            return
         self._saved = True
         self._announce("Weather settings saved.")
         if self.dialog.IsModal():

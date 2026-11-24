@@ -89,6 +89,11 @@ class GlobalMatch:
     #: What the context provider actually returned and this expansion used, as
     #: a stable tuple so a match can be compared and logged.
     context_values: tuple[tuple[str, str], ...] = field(default_factory=tuple)
+    #: The foreground window when the abbreviation was typed, set by the hook:
+    #: the expansion is typed into that window or not at all (FUX-07). Until
+    #: 2026-11-23 the expansion read this field without it existing, so every
+    #: system-wide expansion failed in the worker and nothing was typed.
+    target_window: int = 0
 
 
 def apply_typed_case(typed: str, expansion: str) -> str:

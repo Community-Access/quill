@@ -104,7 +104,7 @@ def notify(host: Any, *, browse_select: str = "", source: Any = None) -> None:
     for window in open_windows(host):
         if window is source:
             continue
-        refresh = getattr(window, "reload", None)
+        refresh = getattr(window, "library_changed", None) or getattr(window, "reload", None)
         if callable(refresh):
             try:
                 refresh()

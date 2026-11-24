@@ -9,12 +9,32 @@ from __future__ import annotations
 
 import wx
 
+from quill.core.list_follow import land
 from quill.core.radio.row_marks import RowMarks
 from quill.ui.radio import dial_tuning_ui, favorites_marks
 from quill.ui.radio.volume_keys import volume_chord_handled
 
 #: The keys favorites_marks answers: "." (and the keypad's), and Delete.
 _MARK_KEYS = (ord("."), wx.WXK_NUMPAD_DECIMAL, wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE)
+
+
+def _tree_rows(tree: wx.TreeCtrl) -> list[tuple[tuple[str, str], wx.TreeItemId]]:
+    """Every folder and station row, top to bottom, with what it holds."""
+    rows: list[tuple[tuple[str, str], wx.TreeItemId]] = []
+
+    def walk(parent: wx.TreeItemId) -> None:
+        child, cookie = tree.GetFirstChild(parent)
+        while child.IsOk():
+            data = tree.GetItemData(child)
+            if isinstance(data, tuple) and len(data) == 2:
+                rows.append((data, child))
+            walk(child)
+            child, cookie = tree.GetNextChild(parent, cookie)
+
+    root = tree.GetRootItem()
+    if root.IsOk():
+        walk(root)
+    return rows
 
 
 class RadioFavoritesTreeMixin:
@@ -36,19 +56,43 @@ class RadioFavoritesTreeMixin:
         self._reload_favorites_tree(keep_key=keep_key)
 
     def _reload_favorites_tree(self, keep_key: str | None = None) -> None:
+        """Rebuild the tree; the reader stays on their station or folder (FUX-06).
+
+        By identity, folder or station alike; when it has gone, on the row that
+        moved into its place rather than the top. Folders the reader closed
+        stay closed. The window that made the change says what it did.
+        """
         from quill.ui import app_context_help
 
         tree = self._favorites_tree
         # F1 also says what the selected row does now (FUX-10); asked only on F1.
         app_context_help.set_selection_help(tree, self._favorites_row_help)
-        if keep_key is None:
-            selected = self._selected_tree_data()
-            if selected is not None and selected[0] == "station":
-                keep_key = selected[1]
+        store, sort = self._radio_favorites, self._radio_history.favorites_sort
+        folder_sorts = self._radio_history.folder_sort_orders
+        marks = getattr(self, "_favorite_marks", None)
+        shape = (
+            list(store.folders_in_display_order(sort)),
+            [
+                (f.key, f.folder, favorites_marks.label_for(marks, f.key, f.display_label))
+                for f in store.favorites_in_display_order(sort, folder_sorts)
+            ],
+        )
+        selected = self._selected_tree_data()
+        unmoved = keep_key is None or selected == ("station", keep_key)
+        drawn = tree.GetCount() > 0 or not shape[1]
+        if unmoved and drawn and shape == getattr(self, "_favorites_shape", None):
+            return  # nothing to redraw: the reader's row is not touched, nor re-read
+        self._favorites_shape = shape
+        before = _tree_rows(tree)
+        wanted = repr(("station", keep_key) if keep_key is not None else selected)
+        keys = [repr(data) for data, _item in before]
+        previous = keys.index(wanted) if wanted in keys else -1
+        closed = {
+            data for data, item in before if data[0] == "folder" and not tree.IsExpanded(item)
+        }
         tree.DeleteAllItems()
         root = tree.AddRoot("Favorites")
         folder_items: dict[str, wx.TreeItemId] = {}
-        select_item = None
 
         def folder_item(path: str) -> wx.TreeItemId:
             if not path:
@@ -62,9 +106,6 @@ class RadioFavoritesTreeMixin:
             folder_items[path] = item
             return item
 
-        store = self._radio_favorites
-        sort = self._radio_history.favorites_sort
-        folder_sorts = self._radio_history.folder_sort_orders
         for path in store.folders_in_display_order(sort):
             folder_item(path)
         for favorite in store.favorites_in_display_order(sort, folder_sorts):
@@ -74,14 +115,14 @@ class RadioFavoritesTreeMixin:
             )
             item = tree.AppendItem(folder_item(favorite.folder), label)
             tree.SetItemData(item, ("station", favorite.key))
-            if favorite.key == keep_key:
-                select_item = item
         tree.ExpandAll()
-        first, _cookie = tree.GetFirstChild(root)
-        if select_item is not None:
-            tree.SelectItem(select_item)
-        elif first.IsOk():
-            tree.SelectItem(first)
+        after = _tree_rows(tree)
+        for data, item in after:
+            if data in closed:
+                tree.Collapse(item)
+        landing = land([repr(data) for data, _item in after], wanted, previous)
+        if landing.index >= 0:
+            tree.SelectItem(after[landing.index][1])
 
     def _selected_tree_data(self) -> tuple[str, str] | None:
         tree = getattr(self, "_favorites_tree", None)

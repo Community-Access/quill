@@ -37,8 +37,6 @@ from quill.apps.inkwell_preferences import InkwellStartupMixin, open_preferences
 from quill.core.abbreviations import (
     AbbreviationLibrary,
     load_abbreviation_library,
-    record_use,
-    resolve_expansion,
     save_abbreviation_library,
 )
 from quill.core.app_version import describe_version, installed_version
@@ -49,9 +47,13 @@ from quill.core.expansion.settings import (
 )
 from quill.core.net import configure_ssl_trust
 from quill.ui import app_sounds
+from quill.ui.activity_menu_rows import append_activity_rows
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dpi import dip, dip_size
+from quill.ui.inkwell_destination import InkwellDestinationMixin
 from quill.ui.inkwell_expansion import InkwellExpansionMixin
+from quill.ui.menu_palette import append_palette_row
+from quill.ui.whats_new import append_whats_new_item
 
 _TITLE = "Quill Inkwell"
 _VERSION = "1.0.0"
@@ -63,6 +65,7 @@ _IPC_SLOT = "inkwell"
 class QuillInkwellFrame(
     AppShellFrame,
     InkwellExpansionMixin,
+    InkwellDestinationMixin,
     InkwellKeysMixin,
     InkwellDictationMixin,
     InkwellStartupMixin,
@@ -241,8 +244,6 @@ class QuillInkwellFrame(
         help_menu = wx.Menu()
         updates_id, about_id = wx.NewIdRef(), wx.NewIdRef()
         help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
-        from quill.ui.menu_palette import append_palette_row
-
         append_palette_row(self, help_menu)  # qc.md X-01
         self.frame.Bind(
             wx.EVT_MENU,
@@ -258,9 +259,8 @@ class QuillInkwellFrame(
         from quill.ui.support_menu import append_get_help_item
 
         append_get_help_item(self, help_menu, wx, source_app=_TITLE, app_version=_VERSION)
-        from quill.ui.whats_new import append_whats_new_item
-
         append_whats_new_item(self, help_menu, "inkwell", _TITLE)  # the changelog
+        append_activity_rows(self, help_menu)  # F9, Shift+F9: kept results (FUX-04)
         help_menu.Append(about_id, "&About Quill Inkwell\tCtrl+Alt+I")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)
         menu_bar.Append(help_menu, "&Help")
@@ -364,13 +364,7 @@ class QuillInkwellFrame(
         self._list.SetFocus()
 
     def _reload_list(self) -> None:
-        inkwell_row_help.install(self)  # F1 says why a disabled entry will not expand
-        self._list.DeleteAllItems()
-        for i, entry in enumerate(self._library.abbreviations):
-            label = entry.abbreviation if entry.enabled else f"{entry.abbreviation} (disabled)"
-            self._list.InsertItem(i, label)
-            self._list.SetItem(i, 1, entry.expansion.replace("\n", " ")[:60])
-            self._list.SetItem(i, 2, entry.category)
+        inkwell_row_help.fill_list(self)  # rows, and F1 on a disabled entry (FUX-10)
 
     def _refresh_status(self) -> None:
         count = len(self._library.abbreviations)
@@ -403,72 +397,13 @@ class QuillInkwellFrame(
     def open_manager(self) -> None:
         from quill.ui.abbreviation_manager_dialog import AbbreviationManagerDialog
 
-        dlg = AbbreviationManagerDialog(self.frame, self._library)
+        dlg = AbbreviationManagerDialog(self.frame, self._library, self)
         self._show_modal_dialog(dlg.dialog, "Manage Abbreviations")
         dlg.close()
         self._library = load_abbreviation_library(self._data_dir)
         self._library_stamp = None
         self._reload_list()
         self._refresh_status()
-
-    def open_quick_insert(self) -> None:
-        """Pick an abbreviation and type its expansion into the previous window.
-
-        Inkwell's window is in front while the picker is open, so the expansion
-        is typed after focus returns to wherever the user was working.
-        """
-        from quill.ui.quick_insert_dialog import QuickInsertDialog
-
-        previous_hwnd = self._foreground_before_dialog()
-        dlg = QuickInsertDialog(self.frame, self._library)
-        result = self._show_modal_dialog(dlg.dialog, "Quick Insert")
-        chosen = dlg.chosen
-        dlg.close()
-        if result != wx.ID_OK or chosen is None:
-            return
-        from quill.ui.fill_in_dialog import prompt_for_fields
-
-        filled = prompt_for_fields(
-            self.frame, chosen.expansion, self._show_modal_dialog, title=chosen.abbreviation
-        )
-        if filled is None:
-            return
-        text, cursor_offset, has_cursor = resolve_expansion(filled, self._clipboard_text())
-        record_use(self._library, chosen.id)
-        save_abbreviation_library(self._library, self._data_dir)
-        self._library_stamp = None
-        self._insert_into_previous_window(
-            text, len(text) - cursor_offset if has_cursor else 0, previous_hwnd
-        )
-
-    def _foreground_before_dialog(self) -> int:
-        try:
-            from quill.platform.windows.foreground import foreground_window_info
-
-            window = foreground_window_info()
-            return 0 if window.hwnd == self.frame.GetHandle() else window.hwnd
-        except Exception:  # noqa: BLE001
-            return 0
-
-    def _insert_into_previous_window(self, text: str, caret_from_end: int, hwnd: int) -> None:
-        if not hwnd:
-            self._announce("Nothing to insert into; copied to the clipboard instead.")
-            self._copy_to_clipboard(text)
-            return
-        try:
-            from quill.platform.windows import text_injector
-            from quill.platform.windows.foreground import force_foreground_window
-
-            force_foreground_window(hwnd)
-            wx.CallLater(
-                150,
-                lambda: text_injector.inject_expansion(
-                    text, backspace_count=0, caret_from_end=caret_from_end
-                ),
-            )
-        except Exception:  # noqa: BLE001
-            self._copy_to_clipboard(text)
-            self._announce("Could not type there; copied to the clipboard instead.")
 
     def new_from_clipboard(self) -> None:
         """Turn whatever is on the clipboard into a new abbreviation."""

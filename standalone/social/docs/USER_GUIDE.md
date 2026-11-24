@@ -29,6 +29,7 @@ Navigate your social world without switching apps:
 - **Network-Specific Views**: Access Home, Local, Federated, and Hashtag timelines for Mastodon, or Custom Feeds and Starter Packs for Bluesky.
 - **Unified Attention**: One place for all Mentions, Replies, and Notifications across all networks.
 - **Customizable Rows**: Configure exactly which fields are spoken or displayed (e.g., Author, Network, Visibility, Engagement) and save these profiles.
+- **A timeline that stays still**: When posts arrive in the background, or the scheduler publishes, the list changes around you without moving you. You stay on the same post, on the same line, and it is not marked read again. New posts wait: you hear "3 new posts. Press F5 to show them." once, and they join the list when you press **F5** (**Tools > Refresh**), which then says how many arrived. If the post you were on has gone, you hear "The post by ... is no longer in the list." and you are on the post that took its place. A post you have just read stays where it is in the Unread view until you leave it.
 
 ### The "Catch-Up" Experience
 Manage social overload with precision:
@@ -37,7 +38,7 @@ Manage social overload with precision:
 - **Gap Detection**: The system detects if posts were missed during a session and offers to load the missing range.
 
 ### Conversations and Threads
-- **Thread Navigation**: Move through complex conversations with a clear sense of hierarchy and thread position.
+- **Thread Navigation**: Move through complex conversations with a clear sense of hierarchy and thread position. A refresh in the background never takes you out of a conversation you have open.
 - **Conversation Tools**: Save entire threads to your library, export them as Markdown, or turn a conversation into a GitHub issue.
 
 ---
@@ -96,7 +97,7 @@ Stop relying on network bookmarks and start building a personal knowledge base:
 
 ### The QUILL Bridge
 QUILL Social is a hub for the wider QUILL ecosystem:
-- **Send-to-QUILL**: Move a social thread directly into a QUILL document for deeper research.
+- **Send-to-QUILL**: Move a social thread directly into a QUILL document for deeper research. The thread is saved as a Markdown file in the exports folder of QUILL Social's data folder; once it is written, QUILL Social says "Saved the thread for QUILL in exports." and shows the file's full path. If it cannot be written, it says so and shows nothing.
 - **Radio & Cast**: Share episodes from QUILL Cast or add streams to QUILL Radio.
 - **Audio Studio**: Open social media clips in QUILL Audio Studio for professional trimming and normalization.
 
@@ -291,6 +292,8 @@ Every command is on a menu, so you can always find it by walking the menu bar wi
 - **Compose** (Alt+C): **Compose > New Post** (Ctrl+N), **Compose > Reply** (Ctrl+R) and **Compose > Quote** (Ctrl+Q). Reply and Quote work on the focused post.
 - **Item** (Alt+I), for the focused post: **Item > Boost / Repost** (Ctrl+Shift+R), **Item > Favourite** (Ctrl+F), **Item > Bookmark** (Alt+B), **Item > Flag for follow-up** (Ctrl+Shift+G), **Item > Open conversation** (Ctrl+G), **Item > Open links** (Ctrl+O), **Item > Mark read** (Ctrl+K), **Item > Next unread** (Alt+.), **Item > Previous unread** (Alt+,), **Item > Accessibility check** (F7), **Item > Send to QUILL** (Ctrl+Shift+Q), **Item > Play media** (Ctrl+Enter) and **Item > Convert Linked Document with Scribe for Documents...** (Alt+Shift+F6).
 - **Feeds** (Alt+D): **Feeds > Add Feed...** (Ctrl+Shift+N), **Feeds > New Folder...** (Ctrl+Alt+F), **Feeds > Feed settings...** (Ctrl+Shift+P), **Feeds > Mark all read** (Ctrl+Shift+K) and **Feeds > Undo mark all read** (Ctrl+Z), then **Feeds > New smart folder...** (Ctrl+Shift+M), **Feeds > Edit smart folder...** (Ctrl+Alt+M), **Feeds > Delete smart folder** (Ctrl+Shift+Delete), **Feeds > Import OPML...** (Ctrl+I), **Feeds > Export OPML...** (Ctrl+E) and **Feeds > Unsubscribe from feed** (Ctrl+Alt+U). Delete smart folder and Unsubscribe ask before they remove anything.
+- **Item** (Alt+I), for the focused post: **Item > Boost / Repost** (Ctrl+Shift+R), **Item > Favourite** (Ctrl+F), **Item > Bookmark** (Alt+B), **Item > Flag for follow-up** (Ctrl+Shift+G), **Item > Open conversation** (Ctrl+G), **Item > Open links** (Ctrl+O), **Item > Mark read** (Ctrl+K), **Item > Accessibility check** (F7), **Item > Send to QUILL** (Ctrl+Shift+Q), **Item > Play media** (Ctrl+Enter) and **Item > Convert Linked Document with Scribe for Documents...** (Alt+Shift+F6).
+- **Feeds** (Alt+D): **Feeds > Add Feed...** (Ctrl+Shift+N), **Feeds > New Folder...** (Ctrl+Alt+F), **Feeds > Feed settings...** (Ctrl+Shift+P), **Feeds > Mark all read** (Ctrl+Shift+K) and **Feeds > Undo mark all read** (Ctrl+Z), then **Feeds > New smart folder...** (Ctrl+Shift+M), **Feeds > Edit smart folder...** (Ctrl+Alt+M), **Feeds > Delete smart folder** (Ctrl+Shift+Delete), **Feeds > Import OPML...** (Ctrl+I), **Feeds > Export OPML...** (Ctrl+E) and **Feeds > Unsubscribe from feed** (Ctrl+Alt+U). Delete smart folder and Unsubscribe ask before they remove anything. Export OPML says how many feeds went to which file in which folder once the file is written, for example "Exported 12 feeds to quill-social-feeds.opml in Downloads."
 - **Listen** (Alt+L): **Listen > Listen to this view** (Ctrl+Shift+L) reads the unread articles in the current view aloud, one after another; **Listen > Play / Pause** (Ctrl+Shift+Space), **Listen > Next article** (Ctrl+Shift+Period), **Listen > Previous article** (Ctrl+Shift+Comma) and **Listen > Stop listening** (Ctrl+Shift+S) control it.
 - **Studio** (Alt+S): **Studio > Drafts...** (Ctrl+Shift+D), **Studio > Agenda / Calendar...** (Ctrl+Shift+Y), **Studio > Queue schedule...** (Ctrl+Shift+U) and **Studio > Approvals...** (Ctrl+Shift+W).
 - **Tools** (Alt+T): **Tools > Command Center** (Ctrl+Shift+C), **Tools > Where Am I** (Ctrl+Shift+I), **Tools > Search** (Ctrl+L), **Tools > Find Text...** (Ctrl+Shift+F), **Tools > Find Next** (F3), **Tools > Find Previous** (Shift+F3), **Tools > Refresh** (F5), **Tools > Catch Up** (Ctrl+Shift+H), **Tools > Insights / Analytics** (Ctrl+Alt+I), **Tools > Safety Center** (Ctrl+Alt+T), **Tools > Notification policies** (Ctrl+Alt+P), **Tools > Plugins** (Ctrl+Alt+G), **Tools > Outbox** (Ctrl+Shift+B), **Tools > Summarize this feed (AI)** (Ctrl+Alt+R), then the Scribe for Documents rows: **Tools > Scribe Conversions** (Alt+Shift+F7), **Tools > My Scribe Documents** (Alt+Shift+F8), **Tools > Scribe Status** (Alt+Shift+F9), **Tools > Repeat Last Scribe Message** (Alt+Shift+F10) and **Tools > Scribe for Documents Options...** (Alt+Shift+F11).

@@ -30,6 +30,7 @@ from quill.core.watch_queue import (
 from quill.io.pandoc import convert_document_with_pandoc
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
+from quill.ui.list_stay_still import refill_listbox
 
 
 class WatchFolderRuntimeMixin:
@@ -228,9 +229,12 @@ class WatchFolderRuntimeMixin:
             items = self._watch_service.queue_items()
         except Exception:
             items = []
+        old = [item.item_id for item in getattr(self, "_watch_queue_items_cache", None) or []]
+        if len(old) != listbox.GetCount():
+            old = []
+            listbox.Clear()
         self._watch_queue_items_cache = items
-        previous = listbox.GetSelection()
-        listbox.Clear()
+        labels = []
         for item in items:
             name = Path(item.source_path).name if item.source_path else "(unknown)"
             label = f"{item.state.title()} - {name}"
@@ -238,10 +242,15 @@ class WatchFolderRuntimeMixin:
                 label += f" (attempt {item.attempts})"
             if item.message:
                 label += f" - {item.message}"
-            listbox.Append(label)
-        if items:
-            target = previous if 0 <= previous < len(items) else 0
-            listbox.SetSelection(target)
+            labels.append(label)
+        # Row by row, by item (FUX-06): every queue event used to clear the list
+        # and reselect by row number, so after Clear Finished, Retry or Open
+        # acted on another file, and the focused row was read again each time.
+        index = listbox.GetSelection()
+        wanted = old[index] if 0 <= index < len(old) else None
+        refill_listbox(listbox, old, [item.item_id for item in items], labels, wanted)
+        if not old and items and listbox.GetSelection() < 0:
+            listbox.SetSelection(0)  # a list filling from empty starts on its first file
         counts = self._watch_service.queue_counts()
         summary = getattr(self, "_watch_queue_summary", None)
         if summary is not None:

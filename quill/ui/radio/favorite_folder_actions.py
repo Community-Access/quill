@@ -180,5 +180,10 @@ def export_folder(host: Any, folder: str, *, store: Any) -> bool:
         announce(f"Could not write the playlist: {error}.")
         return False
     count = len(playable)
-    announce(f"Exported {count} station{'' if count == 1 else 's'} to {Path(destination).name}.")
+    from quill.core.action_feedback import written_result
+    from quill.ui.outcome_report import keep_outcome
+
+    said = written_result(f"Exported {count} station{'' if count == 1 else 's'}", destination)
+    announce(said)  # the file and its folder, and kept with Open Folder (FUX-04)
+    keep_outcome("Export Playlist", said, path=destination)
     return True

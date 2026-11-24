@@ -34,6 +34,7 @@ from quill.ui.dialog_contract import (
     apply_modal_ids,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.list_stay_still import refill_listbox
 
 TITLE = "Downloads"
 
@@ -251,15 +252,19 @@ class DownloadQueueDialog:
         them onto a different download.
         """
         selected = self.selected()
+        old_keys = [str(item.id) for item in self._rows]
         self._rows = list(self._queue.items)
-        self._list.Set([item.row_label() for item in self._rows])
+        # Row by row, never Set(): a full refill drops the reader back at the
+        # top. A removed download lands them on the next one (FUX-06); the
+        # runner already says what finished or failed, so nothing is said here.
+        refill_listbox(
+            self._list,
+            old_keys,
+            [str(item.id) for item in self._rows],
+            [item.row_label() for item in self._rows],
+            None if selected is None else str(selected.id),
+        )
         self._heading.SetLabel(self._queue.summary() if self._rows else NOTHING)
-        if self._rows:
-            index = next(
-                (i for i, item in enumerate(self._rows) if selected and item.id == selected.id),
-                0,
-            )
-            self._list.SetSelection(min(index, len(self._rows) - 1))
         self._sync_buttons()
         self._surface.Layout()
         self._dialog.Layout()

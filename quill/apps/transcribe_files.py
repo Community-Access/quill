@@ -179,4 +179,10 @@ class TranscribeFilesMixin(DictationTranscribeMixin):
         except OSError as error:
             self._dictation_say(f"Could not save {target.name}: {error.strerror or error}")
             return
-        self._dictation_say(f"Saved {target.name}.")
+        from quill.core.action_feedback import saved_result
+        from quill.ui.outcome_report import keep_outcome
+
+        # The file and its folder, and kept with Open Folder for F9 and Activity (FUX-04).
+        said = saved_result(target)
+        self._dictation_say(said)
+        keep_outcome("Save Transcript As", said, object_name=target.name, path=target)

@@ -38,6 +38,7 @@ from quill.core.radio.recordings_index import (
 )
 from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
+from quill.ui.list_stay_still import NO_ANCHOR, capture_report, selected_rows
 from quill.ui.radio import recordings_marks, recordings_split
 from quill.ui.radio.marks_shared import with_ignored_note
 from quill.ui.radio.recordings_queue import RecordingsQueueMixin
@@ -191,7 +192,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         # this never rebuilds the list out from under a screen reader -- only
         # the changed cells move -- so the timer always runs (R1).
         self._timer = wx.Timer(self.dialog)
-        self.dialog.Bind(wx.EVT_TIMER, lambda _e: self._refresh())
+        self.dialog.Bind(wx.EVT_TIMER, lambda _e: self._refresh(say_gone=True))
         self._timer.Start(_REFRESH_MS)
         self.dialog.Bind(wx.EVT_CLOSE, self._on_close)
 
@@ -346,7 +347,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
                 return False
         return True
 
-    def _refresh(self, keep_selection: bool = True) -> None:
+    def _refresh(self, keep_selection: bool = True, *, say_gone: bool = False) -> None:
         self._advance_queue_if_finished()
         snapshot = list_recordings(
             self._settings,
@@ -359,44 +360,20 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
             self._entries = snapshot
             return
 
-        selected_id: str | None = None
-        if keep_selection:
-            index = self._list.GetFirstSelected()
-            if 0 <= index < len(self._entries):
-                selected_id = self._entries[index].id
-        top = self._list.GetTopItem() if self._list.GetItemCount() else 0
-
-        new_count = len(snapshot)
-        old_count = len(self._entries)
-        for row in range(min(new_count, old_count)):
-            self._set_row(row, snapshot[row])
-        if new_count > old_count:
-            for row in range(old_count, new_count):
-                self._list.InsertItem(row, "")
-                self._set_row(row, snapshot[row])
-        elif new_count < old_count:
-            for row in range(old_count - 1, new_count - 1, -1):
-                self._list.DeleteItem(row)
+        # The reader's recording, by identity, and the line it is on (FUX-06).
+        anchor = capture_report(self._list) if keep_selection else NO_ANCHOR
+        selected = self._entries[anchor.index] if 0 <= anchor.index < len(self._entries) else None
+        others = [self._entries[row].id for row in selected_rows(self._list) if keep_selection]
+        # Row by row, by identity: a recording starting above the reader is
+        # inserted, it does not rewrite every row below with its neighbour's text.
+        self._change_rows(snapshot, None if selected is None else selected.id)
         self._entries = snapshot
 
         self._update_status_label()
 
-        # Restore selection by identity. A status flip Recording -> Recorded
-        # keeps the same path identity, so the cursor stays on the same row
-        # instead of yanking to the top (the original 9/10.1 symptom). When the
-        # selected row is genuinely gone (file removed), nothing is forced.
-        if selected_id is not None:
-            for row, entry in enumerate(snapshot):
-                if entry.id == selected_id:
-                    self._list.Select(row)
-                    self._list.Focus(row)
-                    break
-        # Best-effort scroll preservation.
-        if snapshot and top:
-            try:
-                self._list.EnsureVisible(min(top, len(snapshot) - 1))
-            except Exception:  # noqa: BLE001 - scroll preservation is best-effort
-                pass
+        # A status flip Recording -> Recorded keeps the same path identity, so
+        # the cursor stays on the same row instead of yanking to the top (9/10.1).
+        self._keep_reader(anchor, selected, others, say_gone=say_gone)
         self._on_selection_changed()
 
     def _update_status_label(self) -> None:

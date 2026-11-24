@@ -4,12 +4,28 @@ All notable changes to Quill Weather are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- **The Weather Center keeps your place** (FUX-06, 2026-11-23). Refresh used
+  to empty all four lists and put each detail box on the first row with
+  nothing selected. Now each list keeps the alert, period, hour or day you
+  were on, and its details. An alert you were on that expired is named once at
+  the end of the summary, and you land on its neighbour. A slow answer for the
+  place you chose before is ignored, and redrawing after Settings says the
+  summary again only when it changed.
+
 ## [2.2.1] - 2026-10-08
 
 Current build: **2.2.1 (build 2)**. Build 2 keeps everything in build 1 and
 adds the work marked "build 2" below, together with everything recorded since
 (the Command Palette and Product Requirements doors, What's New, QUILL
 Transcribe on the QuillVille menu, and the user guide corrections).
+
+### Settings that could not be saved say so (2026-11-23)
+
+- If Weather Settings cannot write its file, Save now says "Weather settings
+  were not saved: the data folder could not be written. Your choices are
+  still in this window." and leaves the window open. It used to say nothing.
 
 ### Weather Center's Settings keep your tray choices (2026-11-20)
 

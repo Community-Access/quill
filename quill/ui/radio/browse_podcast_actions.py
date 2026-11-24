@@ -479,7 +479,13 @@ def export_opml(dialog: Any) -> None:
         return
     count = len(library.shows)
     noun = "podcast" if count == 1 else "podcasts"
-    dialog._announce(f"Exported {count} {noun} to {Path(path).name}.")
+    from quill.core.action_feedback import written_result
+    from quill.ui.outcome_report import report_outcome
+
+    # The file and its folder, said once and kept with Open Folder (FUX-04).
+    report_outcome(
+        dialog, "Export Podcasts", written_result(f"Exported {count} {noun}", path), path=path
+    )
 
 
 def refresh_all_feeds(dialog: Any) -> None:
