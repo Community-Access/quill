@@ -75,11 +75,7 @@ def remove_selected(dialog: Any) -> None:
     )
     dialog._announce(undo_last_ui.offer(f"Removed recording {entry.name}."))
     dialog._refresh(keep_selection=True)
-    target = index_after_removal(removed_index, dialog._list.GetItemCount())
-    if target is None:
+    # _refresh has already landed the reader on the recording that took its
+    # place (FUX-06); selecting it again here could select a second row.
+    if index_after_removal(removed_index, dialog._list.GetItemCount()) is None:
         dialog._announce("No recordings left.")
-        return
-    dialog._list.Select(target)
-    dialog._list.Focus(target)
-    dialog._list.EnsureVisible(target)
-    dialog._on_selection_changed()

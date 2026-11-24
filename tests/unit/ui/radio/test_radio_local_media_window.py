@@ -113,6 +113,42 @@ def test_rows_say_title_then_state_and_marking_never_moves_focus(app, tmp_path: 
     window._win.Destroy()
 
 
+def test_a_file_gone_from_the_library_lands_on_its_neighbour_and_says_so(
+    app, tmp_path: Path, monkeypatch
+) -> None:
+    # FUX-06: a scan or another window removing the file the reader is on
+    # used to leave nothing selected and say nothing. The sentence waits for
+    # the screen reader to read the new row, and only the window in front says it.
+    host = _Host(_library(tmp_path))
+    window = _window(host)
+    window._select_rows([1])
+    playlist = host._local_media_library.playlists[0]
+    later: list = []
+    monkeypatch.setattr(wx, "CallLater", lambda _ms, fn, *a: later.append(fn))
+    del playlist.items[1]
+    window.library_changed()
+    assert host.said == []  # not in the same breath as the row change
+    later.pop()()
+    assert host.said == [], "a window that is not in front keeps quiet"
+    monkeypatch.setattr(wx.TopLevelWindow, "IsActive", lambda _self: True)
+    del playlist.items[0]
+    window.library_changed()  # Song 3 stays, nothing said
+    assert host.said == [] and window._items.GetItemText(0) == "Song 3"
+    playlist.items.insert(0, playlist.make_item(tmp_path / "song1.mp3", title="Song 1"))
+    playlist.items.insert(1, playlist.make_item(tmp_path / "song2.mp3", title="Song 2"))
+    window.library_changed()
+    window._select_rows([1])
+    del playlist.items[1]
+    window.library_changed()
+    later.pop()()
+    assert window._rows() == [1]
+    assert window._items.GetItemText(1) == "Song 3"
+    assert host.said[-1] == "Song 2 is no longer in the list."
+    window.library_changed()  # nothing changed: nothing said again
+    assert host.said.count("Song 2 is no longer in the list.") == 1
+    window._win.Destroy()
+
+
 def test_a_move_from_the_keyboard_says_where_it_went(app, tmp_path: Path) -> None:
     host = _Host(_library(tmp_path))
     window = _window(host)

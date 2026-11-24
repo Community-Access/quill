@@ -757,6 +757,13 @@ pressing Enter keeps your recording. To delete it, press
 cursor moves to the recording that took its place in the list.</li>
 <li>Press <strong>Escape</strong> to close Radio Recordings.</li>
 </ol>
+<p>The list keeps itself up to date while it is open, and it never moves
+you. A recording that starts, or a schedule that begins, adds a row
+without taking your cursor off the recording you were on. When a
+scheduled recording starts, your cursor follows it to its Recording row.
+If a recording you were on goes from the list some other way, for
+example you delete the file in File Explorer, Quill Radio says “… is no
+longer in the list.” once and puts you on the next one.</p>
 <p>Good to know: recordings are saved in your Music folder, in a folder
 called <code>Quill Radio Recordings</code>. A portable copy saves them
 in its own <code>Recordings</code> folder. <strong>Open in
@@ -919,6 +926,13 @@ change the volume without leaving the tree.</li>
 <li>Press <strong>Shift+F10</strong>, or the Applications key, for
 everything you can do.</li>
 </ol>
+<p>The tree redraws itself when your favorites change, here or in
+another window such as Browse Stations. Your cursor stays on the station
+or folder you were on, and folders you closed stay closed. If the
+station you were on was removed, your cursor goes to the one after it.
+The Favorites branch in Browse Stations works the same way, and redraws
+without saying anything over the “Added” or “Removed” you just
+heard.</p>
 <h4 id="the-menu-on-a-station-or-a-folder">The menu on a station or a
 folder</h4>
 <p>On a <strong>station</strong>, the menu offers <strong>Play</strong>
@@ -3773,7 +3787,9 @@ searches straight away.</li>
 <li><strong>Source</strong> (Alt+U) shows results from just one
 directory: All sources, Radio Browser, iHeart, TuneIn, Podcasts, ACB
 Media, Community M3U, Xiph, Spotify, YouTube or Website. It filters what
-you have without searching again.</li>
+you have without searching again. Your cursor stays on the station you
+were on when that source still shows it; when it does not, Quill Radio
+says so, for example “WNYC is not shown with this filter.”</li>
 <li><strong>Category</strong> (Alt+Y) switches the window to a list
 instead of a search: Favorites, Popular Stations, ACB Media, TuneIn,
 Music Genres, Xiph Directory or Search Results. The window opens on
@@ -3785,6 +3801,11 @@ fifteen.</li>
 <li>When Radio Browser has more than 200 results, the <strong>More
 Stations</strong> button loads the next lot and puts your cursor on the
 first new station.</li>
+<li>Results that arrive later, such as books and podcasts from the
+libraries, join the list around you: your cursor stays on the same
+station, on the same line, and only one row is ever selected. An answer
+for a search you have already replaced, or for a category you have left,
+is dropped.</li>
 </ul>
 <p>After the results, Tab reaches a <strong>Station details</strong>
 box, the status line, <strong>Radio volume</strong>,
@@ -5557,6 +5578,9 @@ computer.</li>
 <li>Press <strong>Escape</strong> to close Downloads. Your downloads
 keep going.</li>
 </ol>
+<p>The list updates as downloads start and finish, and your cursor stays
+on the row you are reading. When a row you were on is removed or
+cleared, you land on the one after it, not back at the top.</p>
 <p>If you send Quill Radio to the tray with downloads still going, it
 either finishes them in the background or stops them, as Download
 Preferences says, and tells you which.</p>
@@ -5943,6 +5967,11 @@ decide what to do with it.</p>
 items, hold <strong>Shift</strong> and arrow, or press
 <strong>Ctrl+A</strong> (<strong>Edit &gt; Select All</strong>) for
 every item in the playlist.</p>
+<p>When the list changes on its own, because the folder gained files or
+another window changed the playlist, your cursor and anything you
+selected stay where they were, on the same line. If the item you were on
+has gone from the playlist, you hear “… is no longer in the list.” once,
+and you are on the item that took its place.</p>
 <h4 id="the-menus-in-the-window">The menus in the window</h4>
 <p>The window has its own menu bar, and every item on it shows its
 key:</p>

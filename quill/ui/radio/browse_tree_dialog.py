@@ -43,7 +43,13 @@ from quill.ui.dialog_contract import (
     dialog_alive,
 )
 from quill.ui.dpi import dip_size
-from quill.ui.radio import browse_feedback, browse_keys, browse_position, transport_keys
+from quill.ui.radio import (
+    browse_favorites_refresh,
+    browse_feedback,
+    browse_keys,
+    browse_position,
+    transport_keys,
+)
 from quill.ui.radio import dial_tuning_ui as dial_tuning
 from quill.ui.radio.browse_marks import favorite_button, row_text
 from quill.ui.radio.volume_row import add_volume_slider
@@ -478,8 +484,9 @@ class BrowseTreeDialog:
         failed: bool = False,
         empty_text: str = "",
         reason: str = "",
+        quiet: bool = False,
     ) -> None:
-        """Turn one node's children into tree rows.
+        """Turn one node's children into tree rows (*quiet*: a refill nobody asked for).
 
         Two cases, and only two. Everything a source wants to say about a row --
         how many children it has, that it opens in a browser, that it must be
@@ -521,7 +528,8 @@ class BrowseTreeDialog:
         # would announce "1 item" for a folder holding nothing.
         count = len(children)
         said = reason if (reason and not count and not failed) else ""
-        self._announce(said or self._children_summary(node, count, failed=failed))
+        if not quiet:  # FUX-06: a refresh is not news; "Added X" already said it
+            self._announce(said or self._children_summary(node, count, failed=failed))
         from quill.ui.radio import browse_prefetch
 
         # Read one level ahead: the first few child folders fetch now, so
@@ -592,9 +600,8 @@ class BrowseTreeDialog:
         children = self._fetch_children("favorites")
         # Favorites says its own thing when empty -- "add stations from any
         # source below" is advice the generic row cannot give.
-        self._add_children(
-            node, children, empty_text="No favorites yet -- add stations from any source below."
-        )
+        empty = "No favorites yet -- add stations from any source below."
+        self._add_children(node, children, empty_text=empty, quiet=not select)
         if not select:
             return
         first, _cookie = self._tree.GetFirstChild(node)
@@ -602,17 +609,8 @@ class BrowseTreeDialog:
             self._tree.SelectItem(first)
 
     def _refresh_favorites_branch(self) -> None:
-        """Rebuild the Favorites branch in place after a favorite is added or
-        removed, so the change shows immediately while the window is open. A
-        no-op until the branch has been expanded once, and it never moves the
-        selection."""
-        node = getattr(self, "_favorites_root", None)
-        if node is None:
-            return
-        data = self._node_data(node)
-        if not data or not data.get("loaded"):
-            return
-        self._add_favorites(node, select=False)
+        """Show a favorite added or removed at once, never moving the reader."""
+        browse_favorites_refresh.refresh(self)
 
     # -- events -----------------------------------------------------------------
 
