@@ -701,6 +701,7 @@ grow without limit.
 
 - **Engine, voice, and pace.** Any offline engine (SAPI 5, DECtalk, Piper,
   Kokoro, eSpeak NG), with a **Preview** button to hear the voice first.
+  Escape, leaving the wizard or closing it stops a preview.
 - **Round-robin voices** read each article or heading in a different voice,
   cycling through a list you build:
   1. Pick a voice from the **Round-robin voices** combo box.

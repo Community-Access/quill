@@ -31,6 +31,7 @@ def show_audio_studio(frame: object) -> BatchSpeechRequest | None:
     from quill.core.i18n import _
     from quill.ui import batch_speech_runner as runner
     from quill.ui.audio_studio.wizard import AudioStudioWizard
+    from quill.ui.preview_guard import guard_preview
 
     def on_preview(engine: str, voice: str) -> None:
         if voice:
@@ -64,6 +65,9 @@ def show_audio_studio(frame: object) -> BatchSpeechRequest | None:
             announce_cb=frame._announce,
             initial_journey=last_journey,
         )
+        # A voice preview stops with Escape, on leaving the wizard and when it
+        # closes, so it never plays on over what comes next (FUX-08).
+        guard_preview(dlg, lambda: bool(frame._stop_active_voice_preview()))
         try:
             code = frame._show_modal_dialog(dlg, str(_("QUILL Studio")))
             if code == RELOAD_WITH_JOB and dlg.loaded_job is not None:

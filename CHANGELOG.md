@@ -2,6 +2,21 @@
 
 ## 1.0.0
 
+### Voice and alert sound previews stop when you ask, and never change a setting (2026-11-24)
+
+- **Speech Settings, Preview Selected Voice.** Escape now stops a playing
+  preview and leaves the window open; pressed again with nothing playing,
+  Escape closes it as before. Closing Speech Settings, or opening another
+  window over it, stops the preview. Before, the voice went on speaking after
+  the window closed.
+- **A preview no longer changes your saved rate or volume.** Preview uses the
+  rate, speed and volume in the window, as it did; those values are now put
+  back when the window closes, so Cancel keeps what you had. Before, a
+  preview's rate and volume stayed in effect after Cancel and could be saved
+  the next time any setting was.
+- **Audio Studio's Preview voice** stops on Escape, when you leave the wizard
+  and when it closes.
+
 ### Quill Studio's Library Window opens, and F1 knows the row you are on (2026-11-23)
 
 In Quill Studio, **View > Library Window...** (Ctrl+Alt+Y) did not open,

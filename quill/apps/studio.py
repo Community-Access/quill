@@ -1454,6 +1454,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         """
         from quill.ui import batch_speech_runner as runner
         from quill.ui.audio_studio.wizard import RELOAD_WITH_JOB, AudioStudioWizard
+        from quill.ui.preview_guard import guard_preview
 
         def on_preview(engine: str, voice: str) -> None:
             if voice:
@@ -1472,6 +1473,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
                 announce_cb=self._announce,
                 initial_journey="documents",
             )
+            guard_preview(dlg, lambda: bool(self._stop_active_voice_preview()))  # FUX-08
             try:
                 code = self._show_modal_dialog(dlg, "QUILL Studio")
                 if code == RELOAD_WITH_JOB and dlg.loaded_job is not None:
@@ -1881,6 +1883,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
             dictation_offline_kwargs=dictation_offline_kwargs,
             dictation_online_kwargs=dictation_online_kwargs,
             initial_tab=initial_tab,
+            announce=self._announce,
         )
         ra_result, dict_result = hub.show(self._show_modal_dialog)
 

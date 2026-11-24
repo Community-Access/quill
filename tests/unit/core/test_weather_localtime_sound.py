@@ -149,3 +149,59 @@ def test_play_alert_sound_repeat_never_raises() -> None:
     from quill.platform import alert_sound
 
     alert_sound.play_alert_sound("", repeat=3)  # default sound, 3x, must not raise
+
+
+# -- FUX-08: a preview can be stopped, and stops only itself -----------------
+
+
+class _FakeWinsound:
+    SND_FILENAME = 1
+    SND_ASYNC = 2
+    SND_NODEFAULT = 4
+
+    def __init__(self) -> None:
+        self.calls: list[object] = []
+
+    def PlaySound(self, sound, flags) -> None:  # noqa: N802 - winsound's name
+        self.calls.append(sound)
+
+
+def test_stop_alert_sound_stops_its_own_play_and_not_a_later_one(monkeypatch) -> None:
+    from quill.platform import alert_sound
+
+    fake = _FakeWinsound()
+    monkeypatch.setattr(alert_sound, "_winsound", fake)
+    monkeypatch.setattr(alert_sound.sys, "platform", "win32")
+    monkeypatch.setattr(alert_sound, "_seconds", lambda _path: 30.0)
+    preview = alert_sound.play_alert_sound("", 1)
+    assert preview and alert_sound.stop_alert_sound(preview) is True
+    assert fake.calls[-1] is None  # the sound was cut off
+    assert alert_sound.stop_alert_sound(preview) is False  # already stopped
+    first = alert_sound.play_alert_sound("", 1)
+    later = alert_sound.play_alert_sound("", 1)  # a real alert after the preview
+    assert alert_sound.stop_alert_sound(first) is False
+    assert alert_sound.stop_alert_sound(later) is True
+
+
+def test_a_stopped_repeat_plays_no_more(monkeypatch) -> None:
+    from quill.platform import alert_sound
+
+    fake = _FakeWinsound()
+    started: list = []
+
+    class _Thread:
+        def __init__(self, target, **_kw) -> None:
+            self.target = target
+
+        def start(self) -> None:
+            started.append(self)
+
+    monkeypatch.setattr(alert_sound, "_winsound", fake)
+    monkeypatch.setattr(alert_sound.sys, "platform", "win32")
+    monkeypatch.setattr(alert_sound.threading, "Thread", _Thread)
+    monkeypatch.setattr(alert_sound, "_seconds", lambda _path: 30.0)
+    play = alert_sound.play_alert_sound("", 5)
+    assert alert_sound.stop_alert_sound(play) is True
+    fake.calls.clear()
+    started[0].target()  # the loop runs after Stop: it plays nothing
+    assert fake.calls == []

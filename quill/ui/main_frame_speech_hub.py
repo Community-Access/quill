@@ -181,6 +181,7 @@ class SpeechHubMixin:
             dictation_offline_kwargs=dictation_offline_kwargs,
             dictation_online_kwargs=dictation_online_kwargs,
             initial_tab=initial_tab,
+            announce=self._announce,
         )
         ra_result, dict_result = hub.show(self._show_modal_dialog)
 

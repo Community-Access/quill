@@ -11,6 +11,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   none. A reload now keeps you on the same copy of a book that shows under both
   a view and its folder, lands you on the next book when yours was removed, and
   leaves the tree alone when a job finishes and nothing changed.
+### Voice previews stop when you ask (2026-11-24)
+
+- **Preview voice** in the Audio Studio wizard stops on Escape, when you leave
+  the wizard and when it closes, instead of playing on.
+- **Speech Hub, Preview Selected Voice:** Escape stops a playing preview and
+  leaves the window open, closing stops it, and the rate, speed and volume it
+  used are put back when the window closes, so Cancel keeps your saved ones.
+
 ### The update offer never interrupts a broadcast or a recording (2026-11-24)
 
 The daily update check used to open its window as soon as it came back, even
