@@ -22,7 +22,6 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Callable
-from dataclasses import dataclass
 from pathlib import Path
 from typing import ClassVar
 
@@ -36,7 +35,9 @@ from quill.core.batch_convert import (
 )
 from quill.core.i18n import _, lazy_gettext
 from quill.core.settings import Settings
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.batch_wizard import BatchRequest
+from quill.ui.batch_wizard_choices import _WizardChoices
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 from quill.ui.dpi import dip_size
 
@@ -54,25 +55,6 @@ class _WizardPage(wx.Panel):
     def __init__(self, parent: wx.Window, name: str) -> None:
         super().__init__(parent)
         self.SetName(name)
-
-
-# ---------------------------------------------------------------------------
-# Shared state carried through the wizard
-# ---------------------------------------------------------------------------
-
-
-@dataclass
-class _WizardChoices:
-    """Mutable container that pages read and write."""
-
-    root: Path
-    recursive: bool
-    output_layout: OutputLayout
-    overwrite: OverwritePolicy
-    direction: str  # "import" or "export"
-    source_format: str
-    target_format: str
-    profile: str | None
 
 
 # ---------------------------------------------------------------------------
@@ -209,7 +191,7 @@ class _FolderPage(_WizardPage):
 
         # Output layout (issue #262: same folder or Output/ subfolder).
         layout_choices = [label for _value, label in _OUTPUT_LAYOUT_LABELS]
-        self._output_layout = wx.RadioBox(
+        self._output_layout = GroupedRadioBox(
             self,
             label=_("Where to put converted files"),
             choices=layout_choices,
@@ -228,7 +210,7 @@ class _FolderPage(_WizardPage):
 
         # Overwrite (issue #262: never / ask / always).
         overwrite_choices = [label for _value, label in _OVERWRITE_LABELS]
-        self._overwrite = wx.RadioBox(
+        self._overwrite = GroupedRadioBox(
             self,
             label=_("When an output file already exists"),
             choices=overwrite_choices,
@@ -286,7 +268,7 @@ class _FormatPage(_WizardPage):
         sizer.Add(heading, flag=wx.ALL, border=12)
 
         # Direction (import vs export).
-        self._direction = wx.RadioBox(
+        self._direction = GroupedRadioBox(
             self,
             label=_("Direction"),
             choices=(

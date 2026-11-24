@@ -13,6 +13,7 @@ from quill.core.radio.recording import (
     RecordingSettings,
     format_uses_bitrate,
 )
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.spin_value import spin_value
@@ -133,6 +134,7 @@ class RecordingSettingsDialog:
         self._reconnect_check.SetName(settings_help.HELP["reconnect"])
         self._reconnect_check.SetValue(settings.reconnect_enabled)
         reconnect_box.Add(self._reconnect_check, 0, wx.ALL, 6)
+        describe_group(reconnect_box, self._reconnect_check)
         reconnect_grid = wx.FlexGridSizer(cols=2, gap=(6, 8))
         reconnect_grid.Add(
             wx.StaticText(self.dialog, label="Reconnect &attempts:"), 0, wx.ALIGN_CENTER_VERTICAL

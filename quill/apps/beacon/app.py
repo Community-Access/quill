@@ -49,11 +49,11 @@ from quill.apps.beacon.dialogs import (
     SyncSettingsDialog,
     TrailEditorDialog,
     TrailStepDialog,
-    parse_hhmm,
 )
 from quill.apps.beacon.model import SCHEMA_VERSION
 from quill.apps.beacon.scribe_ui import BeaconScribeMixin
 from quill.apps.beacon.sync_ui import SyncController
+from quill.apps.beacon.time_of_day import parse_hhmm
 from quill.apps.beacon.undo import UndoManager, restore_beacons, snapshot_beacons
 from quill.core.sound_events import SoundEvent
 from quill.core.support_message import SUPPORT_EMAIL

@@ -43,6 +43,7 @@ from quill.core.publish.auphonic_plan import (
     AuphonicChoices,
     PendingProduction,
 )
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 from quill.ui.dpi import dip_size
@@ -115,7 +116,7 @@ class AuphonicDialog(wx.Dialog):
             self._list.SetSelection(0)
         root.Add(self._list, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
-        self._mode = wx.RadioBox(
+        self._mode = GroupedRadioBox(
             self,
             label="&How to send them",
             choices=[
@@ -195,7 +196,7 @@ class AuphonicDialog(wx.Dialog):
         self._fill_presets([], initial.preset_uuid, initial.preset_label)
         root.Add(self._preset, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
-        self._processing = wx.RadioBox(
+        self._processing = GroupedRadioBox(
             self,
             label="Processin&g",
             choices=[

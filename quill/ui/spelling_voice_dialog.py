@@ -33,6 +33,7 @@ from typing import Any
 import wx
 
 from quill.core.spelling.voicing import LETTER_STYLES, SpellAloudPolicy, spell_out
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
 from quill.ui.spin_value import spin_value
 from quill.ui.spoken_name import set_spoken_name
@@ -94,6 +95,7 @@ def edit_spelling_voice(
     typing_box.Add(sound, 0, wx.ALL, _PAD // 2)
 
     speech = wx.CheckBox(typing_panel, label="Also sa&y the word")
+    describe_group(typing_panel, sound, speech)
     speech.SetHelpText(
         "Speak the misspelling as well as the sound. Off by default and "
         "deliberately: an interruption while you are composing costs more than it "
@@ -147,6 +149,7 @@ def edit_spelling_voice(
     letters_box.Add(style_choice, 0, wx.LEFT, _PAD // 2)
 
     capitals = wx.CheckBox(letters_panel, label="Say which letters are &capitals")
+    describe_group(letters_panel, enabled, capitals)
     capitals.SetHelpText(
         'Prefix an upper-case letter with "cap", so MacDonald and Macdonald are '
         "told apart. Letters are spoken in upper case whatever the word does, "
@@ -252,6 +255,7 @@ def edit_spelling_voice(
     when_box.Add(sug_delay, 0, wx.LEFT, _PAD // 2)
 
     first = wx.CheckBox(when_panel, label="Spell the &first suggestion on arrival")
+    describe_group(when_panel, navigation, suggestions, first)
     first.SetHelpText(
         "When the review reaches a new misspelling, spell the top suggestion as "
         "well as the word. Off by default: it doubles the arrival announcement, "

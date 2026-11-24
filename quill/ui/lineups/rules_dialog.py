@@ -21,6 +21,7 @@ from quill.core.lineups.model import NEW_ITEMS_LABELS, NEW_ITEMS_PLACES, Lineup
 from quill.core.lineups.ops import items_of_rule
 from quill.core.lineups.refs import KIND_EPISODE
 from quill.core.lineups.rules import Rule, evaluate, new_rule
+from quill.ui.accessible_group import describe_group
 from quill.ui.dpi import dip_size
 from quill.ui.lineups import dialogs
 from quill.ui.lineups.rule_edit_dialog import RuleEditor
@@ -106,6 +107,7 @@ class RulesDialog:
         row.Add(self._budget, 0)
         settings.Add(row, 0, wx.EXPAND | wx.ALL, 4)
         self._skip_live = wx.CheckBox(box, label="S&kip live items when playing through")
+        describe_group(box, self._skip_live)
         self._skip_live.SetValue(lineup.skip_live)
         self._skip_live.SetHelpText(
             "A live station never ends; off, it plays until you press Next."

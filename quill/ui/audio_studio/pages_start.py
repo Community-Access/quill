@@ -5,6 +5,7 @@ from __future__ import annotations
 import wx
 
 from quill.core.i18n import _
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.audio_studio.pages_base import StudioPage
 from quill.ui.audio_studio.request import JOURNEYS
 
@@ -19,7 +20,7 @@ class StartPage(StudioPage):
             _("Welcome to the Audio Studio"),
             _("Choose what to make; the next steps adapt to your choice."),
         )
-        self._journey = wx.RadioBox(
+        self._journey = GroupedRadioBox(
             self,
             label=_("What would you like to make?"),
             choices=[

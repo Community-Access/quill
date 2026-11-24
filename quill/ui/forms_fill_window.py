@@ -24,6 +24,7 @@ from quill.core.forms import model as M
 from quill.ui import forms_doc as fd
 from quill.ui import forms_fill as ff
 from quill.ui import wordpress_dialogs as dlg
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
@@ -209,11 +210,13 @@ class FillWindow(wx.Dialog):
         for index, (value, label) in enumerate(choices):
             if kind in ff.MANY:
                 control: Any = wx.CheckBox(box, label=_text(label))
+                describe_group(box, control)
                 control.SetValue(value in picked)
                 control.Bind(wx.EVT_CHECKBOX, lambda _e, k=item_id: self._many(k))
             else:
                 style = wx.RB_GROUP if index == 0 else 0
                 control = wx.RadioButton(box, label=_text(label), style=style)
+                describe_group(box, control)
                 control.Bind(wx.EVT_RADIOBUTTON, lambda _e, k=item_id, v=value: self.answer(k, v))
             control.SetHelpText(f"One of the choices for {name}.")
             control._quill_value = value  # read back by _many

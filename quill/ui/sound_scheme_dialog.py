@@ -50,6 +50,7 @@ from quill.core.sound_scheme import (
     save_scheme,
     user_schemes,
 )
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import (
     apply_modal_ids,
     set_accessible_name,
@@ -225,6 +226,7 @@ class SoundSchemeDialog:
         row.Add(self.play_button, 0, wx.RIGHT, 6)
 
         self.enabled_box = wx.CheckBox(panel, label="S&witched on")
+        describe_group(panel, self.enabled_box)
         self.enabled_box.SetHelpText(
             "Off silences this one event without changing which sound it would "
             "play, so switching it back on gives you the same sound again."

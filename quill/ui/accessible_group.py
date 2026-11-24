@@ -49,7 +49,13 @@ try:  # wx is optional for the fakes-based tests that import this module.
 except Exception:  # noqa: BLE001 - no wx at all: every call is a no-op
     wx = None  # type: ignore[assignment]
 
-__all__ = ["GroupedRadioBox", "describe_group", "group_description", "group_name"]
+__all__ = [
+    "GroupedRadioBox",
+    "describe_group",
+    "group_description",
+    "group_name",
+    "radio_box_of",
+]
 
 #: Where the helper is kept on its control.
 _HELPER_ATTR = "_quill_group_helper"
@@ -220,6 +226,27 @@ def group_description(control: Any) -> str:
     """
     helper = getattr(control, _HELPER_ATTR, None)
     return str(helper.group) if helper is not None else ""
+
+
+def radio_box_of(control: Any) -> Any:
+    """The :class:`GroupedRadioBox` *control* is a choice of, or ``None``.
+
+    F1 topics are keyed on the focused window's name, and in a ``wx.RadioBox``
+    the focused window was the box. Focus is now on one of its buttons, so the
+    help lookup asks for the box (its button sits in the box's static box).
+    """
+    current = control
+    for _ in range(3):
+        if isinstance(current, GroupedRadioBox):
+            return current
+        get_parent = getattr(current, "GetParent", None)
+        if not callable(get_parent):
+            return None
+        try:
+            current = get_parent()
+        except Exception:  # noqa: BLE001
+            return None
+    return None
 
 
 def _access_key(label: object) -> str:

@@ -30,6 +30,7 @@ from dataclasses import dataclass
 import wx
 
 from quill.core.inline_image_alt import build_image_markdown
+from quill.ui.accessible_group import describe_group
 from quill.ui.dpi import dip, dip_size
 
 
@@ -136,6 +137,7 @@ class InsertImageDialog:
             self._responsive_check.SetValue(True)
             self._responsive_check.SetName("Scale down to fit the page, never overflow")
             size_box.Add(self._responsive_check, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 12)
+            describe_group(size_box, self._responsive_check)
             root.Add(size_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
             root.Add(

@@ -21,7 +21,7 @@ def test_guided_speech_dialog_follows_contract_and_is_accessible() -> None:
     assert "apply_modal_ids(" in src
     assert "wx.ID_OK" in src and "wx.ID_CANCEL" in src
     # Accessible engine choice (RadioBox) + model list, not free-form widgets.
-    assert "wx.RadioBox(" in src
+    assert "GroupedRadioBox(" in src
     assert "wx.ListBox(" in src
     # Focus lands on a real control, never a button (screen-reader contract).
     assert "engine_box.SetFocus()" in src

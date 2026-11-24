@@ -39,6 +39,7 @@ from typing import Any
 from quill.core.sync import recovery_phrase, vault_file
 from quill.core.sync.listening_places import new_device_id as _new_device_id
 from quill.core.sync.places_config import PlacesConfig, default_device_name
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
@@ -169,6 +170,9 @@ class SyncPlacesDialog:
         )
         self._subscriptions.SetValue(config.share_subscriptions)
         shared.Add(self._subscriptions, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+        describe_group(
+            shared, self._encrypted, self._interchange, self._labels, self._subscriptions
+        )
         root.Add(shared, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self._status = wx.TextCtrl(

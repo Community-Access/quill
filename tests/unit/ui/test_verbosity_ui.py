@@ -114,7 +114,7 @@ def test_prefs_panel_does_not_disable_focus() -> None:
 def test_token_editor_has_radiobox_view_switch() -> None:
     # §5 decision 6: Simple/Advanced switch is a RadioBox, not a Notebook.
     source = _source("verbosity_token_editor.py")
-    assert "wx.RadioBox" in source
+    assert "GroupedRadioBox(" in source
     assert "wx.Notebook" not in source
 
 

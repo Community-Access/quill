@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from quill.ui import voice_browser_settings
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import (
     apply_modal_ids,
@@ -149,7 +150,7 @@ class VoiceBrowserDialog:
         parent = self._root
 
         # Engine radio box.
-        self._engine_rb = wx.RadioBox(
+        self._engine_rb = GroupedRadioBox(
             parent,
             label="&Engine",
             choices=self._engine_labels,

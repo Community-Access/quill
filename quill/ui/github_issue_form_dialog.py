@@ -21,6 +21,7 @@ from quill.core.github.issue_forms import (
     render_body,
     validate,
 )
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 
@@ -136,6 +137,7 @@ class IssueFormDialog:
             musts = item.required_options or (False,) * len(item.options)
             for option, must in zip(item.options, musts, strict=False):
                 check = wx.CheckBox(box, label=f"{option} (required)" if must else option)
+                describe_group(box, check)
                 check.SetHelpText(item.description or "Check it if it applies.")
                 group.Add(check, 0, wx.ALL, 4)
                 checks.append(check)

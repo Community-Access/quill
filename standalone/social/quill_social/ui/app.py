@@ -19,6 +19,7 @@ from datetime import UTC
 from pathlib import Path
 
 import wx
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.dpi import dip, dip_size
 
 from quill_social import __title__, __version__, paths
@@ -2320,7 +2321,7 @@ class FindDialog(wx.Dialog):
         self.query = wx.TextCtrl(self, value=query or "", style=wx.TE_PROCESS_ENTER)
         self.query.SetName("Find what")
         sizer.Add(self.query, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
-        self.direction = wx.RadioBox(
+        self.direction = GroupedRadioBox(
             self,
             label="Direction",
             choices=["Forward", "Backward"],

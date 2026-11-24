@@ -30,6 +30,7 @@ from dataclasses import dataclass
 
 import wx
 
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.dialog_contract import (
     apply_listbox_activation,
     apply_modal_ids,
@@ -87,7 +88,7 @@ def ask_go_to(
     root = wx.BoxSizer(wx.VERTICAL)
 
     names = ["Line", *kinds]
-    kind_box = wx.RadioBox(dialog, label="Go to a:", choices=names, majorDimension=1)
+    kind_box = GroupedRadioBox(dialog, label="Go to", choices=names, majorDimension=1)
     kind_box.SetHelpText(
         "What to go to. Line asks for a number; the others offer a list of the "
         "places in this document. Arrow between them and the window below "
