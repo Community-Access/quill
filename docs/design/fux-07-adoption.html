@@ -441,8 +441,13 @@ several seconds when it has to start)</td>
 <td>If the focus moved before Transcribe answered, dictation started
 somewhere else, while Cast or Radio had said “Dictation starts
 here”</td>
-<td>Second PR: the request carries the field it was pressed in, and
-Transcribe starts only if that field is still in front</td>
+<td>The request (and the launch command line,
+<code>--dictate-here-place</code>) carries the field’s place – window,
+process, focused control window (<code>focus_place</code>) – taken when
+the key is pressed; Transcribe starts only if <code>still_there</code>,
+else says <code>left_sentence</code> and starts nothing. A request
+naming no field (an older Cast or Radio) starts as before. Tests:
+<code>tests/unit/core/test_dictate_here.py</code></td>
 </tr>
 <tr>
 <td>11</td>

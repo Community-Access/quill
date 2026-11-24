@@ -46,6 +46,7 @@ __all__ = [
     "ExternalDocument",
     "control_identity",
     "focus_identity",
+    "focus_place",
     "foreground_problem",
     "hush_unless_spoken",
     "locked_external_document",
@@ -147,6 +148,23 @@ def focus_identity() -> Any:
         return None
     element = capture_uia_focus()
     return (window.hwnd, window.process_id, control_identity(element, focused_window_handle))
+
+
+def focus_place() -> tuple[int, int, int] | None:
+    """The field in front as a Dictate Here place: the foreground window, its
+    process, and the focused control's own window -- the same three numbers in
+    whichever process asks, which a UI Automation runtime id is not promised to
+    be. ``None`` off Windows or with no window in front (FUX-07;
+    :mod:`quill.core.windows_dictation.dictate_here`)."""
+    try:
+        from quill.platform.windows.foreground import foreground_window_info
+        from quill.platform.windows.text_target import focused_window_handle
+    except Exception:  # noqa: BLE001 - not Windows
+        return None
+    window = foreground_window_info()
+    if not window.hwnd:
+        return None
+    return (window.hwnd, window.process_id, focused_window_handle())
 
 
 def control_identity(element: Any, focused_handle: Callable[[], int]) -> Any:

@@ -2985,6 +2985,10 @@ the focus is.
   dictating once it is ready. The very first time, QUILL Transcribe opens its
   own window instead, to set itself up. Finish that, come back, and press
   Ctrl+F11 again.
+- **You leave the box before QUILL Transcribe is ready:** dictation does not
+  start anywhere else, and you hear "Dictation did not start, because you
+  moved away from the box you pressed Dictate Here in; go back to that box and
+  press Dictate Here again."
 - **Quill Inkwell is dictating:** nothing starts, and you hear "Quill Inkwell
   is dictating. Stop it there, then try again." Only one program uses the
   microphone at a time.

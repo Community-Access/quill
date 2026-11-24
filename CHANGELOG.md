@@ -173,6 +173,17 @@ then one result per repository.
   because the window used another command's preview by mistake. The preview
   now opens.
 
+### Quill Cast and Quill Radio: Dictate Here starts only in your box (2026-11-23)
+
+- **Dictate Here remembers the box.** QUILL Transcribe answers Edit > Dictate
+  Here a moment later -- under a second when it is running, several seconds
+  when it has to start -- and until now it started in whatever was in front by
+  then. Cast and Radio now pass on the box you pressed Ctrl+F11 in (its
+  program, window and the box itself), and QUILL Transcribe starts only if that
+  box is still in front. If it is not, nothing starts, and you hear "Dictation
+  did not start, because you moved away from the box you pressed Dictate Here
+  in; go back to that box and press Dictate Here again."
+
 ### Quill Inkwell and QUILL Transcribe: text goes only where you started (2026-11-23)
 
 Text typed into another program now goes into the field it was meant for, or
