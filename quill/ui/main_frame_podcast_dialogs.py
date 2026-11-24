@@ -64,8 +64,20 @@ class PodcastDialogsMixin:
             self._podcast_manager_dialog = None
         self._refresh_statusbar()
 
-    def _podcast_send_show_notes_to_editor(self, plain_text: str) -> None:
-        self._power_tools_open_text_in_new_buffer(plain_text, "Opened podcast show notes")
+    def _podcast_send_show_notes_to_editor(self, text: str, **about: Any) -> None:
+        """Show notes or a transcript, as a new document here (FUX-02)."""
+        from quill.ui.editor_handoff import send_text
+
+        kind = str(about.get("kind", "show notes"))
+
+        def open_here(document: str, line: int | None) -> None:
+            said = f"Opened the {kind} in a new document."
+            self._power_tools_open_text_in_new_buffer(document, said)
+            if line:
+                self.go_to_line_number(line)  # the line that was being read
+            self._announce(said)
+
+        send_text(text, source_app="QUILL", announce=self._announce, open_here=open_here, **about)
 
     def _podcast_open_settings(self) -> None:
         from quill.ui.podcasts.podcast_settings_dialog import PodcastSettingsDialog

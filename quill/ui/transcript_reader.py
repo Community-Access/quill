@@ -134,11 +134,13 @@ class TranscriptReader:
         seek_to_ms: Callable[[int], bool] | None = None,
         announce: Callable[[str], None] | None = None,
         show_modal_dialog: Callable[[Any, str], int] | None = None,
-        on_send_to_quill: Callable[[str], None] | None = None,
+        on_send_to_quill: Callable[..., None] | None = None,
         is_automatic: bool = False,
         show_title: str = "",
         source_url: str = "",
         transcript_detail: str = "",
+        source_app: str = "",
+        bookmarks: Sequence[tuple[int, str]] = (),
     ) -> None:
         import wx
 
@@ -159,6 +161,10 @@ class TranscriptReader:
         self._announce = announce or (lambda _m: None)
         self._show_modal_dialog = show_modal_dialog
         self._on_send_to_quill = on_send_to_quill
+        # FUX-02: which app this is ("Quill Radio"), for the document's origin
+        # line and folder; and this episode's bookmarks, which travel with it.
+        self._source_app = source_app
+        self._bookmarks = tuple(bookmarks)
 
         # A peer window hands over a panel to build into instead (Cast,
         # quill/ui/podcasts/transcript_window.py; qc.md Phase 4).
@@ -218,7 +224,8 @@ class TranscriptReader:
         ):
             buttons.Add(button, 0, wx.RIGHT, 6)
         self._jump_btn.Enable(seek_to_ms is not None)
-        self._quill_btn.Enable(on_send_to_quill is not None)
+        self._quill_btn.SetHelpText(self._quill_help())
+        self._quill_btn.Enable(on_send_to_quill is not None or bool(source_app))
         root.Add(buttons, 0, wx.ALL, 10)
 
         self._dialog.SetSizer(root)
@@ -445,10 +452,64 @@ class TranscriptReader:
         self._announce(f"Saved the transcript to {path}.")
         return path
 
+    def _quill_help(self) -> str:
+        """Open in QUILL's F1 help: what it does here, in this app."""
+        marks = ", and lists your bookmarks in it" if self._bookmarks else ""
+        if not self._source_app:  # QUILL itself
+            return (
+                "Opens this transcript as a new, unsaved document, with the cursor "
+                f"on the line you are reading. The document names the episode{marks}."
+            )
+        return (
+            f"Saves this transcript in Documents, in the {self._source_app} folder, "
+            "and opens it in QUILL with the cursor on the line you are reading. "
+            f"The document names the episode and where you were{marks}."
+        )
+
     def send_to_quill(self) -> bool:
-        """Open the transcript as a QUILL document."""
-        if self._on_send_to_quill is None:
+        """Open the transcript as a QUILL document (FUX-02).
+
+        The document is Save As's Markdown plus where it came from: the app,
+        the moment the caret is on, and this episode's bookmarks. The host's
+        callback receives it with its title and the line to open at; with no
+        callback, the reader hands it over itself (Quill Radio).
+        """
+        if self._on_send_to_quill is None and not self._source_app:
             self._announce("Opening in QUILL is not available here.")
             return False
-        self._on_send_to_quill(self._text.GetValue())
+        from quill.core.editor_handoff import transcript_document
+        from quill.core.podcasts import transcript_export
+
+        document, line = transcript_document(
+            self._cues,
+            caret_index=self.caret_cue_index(),
+            source_app=self._source_app or "QUILL",
+            bookmarks=self._bookmarks,
+            detail=transcript_export.normalize_detail(self._transcript_detail),
+            show=self._show_title,
+            episode=self._title,
+            source_url=self._source_url,
+            is_automatic=self._is_automatic,
+        )
+        if self._on_send_to_quill is not None:
+            self._on_send_to_quill(
+                document,
+                kind="transcript",
+                title=self._title,
+                show=self._show_title,
+                line=line,
+                wrapped=True,
+            )
+
+            return True
+        from quill.ui.editor_handoff import hand_to_editor
+
+        hand_to_editor(
+            document,
+            filename=self.suggested_filename("md"),
+            kind="the transcript",
+            source_app=self._source_app,
+            announce=self._announce,
+            line=line,
+        )
         return True

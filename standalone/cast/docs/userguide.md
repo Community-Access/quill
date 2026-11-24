@@ -1445,9 +1445,15 @@ all, in your web browser.
 
 The **Show Notes** window has two more buttons of its own:
 
-- **Send to Editor** (Alt+S) puts the notes on the clipboard as plain text, so
-  you can paste them into QUILL, Word or an email. Cast says "Show notes
-  copied to clipboard".
+- **Send to Editor** (Alt+S) opens the notes in QUILL. Cast first saves them
+  in your Documents folder, in a folder called QUILL Cast, as
+  "Show - Episode show notes.md". The document starts with the episode, the
+  show and "Show notes, from QUILL Cast." Cast says where it saved them, then
+  QUILL comes forward with the document's name in its title: "Saved in
+  Documents, in the QUILL Cast folder. Opening it in QUILL." Without QUILL
+  they open in QUILL Lite. With neither, they stay saved and Cast says the
+  file's name and folder. **Send Show Notes to Editor** on an episode's menu
+  does the same.
 - **Save As...** (Alt+A) saves the notes to a file. Choose plain text, HTML or
   Markdown in the file type list. HTML and Markdown keep every link as a
   link.
@@ -1505,8 +1511,20 @@ things:
   as the episode plays. Arrow to any line and press Enter to hear the moment
   it was spoken.
 - **Save Transcript As...** saves it to a file.
-- **Open Transcript in Editor** opens it in QUILL, if you have it, ready to
+- **Open Transcript in Editor** saves it in Documents\QUILL Cast, as Save As
+  would, and opens it in QUILL, if you have it, ready to
   read, quote or copy from.
+
+**Open in QUILL** (Alt+Q) in the Transcript window does the same, and
+carries where you were. The QUILL document names the episode and the show,
+says "Sent from QUILL Cast at" the moment of the line your cursor is on, and
+lists your bookmarks in this episode with their notes, by time, under the
+heading "Your bookmarks", before the heading "Transcript". QUILL opens it with the cursor on that same line. This is the way to
+keep a passage you heard: add a bookmark with a note while it plays, then
+open the transcript in QUILL. Sending the same transcript again reopens the
+copy you already have; a copy you have edited is never written over, and a
+new one gets "(2)" on its name. The Transcript window stays open where you
+left it.
 
 Transcripts are also how Cast works out chapters: when **How long to spend
 looking** is **A while** or longer in Preferences > Chapters, Cast reads the

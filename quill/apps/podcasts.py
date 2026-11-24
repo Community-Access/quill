@@ -623,15 +623,14 @@ class PodcastsAppFrame(
             app_name=_TITLE,
         )
 
-    # -- show notes: no in-editor buffer standalone, so copy to clipboard ----
+    # -- show notes and transcripts: saved, then opened in QUILL (FUX-02) ----
 
-    def _podcast_send_show_notes_to_editor(self, plain_text: str) -> None:
-        if wx.TheClipboard.Open():
-            try:
-                wx.TheClipboard.SetData(wx.TextDataObject(plain_text))
-            finally:
-                wx.TheClipboard.Close()
-        self._announce("Show notes copied to clipboard")
+    _handoff_source_app = _TITLE
+
+    def _podcast_send_show_notes_to_editor(self, text: str, **about: object) -> None:
+        from quill.ui.editor_handoff import send_text
+
+        send_text(text, source_app=_TITLE, announce=self._announce, **about)  # type: ignore[arg-type]
 
     # -- status ---------------------------------------------------------------
 

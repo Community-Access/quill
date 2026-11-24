@@ -996,7 +996,7 @@ Control coverage: 343 audited sites (247 helped, 96 named-help).
 - `self._preview_list`: Each title these patterns would change, before and after. It reports; it has changed nothing.
 #### ShowNotesWindow (`quill/ui/podcasts/show_notes_dialog.py`)
 
-- `send_btn`: Opens these show notes as a new document, as plain text.
+- `send_btn`: Opens these show notes in QUILL as a document that names the episode and the show. From QUILL Cast they are first saved in Documents, in the QUILL Cast folder.
 - `self._save_btn`: Saves these show notes to a file as plain text, HTML or Markdown; the last two keep every link as a link.
 - `close_btn`: Closes this window and returns to where you were.
 #### ShowSettingsWindow (`quill/ui/podcasts/show_settings_dialog.py`)

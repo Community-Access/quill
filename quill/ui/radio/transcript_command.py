@@ -91,7 +91,8 @@ def _open_reader(host: Any, controller: Any, cues: object, is_automatic: bool) -
         seek_to_ms=(lambda ms: bool(controller.seek_to(ms))) if seekable else None,
         announce=host._announce,
         show_modal_dialog=getattr(host, "_show_modal_dialog", None),
-        on_send_to_quill=getattr(host, "_radio_send_text_to_quill", None),
+        on_send_to_quill=None,
+        source_app="Quill Radio",  # FUX-02: the reader saves it and opens it in QUILL
         is_automatic=is_automatic,
         show_title=str(getattr(station, "source", "") or ""),
         source_url=str(getattr(station, "homepage", "") or ""),

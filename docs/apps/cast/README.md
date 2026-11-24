@@ -117,7 +117,7 @@ The same dialog also offers, only when a podcast is loaded, **auto-skip intro** 
 
 #### Show notes
 
-An episode's right-click context menu includes **View Show Notes...**, which opens its description either as **Plain text** (HTML stripped out, real paragraph line breaks so a screen reader's line-by-line navigation moves by line rather than word-by-word through one wrapped line, and links written as `link text (https://...)`) or as **Rich text** (formatted, with any images removed so opening show notes can never trigger a network image fetch QUILL didn't audit). **Send to Editor**, in the same dialog, or **Send Show Notes to Editor** on the episode's context menu, opens the plain-text version as a new QUILL document.
+An episode's right-click context menu includes **View Show Notes...**, which opens its description either as **Plain text** (HTML stripped out, real paragraph line breaks so a screen reader's line-by-line navigation moves by line rather than word-by-word through one wrapped line, and links written as `link text (https://...)`) or as **Rich text** (formatted, with any images removed so opening show notes can never trigger a network image fetch QUILL didn't audit). **Send to Editor**, in the same dialog, or **Send Show Notes to Editor** on the episode's context menu, opens the plain-text version as a new QUILL document that starts with the episode, the show and where it came from.
 
 #### Controlling playback without opening a dialog
 
@@ -330,7 +330,7 @@ checkout or the portable build, use `run-quill-cast.bat`, or
 **Everything is keyboard-first.** The app opens on a real main panel, not an
 empty window: focus lands on the app's most important list the moment it opens.
 
-- **QUILL Cast** — focus starts in your **Subscribed shows** list: press **Enter** on a show to open the full Podcast Manager, where all episode-level work happens. Tab reaches Open Manager, Add Podcast, Play/Pause, and Stop buttons, with the live now-playing line above. Menus: **Subscriptions** (Open Podcast Manager with Ctrl+M, Add Podcast, Import/Export OPML, Podcast Settings), **Episode** (a live now-playing line, Play/Pause, Stop, Next/Previous Chapter), **Downloads** (Pause All / Resume All), and **Help**. One difference from inside QUILL: "Send Show Notes to Editor" copies the notes to the clipboard instead — there is no editor buffer standalone — and announces that it did.
+- **QUILL Cast** — focus starts in your **Subscribed shows** list: press **Enter** on a show to open the full Podcast Manager, where all episode-level work happens. Tab reaches Open Manager, Add Podcast, Play/Pause, and Stop buttons, with the live now-playing line above. Menus: **Subscriptions** (Open Podcast Manager with Ctrl+M, Add Podcast, Import/Export OPML, Podcast Settings), **Episode** (a live now-playing line, Play/Pause, Stop, Next/Previous Chapter), **Downloads** (Pause All / Resume All), and **Help**. One difference from inside QUILL: "Send Show Notes to Editor", "Open Transcript in Editor" and the Transcript window's "Open in QUILL" first save the document in Documents\QUILL Cast, then open it in QUILL (or QUILL Lite), and say where it was saved. The transcript names the moment you were reading, lists that episode's bookmarks, and opens with the cursor on that line.
 
 The app puts an icon in the system tray with the same podcast controls QUILL's
 own tray icon offers, plus **Show** (double-click also works) and **Exit**. And

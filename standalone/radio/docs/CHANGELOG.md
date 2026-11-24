@@ -8,6 +8,15 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased] - 2026-11-07
 
+### Open in QUILL works in the transcript window (2026-11-24)
+
+The transcript window's Open in QUILL button was always dimmed, because
+nothing in Quill Radio answered it. Now it saves the transcript as a Markdown
+document in Documents, in a folder called Quill Radio, naming the video and
+the moment your cursor is on, and opens it in QUILL with the cursor on that
+line (in QUILL Lite when QUILL is not installed). Radio says where it saved it
+first; with neither editor, it stays saved and Radio says so (FUX-02).
+
 ### An empty Favorites list says how to fill it (2026-11-24)
 
 - **A line before an empty Favorite stations list** names the two ways to a

@@ -4,6 +4,22 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+### Show notes and transcripts open in QUILL, saying where they came from (2026-11-24)
+
+Send to Editor, Send Show Notes to Editor, Open Transcript in Editor and the
+Transcript window's Open in QUILL put the text on the clipboard and said "Show
+notes copied to clipboard", even for a transcript, and Send to Editor then
+also said "Sent show notes to a new document", which was not true. Now each
+saves the text as a Markdown document in Documents, in a folder called QUILL
+Cast, and opens it in QUILL (or QUILL Lite), with one sentence first that
+says where it was saved. The document names the episode, the show and QUILL
+Cast. A transcript sent from the Transcript window also names the moment
+your cursor is on, lists your bookmarks in that episode with their notes, and
+opens in QUILL with the cursor on that line. Sending the same thing again
+reopens the copy you have; a copy you edited is never written over. Without
+QUILL or QUILL Lite, the document stays saved and Cast says so (FUX-02,
+journey A).
+
 ### An empty library says how to fill it, after the welcome (2026-11-24)
 
 The sentence an empty Podcasts place says was spoken while the window was

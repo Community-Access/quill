@@ -104,12 +104,16 @@ def editor_name() -> str:
     return "QUILL Lite" if _lite_launcher() is not None else ""
 
 
-def open_in_editor(path: Path) -> str:
+def open_in_editor(path: Path, *, line: int | None = None) -> str:
     """Open *path* in QUILL, or in QUILL Lite when QUILL is not installed.
-    Returns the editor's name, or ``""`` when neither could be started."""
+    Returns the editor's name, or ``""`` when neither could be started.
+
+    *line* (1-based) puts QUILL's cursor there (its ``--line``); QUILL Lite
+    has no such option and opens at the top."""
     from quill.core.app_launcher import launch_app
 
-    if launch_app("quill", extra_args=(str(path),)):
+    at_line = ("--line", str(line)) if line else ()
+    if launch_app("quill", extra_args=(str(path), *at_line)):
         return "QUILL"
     argv = _lite_launcher()
     if argv is None:
