@@ -6763,7 +6763,11 @@ Each one is listed with how it starts:
   Station > Start Quill Radio with Windows; both controls stay in sync.
   Preferences reports when Windows does not allow the setting to change.
 - **Check for updates automatically on launch**: on. A quiet check once a day,
-  which says nothing unless it finds something.
+  which says nothing unless it finds something. When it does, the offer
+  waits until no station is playing and nothing is recording, and never
+  comes in the first minute or while you are typing. The status bar and
+  Update History say what is waiting, and Help > Check for Updates opens it
+  at once.
 - **Announce dialog transitions (more spoken detail)**: off. When it is on,
   Quill Radio says "Entered ..." and "Exited ..." as windows open and close.
 - **Share these choices with my other Quill apps**: off. When it is on,

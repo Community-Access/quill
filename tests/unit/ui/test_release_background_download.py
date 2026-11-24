@@ -117,3 +117,58 @@ def test_a_failed_background_download_is_recorded_quietly(harness, monkeypatch) 
     handled, spoken, ready = _run(harness, monkeypatch, ChannelState(channel="beta"), Conditions())
     assert handled is True and spoken == [] and ready == []
     assert history.read_events(path=harness.log)[0].kind == "failed"
+
+
+def test_a_shell_app_writes_downloaded_and_offers_at_a_quiet_moment(
+    harness, monkeypatch, tmp_path
+) -> None:
+    """FUX-15: Radio's Beta download says "downloaded" on the status bar, not
+    over the station, and its offer waits while the station plays."""
+    from quill.core import maintenance_moment
+    from quill.ui import maintenance_moment_ui, update_notice
+    from quill.ui.radio.playback_state import RadioPlayerState
+
+    monkeypatch.setattr(background, "read_conditions", lambda: Conditions())
+    monkeypatch.setattr("quill.core.paths.app_data_dir", lambda: tmp_path)
+    clock = SimpleNamespace(now=100.0)
+    later: list = []
+    maintenance_moment_ui.reset_for_tests()
+    maintenance_moment_ui._MOMENTS["radio"] = maintenance_moment.MaintenanceMoment(
+        clock=lambda: clock.now, launched=0.0
+    )
+    monkeypatch.setattr(maintenance_moment_ui, "_wx_later", lambda _ms, run: later.append(run))
+    monkeypatch.setattr(maintenance_moment_ui, "window_in_front", lambda _w: True)
+    monkeypatch.setattr(maintenance_moment_ui, "input_idle_seconds", lambda: None)
+    offered: list[str] = []
+    monkeypatch.setattr(
+        update_notice,
+        "show_update_available",
+        lambda *_a, **kw: (offered.append(kw["release"].version), "close")[1],
+    )
+    said: list[str] = []
+    status: list[str] = []
+    shell = SimpleNamespace(
+        frame=SimpleNamespace(Close=lambda: None),
+        _task_manager=SimpleNamespace(submit=harness.submit),
+        _announce=lambda message, **_k: said.append(message),
+        _set_status=status.append,
+        _update_app_name=lambda: "Quill Radio",
+        _running_portable_build=lambda: False,
+        _show_message_box=lambda *_a, **_k: None,
+        _show_modal_dialog=lambda *_a, **_k: None,
+        _radio_recorder=SimpleNamespace(is_recording=False),
+        _radio_controller=SimpleNamespace(state=SimpleNamespace(state=RadioPlayerState.PLAYING)),
+    )
+    try:
+        assert background.shell_found(shell, "radio", _release(), ChannelState("beta"), "3.2.0")
+        assert said == []
+        assert status[0] == "Update 3.3.0 Beta 2 downloaded"
+        assert shell._maintenance_note.startswith("Update 3.3.0 Beta 2 waits until playback stops.")
+        assert offered == []
+        shell._radio_controller.state.state = RadioPlayerState.STOPPED
+        clock.now = 130.0
+        later.pop(0)()
+        assert offered == ["3.3.0-beta.2"]
+        assert shell._maintenance_note == ""
+    finally:
+        maintenance_moment_ui.reset_for_tests()

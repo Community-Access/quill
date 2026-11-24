@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [2.0.0] - built, not yet released
 
+### The update offer never interrupts a broadcast or a recording (2026-11-24)
+
+The daily update check used to open its window as soon as it came back, even
+over a live broadcast, a demonstration recording, a capture or a book that
+was playing, and even while QUILL Studio was in the tray. Now it waits until
+none of those is running, the first minute after launch has passed, you have
+stopped typing and QUILL Studio is the window you are using, and then about
+20 seconds more. While it waits, the status bar says once what is waiting;
+nothing is spoken. **Help > Check for Updates** opens the waiting update at
+once.
+
 QUILL Studio 2.0.0 is the next Studio release after Audio Studio 1.0.0. The previously unpublished 2.2.0 build is renumbered to 2.0.0 for the QUILL Studio rename. Shared-runtime compatibility does not require matching the other apps' version numbers.
 
 This version is built but not yet published: Audio Studio is not offered in the QuillVille menu, and there is no 2.0.0 download page. Everything below is in the build.

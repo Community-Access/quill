@@ -295,10 +295,12 @@ front), it says “Update 3.4.0 is ready and waits for a quiet moment.”
 The sentence goes to the status bar and to the record the app already
 keeps: Notifications in QUILL, Update History in the apps with release
 channels. It is never spoken, because speech would land on top of the
-work it is protecting. It is said once for each update, and QUILL clears
-it from the status bar as the offer opens. An explicit command, Help
-&gt; Check for Updates, never waits: it takes the held offer and opens
-it straight away.</p>
+work it is protecting. It is said once for each update, and it is
+cleared from the status bar as the offer opens. In Radio, Cast and
+Studio, which rewrite their status bar on every playback change, the
+line is kept after the app’s own status text until then. An explicit
+command, Help &gt; Check for Updates, never waits: it takes the held
+offer and opens it straight away.</p>
 <p>One held offer is kept for each kind, and a newer one replaces an
 older one. When the window is gone, the poll stops. A probe that raises
 an error counts as idle, so a broken probe can never block updates for
@@ -479,7 +481,7 @@ Radio, QUILL Cast, QUILL Studio (shared
 <th>Steals focus</th>
 <th>Speaks</th>
 <th>Before</th>
-<th>After (PR for the second group)</th>
+<th>After</th>
 </tr>
 </thead>
 <tbody>
@@ -493,8 +495,9 @@ after launch</td>
 <td><strong>Gap</strong>: opened over the station or episode that had
 just resumed, during a recording, over a Studio live broadcast or demo
 recording, and over a hidden tray window</td>
-<td>Waits for a quiet moment. Probes: Radio recording and playback; Cast
-playback; Studio live broadcast, demo recording, capture, protected
+<td>Waits for a quiet moment. Probes: Radio recording and playback
+(connecting, buffering, playing, reconnecting); Cast playback and
+loading; Studio live broadcast, demo recording, capture, protected
 background jobs and book playback. Update History, or the status bar
 where an app has no release channel, says once what waits. Check for
 Updates opens it at once.</td>
