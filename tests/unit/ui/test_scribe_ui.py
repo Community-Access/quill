@@ -39,6 +39,12 @@ class Host:
     def scribe_in_front(self) -> bool:
         return self.front
 
+    def scribe_has_sound(self, _event: str) -> bool:
+        """No sounds here, whatever another test left in the sound manager: a
+        "Play a sound" moment is then spoken (the family rule), so these tests
+        hear the result sentences. test_scribe_feedback_routing.py has sounds."""
+        return False
+
     def scribe_open_result(self, job: q.Job, format_id: str, path: Path) -> str:
         self.opened.append((format_id, path))
         return "Word is open in QUILL"
