@@ -181,6 +181,13 @@ def test_account_and_choice_lists(server: FakeScribe) -> None:
     assert client.voice_sample_url("en-US-Ava").endswith("/sounds/tts-samples/en-US-Ava.mp3")
 
 
+def test_output_time_remaining_is_milliseconds_from_scribe(server: FakeScribe) -> None:
+    server.add_document(outputs={"mp3": "convert"})
+    document_id = next(iter(server.documents))
+    (output,) = _client(server).list_outputs(document_id)[0]
+    assert output.estimated_time_remaining == 30
+
+
 # --------------------------------------------------------------- channel
 
 
@@ -309,6 +316,7 @@ def test_a_job_uploads_converts_each_format_and_downloads(
     assert service.tick()
     job = service.queue.jobs()[0]
     assert job.state == q.DONE and set(job.outputs) == {"docx", "brf"}
+    assert job.eta_seconds is None
     assert all(Path(p).exists() for p in job.outputs.values())
     assert Path(job.folder).name == "Notes"
     kinds = [k for k, _ in events]
@@ -378,6 +386,23 @@ def test_conversion_in_progress_waits_and_is_never_an_error(
     assert service.queue.jobs()[0].state == q.DONE
     assert "error" not in [k for k, _ in events]
     assert [j.message for k, j in events if k == "chunk"] == ["<h1>Notes</h1>"]
+
+
+def test_quiet_channel_polling_keeps_stage_progress_and_eta(
+    server: FakeScribe, tmp_path: Path
+) -> None:
+    doc = server.add_document(outputs={"mp3": "convert"})
+    service = _service(server, tmp_path)
+    job = _job(
+        tmp_path,
+        formats=("mp3",),
+        state=q.CONVERTING,
+        document_id=doc.id,
+        format="mp3",
+    )
+    assert service._poll_complete(job, _client(server), "mp3", 0, 1) is False
+    assert (job.stage, job.progress, job.eta_seconds) == ("convert", 0.45, 30)
+    assert job.message == "MP3 audio: converting, 50 percent."
 
 
 def test_rate_limited_is_said_once_and_retried(server: FakeScribe, tmp_path: Path) -> None:

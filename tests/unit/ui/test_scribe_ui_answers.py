@@ -286,6 +286,29 @@ def test_no_send_next_file_and_the_wait_shows_silently(controller: Any) -> None:
         window.Destroy()
 
 
+def test_time_left_is_units_aware_and_not_shown_after_conversion() -> None:
+    from quill.core.scribe.sentences import time_left_words
+    from quill.ui.scribe_conversions_window import job_details
+
+    assert time_left_words(30) == "less than a minute left"
+    assert time_left_words(551) == "about 9 minutes left"
+    assert time_left_words(93780) == "about 1 day and 2 hours left"
+    active = q.Job(
+        file_name="Notes.pdf",
+        state=q.CONVERTING,
+        progress=0.8,
+        eta_seconds=551,
+    )
+    done = q.Job(
+        file_name="Notes.pdf",
+        state=q.DONE,
+        progress=1.0,
+        eta_seconds=551,
+    )
+    assert "About 9 minutes left." in job_details(active)
+    assert "minutes left" not in job_details(done)
+
+
 def test_the_options_have_no_batch_setting(controller: Any) -> None:  # noqa: F811
     import quill.ui.scribe_options_dialog as options_dialog
 

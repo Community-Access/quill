@@ -82,7 +82,7 @@ def test_every_section_in_order_with_the_most_important_fact_first() -> None:
     assert usage[0] == "Pages left: 412, using credits from Acme."
     assert any(line.startswith("Pace: 3 of 8 uploads") for line in usage)
     now = _section(report.text, "Now converting")
-    assert now[0].startswith("Notes.pdf, converting, 40 percent, about 2 minutes.")
+    assert now[0].startswith("Notes.pdf, converting, 40 percent, about 2 minutes left.")
     assert "Word and EPUB" in now[0] and now[-1] == "QUILL Lite is doing the work."
     assert "Waiting (2)" in report.text
     waiting = _section(report.text, "Waiting")

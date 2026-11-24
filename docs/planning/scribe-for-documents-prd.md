@@ -149,7 +149,12 @@ The API also covers the person's account and their documents:
    - `conversion_complete` says a format is done.
    - `error` reports a failure, for example `invalid_password`, `needs_purchase` (with a purchase link), `rate_limited` or `conversion_in_progress`.
    - `password_required` arrives when the PDF is locked.
-5. **Download.** `GET .../outputs/{format}/download`.
+5. **Poll if the channel is quiet.** `GET .../outputs` supplies the stage,
+   progress, `estimated_time_remaining`, preview/download flags and password
+   state. The official client types the estimate as an integer but does not
+   state its unit. The live service returns milliseconds; QUILL converts that
+   field to seconds and never treats an old estimate as a live download time.
+6. **Download.** `GET .../outputs/{format}/download`.
 
 If the connection drops, the conversion carries on. QUILL reconnects and joins again; it never uploads again. There are no webhooks. Polling `GET .../outputs` is the fallback.
 

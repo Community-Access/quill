@@ -27,6 +27,7 @@ from pathlib import Path
 from quill.core.scribe import PRODUCT_NAME
 from quill.core.scribe.model import format_label, formats_phrase, stage_words
 from quill.core.scribe.queue import (
+    CONVERTING,
     DONE,
     DOWNLOADING,
     NEEDS_PASSWORD,
@@ -185,6 +186,27 @@ def cancel_waiting_sentence(job: Job, *, app_name: str) -> str:
     )
 
 
+def time_left_words(seconds: int) -> str:
+    """A spoken ETA without inventing precision or showing thousands of minutes."""
+    seconds = max(0, seconds)
+    if seconds < 60:
+        return "less than a minute left"
+    minutes = round(seconds / 60)
+    if minutes < 60:
+        return f"about {minutes} minute{'s' if minutes != 1 else ''} left"
+    hours, minutes = divmod(minutes, 60)
+    if hours < 24:
+        words = f"about {hours} hour{'s' if hours != 1 else ''}"
+        if minutes:
+            words += f" and {minutes} minute{'s' if minutes != 1 else ''}"
+        return words + " left"
+    days, hours = divmod(hours, 24)
+    words = f"about {days} day{'s' if days != 1 else ''}"
+    if hours:
+        words += f" and {hours} hour{'s' if hours != 1 else ''}"
+    return words + " left"
+
+
 def status_sentence(job: Job | None) -> str:
     """The current job in one line: Scribe Status's Now converting section."""
     if job is None:
@@ -193,9 +215,8 @@ def status_sentence(job: Job | None) -> str:
     percent = int(round(job.progress * 100))
     if percent:
         parts.append(f"{percent} percent")
-    if job.eta_seconds:
-        minutes = max(1, round(job.eta_seconds / 60))
-        parts.append(f"about {minutes} minute" + ("" if minutes == 1 else "s"))
+    if job.state == CONVERTING and job.eta_seconds:
+        parts.append(time_left_words(job.eta_seconds))
     return ", ".join(parts) + "."
 
 
@@ -302,4 +323,5 @@ __all__ = [
     "stage_sentence",
     "start_sentence",
     "status_sentence",
+    "time_left_words",
 ]
