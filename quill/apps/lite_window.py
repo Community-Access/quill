@@ -450,6 +450,7 @@ class DocumentFrame(
     def _on_activate(self, event: wx.ActivateEvent) -> None:
         if event.GetActive():
             self.app.active_frame = self
+            self.on_window_activated()  # a lost place is said on arrival (FUX-01)
         event.Skip()
 
     def _report_failure(self, caption: str, message: str) -> None:

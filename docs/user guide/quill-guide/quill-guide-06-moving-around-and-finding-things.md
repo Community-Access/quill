@@ -735,7 +735,10 @@ commands live together on **Navigate > Bookmarks**:
 Bookmarks belong to each document and are kept between sessions. When you
 reopen a file, its bookmarks are still there. QUILL also remembers your last
 cursor position in each saved document and puts you back there when you
-reopen it. A new document that has never been saved keeps its bookmarks only
+reopen it. The cursor follows the sentence it was in, so text another program
+added or removed above it does not move you. If that sentence itself was
+rewritten or deleted, the cursor goes to the start of the line it was on, and
+QUILL tells you once, when you arrive in that document, with the line number. A new document that has never been saved keeps its bookmarks only
 until you close it; save it, and they are kept.
 
 Bookmarks also stay on the right words as you edit. Each one remembers the

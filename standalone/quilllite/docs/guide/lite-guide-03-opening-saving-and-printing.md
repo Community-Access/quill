@@ -1255,6 +1255,9 @@ with a pile of windows to sort through before you can start.
 | three or more | you are asked |
 | any document whose file has moved or gone | you are asked |
 
+You land in the document you were working in when you closed QUILL Lite, not
+simply the last one to open, and in each one the cursor is where you left it.
+
 ### The Reopen Last Session window
 
 The window lists what you had open, one row each, with a checkbox. Everything

@@ -87,6 +87,17 @@ def resolve_anchor(text: str, anchor: BookmarkAnchor) -> int:
     Never raises and never returns an out-of-range value; worst case it returns
     the clamped stored offset, matching the old bare-offset behavior.
     """
+    return locate_anchor(text, anchor)[0]
+
+
+def locate_anchor(text: str, anchor: BookmarkAnchor) -> tuple[int, bool]:
+    """:func:`resolve_anchor`, and whether the remembered text was found.
+
+    ``False`` only when the snippet is gone and the offset is the clamped
+    guess (step 4), which is the case a caller has to *say* rather than
+    land on silently (FUX-01). An anchor with nothing to search for counts
+    as found: there was no text to lose.
+    """
     length = len(text)
     clamped = max(0, min(anchor.offset, length))
 
@@ -94,13 +105,13 @@ def resolve_anchor(text: str, anchor: BookmarkAnchor) -> int:
     # anchor) has nothing to search for -- clamp and go.
     needle = anchor.before + anchor.after
     if not needle.strip():
-        return clamped
+        return clamped, True
 
     # 1) Fast path: the stored offset still has the same neighborhood.
     here_before = text[max(0, clamped - len(anchor.before)) : clamped]
     here_after = text[clamped : clamped + len(anchor.after)]
     if here_before == anchor.before and here_after == anchor.after:
-        return clamped
+        return clamped, True
 
     # 2) Search for the boundary between `before` and `after`. Prefer the
     #    `after` snippet (what the caret sits on); its start is the caret.
@@ -110,17 +121,17 @@ def resolve_anchor(text: str, anchor: BookmarkAnchor) -> int:
     if anchor.after.strip():
         candidates.extend(_all_indices(text, anchor.after))
     if candidates:
-        return min(candidates, key=lambda pos: abs(pos - anchor.offset))
+        return min(candidates, key=lambda pos: abs(pos - anchor.offset)), True
 
     # 3) The caret sat at end-of-text (no `after`); anchor to the end of the
     #    `before` snippet instead.
     if anchor.before.strip():
         ends = [pos + len(anchor.before) for pos in _all_indices(text, anchor.before)]
         if ends:
-            return min(ends, key=lambda pos: abs(pos - anchor.offset))
+            return min(ends, key=lambda pos: abs(pos - anchor.offset)), True
 
     # 4) Nothing matched -- the bookmarked text is gone. Clamp.
-    return clamped
+    return clamped, False
 
 
 def _all_indices(haystack: str, needle: str) -> list[int]:

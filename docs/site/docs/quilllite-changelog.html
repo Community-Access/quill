@@ -244,6 +244,28 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="200">2.0.0</h2>
+<h3 id="back-to-the-sentence-you-left-2026-11-24">Back to the sentence
+you left (2026-11-24)</h3>
+<ul>
+<li><strong>The cursor follows its sentence.</strong> Reopening a
+document puts the cursor back in the sentence you left, even if another
+program added or removed text above it. If that sentence was rewritten
+or deleted, the cursor goes to the start of the line it was on and QUILL
+Lite says so once, with the line number, when you arrive in the
+document, instead of landing somewhere else in silence. While a document
+has unsaved changes, its place stays the last one the file can
+confirm.</li>
+<li><strong>Closing with Alt+F4 kept nothing.</strong> Closing QUILL
+Lite itself, rather than each document, and Windows signing you out,
+forgot where the cursor was in every open document. Both now keep
+it.</li>
+<li><strong>A sudden stop costs half a minute, not the session.</strong>
+Where the cursor is is also written each time the recovery copy is kept,
+if it moved.</li>
+<li><strong>You land in the document you were in.</strong> Reopening
+last session’s documents used to leave the last one in front; now it is
+the one you were working in.</li>
+</ul>
 <h3
 id="f8-moves-from-one-change-to-the-next-in-every-read-only-diff-2026-11-24">F8
 moves from one change to the next in every read-only diff

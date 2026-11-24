@@ -59,7 +59,21 @@ class LiteSessionMixin:
             path = Path(entry)
             if path.is_file() and self.open_path(path):
                 opened += 1
+        self._focus_last_active()
         return opened
+
+    def _focus_last_active(self) -> None:
+        """Put you back in the document you were in, not the last one numbered.
+
+        Opening in order leaves the last window in front, and with four
+        documents back that is a one-in-four chance of being in the right one
+        (FUX-01). Nothing is said: the screen reader reads the window and the
+        line it lands on, and a file that is not open is simply not chosen.
+        """
+        remembered = str(getattr(self.settings, "session_active_file", "") or "")
+        frame = self._frame_for(Path(remembered)) if remembered else None
+        if frame is not None and frame is not self.active_frame:
+            self.focus_frame(frame)
 
     def choose_session_documents(self) -> bool:
         """Ask which remembered documents to reopen, and which to forget.
@@ -117,4 +131,7 @@ class LiteSessionMixin:
         self.settings.session_files = [
             str(frame.path) for frame in self.frames if frame.path is not None
         ]
+        active = self.active_frame if self.active_frame in self.frames else None
+        path = getattr(active, "path", None)
+        self.settings.session_active_file = str(path) if path is not None else ""
         self.save_settings()

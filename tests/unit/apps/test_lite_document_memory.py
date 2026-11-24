@@ -196,3 +196,144 @@ def test_a_malformed_row_costs_the_bookmarks_and_not_the_document(tmp_path: Path
     win.restore_document_memory()
 
     assert [(m.number, m.label) for m in win.bookmarks.all()] == [(1, "kept")]
+
+
+# --------------------------------------------------------------------------- #
+# FUX-01: the place is found again by its text, and a lost one is said
+# --------------------------------------------------------------------------- #
+
+
+class _SavedWindow(_Window):
+    """A window whose text is what its file holds, and which records what it says."""
+
+    def __init__(self, store: DocumentMemory | None, path: Path | None, text: str) -> None:
+        super().__init__(store, path, text)
+        self._clean_text = text
+        self.said: list[str] = []
+
+    def _announce(self, message: str, *, interrupt: bool = True) -> None:
+        self.said.append(message)
+        self.interrupted = interrupt
+
+
+@pytest.fixture
+def call_later_now(monkeypatch):
+    """``wx.CallLater`` runs at once, so what is said on arrival can be read."""
+    import wx
+
+    delays: list[int] = []
+
+    def now(delay, fn, *args, **kwargs):
+        delays.append(delay)
+        fn(*args, **kwargs)
+
+    monkeypatch.setattr(wx, "CallLater", now)
+    return delays
+
+
+_LONG = "".join(f"Paragraph {n} says something only paragraph {n} says.\n" for n in range(40))
+
+
+def test_the_cursor_follows_its_sentence_when_text_is_added_above(
+    store: DocumentMemory, tmp_path: Path
+) -> None:
+    """A bare offset would land 30 characters early, in the sentence before."""
+    doc = tmp_path / "long.txt"
+    first = _SavedWindow(store, doc, _LONG)
+    where = _LONG.index("paragraph 25 says")
+    first.control.SetInsertionPoint(where)
+    first.remember_document_memory()
+
+    edited = "A new opening line, added by hand.\n" + _LONG
+    reopened = _SavedWindow(DocumentMemory.load(store.path), doc, edited)
+    reopened.restore_document_memory()
+
+    assert reopened.control.GetInsertionPoint() == edited.index("paragraph 25 says")
+    assert reopened.said == []  # found: the reader reads the line it lands on
+
+
+def test_a_place_whose_text_is_gone_is_said_once_on_arrival(
+    store: DocumentMemory, tmp_path: Path, call_later_now: list[int]
+) -> None:
+    doc = tmp_path / "long.txt"
+    first = _SavedWindow(store, doc, _LONG)
+    first.control.SetInsertionPoint(_LONG.index("only paragraph 12"))
+    first.remember_document_memory()
+
+    rewritten = "".join(f"Line {n} was rewritten entirely.\n" for n in range(40))
+    reopened = _SavedWindow(DocumentMemory.load(store.path), doc, rewritten)
+    reopened.restore_document_memory()
+
+    # The start of the line it was on (the thirteenth), never a guess mid-word.
+    assert reopened.control.GetInsertionPoint() == rewritten.index("Line 12 ")
+    # Nothing while the window is still being built: the reader's reading of
+    # it, or the next document's load, would cut the sentence off.
+    assert reopened.said == []
+
+    reopened.on_window_activated()
+    reopened.on_window_activated()  # once, not on every return to the window
+
+    assert reopened.said == [
+        "The text where you left off has changed. The cursor is at the start of line 13."
+    ]
+    assert reopened.interrupted is False  # it follows the reader's line
+    assert call_later_now and call_later_now[0] > 0
+
+
+def test_a_document_loaded_after_you_arrived_says_it_at_once(
+    store: DocumentMemory, tmp_path: Path, call_later_now: list[int]
+) -> None:
+    """A large file loads in the background, behind a window you are already in."""
+    doc = tmp_path / "big.txt"
+    first = _SavedWindow(store, doc, _LONG)
+    first.control.SetInsertionPoint(_LONG.index("only paragraph 3"))
+    first.remember_document_memory()
+
+    reopened = _SavedWindow(DocumentMemory.load(store.path), doc, "Different now.\n" * 40)
+    reopened.app.active_frame = reopened
+    reopened.restore_document_memory()
+
+    assert len(reopened.said) == 1 and reopened.said[0].endswith("line 4.")
+
+
+def test_unsaved_text_keeps_the_last_saved_place(store: DocumentMemory, tmp_path: Path) -> None:
+    """A place in text that is then discarded is one the next open cannot check."""
+    doc = tmp_path / "draft.txt"
+    win = _SavedWindow(store, doc, _LONG)
+    win.control.SetInsertionPoint(100)
+    win.remember_document_memory()
+    win.control._text = "typed but not saved " + _LONG
+    win.control.SetInsertionPoint(5)
+
+    win.remember_document_memory()
+    win.remember_caret_if_moved()
+
+    key = store.key_for(doc)
+    assert store.last_position(key) == 100
+    assert store.last_anchor(key) is not None
+
+
+def test_the_autosave_tick_writes_the_cursor_only_when_it_moved(
+    store: DocumentMemory, tmp_path: Path, monkeypatch
+) -> None:
+    """A crash costs one tick of place, and a window left alone writes nothing."""
+    doc = tmp_path / "read.txt"
+    win = _SavedWindow(store, doc, _LONG)
+    win.restore_document_memory()
+    writes: list[int] = []
+    real = DocumentMemory.set_last_position
+
+    def counted(self, key, position, *, anchor=None):
+        writes.append(position)
+        real(self, key, position, anchor=anchor)
+
+    monkeypatch.setattr(DocumentMemory, "set_last_position", counted)
+
+    win.remember_caret_if_moved()
+    assert writes == []
+    win.control.SetInsertionPoint(200)
+    win.remember_caret_if_moved()
+    win.remember_caret_if_moved()
+
+    assert writes == [200]
+    assert DocumentMemory.load(store.path).last_position(store.key_for(doc)) == 200

@@ -2,6 +2,24 @@
 
 ## 2.0.0
 
+### Back to the sentence you left (2026-11-24)
+
+- **The cursor follows its sentence.** Reopening a document puts the cursor
+  back in the sentence you left, even if another program added or removed
+  text above it. If that sentence was rewritten or deleted, the cursor goes to
+  the start of the line it was on and QUILL Lite says so once, with the line
+  number, when you arrive in the document, instead of landing somewhere else
+  in silence. While a document has unsaved changes, its place stays the last
+  one the file can confirm.
+- **Closing with Alt+F4 kept nothing.** Closing QUILL Lite itself, rather than
+  each document, and Windows signing you out, forgot where the cursor was in
+  every open document. Both now keep it.
+- **A sudden stop costs half a minute, not the session.** Where the cursor is
+  is also written each time the recovery copy is kept, if it moved.
+- **You land in the document you were in.** Reopening last session's
+  documents used to leave the last one in front; now it is the one you were
+  working in.
+
 ### F8 moves from one change to the next in every read-only diff (2026-11-24)
 
 The differences of a file in a pull request, Compare Branches' Changed Files,

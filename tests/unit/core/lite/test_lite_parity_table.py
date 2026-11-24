@@ -101,6 +101,8 @@ def test_every_quilllite_field_is_either_shared_mapped_or_its_own() -> None:
         # Session restore is QuillLite-only until G4 gives QUILL one.
         "restore_session",
         "session_files",
+        # Which of them you were in (FUX-01); QUILL reopens tabs in order.
+        "session_active_file",
         # QUILL keeps its pins beside recent.json (recent-pinned.json), as it
         # keeps the recent list itself outside Settings; same rules, one module.
         "pinned_recent_files",

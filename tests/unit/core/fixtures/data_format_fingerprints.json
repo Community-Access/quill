@@ -436,6 +436,7 @@
             "ai_answer_delivery": "str",
             "session_restore_ask": "str",
             "session_files": "list[str]",
+            "session_active_file": "str",
             "recover_untitled_documents": "bool",
             "inline_notes_in_file": "bool",
             "inline_note_line_cue": "str",
@@ -498,7 +499,7 @@
         "constant:quill.core.lite.settings:SCHEMA": "1"
       },
       "classification": "additive, compatible",
-      "note": ""
+      "note": "adds session_active_file (which reopened document to land in); older builds ignore it"
     },
     "quill.keymap": {
       "current": 1,

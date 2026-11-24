@@ -30,6 +30,12 @@ class _Settings:
     session_files: list[str] = field(default_factory=list)
     session_restore_ask: str = "when_it_matters"
     restore_session: bool = True
+    session_active_file: str = ""
+
+
+@dataclass
+class _Frame:
+    path: Path | None
 
 
 class _Voice:
@@ -50,10 +56,23 @@ class _App:
         self.opened: list[Path] = []
         self.saved = 0
         self.queued = 0
+        self.frames: list[_Frame] = []
+        self.active_frame: _Frame | None = None
+        self.focused: list[_Frame] = []
 
     def open_path(self, path: Path) -> bool:
         self.opened.append(Path(path))
+        frame = _Frame(Path(path))
+        self.frames.append(frame)
+        self.active_frame = frame  # as focus_frame does: the newest is in front
         return True
+
+    def _frame_for(self, path: Path) -> _Frame | None:
+        return next((f for f in self.frames if f.path == Path(path)), None)
+
+    def focus_frame(self, frame: _Frame) -> None:
+        self.focused.append(frame)
+        self.active_frame = frame
 
     def save_settings(self) -> None:
         self.saved += 1
@@ -66,6 +85,7 @@ class _App:
     _open_session_entries = QuillLiteApp._open_session_entries
     _restore_session = QuillLiteApp._restore_session
     remember_session = QuillLiteApp.remember_session
+    _focus_last_active = QuillLiteApp._focus_last_active
 
 
 @pytest.fixture
@@ -308,6 +328,43 @@ def test_remembering_session_stays_synchronous_for_shutdown() -> None:
 
     assert app.saved == 1
     assert app.queued == 0
+
+
+def test_the_document_you_were_in_is_remembered(three: list[str]) -> None:
+    """FUX-01: which window you were in, not only which were open."""
+    app = _App([])
+    app.frames = [_Frame(Path(p)) for p in three]
+    app.active_frame = app.frames[1]
+
+    app.remember_session()
+
+    assert app.settings.session_files == three
+    assert app.settings.session_active_file == three[1]
+
+
+def test_reopening_puts_you_back_in_that_document(three: list[str]) -> None:
+    """Opening in order leaves the last one in front; the one you were in wins."""
+    app = _App(three)
+    app.settings.session_restore_ask = ASK_NEVER
+    app.settings.session_active_file = three[0]
+
+    app._restore_session()
+
+    assert app.active_frame is not None and app.active_frame.path == Path(three[0])
+    assert app.voice.said == []  # the reader says the window it lands in
+
+
+def test_a_remembered_active_file_that_did_not_open_changes_nothing(
+    three: list[str], tmp_path: Path
+) -> None:
+    app = _App(three)
+    app.settings.session_restore_ask = ASK_NEVER
+    app.settings.session_active_file = str(tmp_path / "gone.txt")
+
+    app._restore_session()
+
+    assert app.focused == []
+    assert app.active_frame is not None and app.active_frame.path == Path(three[-1])
 
 
 def test_nothing_remembered_says_so_rather_than_opening_an_empty_window(monkeypatch) -> None:

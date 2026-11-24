@@ -50,6 +50,12 @@ from quill.core.numbered_bookmarks import (
     capture_anchor,
     label_for,
 )
+from quill.core.resume_place import (
+    PLACE_NOTE_DELAY_MS,
+    anchor_if_saved,
+    lost_place_sentence,
+    resume_place,
+)
 from quill.core.selection import expand_selection, line_span, paragraph_span, word_span
 
 __all__ = ["DocumentMarksMixin"]
@@ -299,6 +305,14 @@ class DocumentMarksMixin:
         Positions are clamped to the document's length, because the file can
         have been changed by another program since the bookmarks were written
         and a bookmark past the end would send the caret nowhere.
+
+        The cursor is found again by the text it was in (FUX-01,
+        :mod:`quill.core.resume_place`), and the one case that *is* said is
+        that text being gone: the cursor then starts its old line, and a
+        listener told nothing would trust a place that is not theirs. It is
+        said when you arrive in the window (:meth:`on_window_activated`), not
+        here: the window is not shown yet, and the reader's own reading of it,
+        another document's load, or the next open notice would cut it off.
         """
         key = self._memory_key()
         if key is None:
@@ -308,12 +322,18 @@ class DocumentMarksMixin:
         try:
             self.bookmarks = BookmarkSet.from_records(store.numbered_for(key))
             self.bookmarks.clamped_to(length)
-            last = store.last_position(key)
+            last, anchor = store.last_position(key), store.last_anchor(key)
         except Exception:  # noqa: BLE001 - a bad row costs the memory, not the file
             return
-        if isinstance(last, int) and 0 < last <= length:
-            self.control.SetInsertionPoint(last)
-            self.control.ShowPosition(last)
+        text = self.control.GetValue()
+        place = resume_place(text, last if isinstance(last, int) else None, anchor)
+        if place is not None:
+            self.control.SetInsertionPoint(place.position)
+            self.control.ShowPosition(place.position)
+            self._place_on_arrival = lost_place_sentence(text, place.position) if place.lost else ""
+            if getattr(self.app, "active_frame", None) is self:  # loaded after arriving
+                self.on_window_activated()
+        self._remembered_caret = self.control.GetInsertionPoint()
         self._tracked_length = length
         self._touch_status()
 
@@ -354,9 +374,56 @@ class DocumentMarksMixin:
         store = self.app.document_memory
         try:
             store.set_numbered(key, self.bookmarks.to_records())
-            store.set_last_position(key, self.control.GetInsertionPoint())
+            self._write_caret(key)
         except Exception:  # noqa: BLE001 - never let the store fail a close
             pass
+
+    def on_window_activated(self) -> None:
+        """The first arrival after a restore: scroll to the caret, say a lost place.
+
+        Scrolled again because the window had no size when the caret was put
+        back. The sentence is queued behind what the reader says on arrival
+        (the window and the line), and said once.
+        """
+        note = getattr(self, "_place_on_arrival", None)
+        if note is None:
+            return
+        self._place_on_arrival = None
+        self.control.ShowPosition(self.control.GetInsertionPoint())
+        if note:
+            wx.CallLater(PLACE_NOTE_DELAY_MS, self._announce, note, interrupt=False)
+
+    def remember_caret_if_moved(self) -> None:
+        """Write the cursor position on the autosave tick, when it has moved.
+
+        So a crash, a power cut or a sign-out costs at most one tick of
+        reading position rather than everything since the window opened
+        (FUX-01). Only when it moved, so a window left alone writes nothing.
+        """
+        key = self._memory_key()
+        if key is None or self.control.GetInsertionPoint() == getattr(
+            self, "_remembered_caret", None
+        ):
+            return
+        try:
+            self._write_caret(key)
+        except Exception:  # noqa: BLE001 - a missed write must not interrupt typing
+            pass
+
+    def _write_caret(self, key: str) -> None:
+        """Store the cursor and the text around it, while the text is what is saved.
+
+        With unsaved changes the last place written stays: it is the one that
+        can be found again in the file, and a place in text that is then
+        discarded would be one nothing can check.
+        """
+        position = self.control.GetInsertionPoint()
+        text, saved = self.control.GetValue(), getattr(self, "_clean_text", None)
+        if saved is not None and text != saved:
+            return
+        anchor = anchor_if_saved(text, saved, position)
+        self.app.document_memory.set_last_position(key, position, anchor=anchor)
+        self._remembered_caret = position
 
     # ------------------------------------------------------------------ #
     # Keeping bookmarks honest
