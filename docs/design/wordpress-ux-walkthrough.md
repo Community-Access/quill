@@ -5277,9 +5277,9 @@ The Practice Site is a WordPress site that runs on this computer only (WordPress
 
 - How to reach it: Go menu, Practice Site (Alt+G, R); chord Ctrl+6. Go help "The WordPress site on this computer." Also in the tree as an account-level node.
 - What it lists (columns Fact, Value):
-  - "Playground's tool": the path, or "not in this build".
-  - "Node.js": the path, or "not found".
-  - "WordPress core": the path, or "not bundled".
+  - "Playground's tool": the path, or "Missing".
+  - "Node.js": the path, or "Missing".
+  - "WordPress core": the path (the unpacked folder, or the pinned archive the builds ship), or "Missing".
   - "Running": "yes, at http://127.0.0.1:9400" or "no".
   - "What to do": what is missing, or "Tools > Practice Site starts it."
 - Row menu: kind "fact", so Read in Full and Properties only. Nothing on the node starts or stops the site.
@@ -5297,9 +5297,10 @@ The Practice Site is a WordPress site that runs on this computer only (WordPress
 - Before it opens:
   - If the site had stopped by itself: "The Practice Site stopped. Its saved data is still there."
   - If it is not running and a piece is missing, that sentence is spoken and nothing opens. The sentences:
-    - "The practice site needs WordPress Playground's tool, which this build of QUILL does not include yet. A build made with scripts/fetch_build_deps.py --only wp-playground-cli has it."
-    - "The practice site needs Node.js, which ships with QUILL's shared runtime."
-    - "The practice site needs its pinned WordPress core files in this build of QUILL."
+    - "The Practice Site cannot start. WordPress Playground, the part that runs it, is missing from this copy of the app."
+    - "The Practice Site cannot start. Node.js, which WordPress Playground needs, is missing from this copy of the app."
+    - "The Practice Site cannot start. Its WordPress files are missing from this copy of the app."
+    - Each ends "To fix this, install the app again. If you use the portable version, download it again and unzip it to a new folder." (quill/core/missing_parts.py, 2026-11-23; they used to name the build script.)
 - What opens: a chooser titled "Practice Site", labelled "Do:" (access key D). OK is the default.
   - Help: "A WordPress site on this computer only, for learning with nothing at stake. Reset puts it back as new. Press Enter to choose the selected one."
   - The choices depend on state:

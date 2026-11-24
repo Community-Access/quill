@@ -14,7 +14,7 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 Summary by licence
 ------------------
 
-  MIT License: 62 components
+  MIT License: 63 components
   BSD 3-Clause License: 23 components
   Apache License, version 2.0: 13 components
   Python Software Foundation License, version 2: 6 components
@@ -25,6 +25,7 @@ Summary by licence
   Mozilla Public License, version 2.0: 3 components
   Public domain: 3 components
   ISC License: 2 components
+  GNU Lesser General Public License, version 3: 2 components
   BSD Zero Clause License: 1 component
   GNU Affero General Public License, version 3: 1 component
   BASS licence (Un4seen Developments, proprietary freeware): 1 component
@@ -33,7 +34,6 @@ Summary by licence
   GNU General Public License, version 3: 1 component
   GitHub Copilot CLI License (proprietary): 1 component
   Historical Permission Notice and Disclaimer (HPND): 1 component
-  GNU Lesser General Public License, version 3: 1 component
   MIT No Attribution License: 1 component
   MIT-CMU (the historical PIL licence), with the licences of Pillow's bundled libraries: 1 component
   Microsoft Visual C++ Redistributable licence terms: 1 component
@@ -733,6 +733,28 @@ Copyright: Copyright (c) 2004-2011 Ryan Kelly; Dimitri Merejkowsky and contribut
 Upstream: https://pyenchant.github.io/pyenchant/
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Ship the LGPL text and keep the library a separate, replaceable file. The pruned Enchant payload also ships GLib, libiconv and libintl (LGPL-2.1-or-later), Hunspell (MPL-1.1, GPL-2.0 or LGPL-2.1, at our choice) and PCRE2 (BSD-3-Clause), plus the English Hunspell dictionaries (see Hunspell dictionaries: SCOWL licence). The exact source of each copyleft part is published with each release, in the copyleft source manifest and the archives it names.
+
+PyGithub
+--------
+
+What it is: Talks to GitHub for the GitHub Workbench, Open from GitHub and GitHub accounts.
+Version: 2.10.0
+Licence: LGPL-3.0-or-later
+Copyright: Copyright (c) Vincent Jacques and PyGithub contributors
+Upstream: https://github.com/pygithub/pygithub
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Ship the LGPL text and keep the library a separate, replaceable package (it is plain Python in the bundle).
+
+PyJWT
+-----
+
+What it is: Reads and signs JSON Web Tokens, a dependency of PyGithub.
+Version: 2.15.1
+Licence: MIT
+Copyright: Copyright (c) 2015-2022 Jose Padilla
+Upstream: https://github.com/jpadilla/pyjwt
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
 
 PyMuPDF (with MuPDF)
 --------------------
@@ -4194,7 +4216,7 @@ That's all there is to it!
 GNU Lesser General Public License, version 3
 --------------------------------------------
 
-Used by: pillow-heif.
+Used by: pillow-heif, PyGithub.
 
 What it asks of us: Ship the LGPL-3.0 and GPL-3.0 texts. Keep the library replaceable. Offer the library's source, or point to the exact upstream source of the version we ship.
 
@@ -4367,7 +4389,7 @@ Library.
 MIT License
 -----------
 
-Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, Microsoft Copilot SDK (copilot), GitHub Copilot SDK 1.x (legacy runtime package), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sherpa-onnx (with ONNX Runtime), sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, ripgrep (rg.exe), Dictation models: Moonshine tiny (English), Whisper tiny.en and tiny (ONNX), Silero VAD, ptts (Phonon text-to-speech runtime), Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), BlindRadio network table, Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), Dial tuning hiss (quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav), GitHub REST API description.
+Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, Microsoft Copilot SDK (copilot), GitHub Copilot SDK 1.x (legacy runtime package), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, PyJWT, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sherpa-onnx (with ONNX Runtime), sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, ripgrep (rg.exe), Dictation models: Moonshine tiny (English), Whisper tiny.en and tiny (ONNX), Silero VAD, ptts (Phonon text-to-speech runtime), Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), BlindRadio network table, Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), Dial tuning hiss (quill/assets/audio/dial_hiss_low.wav and dial_hiss_medium.wav), QUILL sound packs (Ink and the indent-tone packs), VS Code accessibility signal sounds (the VS Code Signals sound pack), Weather alert sound (quill/assets/audio/weather_alert.wav), GitHub REST API description.
 
 What it asks of us: Keep the copyright notice and the permission notice with every copy.
 

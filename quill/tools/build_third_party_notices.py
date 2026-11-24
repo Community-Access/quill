@@ -85,6 +85,10 @@ _ALIASES = {
     # The Phonon 31m model and voices, data folder in the shared runtime.
     "phonon-models": "phonon-31m",
     "nacl": "pynacl",
+    "github": "pygithub",
+    "jwt": "pyjwt",
+    # soundfile's wheel puts its libsndfile licence notes in a top-level folder.
+    "licensing": "soundfile",
     "yaml": "pyyaml",
     "wx": "wxpython",
     "enchant": "pyenchant",

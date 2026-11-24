@@ -39,6 +39,7 @@ from quill.core.ai.harness import AgentSpec, AIContext, TurnUsage, supports_app_
 from quill.core.ai.harness.codex import SINGLE_REQUEST_SENTENCE, CodexHarness, CodexToolSession
 from quill.core.ai.permissions import PermissionBroker, PermissionCategory, RiskLevel
 from quill.core.ai.tool_gateway import AgentIdentity
+from quill.core.missing_parts import CODEX_MISSING
 from quill.stability.redaction import format_args_for_log, redact_text_for_bundle
 from quill.stability.safe_subprocess import spawn_subprocess_safely
 
@@ -451,7 +452,7 @@ def test_harness_is_registered_with_the_right_capabilities() -> None:
 
 def test_harness_reports_a_missing_engine_and_refuses_single_requests(tmp_path: Path) -> None:
     harness = CodexHarness(binary_resolver=lambda: None)
-    assert harness.is_available() == (False, "This build does not include the Codex engine.")
+    assert harness.is_available() == (False, CODEX_MISSING)
     events: list[AgentEvent] = []
     session = harness.start_session(
         AgentSpec(id="a", display_name="A", system_prompt=""),

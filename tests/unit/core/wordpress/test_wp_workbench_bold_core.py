@@ -194,7 +194,7 @@ def test_watches_learn_first_then_say_only_what_is_new() -> None:
 def test_the_practice_site_says_what_is_missing_and_builds_its_command(tmp_path) -> None:
     assert "Playground" in missing_words(PracticeTools(None, None))
     no_core = PracticeTools(tmp_path / "node.exe", tmp_path / "cli.js")
-    assert "WordPress core" in missing_words(no_core)
+    assert "WordPress files" in missing_words(no_core)
     core = tmp_path / "core"
     core.mkdir()
     (core / "wp-load.php").write_text("<?php", encoding="utf-8")

@@ -143,6 +143,10 @@ if (-not (Get-ChildItem 'dist/windows/installer/Output/Quill-for-All-Setup-*.exe
 }
 ```
 
+### QUILL Lite portable: everything QUILL Lite offers (2026-11-23)
+
+The portable zip now carries every optional group and runtime tool QUILL Lite's menus use, the same as its installer gets from the shared runtime. Which ones, and why each, is `quill/core/lite/portable_needs.py`; `tests/unit/scripts/test_lite_portable_needs.py` fails when a new menu, a new runtime group or a new runtime tool has not been classified there, and when the `quilllite` product in `build_portable.py` disagrees with it. The tools (Copilot, Codex, Node.js, the language servers and WordPress Playground) are copied from the pinned `build\deps` cache into the portable's `tools\`; `build_release.ps1` runs `scripts\fetch_build_deps.py` for them first, and `build_portable.py` fails if a folder or a required file is missing, then runs QUILL's own finders inside the bundle to prove the app sees each one. The language servers' deepest file is 157 characters below `tools\`, so the copy uses `\\?\` paths; unzip the portable into a short folder.
+
 ### QUILL Lite portable: the PDF reader and OCR (first build after 2026-10-17)
 
 The QUILL Lite portable ZIP now installs two more dependency groups, `office-text` (pdfplumber, which brings pdfminer.six and pypdfium2, plus pypdf and openpyxl) and `ocr` (the `winrt` Windows.Media.Ocr projection), so a portable copy opens PDFs and reads scanned pages the way the installed copy always has.

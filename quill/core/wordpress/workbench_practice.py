@@ -135,15 +135,15 @@ class PracticeTools:
     wordpress_archive: Path | None = None
 
     @property
-    def ready(self) -> bool:
-        return (
-            self.node is not None
-            and self.cli is not None
-            and (
-                (self.wordpress is not None and (self.wordpress / "wp-load.php").is_file())
-                or (self.wordpress_archive is not None and self.wordpress_archive.is_file())
-            )
+    def has_wordpress(self) -> bool:
+        """Whether the pinned WordPress is here, unpacked or as its archive."""
+        return (self.wordpress is not None and (self.wordpress / "wp-load.php").is_file()) or (
+            self.wordpress_archive is not None and self.wordpress_archive.is_file()
         )
+
+    @property
+    def ready(self) -> bool:
+        return self.node is not None and self.cli is not None and self.has_wordpress
 
 
 def _tools_dirs(name: str) -> list[Path]:
@@ -191,21 +191,29 @@ def find_cli() -> PracticeTools:
     return PracticeTools(node, cli, wordpress, wordpress_archive)
 
 
+#: Each missing part, said to the person who pressed Practice Site. Every copy
+#: of both editors ships all three (the installer through the shared runtime,
+#: the portable zip in its own tools folder), so one of these means a damaged
+#: copy, and the only useful advice is how to get a whole one back. They used
+#: to name the build script and its flags (2026-11-23).
+_CANNOT_START = "The Practice Site cannot start"
+_NO_PLAYGROUND = "WordPress Playground, the part that runs it, is missing from this copy of the app"
+_NO_NODE = "Node.js, which WordPress Playground needs, is missing from this copy of the app"
+_NO_WORDPRESS = "Its WordPress files are missing from this copy of the app"
+
+
 def missing_words(tools: PracticeTools) -> str:
+    """Why the Practice Site cannot start, in words for its user ("" when it can)."""
+    from quill.core.missing_parts import missing_part
+
     if tools.ready:
         return ""
     if tools.cli is None:
-        return (
-            "The practice site needs WordPress Playground's tool, which this build of QUILL "
-            "does not include yet. A build made with scripts/fetch_build_deps.py --only "
-            "wp-playground-cli has it."
-        )
+        return missing_part(_CANNOT_START, _NO_PLAYGROUND)
     if tools.node is None:
-        return "The practice site needs Node.js, which ships with QUILL's shared runtime."
-    if (tools.wordpress is None or not (tools.wordpress / "wp-load.php").is_file()) and (
-        tools.wordpress_archive is None or not tools.wordpress_archive.is_file()
-    ):
-        return "The practice site needs its pinned WordPress core files in this build of QUILL."
+        return missing_part(_CANNOT_START, _NO_NODE)
+    if not tools.has_wordpress:
+        return missing_part(_CANNOT_START, _NO_WORDPRESS)
     return ""
 
 

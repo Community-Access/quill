@@ -55,6 +55,7 @@ from quill import __version__
 from quill.core.ai.agent_workdir import AgentFolders
 from quill.core.ai.codex_binary import codex_app_server_matches_pin, find_codex_app_server
 from quill.core.error_codes import CodedError
+from quill.core.missing_parts import CODEX_MISSING
 from quill.stability.redaction import (
     redact_known_secrets,
     redact_source_tokens,
@@ -433,7 +434,7 @@ class CodexAppServer:
             raise CodexError("This app is not signed in with ChatGPT.")
         binary = self._resolve_binary()
         if binary is None:
-            raise CodexBinaryError("This build does not include the Codex engine.")
+            raise CodexBinaryError(CODEX_MISSING)
         if not self._pin_check(binary):
             raise CodexBinaryError(
                 "The Codex engine on this computer is not the one this release "

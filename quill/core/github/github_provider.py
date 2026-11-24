@@ -20,6 +20,7 @@ from quill.core.github.models import (
     RemoteRepository,
 )
 from quill.core.github.provider import RemoteProvider
+from quill.core.missing_parts import missing_part
 
 _GITHUB_FILE_SIZE_LIMIT = 1_000_000  # bytes; GitHub's file-contents API limit
 
@@ -30,15 +31,20 @@ class GitHubDependencyError(CodedError):
     code = "QUILL-GITHUB-DEPENDENCY-MISSING"
 
 
+#: Said when PyGithub is missing. Every copy of QUILL and QUILL Lite ships it,
+#: so this means a damaged copy; it used to tell the reader to run pip.
+_MISSING_WORDS = missing_part(
+    "GitHub features are not available",
+    "A part they need is missing from this copy of the app",
+)
+
+
 def require_pygithub() -> None:
     """Raise :class:`GitHubDependencyError` if PyGithub is not installed."""
     try:
         import github  # noqa: F401
     except ImportError as exc:
-        raise GitHubDependencyError(
-            "PyGithub is required for GitHub integration.\n"
-            'Install it with:  pip install "quill[github]"'
-        ) from exc
+        raise GitHubDependencyError(_MISSING_WORDS) from exc
 
 
 def _get_gh_module() -> Any:
@@ -47,9 +53,7 @@ def _get_gh_module() -> Any:
 
         return github
     except ImportError as exc:
-        raise GitHubDependencyError(
-            'PyGithub is not installed. Run: pip install "quill[github]"'
-        ) from exc
+        raise GitHubDependencyError(_MISSING_WORDS) from exc
 
 
 def _looks_binary(data: bytes, *, sample: int = 8000) -> bool:

@@ -17,6 +17,7 @@ from pathlib import Path
 
 from quill.core.ai.codex_binary import file_sha256
 from quill.core.error_codes import CodedError
+from quill.core.missing_parts import COPILOT_MISSING, REPAIR_SENTENCE
 
 __all__ = [
     "COPILOT_RUNTIME_VERSION",
@@ -49,14 +50,14 @@ class CopilotRuntimeUnavailable(CodedError):
     """The pinned in-process runtime is not installed with this app."""
 
     code = "QUILL-AI-COPILOT-RUNTIME-UNAVAILABLE"
-    user_hint = "Repair or reinstall the QuillVille runtime to enable Copilot."
+    user_hint = REPAIR_SENTENCE
 
 
 class CopilotRuntimeUnverified(CodedError):
     """The runtime file does not match the version this app ships."""
 
     code = "QUILL-AI-COPILOT-RUNTIME-UNVERIFIED"
-    user_hint = "Repair or reinstall the QuillVille runtime to restore Copilot."
+    user_hint = REPAIR_SENTENCE
 
 
 def copilot_runtime_search_dirs() -> list[Path]:
@@ -132,10 +133,7 @@ def runtime_path_for_launch() -> Path:
 
     runtime = find_copilot_runtime()
     if runtime is None:
-        raise CopilotRuntimeUnavailable(
-            "The in-process Copilot runtime is not installed. Reinstall the "
-            "QuillVille runtime; QUILL will not download it automatically."
-        )
+        raise CopilotRuntimeUnavailable(COPILOT_MISSING)
     if not copilot_runtime_matches_pin(runtime):
         raise CopilotRuntimeUnverified(
             f"The bundled Copilot runtime at {runtime} does not match version "

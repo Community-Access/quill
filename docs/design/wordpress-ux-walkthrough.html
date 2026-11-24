@@ -12896,9 +12896,10 @@ help “The WordPress site on this computer.” Also in the tree as an
 account-level node.</li>
 <li>What it lists (columns Fact, Value):
 <ul>
-<li>“Playground’s tool”: the path, or “not in this build”.</li>
-<li>“Node.js”: the path, or “not found”.</li>
-<li>“WordPress core”: the path, or “not bundled”.</li>
+<li>“Playground’s tool”: the path, or “Missing”.</li>
+<li>“Node.js”: the path, or “Missing”.</li>
+<li>“WordPress core”: the path (the unpacked folder, or the pinned
+archive the builds ship), or “Missing”.</li>
 <li>“Running”: “yes, at <a
 href="http://127.0.0.1:9400">http://127.0.0.1:9400</a>” or “no”.</li>
 <li>“What to do”: what is missing, or “Tools &gt; Practice Site starts
@@ -12936,13 +12937,16 @@ saved data is still there.”</li>
 <li>If it is not running and a piece is missing, that sentence is spoken
 and nothing opens. The sentences:
 <ul>
-<li>“The practice site needs WordPress Playground’s tool, which this
-build of QUILL does not include yet. A build made with
-scripts/fetch_build_deps.py –only wp-playground-cli has it.”</li>
-<li>“The practice site needs Node.js, which ships with QUILL’s shared
-runtime.”</li>
-<li>“The practice site needs its pinned WordPress core files in this
-build of QUILL.”</li>
+<li>“The Practice Site cannot start. WordPress Playground, the part that
+runs it, is missing from this copy of the app.”</li>
+<li>“The Practice Site cannot start. Node.js, which WordPress Playground
+needs, is missing from this copy of the app.”</li>
+<li>“The Practice Site cannot start. Its WordPress files are missing
+from this copy of the app.”</li>
+<li>Each ends “To fix this, install the app again. If you use the
+portable version, download it again and unzip it to a new folder.”
+(quill/core/missing_parts.py, 2026-11-23; they used to name the build
+script.)</li>
 </ul></li>
 </ul></li>
 <li>What opens: a chooser titled “Practice Site”, labelled “Do:” (access

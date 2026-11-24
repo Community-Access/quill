@@ -26,12 +26,14 @@
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-Iscc <path>]
 #                               [-SkipSharedRuntime] [-Sign]
 #
-# QUILL Lite is a text editor: no ffmpeg, no libmpv, no media, AI or speech
-# stacks -- so, unlike Quill Radio's build, there is nothing to stage under its
-# own tools\. -FfmpegDir/-LibmpvDir are still accepted so an existing build
-# command keeps working; they are unused here. Pass -SkipSharedRuntime to reuse
-# a runtime another app already built. Everything is bundled; the installer
-# and the zip perform no downloads.
+# QUILL Lite uses no ffmpeg and no libmpv. -FfmpegDir/-LibmpvDir are still
+# accepted so an existing build command keeps working; they are unused here.
+# It does use five of the shared runtime's tools (Copilot, Codex, Node.js, the
+# language servers and WordPress Playground): the installer gets them from the
+# runtime, and the portable zip carries its own copy in tools\, staged from the
+# same pinned build\deps cache (quill\core\lite\portable_needs.py says which
+# and why). Pass -SkipSharedRuntime to reuse a runtime another app already
+# built. Everything is bundled; the installer and the zip perform no downloads.
 
 param(
     [string]$Python = "",
@@ -159,11 +161,23 @@ $dictationPython = Join-Path $QuillRepo "build\dictation-python"
 & $Python (Join-Path $QuillRepo "scripts\fetch_dictation_models.py") --out $modelsDir --package-out $dictationPython
 if ($LASTEXITCODE -ne 0) { throw "Dictation models are missing or failed verification." }
 
+# -- the runtime tools the portable carries too -------------------------------
+# The same pinned, verified cache stage_runtime_tools.ps1 fills the shared
+# runtime from; a component already complete there is not fetched again, so
+# after a runtime build this only checks. build_portable.py fails if any is
+# missing, and its list must match this one (test_lite_portable_needs.py).
+$portableTools = @("codex", "copilot", "language-servers", "nodejs", "wp-playground-cli")
+$fetchArgs = @()
+foreach ($tool in $portableTools) { $fetchArgs += @("--only", $tool) }
+& $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") @fetchArgs
+if ($LASTEXITCODE -ne 0) { throw "Could not stage the portable's runtime tools (see scripts/fetch_build_deps.py)." }
+
 # -- portable bundle (self-contained, genuine embeddable runtime) -------------
 # NOT a PyInstaller onedir and NOT a stamped pythonw.exe. See build_portable.py
 # and docs/design/native-launcher-2026-07-24.md: genuine unmodified
 # python.exe/pythonw.exe + the native C launcher (QuillLite.exe) spawning
-# `pythonw.exe -m quill.apps.lite`. QUILL Lite is small -- no ffmpeg/mpv/engines.
+# `pythonw.exe -m quill.apps.lite`. No ffmpeg, mpv or speech engines; the
+# runtime tools above go in its tools\.
 $appDir = Join-Path $repoRoot "dist\QuillLite"
 & $Python (Join-Path $QuillRepo "standalone\studio\scripts\build_portable.py") `
     --product quilllite `

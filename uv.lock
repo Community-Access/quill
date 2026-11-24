@@ -5571,6 +5571,9 @@ ai-openai = [
 audio = [
     { name = "sound-lib" },
 ]
+audio-files = [
+    { name = "soundfile" },
+]
 dev = [
     { name = "babel" },
     { name = "hypothesis" },
@@ -5888,6 +5891,7 @@ requires-dist = [
     { name = "sounddevice", marker = "extra == 'live-dictation'", specifier = ">=0.5.6" },
     { name = "sounddevice", marker = "extra == 'runtime'", specifier = ">=0.5.6" },
     { name = "sounddevice", marker = "extra == 'speech'", specifier = ">=0.5.6" },
+    { name = "soundfile", marker = "extra == 'audio-files'", specifier = ">=0.14.0" },
     { name = "soundfile", marker = "extra == 'kokoro'", specifier = ">=0.14.0" },
     { name = "soundfile", marker = "extra == 'runtime'", specifier = ">=0.14.0" },
     { name = "speechrecognition", marker = "extra == 'dictation'", specifier = ">=3.17.0" },
@@ -5936,7 +5940,7 @@ requires-dist = [
     { name = "yt-dlp-ejs", marker = "extra == 'runtime'", specifier = "==0.8.0" },
     { name = "yt-dlp-ejs", marker = "extra == 'youtube'", specifier = "==0.8.0" },
 ]
-provides-extras = ["ai", "ai-claude", "ai-copilot", "ai-openai", "audio", "dev", "dictation", "docx", "elevenlabs", "fasterwhisper", "github", "glow", "kokoro", "live-dictation", "mac", "macos", "math", "mp3", "native-build", "nemotron", "ocr", "office-text", "packaging", "pages", "pdf-ocr", "rapidfuzz", "runtime", "signing", "social-app", "speech", "spellcheck", "ssh", "tts-phonon", "ui", "vosk", "windows-media", "youtube"]
+provides-extras = ["ai", "ai-claude", "ai-copilot", "ai-openai", "audio", "audio-files", "dev", "dictation", "docx", "elevenlabs", "fasterwhisper", "github", "glow", "kokoro", "live-dictation", "mac", "macos", "math", "mp3", "native-build", "nemotron", "ocr", "office-text", "packaging", "pages", "pdf-ocr", "rapidfuzz", "runtime", "signing", "social-app", "speech", "spellcheck", "ssh", "tts-phonon", "ui", "vosk", "windows-media", "youtube"]
 
 [[package]]
 name = "quill-glow-core"

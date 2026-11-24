@@ -2,6 +2,33 @@
 
 ## 1.0.0
 
+### QUILL Lite's portable copy does everything the installed one does (2026-11-23)
+
+The portable zip of QUILL Lite left out parts the installed copy has always
+had, so several of its menus did nothing useful when run from a stick. It now
+carries all of them:
+
+- **Spell check** with the full dictionaries and other languages, not just a
+  word list.
+- **The GitHub Workbench**, Clone Repository and GitHub accounts.
+- **AI help with GitHub Copilot or ChatGPT (Codex)**, and project tasks in the
+  Developer profile.
+- **Language servers** (Navigate > Code): suggestions and problems for code.
+- **The WordPress Practice Site**, a WordPress on your own computer.
+- **Sounds** that can overlap and follow your volume setting, and **App Sounds
+  Play On**, which now lists your sound cards.
+- **Play Media Here** for WordPress media, through Windows Media.
+- **Equations as MathML** when you export Markdown as a web page.
+- **Ogg and Opus recordings** in Transcribe a Recording.
+
+The zip is larger because of it. Nothing downloads when you first use any of
+these.
+
+When one of these parts is missing from a copy of QUILL or QUILL Lite, the
+app now says so in plain words, and says to install the app again or unzip a
+fresh portable download into a new folder. It used to name build scripts and
+`pip` commands.
+
 ### Scribe for Documents: Jeff's three answers (2026-11-23)
 
 - **The browser waits for its sentence.** When Open Result shows the offline

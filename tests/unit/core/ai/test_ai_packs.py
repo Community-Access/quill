@@ -82,7 +82,7 @@ def test_packs_report_status_consistently() -> None:
         if available:
             assert reason is None
         else:
-            expected = "Copilot runtime" if pack_is_bundled(pack.id) else pack.extra
+            expected = "GitHub Copilot cannot start" if pack_is_bundled(pack.id) else pack.extra
             assert reason is not None and expected in reason
 
 

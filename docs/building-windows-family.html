@@ -475,6 +475,26 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="st">&#39;Missing QUILL for All installer&#39;</span></span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h3
+id="quill-lite-portable-everything-quill-lite-offers-2026-11-23">QUILL
+Lite portable: everything QUILL Lite offers (2026-11-23)</h3>
+<p>The portable zip now carries every optional group and runtime tool
+QUILL Lite’s menus use, the same as its installer gets from the shared
+runtime. Which ones, and why each, is
+<code>quill/core/lite/portable_needs.py</code>;
+<code>tests/unit/scripts/test_lite_portable_needs.py</code> fails when a
+new menu, a new runtime group or a new runtime tool has not been
+classified there, and when the <code>quilllite</code> product in
+<code>build_portable.py</code> disagrees with it. The tools (Copilot,
+Codex, Node.js, the language servers and WordPress Playground) are
+copied from the pinned <code>build\deps</code> cache into the portable’s
+<code>tools\</code>; <code>build_release.ps1</code> runs
+<code>scripts\fetch_build_deps.py</code> for them first, and
+<code>build_portable.py</code> fails if a folder or a required file is
+missing, then runs QUILL’s own finders inside the bundle to prove the
+app sees each one. The language servers’ deepest file is 157 characters
+below <code>tools\</code>, so the copy uses <code>\\?\</code> paths;
+unzip the portable into a short folder.</p>
+<h3
 id="quill-lite-portable-the-pdf-reader-and-ocr-first-build-after-2026-10-17">QUILL
 Lite portable: the PDF reader and OCR (first build after
 2026-10-17)</h3>

@@ -514,12 +514,17 @@ class WorkbenchBoldCommands(
         tools = find_cli()
         process = getattr(self, "_practice", None)
         running = process is not None and process.poll() is None
+        # "Missing", not "not in this build" / "not bundled": the label names
+        # the part, and "What to do" says how to get it back. WordPress ships
+        # as its pinned archive, so the row names that when nothing is
+        # unpacked -- it said "not bundled" beside a ready site.
+        wordpress = tools.wordpress or tools.wordpress_archive
         return fact_rows(
             "",
             [
-                ("Playground's tool", str(tools.cli) if tools.cli else "not in this build"),
-                ("Node.js", str(tools.node) if tools.node else "not found"),
-                ("WordPress core", str(tools.wordpress) if tools.wordpress else "not bundled"),
+                ("Playground's tool", str(tools.cli) if tools.cli else "Missing"),
+                ("Node.js", str(tools.node) if tools.node else "Missing"),
+                ("WordPress core", str(wordpress) if tools.has_wordpress else "Missing"),
                 ("Running", f"yes, at {site_url()}" if running else "no"),
                 ("What to do", missing_words(tools) or "Tools > Practice Site starts it."),
             ],
