@@ -19,10 +19,6 @@ from quill.core.scribe.model import DocumentSummary
 pytestmark = pytest.mark.usefixtures("wx_session_app")
 
 
-def _now(fn: Any, *args: Any) -> None:
-    fn(*args)
-
-
 def _later(_ms: int, fn: Any, *args: Any) -> None:
     fn(*args)
 
@@ -86,7 +82,7 @@ class _Entry:
 
 
 def test_rename_over_the_limit_asks_again_with_the_name_kept(
-    monkeypatch: pytest.MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch, wx_call_after: Any
 ) -> None:
     import wx
 
@@ -96,7 +92,7 @@ def test_rename_over_the_limit_asks_again_with_the_name_kept(
     _Entry.answers = [too_long, "Garden handbook"]
     _Entry.asked = []
     monkeypatch.setattr(module.wx, "TextEntryDialog", _Entry)
-    monkeypatch.setattr(module.wx, "CallAfter", _now)
+    wx_call_after()  # inline
     monkeypatch.setattr(module, "show_modal_dialog", lambda *_a: wx.ID_OK)
     monkeypatch.setattr(module, "_select_all", lambda _d: None)
     acted: list[str] = []
