@@ -16,7 +16,11 @@ or Escape now keeps your place, as closing the window always did.
 
 ### GitHub Workbench: workflows, templates, Dependabot, CODEOWNERS, people, settings and packages across repositories (2026-11-24)
 
-Across Repositories now has a place for every kind in its table (GH-R-150).
+Across Repositories now has a place for every kind in its table (GH-R-150):
+Planning by Name, Code by Name, Actions by Name, Files by Name and Settings by
+Name. Rows are grouped by what the person is doing, and each one names its
+variants, the repositories that have each variant, what is missing and what
+GitHub did not let the signed-in account read.
 
 - **Workflows by Name** (under Actions by Name) lists each workflow file and
   how many versions of it the set has: "ci.yml: in 12 of 12 repositories, 3
@@ -30,18 +34,28 @@ Across Repositories now has a place for every kind in its table (GH-R-150).
   repositories' copies in the Compare Configuration window. **Make Them the
   Same** and **Add to Missing** open one pull request in each repository with
   the winning version. Nothing is pushed, and nothing changes until each pull
-  request is merged.
+  request is merged. Every proposal re-reads the full source and target blob
+  IDs first: if either file changed, became unreadable, or is no longer valid
+  UTF-8 text, QUILL says which repository and leaves its default branch alone.
 - **Repository Settings by Name** (under Settings by Name) lists each switch
   on the Repository sheet's Features and Merging pages: "Allow auto-merge: on
-  in 20, off in 8". **Make Them the Same** sets the winning value in each
-  repository after the preview. It needs Full in the Workbench and admin
-  access in each repository, and Change History can put each one back.
+  in 20, off in 8". "Not shown to you" is kept separate from off. **Make Them
+  the Same** sets the winning value in each repository after the preview. It
+  needs Full in the Workbench and admin access in each repository, and Change
+  History can put each one back.
 - **People by Name** (under Settings by Name) shows each person's role in each
   repository and where it comes from. It is read only; Bulk Access Changes
-  changes access in many repositories.
+  changes access in many repositories. Collaborator lists are read through
+  every page, so a person on page two is not missing from the comparison.
 - **Packages by Name** (under Code by Name) lists each package published from
   the set, with its type and visibility. It is read only, because GitHub's
-  API cannot change a package's visibility or access.
+  API cannot change a package's visibility or access. Each owner is read once,
+  and every package page is included.
+
+All of this uses the same preview and one-result-per-repository contract as
+the Across Repositories places already there. The requirement audit now
+counts 99 of 100 requirements met; only GH-R-119's timed find-the-answer
+sessions with people remain.
 
 ### Back to the sentence you left, in QUILL and QUILL Lite (2026-11-24)
 

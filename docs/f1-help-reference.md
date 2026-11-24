@@ -2795,7 +2795,7 @@ Control coverage: 408 audited sites (408 helped).
 
 **Rules and Branch Protection.** Rules and Branch Protection: each ruleset by name, and each default branch's protection, compared across the set. Make them the same as the winner, add a ruleset where it is missing, or promote one to an organization ruleset; each needs admin access and shows a preview first.
 
-**Packages by Name.** Packages by Name: each package published from the set, its type, visibility and repository. Read only, because GitHub does not let apps change a package's visibility or access.
+**Packages by Name.** Packages by Name: each package published from the set, its type, visibility and repository. Read only, because GitHub does not let apps change a package's visibility or access. Each owner is read once and every package page is included.
 
 **Actions by Name.** Actions by Name: environments, secrets, variables and workflows, each by name across the set. Reading environments, secrets and variables needs admin access in each repository.
 
@@ -2805,15 +2805,15 @@ Control coverage: 408 audited sites (408 helped).
 
 **Variables by Name.** Variables by Name: each Actions variable and its values across the set. Make them the same, add the missing, delete everywhere, or promote to one organization variable for those repositories.
 
-**Workflows by Name.** Workflows by Name: each workflow file across the set and its versions. Compare Configuration shows two copies' differences; Make Them the Same and Add to Missing propose the winning version as one pull request in each repository.
+**Workflows by Name.** Workflows by Name: each workflow file across the set and its versions. Compare Configuration shows two copies' differences; Make Them the Same and Add to Missing propose the winning version as one pull request in each repository. Nothing is pushed. The full source and target blob ids are checked again before a proposal; a changed or unreadable file is named and left alone.
 
 **Files by Name.** Files by Name: templates and community files, Dependabot and CODEOWNERS, each by file name across the set; workflows are under Actions by Name. A file is changed only by a pull request in each repository, never pushed.
 
-**Templates by Name.** Templates by Name: issue and pull request templates, discussion forms and community files such as CONTRIBUTING, each by file name with its versions. Compare, make them the same or add the missing ones, each as a pull request to review.
+**Templates by Name.** Templates by Name: issue and pull request templates, discussion forms and community files such as CONTRIBUTING, each by file name with its versions. Compare, make them the same or add the missing ones, each as a pull request to review. The selected source and each target are checked again before the proposal is made.
 
-**Dependabot by Name.** Dependabot by Name: each repository's dependabot.yml, its versions and its update entries. Compare, make them the same or add it where missing, each as a pull request to review.
+**Dependabot by Name.** Dependabot by Name: each repository's dependabot.yml, its versions and its update entries. Compare, make them the same or add it where missing, each as a pull request to review. A changed source or target is left alone rather than proposed with unexpected contents.
 
-**CODEOWNERS by Name.** CODEOWNERS by Name: the CODEOWNERS file GitHub uses in each repository, its versions, rules and owners. Compare, make them the same or add it where missing, each as a pull request to review.
+**CODEOWNERS by Name.** CODEOWNERS by Name: the CODEOWNERS file GitHub uses in each repository, its versions, rules and owners. Compare, make them the same or add it where missing, each as a pull request to review. The source and target are checked again by their full blob ids before the proposal is made.
 
 **Settings by Name.** Settings by Name: webhooks, deploy keys, autolinks, repository settings and people, each by name across the set. Webhooks, deploy keys and autolinks need admin access to read.
 
@@ -2823,9 +2823,9 @@ Control coverage: 408 audited sites (408 helped).
 
 **Autolinks by Name.** Autolinks by Name: each autolink by its prefix, with its address. Add the missing or delete everywhere; GitHub cannot change an autolink in place.
 
-**Repository Settings by Name.** Repository Settings by Name: each switch on the Repository sheet's Features and Merging pages, on in how many repositories and off in how many. Make Them the Same sets the winning value everywhere after the preview; it needs admin access in each repository.
+**Repository Settings by Name.** Repository Settings by Name: each switch on the Repository sheet's Features and Merging pages, on in how many repositories and off in how many. Make Them the Same sets the winning value everywhere after the preview; it needs admin access in each repository. A setting GitHub did not show is not counted as off, and Change History can put a changed setting back.
 
-**People by Name.** People by Name: each person with access across the set, their role in each repository and where it comes from, and where they have none. Read only; Bulk Access Changes changes access in many repositories.
+**People by Name.** People by Name: each person with access across the set, their role in each repository and where it comes from, and where they have none. Read only; Bulk Access Changes changes access in many repositories. Every collaborator page is read; no access is kept separate from a repository that could not be read.
 
 **Fleet.** Fleet: one line per repository in the set: the exact revision of its default branch, checks, open pull requests, latest release and alerts, and when it was read. A repository that could not be read keeps its line, with the reason.
 

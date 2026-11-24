@@ -136,38 +136,45 @@ ACROSS_NODE_HELP: dict[str, str] = {
     ":across_by_workflows": (
         "Workflows by Name: each workflow file across the set and its versions. Compare "
         "Configuration shows two copies' differences; Make Them the Same and Add to Missing "
-        "propose the winning version as one pull request in each repository."
+        "propose the winning version as one pull request in each repository. Nothing is "
+        "pushed. The full source and target blob ids are checked again before a proposal; "
+        "a changed or unreadable file is named and left alone."
     ),
     ":across_by_templates": (
         "Templates by Name: issue and pull request templates, discussion forms and community "
         "files such as CONTRIBUTING, each by file name with its versions. Compare, make them "
-        "the same or add the missing ones, each as a pull request to review."
+        "the same or add the missing ones, each as a pull request to review. The selected "
+        "source and each target are checked again before the proposal is made."
     ),
     ":across_by_dependabot": (
         "Dependabot by Name: each repository's dependabot.yml, its versions and its update "
         "entries. Compare, make them the same or add it where missing, each as a pull "
-        "request to review."
+        "request to review. A changed source or target is left alone rather than proposed "
+        "with unexpected contents."
     ),
     ":across_by_codeowners": (
         "CODEOWNERS by Name: the CODEOWNERS file GitHub uses in each repository, its versions, "
         "rules and owners. Compare, make them the same or add it where missing, each as a "
-        "pull request to review."
+        "pull request to review. The source and target are checked again by their full blob "
+        "ids before the proposal is made."
     ),
     ":across_by_people": (
         "People by Name: each person with access across the set, their role in each "
         "repository and where it comes from, and where they have none. Read only; Bulk "
-        "Access Changes changes access in many repositories."
+        "Access Changes changes access in many repositories. Every collaborator page is "
+        "read; no access is kept separate from a repository that could not be read."
     ),
     ":across_by_settings": (
         "Repository Settings by Name: each switch on the Repository sheet's Features and "
         "Merging pages, on in how many repositories and off in how many. Make Them the Same "
         "sets the winning value everywhere after the preview; it needs admin access in each "
-        "repository."
+        "repository. A setting GitHub did not show is not counted as off, and Change History "
+        "can put a changed setting back."
     ),
     ":across_by_packages": (
         "Packages by Name: each package published from the set, its type, visibility and "
         "repository. Read only, because GitHub does not let apps change a package's "
-        "visibility or access."
+        "visibility or access. Each owner is read once and every package page is included."
     ),
     ":across_fleet": (
         "Fleet: one line per repository in the set: the exact revision of its default "

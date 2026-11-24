@@ -1734,6 +1734,34 @@ backlog.</td>
 </tr>
 </tbody>
 </table>
+<h4 id="gh-r-150-delivery-evidence">GH-R-150 delivery evidence</h4>
+<p>The implementation covers the collection, review, safety and result
+paths as separate cases:</p>
+<ol type="1">
+<li><strong>Complete discovery.</strong> Collaborators and packages are
+paginated past 100; the owner of several selected repositories is read
+once for packages. A repository that cannot be read is kept in
+<code>unread</code> rather than counted as missing.</li>
+<li><strong>Exact file identity.</strong> File variants use GitHub’s
+full blob id, not a shortened display id. The source and each target are
+fetched again before a proposed update, and their blob ids and UTF-8
+contents must still be readable. A changed or malformed response blocks
+that repository’s proposal.</li>
+<li><strong>One pull request per repository.</strong> Make Them the Same
+and Add to Missing create reviewable pull requests; neither operation
+writes to a default branch. The tests prove that a stale target creates
+no pull request and that a changed source is refused for every
+target.</li>
+<li><strong>Read-only and permission boundaries.</strong> People and
+Packages do not expose write operations. Repository Settings require
+admin access, “not shown” stays separate from off, and a setting is read
+again before it is changed.</li>
+<li><strong>Screen-reader result.</strong> The Workbench keeps
+category-first rows in place, names blocked and missing repositories,
+and returns one result per repository. The focused UI tests drive the
+real Workbench frame over recorded answers; the dialog inventory and
+contract gate stay green.</li>
+</ol>
 </main>
 </body>
 </html>

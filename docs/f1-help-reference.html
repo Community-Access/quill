@@ -6498,7 +6498,7 @@ needs admin access and shows a preview first.</p>
 <p><strong>Packages by Name.</strong> Packages by Name: each package
 published from the set, its type, visibility and repository. Read only,
 because GitHub does not let apps change a package’s visibility or
-access.</p>
+access. Each owner is read once and every package page is included.</p>
 <p><strong>Actions by Name.</strong> Actions by Name: environments,
 secrets, variables and workflows, each by name across the set. Reading
 environments, secrets and variables needs admin access in each
@@ -6519,7 +6519,9 @@ those repositories.</p>
 <p><strong>Workflows by Name.</strong> Workflows by Name: each workflow
 file across the set and its versions. Compare Configuration shows two
 copies’ differences; Make Them the Same and Add to Missing propose the
-winning version as one pull request in each repository.</p>
+winning version as one pull request in each repository. Nothing is
+pushed. The full source and target blob ids are checked again before a
+proposal; a changed or unreadable file is named and left alone.</p>
 <p><strong>Files by Name.</strong> Files by Name: templates and
 community files, Dependabot and CODEOWNERS, each by file name across the
 set; workflows are under Actions by Name. A file is changed only by a
@@ -6527,15 +6529,19 @@ pull request in each repository, never pushed.</p>
 <p><strong>Templates by Name.</strong> Templates by Name: issue and pull
 request templates, discussion forms and community files such as
 CONTRIBUTING, each by file name with its versions. Compare, make them
-the same or add the missing ones, each as a pull request to review.</p>
+the same or add the missing ones, each as a pull request to review. The
+selected source and each target are checked again before the proposal is
+made.</p>
 <p><strong>Dependabot by Name.</strong> Dependabot by Name: each
 repository’s dependabot.yml, its versions and its update entries.
 Compare, make them the same or add it where missing, each as a pull
-request to review.</p>
+request to review. A changed source or target is left alone rather than
+proposed with unexpected contents.</p>
 <p><strong>CODEOWNERS by Name.</strong> CODEOWNERS by Name: the
 CODEOWNERS file GitHub uses in each repository, its versions, rules and
 owners. Compare, make them the same or add it where missing, each as a
-pull request to review.</p>
+pull request to review. The source and target are checked again by their
+full blob ids before the proposal is made.</p>
 <p><strong>Settings by Name.</strong> Settings by Name: webhooks, deploy
 keys, autolinks, repository settings and people, each by name across the
 set. Webhooks, deploy keys and autolinks need admin access to read.</p>
@@ -6555,11 +6561,13 @@ GitHub cannot change an autolink in place.</p>
 Name: each switch on the Repository sheet’s Features and Merging pages,
 on in how many repositories and off in how many. Make Them the Same sets
 the winning value everywhere after the preview; it needs admin access in
-each repository.</p>
+each repository. A setting GitHub did not show is not counted as off,
+and Change History can put a changed setting back.</p>
 <p><strong>People by Name.</strong> People by Name: each person with
 access across the set, their role in each repository and where it comes
 from, and where they have none. Read only; Bulk Access Changes changes
-access in many repositories.</p>
+access in many repositories. Every collaborator page is read; no access
+is kept separate from a repository that could not be read.</p>
 <p><strong>Fleet.</strong> Fleet: one line per repository in the set:
 the exact revision of its default branch, checks, open pull requests,
 latest release and alerts, and when it was read. A repository that could

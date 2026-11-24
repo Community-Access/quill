@@ -1427,7 +1427,8 @@ first.</td>
 <td>across_code</td>
 <td>Packages by Name: each package published from the set, its type,
 visibility and repository. Read only, because GitHub does not let apps
-change a package’s visibility or access.</td>
+change a package’s visibility or access. Each owner is read once and
+every package page is included.</td>
 </tr>
 <tr>
 <td>Actions by Name (<code>:across_actions</code>)</td>
@@ -1465,7 +1466,9 @@ to one organization variable for those repositories.</td>
 <td>Workflows by Name: each workflow file across the set and its
 versions. Compare Configuration shows two copies’ differences; Make Them
 the Same and Add to Missing propose the winning version as one pull
-request in each repository.</td>
+request in each repository. Nothing is pushed. The full source and
+target blob ids are checked again before a proposal; a changed or
+unreadable file is named and left alone.</td>
 </tr>
 <tr>
 <td>Files by Name (<code>:across_files</code>)</td>
@@ -1481,21 +1484,25 @@ repository, never pushed.</td>
 <td>Templates by Name: issue and pull request templates, discussion
 forms and community files such as CONTRIBUTING, each by file name with
 its versions. Compare, make them the same or add the missing ones, each
-as a pull request to review.</td>
+as a pull request to review. The selected source and each target are
+checked again before the proposal is made.</td>
 </tr>
 <tr>
 <td>Dependabot by Name (<code>:across_by_dependabot</code>)</td>
 <td>across_files</td>
 <td>Dependabot by Name: each repository’s dependabot.yml, its versions
 and its update entries. Compare, make them the same or add it where
-missing, each as a pull request to review.</td>
+missing, each as a pull request to review. A changed source or target is
+left alone rather than proposed with unexpected contents.</td>
 </tr>
 <tr>
 <td>CODEOWNERS by Name (<code>:across_by_codeowners</code>)</td>
 <td>across_files</td>
 <td>CODEOWNERS by Name: the CODEOWNERS file GitHub uses in each
 repository, its versions, rules and owners. Compare, make them the same
-or add it where missing, each as a pull request to review.</td>
+or add it where missing, each as a pull request to review. The source
+and target are checked again by their full blob ids before the proposal
+is made.</td>
 </tr>
 <tr>
 <td>Settings by Name (<code>:across_settings</code>)</td>
@@ -1533,14 +1540,18 @@ in place.</td>
 <td>Repository Settings by Name: each switch on the Repository sheet’s
 Features and Merging pages, on in how many repositories and off in how
 many. Make Them the Same sets the winning value everywhere after the
-preview; it needs admin access in each repository.</td>
+preview; it needs admin access in each repository. A setting GitHub did
+not show is not counted as off, and Change History can put a changed
+setting back.</td>
 </tr>
 <tr>
 <td>People by Name (<code>:across_by_people</code>)</td>
 <td>across_settings</td>
 <td>People by Name: each person with access across the set, their role
 in each repository and where it comes from, and where they have none.
-Read only; Bulk Access Changes changes access in many repositories.</td>
+Read only; Bulk Access Changes changes access in many repositories.
+Every collaborator page is read; no access is kept separate from a
+repository that could not be read.</td>
 </tr>
 <tr>
 <td>Fleet (<code>:across_fleet</code>)</td>

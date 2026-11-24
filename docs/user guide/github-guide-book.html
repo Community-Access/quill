@@ -7819,15 +7819,25 @@ access. A repository whose collaborators GitHub does not show you is
 named apart.</li>
 <li><strong>Repository Settings by Name</strong> lists each switch on
 the Repository sheet’s Features and Merging pages, with how many
-repositories have it on and off.</li>
+repositories have it on and off. A switch that GitHub does not show this
+account is “not shown to you”, not off.</li>
 <li><strong>Packages by Name</strong> lists each package published from
-the set, with its type and visibility.</li>
+the set, with its type and visibility. Each owner is read once and every
+page of packages is included. Packages are read only, because GitHub’s
+API cannot change their visibility or access.</li>
 </ul>
-<p>The context menu then changes it everywhere, as far as GitHub allows.
-Every change shows a preview first, repository by repository, with what
-is blocked and why, and then one result per repository. Each target is
-read again just before it is written, so one somebody changed on GitHub
-meanwhile is left alone and named.</p>
+<p>Choose a row, then open its context menu or press
+<code>Shift+F1</code> to find the commands that fit that kind. Every
+change shows a preview first, repository by repository, with what is
+blocked and why. The results return one sentence per repository,
+including skipped, blocked and unchanged targets, so a repository never
+disappears from the outcome.</p>
+<p>Each target is read again just before it is written, so one somebody
+changed on GitHub meanwhile is left alone and named. A people list also
+reads every collaborator page, and Packages reads every package page;
+“past the first 100” is not treated as missing. Repositories where the
+account has no access and repositories that could not be read remain
+separate.</p>
 <ul>
 <li><strong>Make Them the Same</strong> (labels, milestones, rules,
 environments, variables, webhooks, repository settings, and the four
@@ -7844,8 +7854,12 @@ added to more: GitHub accepts one key in one repository only.</li>
 Dependabot or CODEOWNERS file, Make Them the Same and Add to Missing
 open one pull request in each repository with the winning version.
 Nothing changes until each pull request is merged, and the results say
-how many wait for review. A file somebody changed since the list was
-read is not proposed.</li>
+how many wait for review. QUILL re-reads the full source and target blob
+IDs before it proposes a change. A file somebody changed since the list
+was read, a response that is not readable text, or a source that no
+longer exists is named and not proposed. The wrong contents are never
+put in a pull request just because a short version number looked the
+same.</li>
 <li><strong>Compare Configuration</strong> (the four kinds of file):
 choose the version to compare from and the repository to compare with.
 The differences open in the same Compare Configuration window as

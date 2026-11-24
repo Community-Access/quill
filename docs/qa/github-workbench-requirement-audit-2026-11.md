@@ -206,3 +206,30 @@ None.
 | GH-R-155 | Must | Met | Category-first lists cover the eight item kinds in 22.11.1, use an explicit per-account repository set,... | (sampled) `test_category_rows_keep_every_repository_and_enter_then_back_returns`, `test_every_repository_state_has_its_own_sentence`, `test_releases_are_latest_only_until_asked` |
 | GH-R-156 | Must | Met | Issue-type and issue-field values in category lists, filters, and Properties retain their stable IDs,... | `test_issue_types_and_fields_keep_their_states_apart`, `test_issue_type_and_fields_are_read_shown_and_filtered` |
 | GH-R-157 | Must | Met | Repository and item-property checklists announce a Space toggle once, save from Enter, return focus... | `test_space_changes_the_row_once_and_its_text_says_the_new_state`, `test_no_key_handler_can_toggle_a_second_time` (`tests/unit/ui/test_workbench_check_group.py`), `test_repository_features_say_their_state_once_in_the_row`, `test_enter_on_a_checklist_row_saves_and_ok_is_the_default`, `test_focus_comes_back_when_the_save_took_it_away` (`tests/unit/ui/test_github_workbench_properties.py`), `test_the_checklist_checks_adds_once_and_returns_the_checked`. Met on the automated evidence listed; screen-reader testing is a given on every change (Jeff, 2026-11-20); VoiceOver is in the macOS backlog. |
+
+#### GH-R-150 delivery evidence
+
+The implementation covers the collection, review, safety and result paths
+as separate cases:
+
+1. **Complete discovery.** Collaborators and packages are paginated past
+   100; the owner of several selected repositories is read once for
+   packages. A repository that cannot be read is kept in `unread` rather
+   than counted as missing.
+2. **Exact file identity.** File variants use GitHub's full blob id, not a
+   shortened display id. The source and each target are fetched again
+   before a proposed update, and their blob ids and UTF-8 contents must
+   still be readable. A changed or malformed response blocks that
+   repository's proposal.
+3. **One pull request per repository.** Make Them the Same and Add to
+   Missing create reviewable pull requests; neither operation writes to a
+   default branch. The tests prove that a stale target creates no pull
+   request and that a changed source is refused for every target.
+4. **Read-only and permission boundaries.** People and Packages do not
+   expose write operations. Repository Settings require admin access,
+   "not shown" stays separate from off, and a setting is read again before
+   it is changed.
+5. **Screen-reader result.** The Workbench keeps category-first rows in
+   place, names blocked and missing repositories, and returns one result
+   per repository. The focused UI tests drive the real Workbench frame over
+   recorded answers; the dialog inventory and contract gate stay green.
