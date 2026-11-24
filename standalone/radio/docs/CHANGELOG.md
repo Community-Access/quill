@@ -8,6 +8,12 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased] - 2026-11-07
 
+### F1 on Favorites says what Enter does on this row (2026-11-23)
+
+F1 on the Favorites tree now also says what Enter does on the row you are on:
+on the playing station it pauses, on a paused one it resumes, and on a folder
+it plays nothing. It also names a station marked for move and reads your note.
+
 ### Infinity or NaN in the settings file no longer stops Radio (2026-11-20)
 
 A hand-edited or damaged settings file with `Infinity` or `NaN` in a number

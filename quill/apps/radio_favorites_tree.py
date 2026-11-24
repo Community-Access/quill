@@ -36,7 +36,11 @@ class RadioFavoritesTreeMixin:
         self._reload_favorites_tree(keep_key=keep_key)
 
     def _reload_favorites_tree(self, keep_key: str | None = None) -> None:
+        from quill.ui import app_context_help
+
         tree = self._favorites_tree
+        # F1 also says what the selected row does now (FUX-10); asked only on F1.
+        app_context_help.set_selection_help(tree, self._favorites_row_help)
         if keep_key is None:
             selected = self._selected_tree_data()
             if selected is not None and selected[0] == "station":
@@ -94,6 +98,45 @@ class RadioFavoritesTreeMixin:
         if selected is None or selected[0] != "station":
             return None
         return self._radio_favorites.find(selected[1])
+
+    def _favorites_row_help(self) -> str:
+        """What F1 adds about the selected favorite or folder, asked only on F1."""
+        from quill.core.radio import favorite_row_help as words
+        from quill.ui.radio import favorites_details
+        from quill.ui.radio.playback_state import RUNNING_STATES, RadioPlayerState
+
+        selected = self._selected_tree_data()
+        if selected is None:
+            return ""
+        if selected[0] == "folder":
+            path = selected[1]
+            held = sum(
+                1
+                for fav in self._radio_favorites.favorites
+                if fav.folder == path or fav.folder.startswith(f"{path}/")
+            )
+            return words.folder_situation(held)
+        favorite = self._selected_favorite()
+        if favorite is None:
+            return ""
+        state = ""
+        if self._favorite_is_playing(favorite):  # the station the player holds
+            now = self._radio_controller.state.state
+            state = (
+                words.RUNNING
+                if now in RUNNING_STATES
+                else words.PAUSED
+                if now is RadioPlayerState.PAUSED
+                else words.HELD
+            )
+        marked_key = getattr(self, "_marked_favorite_key", None)
+        marked = self._radio_favorites.find(marked_key) if marked_key else None
+        return words.station_situation(
+            held=state,
+            marked_label=marked.display_label if marked is not None else "",
+            marked_is_this=marked is not None and marked.key == favorite.key,
+            note=favorites_details._note_for(favorite.station),
+        )
 
     def _on_favorites_activated(self, event: wx.CommandEvent) -> None:
         selected = self._selected_tree_data()

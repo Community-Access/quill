@@ -2,6 +2,21 @@
 
 ## 1.0.0
 
+### F1 on a list says what you can do with the row you are on (2026-11-23)
+
+In QUILL Cast, F1 on the episode list now also says which menu items are
+unavailable for the selected episode or podcast, and why: "Download Episode:
+this episode is already downloaded." The reasons were already on the row's
+menu, but most screen readers do not read them there. Pause Download, which
+was dimmed with no reason at all, now says that nothing is downloading.
+
+In Quill Radio, F1 on the Favorites tree now also says what Enter does on the
+row you are on: on the playing station it pauses, on a paused one it resumes,
+and on a folder it plays nothing. It also names a station you marked for move
+and reads your note on the station.
+
+Nothing is said while you arrow through the list. The words come only when you
+press F1.
 ### Scribe for Documents: the voices are there, and Play Sample answers (2026-11-23)
 
 In Convert with Scribe for Documents, in QUILL and QUILL Lite:

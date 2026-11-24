@@ -21,7 +21,9 @@ lives in, and three surfaces spend it:
   voice menu help speak;
 * the Quick Action direct keys (Ctrl+1..Ctrl+9), which used to answer a
   dimmed action with "that Quick Action is not available" and now say why;
-* the command palette, through ``CommandRegistry.set_availability_probe``.
+* the command palette, through ``CommandRegistry.set_availability_probe``;
+* F1 on the list, through :func:`unavailable_for` (FUX-10), because a screen
+  reader in a menu seldom speaks an item's help string.
 
 **Wording rules**, so the reasons read as one voice:
 
@@ -48,11 +50,13 @@ __all__ = [
     "no_feed_address",
     "no_show_notes",
     "not_downloaded",
+    "not_downloading",
     "not_routed_to_inbox",
     "nothing_downloaded",
     "nothing_to_download",
     "nothing_unheard",
     "safe_mode",
+    "unavailable_for",
 ]
 
 
@@ -133,9 +137,27 @@ def no_feed_address() -> str:
     return "this show has no feed address on file"
 
 
+def not_downloading() -> str:
+    """Pause Download, with no download of this episode under way."""
+    return "nothing is downloading for this episode"
+
+
 def not_routed_to_inbox() -> str:
     return "this show does not route new episodes to the Inbox"
 
 
 def safe_mode() -> str:
     return "Safe Mode is on, so nothing reaches the network"
+
+
+def unavailable_for(noun: str, sentences: list[str]) -> str:
+    """F1's paragraph on what is unavailable for the selected *noun*, or "".
+
+    *sentences* are :func:`explain` sentences, in the menu's order, one to a
+    line so Down Arrow reads one reason at a time. "Unavailable" is the word a
+    screen reader says on the dimmed menu item.
+    """
+    said = [sentence for sentence in sentences if sentence.strip()]
+    if not said:
+        return ""
+    return f"Unavailable for this {noun}:\n" + "\n".join(said)

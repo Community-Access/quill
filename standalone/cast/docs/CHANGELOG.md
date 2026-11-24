@@ -4,6 +4,13 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+### F1 says what is unavailable for the row you are on (2026-11-23)
+
+F1 on the episode list now also says which menu items are unavailable for the
+selected episode or podcast, and why, from the same reasons the row's menu
+has. Pause Download was dimmed with no reason; it now says nothing is
+downloading.
+
 ### A linked document, made accessible (2026-11-21)
 
 Episode > Convert Linked Document with Scribe for Documents... (Alt+Shift+F6)
