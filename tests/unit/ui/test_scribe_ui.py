@@ -39,6 +39,12 @@ class Host:
     def scribe_in_front(self) -> bool:
         return self.front
 
+    def scribe_has_sound(self, _event: str) -> bool:
+        """No sounds here, whatever another test left in the sound manager: a
+        "Play a sound" moment is then spoken (the family rule), so these tests
+        hear the result sentences. test_scribe_feedback_routing.py has sounds."""
+        return False
+
     def scribe_open_result(self, job: q.Job, format_id: str, path: Path) -> str:
         self.opened.append((format_id, path))
         return "Word is open in QUILL"
@@ -185,7 +191,24 @@ def _job(**kw: Any) -> q.Job:
     return q.Job(formats=["docx"], **kw)
 
 
+def speak_everything(controller: Any) -> None:
+    """Words for every moment, everywhere: for the tests about what is said.
+    By default nothing is spoken (test_scribe_feedback.py)."""
+    from quill.core.scribe.feedback import EVERYWHERE, FeedbackChoices
+
+    options = controller.options()
+    options.feedback = FeedbackChoices(
+        started="speech",
+        stage="speech",
+        finished="speech",
+        failed="speech",
+        stage_scope=EVERYWHERE,
+    )
+    controller.save_options(options)
+
+
 def test_only_the_holding_app_speaks(controller: Any) -> None:
+    speak_everything(controller)
     controller._service = type("S", (), {"holding": False})()
     controller._on_event("started", _job())
     assert controller.host.said == []
@@ -195,6 +218,7 @@ def test_only_the_holding_app_speaks(controller: Any) -> None:
 
 
 def test_each_stage_is_said_once_and_errors_name_scribe(controller: Any) -> None:
+    speak_everything(controller)
     controller._service = type("S", (), {"holding": True})()
     job = _job(state=q.CONVERTING, format="docx", stage="add_image_descriptions")
     controller._on_event("changed", job)

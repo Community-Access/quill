@@ -255,6 +255,9 @@ def test_a_refused_file_is_said_in_its_own_words(controller: Any) -> None:  # no
 
 
 def test_busy_is_said_once_with_the_minute(controller: Any) -> None:  # noqa: F811
+    from tests.unit.ui.test_scribe_ui import speak_everything
+
+    speak_everything(controller)
     controller._service = type("S", (), {"holding": True})()
     job = q.Job(file_name="Notes.pdf", state=q.BUSY)
     controller._on_event("busy", job)

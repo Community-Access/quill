@@ -61,6 +61,14 @@ class SoundEvent(StrEnum):
     #: A background job finishing. Distinct from AI_RESPONSE_RECEIVED, which is
     #: the AI family's own arpeggio: a finished job is not an answer arriving.
     TASK_COMPLETE = "task_complete"
+    #: A Scribe for Documents conversion: sent, ready, and failed or waiting
+    #: for the person (quill/core/scribe/feedback.py, 2026-11-23). Success and
+    #: failure are audibly different on purpose -- the end of a conversion is
+    #: a sound by default, not words, so the sound has to say which end it was.
+    #: Every app that has Scribe plays them, so they live with the editor's.
+    SCRIBE_STARTED = "scribe_started"
+    SCRIBE_FINISHED = "scribe_finished"
+    SCRIBE_FAILED = "scribe_failed"
 
     # Navigation
     QUILL_KEY_PRESSED = "quill_key_pressed"

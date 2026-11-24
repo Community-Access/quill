@@ -1035,6 +1035,7 @@ def generate_all() -> None:
 
     generate_cast_outcomes()
     generate_radio_resumed()
+    generate_scribe_outcomes()
 
 
 def generate_radio_resumed() -> None:
@@ -1071,6 +1072,49 @@ def generate_cast_outcomes() -> None:
     write_wav("cast_marked_played.wav", marked, vol=0.40)
 
 
+def generate_scribe_outcomes() -> None:
+    """Scribe for Documents: a conversion sent, finished, and failed (2026-11-23).
+
+    The end of a conversion is a sound by default rather than words
+    (quill/core/scribe/feedback.py), so success and failure must be told apart
+    by shape before pitch, and neither may startle -- they arrive minutes
+    later, while somebody is reading or typing:
+
+    * **finished** climbs a major triad on soft bells and settles on the
+      octave with a fifth under it: three steps up and a resolved chord.
+      Unlike task_complete (two ticks and one high bell) and ai_done (a fast
+      sine arpeggio falling).
+    * **failed** is two muted triangle tones falling a fourth, the second
+      longer and lower with a soft sine underneath: "it stopped", with no
+      buzz. Unlike error (a square-wave buzz) and conversation_error (falling
+      bells).
+    * **started** is the quietest: one soft sine lifting a fourth, like a
+      page leaving the desk.
+    """
+    write_wav(
+        "scribe_started.wav",
+        _sweep(392, 523, 120, sine_at, _swell_env(12, 30, 0.5, 45)),
+        vol=0.30,
+    )
+    finished = _concat(
+        _bell(523, 85),
+        _silence(16),
+        _bell(659, 85),
+        _silence(16),
+        _mix(_bell(1047, 300), [x * 0.45 for x in _bell(784, 300)]),
+    )
+    write_wav("scribe_finished.wav", finished, vol=0.44)
+    failed = _concat(
+        _tone(466, 130, tri_at, _swell_env(5, 30, 0.55, 45)),
+        _silence(34),
+        _mix(
+            _tone(349, 260, tri_at, _swell_env(5, 40, 0.5, 120)),
+            _tone(175, 260, sine_at, lambda i, n: _swell_env(5, 40, 0.5, 120)(i, n) * 0.35),
+        ),
+    )
+    write_wav("scribe_failed.wav", failed, vol=0.46)
+
+
 def generate_inline_note_line() -> None:
     """The caret has entered a line that carries an inline note (2026-10-17).
 
@@ -1104,7 +1148,9 @@ def generate_diff_lines() -> None:
 if __name__ == "__main__":
     import sys
 
-    if "--diff-lines" in sys.argv:
+    if "--scribe-outcomes" in sys.argv:
+        generate_scribe_outcomes()
+    elif "--diff-lines" in sys.argv:
         generate_diff_lines()
     elif "--inline-note-line" in sys.argv:
         generate_inline_note_line()

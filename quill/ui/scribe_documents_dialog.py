@@ -32,6 +32,9 @@ def short_date(stamp: str) -> str:
 
 
 class ScribeDocumentsDialog(wx.Dialog):
+    #: A Scribe for Documents window (quill.core.scribe.feedback.SCRIBE_WINDOW_ATTR).
+    is_scribe_window = True
+
     def __init__(self, parent: Any, controller: Any) -> None:
         super().__init__(
             parent, title="My Scribe Documents", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER

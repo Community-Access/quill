@@ -81,6 +81,10 @@ def job_details(job: q.Job, now: float | None = None) -> str:
 
 
 class ScribeConversionsWindow(wx.Frame):
+    #: Stage feedback, when chosen, plays while this window is in front
+    #: (quill.core.scribe.feedback.SCRIBE_WINDOW_ATTR).
+    is_scribe_window = True
+
     def __init__(self, parent: Any, controller: Any) -> None:
         super().__init__(parent, title=TITLE, style=wx.DEFAULT_FRAME_STYLE)
         self.SetName("scribe_conversions_window")  # F1 finds its topic by this name (topics.json)

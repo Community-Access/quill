@@ -29,8 +29,9 @@ SCRIBE_PURPOSES: dict[str, str] = {
         f"Every {PRODUCT_NAME} job on this computer, from every QUILL app, with its "
         "formats and stage. Details below the list has the percent, time left and "
         "Scribe's latest message. Enter opens the result, Delete removes the row, and "
-        "the Applications key lists every command, Next Steps among them. Each stage "
-        "is said once, and the rows never move under you. Escape closes it."
+        "the Applications key lists every command, Next Steps among them. The rows "
+        "never move under you, and nothing is spoken unless you choose it in Options. "
+        "Escape closes it."
     ),
     "My Scribe Documents": (
         "Every document in your Scribe account, and the Trash. Download Formats "
@@ -43,7 +44,10 @@ SCRIBE_PURPOSES: dict[str, str] = {
         f"One set of {PRODUCT_NAME} choices for the whole QUILL family: who is signed "
         "in and the pages left, Sign In or Sign Out, your account in the browser, the "
         "default formats, the download folder, whether results open by themselves, "
-        "and how much is spoken. OK saves; Cancel leaves things as they were."
+        "and Progress and results: a sound, speech, both or neither for a conversion "
+        "starting, each stage, finishing, and failing or needing you, with a button to "
+        "hear the success and the failure sound. OK saves; Cancel leaves things as "
+        "they were."
     ),
     "Sign In to Scribe for Documents": (
         "Your browser is open at Scribe's own sign-in page; sign in there and come "
