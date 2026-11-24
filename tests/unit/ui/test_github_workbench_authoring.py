@@ -433,7 +433,10 @@ def test_the_compare_window_checks_every_file_it_can_update(help_ready: Any) -> 
     window = ConfigCompareDialog(None, "o/r", "o/s", diffs)
     try:
         assert len(window.checked()) == 5
-        assert window.diff.GetValue().startswith("--- .github/CODEOWNERS (here)")
+        # FUX-12: marked in words, with where each change is, not a raw diff.
+        shown = window.diff.GetValue()
+        assert shown.startswith("Comparing the source with this repository's copy")
+        assert "Removed: * @x" in shown
         window.files[0].SetValue(False)
         assert len(window.checked()) == 4
         assert (
