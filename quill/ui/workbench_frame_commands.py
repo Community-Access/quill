@@ -510,16 +510,22 @@ class WorkbenchCommandsMixin:
             pass  # a place not remembered costs one arrow press, never the close
 
     def restore_layout(self) -> None:
-        """Last time's window size and tree-pane width, when the provider keeps them."""
+        """Last time's window size and tree-pane width, then fit the window to the screen.
+
+        The fit runs whether or not a size was remembered: the default size can be
+        bigger than the screen at a high scale, and a remembered one can come from
+        a bigger display. Either way the right edge, where Details is, stays visible.
+        """
+        from quill.ui.dpi import fit_to_work_area
+
         recall = getattr(self.provider, "recall_layout", None)
-        if not callable(recall):
-            return
         try:
-            size, sash = recall()
+            size, sash = recall() if callable(recall) else (None, 0)
         except (OSError, TypeError, ValueError):
-            return
+            size, sash = None, 0
         if size:
             self.frame.SetSize(self.frame.FromDIP(self._wx.Size(*size)))
+        fit_to_work_area(self.frame)
         if sash:
             self._splitter.SetSashPosition(self.frame.FromDIP(sash))
 

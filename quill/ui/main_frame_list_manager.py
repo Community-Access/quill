@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 from quill.core.selection import line_span
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
-from quill.ui.dpi import dip_size
+from quill.ui.dpi import dip, dip_size, fit_to_work_area
 from quill.ui.spoken_name import set_spoken_name
 
 
@@ -202,8 +202,10 @@ class ListManagerMixin:
         preview = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | wx.TE_READONLY)
         set_accessible_name(preview, "List item preview")
         set_spoken_name(preview, "List item preview")
-        splitter.SplitVertically(tree, preview, 420)
-        splitter.SetMinimumPaneSize(260)
+        splitter.SplitVertically(tree, preview, dip(dialog, 420))
+        splitter.SetMinimumPaneSize(dip(dialog, 260))
+        dialog.SetMinClientSize(dip_size(dialog, 540, 320))  # both panes, preview included
+        fit_to_work_area(dialog)  # 1020 DIPs is wider than a 1080p screen at 200%
         item_indexes: dict[object, int] = {}
         root = tree.AddRoot("List Items")
 
