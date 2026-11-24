@@ -2313,7 +2313,8 @@ The rest of the Video menu:
   whether captions and described audio are available.
 - **Take a Snapshot** (Ctrl+Shift+Alt+H) saves the current picture into your
   recordings folder, for example so you can read a slide with OCR (optical character recognition). You should
-  hear "Snapshot saved as" and its name.
+  hear "Snapshot saved as", its name and its folder, and it is kept in Activity
+  (Shift+F9) with Open Folder.
 - **Describe the Video** (Ctrl+F5) asks the AI you chose what is on screen. See
   Chapter 13.
 - **Start Watching for Changes** (Ctrl+F9) tells you each time the picture
@@ -3658,7 +3659,7 @@ Want your favorites in another media player, or to share them with a friend?
    `quill-radio-favorites.m3u`.
 2. Choose a folder and a name, then choose **Save**.
 3. You should hear, for example, "Exported 42 stations to
-   quill-radio-favorites.m3u."
+   quill-radio-favorites.m3u in Music.", the file and the folder it is in.
 
 Export writes an **M3U** file, which almost every media player can open. Each
 station is written with the name you see and its stream address, so importing
@@ -7226,8 +7227,13 @@ together with what you can do about them.
 Finished recordings are in the list too, with the file name, how long they
 are, and Open Folder to find the file. A recording that ended early is listed
 as partial with its reason, and a scheduled recording that could not start is
-listed with why. So are exports: the calendar, a playlist, and your
-listening statistics.
+listed with why. So are exports and saves: the calendar, a playlist, a
+favorites folder, a Local Media playlist, podcasts to OPML, Find Streams' Save
+as Playlist, your listening statistics, a backup, a snapshot, songs saved from
+the time-shift buffer, and downloads. Each one says the file and the folder it
+went to, once, and has Open Folder here. A single download says its file and
+folder when it lands, and nothing more; a batch says how many were saved, how
+many failed, and the folder when they all went into one.
 
 **Help > Repeat Last Result** (F9) says the newest result that mattered again.
 That is the last thing Quill Radio itself told you, not the last thing your

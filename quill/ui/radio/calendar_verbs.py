@@ -311,12 +311,14 @@ def export_schedule(host: Any, parent: Any, events: list[Any]) -> None:
     except OSError as error:
         host._announce(f"The schedule could not be exported. {error}.")
         return
+    from quill.core.action_feedback import written_result
     from quill.ui.outcome_report import report_outcome
 
+    noun = "programme" if len(ordered) == 1 else "programmes"
     report_outcome(
         host,
         "Export Calendar",
-        f"Exported {len(ordered)} programme(s) to {destination.name}.",
+        written_result(f"Exported {len(ordered)} {noun}", destination),  # and where (FUX-04)
         path=destination,
     )
 

@@ -32,6 +32,7 @@ import unicodedata
 import urllib.parse
 from collections.abc import Sequence
 from dataclasses import dataclass
+from pathlib import PurePath
 
 from quill.core.net_public import host_is_refused
 from quill.core.radio.find_streams_text import row_status
@@ -318,8 +319,11 @@ def added_sentence(names: Sequence[str], added: int, already: int, folder: str =
     return sentence + "."
 
 
-def saved_sentence(count: int, file_name: str) -> str:
-    return f"Saved {_plural(count, 'stream', 'streams')} to {file_name}."
+def saved_sentence(count: int, path: str | PurePath) -> str:
+    """``Saved 3 streams to WXYZ.m3u in Music.``: the file and its folder (FUX-04)."""
+    from quill.core.action_feedback import written_result
+
+    return written_result(f"Saved {_plural(count, 'stream', 'streams')}", path)
 
 
 def copied_sentence(count: int) -> str:

@@ -215,6 +215,25 @@ somewhere else, and it is never read aloud.
   to the other kept typing. They now compare the box's own window, and a
   moment when Windows cannot say which window is in front holds the words.
 
+### The actual result, said once, in Quill Radio, Media Player and Converter (2026-11-23)
+
+The family UX pilot's FUX-04, carried from Cast and QUILL Lite to three more
+apps. See `docs/design/fux-04-adoption.md`.
+
+- **Quill Converter.** A batch ends by saying the folder the files went into.
+  A Stop says what was kept, what was not converted, and that nothing
+  half-finished was left. The result is kept in Activity, and its Retry
+  converts only the files that are left; pressing Convert again converted
+  every file a second time. Join and Auphonic results are kept too, and the
+  Conversion Report shows whole paths.
+- **Quill Radio.** Exports, backups, snapshots, saved songs and downloads say
+  the file and its folder, once, and are kept in Activity with Open Folder. A
+  single download no longer reads the whole folder path aloud, and is not
+  followed by "1 saved."
+- **Quill Media Player.** Bookmark exports say where they went.
+- Converter and Media Player now have Activity (Shift+F9) and Repeat Last
+  Result (F9) on the Help menu, as Radio and Cast do.
+
 ### Shared runtime: the Practice Site's WordPress Playground ships again (2026-11-23)
 
 - **The cause.** The WordPress Playground tool behind the Practice Site

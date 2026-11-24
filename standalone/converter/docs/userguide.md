@@ -140,8 +140,18 @@ Progress is announced at 25, 50 and 75 percent, counted inside each file as well
 as across the queue, so one long audiobook is not silence until it ends. The status
 bar says how far it has got and, once it can tell, about how long is left, and the
 **Progress** bar under the buttons fills as it goes. The run ends
-by saying how many files converted and naming any that did not. If anything
-failed, Ctrl+R opens the Conversion Report with the reason for each one.
+with one sentence: how many files converted and the folder they went into
+("Converted all 12 files into the folder Converted in Music."), and the name of
+any that did not. If anything failed, Ctrl+R opens the Conversion Report with
+the reason for each one. Two failed files with the same name are named with
+their folders.
+
+The result is also kept in **Help > Activity...** (Shift+F9), with **Open
+Folder**, and **Help > Repeat Last Result** (F9) says it again if you missed it.
+If some files failed, or you stopped the run, choose **Retry** there: it
+converts only the files that are left, to the names they would have had, and
+never converts again the files that already worked. Pressing Convert again
+instead would convert the whole queue a second time.
 
 Converted files go to the **Output folder**. Leave it empty and Quill Converter
 makes a folder named `Converted` beside the first file in the queue. Your
@@ -694,9 +704,12 @@ Workbench has the five fields an audiobook needs in its Book details, with an
 
 - **Stop:** Ctrl+Enter or the Stop Converting button. Stop is immediate: the file
   being converted stops too, and its unfinished output is removed, so nothing
-  half-written is left in the output folder. Files already finished are kept,
-  and the Conversion Report lists the stopped ones as skipped. A Join stops
-  the same way, part way through a file, and saves nothing.
+  half-written is left in the output folder. Files already finished are kept.
+  The run ends by saying so: how many converted and where, how many were not,
+  and that Retry in Activity (Shift+F9) converts only those. The Conversion
+  Report lists the stopped ones as "Not converted (stopped)". A Join stops
+  the same way, part way through a file, and saves nothing. A finished Join
+  names the file and its folder, and is kept in Activity with Open Folder.
 - **Progress** is counted inside each file, not only by files finished: a single
   two-hour audiobook moves from 0 to 100 like a queue of fifty songs does. It is
   announced at 25, 50 and 75 percent, and the status bar and the tray icon's
@@ -1722,6 +1735,8 @@ every key in a read-only window you can arrow through.
 | What's New (the changelog) | Ctrl+Shift+F1 |
 | Product Requirements | Alt+Shift+F1 |
 | Keyboard Shortcuts... | Ctrl+Alt+K |
+| Activity... | Shift+F9 |
+| Repeat Last Result | F9 |
 | Get Help from Support... | Ctrl+Alt+F2 |
 | Get FFmpeg... | Ctrl+Alt+F |
 | Check for Updates... | Ctrl+Alt+U |

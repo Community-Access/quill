@@ -177,6 +177,14 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     )
     add(help_menu, "Product Re&quirements\tAlt+Shift+F1", lambda: open_doc(host, "prd"))
     add(help_menu, "&Keyboard Shortcuts...\tCtrl+Alt+K", host.show_keyboard_shortcuts)
+    # Activity and Repeat Last Result (qc.md F-10, FUX-04): where a batch's
+    # result is kept, with Open Folder and a Retry that converts only the rest.
+    add(help_menu, host._menu_label("Activit&y...", "app.activity"), host.open_activity)
+    add(
+        help_menu,
+        host._menu_label("Re&peat Last Result", "app.repeat_last_result"),
+        host.repeat_last_result,
+    )
     help_menu.AppendSeparator()
     from quill.ui.support_menu import append_get_help_item
 
