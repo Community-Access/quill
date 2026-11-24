@@ -37,7 +37,10 @@ Two downloads. Choose one. Both run on Windows 10 and Windows 11.
 ## Try this first
 
 1. Open Quill Beacon. The window has three panes: Destinations, the bookmarks
-   list, and Details. **F6** moves between them.
+   list, and Details. **F6** moves between them. While you have no bookmarks,
+   it opens on a line called **Getting started**: "No bookmarks yet. New
+   Bookmark (Ctrl+N) saves one, or Import (Ctrl+I) brings bookmarks or
+   subscriptions in."
 2. Press **Ctrl+N** for **New Bookmark**, and save a page or a file.
 3. Press **Ctrl+F** to search. Type a word, then press Down to reach the
    results. **Enter** opens the one you are on.

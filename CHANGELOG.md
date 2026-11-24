@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### The first useful task has a clear beginning in Weather, Beacon and Social (2026-11-24)
+
+Quill Weather, before the first place, opens on a Getting started line, "No
+weather location yet. Add Location (Ctrl+Alt+Shift+L) finds a US place by ZIP
+code, city or address, over the internet.", instead of a sentence spoken while
+the window was being built; Weather Center names its Alt+A. QuillBeacon, with
+no bookmark, opens on "No bookmarks yet. New Bookmark (Ctrl+N) saves one, or
+Import (Ctrl+I) brings bookmarks or subscriptions in." QUILL Social, while its
+demo account is the only one, shows "(demo)" in its title and says at launch
+"Demo timeline only. Add Account (Ctrl+Shift+A) connects Mastodon or Bluesky."
+
 ### The first useful task has a clear beginning in QUILL, QUILL Lite and Inkwell (2026-11-24)
 
 With **Start With No Document Open**, QUILL's Start page said "No document

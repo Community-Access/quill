@@ -8,9 +8,13 @@ are the same ones documented in the Quill Radio User Guide's Weather section
 ## Starting the app
 
 Launch **Quill Weather** from the Start Menu, or run `QuillWeather.exe` from the
-portable folder. On first run there is no saved location yet, so choose
-**Weather menu > Add Location...** (or the **Add Location...** button) and search
-by ZIP code, city, county, or address.
+portable folder. On first run there is no saved location yet, so the window
+opens with focus on a line called **Getting started**, which reads "No weather
+location yet. Add Location (Ctrl+Alt+Shift+L) finds a US place by ZIP code,
+city or address, over the internet." Choose **Weather menu > Add Location...**
+(or the **Add Location...** button, Alt+A) and search by ZIP code, city,
+county, or address. The line goes away once you have a place, and the window
+then opens on **Open Weather Center**.
 
 The main window is small on purpose -- a status line telling you whether
 monitoring is on, and buttons for **Open Weather Center**, **Toggle

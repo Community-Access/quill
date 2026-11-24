@@ -176,8 +176,9 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         self._populate_nav()
         self._load_scope(self.current_scope, self.current_scope_label)
         self.CreateStatusBar()
-        self.SetStatusText("QUILL Social ready. Press F1 for help.")
-        self.announcer.say("QUILL Social ready", "normal")
+        ready = self._ready_sentence()
+        self.announcer.say(ready, "normal")
+        wx.CallAfter(self.SetStatusText, f"{ready} Press F1 for help.")  # after the say
 
         # Local scheduler tier (PRD 18.3): while the app is open, publish plans
         # whose time has arrived. A wx.Timer keeps the UI thread free.
@@ -275,6 +276,22 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
                 self.announcer.say(f"{new_total} new article(s).", "normal")
 
     # -- first run ------------------------------------------------------------
+
+    def _ready_sentence(self) -> str:
+        """What launch says (FUX-09): while the demo is the only account, that
+        the timeline is a sample on this computer and how to connect a real one.
+
+        The demo is marked where it is met, not only in F1 help, so nobody
+        mistakes its posts for their own network.
+        """
+        accounts = self.store.list_accounts()
+        if not accounts or any(a.network != "mock" for a in accounts):
+            return "QUILL Social ready."
+        if not self.GetTitle().endswith("(demo)"):
+            self.SetTitle(f"{self.GetTitle()} (demo)")  # the title says it too
+        key = self.keymap.chord_for("add_account")
+        how = f"Add Account ({key})" if key else "Add Account, in the File menu,"
+        return f"QUILL Social ready. Demo timeline only. {how} connects Mastodon or Bluesky."
 
     def _first_run_seed(self) -> None:
         """Give a brand-new install a workspace and a local demo account.

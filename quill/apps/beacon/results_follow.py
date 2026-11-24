@@ -64,6 +64,9 @@ def show(frame: Any, results: list[Any], *, say_count: bool, filtered: bool) -> 
         frame._following = False
     if say_count:
         frame.announcer.announce_count(len(results), filtered=filtered)
+    from quill.apps.beacon import first_task
+
+    first_task.refresh(frame)  # the line before an empty library (FUX-09)
     if shown is not None:
         frame._show_details(shown)
     return gone

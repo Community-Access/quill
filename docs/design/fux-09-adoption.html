@@ -474,8 +474,13 @@ a library format change left for its own work.
 the window is still being built</td>
 <td><strong>Gap</strong>: no next action named. Beacon is not released
 yet</td>
-<td>Planned: a line before an empty results list naming New Bookmark
-(Ctrl+N) and Import (Ctrl+I)</td>
+<td>While the library has no bookmark at all (not just no match), a line
+above the search box, “No bookmarks yet. New Bookmark (Ctrl+N) saves
+one, or Import (Ctrl+I) brings bookmarks or subscriptions in.”, takes
+launch focus, set after the window is shown; the results refresh keeps
+it current, and a library whose bookmarks are all in Trash is not called
+empty. “0 results” at launch is unchanged.
+(<code>quill/apps/beacon/first_task.py</code>)</td>
 </tr>
 <tr>
 <td><strong>Social</strong></td>
@@ -487,9 +492,13 @@ explained only inside the F1 help window</td>
 <td><strong>Gap</strong>: the demo timeline is sample content and is not
 marked as sample where it is met; Add Account is named only in F1 help,
 without its key</td>
-<td>Planned: at launch, while the demo is the only account, the ready
-sentence says the timeline is a local demo and names Add Account
-(Ctrl+Shift+A)</td>
+<td>While the demo is the only account, the title ends with “(demo)” and
+the launch sentence and status bar say “QUILL Social ready. Demo
+timeline only. Add Account (Ctrl+Shift+A) connects Mastodon or Bluesky.”
+with the bound key (<code>SocialFrame._ready_sentence</code>). Left:
+once a real account is added, Unified Home still shows the demo
+account’s posts beside it until the demo account is removed; separating
+them is a change to Social’s timeline scopes</td>
 </tr>
 <tr>
 <td><strong>Weather</strong></td>
@@ -500,8 +509,16 @@ Location to begin.”</td>
 <td><strong>Gap</strong>: neither names a key or says that finding a
 place uses the internet and covers US places only; launch focus is not
 on Add Location</td>
-<td>Planned: launch focus on Add Location while there is none, and both
-sentences name its key and the dependency</td>
+<td>The launch speech is gone; a line above the buttons, “No weather
+location yet. Add Location (Ctrl+Alt+Shift+L) finds a US place by ZIP
+code, city or address, over the internet.”, takes launch focus while
+there is no place; the window looks again each time it comes back to the
+front, so the first place hides it. Started in the tray, the sentence is
+said once instead. Weather Center’s empty status names its own button’s
+key, Alt+A, and the same dependency, and it opens on Add Location rather
+than speaking before it is shown.
+(<code>quill/apps/weather_first_task.py</code>,
+<code>quill/ui/weather/center_text.py</code>)</td>
 </tr>
 </tbody>
 </table>
