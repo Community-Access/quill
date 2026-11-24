@@ -153,7 +153,7 @@ def _docx_language(source: Path) -> str:
 
 def _pdf_language(source: Path) -> str:
     try:
-        import pypdf
+        import pypdf  # type: ignore[import-not-found,unused-ignore]  # an optional extra
     except ImportError:
         return ""
     reader = pypdf.PdfReader(str(source))
