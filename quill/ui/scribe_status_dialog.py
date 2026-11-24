@@ -68,7 +68,23 @@ def gather_local(controller: Any, **account: Any) -> StatusInputs:
     )
 
 
+def _read_account(client: Any) -> tuple[Any, bool]:
+    """The account (``account_info`` + ``billing``), then the documents list's
+    ``suggest_buying_pages``. That flag is only a hint: if it cannot be read,
+    the account is still shown, and no hint is given."""
+    account = client.account()
+    try:
+        suggest = bool(client.suggest_buying_pages())
+    except Exception:  # noqa: BLE001 - a missing hint never hides the account
+        suggest = False
+    return account, suggest
+
+
 class ScribeStatusDialog(wx.Dialog):
+    #: A Scribe for Documents window (quill.core.scribe.feedback.SCRIBE_WINDOW_ATTR):
+    #: stage feedback set to "only while a Scribe window is in front" counts it.
+    is_scribe_window = True
+
     def __init__(self, parent: Any, controller: Any) -> None:
         super().__init__(
             parent, title=STATUS_TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
@@ -258,15 +274,17 @@ class ScribeStatusDialog(wx.Dialog):
         self._fetching += 1
         generation = self._fetching
         controller._background(  # noqa: SLF001 - the controller's own pool
-            lambda: controller.client().account(),
-            lambda account: self._account_read(generation, announce, account=account),
+            lambda: _read_account(controller.client()),
+            lambda read: self._account_read(generation, announce, *read),
             lambda error: self._account_failed(generation, announce, error),
         )
 
-    def _account_read(self, generation: int, announce: bool, *, account: Any) -> None:
+    def _account_read(
+        self, generation: int, announce: bool, account: Any, suggest: bool = False
+    ) -> None:
         if generation != self._fetching or not self._alive():
             return
-        self._account = {"account": account}
+        self._account = {"account": account, "suggest_buying": suggest}
         report = self.render()
         # The first line is said only when the caret is on it; somebody reading
         # further down hears that it changed, and stays where they were.

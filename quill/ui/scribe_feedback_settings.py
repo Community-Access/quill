@@ -140,7 +140,7 @@ class FeedbackSection:
                 self.scope.SetSelection(_SCOPES.index(scope) if scope in _SCOPES else 0)
                 self.scope.SetHelpText(
                     "Where stage feedback is given: only while the Conversions window, "
-                    "Scribe Status or My Scribe Documents is in front (the default), or "
+                    "Scribe Status or Documents in My Scribe Account is in front (the default), or "
                     "everywhere, even with another program in front. No effect while "
                     "the stage choice is Neither."
                 )

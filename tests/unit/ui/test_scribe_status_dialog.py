@@ -318,3 +318,51 @@ def test_conversions_does_not_stop_at_the_opener_on_the_way(
     monkeypatch.setattr(contract, "show_modal_dialog", lambda *_a, **_k: wx.ID_CANCEL)
     controller.status()
     assert focused == ["conversions", "opener"]
+
+
+def test_the_fake_server_s_subscription_and_low_pages_hint_are_shown(
+    controller: Any,  # noqa: F811
+    pool: Deferred,
+) -> None:
+    controller.server.pages_remaining = 2
+    controller.server.suggest_buying_pages = True
+    controller.server.subscription = {"store": "web", "renews_at": "2026-12-01T00:00:00Z"}
+    dialog = _dialog(controller)
+    try:
+        pool.run()
+        text = dialog.text.GetValue()
+        assert "Subscription: active, bought on the Scribe website, renews 1 December 2026." in text
+        assert "Subscription renews 1 December 2026." in text
+        assert "Pages are running low. Open My Scribe Account in Browser to buy more." in text
+    finally:
+        dialog.Destroy()
+
+
+def test_no_hint_when_scribe_does_not_suggest_buying(controller: Any, pool: Deferred) -> None:  # noqa: F811
+    dialog = _dialog(controller)
+    try:
+        pool.run()
+        text = dialog.text.GetValue()
+        assert "running low" not in text and "Subscription: none." in text
+        assert "Subscription renews" not in text
+    finally:
+        dialog.Destroy()
+
+
+def test_the_account_still_shows_when_the_hint_cannot_be_read(
+    controller: Any,  # noqa: F811
+    pool: Deferred,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from quill.core.scribe.client import ScribeClient
+
+    def broken(_self: Any) -> bool:
+        raise ScribeOfflineError("Couldn't connect to Scribe.")
+
+    monkeypatch.setattr(ScribeClient, "suggest_buying_pages", broken)
+    dialog = _dialog(controller)
+    try:
+        pool.run()
+        assert dialog.text.GetValue().startswith("Signed in as Pat Reader. 100 pages left.")
+    finally:
+        dialog.Destroy()

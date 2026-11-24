@@ -196,7 +196,8 @@ sections, each starting with its name on a line of its own:
   whether you have a subscription and when it renews, and whether your
   sign-in renews by itself.
 - **Usage**: the pages left (an organization's shared pages for a member),
-  and the pace: how many of the 8 uploads and conversions a minute the QUILL
+  when your subscription renews, "Pages are running low" when Scribe
+  suggests buying pages, and the pace: how many of the 8 uploads and conversions a minute the QUILL
   apps allow themselves are used, or, if Scribe asked them to slow down, when
   the next one starts. Scribe tells apps the pages left but not the pages
   used.

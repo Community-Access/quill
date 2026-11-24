@@ -500,7 +500,7 @@ sections, each starting with its name on a line of its own:
 | Section | What it says |
 |---|---|
 | Account | Your name, email, phone and organization as Scribe has them; whether you have a subscription, where it was bought and when it renews; and whether your sign-in renews by itself |
-| Usage | The pages left (for an organization member, the organization's shared pages), and the pace: how many of the 8 uploads and conversions a minute the QUILL apps allow themselves are used, or, after Scribe asked them to slow down, when the next one starts |
+| Usage | The pages left (for an organization member, the organization's shared pages); when your subscription renews; "Pages are running low. Open My Scribe Account in Browser to buy more." when Scribe suggests buying pages; and the pace: how many of the 8 uploads and conversions a minute the QUILL apps allow themselves are used, or, after Scribe asked them to slow down, when the next one starts |
 | Now converting | The job under way: its stage, percent and time left, Scribe's latest message, and which QUILL app is doing the work |
 | Waiting | Queued jobs, and jobs waiting for you, such as a PDF that needs its password |
 | Recent | The last five finished jobs on this computer, with what went wrong for a failed one |
@@ -631,7 +631,7 @@ What the Stage column says:
 ### What you hear at each stage
 
 To start with, QUILL says nothing about a conversion while you work. Its
-progress is in Scribe Conversions and Scribe Status, for when you want to
+progress is in Conversions on This Computer and Scribe Status, for when you want to
 look. When a conversion finishes you hear a short success sound, and when
 it fails or needs you (your sign-in has run out, you are out of pages,
 Scribe refused the file) you hear a different failure sound. Nothing is
@@ -666,8 +666,8 @@ Options. To start with that is **Neither**; with a sound chosen, each stage
 plays a soft tick and each milestone its step of the progress tones. A
 delay (Scribe asking to slow down, or this computer offline) is also in the
 status bar. **Stage feedback applies** decides where: **Only while a Scribe
-for Documents window is in front** (Scribe Conversions, Scribe Status or My
-Scribe Documents, the default), or **Everywhere, even when another program
+for Documents window is in front** (Conversions on This Computer, Scribe Status or Documents in
+My Scribe Account, the default), or **Everywhere, even when another program
 is in front**. Only
 one QUILL app says or plays these things, the one that is running the job;
 the others show the same rows quietly.
@@ -684,7 +684,7 @@ chose in Options. A file that fails does not stop the rest. When the last
 one is done there is one sentence for them all, in the status bar and
 Notifications, and said if you chose words for a finished conversion. For
 example: "Scribe for Documents finished 3 files. Made: Notes.pdf and
-Map.png. Not made: Old.doc; Scribe Conversions has the details."
+Map.png. Not made: Old.doc; the Conversions on This Computer window has the details."
 
 If Scribe asks QUILL to slow down, QUILL waits a minute. The status bar
 says "Scribe for Documents asked QUILL to slow down; trying again in a
@@ -1208,7 +1208,7 @@ start picks them up.
 When something goes wrong, there is one sentence that names Scribe for
 Documents and the file, and usually Scribe's own reason. To start with you
 hear the failure sound, and the sentence is in the status bar, in
-Notifications and in Scribe Conversions; **Repeat Last Scribe Message**
+Notifications and in Conversions on This Computer; **Repeat Last Scribe Message**
 says it. "You hear" below is that sentence, as it is said when you choose
 words in **Progress and results**. Scribe writes its
 messages for people to read. QUILL adds a code, such as QUILL-SCRIBE-PAGES,

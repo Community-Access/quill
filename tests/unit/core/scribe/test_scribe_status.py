@@ -219,3 +219,9 @@ def test_a_failed_refresh_keeps_the_last_account_below_the_error() -> None:
     )
     assert report.first_line.startswith("Signed in, but your Scribe account could not be read")
     assert "Email: pat@example.com" in _section(report.text, "Account")
+
+
+def test_the_low_pages_hint_follows_the_server_flag_only() -> None:
+    low = build_status(StatusInputs(signed_in=True, account=_account(), suggest_buying=True))
+    assert "Pages are running low." in low.text
+    assert "running low" not in build_status(StatusInputs(signed_in=True, account=_account())).text

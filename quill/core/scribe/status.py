@@ -65,6 +65,8 @@ class StatusInputs:
     error_code: str = ""
     #: The sign-in has ended (``QUILL-SCRIBE-SIGNIN``): offer Sign In again.
     sign_in_ended: bool = False
+    #: ``GET /api/documents``' ``suggest_buying_pages``: Scribe says pages are low.
+    suggest_buying: bool = False
     jobs: tuple[q.Job, ...] = ()
     #: The app holding the runner lock (doing the work), or ``""``.
     runner_app: str = ""
@@ -188,6 +190,11 @@ def _usage_lines(inputs: StatusInputs) -> list[str]:
             f", using credits from {account.organization_name}" if account.organization_name else ""
         )
         lines.append(f"Pages left: {account.pages_remaining:,}{pool}.")
+        renews = renewal_date(account.subscription_renews_at)
+        if account.has_subscription and renews:
+            lines.append(f"Subscription renews {renews}.")
+        if inputs.suggest_buying:
+            lines.append("Pages are running low. Open My Scribe Account in Browser to buy more.")
     if inputs.paused_until > inputs.now:
         lines.append(
             f"Pace: Scribe asked {inputs.app_name} to slow down; the next upload or "

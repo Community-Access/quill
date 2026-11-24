@@ -89,8 +89,8 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
         save_options(options)
 
     def _scribe_window_in_front(self) -> bool:
-        """A Scribe for Documents window (Conversions, Status, My Scribe
-        Documents) is the active window: where stage feedback goes by default."""
+        """A Scribe for Documents window (Conversions, Status, Documents in My Scribe
+        Account) is the active window: where stage feedback goes by default."""
         from quill.core.scribe.feedback import SCRIBE_WINDOW_ATTR
 
         active = wx.GetActiveWindow()

@@ -277,6 +277,13 @@ class ScribeClient:
         documents = parse_documents(data.get("documents") if isinstance(data, dict) else [])
         return documents, int(pages) if isinstance(pages, (int, float)) else None
 
+    def suggest_buying_pages(self) -> bool:
+        """``GET /api/documents``' ``suggest_buying_pages``: the server's own say on
+        whether to put buying pages in front of the person (an individual account
+        with only trial pages or few left). False from a server that predates it."""
+        data = self._json("GET", "/api/documents")
+        return bool(data.get("suggest_buying_pages", False)) if isinstance(data, dict) else False
+
     def list_trash(self) -> list[DocumentSummary]:
         data = self._json("GET", "/api/documents/trash")
         return parse_documents(data.get("documents") if isinstance(data, dict) else [])
