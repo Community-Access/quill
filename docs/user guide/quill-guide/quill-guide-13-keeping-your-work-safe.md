@@ -82,14 +82,18 @@ The list reads in plain language, newest first, for example "Today at 4:12 PM
 
 1. Open **File > Restore Previous Version...**.
 2. Arrow to the version you want.
-3. Choose one of the two buttons:
+3. Choose one of the three buttons:
    - **Restore** puts that version in the editor in place of your current
      text. Your current text is saved as a restore point first, so you can
      undo a restore the same way. The document is marked modified, so nothing
      touches the disk until you save.
    - **Open as Copy** opens the earlier version as a new untitled document and
-     leaves your current one exactly as it is. This is the one to use for
-     comparing, or for rescuing a single paragraph.
+     leaves your current one exactly as it is.
+   - **Compare...** (`Alt+M`) compares that version with your current text,
+     one difference at a time, in the same compare dialog as **Compare with
+     File**. Its **Take Changes...** button brings back only the differences
+     you choose, such as a single paragraph, and leaves the rest of your text
+     as it is.
 
 A few details worth knowing:
 

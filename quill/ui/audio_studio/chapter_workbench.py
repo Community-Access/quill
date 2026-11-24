@@ -40,6 +40,7 @@ from quill.core.speech.chapters import (
     set_chapter_start,
     split_chapter,
 )
+from quill.ui.audio_studio.chapter_title_review import review_titles
 from quill.ui.audio_studio.chapter_workbench_dialogs import (
     AcxResultDialog,
 )
@@ -263,8 +264,9 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
             "Transcribes the opening minute of each chapter with the local "
             "speech model (the audio never leaves this computer), then sends "
             "only that text to your configured AI for a short title per chapter. "
-            "You consent first, the proposals land in the list for review, and "
-            "Restore original undoes them. Needs an AI provider; unavailable in "
+            "You consent first, then check the proposals you want, each beside the "
+            "title it replaces; only those go into the list, and Restore original "
+            "undoes them. Needs an AI provider; unavailable in "
             "Safe Mode."
         )
         titles_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_propose_ai_titles())
@@ -775,9 +777,9 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
                     "QUILL will transcribe the first minute of each of the {count}"
                     " chapters with the local speech model (the audio never leaves"
                     " this computer), then send only that transcribed text to your"
-                    " configured AI to suggest a short title per chapter. The"
-                    " proposals land in the list for review — Restore original"
-                    " undoes them. Continue?"
+                    " configured AI to suggest a short title per chapter. You"
+                    " review each proposal before it goes into the list, and"
+                    " Restore original undoes them. Continue?"
                 ).format(count=len(self._book.chapters))
             ),
             str(_("Propose AI titles")),
@@ -803,15 +805,24 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
                 shutil.rmtree(work_dir, ignore_errors=True)
 
         def on_success(result: object) -> None:
+            if not self:  # the Workbench closed while the AI worked
+                return
             if not isinstance(result, list) or len(result) != len(self._book.chapters):
                 self._announce(str(_("No titles were proposed; no changes made.")))
                 return
-            changed = 0
+            # FUX-12: each proposal is reviewed against the title it replaces.
+            current = [c.title for c in self._book.chapters]
+            proposed = [str(p).strip() or old for p, old in zip(result, current, strict=True)]
+            if proposed == current:
+                self._announce(str(_("The AI proposed no different titles; no changes made.")))
+                return
+            titles = review_titles(self, current, proposed, self._announce)
+            if titles is None:
+                return
+            first = next(i for i, (a, b) in enumerate(zip(current, titles, strict=True)) if a != b)
+            changed = sum(1 for old, new in zip(current, titles, strict=True) if old != new)
             chapters = []
-            for chapter, proposal in zip(self._book.chapters, result, strict=True):
-                title = str(proposal).strip() or chapter.title
-                if title != chapter.title:
-                    changed += 1
+            for chapter, title in zip(self._book.chapters, titles, strict=True):
                 chapters.append(
                     Chapter(
                         index=chapter.index,
@@ -822,17 +833,14 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
                         image=chapter.image,
                     )
                 )
-            if not changed:
-                self._announce(str(_("The AI proposed no different titles; no changes made.")))
-                return
+            self._chapter_list.SetFocus()  # back to the list, on the first new title
             self._apply(
                 chapters,
-                select=0,
+                select=first,
                 spoken=str(
-                    _(
-                        "Proposed {count} new title(s) — review the list;"
-                        " Restore original undoes them."
-                    ).format(count=changed)
+                    _("Took {count} proposed title(s); Restore original undoes them.").format(
+                        count=changed
+                    )
                 ),
             )
 

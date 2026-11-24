@@ -26,6 +26,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from quill.core.ai.diff_review import DiffReview
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
 from quill.ui.dpi import dip_size
 
@@ -53,6 +54,8 @@ class DiffReviewDialog:
         revised_text: str,
         on_apply: Callable[[str], None],
         announce: Callable[[str], None] | None = None,
+        intro: str = "",
+        review: DiffReview | None = None,
     ) -> None:
         import wx
 
@@ -61,7 +64,9 @@ class DiffReviewDialog:
         self._wx = wx
         self._on_apply = on_apply
         self._announce = announce or (lambda _message: None)
-        self.review = build_diff_review(original_text, revised_text)
+        # A caller with its own units (Studio's chapter titles) passes the
+        # review it built; otherwise the two texts are compared line by line.
+        self.review = review or build_diff_review(original_text, revised_text)
         self.applied = False
         #: Accepted word groups per hunk, for hunks with any word groups.
         self._word_choices: dict[int, set[int]] = {
@@ -83,7 +88,10 @@ class DiffReviewDialog:
 
         hunks = self.review.hunks
         single = len(hunks) == 1 and len(hunks[0].word_changes) < 2
-        intro = (
+        # Compare (Take Changes) and Restore Previous Version open this same
+        # window for changes that are not the AI's (FUX-12): they pass their
+        # own *intro* and keep everything else.
+        intro = intro or (
             "Review the proposed AI change below. Read it line by line in the "
             "details pane, then choose Accept to apply it or Reject to leave the "
             "document unchanged."
@@ -113,7 +121,7 @@ class DiffReviewDialog:
         )
         set_accessible_name(self.hunk_list, "Changes")
         self.hunk_list.SetHelpText(
-            "Every change the AI proposes, one per line. A checked change will be "
+            "Every proposed change, one per line. A checked change will be "
             "applied; press Space to uncheck one you want to keep as it was. The "
             "details below say exactly what changed, word by word. Alt+C comes "
             "back here."

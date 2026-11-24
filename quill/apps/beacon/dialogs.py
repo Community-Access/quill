@@ -11,6 +11,7 @@ from __future__ import annotations
 import wx
 
 from quill.apps.beacon.model import ALL_TYPES
+from quill.apps.beacon.sync_conflicts import add_conflict_detail, show_selected_conflict
 from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 from quill.ui.dpi import dip_size
@@ -2885,13 +2886,15 @@ class SyncHistoryDialog(wx.Dialog):
             "Conflicts needing review. Select, then choose Local, Remote, or Merged.",
         )
         self.conflict_list.SetHelpText(
-            "Changes both sides edited, waiting for your decision. Select "
-            "a row, then choose Use Local, Use Remote, or Use Merged below."
+            "Changes both sides edited, waiting for your decision. Select a row, read "
+            "both versions in the box below (Alt+V), then choose Use Local, Use Remote, "
+            "or Use Merged."
         )
         self._conflicts = conflicts
         for cf in conflicts:
             self.conflict_list.Append(self._conflict_label(cf))
         sizer.Add(self.conflict_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+        self.conflict_detail = add_conflict_detail(self, sizer)  # FUX-12: hear both first
 
         resolve_row = wx.BoxSizer(wx.HORIZONTAL)
         self.r_local = wx.Button(self, label="Use &Local")
@@ -2948,11 +2951,16 @@ class SyncHistoryDialog(wx.Dialog):
         self.r_local.Bind(wx.EVT_BUTTON, lambda _e: self._resolve("local"))
         self.r_remote.Bind(wx.EVT_BUTTON, lambda _e: self._resolve("remote"))
         self.r_merged.Bind(wx.EVT_BUTTON, lambda _e: self._resolve("merged"))
+        self.conflict_list.Bind(wx.EVT_LISTBOX, lambda _e: self._show_conflict())
+        self._show_conflict()
         apply_modal_ids(self, escape_id=wx.ID_CLOSE)
         _context_help(self)
 
     def _collect_conflicts(self) -> list[dict]:
         return self.ctrl.list_conflicts(resolved=False)
+
+    def _show_conflict(self) -> None:
+        show_selected_conflict(self)
 
     @staticmethod
     def _conflict_label(cf: dict) -> str:
@@ -2974,6 +2982,7 @@ class SyncHistoryDialog(wx.Dialog):
         self.conflict_list.Clear()
         for c in self._conflicts:
             self.conflict_list.Append(self._conflict_label(c))
+        self._show_conflict()
         show_message_box(f"Resolved using {choice} version.", "Resolve", wx.OK)
 
     def _on_rollback(self, _e) -> None:

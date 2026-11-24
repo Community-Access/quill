@@ -1367,7 +1367,7 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 - `rename_btn`: Applies the text in the Chapter title field to the highlighted chapter. The same as pressing Enter in that field.
 - `propose_btn`: Scans any recording -- a lecture or meeting as much as a book -- for silences with ffmpeg and proposes chapters there, titled Proposed chapter. You choose the noise threshold and minimum pause first. If the recording already has chapters you are asked whether to keep them and add only new boundaries, or replace them. Press again while it runs to stop; Restore original undoes a proposal.
 - `acx_btn`: Measures this book against Audible's ACX submission window -- loudness, true peak, and noise floor -- and shows the verdict with plain recommendations for anything failing. Measurement only; the file is not changed.
-- `titles_btn`: Transcribes the opening minute of each chapter with the local speech model (the audio never leaves this computer), then sends only that text to your configured AI for a short title per chapter. You consent first, the proposals land in the list for review, and Restore original undoes them. Needs an AI provider; unavailable in Safe Mode.
+- `titles_btn`: Transcribes the opening minute of each chapter with the local speech model (the audio never leaves this computer), then sends only that text to your configured AI for a short title per chapter. You consent first, then check the proposals you want, each beside the title it replaces; only those go into the list, and Restore original undoes them. Needs an AI provider; unavailable in Safe Mode.
 - `import_btn`: Replaces the chapter list with one read from a file: Audacity labels, a timestamps list, a CUE sheet, Podcasting 2.0 JSON, or CSV. The whole list is swapped for review; Restore original undoes it, and nothing is saved until Save.
 - `export_btn`: Writes the chapter list to a file of your choosing -- Audacity labels, timestamps, CUE sheet, Podcasting 2.0 JSON, or CSV -- for other tools or a podcast host. The audio is untouched.
 - `episodes_btn`: Writes each chapter out as its own audio file, numbered, into a folder you choose -- the reverse trip, for podcast episodes or track-based players. The book itself is untouched.
@@ -2231,7 +2231,7 @@ Control coverage: 60 audited sites (60 helped).
 
 ## Quill Beacon
 
-Control coverage: 127 audited sites (127 helped).
+Control coverage: 128 audited sites (128 helped).
 
 ### Every window, and what it is for
 
@@ -2463,7 +2463,7 @@ Control coverage: 127 audited sites (127 helped).
 #### SyncHistoryDialog (`quill/apps/beacon/dialogs.py`)
 
 - `self.commit_list`: Everything sync has recorded: each row is one commit with its message, how many entries it carried, and which device made it.
-- `self.conflict_list`: Changes both sides edited, waiting for your decision. Select a row, then choose Use Local, Use Remote, or Use Merged below.
+- `self.conflict_list`: Changes both sides edited, waiting for your decision. Select a row, read both versions in the box below (Alt+V), then choose Use Local, Use Remote, or Use Merged.
 - `self.r_local`: Resolve the selected conflict by keeping this device's version.
 - `self.r_remote`: Resolve the selected conflict by taking the other device's version.
 - `self.r_merged`: Resolve the selected conflict with the merged combination of both versions.
@@ -2485,6 +2485,9 @@ Control coverage: 127 audited sites (127 helped).
 - `self.add_point_btn`: Save a time-point bookmark at the current position, tagged timepoint and filed under the current chapter when there is one. It appears in the main bookmarks list.
 - `self.chapter_list`: The episode's chapters with their start times, when the feed supplies them. Selecting a chapter jumps playback to its start. From anywhere in the window, Ctrl+Shift+Period goes to the next chapter and Ctrl+Shift+Comma to the previous one.
 - `self.transcript`: The episode's transcript as read-only text, when one is available. Empty otherwise.
+#### (module level) (`quill/apps/beacon/sync_conflicts.py`)
+
+- `detail`: The selected conflict as text: this device's version, the other device's, each line that differs marked as removed or added, and what Use Merged keeps. Read it before choosing Use Local, Use Remote or Use Merged.
 
 ## GitHub Workbench
 
@@ -5404,7 +5407,7 @@ Control coverage: 298 audited sites (298 helped).
 - `close`: Close this window. Changes to the list are kept.
 #### DiffReviewDialog (`quill/ui/ai_diff_review_dialog.py`)
 
-- `self.hunk_list`: Every change the AI proposes, one per line. A checked change will be applied; press Space to uncheck one you want to keep as it was. The details below say exactly what changed, word by word. Alt+C comes back here.
+- `self.hunk_list`: Every proposed change, one per line. A checked change will be applied; press Space to uncheck one you want to keep as it was. The details below say exactly what changed, word by word. Alt+C comes back here.
 - `self.word_list`: Each word edit inside the change you are on, with the sentence it is in. A checked edit is applied; press Space to drop one and keep the original words there while the rest of the change still goes in. Dropping every edit drops the change. Shown only when a change holds two or more word edits; Alt+W reaches it.
 - `self.details`: The change you are on, line by line: what was there, what would replace it, and for a small change the words that differ and the sentence they are in. Read-only.
 - `self.apply_button`: Applies the change as one edit; Control Z takes it back.
