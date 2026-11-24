@@ -1782,7 +1782,7 @@ Control coverage: 5 audited sites (5 helped).
 
 **New Abbreviation.** Create one abbreviation: the trigger word you will type, and the expansion that replaces it. The expansion may carry placeholders -- ${cursor} for where the caret lands, ${date}, ${time}, and ${clipboard} -- and Expand after chooses which keys fire it, including never, for Quick Insert only. OK saves it into the shared library at once.
 
-**Quick Insert.** Pick an abbreviation and Inkwell types its expansion into the window you were just working in -- the way to use an entry set to expand only manually, or one whose trigger you cannot recall. Filter, choose, press Enter; focus returns to where you were and the text is typed there. If there is nowhere to type, the expansion is copied to the clipboard instead.
+**Quick Insert.** Pick an abbreviation and Inkwell types its expansion into the window you were just working in -- the way to use an entry set to expand only manually, or one whose trigger you cannot recall. Filter, choose, press Enter; focus returns to where you were and the text is typed there, and only there. If there is nowhere to type, the expansion is copied to the clipboard instead.
 
 **Quick Insert Key.** Choose one key that opens Quick Insert from any program, so an entry you only insert by hand is always a keystroke away. There is none until you choose one. Type it, or leave the box empty for no key; a key another QuillVille app already uses is refused, and you are told whose it is.
 
@@ -1795,6 +1795,8 @@ Control coverage: 5 audited sites (5 helped).
 **Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
 
 **Suggest Abbreviations.** The abbreviations the AI suggested from your document, one check box each, all starting cleared. Check the ones you want and press OK to add them to the library QUILL shares; Cancel adds none. An abbreviation you already have is never suggested, so nothing here can replace one of yours.
+
+**Text Not Typed.** The text was kept, not typed, because the focus is not in the field you started in, or that field refused it. Insert goes back to that field and types it there; Copy puts it on the clipboard; Escape lets it go.
 
 **Update downloaded.** A new Quill Inkwell is on disk and ready. Install and restart now applies it and relaunches -- your abbreviations and settings are kept -- or Open folder shows you the installer to run later.
 

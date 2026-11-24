@@ -44,6 +44,7 @@ __all__ = [
     "PAUSE_ADVICE",
     "WRITE_FAILURE",
     "ExternalDocument",
+    "control_identity",
     "focus_identity",
     "foreground_problem",
     "hush_unless_spoken",
@@ -125,25 +126,37 @@ def focus_identity() -> Any:
     """Which field has the focus, as an identity to compare, never its text.
 
     The foreground window, its process, and the focused control: its UI
-    Automation runtime id where UI Automation can say, else the native class of
-    the focused child window. Used by QUILL Transcribe's target lock
-    (:mod:`quill.core.windows_dictation.target_lock`); ``None`` off Windows.
+    Automation runtime id where UI Automation can say, else the focused child
+    window's handle. Used by the target lock
+    (:mod:`quill.core.windows_dictation.target_lock`); ``None`` off Windows, or
+    when Windows cannot name the window in front -- "cannot tell" is never "the
+    same field" (FUX-07).
+
+    Until 2026-11-23 the last resort was the focused window's *class* name,
+    which two edit boxes in one dialog share: with UI Automation unavailable,
+    a move from one to the other kept on typing. A handle is an identity.
     """
     try:
         from quill.platform.windows.external_target import capture_uia_focus
         from quill.platform.windows.foreground import foreground_window_info
-        from quill.platform.windows.text_target import focused_class_name
+        from quill.platform.windows.text_target import focused_window_handle
     except Exception:  # noqa: BLE001 - not Windows
         return None
     window = foreground_window_info()
+    if not window.hwnd:
+        return None
     element = capture_uia_focus()
+    return (window.hwnd, window.process_id, control_identity(element, focused_window_handle))
+
+
+def control_identity(element: Any, focused_handle: Callable[[], int]) -> Any:
+    """The focused control's identity: UI Automation's runtime id, else a window
+    handle -- UI Automation's, then the focused thread's (*focused_handle*)."""
     if element is not None and element.runtime_id:
-        control: Any = ("uia", tuple(element.runtime_id))
-    elif element is not None and element.native_window_handle:
-        control = ("hwnd", element.native_window_handle)
-    else:
-        control = ("class", focused_class_name())
-    return (window.hwnd, window.process_id, control)
+        return ("uia", tuple(element.runtime_id))
+    if element is not None and element.native_window_handle:
+        return ("hwnd", element.native_window_handle)
+    return ("hwnd", int(focused_handle() or 0))
 
 
 def _type(text: str, hush: bool = False) -> bool:

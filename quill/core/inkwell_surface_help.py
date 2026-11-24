@@ -92,8 +92,14 @@ PURPOSES: dict[str, str] = {
         "window you were just working in -- the way to use an entry set to "
         "expand only manually, or one whose trigger you cannot recall. "
         "Filter, choose, press Enter; focus returns to where you were and "
-        "the text is typed there. If there is nowhere to type, the "
+        "the text is typed there, and only there. If there is nowhere to type, the "
         "expansion is copied to the clipboard instead."
+    ),
+    "Text Not Typed": (
+        "The text was kept, not typed, because the focus is not in the field "
+        "you started in, or that field refused it. Insert goes back to that "
+        "field and types it there; Copy puts it on the clipboard; Escape lets "
+        "it go."
     ),
     "Excluded Applications": (
         "Programs where expansion must never run, one program file name per "

@@ -356,6 +356,9 @@ class ExpansionHook:
         if match is None:
             return False
         self._buffer.clear()
+        # The window the abbreviation was typed in: the expansion is typed
+        # there or nowhere (FUX-07; InkwellTextRuntime's expected_window).
+        match.target_window = window.hwnd
         return self._queue_match(match)
 
     def _queue_match(self, match: GlobalMatch) -> bool:
@@ -452,6 +455,7 @@ class ExpansionHook:
                 cursor_offset=cursor_offset,
                 has_cursor=has_cursor,
                 trailing_space=False,
+                target_window=int(_user32.GetForegroundWindow() or 0),
             )
         )
         return True

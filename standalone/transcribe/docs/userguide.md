@@ -294,6 +294,11 @@ If you move to another field, another program or another window while
 dictating, QUILL Transcribe stops typing. It does not follow you. You hear
 "Dictation paused" and the reason.
 
+The field you started in is known by its program, its window and the field
+itself, never by what it says. The same program closed and opened again counts
+as a different place, and so does a moment when Windows cannot say which field
+has the focus: in both cases the words are held, not typed.
+
 While it is paused, it keeps listening and holds what you say. Nothing is
 typed anywhere. Then you choose:
 

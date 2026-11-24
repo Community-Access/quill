@@ -244,6 +244,52 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3
+id="quill-lite-makes-listening-versions-of-wordpress-pages-2026-11-23">QUILL
+Lite makes listening versions of WordPress pages (2026-11-23)</h3>
+<p><strong>Tools &gt; WordPress &gt; More Media &gt; Make a Listening
+Version</strong> now works in QUILL Lite, installed or portable. It
+reads your page aloud with your Windows voice, turns the recording into
+an MP3, uploads it and puts a player at the top of the page. QUILL Lite
+now ships FFmpeg, the part that makes the MP3, in both downloads, so
+nothing is downloaded when you first use it.</p>
+<p>If FFmpeg is missing from a copy of QUILL or QUILL Lite, the command
+now says so before anything is recorded, and says how to get it back. It
+used to record the page and then fail with a file error.</p>
+<h3
+id="quill-lites-portable-copy-does-everything-the-installed-one-does-2026-11-23">QUILL
+Lite’s portable copy does everything the installed one does
+(2026-11-23)</h3>
+<p>The portable zip of QUILL Lite left out parts the installed copy has
+always had, so several of its menus did nothing useful when run from a
+stick. It now carries all of them:</p>
+<ul>
+<li><strong>Spell check</strong> with the full dictionaries and other
+languages, not just a word list.</li>
+<li><strong>The GitHub Workbench</strong>, Clone Repository and GitHub
+accounts.</li>
+<li><strong>AI help with GitHub Copilot or ChatGPT (Codex)</strong>, and
+project tasks in the Developer profile.</li>
+<li><strong>Language servers</strong> (Navigate &gt; Code): suggestions
+and problems for code.</li>
+<li><strong>The WordPress Practice Site</strong>, a WordPress on your
+own computer.</li>
+<li><strong>Sounds</strong> that can overlap and follow your volume
+setting, and <strong>App Sounds Play On</strong>, which now lists your
+sound cards.</li>
+<li><strong>Play Media Here</strong> for WordPress media, through
+Windows Media.</li>
+<li><strong>Equations as MathML</strong> when you export Markdown as a
+web page.</li>
+<li><strong>Ogg and Opus recordings</strong> in Transcribe a
+Recording.</li>
+</ul>
+<p>The zip is larger because of it. Nothing downloads when you first use
+any of these.</p>
+<p>When one of these parts is missing from a copy of QUILL or QUILL
+Lite, the app now says so in plain words, and says to install the app
+again or unzip a fresh portable download into a new folder. It used to
+name build scripts and <code>pip</code> commands.</p>
 <h3 id="scribe-for-documents-jeffs-three-answers-2026-11-23">Scribe for
 Documents: Jeff’s three answers (2026-11-23)</h3>
 <ul>
@@ -405,6 +451,42 @@ checked.</li>
 <li>Fixed: every change under Across Repositories stopped before its
 preview, because the window used another command’s preview by mistake.
 The preview now opens.</li>
+</ul>
+<h3
+id="quill-inkwell-and-quill-transcribe-text-goes-only-where-you-started-2026-11-23">Quill
+Inkwell and QUILL Transcribe: text goes only where you started
+(2026-11-23)</h3>
+<p>Text typed into another program now goes into the field it was meant
+for, or nowhere. If that field cannot be confirmed, the text is kept,
+not typed somewhere else, and it is never read aloud.</p>
+<ul>
+<li><strong>Inkwell’s expansions work again.</strong> Every system-wide
+expansion failed inside Inkwell and typed nothing, because the expansion
+asked for the window it was typed in and that was never recorded. Each
+expansion now carries its window, and is typed there or not at all.</li>
+<li><strong>Quick Insert and fields check the field.</strong> Quick
+Insert’s picker and an expansion’s fill-in form take the focus, so
+Inkwell now remembers the field you were in (its program, window and the
+field itself) before they open, and checks it again just before typing.
+Before, Quick Insert typed into whatever was in front once its window
+closed. If the focus came back somewhere else, or the program was closed
+and opened again, nothing is typed: a small window, Text Not Typed, says
+why in one sentence and offers Insert (go back to that field and type it
+there) or Copy. A field Windows reports as a password field offers Copy
+only.</li>
+<li><strong>Taking an expansion back</strong> with Backspace now types
+only in the window it expanded in, and says “Not undone” with the reason
+otherwise.</li>
+<li><strong>Plain words for a refusal.</strong> An expansion that cannot
+be typed now says “Not expanded, because the focus is not where you
+started.” (or the other reason) instead of an internal message.</li>
+<li><strong>Dictation tells two boxes apart.</strong> QUILL Transcribe
+and Inkwell’s Dictate Anywhere know the field you started in by its
+program, window and control. When Windows could not name the control,
+they compared its kind of window, which two edit boxes in one dialog
+share, so moving from one to the other kept typing. They now compare the
+box’s own window, and a moment when Windows cannot say which window is
+in front holds the words.</li>
 </ul>
 <h3
 id="shared-runtime-the-practice-sites-wordpress-playground-ships-again-2026-11-23">Shared
