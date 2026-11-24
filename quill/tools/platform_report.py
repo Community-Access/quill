@@ -212,6 +212,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.check_access_keys"),
     ),
     Gate(
+        "group-captions",
+        "GATE-GROUP: a check box or radio button in a group says which group it is",
+        (sys.executable, "-m", "quill.tools.group_caption_audit"),
+    ),
+    Gate(
         "menubar-mnemonics",
         "GATE-15: no window control shares an Alt letter with its menu bar",
         (sys.executable, "-m", "quill.tools.check_menubar_mnemonics"),
