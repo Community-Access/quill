@@ -8,6 +8,18 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased] - 2026-11-07
 
+### The chapter keys land where they say (2026-11-23)
+
+- **Next Chapter in the last chapter** says "This is the last chapter." and
+  stays put. It used to jump back to the start of the chapter you were in and
+  announce it as if it had moved.
+- **The chapter keys find the chapters the Chapters list finds.** When nothing
+  was published, Ctrl+Shift+. and Ctrl+Shift+, now move through the file's own
+  chapter marks, or the chapters QUILL Cast worked out, instead of saying there
+  are none. Worked-out chapters are said with "estimated".
+- "This has no chapters." replaces "This video has no chapters.", which was
+  said for podcast episodes, recordings and files too.
+
 ### Infinity or NaN in the settings file no longer stops Radio (2026-11-20)
 
 A hand-edited or damaged settings file with `Infinity` or `NaN` in a number

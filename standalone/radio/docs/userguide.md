@@ -1607,7 +1607,14 @@ episode, a recording or a downloaded file.
   chapter you are in.
 - **Next Chapter** (Ctrl+Shift+.) and **Previous Chapter** (Ctrl+Shift+,) move
   by chapter. Like a CD player, Previous Chapter first goes back to the start
-  of the chapter you are in.
+  of the chapter you are in. Each move says the chapter's name and its place,
+  "The problem, chapter 2 of 5." In the last chapter, Next Chapter says "This is
+  the last chapter." and leaves you where you are, and Previous Chapter at the
+  start of the first one says "This is the first chapter."
+- When the uploader published no chapters, the chapter keys use the same ones
+  the **Chapters...** list finds: the file's own chapter marks, or chapters
+  QUILL Cast worked out earlier. Chapters that were worked out rather than
+  published end with "estimated", so you know a person did not place them.
 - **Skip Silence** (Ctrl+Shift+9) shortens long pauses. It works straight away,
   with no break in the sound.
 

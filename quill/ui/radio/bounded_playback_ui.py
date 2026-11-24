@@ -22,8 +22,17 @@ from typing import Any
 #: Said whenever a transport command lands on a live stream.
 LIVE_REFUSAL = "This is a live stream, so there is no timeline to move along."
 
-#: Said when the video plays but its uploader published no chapters.
-NO_CHAPTERS = "This video has no chapters."
+#: Said when what plays has no chapters anywhere: none published, none in the
+#: file, none Cast worked out. Not "this video": episodes, recordings and local
+#: files land here too (FUX-14 audit, 2026-11-23).
+NO_CHAPTERS = "This has no chapters."
+
+#: Said by Next Chapter in the last chapter. It used to seek back to the start
+#: of the chapter you were in and announce it, as if it had moved.
+LAST_CHAPTER = "This is the last chapter."
+
+#: Said by Previous Chapter in the first seconds of the first chapter.
+FIRST_CHAPTER = "This is the first chapter."
 
 CHAPTERS_TITLE = "Chapters"
 GO_TO_POSITION_TITLE = "Go to Position"
@@ -281,12 +290,99 @@ def toggle_skip_silence(host: Any) -> None:
 # -- chapters ----------------------------------------------------------------
 
 
-def _announce_chapter(host: Any, index: int) -> None:
-    controller = _controller(host)
-    chapters = controller.chapters()
+def _announce_chapter(host: Any, index: int, chapters: list[Any] | None = None) -> None:
+    from quill.core.podcasts.chapter_scoring import is_estimated
+    from quill.core.structure_landing import describe_landing
+
+    if chapters is None:
+        chapters = _controller(host).chapters()
     if 0 <= index < len(chapters):
-        title = str(getattr(chapters[index], "title", "") or "").strip() or "Untitled chapter"
-        host._announce(f"{title}, chapter {index + 1} of {len(chapters)}.")
+        chapter = chapters[index]
+        title = str(getattr(chapter, "title", "") or "")
+        host._announce(
+            describe_landing(
+                "chapter", title, index, len(chapters), estimated=is_estimated(chapter)
+            )
+        )
+
+
+def _found_chapters(controller: Any) -> tuple[list[Any], str]:
+    """Chapters that already exist for what plays but were not published with it.
+
+    The file's own chapter frames, or the list QUILL Cast worked out earlier
+    (:mod:`quill.core.radio.chapter_lookup`). The Chapters list has offered
+    these since 2026-10; Next and Previous Chapter now reach the same ones, so
+    the list and the keys never disagree about whether there are chapters.
+    """
+    from quill.core.paths import app_data_dir
+    from quill.core.radio.chapter_lookup import chapters_for_media, identify_episode
+
+    station = getattr(getattr(controller, "state", None), "station", None)
+    show_id, guid = "", ""
+    try:
+        if station is not None:
+            show_id, guid = identify_episode(
+                app_data_dir(),
+                str(getattr(station, "homepage", "") or ""),
+                str(getattr(station, "stream_url", "") or ""),
+            )
+        return chapters_for_media(local_media_path(controller), show_id=show_id, episode_guid=guid)
+    except Exception:  # noqa: BLE001 - a lookup that fails is simply no chapters
+        return [], ""
+
+
+def _position_ms(controller: Any) -> int:
+    probe = getattr(controller, "position_ms", None)
+    if callable(probe):
+        return int(probe())
+    engine = getattr(controller, "_engine", None)
+    return int(engine.position_ms()) if engine is not None else 0
+
+
+def _step_found_chapters(host: Any, direction: int) -> bool:
+    """Next/Previous over :func:`_found_chapters`. False when there are none."""
+    controller = _controller(host)
+    chapters, _where = _found_chapters(controller)
+    if not chapters:
+        return False
+    position = _position_ms(controller)
+    current = -1
+    for index, chapter in enumerate(chapters):
+        if int(getattr(chapter, "start_ms", 0)) <= position:
+            current = index
+    if direction > 0:
+        target = current + 1
+        if target >= len(chapters):
+            host._announce(LAST_CHAPTER)
+            return True
+    else:
+        target = max(0, current)
+        start = int(getattr(chapters[target], "start_ms", 0))
+        # The same rule as published chapters: well inside one, Previous restarts it.
+        if position - start <= _CHAPTER_RESTART_MS:
+            if target == 0:
+                host._announce(FIRST_CHAPTER)
+                return True
+            target -= 1
+    if not controller.seek_to(int(getattr(chapters[target], "start_ms", 0))):
+        host._announce(LIVE_REFUSAL)
+        return True
+    _announce_chapter(host, target, chapters)
+    return True
+
+
+#: Matches ``player_controller._CHAPTER_RESTART_MS``.
+_CHAPTER_RESTART_MS = 3000
+
+
+def _within_restart(controller: Any) -> bool:
+    """Whether the playhead is in the first seconds of its published chapter."""
+    chapters = controller.chapters()
+    index = controller.current_chapter_index()
+    if not 0 <= index < len(chapters):
+        return False
+    start = int(getattr(chapters[index], "start_ms", 0))
+    return _position_ms(controller) - start <= _CHAPTER_RESTART_MS
 
 
 def _playlist_step(host: Any, direction: int) -> bool:
@@ -330,8 +426,12 @@ def next_chapter(host: Any) -> None:
         return
     controller = _controller(host)
     if not controller.chapters():
-        if not _playlist_step(host, 1):
+        if not _step_found_chapters(host, 1) and not _playlist_step(host, 1):
             host._announce(NO_CHAPTERS)
+        return
+    if controller.current_chapter_index() >= len(controller.chapters()) - 1:
+        if not _playlist_step(host, 1):
+            host._announce(LAST_CHAPTER)
         return
     index = controller.go_to_adjacent_chapter(1)
     if index < 0:
@@ -349,8 +449,11 @@ def previous_chapter(host: Any) -> None:
         return
     controller = _controller(host)
     if not controller.chapters():
-        if not _playlist_step(host, -1):
+        if not _step_found_chapters(host, -1) and not _playlist_step(host, -1):
             host._announce(NO_CHAPTERS)
+        return
+    if controller.current_chapter_index() == 0 and _within_restart(controller):
+        host._announce(FIRST_CHAPTER)
         return
     index = controller.go_to_adjacent_chapter(-1)
     if index < 0:
@@ -400,18 +503,7 @@ def open_chapters(host: Any) -> None:
     audio_path = local_media_path(controller)
     source_label = "published by the uploader"
     if not chapters:
-        from quill.core.paths import app_data_dir
-        from quill.core.radio.chapter_lookup import chapters_for_media, identify_episode
-
-        station = getattr(getattr(controller, "state", None), "station", None)
-        show_id, guid = "", ""
-        if station is not None:
-            show_id, guid = identify_episode(
-                app_data_dir(),
-                str(getattr(station, "homepage", "") or ""),
-                str(getattr(station, "stream_url", "") or ""),
-            )
-        found, where = chapters_for_media(audio_path, show_id=show_id, episode_guid=guid)
+        found, where = _found_chapters(controller)
         if found:
             chapters, source_label = found, where
     if not chapters:
