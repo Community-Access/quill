@@ -11,7 +11,7 @@ after the dialog's AI consent:
    Tab reaches the words *before* the check box that agrees to them.
 3. **"I agree to send this folder's files to Scribe for Documents (Pneuma
    Solutions)"**: the profile's standing consent, the only one there is
-   (PRD 10.1.1), shown in the profile and revocable by unticking it.
+   (PRD 10.1.1), shown in the profile and revocable by unchecking it.
 
 The wording says that a watch folder spends Scribe pages with nobody at the
 computer, and that each file uses the Scribe for Documents Options as they
@@ -25,6 +25,7 @@ from typing import Any
 from quill.core.scribe import PRODUCT_NAME
 from quill.core.scribe.consent import COPYRIGHT_LINE
 from quill.core.scribe.model import FORMATS, valid_formats
+from quill.ui.accessible_group import describe_group
 
 ACTION_ID = "scribe_convert"
 
@@ -57,6 +58,7 @@ class ScribeProfileControls:
                 f"With the {PRODUCT_NAME} action, each arriving file is converted to "
                 f"{item.label}. You can choose several."
             )
+            describe_group(box, check)
             box.Add(check, 0, wx.ALL, 2)
             self.formats[item.id] = check
         root.Add(box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -67,7 +69,7 @@ class ScribeProfileControls:
             dialog, value=WATCH_CONSENT_TEXT, style=wx.TE_MULTILINE | wx.TE_READONLY
         )
         self.details.SetName(f"{PRODUCT_NAME} consent details")
-        self.details.SetHelpText("What agreeing below means. Read it before you tick the box.")
+        self.details.SetHelpText("What agreeing below means. Read it before you check the box.")
         root.Add(self.details, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         self.consent = wx.CheckBox(
@@ -77,7 +79,7 @@ class ScribeProfileControls:
         self.consent.SetValue(bool(options.get("consent", False)))
         self.consent.SetName(f"{PRODUCT_NAME} consent for this profile")
         self.consent.SetHelpText(
-            "This profile's standing consent. Untick it at any time and nothing more is sent."
+            "This profile's standing consent. Uncheck it at any time and nothing more is sent."
         )
         root.Add(self.consent, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
         #: The profile's own settings, if its file names any: kept as they were.
@@ -99,7 +101,7 @@ class ScribeProfileControls:
             return (f"Choose at least one format for {PRODUCT_NAME} to make.", self.formats["docx"])
         if not self.consent.GetValue():
             return (
-                f"To use {PRODUCT_NAME} in this profile, read the consent details and tick "
+                f"To use {PRODUCT_NAME} in this profile, read the consent details and check "
                 "the box that agrees to them.",
                 self.consent,
             )

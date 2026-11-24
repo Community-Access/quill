@@ -16,7 +16,7 @@ from quill.core.github.pr_review import (
     PullReviewClient,
 )
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, show_modal_dialog
-from quill.ui.dpi import dip_size
+from quill.ui.dpi import dip_size, fit_to_work_area
 from quill.ui.github_pr_review_copilot import GitHubPullReviewCopilotMixin
 from quill.ui.github_pr_review_extras import GitHubPullReviewExtrasMixin
 from quill.ui.github_pr_review_menus import GitHubPullReviewMenusMixin
@@ -81,6 +81,7 @@ class GitHubPullReviewDialog(
         )
         self.dialog.SetMinSize(dip_size(self.dialog, 960, 600))
         self.dialog.SetSize(dip_size(self.dialog, 1180, 740))
+        fit_to_work_area(self.dialog)  # 960 DIPs minimum is wider than a 1080p screen at 200%
         panel = wx.Panel(self.dialog)
         root = wx.BoxSizer(wx.VERTICAL)
 

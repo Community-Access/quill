@@ -2,6 +2,7 @@
   "quill.ui.abbreviation_manager_dialog": "reachable",
   "quill.ui.abbreviation_transfer": "reachable",
   "quill.ui.about_notices": "reachable",
+  "quill.ui.accessible_group": "reachable",
   "quill.ui.action_builder_dialog": "reachable",
   "quill.ui.activity_window": "reachable",
   "quill.ui.agent_validator_dialog": "reachable",

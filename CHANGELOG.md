@@ -2,6 +2,48 @@
 
 ## 1.0.0
 
+### Scribe for Documents: the voices are there, and Play Sample answers (2026-11-23)
+
+In Convert with Scribe for Documents, in QUILL and QUILL Lite:
+
+- **The voices are listed straight away.** When you have not chosen a
+  dialect for a language before, Dialect starts on the dialect of the
+  document's own language when the file says what it is (Word, PDF, web page or EPUB), or
+  else on your Windows language and region, such as English (United
+  States). This works with Language on Detect automatically too. A dialect
+  you chose, or one in your Scribe account, always wins, and one chosen for
+  you is used for that document only: it is never saved as your Scribe
+  account default.
+- **Every voice, even on Scribe's default dialect.** With Dialect on
+  Scribe's default, Voice lists every dialect's voices, each with its
+  dialect, such as "Jenny, English (United States)". Choosing one chooses
+  its dialect too. A voice Scribe has no sample of says so in its name,
+  such as "Guy, no sample".
+- **Play Sample always answers.** It plays the sample, or says "Choose a
+  voice to hear a sample.", or that the voice has no sample, or that the
+  voices are still loading or could not be loaded. A second press while a
+  sample downloads does not start another. Before, with no voice
+  chosen, it could seem to do nothing.
+- **Retry Loading puts you on the lists.** When it works, you land on
+  Language (or Dialect, for a document already uploaded) with the lists
+  filled in; when it fails again, it says so.
+- Language and Dialect come before Voice and Play Sample, in Tab order and
+  on the screen.
+
+### Scribe for Documents: groups of options say which group they are (2026-11-23)
+
+In Scribe Options, the "Default formats" check boxes read only "Word, check
+box, not checked", so you could not tell what Word was for. The choices under
+"Open each result when it is ready" read the same way, without the question.
+Each check box and radio button in a group now says its group after its own
+name and state, for example "Word, check box, not checked, Default formats".
+The same goes for "What you want back" and the settings groups in Convert with
+Scribe, and "Scribe for Documents makes" in a watch profile.
+
+Alt+W now moves to the "Open each result when it is ready" choices. Its
+underlined letter did nothing before.
+
+Help in these dialogs says "checked", not "ticked".
 ### QUILL Lite makes listening versions of WordPress pages (2026-11-23)
 
 **Tools > WordPress > More Media > Make a Listening Version** now works in
@@ -13,6 +55,27 @@ in both downloads, so nothing is downloaded when you first use it.
 If FFmpeg is missing from a copy of QUILL or QUILL Lite, the command now says
 so before anything is recorded, and says how to get it back. It used to
 record the page and then fail with a file error.
+### Workbench windows stay on your screen, and so does Details (2026-11-23)
+
+In the WordPress and GitHub Workbenches, the Details box could run past what
+you could see, so the end of a line was cut off. Two things caused it, and
+both are fixed:
+
+- The window opened at a fixed size and never checked the screen. At 200
+  percent scaling, or on a smaller screen, its right side, where Details is,
+  hung off the edge. It now opens inside the screen, and a size the GitHub
+  Workbench remembered from a bigger screen is made to fit.
+- Made narrow enough, the window pushed its right side, list and Details
+  included, out of view. It now stops at a width where both sides still show.
+
+The row of status cells along the bottom also shows now as soon as it has
+something to say; it used to stay squeezed out of sight until you resized the
+window.
+
+The same fit applies to every main window that remembers its size, and to the
+Review Pull Request and List Manager windows, which were wider than a 1080p
+screen at 200 percent. A window you stretched across two screens is brought
+back onto one when it opens.
 
 ### QUILL Lite's portable copy does everything the installed one does (2026-11-23)
 

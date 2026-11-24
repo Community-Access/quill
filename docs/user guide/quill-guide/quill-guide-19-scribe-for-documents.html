@@ -697,12 +697,16 @@ settings</h3>
 </tr>
 <tr>
 <td>Dialect</td>
-<td>Scribe’s default, or a dialect of the chosen language</td>
+<td>Scribe’s default, or a dialect of the chosen language. When nothing
+is saved, it starts on the document’s own language, or else your Windows
+language and region</td>
 </tr>
 <tr>
 <td>Voice</td>
-<td>Scribe’s default, or a voice for that dialect. Used for MP3 and
-DAISY</td>
+<td>Scribe’s default, or a voice for that dialect. With Dialect on
+Scribe’s default, every dialect’s voices, each with its dialect, such as
+“Jenny, English (United States)”. Choosing one chooses its dialect too.
+Used for MP3 and DAISY</td>
 </tr>
 <tr>
 <td>Play Sample</td>
@@ -725,6 +729,37 @@ times</td>
 loaded”, and a <strong>Retry Loading</strong> button appears after the
 language. Scribe may not yet read faster at 3 or 4 times than at 2
 times, so those two say “(may not be faster than 2 times)”.</p>
+<p>Language and Dialect always come before Voice and Play Sample, so the
+voices you hear about are the ones for the language you chose.</p>
+<p><strong>The starting dialect.</strong> When you have not chosen a
+dialect for a language before, QUILL starts on one for you: the
+document’s own language when the file says what it is (a Word document,
+a PDF, a web page or an EPUB book), or else your Windows display
+language and region. With Language on Detect automatically, it starts on
+the dialect for that language too, so the voices are listed; that
+dialect and voice are used only if Scribe finds that language. A dialect
+you choose, or one saved in your Scribe account, always wins. A dialect
+QUILL chose for you is used for this document only: it is not saved as
+your Scribe account default, even with <strong>Also save as my Scribe
+account defaults</strong> checked.</p>
+<p><strong>Voices without a sample.</strong> A voice Scribe has no
+sample of says so in its name, for example “Guy, no sample”.</p>
+<p><strong>What Play Sample says.</strong> It always answers:</p>
+<ul>
+<li>With a voice chosen that has a sample, it plays the sample.</li>
+<li>With Voice on Scribe’s default: “Choose a voice to hear a
+sample.”</li>
+<li>With a voice that has no sample, for example: “Guy has no
+sample.”</li>
+<li>While the lists are still loading: “The voices are still
+loading.”</li>
+<li>If the lists could not be loaded: “The voices could not be loaded.
+Use Retry Loading, Alt+Y.”</li>
+<li>While the sample is downloading: “The sample is still coming.” A
+second press never starts a second download.</li>
+<li>If the sample cannot be fetched: “The sample could not be
+played.”</li>
+</ul>
 <h3 id="the-braille-settings">The Braille settings</h3>
 <p>Shown when Braille (BRF) is checked.</p>
 <table>
@@ -1543,8 +1578,11 @@ DAISY audio for the Media Player</h3>
 File…</strong> and choose the textbook, here “Biology.pdf”.</li>
 <li>In the Convert dialog, uncheck <strong>Word</strong> and check
 <strong>DAISY (text and audio)</strong>.</li>
-<li>Tab to <strong>Voice</strong>. Choose a voice and press <strong>Play
-Sample</strong> to hear it. Press Escape to stop the sample.</li>
+<li>Tab past <strong>Language</strong> and <strong>Dialect</strong> to
+<strong>Voice</strong>. Dialect usually starts on your document’s
+language, or your Windows language, so its voices are listed. Choose a
+voice and press <strong>Play Sample</strong> to hear it. Press Escape to
+stop the sample.</li>
 <li>Choose a <strong>Speed</strong>, such as 1.5 times.</li>
 <li>Tab to <strong>Pages</strong> and check you have enough. Then press
 <strong>Send and Convert</strong>.</li>

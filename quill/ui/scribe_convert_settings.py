@@ -28,6 +28,17 @@ controller. While a list loads its control says "Loading voices..." (enabled,
 not dimmed, so Tab still reaches it); if loading fails it says "Voices could
 not be loaded" and Retry Loading appears right after it. A list is never
 empty.
+
+**Language, then Dialect, then Voice and Play Sample** (Jeff, 2026-11-23), in
+Tab order and on screen: they are created in that order and nothing moves
+them. The starting dialect and the voice list are
+:mod:`quill.core.scribe.voices`'s: a dialect suggested from the document's
+language or Windows' when nothing is saved, and every dialect's voices when
+Dialect is on Scribe's default. A suggestion stays a suggestion until the
+person chooses a dialect or a voice: :meth:`SettingsGroups.remembered`
+leaves it out of what this app remembers, and :meth:`suggested` tells the
+dialog to keep it out of the account's defaults. Filling those two lists,
+and Play Sample, are :class:`~quill.ui.scribe_voice_settings.VoiceSettingsMixin`'s.
 """
 
 from __future__ import annotations
@@ -46,12 +57,12 @@ from quill.core.scribe.model import (
     nearest_rate,
     visible_groups,
 )
+from quill.core.scribe.voices import os_language_tags
+from quill.ui.accessible_group import describe_group
+from quill.ui.scribe_voice_settings import DETECT, SCRIBE_DEFAULT, VoiceSettingsMixin
 
-DETECT = "Detect automatically"
-SCRIBE_DEFAULT = "Scribe's default"
 
-
-class SettingsGroups:
+class SettingsGroups(VoiceSettingsMixin):
     """Builds the four groups into *parent*'s *sizer*; owns their controls."""
 
     def __init__(
@@ -63,12 +74,20 @@ class SettingsGroups:
         *,
         ai_off: bool,
         app_name: str,
+        language_hints: list[str] | None = None,
     ) -> None:
         self._parent = parent
         self._controller = controller
         self._settings = settings
         self._lists: dict[str, Any] = {}
         self._player: Any = None
+        #: Where a starting dialect comes from: the document's language, then Windows'.
+        self._hints = [h for h in (language_hints or []) if h] + os_language_tags()
+        #: The dialect suggested for the language shown, as (language, locale).
+        self._suggestion: tuple[str, str] | None = None
+        #: The person chose a dialect or a voice: no suggestion any more.
+        self._voice_chosen = False
+        self._voice_rows: dict[str, Any] = {}
         self.boxes: dict[str, Any] = {}
         labels = {key: label for key, label, _shown in GROUPS}
 
@@ -82,6 +101,7 @@ class SettingsGroups:
             "The settings this document's upload fixed: language, picture descriptions, "
             "mathematics and large print. They cannot be changed for it."
         )
+        describe_group(box, self.fixed)
         box.Add(self.fixed, 0, wx.EXPAND | wx.ALL, 4)
         self.fixed_label.Hide()
         self.fixed.Hide()
@@ -90,7 +110,8 @@ class SettingsGroups:
             box,
             "&Language:",
             ["Loading languages..."],
-            "The document's language. Detect automatically lets Scribe find it.",
+            "The document's language. Detect automatically lets Scribe find it; the dialect "
+            "and voice shown then are used only if Scribe finds that language.",
         )
         self.retry = wx.Button(box.GetStaticBox(), label="Retr&y Loading")
         self.retry.SetHelpText(
@@ -102,20 +123,24 @@ class SettingsGroups:
             box,
             "&Dialect:",
             ["Loading dialects..."],
-            "The dialect of the chosen language, which decides the voices offered.",
+            "The dialect of the chosen language, which decides the voices offered. With "
+            "nothing saved, it starts on the document's language or your Windows language.",
         )
         row = wx.BoxSizer(wx.HORIZONTAL)
         self.voice = self._choice(
             box,
             "&Voice:",
             ["Loading voices..."],
-            "The voice for MP3 and DAISY audio. Play Sample lets you hear it.",
+            "The voice for MP3 and DAISY audio. With Dialect on Scribe's default, every "
+            "dialect's voices are listed, each with its dialect, and choosing one chooses "
+            "its dialect too. A voice Scribe has no sample of ends in no sample.",
             into=row,
         )
         self.sample = wx.Button(box.GetStaticBox(), label="Play &Sample")
         self.sample.SetHelpText(
             "Plays a short sample of the chosen voice. While it plays the button reads Stop "
-            "Sample, and Escape stops the sample without closing the dialog."
+            "Sample, and Escape stops the sample without closing the dialog. With no voice "
+            "chosen, or one without a sample, it says so."
         )
         row.Add(self.sample, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 4)
         box.Add(row, 0, wx.EXPAND)
@@ -202,7 +227,7 @@ class SettingsGroups:
         )
 
         self.touched = False
-        for control in (self.gender, self.speed, self.table, self.voice):
+        for control in (self.gender, self.speed, self.table):
             control.Bind(wx.EVT_CHOICE, self._on_touched)
         for control in (self.cells, self.lines):
             control.Bind(wx.EVT_SPINCTRL, self._on_touched)
@@ -218,7 +243,8 @@ class SettingsGroups:
             control.Bind(wx.EVT_SET_FOCUS, self._on_touched)
         self._ai_off = ai_off
         self.language.Bind(wx.EVT_CHOICE, lambda e: (self._on_touched(e), self._fill_dialects()))
-        self.dialect.Bind(wx.EVT_CHOICE, lambda e: (self._on_touched(e), self._fill_voices()))
+        self.dialect.Bind(wx.EVT_CHOICE, lambda e: (self._on_touched(e), self.dialect_chosen()))
+        self.voice.Bind(wx.EVT_CHOICE, lambda e: (self._on_touched(e), self.voice_chosen()))
         self.sample.Bind(wx.EVT_BUTTON, lambda _e: self.toggle_sample())
         self.retry.Bind(wx.EVT_BUTTON, lambda _e: self.load())
         self.load()
@@ -226,8 +252,12 @@ class SettingsGroups:
     # ------------------------------------------------------- starting values
 
     def _on_touched(self, event: Any) -> None:
-        self.touched = True
         event.Skip()
+        moved = getattr(self, "_focus_moved_to", None)
+        if moved is not None and event.GetEventObject() is moved:
+            self._focus_moved_to = None  # our own move after Retry Loading
+            return
+        self.touched = True
 
     def _set_speed(self, rate: float) -> None:
         rates = [value for value, _label in TTS_RATES]
@@ -312,6 +342,7 @@ class SettingsGroups:
         choice.SetSelection(0)
         choice.SetName(label.replace("&", "").rstrip(":"))
         choice.SetHelpText(help_text)
+        describe_group(box, choice)
         target.Add(choice, 1 if into is not None else 0, wx.EXPAND | wx.ALL, 4)
         return choice
 
@@ -330,6 +361,7 @@ class SettingsGroups:
         check = wx.CheckBox(box.GetStaticBox(), label=label)
         check.SetValue(bool(value))
         check.SetHelpText(help_text)
+        describe_group(box, check)
         box.Add(check, 0, wx.ALL, 4)
         return check
 
@@ -365,7 +397,8 @@ class SettingsGroups:
         if cached:
             self._apply(cached)
             return
-        self.retry.Hide()
+        if wx.Window.FindFocus() is not self.retry:  # never hide what has focus
+            self.retry.Hide()
 
         def work() -> dict[str, Any]:
             client = self._controller.client()
@@ -402,14 +435,18 @@ class SettingsGroups:
             control.SetSelection(0)
         self.retry.Show()
         self._parent.Layout()
-        if wx.Window.FindFocus() in (self.language, self.voice, self.table, self.dialect):
+        focused = wx.Window.FindFocus()
+        if focused is self.retry:  # Retry Loading was pressed and failed again
+            self._say("The lists still could not be loaded. Use Retry Loading, Alt+Y.")
+        elif focused in (self.language, self.voice, self.table, self.dialect):
             self._controller.host.scribe_announce(
-                "The lists could not be loaded. Use Retry Loading."
+                "The lists could not be loaded. Use Retry Loading, Alt+Y."
             )
 
     def _apply(self, lists: dict[str, Any]) -> None:
         if not self._alive():
             return
+        move = wx.Window.FindFocus() is self.retry
         self._lists = lists
         self._set(self.language, [(DETECT, "")] + list(lists["languages"]), self._settings.language)
         self._set(
@@ -419,6 +456,14 @@ class SettingsGroups:
         )
         self._fill_dialects()
         self._refresh_fixed(self._settings)
+        if move:
+            # Retry Loading worked and is about to go: focus to the first list,
+            # filled first so the screen reader reads its new value. Arriving
+            # there this way is not the person reaching a setting, so values
+            # read from the account later may still go in.
+            target = self.language if self.language.IsShown() else self.dialect
+            self._focus_moved_to = target
+            target.SetFocus()
         self.retry.Hide()
         self._parent.Layout()
 
@@ -436,67 +481,6 @@ class SettingsGroups:
             return ""
         return str(ids[index])
 
-    def _fill_dialects(self) -> None:
-        language = self._value(self.language)
-        dialects = list(self._lists.get("dialects", {}).get(language, [])) if language else []
-        chosen = self._settings.dialects.get(language, "")
-        self._set(self.dialect, [(SCRIBE_DEFAULT, "")] + dialects, chosen)
-        self._fill_voices()
-
-    def _fill_voices(self) -> None:
-        locale = self._value(self.dialect)
-        voices = self._lists.get("voices", {}).get(locale, []) if locale else []
-        self._samples = {short: has for _n, short, has in voices}
-        chosen = self._settings.voices.get(locale, "")
-        self._set(self.voice, [(SCRIBE_DEFAULT, "")] + [(n, s) for n, s, _h in voices], chosen)
-
-    # -------------------------------------------------------------- sample
-
-    def sample_playing(self) -> bool:
-        return self._player is not None and self._player.is_playing()
-
-    def toggle_sample(self) -> None:
-        if self.sample_playing():
-            self.stop_sample()
-            return
-        short = self._value(self.voice)
-        if not short or not getattr(self, "_samples", {}).get(short):
-            self._controller.host.scribe_announce("This voice has no sample.")
-            return
-
-        self._controller._background(
-            lambda: self._controller.client().voice_sample(short),
-            self._play,
-            lambda _error: self._controller.host.scribe_announce("The sample could not be played."),
-        )
-
-    def _play(self, data: bytes) -> None:
-        from quill.ui.scribe_sample_player import SamplePlayer
-
-        if not self._alive():
-            return
-        self._player = self._player or SamplePlayer()
-        if self._player.play(data):
-            self.sample.SetLabel("&Stop Sample")
-            # Back to Play Sample when the sample ends on its own.
-            self._sample_timer = wx.CallLater(500, self._watch_sample)
-        else:
-            self._controller.host.scribe_announce("The sample could not be played.")
-
-    def _watch_sample(self) -> None:
-        if not self._alive():
-            return
-        if self.sample_playing():
-            self._sample_timer = wx.CallLater(500, self._watch_sample)
-        elif self._player is not None:
-            self.stop_sample()
-
-    def stop_sample(self) -> None:
-        if self._player is not None:
-            self._player.stop()
-        if self._alive():
-            self.sample.SetLabel("Play &Sample")
-
     # -------------------------------------------------------------- result
 
     def email_changed(self) -> bool:
@@ -504,15 +488,20 @@ class SettingsGroups:
         return bool(self.notify.GetValue()) != bool(self._settings.notify_when_complete)
 
     def settings(self) -> ScribeSettings:
-        language = self._value(self.language)
+        """The settings for this document, a suggested dialect included."""
+        language = self.voice_language()
         dialect = self._value(self.dialect)
         voice = self._value(self.voice)
+        item = self._voice_rows.get(voice)
+        if voice and not dialect and item is not None:
+            dialect = item.locale  # chosen from every dialect's voices
         dialects = dict(self._settings.dialects)
         voices = dict(self._settings.voices)
         if language and dialect:
             dialects[language] = dialect
         if dialect and voice:
             voices[dialect] = voice
+        language = self._value(self.language)
         gender_index = max(0, self.gender.GetSelection())
         return ScribeSettings(
             language=language if self._lists.get("languages") else self._settings.language,

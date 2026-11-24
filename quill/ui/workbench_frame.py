@@ -42,6 +42,7 @@ from quill.ui.workbench_frame_actions import WorkbenchActionsMixin
 from quill.ui.workbench_frame_commands import WorkbenchCommandsMixin
 from quill.ui.workbench_frame_groups import GroupRef, WorkbenchGroupsMixin
 from quill.ui.workbench_frame_help import WorkbenchHelpMixin
+from quill.ui.workbench_frame_layout import hold_panes
 from quill.ui.workbench_status_bar import StatusCell, WorkbenchStatusBar
 
 __all__ = ["GroupRef", "NodeRef", "WorkbenchFrame", "WorkbenchProvider"]
@@ -187,7 +188,6 @@ class WorkbenchFrame(
         column.Add(self.details, 1, wx.EXPAND | wx.ALL, 4)
         right.SetSizer(column)
         splitter.SplitVertically(self.tree, right, self.frame.FromDIP(280))
-        splitter.SetMinimumPaneSize(self.frame.FromDIP(120))
         outer = wx.BoxSizer(wx.VERTICAL)
         outer.Add(splitter, 1, wx.EXPAND)
         self.status = WorkbenchStatusBar(
@@ -201,6 +201,7 @@ class WorkbenchFrame(
         panel.SetSizer(outer)
         self.frame.SetStatusBarPane(-1)  # menu help must not overwrite the mirrored cells
         self._build_menu()
+        hold_panes(self.frame, splitter)  # both panes, Details included, stay in view
         self._build_tree()
         self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, self._on_tree_selected)
         self.tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, lambda _e: self.list.SetFocus())

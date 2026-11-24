@@ -304,6 +304,31 @@ def test_the_options_have_no_batch_setting(controller: Any) -> None:  # noqa: F8
         dialog.Destroy()
 
 
+def test_the_options_groups_say_which_group_they_are(controller: Any) -> None:  # noqa: F811
+    """Jeff, 2026-11-23: the format check boxes and the open-results choices
+    read without their caption. Each now carries it as its description."""
+    import sys
+
+    import quill.ui.scribe_options_dialog as options_dialog
+    from quill.ui.accessible_group import group_description
+
+    if sys.platform != "win32":
+        pytest.skip("wx.Accessible is Windows-only")
+    dialog = options_dialog.ScribeOptionsDialog(None, controller)
+    try:
+        assert {group_description(check) for check in dialog.formats.values()} == {
+            "Default formats"
+        }
+        buttons = dialog.open_results.buttons()
+        assert [group_description(b) for b in buttons] == [
+            "Open each result when it is ready"
+        ] * len(buttons)
+        dialog.open_results.SetSelection(1)
+        assert dialog.result().open_results == options_dialog.OPEN_CHOICES[1][0]
+    finally:
+        dialog.Destroy()
+
+
 # ------------------------------------- the corpus variants, from the dialog
 
 
@@ -347,10 +372,15 @@ def test_a_document_already_in_the_account_starts_with_scribes_email_off(sync: A
 def test_saving_account_defaults_leaves_the_email_unless_it_was_changed(
     sync: Any,  # noqa: F811
     isolated: Path,  # noqa: F811
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from quill.core.scribe.client import ScribeClient
+    from quill.ui import scribe_convert_settings
     from tests.unit.core.scribe.fake_scribe import BASE, StaticTokens
 
+    # No dialect suggested from this computer's language: one would be left
+    # out too (tests/unit/ui/test_scribe_voice_settings.py), and this is the email.
+    monkeypatch.setattr(scribe_convert_settings, "os_language_tags", lambda: [])
     dialog = _dialog(sync, paths=[_source(isolated)], formats=["docx"])
     try:
         dialog.defaults.SetValue(True)
