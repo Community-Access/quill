@@ -2,6 +2,21 @@
 
 ## 1.0.0
 
+### Review the AI's chapter titles one by one (2026-11-24)
+
+In the Chapter Workbench, **Propose AI titles...** no longer replaces every
+title at once. The proposals open in **Review Proposed Titles**, one check box
+for each chapter whose title would change, read as "Chapter 3: "Track 03"
+becomes "The Storm"". Only the titles you leave checked go into the list;
+nothing is saved until Save, and **Restore original** still undoes them.
+
+### Read both versions of a sync conflict before choosing (2026-11-24)
+
+Sync History now shows the selected conflict below the list: this device's
+version, the other device's, each line that differs marked as removed or
+added, and what Use Merged keeps. Before, a conflict was only a row naming the
+beacon, so you chose a version without reading either.
+
 ### Compare, then take only the changes you want (2026-11-24)
 
 In QUILL, the compare dialog (**Compare with File...**) has a **Take

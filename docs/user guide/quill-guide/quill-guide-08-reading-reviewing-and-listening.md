@@ -1104,9 +1104,11 @@ adding Shift moves ten steps at once.
   listening to them. The first minute of each chapter is transcribed on this
   computer by the local speech model, so the audio never leaves your
   computer. Only that text goes to the AI you have set up (a local model
-  keeps even the text on your computer). A short suggested title for each
-  chapter lands in the list for you to review, and **Restore original**
-  undoes the lot. Needs AI set up; not available in Safe Mode.
+  keeps even the text on your computer). The suggested titles open in
+  **Review Proposed Titles**, one check box for each chapter whose title would
+  change, with its title now and the proposed one. Only the checked titles go
+  into the list, and **Restore original** undoes them. Needs AI set up; not
+  available in Safe Mode.
 
 #### Checking, importing and splitting
 

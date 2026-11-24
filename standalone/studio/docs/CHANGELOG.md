@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [2.0.0] - built, not yet released
 
+- **Review the AI's chapter titles one by one** (FUX-12, 2026-11-24). In the
+  Chapter Workbench, Propose AI titles no longer replaces every title at once.
+  The proposals open in Review Proposed Titles, one check box for each chapter
+  whose title would change, with its title now and the proposed one. Only the
+  checked titles go into the list; nothing is saved until Save, and Restore
+  original still undoes them.
 - **The Library Window opens, and keeps your place** (FUX-06, 2026-11-23).
   Opening it failed, because the window handed its tree to a method that took
   none. A reload now keeps you on the same copy of a book that shows under both

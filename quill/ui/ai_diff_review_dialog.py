@@ -26,6 +26,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from quill.core.ai.diff_review import DiffReview
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
 from quill.ui.dpi import dip_size
 
@@ -54,6 +55,7 @@ class DiffReviewDialog:
         on_apply: Callable[[str], None],
         announce: Callable[[str], None] | None = None,
         intro: str = "",
+        review: DiffReview | None = None,
     ) -> None:
         import wx
 
@@ -62,7 +64,9 @@ class DiffReviewDialog:
         self._wx = wx
         self._on_apply = on_apply
         self._announce = announce or (lambda _message: None)
-        self.review = build_diff_review(original_text, revised_text)
+        # A caller with its own units (Studio's chapter titles) passes the
+        # review it built; otherwise the two texts are compared line by line.
+        self.review = review or build_diff_review(original_text, revised_text)
         self.applied = False
         #: Accepted word groups per hunk, for hunks with any word groups.
         self._word_choices: dict[int, set[int]] = {

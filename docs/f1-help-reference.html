@@ -3313,9 +3313,10 @@ only; the file is not changed.</li>
 <li><code>titles_btn</code>: Transcribes the opening minute of each
 chapter with the local speech model (the audio never leaves this
 computer), then sends only that text to your configured AI for a short
-title per chapter. You consent first, the proposals land in the list for
-review, and Restore original undoes them. Needs an AI provider;
-unavailable in Safe Mode.</li>
+title per chapter. You consent first, then check the proposals you want,
+each beside the title it replaces; only those go into the list, and
+Restore original undoes them. Needs an AI provider; unavailable in Safe
+Mode.</li>
 <li><code>import_btn</code>: Replaces the chapter list with one read
 from a file: Audacity labels, a timestamps list, a CUE sheet, Podcasting
 2.0 JSON, or CSV. The whole list is swapped for review; Restore original
@@ -6007,8 +6008,8 @@ Close itself.</li>
 row is one commit with its message, how many entries it carried, and
 which device made it.</li>
 <li><code>self.conflict_list</code>: Changes both sides edited, waiting
-for your decision. Select a row, then choose Use Local, Use Remote, or
-Use Merged below.</li>
+for your decision. Select a row, read both versions in the box below
+(Alt+V), then choose Use Local, Use Remote, or Use Merged.</li>
 <li><code>self.r_local</code>: Resolve the selected conflict by keeping
 this device’s version.</li>
 <li><code>self.r_remote</code>: Resolve the selected conflict by taking
@@ -6056,6 +6057,14 @@ playback to its start. From anywhere in the window, Ctrl+Shift+Period
 goes to the next chapter and Ctrl+Shift+Comma to the previous one.</li>
 <li><code>self.transcript</code>: The episode’s transcript as read-only
 text, when one is available. Empty otherwise.</li>
+</ul>
+<h4 id="module-level-quillappsbeaconsync_conflictspy">(module level)
+(<code>quill/apps/beacon/sync_conflicts.py</code>)</h4>
+<ul>
+<li><code>detail</code>: The selected conflict as text: this device’s
+version, the other device’s, each line that differs marked as removed or
+added, and what Use Merged keeps. Read it before choosing Use Local, Use
+Remote or Use Merged.</li>
 </ul>
 <h2 id="github-workbench">GitHub Workbench</h2>
 <p>Control coverage: 408 audited sites (408 helped).</p>

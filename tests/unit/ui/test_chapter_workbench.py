@@ -400,3 +400,33 @@ class _OKDialogWithDefaults:
 
     def values(self):
         return -30.0, 0.8
+
+
+def test_ai_titles_go_in_only_as_reviewed(wx_app, tmp_path, monkeypatch):
+    """FUX-12: proposals open in the review; only the checked titles reach the list."""
+    announces: list[str] = []
+    frame, dlg = _make(wx_app, tmp_path, announces)
+    try:
+        before = [c.title for c in dlg._book.chapters]
+        dlg._book.path.write_bytes(b"x")
+        dlg._ask_ai = lambda *_a, **_k: ""
+        dlg._run_background = None
+        monkeypatch.setattr(cwb, "show_message_box", lambda *_a, **_k: wx.YES)
+        monkeypatch.setattr(
+            "quill.core.speech.chapter_titles.propose_chapter_titles",
+            lambda *_a, **_k: ["Opening"] + [f"New {i}" for i in range(1, len(before))],
+        )
+        reviewed: list[list[str]] = []
+
+        def fake_review(_parent, titles, proposals, _announce):
+            reviewed.append(list(proposals))
+            return ["Opening"] + titles[1:]  # took only the first proposal
+
+        monkeypatch.setattr(cwb, "review_titles", fake_review)
+        dlg._on_propose_ai_titles()
+        assert reviewed and reviewed[0][0] == "Opening"
+        assert [c.title for c in dlg._book.chapters] == ["Opening"] + before[1:]
+        assert announces[-1] == "Took 1 proposed title(s); Restore original undoes them."
+    finally:
+        dlg.Destroy()
+        frame.Destroy()
