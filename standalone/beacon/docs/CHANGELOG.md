@@ -4,11 +4,11 @@
 
 - **Places in Scribe for Documents results** (2026-11-21). A Scribe
   Documents destination lists places in what Scribe for Documents made.
-  Tools > Scribe for Documents > Add My Scribe Documents as Places
+  Tools > Scribe for Documents > Add Documents in My Scribe Account as Places
   (Alt+Shift+F6) makes a place for each document in your Scribe account, and
   QUILL's Next Steps can save one at a heading. A place whose file is gone
   checks your Scribe account and offers to download it again, with no pages
-  used. The submenu also holds Scribe Conversions, My Scribe Documents, Scribe
+  used. The submenu also holds Conversions on This Computer, Documents in My Scribe Account, Scribe
   Status, Repeat Last Scribe Message and Scribe for Documents Options, on
   Alt+Shift+F7 to F11.
 - **Settings survive a full disk or a crash while saving** (2026-11-20).

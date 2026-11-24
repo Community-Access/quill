@@ -311,19 +311,19 @@ runner lock and shared rate count, the 23 input types and the size
 check, consent, options, the library, and the QUILL-SCRIBE-*
 errors.</li>
 <li>The shared windows in <code>quill/ui/scribe_*.py</code>: Sign In,
-Enter Password, Convert with Scribe for Documents, Scribe Conversions,
-My Scribe Documents (with Trash) and Options.</li>
+Enter Password, Convert with Scribe for Documents, Conversions on This
+Computer, Documents in My Scribe Account (with Trash) and Options.</li>
 <li>QUILL: Tools &gt; Scribe for Documents; File &gt; Import &gt;
 Convert with Scribe for Documents; File &gt; Export &gt; With Scribe for
 Documents; Tools &gt; Braille &gt; Translate with Scribe for Documents;
-Window &gt; Scribe Conversions; the offer beside OCR when a PDF has
-little or no text.</li>
+Window &gt; Conversions on This Computer; the offer beside OCR when a
+PDF has little or no text.</li>
 </ul></li>
 <li><strong>Built (phase 2, the rest of QUILL and QUILL Lite,
 2026-11-21; builds on #1994).</strong>
 <ul>
-<li>QUILL: Next Steps in Scribe Conversions (8.1.7: Read Aloud with
-QUILL’s voices, the GLOW accessibility check, Summarize with the
+<li>QUILL: Next Steps in Conversions on This Computer (8.1.7: Read Aloud
+with QUILL’s voices, the GLOW accessibility check, Summarize with the
 person’s own AI, the braille view, Send to Media Player); the streaming
 read tab with Replace with Finished Document (8.1.3); the watch-folder
 action “Convert with Scribe for Documents” (8.1.6); a Scribe for
@@ -331,7 +331,7 @@ Documents page in More Preferences.</li>
 <li>QUILL Lite (8.2): the <code>scribe</code> feature area (off by
 default, on only in Everything; offered on first need from the
 scanned-import question), File &gt; Scribe for Documents and Window &gt;
-Scribe Conversions, through the shared entry points
+Conversions on This Computer, through the shared entry points
 (<code>quill/ui/scribe_entry.py</code>) that QUILL uses too.</li>
 <li>A user guide chapter in each editor (QUILL chapter 19, Lite chapter
 17) and F1 topics for every command and window.</li>
@@ -358,8 +358,8 @@ with Scribe for Documents… on the Episode and Item menus
 (<code>quill/core/scribe/links.py</code>,
 <code>quill/ui/scribe_link_choice.py</code>).</li>
 <li>Quill Beacon (8.7): the Scribe Documents destination, Tools &gt;
-Scribe for Documents &gt; Add My Scribe Documents as Places, Download
-Again for a place whose file is gone
+Scribe for Documents &gt; Add Documents in My Scribe Account as Places,
+Download Again for a place whose file is gone
 (<code>quill/apps/beacon/scribe_places.py</code>,
 <code>scribe_ui.py</code>); QUILL’s Next Steps gain Save a Beacon Place…
 (8.1.7, <code>quill/ui/scribe_beacon_place.py</code>).</li>
@@ -395,34 +395,34 @@ menu has no access letter left.</li>
 <li><strong>The other apps’ keys.</strong> Every menu row in Player,
 Converter, Studio, Cast, Beacon and Social shows a key, so their Scribe
 rows have keys (rule 9: a key, not a short one): the app’s own command
-on Alt+Shift+F6, then Scribe Conversions, My Scribe Documents, Scribe
-Status, Repeat Last Scribe Message and Options on Alt+Shift+F7 to F11,
-the same in each. Not Ctrl+Alt+Shift with a letter (AltGr+Shift types
-those on many keyboards) and not the family’s Ctrl+Alt+Shift F-row.
-QUILL and QUILL Lite use Alt+Shift+F6 to F11 for editing, so their
-Scribe rows keep no default key. Each app has a Scribe for Documents
-submenu for the shared rows (File in Player and Converter, Studio in
-Studio, Podcasts in Cast, Tools in Beacon; flat Tools rows in Social,
-whose menus are a table without submenus). Sign In and Sign Out are in
-Options.</li>
+on Alt+Shift+F6, then Conversions on This Computer, Documents in My
+Scribe Account, Scribe Status, Repeat Last Scribe Message and Options on
+Alt+Shift+F7 to F11, the same in each. Not Ctrl+Alt+Shift with a letter
+(AltGr+Shift types those on many keyboards) and not the family’s
+Ctrl+Alt+Shift F-row. QUILL and QUILL Lite use Alt+Shift+F6 to F11 for
+editing, so their Scribe rows keep no default key. Each app has a Scribe
+for Documents submenu for the shared rows (File in Player and Converter,
+Studio in Studio, Podcasts in Cast, Tools in Beacon; flat Tools rows in
+Social, whose menus are a table without submenus). Sign In and Sign Out
+are in Options.</li>
 <li><strong>A result that opens in another app never opens by
 itself</strong> (7.4a, accessibility review 2026-11-21): the other app
 coming to the front would cut the result sentence off. Converter,
-Studio, Cast, Beacon and Social end the sentence “Open it from Scribe
-Conversions.”; Open Result and Next Steps open it. The Media Player
-opens its own audio by itself, and only into a Player the person is in,
-with no dialog open and nothing playing.</li>
+Studio, Cast, Beacon and Social end the sentence “Open it from the
+Conversions on This Computer window.”; Open Result and Next Steps open
+it. The Media Player opens its own audio by itself, and only into a
+Player the person is in, with no dialog open and nothing playing.</li>
 <li><strong>Media Player (8.3):</strong> “plays it when ready” is “opens
 it ready to play”: the book is loaded, not playing, so the result
 sentence is not talked over, and the sentence ends “Press Alt+A to
 play”.</li>
 <li><strong>Converter (8.4):</strong> document jobs are not rows in
-Converter’s audio queue; they are in the shared Scribe Conversions
-window. The audio queue is a list the person edits, and a live job list
-beside it would move under the reader. “Converter’s own output folder
-rules”: the Output folder, or Converted beside the first document, with
-no folder per document. A document added to the audio queue is left out
-with one sentence saying where documents go.</li>
+Converter’s audio queue; they are in the shared Conversions on This
+Computer window. The audio queue is a list the person edits, and a live
+job list beside it would move under the reader. “Converter’s own output
+folder rules”: the Output folder, or Converted beside the first
+document, with no folder per document. A document added to the audio
+queue is left out with one sentence saying where documents go.</li>
 <li><strong>Studio (8.5):</strong> Studio has no File menu, so the row
 is Studio &gt; Narration from Scribe for Documents…; it opens in the
 Chapter Workbench on the person’s command, never by itself, because the
@@ -433,9 +433,9 @@ or many added up, is as long as the MP3.</li>
 are chosen from a standard list, “Choose a Linked Document”.</li>
 <li><strong>Beacon (8.7):</strong> Beacon has Destinations, not a
 sources list; “Scribe Documents” is one, showing Beacon’s Scribe places,
-and Add My Scribe Documents as Places makes the person’s Scribe library
-into places on their command. A place points at a heading (its
-structural locator) or the start; Download Again checks the account
+and Add Documents in My Scribe Account as Places makes the person’s
+Scribe library into places on their command. A place points at a heading
+(its structural locator) or the start; Download Again checks the account
 first and asks only when the document is still there.</li>
 <li><strong>Save a Beacon place (8.1.7)</strong> chooses the start or a
 heading from a list; it is offered only where Beacon is released or
@@ -462,8 +462,8 @@ names the download does not include. The accessible HTML is still what
 opens in the editor and what every Next Step uses; the offline page is
 saved, and Next Steps offers “Open in Your Browser (Web page for offline
 reading)”. The result sentence ends with where the pictures are: in the
-offline page, or, when it was not made, added by Download Formats in My
-Scribe Documents (accessibility review, 2026-11-22).</li>
+offline page, or, when it was not made, added by Download Formats in
+Documents in My Scribe Account (accessibility review, 2026-11-22).</li>
 <li><strong>F3.</strong> DAISY 3 with pictures missing from the zip and
 an OPF that says Z39.86-2002 opens from <code>dtb.ncx</code> with its
 headings. Its audio is split, one MP3 per paragraph or section. Studio’s
@@ -482,9 +482,10 @@ page-number lines.</li>
 <li><strong>F5.</strong> EPUB 2 with <code>dc:language</code>
 <code>C</code> imports; the language falls back to the content’s own
 <code>lang</code> (<code>en</code>), never <code>C</code>.</li>
-<li><strong>F6.</strong> Names, folders and sentences use our stem; My
-Scribe Documents’ Convert and Beacon’s Add My Scribe Documents as Places
-use our recorded name too, not Scribe’s title.</li>
+<li><strong>F6.</strong> Names, folders and sentences use our stem;
+Documents in My Scribe Account’ Convert and Beacon’s Add Documents in My
+Scribe Account as Places use our recorded name too, not Scribe’s
+title.</li>
 <li><strong>F7.</strong> No format has MathML or OMML, math on or off.
 The check box is now “Mathematics (beta)”, and its help and the guides
 say what it does today.</li>
@@ -500,9 +501,10 @@ the Chapter Workbench.” and opens it at once, titled with the book’s
 name; a second request while it is open is ignored.</li>
 <li>A Kindle (MOBI) result’s sentence says how to read it (an older
 Kindle over USB, or Calibre); when nothing made opens by itself, the
-sentence ends “Open Folder in Scribe Conversions shows it.” “Also save
-as my Scribe account defaults” changes the account’s email setting only
-when the person changed it in the dialog.</li>
+sentence ends “To find it, use Open Folder in the Conversions on This
+Computer window.” “Also save as my Scribe account defaults” changes the
+account’s email setting only when the person changed it in the
+dialog.</li>
 </ul></li>
 <li><strong>Follow-ups (2026-11-23).</strong> A BRF that ends with its
 form feed (every Scribe BRF) is no longer counted one page too many.
@@ -510,16 +512,16 @@ QUILL Lite opens a result window, or Media Player, only after the
 sentence that names it (a delay from the sentence’s length, 1.5 to 6
 seconds), so the screen reader’s window announcement does not cut it
 off. The offline web page never opens in an editor as text: when it is
-all there is, Open Result and My Scribe Documents’ Open show it in the
-browser. My Scribe Documents’ Open takes the file that opens first, not
-the one downloaded last. Phase-one audit fixes (2026-11-23): the
-accessible HTML opens readable (converted in QUILL and Lite, in the
-browser from the other apps), the tagged PDF opens in QUILL or Lite on
-command, EPUB is never handed to Lite, Media Player falls back to the
-MP3 when the DAISY book fails and is never handed DAISY 2.02, QUILL’s
-audio hand-off waits for its sentence, a failed hand-off names the right
-app, and a Beacon Scribe place points at the document and opens in the
-family app for its format.</li>
+all there is, Open Result and Documents in My Scribe Account’ Open show
+it in the browser. Documents in My Scribe Account’ Open takes the file
+that opens first, not the one downloaded last. Phase-one audit fixes
+(2026-11-23): the accessible HTML opens readable (converted in QUILL and
+Lite, in the browser from the other apps), the tagged PDF opens in QUILL
+or Lite on command, EPUB is never handed to Lite, Media Player falls
+back to the MP3 when the DAISY book fails and is never handed DAISY
+2.02, QUILL’s audio hand-off waits for its sentence, a failed hand-off
+names the right app, and a Beacon Scribe place points at the document
+and opens in the family app for its format.</li>
 <li><strong>Not built yet.</strong> QUILL Lite’s Send To item and its
 command line (8.10). Live testing against scribeit.io comes once the
 code is merged, and every new surface still needs its NVDA, JAWS and
@@ -633,9 +635,9 @@ afterwards for that document.</li>
 <li><strong>Later changes</strong> use
 <code>PATCH /api/documents/{id}/settings</code>, and apply only to
 formats not made yet: a format already made is not remade. When reusing
-a document from My Scribe Documents (7.5), the dialog says which
-settings are fixed by the earlier upload, and that formats already made
-keep their settings.</li>
+a document from Documents in My Scribe Account (7.5), the dialog says
+which settings are fixed by the earlier upload, and that formats already
+made keep their settings.</li>
 <li><strong>The server does not validate ranges yet.</strong> QUILL
 offers only the website’s values (below).</li>
 </ul>
@@ -1063,15 +1065,16 @@ it, because the server runs one conversion per document.</li>
 <li>Formats follow Scribe’s dependency order: html, then the formats
 made from it, with mp3 before daisy.</li>
 </ul></li>
-<li><strong>Progress window (Scribe Conversions).</strong>
+<li><strong>Progress window (Conversions on This Computer).</strong>
 <ul>
 <li>Each app shows its own instance, read from the shared queue
 file.</li>
 <li>It is a top-level modeless window with a title and its own key.
 Escape closes it and returns focus to where it was opened from, and it
 has an F1 topic.</li>
-<li>It is reachable from every app: Window &gt; Scribe Conversions, and
-Tools &gt; Scribe for Documents &gt; Conversions.</li>
+<li>It is reachable from every app: Window &gt; Conversions on This
+Computer, and Tools &gt; Scribe for Documents &gt; Conversions on This
+Computer.</li>
 <li><strong>The list.</strong> A list in report view (wx.ListCtrl, not a
 tree or DataViewCtrl), one row per job, with the formats as a column.
 Enter opens the result, Delete removes the row from the list, and the
@@ -1113,7 +1116,7 @@ Documents.”</li>
 </ul></li>
 <li><strong>Cancel Waiting</strong> says what it means: “QUILL stopped
 waiting for Notes.pdf. Scribe will still finish it and may use pages; it
-stays in My Scribe Documents.”</li>
+stays in Documents in My Scribe Account.”</li>
 <li><strong>Several files (exception approved 2026-11-21).</strong>
 <ul>
 <li>When the person chooses several files in one Convert dialog, they go
@@ -1137,8 +1140,8 @@ same state silently. When the lock passes to another app, the speaking
 passes with it.</li>
 <li><strong>Background jobs never open a dialog.</strong> A job that
 needs the person moves to a “Waiting for you” state and says so once,
-for example: “Notes.pdf needs its password. Open Scribe Conversions to
-enter it.”
+for example: “Notes.pdf needs its password. Open the Conversions on This
+Computer window to enter it.”
 <ul>
 <li>The action is a command on the job in the progress window: Enter
 Password…, Sign In…, Open Result.</li>
@@ -1169,15 +1172,16 @@ Scribe sentence again.</li>
 <li>A result opens on its own only in the app that started the job, and
 only if that app is in front and the person has not typed in the last
 few seconds.</li>
-<li>Otherwise the result sentence ends: “Open it from Scribe
-Conversions.”</li>
+<li>Otherwise the result sentence ends: “Open it from the Conversions on
+This Computer window.”</li>
 <li>The result sentence names the final file name, after any “(2)”.</li>
 </ul></li>
 </ul>
-<h3 id="75-my-scribe-documents">7.5 My Scribe Documents</h3>
+<h3 id="75-documents-in-my-scribe-account">7.5 Documents in My Scribe
+Account</h3>
 <ul>
-<li><strong>Where.</strong> File &gt; My Scribe Documents in QUILL and
-Lite, and in the progress window.</li>
+<li><strong>Where.</strong> File &gt; Documents in My Scribe Account in
+QUILL and Lite, and in the progress window.</li>
 <li><strong>What it is.</strong> A modal dialog with a Refresh button.
 It is not a live list.</li>
 <li><strong>What it lists.</strong> Every document in the person’s
@@ -1234,8 +1238,8 @@ made safe.</li>
 <li><strong>Resuming.</strong> Downloads resume with Range after a
 drop.</li>
 <li><strong>Local record.</strong> <code>library.py</code> keeps which
-document ID made which file, so My Scribe Documents can say “downloaded
-to …” and Beacon can find it.</li>
+document ID made which file, so Documents in My Scribe Account can say
+“downloaded to …” and Beacon can find it.</li>
 </ul>
 <h3 id="77-options--scribe-for-documents">7.7 Options &gt; Scribe for
 Documents</h3>
@@ -1348,7 +1352,7 @@ holds:</p>
 <li>Convert a File…</li>
 <li>Convert This Document…</li>
 <li>Convert from a Link…</li>
-<li>My Scribe Documents</li>
+<li>Documents in My Scribe Account</li>
 <li>Conversions</li>
 <li>Sign In / Sign Out</li>
 <li>Open My Scribe Account in Browser</li>
@@ -1379,7 +1383,7 @@ on.</li>
 person prefers.</li>
 </ul></li>
 <li><strong>File &gt; Convert with Scribe for Documents…</strong></li>
-<li><strong>File &gt; My Scribe Documents.</strong></li>
+<li><strong>File &gt; Documents in My Scribe Account.</strong></li>
 <li><strong>File &gt; Export &gt; With Scribe for Documents…</strong>
 <ul>
 <li>Lite then reaches every Scribe format, although its own export is
@@ -1451,7 +1455,7 @@ The result opens in QUILL or Lite, whichever is installed.</li>
 <li>A Beacon place can point into a Scribe result (a heading or passage
 in the HTML or Word) and remembers the Scribe document ID.</li>
 <li>If the local file is gone, Beacon offers to download it again from
-My Scribe Documents.</li>
+Documents in My Scribe Account.</li>
 </ul></li>
 <li><strong>Scribe Documents source.</strong> Beacon’s sources list
 gains “Scribe Documents”, showing the person’s Scribe library as
@@ -1575,8 +1579,8 @@ days.</li>
 picture-description provider and makes no promise yet about how long
 that provider keeps data; QUILL says exactly that, and nothing more,
 until Pneuma updates it.</li>
-<li>Here is how to delete it: My Scribe Documents, Move to Trash, Delete
-Forever.</li>
+<li>Here is how to delete it: Documents in My Scribe Account, Move to
+Trash, Delete Forever.</li>
 </ul></li>
 <li><strong>Safe Mode</strong> turns every Scribe command off with the
 family’s usual message. So does running without network.</li>
@@ -1717,19 +1721,19 @@ GATE-BRAILLE).</li>
 <li>Percentages are shown always and spoken only at 25, 50 and 75
 percent.</li>
 </ul></li>
-<li><strong>Live lists</strong> (progress window, My Scribe Documents)
-hold focus and position while rows change (FUX-06).</li>
+<li><strong>Live lists</strong> (progress window, Documents in My Scribe
+Account) hold focus and position while rows change (FUX-06).</li>
 <li><strong>Results.</strong> The result sentence names the file and
 folder and is said once (FUX-04).</li>
 <li><strong>The streaming tab</strong> never moves the caret or speaks
 arriving text.</li>
 <li><strong>Voice samples</strong> play through the app’s audio output,
 stopped as 7.3 says.</li>
-<li><strong>Modeless windows.</strong> Scribe Conversions follows a
-modeless-window contract: a title, Escape returns focus to where it was
-opened from, an F1 topic, and no focus stealing when it updates. The
-family’s <code>_show_modal_dialog</code> contract covers only modal
-dialogs, so this contract is new.</li>
+<li><strong>Modeless windows.</strong> Conversions on This Computer
+follows a modeless-window contract: a title, Escape returns focus to
+where it was opened from, an F1 topic, and no focus stealing when it
+updates. The family’s <code>_show_modal_dialog</code> contract covers
+only modal dialogs, so this contract is new.</li>
 <li><strong>Options page.</strong> Account and pages are shown in
 read-only text fields that Tab reaches. Links to Scribe’s terms, privacy
 policy and manual are buttons (“Open Scribe Terms in Browser”), as
@@ -1793,12 +1797,12 @@ pointer here.</li>
 <h2 id="15-phases">15. Phases</h2>
 <ol type="1">
 <li><strong>Foundation and QUILL. Built (PR #1994).</strong> Client,
-channel, sign-in, the convert dialog, the queue and progress, My Scribe
-Documents, options; QUILL’s Import tier, low-text PDF offer, Export with
-Scribe, braille. The client ID arrived on 2026-11-21 and is in the
-build; tested against the fake server, live testing still to do. The
-chained actions, the streaming tab and the watch-folder action followed
-in phase 2.</li>
+channel, sign-in, the convert dialog, the queue and progress, Documents
+in My Scribe Account, options; QUILL’s Import tier, low-text PDF offer,
+Export with Scribe, braille. The client ID arrived on 2026-11-21 and is
+in the build; tested against the fake server, live testing still to do.
+The chained actions, the streaming tab and the watch-folder action
+followed in phase 2.</li>
 <li><strong>Lite and Media Player. Built (2026-11-21).</strong> Lite’s
 area and commands, with QUILL having every one; the rest of QUILL’s 8.1
 (#1998). Player’s Listen command and DAISY reading followed with phase

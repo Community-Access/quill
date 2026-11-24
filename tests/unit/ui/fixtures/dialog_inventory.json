@@ -1008,6 +1008,7 @@
   "quill/ui/scribe_options_dialog.py::ScribeOptionsDialog._browse::wx.DirDialog": "native",
   "quill/ui/scribe_options_dialog.py::ScribeOptionsDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/scribe_signin_dialog.py::ScribeSignInDialog::subclass:wx.Dialog": "hardened_custom",
+  "quill/ui/scribe_status_dialog.py::ScribeStatusDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/searchable_picker.py::choose_searchable_option::wx.Dialog": "hardened_custom",
   "quill/ui/session_browser.py::SessionBrowserDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/session_restore_dialog.py::ask_session_restore::wx.Dialog": "hardened_custom",

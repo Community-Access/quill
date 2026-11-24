@@ -8,8 +8,8 @@ dialog; several go one after another under the batch exception (7.4).
   conversions go -- the Output folder when one is set, otherwise a
   ``Converted`` folder beside the first document -- not a folder per document.
 * **Effect recipes do not apply**, and the document jobs are not rows in the
-  audio queue: they are in the shared Scribe Conversions window (File > Scribe
-  for Documents > Scribe Conversions), which every QUILL app shares, while the
+  audio queue: they are in the shared Conversions on This Computer window (File > Scribe
+  for Documents > Conversions on This Computer), which every QUILL app shares, while the
   audio queue stays the list the person edits (accessibility review,
   2026-11-21; PRD section 2, "Built differently").
 * **A document added to the audio queue** (Add Files, a drop, Paste Files) is

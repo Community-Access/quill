@@ -4508,7 +4508,7 @@ press **Send and Convert**.
 | Menu | What is there |
 |---|---|
 | **Episode > Convert Linked Document with Scribe for Documents...** | The selected episode's linked documents |
-| **Podcasts > Scribe for Documents** | Scribe Conversions, My Scribe Documents, Scribe Status, Repeat Last Scribe Message, Scribe for Documents Options |
+| **Podcasts > Scribe for Documents** | Conversions on This Computer, Documents in My Scribe Account, Scribe Status, Repeat Last Scribe Message, Scribe for Documents Options |
 
 The Episode and Podcasts menus have no access letter left for these rows,
 so use their keys, or arrow to them.
@@ -4543,8 +4543,8 @@ Step by step:
    press **Send and Convert**. You hear each stage once.
 6. When it is done you hear one sentence, for example: "Scribe for
    Documents made Notes.docx in Documents\Scribe for Documents\Notes. Open
-   it from Scribe Conversions."
-7. Open Scribe Conversions (Alt+Shift+F7), choose the row and press Enter.
+   it from Conversions on This Computer."
+7. Open Conversions on This Computer (Alt+Shift+F7), choose the row and press Enter.
    Word, HTML and EPUB open in QUILL, or in QUILL Lite when QUILL is not
    installed; MP3 and DAISY open in Quill Media Player. **Next Steps...**
    lists the same choices by name, such as **Open in QUILL (Word)**.
@@ -4560,8 +4560,8 @@ Keys:
 | Command | Menu | Key | What it does |
 |---|---|---|---|
 | Convert Linked Document with Scribe for Documents | Episode | **Alt+Shift+F6** | Converts a document the selected episode's show notes link |
-| Scribe Conversions | Podcasts > Scribe for Documents | **Alt+Shift+F7** | Every Scribe job on this computer, and what it is doing |
-| My Scribe Documents | Podcasts > Scribe for Documents | **Alt+Shift+F8** | Your documents on Scribe, and the Trash |
+| Conversions on This Computer | Podcasts > Scribe for Documents | **Alt+Shift+F7** | Every Scribe job on this computer, and what it is doing |
+| Documents in My Scribe Account | Podcasts > Scribe for Documents | **Alt+Shift+F8** | Your documents on Scribe, and the Trash |
 | Scribe Status | Podcasts > Scribe for Documents | **Alt+Shift+F9** | Says what the running job is doing, once |
 | Repeat Last Scribe Message | Podcasts > Scribe for Documents | **Alt+Shift+F10** | Says the last Scribe message again |
 | Scribe for Documents Options | Podcasts > Scribe for Documents | **Alt+Shift+F11** | Sign in or out, your account, the download folder, how much is spoken |
@@ -4570,11 +4570,11 @@ Inside the Scribe windows:
 
 | Where | Key | What it does |
 |---|---|---|
-| Scribe Conversions list | Enter | Open Result |
-| Scribe Conversions list | Delete | Remove from List |
-| Scribe Conversions and My Scribe Documents lists | Applications key or Shift+F10 | Every command for the row |
-| Scribe Conversions | Escape | Closes it, back to where you were |
-| My Scribe Documents list | Enter | Download Formats |
+| Conversions on This Computer list | Enter | Open Result |
+| Conversions on This Computer list | Delete | Remove from List |
+| Conversions on This Computer and Documents in My Scribe Account lists | Applications key or Shift+F10 | Every command for the row |
+| Conversions on This Computer | Escape | Closes it, back to where you were |
+| Documents in My Scribe Account list | Enter | Download Formats |
 | Convert dialog, What will be sent | Enter | Send and Convert |
 | Convert dialog, while a voice sample plays | Escape | Stops the sample |
 | Any Scribe window | F1 | What the window is for, then the control you are on |
@@ -4589,14 +4589,14 @@ When something goes wrong:
 When something goes wrong, you hear one sentence that names Scribe for
 Documents and the file, and usually Scribe's own reason. QUILL Cast adds a code,
 such as QUILL-SCRIBE-PAGES, which you never hear. It is in the Details box in
-Scribe Conversions and in **Copy Details**, for when you ask for help.
+Conversions on This Computer and in **Copy Details**, for when you ask for help.
 
 | Code | What you hear | What to do |
 |---|---|---|
-| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended. Conversions are paused until you sign in again." | In Scribe Conversions, press **Sign In...** on the job. It carries on when you are signed in. |
+| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended. Conversions are paused until you sign in again." | In Conversions on This Computer, press **Sign In...** on the job. It carries on when you are signed in. |
 | QUILL-SCRIBE-SIGNIN-LOCAL | That no port could be opened to receive the sign-in, or that the browser could not be opened | Allow QUILL apps in your security software, then **Try Again**. Or press **Copy Sign-in Link** and paste it into any browser. |
-| QUILL-SCRIBE-PAGES | "Scribe for Documents could not convert Notes.pdf:", Scribe's message, then "Use Buy Pages in Scribe Conversions, then Retry." | Press **Buy Pages**, buy pages in your browser, then **Retry**. Without pages, Scribe still makes a free preview of the first two pages. |
-| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open Scribe Conversions to enter it." | Press **Enter Password...** on the job. After three wrong tries, press **Retry** for three more. |
+| QUILL-SCRIBE-PAGES | "Scribe for Documents could not convert Notes.pdf:", Scribe's message, then "Use Buy Pages in the Conversions on This Computer window, then Retry." | Press **Buy Pages**, buy pages in your browser, then **Retry**. Without pages, Scribe still makes a free preview of the first two pages. |
+| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open the Conversions on This Computer window to enter it." | Press **Enter Password...** on the job. After three wrong tries, press **Retry** for three more. |
 | QUILL-SCRIBE-BUSY | "Scribe for Documents asked QUILL Cast to slow down; trying again in a minute." | Nothing. QUILL Cast waits a minute and carries on. |
 | QUILL-SCRIBE-NOTDOC | "Scribe for Documents cannot convert Data.xml: it takes PDF, pictures, Office, OpenDocument, text, EPUB and MOBI files, not web pages." | Save the file as Word or PDF and send that. |
 | QUILL-SCRIBE-TOOBIG | "Video.pdf is 612 MB. Scribe for Documents takes files up to 500 MB." | Split the document, or save a copy with smaller pictures. Nothing was sent. |
@@ -4613,14 +4613,14 @@ and Convert** in the Convert dialog, which first says exactly what will be
 sent and where. There is no "don't ask again".
 
 **Will a second format cost more pages?** No. Pages are charged once for each
-document. Use **Download Formats...** in My Scribe Documents for another
+document. Use **Download Formats...** in Documents in My Scribe Account for another
 format of a document already in your account.
 
 **Can I use QUILL Cast and QUILL at the same time?** Yes. Every QUILL app on this
 computer shares one sign-in, one queue and one Options window. Only one
 sends at a time, and only the app running the job speaks; the others show
 the same rows quietly. If another QUILL app is running the job, the result
-sentence ends "Open it from Scribe Conversions."
+sentence ends "Open it from the Conversions on This Computer window."
 
 **Can I stop a conversion?** Scribe cannot be stopped once it starts.
 **Cancel Waiting** stops QUILL Cast waiting and downloading, and says so.
@@ -4642,8 +4642,8 @@ F1 in the Scribe windows:
 | Window | What F1 tells you |
 |---|---|
 | Convert with Scribe for Documents | What is sent and where, the formats, the settings, and the pages it uses |
-| Scribe Conversions | The jobs, their stages, and every command on a job |
-| My Scribe Documents | Your documents and the Trash, and what each button does |
+| Conversions on This Computer | The jobs, their stages, and every command on a job |
+| Documents in My Scribe Account | Your documents and the Trash, and what each button does |
 | Scribe for Documents Options | The family's one set of Scribe choices |
 | Sign In to Scribe for Documents | Signing in on Scribe's own page, in your browser |
 | Password for Notes.pdf | A PDF's password, used once and never saved |
@@ -5917,8 +5917,8 @@ They are listed in full under "Keys in the Lineups window" in Chapter 9.
 | Rearrange Library and Inbox | Ctrl+Shift+R |
 | Settings for This Podcast | Ctrl+Alt+, |
 | Preferences | Ctrl+, |
-| Scribe Conversions | Alt+Shift+F7 |
-| My Scribe Documents | Alt+Shift+F8 |
+| Conversions on This Computer | Alt+Shift+F7 |
+| Documents in My Scribe Account | Alt+Shift+F8 |
 | Scribe Status | Alt+Shift+F9 |
 | Repeat Last Scribe Message | Alt+Shift+F10 |
 | Scribe for Documents Options | Alt+Shift+F11 |

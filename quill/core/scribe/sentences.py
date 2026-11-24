@@ -116,9 +116,9 @@ def _result_text(job: Job, *, opened: str, offer: bool, note: str) -> str:
         return f"{text} {opened}."
     if names and not any(default_action(f) != "save" for f in job.outputs):
         # Nothing made opens anywhere (the offline page): say where to look.
-        return f"{text} Open Folder in Scribe Conversions shows it."
+        return f"{text} To find it, use Open Folder in the Conversions on This Computer window."
     if offer or names:
-        return f"{text} Open it from Scribe Conversions."
+        return f"{text} Open it from the Conversions on This Computer window."
     return text
 
 
@@ -129,7 +129,10 @@ def error_sentence(job: Job, message: str) -> str:
 def needs_you_sentence(job: Job, *, app_name: str) -> str:
     """Said once when a background job needs the person (7.4a)."""
     if job.state == NEEDS_PASSWORD:
-        return f"{job.display_name} needs its password. Open Scribe Conversions to enter it."
+        return (
+            f"{job.display_name} needs its password. Open the Conversions on This Computer "
+            "window to enter it."
+        )
     if job.state == NEEDS_SIGNIN:
         return (
             f"Your {PRODUCT_NAME} sign-in has ended. Conversions are paused until you "
@@ -140,7 +143,7 @@ def needs_you_sentence(job: Job, *, app_name: str) -> str:
 
 def pages_sentence(message: str) -> str:
     """``needs_purchase``: the server's sentence, then where Buy Pages is."""
-    return f"{message} Use Buy Pages in Scribe Conversions, then Retry."
+    return f"{message} Use Buy Pages in the Conversions on This Computer window, then Retry."
 
 
 def busy_sentence(app_name: str) -> str:
@@ -158,10 +161,10 @@ def batch_sentence(jobs: list[Job]) -> str:
     if not missed:
         return f"{head}: all were made."
     if not made:
-        return f"{head}: none were made. Scribe Conversions has the details."
+        return f"{head}: none were made. The Conversions on This Computer window has the details."
     return (
         f"{head}. Made: {_join_names(made)}. Not made: {_join_names(missed)}; "
-        "Scribe Conversions has the details."
+        "the Conversions on This Computer window has the details."
     )
 
 
@@ -178,12 +181,12 @@ def gone_sentence(job: Job) -> str:
 def cancel_waiting_sentence(job: Job, *, app_name: str) -> str:
     return (
         f"{app_name} stopped waiting for {job.display_name}. Scribe will still finish it "
-        "and may use pages; it stays in My Scribe Documents."
+        "and may use pages; it stays in your Scribe account."
     )
 
 
 def status_sentence(job: Job | None) -> str:
-    """Scribe Status: the current job, once, without opening anything."""
+    """The current job in one line: Scribe Status's Now converting section."""
     if job is None:
         return f"No {PRODUCT_NAME} conversions are running."
     parts = [stage_sentence(job).rstrip(".")]

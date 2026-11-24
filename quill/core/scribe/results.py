@@ -85,7 +85,7 @@ PICTURES_NOTE = (
 #: ...and with it, where it opens.
 ZIPPED_PICTURES_NOTE = (
     "Its pictures are in the Web page for offline reading, saved as a zip; "
-    "Open Folder in Scribe Conversions shows it."
+    "To find it, use Open Folder in the Conversions on This Computer window."
 )
 OFFLINE_PICTURES_NOTE = (
     "Its pictures are in the Web page for offline reading; Next Steps opens that in your browser."
@@ -133,8 +133,8 @@ def open_order(outputs: dict[str, str]) -> list[tuple[str, Path]]:
 
 def library_order(files: list[tuple[str, Path]]) -> list[tuple[str, Path]]:
     """A document's downloaded files (the library's ``(format, path)``) in the
-    order Open Result tries them, the newest of each format: what My Scribe
-    Documents and Beacon open, rather than whichever was downloaded last (a
+    order Open Result tries them, the newest of each format: what Documents in My Scribe
+    Account and Beacon open, rather than whichever was downloaded last (a
     Kindle book or the offline page, which open nowhere)."""
     newest: dict[str, str] = {}
     for format_id, path in files:

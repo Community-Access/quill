@@ -8,7 +8,7 @@ these commands under the id in :data:`SCRIBE_EQUIVALENTS` (rule 10: QUILL Lite
 may never be ahead of QUILL).
 
 **In File, as a submenu.** QUILL keeps these in Tools > Scribe for Documents
-with My Scribe Documents and Convert with Scribe also in File; QUILL Lite's
+with Documents in My Scribe Account and Convert with Scribe also in File; QUILL Lite's
 File menu has three letters left, so the whole family sits in one File
 submenu, where a person converting a document looks. The submenu takes B
 (Scri&be), which Open from Clipboard gave up: it keeps Ctrl+Alt+Shift+Enter
@@ -36,8 +36,8 @@ SCRIBE_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     (_S, "&Export with Scribe for Documents...", "", "cmd_scribe_export", ""),
     (_S, "Convert from a &Link...", "", "cmd_scribe_convert_link", ""),
     _SEP,
-    (_S, "&My Scribe Documents", "", "cmd_scribe_my_documents", ""),
-    (_S, "&Conversions", "", "cmd_scribe_conversions", ""),
+    (_S, "Documents in &My Scribe Account...", "", "cmd_scribe_my_documents", ""),
+    (_S, "&Conversions on This Computer...", "", "cmd_scribe_conversions", ""),
     (_S, "Scribe &Status", "", "cmd_scribe_status", ""),
     (_S, "&Repeat Last Scribe Message", "", "cmd_scribe_repeat", ""),
     _SEP,
@@ -48,9 +48,9 @@ SCRIBE_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     (_S, "A&bout Scribe for Documents", "", "cmd_scribe_about", ""),
 )
 
-#: Window > Scribe Conversions, as in QUILL (PRD 7.4: reachable from every app).
+#: Window > Conversions on This Computer, as in QUILL (PRD 7.4: reachable from every app).
 SCRIBE_WINDOW_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
-    ("&Window", "Scribe Con&versions", "", "cmd_scribe_window", ""),
+    ("&Window", "Con&versions on This Computer", "", "cmd_scribe_window", ""),
 )
 
 #: QUILL Lite handler -> QUILL command id, for parity.py's COMMAND_EQUIVALENTS.

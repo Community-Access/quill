@@ -390,7 +390,9 @@ def test_converter_saves_beside_its_own_destination(world: World) -> None:
     job = _run(controller, world)
     assert {Path(p).parent for p in job.outputs.values()} == {destination}
     result = _check_speech(frame.said, job)
-    assert "Open it from Scribe Conversions. A Kindle (MOBI) book" in result  # on command
+    assert (
+        "Open it from the Conversions on This Computer window. A Kindle (MOBI) book" in result
+    )  # on command
     assert world.opened_elsewhere == []
     controller.open_job_result(job)
     assert world.opened_elsewhere == [("editor", f"{GARDEN}.epub")]
@@ -410,7 +412,7 @@ def test_studio_narration_never_opens_by_itself(world: World) -> None:
     job = _run(controller, world)
     assert job.open_as == "narration"
     result = _check_speech(frame.said, job)
-    assert result.endswith("Open it from Scribe Conversions.")
+    assert result.endswith("Open it from the Conversions on This Computer window.")
     labels = [label for label, _run in controller.next_steps(job)]
     assert labels == ["Open in QUILL (Word)"]
 

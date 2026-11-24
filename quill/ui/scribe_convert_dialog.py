@@ -21,7 +21,7 @@ Its parts, in tab order:
    asks at Send; "Show password" swaps in a plain field (each with its own
    label) so braille and typing-echo users can check what they typed. Never
    pre-filled, saved or logged. A wrong password is caught by Scribe after the
-   upload; the job then waits in Scribe Conversions with three tries.
+   upload; the job then waits in Conversions on This Computer with three tries.
 6. **Pages** -- "This uses about x of your n pages", updated silently, and
    Buy Pages.
 7. **Send and Convert** (default; "Convert" when nothing is uploaded) and Cancel.

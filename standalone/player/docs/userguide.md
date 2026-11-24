@@ -605,7 +605,7 @@ and Convert**.
 | Menu | What is there |
 |---|---|
 | **File > Listen to a Document with Scribe for Documents...** | Choose a document; it comes back as a DAISY book and MP3 audio |
-| **File > Scribe for Documents** | Scribe Conversions, My Scribe Documents, Scribe Status, Repeat Last Scribe Message, Scribe for Documents Options |
+| **File > Scribe for Documents** | Conversions on This Computer, Documents in My Scribe Account, Scribe Status, Repeat Last Scribe Message, Scribe for Documents Options |
 
 ### Signing in
 
@@ -654,8 +654,8 @@ The Player opens a finished book by itself only when it is safe to:
 - this Player started the job. If another QUILL app is running Scribe's
   queue, that app says the result.
 
-Otherwise the result sentence ends "Open it from Scribe Conversions." Open
-**File > Scribe for Documents > Scribe Conversions**, choose the row and
+Otherwise the result sentence ends "Open it from the Conversions on This Computer window." Open
+**File > Scribe for Documents > Conversions on This Computer**, choose the row and
 press Enter, or press **Next Steps...** and choose **Play in Media Player
 (DAISY (text and audio))**. Next Steps also offers **Play in Media Player
 (MP3 audio)**, and **Open in QUILL** for any Word, HTML or EPUB made with it.
@@ -674,8 +674,8 @@ named as one, and not opened.
 | Command | Menu | Key | What it does |
 |---|---|---|---|
 | Listen to a Document with Scribe for Documents | File | **Alt+Shift+F6** | Chooses a document and makes it a book to listen to |
-| Scribe Conversions | File > Scribe for Documents | **Alt+Shift+F7** | Every Scribe job on this computer, and what it is doing |
-| My Scribe Documents | File > Scribe for Documents | **Alt+Shift+F8** | Your documents on Scribe, and the Trash |
+| Conversions on This Computer | File > Scribe for Documents | **Alt+Shift+F7** | Every Scribe job on this computer, and what it is doing |
+| Documents in My Scribe Account | File > Scribe for Documents | **Alt+Shift+F8** | Your documents on Scribe, and the Trash |
 | Scribe Status | File > Scribe for Documents | **Alt+Shift+F9** | Says what the running job is doing, once |
 | Repeat Last Scribe Message | File > Scribe for Documents | **Alt+Shift+F10** | Says the last Scribe message again |
 | Scribe for Documents Options | File > Scribe for Documents | **Alt+Shift+F11** | Sign in or out, your account, the download folder, how much is spoken |
@@ -684,11 +684,11 @@ Inside the Scribe windows:
 
 | Where | Key | What it does |
 |---|---|---|
-| Scribe Conversions list | Enter | Open Result |
-| Scribe Conversions list | Delete | Remove from List |
-| Scribe Conversions and My Scribe Documents lists | Applications key or Shift+F10 | Every command for the row |
-| Scribe Conversions | Escape | Closes it, back to where you were |
-| My Scribe Documents list | Enter | Download Formats |
+| Conversions on This Computer list | Enter | Open Result |
+| Conversions on This Computer list | Delete | Remove from List |
+| Conversions on This Computer and Documents in My Scribe Account lists | Applications key or Shift+F10 | Every command for the row |
+| Conversions on This Computer | Escape | Closes it, back to where you were |
+| Documents in My Scribe Account list | Enter | Download Formats |
 | Convert dialog, What will be sent | Enter | Send and Convert |
 | Convert dialog, while a voice sample plays | Escape | Stops the sample |
 | Any Scribe window | F1 | What the window is for, then the control you are on |
@@ -703,14 +703,14 @@ Scribe commands have no key until you give them one in the Keymap Editor.
 When something goes wrong, you hear one sentence that names Scribe for
 Documents and the file, and usually Scribe's own reason. Quill Media Player adds a code,
 such as QUILL-SCRIBE-PAGES, which you never hear. It is in the Details box in
-Scribe Conversions and in **Copy Details**, for when you ask for help.
+Conversions on This Computer and in **Copy Details**, for when you ask for help.
 
 | Code | What you hear | What to do |
 |---|---|---|
-| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended. Conversions are paused until you sign in again." | In Scribe Conversions, press **Sign In...** on the job. It carries on when you are signed in. |
+| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended. Conversions are paused until you sign in again." | In Conversions on This Computer, press **Sign In...** on the job. It carries on when you are signed in. |
 | QUILL-SCRIBE-SIGNIN-LOCAL | That no port could be opened to receive the sign-in, or that the browser could not be opened | Allow QUILL apps in your security software, then **Try Again**. Or press **Copy Sign-in Link** and paste it into any browser. |
-| QUILL-SCRIBE-PAGES | "Scribe for Documents could not convert Notes.pdf:", Scribe's message, then "Use Buy Pages in Scribe Conversions, then Retry." | Press **Buy Pages**, buy pages in your browser, then **Retry**. Without pages, Scribe still makes a free preview of the first two pages. |
-| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open Scribe Conversions to enter it." | Press **Enter Password...** on the job. After three wrong tries, press **Retry** for three more. |
+| QUILL-SCRIBE-PAGES | "Scribe for Documents could not convert Notes.pdf:", Scribe's message, then "Use Buy Pages in the Conversions on This Computer window, then Retry." | Press **Buy Pages**, buy pages in your browser, then **Retry**. Without pages, Scribe still makes a free preview of the first two pages. |
+| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open the Conversions on This Computer window to enter it." | Press **Enter Password...** on the job. After three wrong tries, press **Retry** for three more. |
 | QUILL-SCRIBE-BUSY | "Scribe for Documents asked Quill Media Player to slow down; trying again in a minute." | Nothing. Quill Media Player waits a minute and carries on. |
 | QUILL-SCRIBE-NOTDOC | "Scribe for Documents cannot convert Data.xml: it takes PDF, pictures, Office, OpenDocument, text, EPUB and MOBI files, not web pages." | Save the file as Word or PDF and send that. |
 | QUILL-SCRIBE-TOOBIG | "Video.pdf is 612 MB. Scribe for Documents takes files up to 500 MB." | Split the document, or save a copy with smaller pictures. Nothing was sent. |
@@ -732,14 +732,14 @@ and Convert** in the Convert dialog, which first says exactly what will be
 sent and where. There is no "don't ask again".
 
 **Will a second format cost more pages?** No. Pages are charged once for each
-document. Use **Download Formats...** in My Scribe Documents for another
+document. Use **Download Formats...** in Documents in My Scribe Account for another
 format of a document already in your account.
 
 **Can I use Quill Media Player and QUILL at the same time?** Yes. Every QUILL app on this
 computer shares one sign-in, one queue and one Options window. Only one
 sends at a time, and only the app running the job speaks; the others show
 the same rows quietly. If another QUILL app is running the job, the result
-sentence ends "Open it from Scribe Conversions."
+sentence ends "Open it from the Conversions on This Computer window."
 
 **Can I stop a conversion?** Scribe cannot be stopped once it starts.
 **Cancel Waiting** stops Quill Media Player waiting and downloading, and says so.
@@ -765,8 +765,8 @@ on:
 | Window | What F1 tells you |
 |---|---|
 | Convert with Scribe for Documents | What is sent and where, the formats, the settings, and the pages it uses |
-| Scribe Conversions | The jobs, their stages, and every command on a job |
-| My Scribe Documents | Your documents and the Trash, and what each button does |
+| Conversions on This Computer | The jobs, their stages, and every command on a job |
+| Documents in My Scribe Account | Your documents and the Trash, and what each button does |
 | Scribe for Documents Options | The family's one set of Scribe choices |
 | Sign In to Scribe for Documents | Signing in on Scribe's own page, in your browser |
 | Password for Notes.pdf | A PDF's password, used once and never saved |

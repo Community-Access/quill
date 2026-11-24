@@ -1,4 +1,4 @@
-"""My Scribe Documents: every document in the person's Scribe account (PRD 7.5).
+"""Documents in My Scribe Account: every document in the person's Scribe account (PRD 7.5).
 
 A modal dialog with Refresh, not a live list. "Show: Documents / Trash" sits
 above the list; when there is nothing to list, a focusable line says so.
@@ -37,7 +37,9 @@ class ScribeDocumentsDialog(wx.Dialog):
 
     def __init__(self, parent: Any, controller: Any) -> None:
         super().__init__(
-            parent, title="My Scribe Documents", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+            parent,
+            title="Documents in My Scribe Account",
+            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         self.SetName("scribe_documents_dialog")  # F1 finds its topic by this name (topics.json)
         self._controller = controller
@@ -104,7 +106,7 @@ class ScribeDocumentsDialog(wx.Dialog):
             row.Add(button, 0, wx.ALL, 4)
             self.commands[key] = button
         close = wx.Button(self, wx.ID_CANCEL, label="Close")
-        close.SetHelpText("Closes My Scribe Documents.")
+        close.SetHelpText("Closes Documents in My Scribe Account.")
         row.Add(close, 0, wx.ALL, 4)
         sizer.Add(row, 0, wx.EXPAND)
         self.SetSizer(sizer)

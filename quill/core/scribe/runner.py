@@ -5,8 +5,8 @@ queue's runner lock when it is free (a heartbeat thread keeps it while a long
 upload runs), and then -- only then -- runs the oldest job:
 
 1. **Upload** (``POST /api/documents``) with the full settings set as form
-   fields, unless the document is already in the account (My Scribe
-   Documents). Only the 23 types Scribe takes, up to 500 MB, are ever sent
+   fields, unless the document is already in the account (Documents in My Scribe
+   Account). Only the 23 types Scribe takes, up to 500 MB, are ever sent
    (:mod:`.inputs`). A password from the convert dialog is held in memory for
    this one job and never written anywhere.
 2. **Settings**: for a document already in the account, ``PATCH`` its settings

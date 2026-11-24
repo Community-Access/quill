@@ -167,18 +167,20 @@ These are never done from a sentence, because they send, delete, sign in, change
 - Check for Updates: Help, Check for Updates.
 - Check What QUILL Says: Command Palette.
 - Compare Braille Surfaces: Help, Troubleshooting.
+- Conversions on This Computer: Tools, Scribe for Documents.
+- Conversions on This Computer (Window): Window.
 - Convert a File with Scribe: Tools, Scribe for Documents.
 - Convert from a Link with Scribe: Tools, Scribe for Documents.
 - Convert This Document with Scribe: Tools, Scribe for Documents.
 - Copy a Diagnostic Summary: Help, Troubleshooting.
 - Copy to the Next Tray Slot: Edit, Copy Tray.
 - Dark Mode: View, Dark Mode.
+- Documents in My Scribe Account: Tools, Scribe for Documents.
+- Documents in My Scribe Account (File): File.
 - Exit: File, Exit.
 - Export with Scribe: File, Export.
 - Import with Scribe: File, Import.
 - Language Servers: Navigate, Code, Language Servers.
-- My Scribe Documents: Tools, Scribe for Documents.
-- My Scribe Documents (File): File.
 - Open a Web Address: File, Open a Web Address.
 - Open My Scribe Account: Tools, Scribe for Documents.
 - Preferences Hub: Tools, Preferences Hub.
@@ -190,8 +192,6 @@ These are never done from a sentence, because they send, delete, sign in, change
 - Save to GitHub: the GitHub menu.
 - Save to Remote: File, Save to Remote.
 - Say or Type a Command: F11.
-- Scribe Conversions: Tools, Scribe for Documents.
-- Scribe Conversions Window: Window.
 - Scribe Options: Tools, Scribe for Documents.
 - Scribe Status: Tools, Scribe for Documents.
 - Send to Tray: View, Send to Tray.
@@ -345,21 +345,21 @@ These are never done from a sentence, because they send, delete, sign in, change
 - About Scribe for Documents: Tools, Scribe for Documents.
 - AI Hub: AI, AI Hub.
 - Check for Updates: Help, Check for Updates.
+- Conversions on This Computer: Tools, Scribe for Documents.
+- Conversions on This Computer (Window): Window.
 - Convert a File with Scribe: Tools, Scribe for Documents.
 - Convert from a Link with Scribe: Tools, Scribe for Documents.
 - Convert This Document with Scribe: Tools, Scribe for Documents.
 - Copy to the Next Tray Slot: Edit, Copy Tray.
 - Dark Mode: View, Dark Mode.
+- Documents in My Scribe Account: Tools, Scribe for Documents.
 - Exit: File, Exit.
 - Export with Scribe: File, Export.
 - Language Servers: Navigate, Code, Language Servers.
-- My Scribe Documents: Tools, Scribe for Documents.
 - Open a Web Address: File, Open a Web Address.
 - Open My Scribe Account: Tools, Scribe for Documents.
 - Repeat Last Scribe Message: Tools, Scribe for Documents.
 - Say or Type a Command: F11.
-- Scribe Conversions: Tools, Scribe for Documents.
-- Scribe Conversions Window: Window.
 - Scribe Options: Tools, Scribe for Documents.
 - Scribe Status: Tools, Scribe for Documents.
 - Settings: Tools, Settings.

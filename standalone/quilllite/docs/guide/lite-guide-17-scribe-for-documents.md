@@ -45,12 +45,12 @@ it on in Tools, Customize Features."
 
 | Menu | What is there |
 |---|---|
-| **File > Scribe for Documents** | Convert a File..., Convert This Document..., Export with Scribe for Documents..., Convert from a Link..., My Scribe Documents, Conversions, Scribe Status, Repeat Last Scribe Message, Sign In..., Sign Out, Open My Scribe Account in Browser, Options..., About Scribe for Documents |
-| **Window** | Scribe Conversions |
+| **File > Scribe for Documents** | Convert a File..., Convert This Document..., Export with Scribe for Documents..., Convert from a Link..., Documents in My Scribe Account, Conversions on This Computer, Scribe Status, Repeat Last Scribe Message, Sign In..., Sign Out, Open My Scribe Account in Browser, Options..., About Scribe for Documents |
+| **Window** | Conversions on This Computer |
 | **File > Import / Convert Document (OCR)...** | Offers Scribe when a PDF has little or no text |
 
 From the keyboard, **File > Scribe for Documents** is **Alt+F**, then **B**.
-**Window > Scribe Conversions** is **Alt+W**, then **V**.
+**Window > Conversions on This Computer** is **Alt+W**, then **V**.
 
 Every command is also in the Command Palette (**Ctrl+Shift+P**): type
 "Scribe". None has a key of its own. You can give any of them one in
@@ -143,7 +143,7 @@ Media Player, comes to the front only once QUILL Lite has said what it made,
 between 1.5 and 6 seconds later depending on how long the sentence is. That
 way your screen reader's announcement of the new window does not cut the
 sentence off. If you move to another program while it waits, the result does
-not open; use **Open Result** in Scribe Conversions when you are ready. The
+not open; use **Open Result** in Conversions on This Computer when you are ready. The
 same goes for a result that opens in your browser.
 
 The accessible HTML opens once. Ask for it again while its "Notes (Scribe)"
@@ -152,9 +152,9 @@ window is open and QUILL Lite brings that window forward instead, saying
 
 **The Web page for offline reading never opens as text.** Every picture is
 inside it, so in an editor each one would be a single very long line. Next
-Steps opens it in your browser; so does **Open Result**, and **Open** in My
-Scribe Documents, when it is the only thing there is to open. "Opening the Web
-page for offline reading in your browser." **Open** in My Scribe Documents
+Steps opens it in your browser; so does **Open Result**, and **Open** in Documents in
+My Scribe Account, when it is the only thing there is to open. "Opening the Web
+page for offline reading in your browser." **Open** in Documents in My Scribe Account
 opens what Open Result would, Word before the Kindle book, not just the file
 downloaded last.
 
@@ -170,16 +170,52 @@ downloaded last.
   although its own export is HTML.
 - **Convert from a Link...** asks for the address of a file. Scribe fetches
   it.
-- **My Scribe Documents** lists your documents on Scribe, and the Trash.
-- **Conversions**, and **Window > Scribe Conversions**, open the list of
-  jobs.
-- **Scribe Status** says what the running job is doing, for example
-  "Notes.pdf, adding image descriptions, 40 percent, about 2 minutes."
+- **Documents in My Scribe Account...** lists your documents on Scribe's
+  servers, and the Trash.
+- **Conversions on This Computer...**, and **Window > Conversions on This
+  Computer**, open the list of jobs this computer is running. The two windows
+  have different names on purpose: one is your account, the other is this
+  computer's queue.
+- **Scribe Status** opens the Scribe Status dialog, described below.
 - **Repeat Last Scribe Message** says the last Scribe message again.
 - **Sign In...**, **Sign Out** and **Open My Scribe Account in Browser**.
   Your account page is where you change how long documents are kept, buy
   pages, and delete your account.
 - **Options...** and **About Scribe for Documents**.
+
+### Scribe Status
+
+**File > Scribe for Documents > Scribe Status** opens a dialog with
+everything QUILL Lite knows about your account and your conversions, in one
+read-only text field. Arrow through it line by line, or pan it on a braille
+display. The first line is the one most people want, for example "Signed in
+as Pat Reader, using credits from Acme. 412 pages left." Then come five
+sections, each starting with its name on a line of its own:
+
+- **Account**: your name, email, phone and organization as Scribe has them,
+  whether you have a subscription and when it renews, and whether your
+  sign-in renews by itself.
+- **Usage**: the pages left (an organization's shared pages for a member),
+  when your subscription renews, "Pages are running low" when Scribe
+  suggests buying pages, and the pace: how many of the 8 uploads and conversions a minute the QUILL
+  apps allow themselves are used, or, if Scribe asked them to slow down, when
+  the next one starts. Scribe tells apps the pages left but not the pages
+  used.
+- **Now converting**: the job under way, its stage, percent and time left,
+  and which QUILL app is doing the work.
+- **Waiting**: queued jobs, and jobs waiting for you (a password, a sign-in).
+- **Recent**: the last five finished jobs on this computer.
+
+What is on this computer shows at once; your account is read from Scribe in
+the background, and when it arrives you hear the new first line once. If it
+cannot be read you hear why, and the first line keeps the reason and its
+code, such as QUILL-SCRIBE-OFFLINE.
+
+The buttons are **Refresh** (Alt+R), which reads everything again and says
+once that it did; **Sign In...** (Alt+I), only when you are not signed in;
+**Open My Scribe Account in Browser** (Alt+A); **Conversions on This
+Computer** (Alt+C), which closes Scribe Status and opens that window; and
+**Close**. Escape closes it too, and you are back where you were.
 
 ### When a PDF looks scanned
 
@@ -242,9 +278,14 @@ For a document already in your account, the language, pictures, maths and
 large print were fixed at upload. They are listed in a read-only line,
 **Fixed when Notes was uploaded**, instead.
 
-## Scribe Conversions
+## Conversions on This Computer
 
-**Window > Scribe Conversions** lists every Scribe job on this computer,
+Two windows, two names: **Conversions on This Computer** is the jobs this
+computer is running, and **Documents in My Scribe Account** is what is kept on
+Scribe's servers. Until November 2026 they were called Scribe Conversions and
+My Scribe Documents; the Command Palette still finds them by those names.
+
+**Window > Conversions on This Computer** lists every Scribe job on this computer,
 from QUILL Lite and QUILL. It stays open beside your document, and jobs
 carry on when you close it or close QUILL Lite.
 
@@ -299,9 +340,9 @@ QUILL Lite to slow down; trying again in a minute."
 QUILL has more here, such as Read Aloud and its braille view. QUILL Lite
 has no braille view, so a braille file opens as text.
 
-## My Scribe Documents
+## Documents in My Scribe Account
 
-**File > Scribe for Documents > My Scribe Documents** lists every document
+**File > Scribe for Documents > Documents in My Scribe Account** lists every document
 in your Scribe account, with **Show: Documents / Trash** at the top.
 
 - **Download Formats...** (Enter) makes or downloads a format. Another
@@ -352,7 +393,7 @@ everywhere, with the sounds as well.
 
 ### Another format, no pages used
 
-1. Choose **File > Scribe for Documents > My Scribe Documents**.
+1. Choose **File > Scribe for Documents > Documents in My Scribe Account**.
 2. Arrow to the document and press Enter.
 3. The dialog says "No file is sent." The formats you do not have yet say
    ", no pages used". Check **MP3 audio**, and press **Convert**.
@@ -361,18 +402,18 @@ everywhere, with the sounds as well.
 
 QUILL's guide has four more walkthroughs, including a password-protected
 PDF: press **Send and Convert**, type the password in **Password for** the
-file, and press it again. If it was wrong, the job waits in Scribe
-Conversions; use **Enter Password...** there.
+file, and press it again. If it was wrong, the job waits in Conversions on This
+Computer; use **Enter Password...** there.
 
 ## Scribe for Documents in the other QUILL apps
 
 QUILL Lite shares Scribe for Documents with the rest of the QUILL family:
-one sign-in, one set of Options, one queue and one Scribe Conversions
+one sign-in, one set of Options, one queue and one Conversions on This Computer
 window. Quill Media Player can turn a document into a book to listen to,
 Quill Converter converts documents as well as audio, QUILL Studio makes a
 narration with chapters, QUILL Cast and QUILL Social convert a document an
 episode or a post links, and Quill Beacon keeps places in what Scribe made.
-A job started in any of them shows in QUILL Lite's Scribe Conversions too,
+A job started in any of them shows in QUILL Lite's Conversions on This Computer too,
 and only the app running it speaks.
 
 In those apps the Scribe commands have keys of their own. They are not QUILL
@@ -388,9 +429,9 @@ Scribe for Documents section.
 | Convert This Document... | File > Scribe for Documents | None; assign one in the Keyboard Manager | Sends the document you are working on |
 | Export with Scribe for Documents... | File > Scribe for Documents | None; assign one in the Keyboard Manager | The same, Tagged PDF first |
 | Convert from a Link... | File > Scribe for Documents | None; assign one in the Keyboard Manager | Scribe fetches a file |
-| My Scribe Documents | File > Scribe for Documents | None; assign one in the Keyboard Manager | Your documents and the Trash |
-| Conversions | File > Scribe for Documents | None; assign one in the Keyboard Manager | Opens Scribe Conversions |
-| Scribe Conversions | Window | None; assign one in the Keyboard Manager | Opens Scribe Conversions |
+| Documents in My Scribe Account | File > Scribe for Documents | None; assign one in the Keyboard Manager | Your documents and the Trash |
+| Conversions | File > Scribe for Documents | None; assign one in the Keyboard Manager | Opens Conversions on This Computer |
+| Conversions on This Computer | Window | None; assign one in the Keyboard Manager | Opens Conversions on This Computer |
 | Scribe Status | File > Scribe for Documents | None; assign one in the Keyboard Manager | Says what the job is doing |
 | Repeat Last Scribe Message | File > Scribe for Documents | None; assign one in the Keyboard Manager | Says the last message again |
 | Sign In... | File > Scribe for Documents | None; assign one in the Keyboard Manager | Signs in in your browser |
@@ -413,7 +454,7 @@ Scribe for Documents section.
 - **Picture descriptions.** Pneuma is reviewing its picture-description
   provider, and makes no promise yet about how long that provider keeps
   data.
-- **Deleting.** My Scribe Documents, **Move to Trash**, then **Delete
+- **Deleting.** Documents in My Scribe Account, **Move to Trash**, then **Delete
   Forever** in the Trash.
 - **On your computer.** A PDF password is used once and never saved.
   QUILL Lite keeps your sign-in in Windows' secure store. Your results are
@@ -432,10 +473,10 @@ such as QUILL-SCRIBE-PAGES, is in **Copy Details**, never spoken.
 
 | Code | What you hear, in short | What to do |
 |---|---|---|
-| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended." | **Sign In...** on the job in Scribe Conversions |
+| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended." | **Sign In...** on the job in Conversions on This Computer |
 | QUILL-SCRIBE-SIGNIN-LOCAL | No port could be opened on this computer, or your browser did not open | Allow QUILL Lite in your security software, or use **Copy Sign-in Link** |
-| QUILL-SCRIBE-PAGES | Scribe's message, then "Use Buy Pages in Scribe Conversions, then Retry." | **Buy Pages**, then **Retry** |
-| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open Scribe Conversions to enter it." | **Enter Password...**; three tries, then **Retry** |
+| QUILL-SCRIBE-PAGES | Scribe's message, then "Use Buy Pages in the Conversions on This Computer window, then Retry." | **Buy Pages**, then **Retry** |
+| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open the Conversions on This Computer window to enter it." | **Enter Password...**; three tries, then **Retry** |
 | QUILL-SCRIBE-BUSY | "Scribe for Documents asked QUILL Lite to slow down; trying again in a minute." | Nothing: it tries again |
 | QUILL-SCRIBE-NOTDOC | Scribe does not take this kind of file, or web pages | Save it as Word or PDF first |
 | QUILL-SCRIBE-TOOBIG | The file is over 500 MB | Split it, or make it smaller |

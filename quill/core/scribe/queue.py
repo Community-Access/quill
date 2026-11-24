@@ -314,6 +314,19 @@ class FamilyQueue:
             self._write(self.jobs(), actions=recent)
             return 0.0
 
+    def pace(self) -> tuple[int, float]:
+        """Read only, for Scribe Status: the family's actions in the last
+        minute, and when a ``rate_limited`` pause ends (``0.0`` if none)."""
+        data = self._read()
+        now = self._now()
+        recent = [
+            t
+            for t in data.get("actions", []) or []
+            if isinstance(t, (int, float)) and 0 <= now - float(t) < ACTION_WINDOW_S
+        ]
+        paused = float(data.get("paused_until", 0.0) or 0.0)
+        return len(recent), paused if paused > now else 0.0
+
     def pause_for_rate_limit(self) -> float:
         """``rate_limited``: no app sends anything for a minute. Returns the wait."""
         with self._editing():

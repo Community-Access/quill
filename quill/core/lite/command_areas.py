@@ -131,7 +131,7 @@ COMMAND_AREA: dict[str, str] = {
     "cmd_forms_payments_setup": "forms_payments",
     "cmd_forms_insert_payment": "forms_payments",
     "cmd_forms_verify_payments": "forms_payments",
-    "cmd_scribe_window": "scribe",  # Window > Scribe Conversions
+    "cmd_scribe_window": "scribe",  # Window > Conversions on This Computer
     "cmd_page_setup": "printing",
     "cmd_print": "printing",
     # With the rest of the spelling submenu, which is one switchable area.

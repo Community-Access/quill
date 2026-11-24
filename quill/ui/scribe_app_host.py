@@ -11,7 +11,7 @@ one of them needs the same few things, written here once:
   **A result that opens in another app never opens by itself**
   (``scribe_opens_on_its_own = False``): the other app coming to the front
   would cut the one result sentence off, so the sentence ends "Open it from
-  Scribe Conversions." and Open Result and Next Steps open it on the person's
+  the Conversions on This Computer window." and Open Result and Next Steps open it on the person's
   command (accessibility review, 2026-11-21). The Media Player, whose results
   open in itself, says otherwise.
 * :class:`AppScribeMixin` -- the shared commands on an
@@ -19,7 +19,7 @@ one of them needs the same few things, written here once:
   :class:`~quill.ui.scribe_entry.ScribeEntryPoints` (there is no document in
   front, so Convert This Document is not offered).
 * :data:`COMMON_ROWS` and :func:`append_scribe_submenu` -- the Scribe for
-  Documents submenu every app has: Scribe Conversions, My Scribe Documents,
+  Documents submenu every app has: Conversions on This Computer, Documents in My Scribe Account,
   Scribe Status, Repeat Last Scribe Message and Options (which holds Sign In,
   Sign Out and the account). **The same keys in every app**, so a person who
   knows one knows them all: these apps show a key on every menu row, and a
@@ -45,13 +45,23 @@ from quill.core.scribe import PRODUCT_NAME
 from quill.ui.scribe_entry import ScribeEntryPoints, browser_steps, send_to_player
 
 #: The app's own Scribe command (Listen, Convert Documents, Narration, Convert
-#: Linked Document, Add My Scribe Documents as Places).
+#: Linked Document, Add Documents in My Scribe Account as Places).
 ENTRY_KEY = "Alt+Shift+F6"
 
 #: (command id, label, handler on the app, key): the submenu, in order.
 COMMON_ROWS: tuple[tuple[str, str, str, str], ...] = (
-    ("scribe.conversions", "Scribe &Conversions", "scribe_conversions", "Alt+Shift+F7"),
-    ("scribe.my_documents", "&My Scribe Documents", "scribe_my_documents", "Alt+Shift+F8"),
+    (
+        "scribe.conversions",
+        "&Conversions on This Computer...",
+        "scribe_conversions",
+        "Alt+Shift+F7",
+    ),
+    (
+        "scribe.my_documents",
+        "Documents in &My Scribe Account...",
+        "scribe_my_documents",
+        "Alt+Shift+F8",
+    ),
     ("scribe.status", "Scribe &Status", "scribe_status", "Alt+Shift+F9"),
     ("scribe.repeat", "&Repeat Last Scribe Message", "scribe_repeat", "Alt+Shift+F10"),
     ("scribe.options", "Scribe for Documents &Options...", "scribe_options", "Alt+Shift+F11"),
@@ -278,8 +288,8 @@ def append_scribe_submenu(
 ) -> list[Any]:
     """Append the Scribe for Documents submenu to *menu*; return its ids.
 
-    *first* is an app row that belongs in the submenu itself (Beacon's Add My
-    Scribe Documents as Places), on :data:`ENTRY_KEY`. Each row runs the
+    *first* is an app row that belongs in the submenu itself (Beacon's Add Documents in
+    My Scribe Account as Places), on :data:`ENTRY_KEY`. Each row runs the
     owner's ``scribe_*`` command of the same name. *position* inserts the
     submenu there instead of at the end.
     """

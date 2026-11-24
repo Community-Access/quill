@@ -14,7 +14,7 @@ Scribe library records.
 
 **It never opens by itself.** The Chapter Workbench is a modal window, and a
 background job must not open a dialog (7.4a), so the sentence ends "Open it
-from Scribe Conversions." Open Result and Next Steps' "Open in the Chapter
+from Conversions on This Computer." Open Result and Next Steps' "Open in the Chapter
 Workbench" open it on the person's command; there they edit chapters, run the
 loudness check and export M4B as with any book. When it closes, focus goes back
 to the window it was opened from.

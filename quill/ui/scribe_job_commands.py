@@ -56,7 +56,8 @@ class ScribeJobCommands:
         if self._service is None or not self._service.holding:
             holder = (self.queue.holder() or {}).get("app", "another app")
             self._say(
-                f"Scribe Conversions in {holder} is running this job; enter the password there."
+                f"{holder} is running this job; enter the password in its Conversions on This "
+                "Computer window."
             )
             return
         from quill.ui.scribe_convert_password import ask_password

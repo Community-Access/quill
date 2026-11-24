@@ -3,7 +3,7 @@
 An adapter with no commands of its own: each ``cmd_scribe_*`` below hands
 straight to the shared :class:`~quill.ui.scribe_entry.ScribeEntryPoints`, the
 same code QUILL's :mod:`quill.ui.main_frame_scribe` reaches, and every Scribe
-window is the shared one (Convert, Scribe Conversions, My Scribe Documents,
+window is the shared one (Convert, Conversions on This Computer, Documents in My Scribe Account,
 Options, Sign In). The rows are :mod:`quill.core.lite.commands_scribe`'s.
 
 **One controller for the app**, not one per window: QUILL Lite has a window
@@ -381,7 +381,7 @@ class DocumentScribeMixin(ScribeEntryPoints):
             self.scribe_conversions()
 
     def cmd_scribe_window(self) -> None:
-        """Window > Scribe Conversions."""
+        """Window > Conversions on This Computer."""
         self.cmd_scribe_conversions()
 
     def cmd_scribe_status(self) -> None:

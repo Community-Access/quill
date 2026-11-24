@@ -18,10 +18,10 @@ Testing build: **2.0.0 (build 2)**. Builds since the first have not been publish
   Scribe for Documents read a document aloud, as MP3 audio and a DAISY book.
   Studio writes the book's headings into the MP3 as chapter markers and says
   so in the one result sentence ("with 12 chapter markers"), or says why it
-  could not. Open it in the Chapter Workbench from Scribe Conversions, where
+  could not. Open it in the Chapter Workbench from Conversions on This Computer, where
   you edit it, check its loudness and export M4B. It never opens by itself.
-- **Studio > Scribe for Documents** holds Scribe Conversions, My Scribe
-  Documents, Scribe Status, Repeat Last Scribe Message and Scribe for
+- **Studio > Scribe for Documents** holds Conversions on This Computer, Documents in My Scribe
+  Account, Scribe Status, Repeat Last Scribe Message and Scribe for
   Documents Options, on Alt+Shift+F7 to F11.
 
 ### A setting that cannot be saved is said (2026-11-20)

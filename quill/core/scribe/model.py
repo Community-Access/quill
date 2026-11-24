@@ -429,6 +429,14 @@ class Account:
     email: str = ""
     organization_name: str = ""
     pages_remaining: int | None = None
+    phone_number: str = ""
+    #: ``GET /api/billing``'s ``subscription``: ``None`` when the account has
+    #: none. ``store`` is ``"app_store"`` or ``"web"``; ``renews_at`` an ISO
+    #: 8601 UTC time when the server knows it. (``app_account_token``, the
+    #: App Store purchase ID, is never kept: nothing here buys in the App Store.)
+    has_subscription: bool = False
+    subscription_store: str = ""
+    subscription_renews_at: str = ""
 
     @property
     def name(self) -> str:
@@ -447,12 +455,18 @@ class Account:
         info = info if isinstance(info, dict) else {}
         billing = billing if isinstance(billing, dict) else {}
         pages = billing.get("pages_remaining")
+        plan = billing.get("subscription")
+        plan = plan if isinstance(plan, dict) else None
         return cls(
             first_name=str(info.get("first_name") or ""),
             last_name=str(info.get("last_name") or ""),
             email=str(info.get("email") or ""),
             organization_name=str(info.get("organization_name") or ""),
             pages_remaining=int(pages) if isinstance(pages, (int, float)) else None,
+            phone_number=str(info.get("phone_number") or ""),
+            has_subscription=plan is not None,
+            subscription_store=str((plan or {}).get("store") or ""),
+            subscription_renews_at=str((plan or {}).get("renews_at") or ""),
         )
 
 
