@@ -145,6 +145,9 @@
     "windows_dictation_working": "windows_dictation_working.wav",
     "word_corrected": "word_corrected.wav",
     "diff_line_added": "diff_line_added.wav",
-    "diff_line_removed": "diff_line_removed.wav"
+    "diff_line_removed": "diff_line_removed.wav",
+    "scribe_started": "scribe_started.wav",
+    "scribe_finished": "scribe_finished.wav",
+    "scribe_failed": "scribe_failed.wav"
   }
 }

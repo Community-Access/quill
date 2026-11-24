@@ -709,9 +709,9 @@ Control coverage: 343 audited sites (247 helped, 96 named-help).
 
 **Save a Beacon Place.** Where in the document the Quill Beacon place should point: the start, or one of its headings. The place remembers the Scribe document, so Beacon can download it again if the file is gone.
 
-**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. Each stage is said once, and the rows never move under you. Escape closes it.
+**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. The rows never move under you, and nothing is spoken unless you choose it in Options. Escape closes it.
 
-**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and how much is spoken. OK saves; Cancel leaves things as they were.
+**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and Progress and results: a sound, speech, both or neither for a conversion starting, each stage, finishing, and failing or needing you, with a button to hear the success and the failure sound. OK saves; Cancel leaves things as they were.
 
 **Search Everywhere.** One search across everything Cast knows: your shows, their episodes, show notes and transcripts. Each result says which show and which episode it came from, and Enter opens the row it names.
 
@@ -1151,9 +1151,9 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 **Save a Beacon Place.** Where in the document the Quill Beacon place should point: the start, or one of its headings. The place remembers the Scribe document, so Beacon can download it again if the file is gone.
 
-**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. Each stage is said once, and the rows never move under you. Escape closes it.
+**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. The rows never move under you, and nothing is spoken unless you choose it in Options. Escape closes it.
 
-**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and how much is spoken. OK saves; Cancel leaves things as they were.
+**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and Progress and results: a sound, speech, both or neither for a conversion starting, each stage, finishing, and failing or needing you, with a button to hear the success and the failure sound. OK saves; Cancel leaves things as they were.
 
 **Show and Hide Key.** Choose one key that shows and hides the player from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
 
@@ -1318,9 +1318,9 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 
 **Screenshot visual preview.** An optional magnified visual preview. Use scrolling keys to inspect it. The editing window retains a text plan and object list for nonvisual review.
 
-**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. Each stage is said once, and the rows never move under you. Escape closes it.
+**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. The rows never move under you, and nothing is spoken unless you choose it in Options. Escape closes it.
 
-**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and how much is spoken. OK saves; Cancel leaves things as they were.
+**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and Progress and results: a sound, speech, both or neither for a conversion starting, each stage, finishing, and failing or needing you, with a button to hear the success and the failure sound. OK saves; Cancel leaves things as they were.
 
 **Sign In to Scribe for Documents.** Your browser is open at Scribe's own sign-in page; sign in there and come back. QUILL never sees what you type. Copy Sign-in Link copies the address for another browser, and Continue closes this once you are signed in.
 
@@ -2098,9 +2098,9 @@ Control coverage: 60 audited sites (60 helped).
 
 **Save a Beacon Place.** Where in the document the Quill Beacon place should point: the start, or one of its headings. The place remembers the Scribe document, so Beacon can download it again if the file is gone.
 
-**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. Each stage is said once, and the rows never move under you. Escape closes it.
+**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. The rows never move under you, and nothing is spoken unless you choose it in Options. Escape closes it.
 
-**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and how much is spoken. OK saves; Cancel leaves things as they were.
+**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and Progress and results: a sound, speech, both or neither for a conversion starting, each stage, finishing, and failing or needing you, with a button to hear the success and the failure sound. OK saves; Cancel leaves things as they were.
 
 **Send to Auphonic?.** The last look before anything leaves this computer: every file to be uploaded and every file left out, the preset and processing, and where the results will be saved. Upload and Process sends them using your Auphonic credits; Cancel sends nothing.
 
@@ -2280,9 +2280,9 @@ Control coverage: 127 audited sites (127 helped).
 
 **Save a Beacon Place.** Where in the document the Quill Beacon place should point: the start, or one of its headings. The place remembers the Scribe document, so Beacon can download it again if the file is gone.
 
-**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. Each stage is said once, and the rows never move under you. Escape closes it.
+**Scribe Conversions.** Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command, Next Steps among them. The rows never move under you, and nothing is spoken unless you choose it in Options. Escape closes it.
 
-**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and how much is spoken. OK saves; Cancel leaves things as they were.
+**Scribe for Documents Options.** One set of Scribe for Documents choices for the whole QUILL family: who is signed in and the pages left, Sign In or Sign Out, your account in the browser, the default formats, the download folder, whether results open by themselves, and Progress and results: a sound, speech, both or neither for a conversion starting, each stage, finishing, and failing or needing you, with a button to hear the success and the failure sound. OK saves; Cancel leaves things as they were.
 
 **Sign In to Scribe for Documents.** Your browser is open at Scribe's own sign-in page; sign in there and come back. QUILL never sees what you type. Copy Sign-in Link copies the address for another browser, and Continue closes this once you are signed in.
 

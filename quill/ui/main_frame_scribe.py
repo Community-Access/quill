@@ -137,6 +137,10 @@ class QuillScribeHost:
         self._mf._announce(text)
         self._after.said(text)
 
+    def scribe_status_text(self, text: str) -> None:
+        """The latest Scribe sentence in the status bar, not spoken."""
+        self._mf._set_status_quiet(text)
+
     def scribe_hold(self, opening: Any, phrase: str) -> None:
         """Open after the sentence carrying *phrase* (the browser, Media Player)."""
         self._after.hold(opening, phrase)

@@ -2,6 +2,29 @@
 
 ## 1.0.0
 
+### Scribe for Documents is quiet while you work, and its sounds say how it went (2026-11-23)
+
+A conversion no longer talks over your document. To start with, nothing is
+said while it runs: its progress is in Scribe Conversions and Scribe Status
+when you want to look. When it finishes you hear a short success sound, and
+when it fails or needs you (your sign-in ran out, you are out of pages,
+Scribe refused the file) a different, lower failure sound. The sentence is
+still kept: it is in the status bar and in Notifications, and Repeat Last
+Scribe Message says it again.
+
+Scribe for Documents Options has a new **Progress and results** group, in
+QUILL, QUILL Lite and every app with Scribe: for when a conversion starts,
+each stage, when it finishes, and when it fails or needs you, choose **Play
+a sound**, **Speak the action**, **Both a sound and speech** or **Neither**.
+**Stage feedback plays** chooses whether stage feedback comes only while a
+Scribe for Documents window has focus, or everywhere. **Play Success Sound**
+and **Play Failure Sound** let you hear the two sounds, at your App Sounds
+volume. The three new sounds are in the sound scheme, in the group **Scribe
+for Documents**, where you can change or silence each one. Words go to your
+screen reader and braille display, as everything else does. This replaces
+**Speak each stage**; if you had it set to **Always**, you keep words for
+everything, everywhere, with the sounds as well.
+
 ### Scribe for Documents: the voices are there, and Play Sample answers (2026-11-23)
 
 In Convert with Scribe for Documents, in QUILL and QUILL Lite:
@@ -54,6 +77,7 @@ the Practice Site list still said it was not running until you connected it.
   for a real site.
 
 This is the same in QUILL and QUILL Lite.
+
 
 ### Scribe for Documents: groups of options say which group they are (2026-11-23)
 

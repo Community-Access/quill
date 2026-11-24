@@ -256,7 +256,22 @@ Applications key lists every command. Escape closes the window.
 
 ### What you hear
 
-| When | What you hear |
+To start with, QUILL Lite says nothing about a conversion while you write.
+Its progress is in Conversions and Scribe Status, for when you want to
+look. A finished conversion plays a short success sound; one that failed
+or needs you (sign-in run out, out of pages, a file Scribe refused) plays a
+different failure sound. The sentence is in the status bar and on
+its row in Conversions, and **Repeat Last Scribe Message** says it again,
+so a missed sound loses nothing.
+
+**Progress and results** in Options changes this: for when a conversion
+starts, each stage, when it finishes, and when it fails or needs you, **Play
+a sound**, **Speak the action**, **Both a sound and speech** or **Neither**.
+Words go to your screen reader and braille display. If you keep QUILL
+Lite's sounds off, a moment set to **Play a sound** is spoken instead.
+When you have chosen words, these are the sentences:
+
+| When | What is said |
 |---|---|
 | A file is sent | "Scribe for Documents: sending Notes.pdf, for Word." |
 | Each change of stage | "Notes.pdf, uploading.", then for example "Notes.pdf, adding image descriptions." |
@@ -265,9 +280,9 @@ Applications key lists every command. Escape closes the window.
 | It failed | "Scribe for Documents could not convert Notes.pdf:" and Scribe's reason |
 
 Several files chosen together go one after another, without asking again.
-At the end you hear one sentence saying what was made and what was not.
-When Scribe asks for a pause, you hear "Scribe for Documents asked QUILL
-Lite to slow down; trying again in a minute."
+At the end there is one sentence saying what was made and what was not.
+When Scribe asks for a pause, the stage says so: "Scribe for Documents asked
+QUILL Lite to slow down; trying again in a minute."
 
 ### Next Steps in QUILL Lite
 
@@ -298,10 +313,20 @@ in your Scribe account, with **Show: Documents / Trash** at the top.
 QUILL Lite and QUILL. A change here is a change in both. It has your
 account and pages, Sign In or Sign Out, **Default formats**, the **Download
 folder**, **Open each result when it is ready** (Open it, Ask me first or
-Don't open), **Offer Scribe when a PDF has little or no text**, **Speak
-each stage** (Only while a QUILL app is in front, Always or Never), and the
-About text with buttons for Scribe's terms, privacy policy and manual.
-Press **OK** to save.
+Don't open), **Offer Scribe when a PDF has little or no text**, **Progress
+and results**, and the About text with buttons for Scribe's terms, privacy
+policy and manual. Press **OK** to save.
+
+**Progress and results** has a choice for **When a conversion starts**
+(Neither to start with), **At each stage, milestone or delay** (Neither),
+**When a conversion finishes** (Play a sound) and **When a conversion fails
+or needs you** (Play a sound). **Stage feedback applies** is **Only while a
+Scribe for Documents window is in front** (the default) or **Everywhere,
+even when another program is in front**. **Play Success Sound** and **Play Failure Sound**
+let you hear the two sounds, at the volume App Sounds uses; you can change
+either one in Sound Scheme, in the group **Scribe for Documents**. If you
+had **Speak each stage** set to **Always**, you keep words for everything,
+everywhere, with the sounds as well.
 
 ## Two walkthroughs
 

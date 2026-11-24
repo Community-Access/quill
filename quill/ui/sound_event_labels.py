@@ -146,6 +146,10 @@ EVENT_GROUPS: tuple[tuple[str, tuple[str, ...]], ...] = (
         ("information", "question", "warning", "error", "task_complete"),
     ),
     (
+        "Scribe for Documents",
+        ("scribe_started", "scribe_finished", "scribe_failed"),
+    ),
+    (
         "Connections",
         ("ssh_connected", "ssh_disconnected"),
     ),
@@ -285,6 +289,9 @@ LABELS: dict[str, str] = {
     "warning": "Warning",
     "error": "Error",
     "task_complete": "Task finished",
+    "scribe_started": "Conversion sent to Scribe",
+    "scribe_finished": "Conversion finished",
+    "scribe_failed": "Conversion failed or needs you",
     # Connections
     "ssh_connected": "Connected to a server",
     "ssh_disconnected": "Disconnected from a server",

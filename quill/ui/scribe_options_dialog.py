@@ -6,6 +6,10 @@ and pages are read-only fields that Tab reaches; the links to Scribe's terms,
 privacy policy and manual are buttons, as elsewhere in the family. Tokens
 never go in options.
 
+**Progress and results** (:mod:`quill.ui.scribe_feedback_settings`) replaced
+"Speak each stage" on 2026-11-23: a sound, words, both or neither for a
+conversion starting, each stage, finishing, and failing or needing you.
+
 There is no batch setting: Pneuma approved the exception on 2026-11-21, so
 several files chosen together always go one after another (7.4). The About
 text carries the privacy notes of 10.1.2.
@@ -22,9 +26,10 @@ from quill.core.scribe import LINKS, PRODUCT_NAME
 from quill.core.scribe.consent import ABOUT_TEXT
 from quill.core.scribe.library import default_download_root
 from quill.core.scribe.model import FORMATS
-from quill.core.scribe.options import OPEN_CHOICES, SPEAK_CHOICES, ScribeOptions
+from quill.core.scribe.options import OPEN_CHOICES, ScribeOptions
 from quill.ui.accessible_group import GroupedRadioBox, describe_group
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.scribe_feedback_settings import FeedbackSection
 
 
 class ScribeOptionsDialog(wx.Dialog):
@@ -106,17 +111,10 @@ class ScribeOptionsDialog(wx.Dialog):
         self.offer_pdf.SetHelpText("When a PDF looks scanned, the OCR question also offers Scribe.")
         sizer.Add(self.offer_pdf, 0, wx.ALL, 6)
 
-        sizer.Add(wx.StaticText(self, label="S&peak each stage:"), 0, wx.LEFT, 6)
-        self.speak = wx.Choice(self, choices=[label for _key, label in SPEAK_CHOICES])
-        keys = [key for key, _label in SPEAK_CHOICES]
-        self.speak.SetSelection(
-            keys.index(self._options.speak_stages) if self._options.speak_stages in keys else 0
+        self.feedback = FeedbackSection(
+            self, self._options.feedback, say=controller.host.scribe_announce
         )
-        self.speak.SetHelpText(
-            "When stages and the 25, 50 and 75 percent marks are spoken. Start, finish and "
-            "errors are always spoken."
-        )
-        sizer.Add(self.speak, 0, wx.ALL, 6)
+        sizer.Add(self.feedback.sizer, 0, wx.EXPAND | wx.ALL, 6)
 
         box = wx.StaticBoxSizer(wx.VERTICAL, self, f"Powered by {PRODUCT_NAME}")
         parent_box = box.GetStaticBox()
@@ -217,7 +215,7 @@ class ScribeOptionsDialog(wx.Dialog):
         options.download_folder = "" if folder == str(default_download_root()) else folder
         options.open_results = OPEN_CHOICES[max(0, self.open_results.GetSelection())][0]
         options.offer_low_text_pdf = self.offer_pdf.GetValue()
-        options.speak_stages = SPEAK_CHOICES[max(0, self.speak.GetSelection())][0]
+        options.feedback = self.feedback.choices(options.feedback)
         return options
 
 
