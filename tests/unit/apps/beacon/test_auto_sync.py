@@ -92,3 +92,90 @@ def test_auto_sync_timer_stops_on_zero(frame, tmp_path):
     frame.sync.save_config(frame.sync.config)
     frame._apply_auto_sync_interval()
     assert not frame._sync_timer.IsRunning()
+
+
+def _ready(frame, tmp_path):
+    frame.sync.save_config(
+        SyncConfig(
+            transport="folder", folder=str(tmp_path / "remote"), device="d", auto_sync_seconds=300
+        )
+    )
+    frame.sync.setup_vault("pass")
+    frame.sync.unlock("pass")
+
+
+def test_a_routine_auto_sync_is_written_not_spoken(frame, tmp_path, monkeypatch):
+    """FUX-15: a sync that changed nothing here never talks over reading."""
+    _ready(frame, tmp_path)
+    said, refreshed = [], []
+    monkeypatch.setattr(frame.announcer, "say", lambda message, *a, **k: said.append(message))
+    monkeypatch.setattr(frame, "_refresh_results", lambda *a, **k: refreshed.append(True))
+    monkeypatch.setattr(frame.sync, "sync_now", lambda: {"pushed": 2, "pulled": 0})
+    frame._on_auto_sync_tick(None)
+    assert said == [] and refreshed == []
+    assert frame.GetStatusBar().GetStatusText() == "Auto-synced. Pushed 2, pulled 0."
+
+
+def test_an_auto_sync_that_brought_changes_says_so(frame, tmp_path, monkeypatch):
+    _ready(frame, tmp_path)
+    said, refreshed = [], []
+    monkeypatch.setattr(frame.announcer, "say", lambda message, *a, **k: said.append(message))
+    monkeypatch.setattr(frame, "_refresh_results", lambda **k: refreshed.append(k))
+    monkeypatch.setattr(frame.sync, "sync_now", lambda: {"pushed": 0, "pulled": 3})
+    frame._on_auto_sync_tick(None)
+    # One sentence: the refresh itself says no count and moves no details.
+    assert said == ["Auto-synced. Pushed 0, pulled 3."] and refreshed == [{"quiet": True}]
+
+
+def test_a_sync_that_moved_nothing_leaves_the_status_bar_alone(frame, tmp_path, monkeypatch):
+    _ready(frame, tmp_path)
+    frame.SetStatusText("12 results")
+    monkeypatch.setattr(frame.sync, "sync_now", lambda: {"pushed": 0, "pulled": 0})
+    frame._on_auto_sync_tick(None)
+    assert frame.GetStatusBar().GetStatusText() == "12 results"
+
+
+def test_conflicts_are_said_even_when_nothing_was_pulled(frame, tmp_path, monkeypatch):
+    _ready(frame, tmp_path)
+    said = []
+    monkeypatch.setattr(frame.announcer, "say", lambda message, *a, **k: said.append(message))
+    monkeypatch.setattr(
+        frame.sync, "sync_now", lambda: {"pushed": 0, "pulled": 0, "conflicts": [1]}
+    )
+    frame._on_auto_sync_tick(None)
+    assert said == ["Auto-synced. Pushed 0, pulled 0. 1 conflict(s) need review."]
+
+
+def test_the_selected_bookmark_stays_selected_after_a_sync_refresh(frame, tmp_path):
+    from quill.apps.beacon.auto_sync import refresh_keeping_place
+
+    for title in ("B", "C"):
+        res = Resource(title=title, type="web", primary_uri=f"https://x/{title}")
+        frame.store.put_beacon(
+            Beacon(resource_id=res.resource_id, title=title, in_inbox=False), resource=res
+        )
+    frame._refresh_results(quiet=True)
+    titles = [b.title for b in frame._results_cache]
+    chosen = titles.index("C")
+    frame.results.Select(chosen)
+    res = Resource(title="A", type="web", primary_uri="https://x/A")
+    frame.store.put_beacon(
+        Beacon(resource_id=res.resource_id, title="A", in_inbox=False), resource=res
+    )
+    refresh_keeping_place(frame)
+    assert frame._selected_beacon().title == "C"
+
+
+def test_a_window_disabled_by_a_modal_holds_the_sync(frame):
+    """Windows disables a modal's owner -- a system message box or file picker
+    too, which wx.GetTopLevelWindows never lists."""
+    import sys
+
+    from quill.apps.beacon.auto_sync import modal_open
+
+    assert modal_open(frame) is False
+    frame.Disable()
+    try:
+        assert modal_open(frame) is (sys.platform == "win32")
+    finally:
+        frame.Enable()

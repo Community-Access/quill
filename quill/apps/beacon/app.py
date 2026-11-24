@@ -894,7 +894,9 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
             return (self.last_query + f' collection:"{col}"').strip()
         return self.last_query
 
-    def _refresh_results(self) -> None:
+    def _refresh_results(self, *, quiet: bool = False) -> None:
+        """Show the current scope's results; *quiet* (an automatic sync) leaves
+        the count unsaid and the details pane alone (FUX-15)."""
         if self._scribe_scope_results():  # the Scribe Documents destination
             return
         # Smart Collections evaluate their saved grammar live (PRD 15.6).
@@ -915,9 +917,10 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
             self.results.SetItemCount(len(results))
             if results:
                 self.results.RefreshItem(0)
-            self.announcer.announce_count(len(results), filtered=True)
-            if results:
-                self._show_details(results[0])
+            if not quiet:
+                self.announcer.announce_count(len(results), filtered=True)
+                if results:
+                    self._show_details(results[0])
             return
 
         query = self._scope_filter()
@@ -930,6 +933,8 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
         self.results.SetItemCount(len(results))
         if results:
             self.results.RefreshItem(0)
+        if quiet:
+            return
         self.announcer.announce_count(len(results), filtered=bool(query.strip()))
         if results:
             self._show_details(results[0])
@@ -1733,18 +1738,9 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
             self._sync_timer.Stop()
 
     def _on_auto_sync_tick(self, _e) -> None:
-        if not self.sync.config.is_configured() or not self.sync.is_unlocked():
-            return  # not ready; leave the timer running for when it is
-        res = self.sync.sync_now()
-        if "error" in res:
-            self.announcer.say(f"Auto-sync failed: {res['error']}", "minimal")
-            return
-        self._refresh_results()
-        conflicts = res.get("conflicts") or []
-        msg = f"Auto-synced. Pushed {res.get('pushed', 0)}, pulled {res.get('pulled', 0)}."
-        if conflicts:
-            msg += f" {len(conflicts)} conflict(s) need review."
-        self.announcer.say(msg, "minimal", sound=SoundEvent.BEACON_SYNC_COMPLETE)
+        from quill.apps.beacon.auto_sync import tick
+
+        tick(self)
 
     def _on_auto_sync(self, _e) -> None:
         """Choose an automatic sync interval (off by default)."""
