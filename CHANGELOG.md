@@ -2,6 +2,18 @@
 
 ## 1.0.0
 
+### Radio: test your recording settings for 30 seconds (2026-11-24)
+
+Quill Radio's **Recording Settings** (Ctrl+Alt+Shift+I) now says what an
+hour of recording weighs at the format and quality you have chosen, in a new
+**Test result** box. **Test These Settings** (Alt+G) records the station that
+is playing for 30 seconds with the format, quality and Sound Enhancements in
+the window, before you press OK, into a temporary folder. It then says what
+those seconds made and how large an hour will be, which is the only honest
+answer for a raw or lossless recording. **Hear the Test** (Alt+H) plays it.
+Nothing goes into your recordings folder, and a change of format, quality or
+Sound Enhancements afterwards marks the test out of date.
+
 ### The first useful task has a clear beginning in Weather, Beacon and Social (2026-11-24)
 
 Quill Weather, before the first place, opens on a Getting started line, "No

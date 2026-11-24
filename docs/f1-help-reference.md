@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 343 audited sites (231 helped, 112 named-help).
+Control coverage: 346 audited sites (234 helped, 112 named-help).
 
 ### Every window, and what it is for
 
@@ -411,6 +411,10 @@ Control coverage: 343 audited sites (231 helped, 112 named-help).
 
 - `self._send`: Checks what you typed, then opens your mail program with the suggestion written to support@community-access.org. Nothing is sent until you press Send there.
 - `cancel`: Closes without sending anything.
+#### TestRecordingControls (`quill/ui/radio/test_recording_controls.py`)
+
+- `self.hear_button`: Plays the last test recording; before a test it says there is nothing to hear yet. Pause the station first to hear it clearly. Press again to stop.
+- `self.result`: How large an hour is at these settings, and what the last test recording made. It says out of date when a setting changed after the test.
 #### (module level) (`quill/ui/radio/upcoming_dialog.py`)
 
 - `snooze_btn`: Pushes a reminder out by a few minutes, counted from now. Only reminders can be snoozed -- a recording has a start time to keep.
