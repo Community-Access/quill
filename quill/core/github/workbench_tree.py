@@ -271,7 +271,7 @@ _FIXED: tuple[NodeSpec, ...] = (
         )
         for key, label in ACROSS_CATEGORIES
     ),
-    # By name across the set, in four groups, and the Fleet (PRD 22.11, 22.12, GX16):
+    # By name across the set, in five groups, and the Fleet (PRD 22.11, 22.12, GX16):
     # quill.core.github.workbench_tree_more.ACROSS_BY_NAME.
     # Help is a place, not only a key (Part D11): the same branch in both
     # Workbenches, every node a list you can type through and filter.

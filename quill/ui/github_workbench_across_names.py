@@ -33,9 +33,15 @@ import time
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.github.across_files import FILE_KINDS
 from quill.core.github.across_more_changes import MORE_KINDS
 from quill.core.github.explore_models import ExploreRow
 from quill.core.github.workbench_tree_more import ACROSS_GROUPS
+from quill.ui.github_workbench_across_files import (
+    FILES_REASONS,
+    FILES_VERBS,
+    GitHubWorkbenchAcrossFilesMixin,
+)
 from quill.ui.github_workbench_across_more import (
     MORE_REASONS,
     MORE_VERBS,
@@ -62,6 +68,8 @@ _FITS: dict[str, frozenset[str]] = {
         "environments",
         "variables",
         "webhooks",
+        "settings",
+        *FILE_KINDS,
     }),
     "add_missing": frozenset({
         "labels",
@@ -72,6 +80,7 @@ _FITS: dict[str, frozenset[str]] = {
         "variables",
         "webhooks",
         "autolinks",
+        *FILE_KINDS,
     }),
     "rename": frozenset({"labels", "milestones", "branches"}),
     "delete": frozenset({"labels", "milestones", "topics", *MORE_KINDS} - {"branches"}),
@@ -79,7 +88,14 @@ _FITS: dict[str, frozenset[str]] = {
 }
 #: Kinds whose writes decide who may change code or deploy, hold secrets, or send
 #: data out: Full only, whatever the command's own tier.
-_ACCESS_KINDS = frozenset({"rules", "environments", "secrets", "webhooks", "deploy_keys"})
+_ACCESS_KINDS = frozenset({
+    "rules",
+    "environments",
+    "secrets",
+    "webhooks",
+    "deploy_keys",
+    "settings",
+})
 
 NAME_VERBS: dict[str, frozenset[str]] = {
     "across_variants": frozenset({"by_name"}),
@@ -95,18 +111,22 @@ NAME_VERBS: dict[str, frozenset[str]] = {
     "across_promote_org": frozenset({"by_name"}),
     **MORE_VERBS,
     **OPS_VERBS,
+    **FILES_VERBS,
 }
 NAME_REASONS: dict[str, str] = {
     **MORE_REASONS,
     **OPS_REASONS,
+    **FILES_REASONS,
     "across_make_same": (
         "Not for this kind: a topic, tag, branch or deploy key has nothing to make the same, "
-        "a secret is set with Set Secret Everywhere, and GitHub cannot change an autolink."
+        "a secret is set with Set Secret Everywhere, GitHub cannot change an autolink or a "
+        "package, and a person's access changes with Bulk Access Changes."
     ),
     "across_add_missing": (
         "Not for this kind: branch protection is per branch, a tag is made by Release Train, "
-        "a secret by Set Secret Everywhere, and GitHub takes a deploy key in one repository "
-        "only."
+        "a secret by Set Secret Everywhere, GitHub takes a deploy key in one repository only, "
+        "every repository has every setting, a person is given access with Bulk Access "
+        "Changes, and a package is published by its own build."
     ),
     "across_rename_name": "Only a label, a milestone or a branch is renamed everywhere.",
     "across_merge_label": "Only labels are merged.",
@@ -130,7 +150,7 @@ _kind_of = kind_of
 
 
 class GitHubWorkbenchAcrossNamesMixin(
-    GitHubWorkbenchAcrossMoreMixin, GitHubWorkbenchAcrossOpsMixin
+    GitHubWorkbenchAcrossFilesMixin, GitHubWorkbenchAcrossMoreMixin, GitHubWorkbenchAcrossOpsMixin
 ):
     """The by-name sheets and the Fleet over the Repository Set in use."""
 
@@ -271,7 +291,8 @@ class GitHubWorkbenchAcrossNamesMixin(
         if len(variants) == 1:
             return variants[0][0]
         labels = [
-            f"Variant {n}, {describe_props(props)}: {len(repos)} repositories, {', '.join(repos)}"
+            f"Variant {n}, {describe_props(props)}: {len(repos)} "
+            f"repositor{'y' if len(repos) == 1 else 'ies'}, {', '.join(repos)}"
             for n, (props, repos) in enumerate(variants, start=1)
         ]
         index = self._choose(title, "Which version wins?", labels)
@@ -289,7 +310,7 @@ class GitHubWorkbenchAcrossNamesMixin(
             self._say(f"{hit.name} is already the same in every repository that has it.")
             return
         winner = self._winner(hit, "Make Them the Same")
-        if winner is None:
+        if winner is None or self._same_own_kind(found, hit, winner):
             return
         if found.kind in MORE_KINDS:
             from quill.core.github.across_more_changes import plan_more_same
@@ -319,7 +340,7 @@ class GitHubWorkbenchAcrossNamesMixin(
             self._run_plan("across_add_missing", plan_topic_add(found, hit, targets), "Add")
             return
         winner = self._winner(hit, "Add to Missing")
-        if winner is None:
+        if winner is None or self._add_own_kind(found, hit, winner, targets):
             return
         if found.kind in MORE_KINDS:
             from quill.core.github.across_more_changes import plan_more_add
@@ -425,59 +446,6 @@ class GitHubWorkbenchAcrossNamesMixin(
         if pair is not None:
             self._run_plan("across_close_milestone", plan_close(*pair), "Close")
 
-    def _choose_many(
-        self, title: str, prompt: str, labels: list[str], checked: list[str]
-    ) -> list[str]:
-        """Real check boxes that each say their state (A11Y-SR-1); [] on Cancel."""
-        from quill.ui.dialog_contract import show_modal_dialog
-        from quill.ui.wordpress_workbench_dialogs import ask_checks
-
-        chosen = ask_checks(
-            self.frame.frame,
-            show_modal_dialog,
-            title=title,
-            prompt=prompt,
-            rows=labels,
-            checked=[i for i, label in enumerate(labels) if label in checked],
-            help_text="The repositories this change reaches. The preview comes next.",
-        )
-        return [labels[i] for i in chosen or ()]
-
-    def _across_preview(
-        self,
-        title: str,
-        plan: Any,
-        yes: str,
-        *,
-        destructive: bool | None = None,
-        undoable: bool = False,
-    ) -> bool:
-        """The preview; a destructive one starts on Cancel and names every repository."""
-        from quill.ui.dialog_contract import show_modal_dialog
-        from quill.ui.wordpress_workbench_dialogs import (
-            IRREVERSIBLE,
-            _destructive_now,
-            ask_preview,
-        )
-
-        summary = plan.preview().splitlines()[0]
-        if destructive is None:
-            destructive = _destructive_now() or yes in IRREVERSIBLE
-        names = [step.repository for step in plan.runnable]
-        if destructive and names:  # it starts on Cancel, so it says where it reaches
-            listed = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
-            summary += f" They are: {listed}."
-        return ask_preview(
-            self.frame.frame,
-            show_modal_dialog,
-            title=title,
-            summary=summary,
-            lines=[step.preview() for step in plan.steps],
-            yes=yes,
-            destructive=destructive,
-            undoable=undoable,
-        )
-
     def _run_plan(
         self,
         verb: str,
@@ -525,6 +493,8 @@ class GitHubWorkbenchAcrossNamesMixin(
         api = self.github_api()
         if engine is not None:
             work = lambda: engine(api, plan)  # noqa: E731
+        elif (own := self._own_work(api, plan)) is not None:
+            work = own
         elif plan.kind in MORE_KINDS:
             from quill.core.github.across_more_changes import apply_more
             from quill.core.github.across_more_promote import apply_more_promote
@@ -544,7 +514,7 @@ class GitHubWorkbenchAcrossNamesMixin(
                 f"{r.repository}: {r.said}" if r.ok else f"{r.repository}: not changed, {r.said}"
                 for r in results
             ]
-            said = results_summary(results)
+            said = self._own_summary(plan, results) or results_summary(results)
             # The results stay in the details until you move; F5 reads the set again.
             self.frame.details.ChangeValue("\n".join([said, "", *lines]))
             self._say(f"{said} F5 reads the repositories again.")

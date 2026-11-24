@@ -11,9 +11,10 @@ help reference read them like every other row. Five row types:
   vanishing.
 - ``repository_set``: a named set under Repository Sets.
 - ``by_name``: a label, milestone, topic, rule set, tag, branch, environment,
-  secret, variable, webhook, deploy key or autolink by name across the set.
-  Delete Where Merged and Draft Releases Together are here too; Dismiss
-  Everywhere is on an ``across_item`` alert row.
+  secret, variable, webhook, deploy key, autolink, workflow, template,
+  Dependabot or CODEOWNERS file, person, repository setting or package by name
+  across the set. Delete Where Merged and Draft Releases Together are here
+  too; Dismiss Everywhere is on an ``across_item`` alert row.
 - ``fleet``: one repository's line in the Fleet.
 
 :data:`KEYLESS` is family rule 8 for these commands: every one has a key in
@@ -171,6 +172,14 @@ ACROSS_ROWS: dict[str, tuple[ActionRow, ...]] = {
             "Create it in the repositories you choose that lack it, after the preview.",
         ),
         _a(
+            "across_compare_config",
+            "Compare Configuration...",
+            _W,
+            "push",
+            "Choose a version and another repository, then read the differences in the "
+            "Compare Configuration window; its Propose Update opens one pull request there.",
+        ),
+        _a(
             "across_find_uses",
             "Find Uses",
             _R,
@@ -301,6 +310,7 @@ KEYLESS: dict[str, str] = {
     f"{_P}across_make_same": _RARE,
     f"{_P}across_add_missing": _RARE,
     f"{_P}across_find_uses": _RARE,
+    f"{_P}across_compare_config": _RARE,
     f"{_P}across_rename_name": _RARE,
     f"{_P}across_merge_label": _RARE,
     f"{_P}across_close_milestone": _RARE,

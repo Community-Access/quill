@@ -553,35 +553,83 @@ with the reason.
 
 GitHub keeps a label, a tag or a secret inside one repository, but you think
 of them by name across many: "the bug label", "the v3.2.0 tag", "the
-NUGET_KEY secret". Across Repositories has a place for each such kind, in four
+NUGET_KEY secret". Across Repositories has a place for each such kind, in five
 groups:
 
 - **Planning by Name:** Labels, Milestones, Topics.
-- **Code by Name:** Tags, Branches, Rules and Branch Protection.
-- **Actions by Name:** Environments, Secrets, Variables.
-- **Settings by Name:** Webhooks, Deploy Keys, Autolinks.
+- **Code by Name:** Tags, Branches, Rules and Branch Protection, Packages.
+- **Actions by Name:** Environments, Secrets, Variables, Workflows.
+- **Files by Name:** Templates, Dependabot, CODEOWNERS.
+- **Settings by Name:** Webhooks, Deploy Keys, Autolinks, Repository
+  Settings, People.
 
 A row is one name, such as "v3.2.0: in 4 of 4 repositories, 4 different
-commits" or "main: in 30 of 30 repositories, default in 30, protected in 26".
+commits", "main: in 30 of 30 repositories, default in 30, protected in 26",
+"ci.yml: in 12 of 12 repositories, 3 versions of the file" or "Allow
+auto-merge: on in 20, off in 8".
 Enter shows its variants, each with the repositories that have it, and the
 repositories that lack it. A repository that could not be read, often because
 reading secrets, webhooks and keys needs admin access, is named apart and
 never counted as missing.
 
-The context menu then changes it everywhere, as far as GitHub allows. Every
-change shows a preview first, repository by repository, with what is blocked
-and why, and then one result per repository. Each target is read again just
-before it is written, so one somebody changed on GitHub meanwhile is left
-alone and named.
+The places for files, people, settings and packages each read what one
+repository already shows:
+
+- **Workflows by Name** lists each workflow file. **Templates by Name** lists
+  issue and pull request templates, discussion forms, and community files
+  such as CONTRIBUTING and SECURITY, wherever each repository keeps them.
+  **Dependabot by Name** lists dependabot.yml with its update entries, and
+  **CODEOWNERS by Name** the CODEOWNERS file GitHub uses, with its rules and
+  owners. A variant is a version of the file.
+- **People by Name** is the access matrix from each person's side: their role
+  in each repository and where it comes from, directly or from the
+  organization or a team, and where they have no access. A repository whose
+  collaborators GitHub does not show you is named apart.
+- **Repository Settings by Name** lists each switch on the Repository sheet's
+  Features and Merging pages, with how many repositories have it on and off.
+  A switch that GitHub does not show this account is "not shown to you", not
+  off.
+- **Packages by Name** lists each package published from the set, with its
+  type and visibility. Each owner is read once and every page of packages is
+  included. Packages are read only, because GitHub's API cannot change their
+  visibility or access.
+
+Choose a row, then open its context menu or press `Shift+F1` to find the
+commands that fit that kind. Every change shows a preview first, repository
+by repository, with what is blocked and why. The results return one sentence
+per repository, including skipped, blocked and unchanged targets, so a
+repository never disappears from the outcome.
+
+Each target is read again just before it is written, so one somebody changed
+on GitHub meanwhile is left alone and named. A people list also reads every
+collaborator page, and Packages reads every package page; "past the first 100"
+is not treated as missing. Repositories where the account has no access and
+repositories that could not be read remain separate.
 
 - **Make Them the Same** (labels, milestones, rules, environments, variables,
-  webhooks): choose the winning variant. An environment's custom branch list,
-  and a team reviewer from another owner, are not copied. A webhook keeps its
-  secret.
+  webhooks, repository settings, and the four kinds of file): choose the
+  winning variant. An environment's custom branch list, and a team reviewer
+  from another owner, are not copied. A webhook keeps its secret. A setting
+  needs admin access in each repository, and Change History can put each one
+  back.
 - **Add to Missing** (labels, milestones, topics, rulesets, environments,
-  variables, webhooks, autolinks). An environment's custom list of branches,
-  and a team reviewer from another owner, are not copied. A deploy key cannot
-  be added to more: GitHub accepts one key in one repository only.
+  variables, webhooks, autolinks, and the four kinds of file). An
+  environment's custom list of branches, and a team reviewer from another
+  owner, are not copied. A deploy key cannot be added to more: GitHub accepts
+  one key in one repository only.
+- **A file is never pushed.** For a workflow, template, Dependabot or
+  CODEOWNERS file, Make Them the Same and Add to Missing open one pull
+  request in each repository with the winning version. Nothing changes until
+  each pull request is merged, and the results say how many wait for review.
+  QUILL re-reads the full source and target blob IDs before it proposes a
+  change. A file somebody changed since the list was read, a response that is
+  not readable text, or a source that no longer exists is named and not
+  proposed. The wrong contents are never put in a pull request just because
+  a short version number looked the same.
+- **Compare Configuration** (the four kinds of file): choose the version to
+  compare from and the repository to compare with. The differences open in
+  the same Compare Configuration window as Repository Actions, where Propose
+  Update opens one pull request in that repository.
 - **Release Train** (tags): make the tag, the tag's draft release, or the tag
   and a published release, on the default branch of each repository you
   choose. A repository that already has the tag is skipped, and its tag is
@@ -636,9 +684,14 @@ A preview that deletes, or that dismisses alerts, starts on Cancel, so Enter
 sends nothing: press the button that names the change. Its summary says how
 many repositories will change and names each one.
 
-Secrets, environments, webhooks, deploy keys and rules decide who may deploy,
-what is kept secret or where data is sent, so changing them across
-repositories needs Full in the Workbench.
+People and packages are read only here. Bulk Access Changes gives or takes a
+role in many repositories, and GitHub's API cannot change a package's
+visibility or access.
+
+Secrets, environments, webhooks, deploy keys, rules and repository settings
+decide who may deploy, what is kept secret, where data is sent or how the
+repository works, so changing them across repositories needs Full in the
+Workbench.
 
 ### Dismissing one alert everywhere
 

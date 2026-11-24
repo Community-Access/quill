@@ -41,7 +41,9 @@ __all__ = [
     "fetch_packages",
     "fetch_repository_packages",
     "fetch_versions",
+    "owner_packages",
     "package_row",
+    "raw_packages",
     "restore_package",
     "row_parts",
 ]
@@ -135,23 +137,42 @@ def package_row(raw: Mapping[str, Any], org: str = "", person: str = "") -> Expl
     )
 
 
+def raw_packages(
+    api: GitHubApi, *, limit: int = 100, org: str = "", person: str = "", all_pages: bool = False
+) -> list[Mapping[str, Any]]:
+    """Every package of yours, of *org*, or *person*'s public ones, as GitHub gives them."""
+    found: list[Mapping[str, Any]] = []
+    for kind in PACKAGE_TYPES:
+        page = 1
+        while True:
+            query = {"package_type": kind, "per_page": str(max(1, min(limit, 100)))}
+            if all_pages:
+                query["page"] = str(page)
+            try:
+                data = api.rest("GET", _base(org, person), query=query).data
+            except GitHubRestError as exc:
+                if exc.status in (400, 422):  # a type this account cannot hold
+                    break
+                raise _refused(exc, "list your packages", "read:packages") from exc
+            if all_pages and (
+                not isinstance(data, list) or not all(isinstance(raw, Mapping) for raw in data)
+            ):
+                raise ValueError("GitHub returned an unreadable package list.")
+            found += [raw for raw in data or () if isinstance(raw, Mapping)]
+            if not all_pages or len(data) < int(query["per_page"]):
+                break
+            page += 1
+    return found
+
+
 def fetch_packages(
     api: GitHubApi, *, limit: int = 100, org: str = "", person: str = ""
 ) -> list[ExploreRow]:
     """Every package of yours, of *org*, or *person*'s public ones, each type in turn."""
-    rows: list[ExploreRow] = []
-    for kind in PACKAGE_TYPES:
-        try:
-            data = api.rest(
-                "GET",
-                _base(org, person),
-                query={"package_type": kind, "per_page": str(max(1, min(limit, 100)))},
-            ).data
-        except GitHubRestError as exc:
-            if exc.status in (400, 422):  # a type this account cannot hold
-                continue
-            raise _refused(exc, "list your packages", "read:packages") from exc
-        rows += [package_row(raw, org, person) for raw in data or () if isinstance(raw, Mapping)]
+    rows = [
+        package_row(raw, org, person)
+        for raw in raw_packages(api, limit=limit, org=org, person=person)
+    ]
     rows.sort(key=lambda row: row.label.lower())
     return rows[:limit]
 
@@ -253,6 +274,27 @@ def versions_text(name: str, versions: list[PackageVersion]) -> str:
     return "\n".join([heading, "", *(version.label + "." for version in versions)])
 
 
+def owner_packages(
+    api: GitHubApi, owner: str, about: str = "", *, all_pages: bool = False
+) -> tuple[list[Mapping[str, Any]], str, str]:
+    """*owner*'s packages as GitHub gives them, and (org, person) as :func:`package_row` takes.
+
+    GitHub lists packages by owner only: an organization's, yours, or another
+    person's that you may see.
+    """
+    try:
+        who = api.rest("GET", f"/users/{quote(owner, safe='')}").data
+    except GitHubRestError as exc:
+        raise _refused(exc, f"find who owns {about or owner}", "read:packages") from exc
+    if isinstance(who, Mapping) and who.get("type") == "Organization":
+        return raw_packages(api, org=owner, all_pages=all_pages), owner, ""
+    me = api.rest("GET", "/user").data
+    mine = isinstance(me, Mapping) and str(me.get("login") or "").lower() == owner.lower()
+    if mine:
+        return raw_packages(api, all_pages=all_pages), "", ""
+    return raw_packages(api, person=owner, all_pages=all_pages), "", owner
+
+
 def fetch_repository_packages(api: GitHubApi, repo: str, *, limit: int = 100) -> list[ExploreRow]:
     """Repository > Packages: the packages published from *repo*.
 
@@ -261,16 +303,6 @@ def fetch_repository_packages(api: GitHubApi, repo: str, *, limit: int = 100) ->
     person's that you may see) and keeps the ones from *repo*. Each row acts
     like the same row under the owner's own Packages.
     """
-    owner = repo.partition("/")[0]
-    try:
-        who = api.rest("GET", f"/users/{quote(owner, safe='')}").data
-    except GitHubRestError as exc:
-        raise _refused(exc, f"find who owns {repo}", "read:packages") from exc
-    is_org = isinstance(who, Mapping) and who.get("type") == "Organization"
-    if is_org:
-        rows = fetch_packages(api, org=owner)
-    else:
-        me = api.rest("GET", "/user").data
-        mine = isinstance(me, Mapping) and str(me.get("login") or "").lower() == owner.lower()
-        rows = fetch_packages(api) if mine else fetch_packages(api, person=owner)
+    raws, org, person = owner_packages(api, repo.partition("/")[0], repo)
+    rows = sorted((package_row(raw, org, person) for raw in raws), key=lambda r: r.label.lower())
     return [row for row in rows if row.repo.lower() == repo.lower()][:limit]

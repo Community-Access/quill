@@ -40,6 +40,7 @@ ACROSS_GROUPS: tuple[tuple[str, str, tuple[tuple[str, str], ...]], ...] = (
             ("tags", "Tags by Name"),
             ("branches", "Branches by Name"),
             ("rules", "Rules and Branch Protection"),
+            ("packages", "Packages by Name"),
         ),
     ),
     (
@@ -49,6 +50,16 @@ ACROSS_GROUPS: tuple[tuple[str, str, tuple[tuple[str, str], ...]], ...] = (
             ("environments", "Environments by Name"),
             ("secrets", "Secrets by Name"),
             ("variables", "Variables by Name"),
+            ("workflows", "Workflows by Name"),
+        ),
+    ),
+    (
+        "across_files",
+        "Files by Name",
+        (
+            ("templates", "Templates by Name"),
+            ("dependabot", "Dependabot by Name"),
+            ("codeowners", "CODEOWNERS by Name"),
         ),
     ),
     (
@@ -58,6 +69,8 @@ ACROSS_GROUPS: tuple[tuple[str, str, tuple[tuple[str, str], ...]], ...] = (
             ("webhooks", "Webhooks by Name"),
             ("deploy_keys", "Deploy Keys by Name"),
             ("autolinks", "Autolinks by Name"),
+            ("settings", "Repository Settings by Name"),
+            ("people", "People by Name"),
         ),
     ),
 )
