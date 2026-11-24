@@ -433,12 +433,18 @@ recording. Live audio is never offered as seekable</td>
 </tr>
 <tr>
 <td>Studio</td>
-<td>Last book and its place, saved when the chapter workbench
+<td>Last book and its place, saved when the Chapter Workbench
 closes</td>
-<td>The workbench, paused, when Resume Last Book is on</td>
-<td>The place is written only when the workbench closes, so a crash
-loses it</td>
-<td>Left (below)</td>
+<td>The Workbench, paused, when Resume Last Book is on</td>
+<td>The Workbench saved the place only in its <code>EVT_CLOSE</code>
+handler, and its Close button and Escape end the window with
+<code>wx.ID_CANCEL</code> and no close event (checked against wx):
+leaving that way kept no place, did not update Studio’s history, and did
+not stop the player. A crash also loses the place, since it is written
+only on leaving</td>
+<td>The Cast and Media Player pull request: the Workbench keeps its
+place and stops however it is left (the same window in QUILL’s Audio
+Studio). The crash case is left (below)</td>
 </tr>
 <tr>
 <td>Transcribe</td>
@@ -505,7 +511,8 @@ in its first file rather than the last one you were in; that needs the
 book’s own last file, which the position store (keyed by each file’s
 contents) does not hold.</li>
 <li><strong>Studio’s place on a crash</strong> needs a periodic write in
-the chapter workbench, which has no timer today.</li>
+the Chapter Workbench, which has no timer today; leaving it any normal
+way now keeps the place.</li>
 <li><strong>Social</strong> and <strong>Beacon</strong>, as in the
 table.</li>
 </ul>
