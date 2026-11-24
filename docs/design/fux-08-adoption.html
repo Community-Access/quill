@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FUX-08: hear or see what a setting will do, app by app</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="fux-08-hear-or-see-what-a-setting-will-do-app-by-app">FUX-08:
+hear or see what a setting will do, app by app</h1>
+<p><strong>Date:</strong> 2026-11-24 <strong>Source:</strong> FUX-08 in
+the family UX plan (<code>git show b7c6a1a04^:complete2.md</code>), held
+to <a
+href="family-interaction-contracts.md">family-interaction-contracts.md</a>.
+It is not one of the promoted pilots (<a
+href="2026-11-19-family-ux-pilots.md">2026-11-19-family-ux-pilots.md</a>,
+section 5), so the work here is limited to real gaps in settings the
+family already has. It adds no new panel, key, centre or settings
+surface: a preview is a button or a live change inside the window that
+already holds the setting.</p>
+<h2 id="what-a-preview-has-to-do">What a preview has to do</h2>
+<p>Every preview in the family, old and new, is held to the same five
+rules:</p>
+<ol type="1">
+<li><strong>Reached from the keyboard.</strong> A real button (or a
+control whose change is heard at once), in the Tab order next to the
+setting it plays.</li>
+<li><strong>Said once.</strong> The preview’s own sound and words, and
+one sentence only when nothing could be heard and the person needs to
+know why (sounds off, no sound in the scheme, the choice is silence).
+Nothing the screen reader already says (GATE-13).</li>
+<li><strong>Never changes the saved value.</strong> It plays what the
+window shows. Cancel, Close or Escape leaves the setting as it was, and
+any live change is put back.</li>
+<li><strong>Stops.</strong> Pressing the button again, pressing Escape,
+or closing the window stops it. Escape that stops a preview does not
+also close the window, the way Scribe’s Play Sample works.</li>
+<li><strong>Honest.</strong> It uses the same rule the real moment uses,
+so a choice that falls back to words for real falls back to words in the
+preview.</li>
+</ol>
+<h2 id="what-the-family-already-has">What the family already has</h2>
+<ul>
+<li><strong>Scribe’s Play Sample</strong>
+(<code>quill/ui/scribe_convert_settings.py</code>): plays the chosen
+voice, becomes Stop Sample, and Escape stops it without closing the
+dialog. The model for rule 4.</li>
+<li><strong>Sound Scheme</strong>
+(<code>quill/ui/sound_scheme_dialog.py</code>, QUILL and QUILL Lite): a
+Play button and “play each sound as I move through the list”, nothing
+saved until OK.</li>
+<li><strong>Sound Enhancements in Radio</strong>
+(<code>quill/ui/sound_enhance_dialog.py</code> with
+<code>on_live_change</code>): every slider and box is heard on what is
+playing a moment after it moves, and Cancel puts back the values it
+opened with.</li>
+<li><strong>Media Player’s Audio tab</strong> applies equaliser, boost
+and normalise live; there is nothing to keep or cancel.</li>
+<li><strong>Converter’s Play Preview and Hear Original</strong> (Ctrl+P,
+Ctrl+Shift+P): fifteen seconds with your settings or without, the same
+key stops, closing the window stops.</li>
+<li><strong>Weather’s alert sound Play button</strong>, <strong>Studio’s
+Preview voice</strong>, <strong>the Speech Hub’s Preview Selected
+Voice</strong>, and <strong>Test Microphone</strong> in Dictation
+Settings and Transcribe Set Up.</li>
+<li><strong>Scribe’s feedback sound preview</strong> (#2037,
+<code>quill/ui/scribe_feedback_settings.py</code>): Play Success Sound
+and Play Failure Sound in Scribe Options, saying why nothing
+played.</li>
+</ul>
+<h2 id="the-shared-helper">The shared helper</h2>
+<p><code>quill/ui/setting_preview.py</code> is the one place a feedback
+preview is built:</p>
+<ul>
+<li><code>feedback_step(mode, ...)</code> resolves the family’s “a
+sound, words, both or neither” choice through
+<code>quill.core.action_feedback.resolve</code>, the function the real
+moment uses, so a sound with no clip in the scheme speaks in the preview
+as it does for real.</li>
+<li><code>edge_step(...)</code> is a start or stop moment with a “play
+sounds” box and a “say it” box, the rule dictation’s
+<code>_announce_edge</code> follows.</li>
+<li><code>PreviewSequence</code> plays a few steps a moment apart, once;
+the button again, Escape or closing the window stops it
+(<code>guard</code>). When every step is silent it says so in one
+sentence, and when the app’s sounds are off it says that once.</li>
+</ul>
+<p>Scribe’s feedback preview (#2037) says the same reasons in its own
+words, for a single sound rather than a sequence; it can move onto this
+helper later without changing what it says.</p>
+<h2 id="app-by-app">App by app</h2>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Settings whose effect is not obvious</th>
+<th>Preview today</th>
+<th>The gap</th>
+<th>What changed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL</td>
+<td>Dictation feedback; voices, rate, volume and pitch; sound scheme;
+action and find-miss feedback; theme and font size</td>
+<td>Sound Scheme; the Speech Hub’s Preview Selected Voice; browse-mode
+WAV Preview</td>
+<td>Dictation feedback could not be heard. The Speech Hub preview wrote
+the unsaved rate and volume into the live settings and kept playing
+after Escape or Close</td>
+<td>Dictation Settings: <strong>Hear Start, Phrase and Stop</strong>
+(this pull request). The Speech Hub: the voices pull request (#2053)
+gives the values back on close and stops the preview on Escape, leaving
+or closing</td>
+</tr>
+<tr>
+<td>QUILL Lite</td>
+<td>Dictation feedback; command and search-miss feedback; theme</td>
+<td>Sound Scheme; Scribe Play Sample</td>
+<td>Dictation feedback could not be heard</td>
+<td>Dictation Settings: Hear Start, Phrase and Stop (the same
+window)</td>
+</tr>
+<tr>
+<td>Radio</td>
+<td>Sound Enhancements; reminder sound; dial hiss; output device</td>
+<td>Sound Enhancements is live, and Cancel puts it back; App Sounds
+plays a sound on the chosen device</td>
+<td>None that needs a button: the reminder and dial hiss are heard the
+next time they happen and say what they are</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>Cast</td>
+<td>Sound Enhancements; speed; Volume Boost; Even Out Volume; action
+feedback</td>
+<td>None. The Sound Enhancements window was heard only after Apply,
+which also saves</td>
+<td>A pilot task (“change a podcast’s speed and hear it take effect”)
+had no way to hear an equaliser change before keeping it</td>
+<td>The Cast pull request (#2054): the Sound Enhancements window is
+heard live, a change during a reload waits for it, and Close puts back
+what was not applied and says so</td>
+</tr>
+<tr>
+<td>Media Player</td>
+<td>Equaliser, boost, normalise, skip silence</td>
+<td>Live on the Audio tab</td>
+<td>None</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>Converter</td>
+<td>Effect, preset, Custom Effects</td>
+<td>Play Preview and Hear Original</td>
+<td>Custom Effects (loudness, gain, speed) is heard only after OK and
+Ctrl+P</td>
+<td>Left: its preview has to render the file with unsaved effects
+through ffmpeg; Ctrl+P straight after OK is the honest path today</td>
+</tr>
+<tr>
+<td>Transcribe</td>
+<td>Dictation feedback, engine and model</td>
+<td>Test Microphone in Set Up and Dictation Settings</td>
+<td>Dictation feedback could not be heard</td>
+<td>Dictation Settings: Hear Start, Phrase and Stop (the same
+window)</td>
+</tr>
+<tr>
+<td>Inkwell</td>
+<td>Dictation feedback</td>
+<td>Test Microphone</td>
+<td>Dictation feedback could not be heard</td>
+<td>Dictation Settings: Hear Start, Phrase and Stop (the same
+window)</td>
+</tr>
+<tr>
+<td>Studio</td>
+<td>Voice, rate and speed for narration; audio processing</td>
+<td>Speech Hub Preview; the Audio Studio wizard’s Preview voice</td>
+<td>Both previews kept playing after Escape or closing the window; the
+Speech Hub’s also changed the saved rate and volume</td>
+<td>The voices pull request (#2053): both stop on Escape, on leaving and
+on close; the Speech Hub gives back the saved values (it is shared with
+QUILL)</td>
+</tr>
+<tr>
+<td>Beacon</td>
+<td>High contrast, text scale, verbosity</td>
+<td>Applied on OK</td>
+<td>A visual setting is seen as soon as OK is pressed, and Beacon is not
+released</td>
+<td>None now</td>
+</tr>
+<tr>
+<td>Social</td>
+<td>Notification channels; high contrast</td>
+<td>None</td>
+<td>Social keeps its own settings model in
+<code>standalone/social</code></td>
+<td>Left, for Social’s own settings work</td>
+</tr>
+<tr>
+<td>Weather</td>
+<td>Alert sound and how many times it plays</td>
+<td>A Play button</td>
+<td>Play with a repeat count above one looped on a thread nothing could
+stop: Escape and closing Weather Settings left it playing, and each
+press added another loop</td>
+<td>The voices pull request (#2053): the button again, Escape or closing
+stops it, repeats and all, and a real alert is never cut off</td>
+</tr>
+</tbody>
+</table>
+<h2 id="left-and-why">Left, and why</h2>
+<ul>
+<li><strong>QUILL’s browse-mode WAV Preview</strong>
+(<code>main_frame_preferences.py</code>) plays on the UI thread until
+the clip ends, so the window cannot be used meanwhile. It is QUILL’s
+Preferences, which <code>main_frame_preferences.py</code>’s size budget
+and the generic settings-spec builder make a change of its own.</li>
+<li><strong>Action and search-miss feedback</strong> in QUILL and QUILL
+Lite has no Hear button. QUILL draws that chooser from the generic
+settings specs, which have no place for a button, and QUILL Lite may not
+get one first. The shared <code>feedback_step</code> is ready for
+it.</li>
+<li><strong>Converter Custom Effects</strong>, <strong>Social</strong>
+and <strong>Beacon</strong>, as in the table.</li>
+</ul>
+<h2 id="the-acceptance-list">The acceptance list</h2>
+<ul>
+<li><strong>A preview has a clear end and puts things back:</strong> the
+button again, Escape, or closing the window stops it; Cast’s live sound
+is put back on Close unless applied.</li>
+<li><strong>Shared versus app-only is clear before applying:</strong>
+Dictation Settings is one window that four apps open, and says nothing
+is saved until OK. No new setting is shared
+(<code>family_preferences.py</code> is untouched).</li>
+<li><strong>Nothing silently synchronises keys, focus, microphones or
+credentials:</strong> no preview reads or writes any of them; Test
+Microphone is unchanged.</li>
+<li><strong>A setting that needs a restart says so:</strong> none of the
+settings previewed here needs one.</li>
+<li><strong>No extra confirmation for an ordinary reversible
+choice:</strong> none added.</li>
+<li><strong>Undo without remembering the old value:</strong> Cancel
+keeps the saved value; Cast’s Close puts back the values the window
+opened with.</li>
+</ul>
+</main>
+</body>
+</html>

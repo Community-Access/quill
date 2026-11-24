@@ -1212,6 +1212,7 @@ right side is about starting and stopping.
 | Just write what I say: nothing happens at a pause | No full stop, sound, read-back or command at a pause | Off |
 | Play sounds when dictation starts, stops or fails | The start, stop and error tones | On |
 | Say "Dictation on" and "Dictation off" | The words that go with those tones | On |
+| Hear Start, Phrase and Stop (button) | Plays the three choices above as they are now, before you press OK; again or Escape stops it | (a button) |
 | Listen for the wake phrase while dictation is off | Start dictation by voice | Off |
 | Wake phrase | The words that start it | Quill dictate |
 | Stop phrase | The words that stop it, said on their own | stop dictation |

@@ -268,6 +268,14 @@ is no tick; you hear "Still working on that phrase." when a phrase has taken
 four seconds, each time that happens. If your sound pack has no tick sound, you
 hear the sentence at four seconds instead of the ticks, each time.
 
+**Hear Start, Phrase and Stop**, the button after those three choices, plays
+what dictation will do with them as they are in the window now: dictation
+starting, a phrase being written, and dictation stopping, a moment apart. Try
+a choice, listen, and press Cancel if you would rather keep what you had:
+nothing is saved until OK. Press the button again, or Escape, to stop it;
+Escape then does not close the window. If your sounds are off, or a choice is
+silent, it says so.
+
 It speaks when something happens that your screen reader cannot tell you: that
 dictation paused, that it could not start and why, that a phrase may be
 incomplete.

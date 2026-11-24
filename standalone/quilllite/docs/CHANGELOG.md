@@ -2,6 +2,19 @@
 
 ## 2.0.0
 
+### Dictation Settings: hear the feedback choices before keeping them (2026-11-24)
+
+Dictation Settings has a new button, **Hear Start, Phrase and Stop**, after
+"After each phrase is written, give me", the start and stop sounds, and "Say
+Dictation on and Dictation off". It plays what dictation will do with those
+three choices as they are in the window now, before you press OK: dictation
+starting, a phrase being written, and dictation stopping, a moment apart.
+Nothing is saved until OK, so Cancel keeps what you had. Press the button
+again, or Escape, to stop it; Escape then leaves the window open. If the app's
+sounds are off, or every choice is silent, it says so in one sentence. The
+same window is Dictation Settings in QUILL, QUILL Lite, QUILL Transcribe and
+Quill Inkwell.
+
 ### Export as HTML says where the page went (2026-11-23)
 
 File > Export as HTML says the file and its folder, for example "Exported to

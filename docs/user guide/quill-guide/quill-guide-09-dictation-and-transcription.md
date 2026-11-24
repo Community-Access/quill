@@ -1230,6 +1230,10 @@ brackets:
   or two hyphens.
 - The **start, stop and error tones** (`windows_dictation_cue_sounds`).
 - **Saying "Dictation on" and "Dictation off"** (`windows_dictation_announce`).
+- **Hear Start, Phrase and Stop**, a button after those three choices, plays
+  them as they are in the window now: dictation starting, a phrase being
+  written, and dictation stopping. Nothing is saved until OK. Press it again,
+  or Escape, to stop it; Escape then does not close the window.
 - The **wake phrase** (`windows_dictation_wake_enabled`,
   `windows_dictation_wake_phrase`).
 - The **stop phrase** (`windows_dictation_stop_phrase`). It is "stop

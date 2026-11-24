@@ -601,7 +601,10 @@ backup. Change them in **Dictation > Dictation
 Settings...** (Ctrl+Alt+D), which is the same window the editors use. One
 difference: the read-back after each phrase starts as a tone rather than the
 words, because your screen reader can already read out what is typed, and hearing
-everything twice gets tiring. You can change that in the same window.
+everything twice gets tiring. You can change that in the same window, and
+**Hear Start, Phrase and Stop** there plays your choices before you keep them:
+dictation starting, a phrase being written, and dictation stopping. Nothing is
+saved until OK, and the button again or Escape stops it.
 
 **Correcting yourself as you talk.** Check **Fix it when I correct myself,
 like Thursday, no, Friday** (Alt+X) in Dictation Settings, and when you say
