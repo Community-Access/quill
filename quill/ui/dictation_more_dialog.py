@@ -40,6 +40,7 @@ from quill.core.windows_dictation.preview import PREVIEW_CHOICES, coerce_preview
 from quill.core.windows_dictation.settings_fields import SHARE_FIELD, share_on
 from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dictation_my_words import saved_my_words
 from quill.ui.spin_value import spin_value
 
 __all__ = [
@@ -469,13 +470,7 @@ class MoreDictationDialog(wx.Dialog):
         """The person's My Words vocabulary, which the command word may not be."""
         if self._my_words is not None:
             return list(self._my_words)
-        try:
-            from quill.core.speech.dictation_profile import default_profile_path
-            from quill.core.windows_dictation.profile import load
-
-            return list(load(default_profile_path()).vocabulary)
-        except Exception:  # noqa: BLE001 - no words is a fine answer
-            return []
+        return saved_my_words()
 
     def _on_ok(self, event: Any) -> None:
         """OK: refused, with the reason, while the command word would not do."""

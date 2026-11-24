@@ -527,7 +527,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/watch_profile_store.py::_save_locked": "versioned",
     "core/menu_customization.py::save_menu_customization": "versioned",
     "core/profile_startup.py::save_profile_startup_config": "versioned",
-    "ui/ai_hub_dialog.py::_save_deepgram_max_speakers": "versioned",
+    "ui/ai_hub_audio_settings.py::_save_deepgram_max_speakers": "versioned",
     # The Read-Only Guard list, shared by both editors since 2026-10-16.
     "core/read_only_guards.py::set": "versioned",
 }

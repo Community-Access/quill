@@ -22,7 +22,6 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Callable
-from dataclasses import dataclass
 from pathlib import Path
 from typing import ClassVar
 
@@ -38,6 +37,7 @@ from quill.core.i18n import _, lazy_gettext
 from quill.core.settings import Settings
 from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.batch_wizard import BatchRequest
+from quill.ui.batch_wizard_choices import _WizardChoices
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 from quill.ui.dpi import dip_size
 
@@ -55,25 +55,6 @@ class _WizardPage(wx.Panel):
     def __init__(self, parent: wx.Window, name: str) -> None:
         super().__init__(parent)
         self.SetName(name)
-
-
-# ---------------------------------------------------------------------------
-# Shared state carried through the wizard
-# ---------------------------------------------------------------------------
-
-
-@dataclass
-class _WizardChoices:
-    """Mutable container that pages read and write."""
-
-    root: Path
-    recursive: bool
-    output_layout: OutputLayout
-    overwrite: OverwritePolicy
-    direction: str  # "import" or "export"
-    source_format: str
-    target_format: str
-    profile: str | None
 
 
 # ---------------------------------------------------------------------------

@@ -1016,22 +1016,6 @@ class RadioProgramDialog(wx.Dialog):
         return self._result
 
 
-def parse_hhmm(value: str) -> int | None:
-    """Parse HH:MM (24h) to epoch-ms-of-day. Returns None if blank/invalid."""
-    if not value:
-        return None
-    parts = value.split(":")
-    if len(parts) != 2:
-        return None
-    try:
-        h, m = int(parts[0]), int(parts[1])
-    except ValueError:
-        return None
-    if not (0 <= h < 24 and 0 <= m < 60):
-        return None
-    return (h * 3600 + m * 60) * 1000
-
-
 class StatusCenterDialog(wx.Dialog):
     """Status center: one place to hear how capture, sync, and health are (PRD 13.4).
 
