@@ -75,12 +75,19 @@ def role_usage(class_name: str) -> str:
     return _ROLE_USAGE.get(class_name, _GENERIC_USAGE)
 
 
-def compose_control_body(*, accessible_name: str, help_text: str, usage: str) -> str:
+def compose_control_body(
+    *, accessible_name: str, help_text: str, usage: str, selection: str = ""
+) -> str:
     """The control section's body, from whichever of the pieces exist.
 
     Never empty: with nothing authored it still says what the control is
     called and how to drive its kind. Pieces are separated by blank lines and
     never repeated -- a help text that IS the accessible name appears once.
+
+    *selection* is what a list says about its selected row right now (FUX-10):
+    what Enter does on this row, and what is greyed for it and why. It follows
+    the control's own help, which says what the list is, and comes before the
+    role line.
     """
     parts: list[str] = []
     name = accessible_name.strip()
@@ -89,6 +96,8 @@ def compose_control_body(*, accessible_name: str, help_text: str, usage: str) ->
         parts.append(help_body)
     if name and name.lower() not in help_body.lower():
         parts.insert(0, f"{name}.")
+    if selection.strip():
+        parts.append(selection.strip())
     if usage:
         parts.append(usage)
     return "\n\n".join(parts) if parts else _GENERIC_USAGE

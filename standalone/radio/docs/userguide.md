@@ -591,7 +591,7 @@ moved, not gone. Play is **Enter** on a station, or **Ctrl+P**. Record is
 2. Arrow **Up** and **Down** to move. **Right Arrow** opens a folder and **Left
    Arrow** closes it.
 3. Press **Enter** on a station to play it. Press **Enter** on the station that
-   is playing to stop it.
+   is playing to pause it, and again to resume.
 4. Press **Space** on the playing station to pause or resume it, when it is
    something that can be paused. Live radio cannot be paused.
 5. Press **F2** to rename a station or folder. Leave a station's name blank to
@@ -7377,6 +7377,9 @@ Quill Radio comes with.
    what the control you are on does and how to use it.
 3. Arrow through the text. You can copy it if you like.
 4. Press **Escape**. You are back exactly where you were.
+
+On the Favorites tree, F1 also says what Enter does on the station you are on,
+names a station you marked for move, and reads your note.
 
 ### Check for Updates, step by step
 

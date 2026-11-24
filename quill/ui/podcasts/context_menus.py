@@ -175,6 +175,10 @@ def episode_row_menu(host: Any) -> None:
     )
     pause_item = menu.Append(wx.ID_ANY, pause_label)
     pause_item.Enable(in_flight)
+    if not in_flight:  # a dimmed item says why, like every row action below it
+        from quill.core import dimmed_reason
+
+        pause_item.SetHelp(dimmed_reason.explain(pause_label, dimmed_reason.not_downloading()))
     menu.Bind(wx.EVT_MENU, lambda _e: host._on_pause_resume_download(None), pause_item)
     if getattr(host, "_current_place", "") == "recently_expired":
         restore = menu.Append(wx.ID_ANY, "&Restore to the Play Queue")

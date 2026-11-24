@@ -4686,6 +4686,10 @@ what the control you are on does. On a checkbox and not sure what checking it
 changes? Press F1 before you check it. Try it now on anything in the main
 window.
 
+On the episode list, F1 also says which menu items are dimmed for the episode
+or podcast you are on, and why: "Download Episode: this episode is already
+downloaded." Your screen reader calls them unavailable.
+
 ### Finding a command you have forgotten
 
 You know Cast can do something, and you cannot remember where it is. Three
