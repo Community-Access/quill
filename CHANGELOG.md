@@ -62,6 +62,16 @@ press F1.
 - **Quick Nav letters say the kind and the place**, "Link, 3 of 12", instead of
   "Moved to next link". The heading-level digits 1 to 6 say the heading itself,
   title included, and the caret's heading cue is not said a second time.
+### Next and previous unread in Quill Social, and Beacon's chapter keys (2026-11-23)
+
+- **Quill Social: Item > Next unread** (Alt+.) and **Previous unread**
+  (Alt+,) move to the next or previous unread post in the view. Not the
+  GitHub Workbench's Ctrl+. pair: its Previous, Ctrl+Shift+., is Next Article
+  in Social's Listen menu.
+- **Quill Beacon's player** moves by chapter with Ctrl+Shift+Period and
+  Ctrl+Shift+Comma, Quill Radio's chapter keys, and says each one once with its
+  place, "The news, chapter 2 of 5." The chapter list promised N and P and
+  nothing was bound. Its 30 seconds forward button skipped 15; it skips 30.
 - FUX-14, app by app: `docs/design/fux-14-adoption.md`.
 
 ### Scribe for Documents: the voices are there, and Play Sample answers (2026-11-23)

@@ -39,6 +39,12 @@ DEFAULT_BINDINGS: dict[str, str] = {
     "prev_pane": "Shift+F6",
     "refresh": "F5",
     "mark_read": "Ctrl+K",
+    # Alt+Period and Alt+Comma (FUX-14, 2026-11-23). Not the GitHub
+    # Workbench's Ctrl+Period pair: its Previous, Ctrl+Shift+Period, is Next
+    # Article in Listen here, and Ctrl+Alt+Period is AltGr+Period, which types
+    # a character on some European layouts. Punctuation is never a menu letter.
+    "next_unread": "Alt+.",
+    "previous_unread": "Alt+,",
     "search": "Ctrl+L",
     "help": "F1",
     "goto_1": "Ctrl+1",

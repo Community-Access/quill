@@ -2469,9 +2469,9 @@ Control coverage: 127 audited sites (127 helped).
 
 - `self.play_btn`: Play the episode, or pause it if it is playing. The change is announced.
 - `self.back_btn`: Jump back 15 seconds and announce the new position.
-- `self.fwd_btn`: Jump forward by the skip interval (15 seconds) and announce the new position.
+- `self.fwd_btn`: Jump forward 30 seconds and announce the new position.
 - `self.add_point_btn`: Save a time-point bookmark at the current position, tagged timepoint and filed under the current chapter when there is one. It appears in the main bookmarks list.
-- `self.chapter_list`: The episode's chapters with their start times, when the feed supplies them. Selecting a chapter jumps playback to its start.
+- `self.chapter_list`: The episode's chapters with their start times, when the feed supplies them. Selecting a chapter jumps playback to its start. From anywhere in the window, Ctrl+Shift+Period goes to the next chapter and Ctrl+Shift+Comma to the previous one.
 - `self.transcript`: The episode's transcript as read-only text, when one is available. Empty otherwise.
 
 ## GitHub Workbench
