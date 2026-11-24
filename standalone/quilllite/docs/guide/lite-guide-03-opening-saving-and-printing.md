@@ -1080,6 +1080,11 @@ If the document has notes written into the file, QUILL Lite asks whether to
 include them in the page, marked as notes. No is the default, so a note never
 ends up in a page by accident. QUILL has the same command on the same key.
 
+When the page is written, QUILL Lite says where it went, for example "Exported
+to minutes.html in Documents." If you missed it, **Repeat Last Result** (**F9**)
+says it again, and **Activity** (**Shift+F9**) keeps it with an **Open Folder**
+button.
+
 Equations in a Markdown document, written as `\(...\)` inside a line or as
 `$$...$$` or a fenced `math` block on their own, go into the page as MathML,
 the web's own format for maths. The page needs no script and nothing from the

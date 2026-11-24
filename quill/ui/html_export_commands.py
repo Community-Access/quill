@@ -64,7 +64,13 @@ class HtmlExportCommandsMixin(EditorHostMixin):
         except Exception as error:  # noqa: BLE001 - reported, never a crash
             self._host_say(f"Could not export {target.name}: {error}")
             return
-        self._host_say(f"Exported {target.name}")
+        # The page and its folder, and kept in Activity with Open Folder (FUX-04).
+        from quill.core.action_feedback import written_result
+        from quill.ui.outcome_report import keep_outcome
+
+        said = written_result("Exported", target)
+        self._host_say(said)
+        keep_outcome("Export as HTML", said, object_name=target.name, path=target)
 
     def _write_html_export(
         self, target: Path, text: str, kind: str, title: str, include_notes: bool

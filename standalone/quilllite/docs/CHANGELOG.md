@@ -2,6 +2,13 @@
 
 ## 2.0.0
 
+### Export as HTML says where the page went (2026-11-23)
+
+File > Export as HTML says the file and its folder, for example "Exported to
+minutes.html in Documents.", and keeps the result: F9 says it again, and
+Activity (Shift+F9) has it with an Open Folder button. Import and Export in
+Manage Abbreviations say where too, and no longer show a box when they work.
+
 ### Scribe for Documents, off until you turn it on (2026-11-21)
 
 QUILL Lite can now send a document you choose to Pneuma Solutions' Scribe

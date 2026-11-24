@@ -327,7 +327,7 @@ class AbbreviationsMixin:
         from quill.core.abbreviations import load_abbreviation_library
         from quill.ui.abbreviation_manager_dialog import AbbreviationManagerDialog
 
-        dlg = AbbreviationManagerDialog(self.frame, self._abbreviation_library)
+        dlg = AbbreviationManagerDialog(self.frame, self._abbreviation_library, self)
         self._show_modal_dialog(dlg.dialog, "Manage Abbreviations")
         self._abbreviation_library = load_abbreviation_library()
         dlg.close()

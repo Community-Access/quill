@@ -683,6 +683,15 @@ route.</p>
 buttons read and write the shared library as JSON. Export is the honest
 backup of everything, including every per-entry setting; import merges
 entries in.</p>
+<p>Each says what it did, and where, instead of showing a box: “Exported
+42 abbreviations to abbreviations.json in Documents.” An import says how
+many it added from which file, how many were already in your list, and
+how many entries it could not use because they had no abbreviation or no
+text. If you missed it, <strong>Help &gt; Repeat Last Result</strong>
+(<code>F9</code>) says it again, and <strong>Help &gt;
+Activity…</strong> (<code>Shift+F9</code>) keeps it with an <strong>Open
+Folder</strong> button. A file that cannot be read or written still gets
+a box, because nothing changed and it needs your attention.</p>
 <h2 id="14-settings-reference">14. Settings reference</h2>
 <p>Inkwell’s own preferences live in <code>inkwell.json</code> beside
 the library:</p>
@@ -910,6 +919,14 @@ spoken instead.</p>
 <tr>
 <td>AI Privacy Agreement</td>
 <td>Alt+Shift+F2</td>
+</tr>
+<tr>
+<td>Repeat Last Result: hear the last result again</td>
+<td>F9</td>
+</tr>
+<tr>
+<td>Activity: this session’s results, with Open Folder</td>
+<td>Shift+F9</td>
 </tr>
 </tbody>
 </table>

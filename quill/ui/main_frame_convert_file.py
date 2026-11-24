@@ -201,17 +201,18 @@ class ConvertFileMixin:
 
         self._remember_convert_file_choices(request.output_dir, request.output_token)
         self._record_recent(target)
-        if substitute:
-            # MarkItDown cannot run in a shipped build (magika needs
-            # onnxruntime, which the shared runtime leaves out), so the reader
-            # that stood in is named rather than letting the user think
-            # MarkItDown made this file.
-            self._announce(
-                f"Converted to {target.name}. MarkItDown could not run here, "
-                f"so {substitute} read the file instead."
-            )
-        else:
-            self._announce(f"Converted to {target.name}")
+        # MarkItDown cannot run in a shipped build (magika needs onnxruntime,
+        # which the shared runtime leaves out), so the reader that stood in is
+        # named rather than letting the user think MarkItDown made this file.
+        # The file and its folder, kept in Activity with Open Folder (FUX-04).
+        self._report_written(
+            "Convert File",
+            "Converted",
+            target,
+            reason=f"MarkItDown could not run here, so {substitute} read the file instead."
+            if substitute
+            else "",
+        )
 
         if request.action == "open":
             self.open_file(path=target)
