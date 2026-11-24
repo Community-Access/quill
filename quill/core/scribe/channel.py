@@ -10,6 +10,16 @@ a time; ``start_conversion`` while one runs answers ``conversion_in_progress``.
 If the connection drops, the conversion carries on at Scribe: the runner
 opens a new channel on the same document and never uploads again.
 
+**Preview chunks are replayed on join.** QUILL joins with ``replay_chunks``
+(as Pneuma's client does since 2026-11-23), so Scribe first sends the
+``html_stream`` chunks already streamed: a preview joined after the upload
+started, or after a dropped connection, misses none. Each chunk carries an
+``index`` counting up from 0; a :class:`ChunkLedger` shared by every channel
+one opener makes remembers the last index passed on per document, and a
+chunk at or below it (one already shown) is dropped. Servers from before
+``index`` send neither the index nor the replay, and their chunks pass as
+they always have.
+
 GATE-9: :func:`create_connection` is the one call site that opens the socket.
 The token is in the address because that is Phoenix's protocol; the address
 is never logged. wx-free; tests hand :class:`DocumentChannel` a scripted
@@ -90,7 +100,8 @@ def channel_url(base_url: str, token: str, locale: str = "") -> str:
 @dataclass(frozen=True, slots=True)
 class ChannelEvent:
     """Something the server pushed: ``status``, ``chunk``, ``conversion_complete``,
-    ``error`` or ``password_required``."""
+    ``error`` or ``password_required``. A chunk's *index* is ``-1`` when the
+    server sent none."""
 
     kind: str
     format: str = ""
@@ -101,6 +112,31 @@ class ChannelEvent:
     reason: str = ""
     message: str = ""
     purchase_url: str = ""
+    index: int = -1
+
+
+class ChunkLedger:
+    """The last preview chunk passed on, per document, across reconnects.
+
+    A document's entry is forgotten when its preview completes, so a later
+    preview of the same document (its indexes start at 0 again) is passed
+    on whole rather than dropped as already seen.
+    """
+
+    def __init__(self) -> None:
+        self._last: dict[str, int] = {}
+
+    def admit(self, document_id: str, event: ChannelEvent) -> bool:
+        """True to pass *event* on; False for a chunk already passed on."""
+        if event.kind == "conversion_complete" and event.format == "html_stream":
+            self._last.pop(document_id, None)
+            return True
+        if event.kind != "chunk" or event.index < 0:
+            return True
+        if event.index <= self._last.get(document_id, -1):
+            return False
+        self._last[document_id] = event.index
+        return True
 
 
 def parse_event(event: str, payload: Any) -> ChannelEvent | None:
@@ -120,7 +156,9 @@ def parse_event(event: str, payload: Any) -> ChannelEvent | None:
             progress=max(0.0, min(1.0, progress)),
         )
     if event == "chunk":
-        return ChannelEvent("chunk", content=str(data.get("content") or ""))
+        raw_index = data.get("index")
+        index = raw_index if isinstance(raw_index, int) and not isinstance(raw_index, bool) else -1
+        return ChannelEvent("chunk", content=str(data.get("content") or ""), index=max(-1, index))
     if event == "conversion_complete":
         if not data.get("format"):
             return None
@@ -150,9 +188,11 @@ class DocumentChannel:
         document_id: str,
         *,
         clock: Callable[[], float] = time.monotonic,
+        chunk_ledger: ChunkLedger | None = None,
     ) -> None:
         self._socket = socket
         self.document_id = document_id
+        self._ledger = chunk_ledger or ChunkLedger()
         self.topic = f"documents:{document_id}"
         self._join_ref = "1"
         self._next_ref = 2
@@ -170,8 +210,13 @@ class DocumentChannel:
         connector: Connector | None = None,
         locale: str = "",
         clock: Callable[[], float] = time.monotonic,
+        chunk_ledger: ChunkLedger | None = None,
     ) -> DocumentChannel:
-        """Connect and join. Raises :class:`ScribeOfflineError` if it cannot connect."""
+        """Connect and join. Raises :class:`ScribeOfflineError` if it cannot connect.
+
+        The join asks for the preview chunks already streamed (``replay_chunks``);
+        *chunk_ledger* drops the ones an earlier channel already passed on.
+        """
         try:
             url = channel_url(base_url, token, locale)
             socket = create_connection(url) if connector is None else connector(url)
@@ -189,8 +234,10 @@ class DocumentChannel:
             raise ScribeOfflineError(
                 "Couldn't connect to Scribe. Check your connection and try again."
             ) from None
-        channel = cls(socket, document_id, clock=clock)
-        channel._send(channel._join_ref, "phx_join", {}, join_ref=channel._join_ref)
+        channel = cls(socket, document_id, clock=clock, chunk_ledger=chunk_ledger)
+        channel._send(
+            channel._join_ref, "phx_join", {"replay_chunks": True}, join_ref=channel._join_ref
+        )
         channel._await_reply(channel._join_ref, _JOIN_TIMEOUT_S)
         logger.info("Scribe channel joined id=%s", document_id)
         return channel
@@ -265,7 +312,7 @@ class DocumentChannel:
             if event in ("phx_error", "phx_close"):
                 raise ScribeOfflineError("The connection to Scribe for Documents was lost.")
             parsed = parse_event(event, payload)
-            if parsed is not None:
+            if parsed is not None and self._ledger.admit(self.document_id, parsed):
                 self._pending.append(parsed)
 
     # --------------------------------------------------------------- public
@@ -306,7 +353,7 @@ class DocumentChannel:
             if event in ("phx_error", "phx_close"):
                 raise ScribeOfflineError("The connection to Scribe for Documents was lost.")
             parsed = parse_event(event, payload)
-            if parsed is not None:
+            if parsed is not None and self._ledger.admit(self.document_id, parsed):
                 return parsed
 
     def close(self) -> None:
@@ -319,7 +366,12 @@ class DocumentChannel:
 def default_channel_opener(
     connector: Connector | None = None, locale: str = ""
 ) -> Callable[[ScribeClient, str], DocumentChannel]:
-    """Open a document channel with the client's token (refreshed once on refusal)."""
+    """Open a document channel with the client's token (refreshed once on refusal).
+
+    Every channel the opener makes shares one :class:`ChunkLedger`, so a
+    reconnect's replayed preview chunks are not passed on twice.
+    """
+    ledger = ChunkLedger()
 
     def opener(client: ScribeClient, document_id: str) -> DocumentChannel:
         tokens = client._tokens  # noqa: SLF001 - the same session the client uses
@@ -330,6 +382,7 @@ def default_channel_opener(
                 document_id,
                 connector=connector,
                 locale=locale,
+                chunk_ledger=ledger,
             )
         except ScribeSignInError:
             return DocumentChannel.open(
@@ -338,6 +391,7 @@ def default_channel_opener(
                 document_id,
                 connector=connector,
                 locale=locale,
+                chunk_ledger=ledger,
             )
 
     return opener
@@ -347,6 +401,7 @@ __all__ = [
     "default_channel_opener",
     "HEARTBEAT_S",
     "ChannelEvent",
+    "ChunkLedger",
     "Connector",
     "DocumentChannel",
     "Socket",

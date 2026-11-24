@@ -296,8 +296,17 @@ class ScribeDocumentsDialog(wx.Dialog):
                 doc, lambda c: c.delete_forever(doc.id), f"{doc.display_title} deleted forever."
             )
 
-    def _rename(self, doc: DocumentSummary) -> None:
-        dialog = wx.TextEntryDialog(self, "&New name:", "Rename", doc.display_title)
+    def _rename(self, doc: DocumentSummary, typed: str | None = None) -> None:
+        from quill.core.scribe.client import TITLE_LIMIT
+
+        prompt = "&New name:"
+        if typed is not None:  # too long: asked again with what was typed, never lost
+            prompt = (
+                f"This name has {len(typed):,} characters, and a name can have at most "
+                f"{TITLE_LIMIT}. &New name:"
+            )
+        start = doc.display_title if typed is None else typed
+        dialog = wx.TextEntryDialog(self, prompt, "Rename", start)
         wx.CallAfter(_select_all, dialog)
         try:
             if show_modal_dialog(dialog, "Rename") != wx.ID_OK:
@@ -307,6 +316,9 @@ class ScribeDocumentsDialog(wx.Dialog):
             dialog.Destroy()
         if not title:
             self._controller.host.scribe_announce("A document needs a name. Nothing was changed.")
+            return
+        if len(title) > TITLE_LIMIT:
+            wx.CallAfter(self._rename, doc, title)
             return
         self._act(doc, lambda c: c.rename(doc.id, title), f"Renamed to {title}.")
 

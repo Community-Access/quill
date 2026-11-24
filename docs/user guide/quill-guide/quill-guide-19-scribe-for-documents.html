@@ -437,6 +437,12 @@ different browser. Paste it there.</li>
 in.</li>
 <li><strong>Cancel</strong> stops waiting. You are not signed in.</li>
 </ul>
+<p>QUILL finishes only a sign-in it started itself. If a sign-in it did
+not start reaches it, or you leave Scribe’s page without signing in, the
+browser tab says “Sign-in did not complete. Return to QUILL and try
+again.” and nothing is saved. The sign-in window says “Scribe for
+Documents did not sign you in. Try again.” Focus is on <strong>Try
+Again</strong>. Press it to start a new sign-in.</p>
 <p>One sign-in covers every QUILL app on this computer, QUILL Lite
 included. It is kept in Windows’ secure store, never in a settings
 file.</p>
@@ -1283,7 +1289,9 @@ Download a format already made, or make a new one</td>
 </tr>
 <tr>
 <td><strong>Rename…</strong></td>
-<td>Changes the document’s title in your Scribe account</td>
+<td>Changes the document’s title in your Scribe account. A name can have
+up to 255 characters. A longer one is not sent: Rename asks again, with
+what you typed still there</td>
 </tr>
 <tr>
 <td><strong>Move to Trash</strong></td>
@@ -1475,6 +1483,10 @@ It is read-only.</li>
 <li>Text is added only a whole paragraph, heading or list item at a
 time, at the end. Your place does not move, the braille line does not
 change under you, and nothing new is spoken.</li>
+<li>The tab starts at the beginning of the document, even when Scribe
+started sending before QUILL was listening. If the connection drops,
+QUILL picks up where it stopped when it reconnects: nothing is missed,
+and nothing is added twice.</li>
 <li>When the text is all there, the tab is named “Notes (Scribe,
 complete)”. If the conversion fails partway, it is named “Notes (Scribe,
 incomplete)” and keeps what arrived.</li>

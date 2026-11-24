@@ -25,6 +25,25 @@ for Documents**, where you can change or silence each one. Words go to your
 screen reader and braille display, as everything else does. This replaces
 **Speak each stage**; if you had it set to **Always**, you keep words for
 everything, everywhere, with the sounds as well.
+### Scribe for Documents: a safer sign-in and a preview with no gaps (2026-11-24)
+
+In QUILL, and in QUILL Lite where it says so:
+
+- **Sign-in accepts only the sign-in QUILL started.** QUILL now checks that
+  the sign-in coming back to it is the one it started, so nobody can make
+  QUILL sign in to their account instead of yours. If the check fails, the
+  browser tab says "Sign-in did not complete", QUILL says "Scribe for
+  Documents did not sign you in. Try again.", and nothing is saved. If you
+  are still in the browser, QUILL says it when you come back to the sign-in
+  window. QUILL Lite too.
+- **Read while it converts starts at the beginning, and survives a dropped
+  connection.** The tab used to miss what Scribe sent before QUILL was
+  listening, and anything sent while the connection was down. Now Scribe
+  sends those parts again, and QUILL adds each one once, in order.
+- **Rename says when a name is too long.** Scribe takes names of up to
+  255 characters. A longer one is not sent: Rename asks again, with what you
+  typed still there, and says "This name has 300 characters, and a name can
+  have at most 255." QUILL Lite too.
 
 ### Scribe for Documents: the voices are there, and Play Sample answers (2026-11-23)
 

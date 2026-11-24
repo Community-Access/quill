@@ -2,6 +2,19 @@
 
 ## 2.0.0
 
+### Scribe for Documents: a safer sign-in (2026-11-24)
+
+- **Sign-in accepts only the sign-in QUILL Lite started.** QUILL Lite now
+  checks that the sign-in coming back to it is the one it started, so
+  nobody can make QUILL Lite sign in to their account instead of yours. If
+  the check fails, the browser tab says "Sign-in did not complete", you hear
+  "Scribe for Documents did not sign you in. Try again.", and nothing is
+  saved. If you are still in the browser, you hear it when you come back to
+  the sign-in window.
+- **Rename says when a name is too long.** Scribe takes names of up to 255
+  characters. A longer one is not sent: Rename asks again, with what you
+  typed still there.
+
 ### Scribe for Documents, off until you turn it on (2026-11-21)
 
 QUILL Lite can now send a document you choose to Pneuma Solutions' Scribe

@@ -81,7 +81,7 @@ class ScribeSignInDialog(wx.Dialog):
         bind_close_button(self, self.cancel_button, modeless=False)
         self.Bind(wx.EVT_WINDOW_DESTROY, self._on_destroy)
         self.Bind(wx.EVT_ACTIVATE, self._on_activate)
-        self._signed_in_sentence = ""
+        self._pending_sentence = ""
         self._heard_in_background = False
         # Escape is wx.ID_ANY: Cancel while waiting, Continue once signed in.
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL, escape_id=wx.ID_ANY)
@@ -150,17 +150,24 @@ class ScribeSignInDialog(wx.Dialog):
             self.copy_button.Hide()
             self.cancel_button.Hide()
             self.Layout()
-            self._signed_in_sentence = sentence
-            if not self.IsActive():
-                self._heard_in_background = True
-                self.RequestUserAttention()
-            else:
-                wx.CallLater(200, self._controller.host.scribe_announce, sentence)
+            self._say_when_seen(sentence)
             return
         text = error or TIMED_OUT
         self._set_text(text)
         self._show_retry()
-        wx.CallLater(200, self._controller.host.scribe_announce, text)
+        self._say_when_seen(text)
+
+    def _say_when_seen(self, sentence: str) -> None:
+        """Say *sentence* now, or, while the person is still in the browser, once
+        they come back: said in the background, it is lost or spoken over the
+        browser, and coming back reads only the title and the focused button."""
+        self._pending_sentence = sentence
+        if not self.IsActive():
+            self._heard_in_background = True
+            self.RequestUserAttention()
+        else:
+            self._heard_in_background = False
+            wx.CallLater(200, self._controller.host.scribe_announce, sentence)
 
     def _show_retry(self) -> None:
         self.retry_button.Show()
@@ -171,9 +178,9 @@ class ScribeSignInDialog(wx.Dialog):
 
     def _on_activate(self, event: wx.ActivateEvent) -> None:
         event.Skip()
-        if event.GetActive() and self._heard_in_background and self._signed_in_sentence:
+        if event.GetActive() and self._heard_in_background and self._pending_sentence:
             self._heard_in_background = False
-            wx.CallLater(250, self._controller.host.scribe_announce, self._signed_in_sentence)
+            wx.CallLater(250, self._controller.host.scribe_announce, self._pending_sentence)
 
     def _on_copy(self, _event: wx.CommandEvent) -> None:
         if not self._url:
