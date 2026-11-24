@@ -239,13 +239,15 @@ def test_options_access_keys_are_unique_in_the_whole_window(
 
     dialog = ScribeOptionsDialog(None, controller)
     try:
-        keys: list[str] = []
+        # One label shown twice (a grouped radio box's panel and its frame) is
+        # one control to the gate, as in check_access_keys.
+        labels: dict[str, set[str]] = {}
         for child in _all_children(dialog):
             label = child.GetLabel() if hasattr(child, "GetLabel") else ""
             match = re.search(r"&([^&\s])", label or "")
             if match:
-                keys.append(match.group(1).lower())
-        duplicates = sorted({key for key in keys if keys.count(key) > 1})
+                labels.setdefault(match.group(1).lower(), set()).add(label)
+        duplicates = sorted(key for key, seen in labels.items() if len(seen) > 1)
         assert duplicates == []
     finally:
         dialog.Destroy()
@@ -319,7 +321,7 @@ def test_with_sounds_off_a_sound_moment_is_spoken_instead(
     from quill.ui import sound_manager
 
     host = _sinks(controller)
-    del host.scribe_has_sound  # ask the real sound manager
+    host.scribe_has_sound = None  # ask the real sound manager
     monkeypatch.setattr(sound_manager, "has_sound_for", lambda _event: True)
     monkeypatch.setattr(sound_manager, "is_active", lambda: False)
     controller._on_event("error", _failed_job())
@@ -329,3 +331,21 @@ def test_with_sounds_off_a_sound_moment_is_spoken_instead(
     controller._on_event("error", _job(id="two", state=q.FAILED, message="Bad."))
     assert host.cues == [FAILED]
     assert len(host.said) == 1
+
+
+def test_each_control_in_the_section_says_its_group(controller: Any) -> None:  # noqa: F811
+    import sys
+
+    from quill.ui.accessible_group import group_description
+    from quill.ui.scribe_options_dialog import ScribeOptionsDialog
+
+    if sys.platform != "win32":
+        pytest.skip("the group description is a Windows accessible object")
+    dialog = ScribeOptionsDialog(None, controller)
+    try:
+        section = dialog.feedback
+        controls = [*section.modes.values(), section.scope]
+        controls += [section.play_success, section.play_failure]
+        assert {group_description(c) for c in controls} == {"Progress and results"}
+    finally:
+        dialog.Destroy()

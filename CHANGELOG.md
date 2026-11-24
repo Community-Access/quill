@@ -14,8 +14,9 @@ Scribe Message says it again.
 
 Scribe for Documents Options has a new **Progress and results** group, in
 QUILL, QUILL Lite and every app with Scribe: for when a conversion starts,
-each stage, milestone or delay, when it finishes, and when it fails or needs you, choose **Play
-a sound**, **Speak the action**, **Both a sound and speech** or **Neither**.
+each stage, milestone or delay, when it finishes, and when it fails or needs
+you, choose **Play a sound**, **Speak the action**, **Both a sound and
+speech** or **Neither**. Each control says its group's name after its own.
 **Stage feedback applies** chooses whether stage feedback comes only while a
 Scribe for Documents window is in front, or everywhere. **Play Success Sound**
 and **Play Failure Sound** let you hear the two sounds, at your App Sounds

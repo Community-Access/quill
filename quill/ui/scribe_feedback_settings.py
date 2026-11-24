@@ -35,6 +35,7 @@ from quill.core.scribe.feedback import (
     Moment,
     sound_for,
 )
+from quill.ui.accessible_group import describe_group
 
 __all__ = ["BOX_LABEL", "FeedbackSection", "preview_sound"]
 
@@ -159,6 +160,11 @@ class FeedbackSection:
         row.Add(self.play_success, 0, wx.ALL, 4)
         row.Add(self.play_failure, 0, wx.ALL, 4)
         self.sizer.Add(row)
+        # Each control says "Progress and results" after its own name, as the
+        # rest of Scribe Options does (quill.ui.accessible_group, GATE-GROUP).
+        describe_group(
+            self.sizer, *self.modes.values(), self.scope, self.play_success, self.play_failure
+        )
         self.play_success.Bind(wx.EVT_BUTTON, lambda _e: self.play(Moment.FINISHED))
         self.play_failure.Bind(wx.EVT_BUTTON, lambda _e: self.play(Moment.FAILED))
 
