@@ -26,7 +26,6 @@ from quill.core.radio.recording import (
     RadioRecorder,
     RecordingError,
     load_recording_settings,
-    save_recording_settings,
 )
 from quill.core.radio.recording_join import describe_reconnect
 from quill.core.radio.recording_schedule import RecordingScheduler
@@ -41,7 +40,7 @@ from quill.ui.radio import dial_tuning_ui as dial_tuning
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
 from quill.ui.radio.playback_state import RadioPlaybackState
 from quill.ui.radio.player_controller import RadioPlayerController, ResolvedEnhancement
-from quill.ui.radio.recording_settings_dialog import RecordingSettingsDialog
+from quill.ui.radio.recording_settings_dialog import open_recording_settings
 from quill.ui.radio.schedule_recording_dialog import ScheduleRecordingDialog
 from quill.ui.radio.station_browser_dialog import StationBrowserDialog
 
@@ -746,16 +745,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         )
 
     def _radio_open_recording_settings(self) -> None:
-        dialog = RecordingSettingsDialog(
-            self.frame, settings=self._radio_recording_settings, announce_cb=self._announce
-        )
-        updated = dialog.show()
-        if updated is None:
-            return
-        self._radio_recording_settings = updated
-        self._radio_scheduler.set_recording_settings(updated)
-        save_recording_settings(app_data_dir(), updated)
-        self._announce("Recording settings saved")
+        open_recording_settings(self)
 
     def _radio_open_schedule_recording(self, *, station: Any = None) -> None:
         windows = getattr(self, "_windows", None)
