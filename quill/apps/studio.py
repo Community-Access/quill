@@ -24,6 +24,7 @@ from pathlib import Path
 import wx
 
 from quill.apps.studio_capture import StudioCaptureMixin
+from quill.apps.studio_results import append_result_items, diagnostics_saved  # FUX-04
 from quill.apps.studio_scribe import StudioScribeMixin
 from quill.core.app_version import describe_version, installed_version
 from quill.core.audio_studio.book_prefs import (
@@ -411,13 +412,16 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         except Exception:  # noqa: BLE001 - an unreadable MRU is an empty library
             return []
 
-    def _reload_library_tree(self) -> None:
+    def _reload_library_tree(self, tree: wx.TreeCtrl | None = None) -> None:
         """Rebuild the library tree from the persisted state + recent files.
 
         Kept under the original list name so the many call sites that refresh
         after a mutation (open, narrate, publish, delete) still work unchanged.
+        *tree* is the new Library Window's tree, filled before it is remembered;
+        the window used to pass it to a method that took none, so opening the
+        Library Window failed.
         """
-        tree = getattr(self, "_library_tree", None)
+        tree = tree if tree is not None else getattr(self, "_library_tree", None)
         if tree is None:
             return
         keep = selected_key(tree)
@@ -1082,9 +1086,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         help_menu.Append(whats_new_id, "&What's New\tCtrl+Shift+F1")
         help_menu.AppendSeparator()
         help_menu.Append(palette_id, "&Command Palette...\tCtrl+Shift+P")
-        from quill.apps.studio_results import append_result_items  # FUX-04: Activity, F9
-
-        result_items = append_result_items(self, help_menu)
+        result_items = append_result_items(self, help_menu)  # Activity, F9
         help_menu.AppendSeparator()
         help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
         help_menu.Append(bug_id, "Get Help from &Support...\tCtrl+Alt+F2")
@@ -2107,8 +2109,6 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
                 task_snapshot=self._task_manager.snapshot(),
                 logs_path=log_file if log_file.exists() else None,
             )
-
-        from quill.apps.studio_results import diagnostics_saved  # file and folder (FUX-04)
 
         self._run_background_task(
             "Building diagnostics bundle", _build, lambda _r: diagnostics_saved(self, target)

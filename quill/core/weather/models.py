@@ -156,6 +156,8 @@ class HourlyPeriod:
     wind_speed: str = ""
     wind_direction: str = ""
     is_daytime: bool = True
+    #: The hour's own start (ISO), which identifies it: "3 PM" comes round daily.
+    start: str = ""
 
     @property
     def line(self) -> str:

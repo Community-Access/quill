@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [2.0.0] - built, not yet released
 
+- **The Library Window opens, and keeps your place** (FUX-06, 2026-11-23).
+  Opening it failed, because the window handed its tree to a method that took
+  none. A reload now keeps you on the same copy of a book that shows under both
+  a view and its folder, lands you on the next book when yours was removed, and
+  leaves the tree alone when a job finishes and nothing changed.
+
 QUILL Studio 2.0.0 is the next Studio release after Audio Studio 1.0.0. The previously unpublished 2.2.0 build is renumbered to 2.0.0 for the QUILL Studio rename. Shared-runtime compatibility does not require matching the other apps' version numbers.
 
 This version is built but not yet published: Audio Studio is not offered in the QuillVille menu, and there is no 2.0.0 download page. Everything below is in the build.

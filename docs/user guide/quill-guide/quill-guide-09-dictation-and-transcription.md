@@ -2908,7 +2908,9 @@ deals with it. You will find the commands on **Tools > Watch Folder**.
 - **Watch Folder Profiles...** sets the folder path, whether subfolders count,
   what happens at startup, and how often the folder is checked.
 - **Watch Folder Queue...** shows what is happening right now and the settings
-  in use.
+  in use. The list updates as each file is queued, transcribed or converted,
+  and your cursor stays on the file you are on, even when Clear Finished
+  removes rows above it, so Retry and Open always act on the file you chose.
 
 Watch folders are good for "drop and open" work: copy supported files into one
 folder and let QUILL open them in the background. They respect Do Not Disturb
