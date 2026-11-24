@@ -53,8 +53,17 @@ class SiteProfile:
     def host(self) -> str:
         return (urlparse(self.site_url).hostname or self.site_url).lower()
 
+    @property
+    def listed(self) -> str:
+        """Its name in a list of sites: "Practice Site (on this computer)" for that one."""
+        from quill.core.wordpress.workbench_practice import listed_name
+
+        return listed_name(self.name, self.site_url) if self.kind == "self_hosted" else self.name
+
     def spoken(self) -> str:
         role = f", {self.role}" if self.role else ""
+        if self.listed != self.name:  # the Practice Site: its name already says where
+            return f"{self.listed}{role}"
         where = "WordPress.com" if self.kind == "wpcom" else self.host
         return f"{self.name}{role}, {where}"
 

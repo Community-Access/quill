@@ -32,7 +32,6 @@ from typing import Any, Protocol
 from quill.core.counted import plural
 from quill.core.workbench.actions import ActionRow, ActionTable
 from quill.core.workbench.filters import Query, describe, matches_words, parse
-from quill.core.workbench.list_place import same_cells
 from quill.core.workbench.menus import MenuSpec
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import NodeSpec, TreeSpec
@@ -485,11 +484,13 @@ class WorkbenchFrame(
             if not words or matches_words(" ".join(self.provider.cells(row, columns)), words)
         ]
         cells = [self.provider.cells(row, columns) for row in rows]
-        if same_cells(self._shown_cells, cells) and self.list.GetItemCount() == len(cells):
-            # Nothing a reader could see changed: leave the list, and its place, alone.
+        if self.update_in_place(rows, cells):
+            # The same rows: what changed is set in place, the place left alone (FUX-06).
             self.rows = rows
-            if self.selected_row() is not None:
-                self.details.ChangeValue(self.provider.detail(self.selected_row()))
+            chosen = self.selected_row()
+            said = self.provider.detail(chosen) if chosen is not None else None
+            if said is not None and said != self.details.GetValue():  # else the caret stays
+                self.details.ChangeValue(said)
         else:
             # Keep the place: the same item, selected and focused in ONE change.
             # Select then Focus was two, and a screen reader read the row twice.

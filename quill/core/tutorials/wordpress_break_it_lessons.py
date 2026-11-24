@@ -4,7 +4,7 @@ Each lesson begins with something already wrong on the Practice Site -- a
 picture with no alternative text, a link to a page that is not there, two
 plugins fighting over one shortcode, a misspelt address -- and teaches the
 Workbench's way of finding it and fixing it. The broken state is put there by
-Tools > Practice Site, Set Up the Lesson Material
+Tools > Practice Site > All Practice Site Choices, Set Up the Lesson Material
 (:mod:`quill.core.wordpress.workbench_practice_material`), which writes only
 into the Practice Site's own folder on this computer, shows what it will add
 first, and goes into Change History with Take Away as its undo.
@@ -70,9 +70,9 @@ def break_it_lessons(
                     "practice",
                     title="Open Practice Site",
                     body=(
-                        "In the Workbench's Tools menu, choose Practice Site. Once the site "
-                        "has been started at least once, the list ends with Set Up the Lesson "
-                        "Material."
+                        "In the Workbench's Tools menu, open Practice Site and choose All "
+                        "Practice Site Choices. Once the site has been started at least once, "
+                        "the list ends with Set Up the Lesson Material."
                     ),
                     hear="Practice Site, and what you can do with it now.",
                 ),

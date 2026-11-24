@@ -46,6 +46,7 @@ from quill.core.wordpress.workbench_parity_actions import MEDIA_ROWS as PARITY_M
 from quill.core.wordpress.workbench_parity_actions import NODE_ROWS as PARITY_NODE_ROWS
 from quill.core.wordpress.workbench_places import PLUGIN_BLOCK_USES, places_rows
 from quill.core.wordpress.workbench_plugin_actions import PLUGIN_ACTION_ROWS, QAF_FORM_ROWS
+from quill.core.wordpress.workbench_practice_actions import practice_menus
 from quill.core.wordpress.workbench_qaf_spam_edit import QAF_SPAM_ROWS
 from quill.core.wordpress.workbench_qaf_visitor_words import QAF_WORDS_ROWS
 from quill.core.wordpress.workbench_site_files_actions import MEDIA_ROWS as SITE_FILES_MEDIA_ROWS
@@ -117,6 +118,26 @@ _COPY_TO_SITE = _a(
     "Copy to Site...",
     tier=Tier.WRITE,
     help="To another of your sites, after a preview. Ctrl+Shift+Y.",
+)
+
+_NODE_ROWS = (
+    _a("refresh", "Refresh", default=True, help="Load this view again. F5."),
+    _a("new_here", "New Here...", tier=Tier.WRITE, help="Make something new here. Ctrl+N."),
+    _a("load_more", "Load More", help="Read three hundred more rows. Ctrl+Shift+L."),
+    _a("load_all", "Load All", help="Read every row the site has. Ctrl+Alt+L."),
+    _a("columns", "Columns...", help="Choose the columns this list shows. Ctrl+Alt+C."),
+    _a("group_by", "Group By...", help="A child node per value of a column. Ctrl+Alt+G."),
+    _a("what_can_i_do", "What Can I Do Here?", help="What your role allows. Shift+F1."),
+    *PARITY_NODE_ROWS,
+    *ADMIN_NODE_ROWS,
+    _SHEET,
+)
+_SITE_ROWS = (
+    _a("open_site", "Open This Site", default=True, help="Select its node in the tree."),
+    _OPEN_SITE,
+    *QAF_SPAM_ROWS,  # QUILL Accessible Forms' question bank and weeks (complete.md WP-C)
+    *QAF_WORDS_ROWS,  # what QAF's forms say to visitors (WP-R-050)
+    _SHEET,
 )
 
 WORDPRESS_ACTIONS = ActionTable(
@@ -362,13 +383,7 @@ WORDPRESS_ACTIONS = ActionTable(
             ),
             _SHEET,
         ),
-        "site": (
-            _a("open_site", "Open This Site", default=True, help="Select its node in the tree."),
-            _OPEN_SITE,
-            *QAF_SPAM_ROWS,  # QUILL Accessible Forms' question bank and weeks (complete.md WP-C)
-            *QAF_WORDS_ROWS,  # what QAF's forms say to visitors (WP-R-050)
-            _SHEET,
-        ),
+        "site": _SITE_ROWS,
         "writing_type": (
             _a("open_kind", "Open Its List", default=True, help="Select its node in the tree."),
             _SHEET,
@@ -489,18 +504,8 @@ WORDPRESS_ACTIONS = ActionTable(
                 "mixed",
             )
         },
-        "node": (
-            _a("refresh", "Refresh", default=True, help="Load this view again. F5."),
-            _a("new_here", "New Here...", tier=Tier.WRITE, help="Make something new here. Ctrl+N."),
-            _a("load_more", "Load More", help="Read three hundred more rows. Ctrl+Shift+L."),
-            _a("load_all", "Load All", help="Read every row the site has. Ctrl+Alt+L."),
-            _a("columns", "Columns...", help="Choose the columns this list shows. Ctrl+Alt+C."),
-            _a("group_by", "Group By...", help="A child node per value of a column. Ctrl+Alt+G."),
-            _a("what_can_i_do", "What Can I Do Here?", help="What your role allows. Shift+F1."),
-            *PARITY_NODE_ROWS,
-            *ADMIN_NODE_ROWS,
-            _SHEET,
-        ),
+        **practice_menus(_READ, _SHEET, _NODE_ROWS, _SITE_ROWS),  # its own rows and nodes
+        "node": _NODE_ROWS,
     },
     properties_command=PROPERTIES,
 )

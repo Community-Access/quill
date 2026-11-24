@@ -8,13 +8,17 @@ now asks :func:`landing_index` for the row you were on (the same item, by its
 identity, wherever it moved) and selects and focuses it in one change; and
 when nothing in the list changed it does not rewrite the list at all
 (:func:`same_cells`), so a refresh that found nothing new says nothing.
+When the same rows come back with only some values changed (the Practice
+Site's Running fact), :func:`changed_cells` names just those cells, so the
+list is changed in place: focus stays where it is and no unchanged row is
+read again (FUX-06).
 """
 
 from __future__ import annotations
 
 from collections.abc import Sequence
 
-__all__ = ["landing_index", "row_identity", "same_cells"]
+__all__ = ["changed_cells", "landing_index", "row_identity", "same_cells"]
 
 #: The attributes that say which item a row is, in order of trust.
 _IDENTITY_FIELDS = ("url", "html_url", "key", "sha", "id", "number", "name", "tag")
@@ -54,3 +58,25 @@ def same_cells(before: Sequence[Sequence[str]], after: Sequence[Sequence[str]]) 
     return len(before) == len(after) and all(
         list(a) == list(b) for a, b in zip(before, after, strict=True)
     )
+
+
+def changed_cells(
+    before: Sequence[Sequence[str]], after: Sequence[Sequence[str]]
+) -> list[tuple[int, int, str]] | None:
+    """The (row, column, new text) cells that differ, or None when the rows are not the same.
+
+    The same rows means as many, each with the same first column and as many
+    columns: then only values changed, and the list can be updated in place.
+    """
+    if len(before) != len(after):
+        return None
+    changes: list[tuple[int, int, str]] = []
+    for index, (old, new) in enumerate(zip(before, after, strict=True)):
+        if len(old) != len(new) or (old and old[0] != new[0]):
+            return None
+        changes.extend(
+            (index, column, text)
+            for column, (was, text) in enumerate(zip(old, new, strict=True))
+            if was != text
+        )
+    return changes

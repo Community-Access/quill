@@ -54,7 +54,9 @@ __all__ = [
     "crossing_warning",
     "together_warning",
     "find_cli",
+    "forget_setup",
     "is_practice_address",
+    "listed_name",
     "missing_words",
     "practice_label",
     "practice_dir",
@@ -257,6 +259,30 @@ def practice_label(name: str, url: str) -> str:
     if not is_practice_address(url) or "practice" in clean.lower():
         return clean
     return f"{clean} (practice)" if clean else PRACTICE_NAME
+
+
+#: What a list of sites adds to the Practice Site's name (Jeff, 2026-11-23).
+ON_THIS_COMPUTER = "on this computer"
+
+
+def listed_name(name: str, url: str) -> str:
+    """The name a list of sites shows: the Practice Site says it is on this computer.
+
+    New Page, New Post, Switch Site and the Sites window list real sites and
+    the Practice Site side by side, so it must never read like a real one:
+    "Practice Site (on this computer)"; renamed to "My Blog", "My Blog
+    (practice site, on this computer)". A real site's name is left alone.
+    """
+    clean = (name or "").strip()
+    if not is_practice_address(url):
+        return clean
+    if not clean:
+        clean = PRACTICE_NAME
+    if clean.endswith(")") and f"{PRACTICE_NAME} (local" in clean:  # a second one
+        return clean.replace("(local", f"({ON_THIS_COMPUTER},").replace(",)", ")")
+    if "practice" in clean.lower():
+        return f"{clean} ({ON_THIS_COMPUTER})"
+    return f"{clean} (practice site, {ON_THIS_COMPUTER})"
 
 
 def _names(names: list[str]) -> str:
@@ -490,6 +516,20 @@ def clear_password(folder: Path) -> bool:
     try:
         (folder / _HANDOFF_DIR / _PASSWORD_FILE).unlink(missing_ok=True)
         (folder / _PASSWORD_FILE).unlink(missing_ok=True)
+    except OSError:
+        return False
+    return True
+
+
+def forget_setup(folder: Path) -> bool:
+    """Let the next start make QUILL a new password, when the last one was used up.
+
+    The first-run setup runs once; it is what makes the one-time password.
+    With its marker gone, the next start runs it again: the password is made
+    afresh and the starter content, which it checks for first, is not doubled.
+    """
+    try:
+        (folder / _HANDOFF_DIR / _SETUP_MARKER).unlink(missing_ok=True)
     except OSError:
         return False
     return True

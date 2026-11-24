@@ -55,6 +55,8 @@ FORBIDDEN_COMMANDS = frozenset({
 
 #: Where the Practice Site answers, as the lessons say it.
 ADDRESS = site_url()
+#: What Start says once it has connected the site (the Workbench's own sentence).
+RUNNING_AND_CONNECTED = "The Practice Site is running and connected. It is under Sites."
 
 
 def _wb(verb: str) -> tuple[str, tuple[str, ...]]:
@@ -117,35 +119,41 @@ def practice_lessons(
                     "practice",
                     title="Open Practice Site",
                     body=(
-                        "In the Workbench's Tools menu, choose Practice Site. It is one short "
-                        "list of what you can do with the site right now."
+                        "In the Workbench's Tools menu, open Practice Site and choose All "
+                        "Practice Site Choices. It is one short list of what you can do with "
+                        "the site right now."
                     ),
                     hear="Practice Site, and Start the Practice Site.",
                 ),
                 Step(
                     title="Start it",
                     body=(
-                        "Choose Start the Practice Site and press Enter. The first start builds "
-                        "a fresh WordPress with a welcome page, a first post and a draft, so "
-                        "give it two or three minutes. Later starts take under a minute."
+                        "Choose Start the Practice Site and press Enter. The first time, "
+                        "QUILL asks before it starts whether the Practice Site should be "
+                        "your default site once it is connected. If you have no other site, "
+                        "it is your default anyway, and QUILL does not ask."
                     ),
                     keys=("Enter",),
-                    hear=f"The Practice Site is running at {ADDRESS}. Connect it in a moment.",
-                    note=(
-                        "If something else on this computer is using its port, it says so "
-                        "and does not start. Stop the other copy first."
-                    ),
+                    hear="Default Site, and the question.",
                 ),
-                _step(
-                    "practice",
-                    title="Connect it",
+                Step(
+                    title="Choose where new pages start",
                     body=(
-                        "Open Practice Site again and choose Connect It as Practice Site. "
-                        "The site made a one-time password for QUILL when it started; the "
-                        "Workbench keeps it in Windows Credential Manager, so you type "
-                        "nothing."
+                        "Make It My Default means New Page and New Post start on the Practice "
+                        "Site while you learn. No is selected, and keeps your default as it "
+                        "is. Then wait: the first start builds a fresh WordPress with a "
+                        "welcome page, a first post and a draft, so give it two or three "
+                        "minutes. When it answers, QUILL connects it, so it is under Sites. "
+                        "You type no password."
                     ),
-                    hear="Practice Site is connected. It is under Sites.",
+                    keys=("Enter",),
+                    hear=RUNNING_AND_CONNECTED,
+                    note=(
+                        "You can change the default whenever you like: Make It My Default "
+                        "Site is on the Practice Site's context menu, and Switch Site is in "
+                        "the editor's File > WordPress menu. If something else on this "
+                        "computer is using the site's port, it says so and does not start."
+                    ),
                 ),
             ),
             closing=(

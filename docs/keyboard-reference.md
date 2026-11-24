@@ -1160,7 +1160,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+M | Only Mine | `wordpress.workbench.only_mine` |
 | Ctrl+Alt+N | Entry Notes... | `wordpress.workbench.entry_notes` |
 | Ctrl+Alt+O | Show Only Like This... | `wordpress.workbench.show_only` |
-| Ctrl+Alt+P | Practice Site... | `wordpress.workbench.practice` |
+| Ctrl+Alt+P | All Practice Site Choices... | `wordpress.workbench.practice` |
 | Ctrl+Alt+Q | Run a Saved Request... | `wordpress.workbench.run_saved` |
 | Ctrl+Alt+R | Roles and What They May Do | `wordpress.workbench.roles` |
 | Ctrl+Alt+S | Take a Snapshot... | `wordpress.workbench.snapshot` |

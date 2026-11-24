@@ -58,7 +58,12 @@ from quill.core.wordpress.workbench_load import SiteContext, load
 from quill.core.wordpress.workbench_node_help import node_help as authored_help
 from quill.core.wordpress.workbench_node_help import row_help
 from quill.core.wordpress.workbench_permissions import AccessStore
-from quill.core.wordpress.workbench_practice import practice_label, stop_process
+from quill.core.wordpress.workbench_practice import (
+    is_practice_address,
+    practice_label,
+    stop_process,
+)
+from quill.core.wordpress.workbench_practice_actions import PRACTICE_SITE_KIND
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.wordpress.workbench_tree import (
     DYNAMIC_NAMESPACE,
@@ -389,7 +394,7 @@ class WordPressWorkbenchProvider(
         ctx = self._contexts.get(name)
         role = ctx.account.role_name if ctx and ctx.account else (profile.role or "")
         return WbRow(
-            "site",
+            PRACTICE_SITE_KIND if is_practice_address(profile.site_url) else "site",
             name,
             profile.id,
             {"site": name, "address": profile.site_url, "role": role},
