@@ -323,7 +323,11 @@ class CoverPagePanel(wx.Panel):
                 self,
             )
             return
-        self._announce(str(_("Saved {name}")).format(name=out.name))
+        from quill.core.action_feedback import saved_result
+        from quill.ui.outcome_report import report_outcome
+
+        # The file and its folder, kept with Open Folder (FUX-04).
+        report_outcome(self, "Save Cover", saved_result(out), object_name=out.name, path=out)
 
 
 class TagEditorDialog(wx.Dialog):
@@ -453,4 +457,9 @@ def open_tags_in_editor(frame: object, path: object) -> None:
         show_message_box(str(exc), str(_("Tag Editor")), wx.OK | wx.ICON_ERROR, None)
         return
     if announce is not None:
-        announce(str(_("Saved tags to {name}")).format(name=target.name))
+        from quill.core.action_feedback import place_of
+        from quill.ui.outcome_report import keep_outcome
+
+        said = f"Saved the tags of {place_of(target)}."  # FUX-04: which file, where
+        announce(said)
+        keep_outcome("Tag Editor", said, object_name=target.name, path=target)

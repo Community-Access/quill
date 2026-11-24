@@ -1172,19 +1172,17 @@ def _run(frame: Any, req: BatchSpeechRequest) -> None:
             shutil.rmtree(temp_root, ignore_errors=True)
 
     def on_success(result: object) -> None:
-        done, skipped, errors, total_chapters, total_subs, book_summary, cancelled = result  # type: ignore[misc]
-        if req.dry_run:
-            frame._set_status(
-                f"Dry run complete: {done} preview(s) written, {total_subs} "
-                f"substitution(s), {errors} error(s)"
-            )
-            return
-        tail = f"; {book_summary}" if book_summary else ""
-        lead = "Batch speech export cancelled" if cancelled else "Batch speech export complete"
-        frame._set_status(
-            f"{lead}: {done} done ({total_chapters} chapters), "
-            f"{skipped} skipped, {errors} error(s){tail}"
-        )
+        # The actual result, said once and kept with Open Folder (FUX-04).
+        from quill.ui.audio_studio.run_result import report_run, run_sentence
+
+        done, skipped, errors, _chapters, total_subs, book_summary, cancelled = result  # type: ignore[misc]
+        said = run_sentence(
+            total=total, done=done, skipped=skipped, errors=errors, cancelled=cancelled,
+            folder=out_folder, resumes=reuse_enabled or req.on_existing == "skip",
+            book_summary=book_summary, book=book_mode, dry_run=req.dry_run,
+            substitutions=total_subs,
+        )  # fmt: skip
+        report_run(frame, said, folder=out_folder, problem=bool(cancelled or errors))
 
     frame._run_background_task(
         f"Batch speech export ({total} file(s))",

@@ -234,6 +234,41 @@ apps. See `docs/design/fux-04-adoption.md`.
 - Converter and Media Player now have Activity (Shift+F9) and Repeat Last
   Result (F9) on the Help menu, as Radio and Cast do.
 
+### QUILL Studio and QUILL Transcribe: the actual result, said once (2026-11-23)
+
+The family's "actual result" work (FUX-04), as Quill Cast and QUILL Lite
+already have it.
+
+- **An Audio Studio run ends with a sentence.** It used to end on a status
+  line nobody heard, and in QUILL Studio not even a notification. Now you hear
+  what was made and where: "Made audio for 10 documents in Reports." Skipped
+  and failed documents are counted, and a failure points to the run's log. A
+  book's check is its own sentence after the build ("Built the audiobook
+  Reports.m4b in Reports. Its check found all 12 chapters."), so a book that
+  did not check out never sounds finished. A cancelled run says how many are
+  kept, how many have no audio yet, and how to make the rest. The translated
+  speech export ends the same way. Both are kept in Activity (Shift+F9) with
+  Open Folder, and F9 says them again. This is the same in QUILL's Audio
+  Studio.
+- **Saves say the file and its folder, after the write.** The Chapter
+  Workbench (Save, Save As, Export chapters, Split into files), the Tag
+  Editor, Copy Sections, Generate Captions, Save Diagnostics and a screenshot
+  report now say "Saved Long Walk.mp3 in Books." rather than the name alone or
+  a whole path, and each is kept in Activity with Open Folder. Captions made
+  beside a recording name each file, so "Demo (2).srt" is not mistaken for the
+  old one.
+- **Results you might miss stay reachable.** A screenshot (shown, never
+  spoken over what you are capturing), a broadcast's saved copy and a checked
+  demonstration are kept in Activity after their sentence or window is gone.
+- **Activity and Repeat Last Result are on the Help menu** of QUILL Studio
+  and QUILL Transcribe (Shift+F9 and F9), where the results above are kept.
+  Before, no menu in either app carried them.
+- **QUILL Transcribe's Save As** in Review Transcript says the file and its
+  folder and keeps it in Activity.
+- **Stopping a recording's transcription says what is left**: "Stopped
+  transcribing meeting.mp3. No transcript was kept; transcribe it again to
+  start over." The same in QUILL and QUILL Lite.
+
 ### Shared runtime: the Practice Site's WordPress Playground ships again (2026-11-23)
 
 - **The cause.** The WordPress Playground tool behind the Practice Site

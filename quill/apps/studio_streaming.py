@@ -328,6 +328,15 @@ class StudioStreamingMixin:
                 "Broadcast ended." + (" A copy was saved." if archive else ""),
                 status=f"Broadcast ended. Saved copy: {archive}" if archive else "",
             )
+            if archive:  # the copy stays findable, with Open Folder (FUX-04)
+                from quill.core.action_feedback import place_of
+                from quill.ui.outcome_report import keep_outcome
+
+                keep_outcome(
+                    "Broadcast",
+                    f"Broadcast ended. Copy saved as {place_of(archive)}.",
+                    path=archive,
+                )
 
         self._task_manager.submit(
             "Stop broadcasting",

@@ -180,6 +180,8 @@ Seven steps: Start, What should I read?, Who should read it?, How should chapter
 
 The summary reads every choice back in plain sentences; press **Back** to change any of it. **Save a job file...** pins this exact run to a portable `.quilljob` (see "Job files"). Press **Start** and the run begins in the background: per-file progress in the status bar, spoken milestones at 25, 50, and 75 percent, and the finished book lands in Your books. **Cancel** (or Escape) stops a run cleanly - the file being synthesized right now finishes first, so you are never left with a half-written audio file, and nothing new is started after it. The diagnostics log records the same chunk-by-chunk detail the progress dialog shows, so reading the log after a run tells you as much as watching it did.
 
+When the run ends, the Studio says once what it made and where, for example "Made audio for 10 documents in Reports." Anything skipped or failed is counted, and a failure points you to the run's log. A book's own check is said as its own sentence after the build, for example "Built the audiobook Reports.m4b in Reports. Its check found all 12 chapters.", so a book that was built but did not check out never sounds finished. If you cancelled, you hear how many documents' audio is kept, how many have none yet, and how to make the rest. The same sentence stays in **Activity** (Shift+F9), where **Open Folder** opens that folder, and **Repeat Last Result** (F9) says it again. No window opens, so whatever you were doing keeps the focus.
+
 ## Journey 2: Build From Recordings
 
 Four steps: Start, Where are the recordings?, Tell me about the book, Review and start.
@@ -273,7 +275,7 @@ Saving is honest about physics:
 - An **MP3** saves **in place** with **Save** - only the tags are rewritten; the audio is untouched. **Save As...** writes an edited copy instead.
 - An **M4B** cannot be rewritten in place; the Save button is disabled and **Save As...** performs a lossless re-mux (no re-encode, no quality loss) into a new file.
 
-Long saves run in the background so the window stays responsive.
+Long saves run in the background so the window stays responsive. When the write has finished, you hear the file and its folder, for example "Saved Long Walk.mp3 in Books." Export chapters, Split into files, the Tag Editor and Copy Sections say the same about what they wrote. Each stays in **Activity** (Shift+F9), with **Open Folder**.
 
 ### Publish...
 
@@ -335,7 +337,7 @@ The Studio shares its speech settings with QUILL, so an engine you choose in eit
 1. Press **Ctrl+Shift+C** (Voices > Generate Captions (Offline)...).
 2. If no model is installed yet, the Studio asks "No offline speech model is installed yet. Open Manage Speech Models to download one?" Choose Yes, download Whisper.cpp's Small model, close the window, and press Ctrl+Shift+C again.
 3. Choose the audio or video file, such as chapter 3 of your book.
-4. Wait while it works. The Studio tells you how it is getting on, and says when it has finished.
+4. Wait while it works. The Studio tells you how it is getting on, and says when it has finished. Captions made beside a recording are named one by one, with their folder, for example "Saved Chapter 3.srt, Chapter 3.vtt and Chapter 3.transcript.txt in Book."
 5. Choose the caption format, **SubRip captions (.srt)** or **WebVTT captions (.vtt)**, then choose where to save. The file is named after the recording to begin with.
 
 #### Limits
@@ -609,6 +611,8 @@ All the Quill apps are published from one place, and each one recognizes its own
 | View menu | Alt+V |
 | Help menu | Alt+H |
 | What's New (the changelog, in your browser) | Ctrl+Shift+F1 |
+| Activity: this session's results, with Open Folder (Help menu) | Shift+F9 |
+| Repeat Last Result (Help menu) | F9 |
 | Build From Recordings button (main window) | Alt+R |
 | Your books list (main window) | Alt+Y |
 | Capture menu (screenshots, recording, mixer, broadcasting) | Alt+C |
@@ -985,7 +989,7 @@ Studio joins the pieces, mixes the sounds at your levels, adds the camera pictur
 
 The result is **Verified** when every check passed, **Needs review** when it plays but something may be spoiled, or **Failed** when a stream is missing or it does not decode, in which case the recorded pieces are kept so nothing is lost.
 
-The result window lists every check, and has buttons to:
+The result window lists every check, and has buttons to (after you close it, the sentence and **Open Folder** are still in **Activity**, Shift+F9):
 
 - play the file, open its folder, or copy its path;
 - **Inspect a frame...** in the Screenshot Inspector;
@@ -1391,7 +1395,7 @@ Studio says "On air" only once the server has taken 2 seconds of your sound, not
 
 - **Now playing** and **Update the title** change the title listeners see, such as the name of the current segment.
 - **Mute everything public** (Ctrl+Alt+Shift+Z) gives listeners silence at once without disconnecting. Press it again to bring the sound back. Use it for a cough, a phone call, or anything you do not want broadcast.
-- **Stop broadcasting** (Ctrl+Alt+Shift+E) ends the show. You hear "Broadcast ended", and "A copy was saved" when one was; the saved copy's full path is in the status bar rather than read aloud.
+- **Stop broadcasting** (Ctrl+Alt+Shift+E) ends the show. You hear "Broadcast ended", and "A copy was saved" when one was; the saved copy's full path is in the status bar rather than read aloud, and **Activity** (Shift+F9) keeps its name and folder with **Open Folder**.
 
 Both keys work while Studio has focus. Give them system-wide keys in **Capture > Capture global hotkeys...** so they work from any program; Mute everything public is the one to have under your fingers.
 
