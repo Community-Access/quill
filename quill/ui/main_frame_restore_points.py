@@ -125,27 +125,49 @@ class RestorePointsMixin:
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         restore_button = wx.Button(dialog, id=wx.ID_OK, label="&Restore")
         copy_button = wx.Button(dialog, id=wx.ID_APPLY, label="Open as &Copy")
+        # Compare (FUX-12): hear what that version has that yours does not,
+        # change by change, and take only some of it (Take Changes).
+        compare_button = wx.Button(dialog, label="Co&mpare...")
+        compare_id = compare_button.GetId()
+        compare_button.SetHelpText(
+            "Compares the selected version with your current text, difference by "
+            "difference, and lets you take only the differences you choose."
+        )
         close_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Close")
         buttons.AddStretchSpacer(1)
         buttons.Add(restore_button, 0, wx.RIGHT, 6)
         buttons.Add(copy_button, 0, wx.RIGHT, 6)
+        buttons.Add(compare_button, 0, wx.RIGHT, 6)
         buttons.Add(close_button, 0)
         root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
         dialog.SetSizer(root)
         dialog.SetSize(dip_size(dialog, 520, 360))
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
         copy_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_APPLY))
+        compare_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(compare_id))
         try:
             result = self._show_modal_dialog(dialog, "Restore Previous Version")
             selection = listbox.GetSelection()
         finally:
             dialog.Destroy()
-        if result not in (wx.ID_OK, wx.ID_APPLY) or not (0 <= selection < len(candidates)):
+        if result not in (wx.ID_OK, wx.ID_APPLY, compare_id) or not (
+            0 <= selection < len(candidates)
+        ):
             return
         point = candidates[selection]
         text = read_restore_point(path, point.content_hash)
         if text is None:
             self._set_status("That version could not be read; it may have been pruned")
+            return
+        if result == compare_id:
+            # Posted, so the editor focus this closed window queued settles first.
+            wx.CallAfter(
+                self._run_compare_dialog,
+                current,
+                text,
+                left_label=self.document.name or "your document",
+                right_label=f"the version from {_speakable_when(point)}",
+            )
             return
         if result == wx.ID_APPLY:
             self._open_restore_point_copy(text)

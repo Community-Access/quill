@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 343 audited sites (231 helped, 112 named-help).</p>
+<p>Control coverage: 346 audited sites (234 helped, 112 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -1122,6 +1122,17 @@ program with the suggestion written to <a
 href="mailto:support@community-access.org">support@community-access.org</a>.
 Nothing is sent until you press Send there.</li>
 <li><code>cancel</code>: Closes without sending anything.</li>
+</ul>
+<h4
+id="testrecordingcontrols-quilluiradiotest_recording_controlspy">TestRecordingControls
+(<code>quill/ui/radio/test_recording_controls.py</code>)</h4>
+<ul>
+<li><code>self.hear_button</code>: Plays the last test recording; before
+a test it says there is nothing to hear yet. Pause the station first to
+hear it clearly. Press again to stop.</li>
+<li><code>self.result</code>: How large an hour is at these settings,
+and what the last test recording made. It says out of date when a
+setting changed after the test.</li>
 </ul>
 <h4 id="module-level-quilluiradioupcoming_dialogpy">(module level)
 (<code>quill/ui/radio/upcoming_dialog.py</code>)</h4>
@@ -2960,7 +2971,7 @@ with Note (Navigation menu) adds words to it.</li>
 from this book; the audio and your place stay.</li>
 </ul>
 <h2 id="quill-studio">QUILL Studio</h2>
-<p>Control coverage: 306 audited sites (11 help-elsewhere, 295
+<p>Control coverage: 308 audited sites (11 help-elsewhere, 297
 helped).</p>
 <h3 id="every-window-and-what-it-is-for-3">Every window, and what it is
 for</h3>
@@ -3313,9 +3324,10 @@ only; the file is not changed.</li>
 <li><code>titles_btn</code>: Transcribes the opening minute of each
 chapter with the local speech model (the audio never leaves this
 computer), then sends only that text to your configured AI for a short
-title per chapter. You consent first, the proposals land in the list for
-review, and Restore original undoes them. Needs an AI provider;
-unavailable in Safe Mode.</li>
+title per chapter. You consent first, then check the proposals you want,
+each beside the title it replaces; only those go into the list, and
+Restore original undoes them. Needs an AI provider; unavailable in Safe
+Mode.</li>
 <li><code>import_btn</code>: Replaces the chapter list with one read
 from a file: Audacity labels, a timestamps list, a CUE sheet, Podcasting
 2.0 JSON, or CSV. The whole list is swapped for review; Restore original
@@ -3864,6 +3876,19 @@ anything.</li>
 <li><code>open_studio</code>: Closes this window and opens the full
 Audio Studio wizard instead, where a whole folder can be narrated and a
 chaptered audiobook built and published.</li>
+</ul>
+<h4 id="samplecontrols-quilluiaudio_studiotry_samplepy">SampleControls
+(<code>quill/ui/audio_studio/try_sample.py</code>)</h4>
+<ul>
+<li><code>self.button</code>: Speaks about the first 30 seconds of the
+first document with every setting above, plays it, and estimates how
+long the whole run takes and how large it will be. Nothing is saved
+beside your documents. Press again to stop a sample being made or
+playing, or to hear it again.</li>
+<li><code>self.result</code>: What the last sample made, what it
+measured on this computer, what the whole run should take, and what a
+sample cannot prove. It says out of date when a setting changed after
+the sample was made.</li>
 </ul>
 <h4 id="audiostudiowizard-quilluiaudio_studiowizardpy">AudioStudioWizard
 (<code>quill/ui/audio_studio/wizard.py</code>)</h4>
@@ -5487,7 +5512,7 @@ touched.</li>
 <li><code>close</code>: Closes this window.</li>
 </ul>
 <h2 id="quill-beacon">Quill Beacon</h2>
-<p>Control coverage: 127 audited sites (127 helped).</p>
+<p>Control coverage: 128 audited sites (128 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>AI Usage.</strong> How much each AI you have set up has been
@@ -6007,8 +6032,8 @@ Close itself.</li>
 row is one commit with its message, how many entries it carried, and
 which device made it.</li>
 <li><code>self.conflict_list</code>: Changes both sides edited, waiting
-for your decision. Select a row, then choose Use Local, Use Remote, or
-Use Merged below.</li>
+for your decision. Select a row, read both versions in the box below
+(Alt+V), then choose Use Local, Use Remote, or Use Merged.</li>
 <li><code>self.r_local</code>: Resolve the selected conflict by keeping
 this device’s version.</li>
 <li><code>self.r_remote</code>: Resolve the selected conflict by taking
@@ -6056,6 +6081,14 @@ playback to its start. From anywhere in the window, Ctrl+Shift+Period
 goes to the next chapter and Ctrl+Shift+Comma to the previous one.</li>
 <li><code>self.transcript</code>: The episode’s transcript as read-only
 text, when one is available. Empty otherwise.</li>
+</ul>
+<h4 id="module-level-quillappsbeaconsync_conflictspy">(module level)
+(<code>quill/apps/beacon/sync_conflicts.py</code>)</h4>
+<ul>
+<li><code>detail</code>: The selected conflict as text: this device’s
+version, the other device’s, each line that differs marked as removed or
+added, and what Use Merged keeps. Read it before choosing Use Local, Use
+Remote or Use Merged.</li>
 </ul>
 <h2 id="github-workbench">GitHub Workbench</h2>
 <p>Control coverage: 408 audited sites (408 helped).</p>
@@ -8077,8 +8110,9 @@ that the second lacks, newest first: what it is behind by. GitHub gives
 at most 250; the tab says when there are more.</li>
 <li><code>self._files</code>: The changed files, one per row. Arrow to a
 file to read its changes below.</li>
-<li><code>self._detail</code>: The selected item in full, read-only.
-Arrow through it line by line.</li>
+<li><code>self._detail</code>: The differences of the selected file,
+read-only. Arrow through it line by line; F8 and Shift+F8 move to the
+next and previous difference and say which one it is.</li>
 <li><code>self._browser_btn</code>: Open this on GitHub in your
 browser.</li>
 <li><code>self._pull_btn</code>: Open the pull request already open
@@ -8090,9 +8124,10 @@ same.</li>
 id="configcomparedialog-quilluigithub_config_compare_dialogpy">ConfigCompareDialog
 (<code>quill/ui/github_config_compare_dialog.py</code>)</h4>
 <ul>
-<li><code>self.diff</code>: A unified diff: lines starting with + come
-from the source, lines starting with - are what this repository has
-now.</li>
+<li><code>self.diff</code>: Each change in the selected file: where it
+is, then its lines, each marked in your Diff Line Marks style. Added
+lines come from the source; removed lines are what this repository has
+now. F8 and Shift+F8 move to the next and previous change.</li>
 <li><code>ok</code>: Ask, then open one pull request with the checked
 files.</li>
 <li><code>cancel</code>: Close without changing anything.</li>
@@ -8642,8 +8677,9 @@ id="githubpulldiffdialog-quilluigithub_pr_diff_dialogpy">GitHubPullDiffDialog
 <ul>
 <li><code>self._files</code>: The changed files, one per row. Arrow to a
 file to read its changes below.</li>
-<li><code>self._detail</code>: The selected item in full, read-only.
-Arrow through it line by line.</li>
+<li><code>self._detail</code>: The differences of the selected file,
+read-only. Arrow through it line by line; F8 and Shift+F8 move to the
+next and previous difference and say which one it is.</li>
 <li><code>self._hunk</code>: Read the changed line and its surrounding
 patch context.</li>
 <li><code>close_btn</code>: Close this window. Escape does the
@@ -10769,10 +10805,10 @@ kept.</li>
 id="diffreviewdialog-quilluiai_diff_review_dialogpy">DiffReviewDialog
 (<code>quill/ui/ai_diff_review_dialog.py</code>)</h4>
 <ul>
-<li><code>self.hunk_list</code>: Every change the AI proposes, one per
-line. A checked change will be applied; press Space to uncheck one you
-want to keep as it was. The details below say exactly what changed, word
-by word. Alt+C comes back here.</li>
+<li><code>self.hunk_list</code>: Every proposed change, one per line. A
+checked change will be applied; press Space to uncheck one you want to
+keep as it was. The details below say exactly what changed, word by
+word. Alt+C comes back here.</li>
 <li><code>self.word_list</code>: Each word edit inside the change you
 are on, with the sentence it is in. A checked edit is applied; press
 Space to drop one and keep the original words there while the rest of

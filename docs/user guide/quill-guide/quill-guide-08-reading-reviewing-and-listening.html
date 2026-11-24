@@ -847,7 +847,30 @@ differences</h3>
 <li><code>Ctrl+Alt+Shift+D</code> reads the current difference.</li>
 </ul>
 <p>The compare dialog is a list you can review with your screen reader,
-one difference at a time, entirely from the keyboard.</p>
+one difference at a time, entirely from the keyboard. Inside it,
+<code>F8</code> and <code>Shift+F8</code> move to the next and previous
+difference, <code>Ctrl+F8</code> reads the current one, and
+<strong>Ignore trailing whitespace</strong> (<code>Alt+I</code>, or
+<code>Ctrl+Shift+F8</code>) compares again leaving out spaces at the
+ends of lines and says how many differences are left.</p>
+<h3 id="taking-some-of-the-other-files-changes">Taking some of the other
+file’s changes</h3>
+<p><strong>Take Changes…</strong> (<code>Alt+T</code> in the compare
+dialog) lets you bring some of the other file’s differences into your
+document and leave the rest. It opens a list with one check box for each
+difference, and each one says what would change and where, with the old
+and the new lines in the details below it. Every difference starts out
+checked. Press <code>Space</code> to uncheck one you want to keep as it
+is, then choose <strong>Apply Checked</strong>. Only the checked
+differences go in, as one change that <code>Ctrl+Z</code> undoes.
+<strong>Reject All</strong> closes the list and takes nothing. When
+there is only one difference, the buttons are <strong>Accept</strong>
+and <strong>Reject</strong>. The list always holds the two texts you
+compared. If <strong>Ignore trailing whitespace</strong> is checked, a
+line that differs only in spaces at its end is not offered, and your
+version of it stays. If your document changed after you compared, the
+list does not open, and QUILL says so. Take Changes isn’t offered for a
+read-only document, and the compare dialog says so.</p>
 <h3 id="how-changed-lines-are-marked">How changed lines are marked</h3>
 <p>Each difference ends with its lines, and each line starts with a mark
 that says what happened to it. <strong>Mark lines as</strong>
@@ -927,6 +950,14 @@ project profile already fills every page, so a repeat run is three
 keystrokes. The work runs in the background with progress for each file,
 and you can cancel it. It uses the same speech engine as live Read
 Aloud, so the voice you audition is the voice you get.</p>
+<p>Before a long run, <strong>Try a Sample</strong> (Alt+P) on the
+summary page speaks about the first 30 seconds of the first document
+with every choice you made, plays it, and says in the <strong>Sample
+result</strong> box what the whole run should take, play for and weigh
+at that pace on this computer, and what one sample cannot prove. It is
+made in a temporary folder and kept only until the wizard closes;
+nothing is saved beside your documents. After you change a setting, the
+result says “Out of date” until you try again.</p>
 <p>The source pages offer a list of <strong>recent source
 folders</strong>, and the edit path’s file picker remembers
 <strong>recently opened audiobooks</strong>. Both lists are kept between
@@ -1387,9 +1418,11 @@ file (it opens as one chapter), press one button, review, and save.</li>
 minute of each chapter is transcribed on this computer by the local
 speech model, so the audio never leaves your computer. Only that text
 goes to the AI you have set up (a local model keeps even the text on
-your computer). A short suggested title for each chapter lands in the
-list for you to review, and <strong>Restore original</strong> undoes the
-lot. Needs AI set up; not available in Safe Mode.</li>
+your computer). The suggested titles open in <strong>Review Proposed
+Titles</strong>, one check box for each chapter whose title would
+change, with its title now and the proposed one. Only the checked titles
+go into the list, and <strong>Restore original</strong> undoes them.
+Needs AI set up; not available in Safe Mode.</li>
 </ul>
 <h4 id="checking-importing-and-splitting">Checking, importing and
 splitting</h4>

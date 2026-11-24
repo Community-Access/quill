@@ -244,6 +244,102 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="review-the-ais-chapter-titles-one-by-one-2026-11-24">Review the
+AI’s chapter titles one by one (2026-11-24)</h3>
+<p>In the Chapter Workbench, <strong>Propose AI titles…</strong> no
+longer replaces every title at once. The proposals open in
+<strong>Review Proposed Titles</strong>, one check box for each chapter
+whose title would change, read as “Chapter 3: “Track 03” becomes “The
+Storm””. Only the titles you leave checked go into the list; nothing is
+saved until Save, and <strong>Restore original</strong> still undoes
+them.</p>
+<h3
+id="read-both-versions-of-a-sync-conflict-before-choosing-2026-11-24">Read
+both versions of a sync conflict before choosing (2026-11-24)</h3>
+<p>Sync History now shows the selected conflict below the list: this
+device’s version, the other device’s, each line that differs marked as
+removed or added, and what Use Merged keeps. Before, a conflict was only
+a row naming the beacon, so you chose a version without reading
+either.</p>
+<h3 id="compare-then-take-only-the-changes-you-want-2026-11-24">Compare,
+then take only the changes you want (2026-11-24)</h3>
+<p>In QUILL, the compare dialog (<strong>Compare with File…</strong>)
+has a <strong>Take Changes…</strong> button (<code>Alt+T</code>). It
+lists each difference as a check box. Each one says what changed and
+where, with the old and the new lines. Only the differences you leave
+checked go into your document, as one change that <code>Ctrl+Z</code>
+undoes.</p>
+<p><strong>File &gt; Restore Previous Version…</strong> has a
+<strong>Compare…</strong> button (<code>Alt+M</code>). It shows what an
+earlier save has that your current text does not, one difference at a
+time, and Take Changes brings back only the parts you choose.</p>
+<p>In the compare dialog, <strong>Ignore trailing whitespace</strong>
+and <code>Ctrl+Shift+F8</code> now compare again and say how many
+differences are left. Before, they only checked or unchecked the
+box.</p>
+<h3
+id="f8-moves-from-one-change-to-the-next-in-every-read-only-diff-2026-11-24">F8
+moves from one change to the next in every read-only diff
+(2026-11-24)</h3>
+<p>In QUILL and QUILL Lite, the differences of a file in a pull request,
+Compare Branches’ Changed Files, Compare Configuration and WordPress’s
+<strong>Compare with Site</strong> now answer <code>F8</code> and
+<code>Shift+F8</code>, as the compare dialog already did. The caret
+moves to where the next or previous change starts, and QUILL says which
+one of how many it is, such as “Change 2 of 4. Lines 10 to 15:”. Before,
+the only way to the next change was line by line.</p>
+<p>Compare Configuration now marks each line in your Line marks style
+(“Added:”, “Removed:”), with where each change is. Before, it showed a
+raw diff whose “+” and “-” a screen reader may not speak.</p>
+<h3 id="studio-hear-a-sample-before-a-long-narration-2026-11-24">Studio:
+hear a sample before a long narration (2026-11-24)</h3>
+<p>The last page of the QUILL Studio wizard, Review and start, has a new
+button, <strong>Try a Sample</strong> (Alt+P). It is also in QUILL’s
+Audiobook and Batch Speech. It speaks about the first 30 seconds of your
+first document with every choice you made: the engine, voice, pace,
+gaps, chapter sound, loudness, pronunciation dictionaries and voice
+rotation. Then it plays the sample.</p>
+<p>The <strong>Sample result</strong> box says what was made, how long
+it took on this computer, and what the whole run should take, play for
+and weigh at that pace. It also says that one opening does not prove the
+rest. The sample is made in a temporary folder and removed when the
+wizard closes. Nothing is saved beside your documents, and no setting
+changes.</p>
+<p>Press the button again to stop a sample that is being made or
+playing, or to hear it again. Going back to an earlier page stops it
+too. If you go back and change a setting, the result starts “Out of
+date”, and the next press makes a new sample.</p>
+<h3
+id="transcribe-and-converter-try-a-minute-before-an-hour-2026-11-24">Transcribe
+and Converter: try a minute before an hour (2026-11-24)</h3>
+<p>Transcribe a Recording (Shift+F5 in QUILL, and in QUILL Transcribe)
+has a new button, <strong>Try the First Minute</strong> (Alt+I). It
+transcribes only the first minute of the recording, with the model,
+language and options you chose. Then the <strong>About this model and
+this recording</strong> box shows the words it heard, how long that
+minute took on this computer, and what the whole recording should take
+at that pace. Nothing is queued or saved. Change a choice afterwards and
+the box says the result is out of date. OpenAI’s models are not offered,
+because they charge for every minute.</p>
+<p>In Quill Converter, <strong>Play Preview</strong> (Ctrl+P) now also
+times its fifteen seconds. While it plays, the status bar says what the
+whole queue should take and how large it should be, and that one preview
+does not prove the rest. There is no estimate for a video format or for
+copying the sound unchanged.</p>
+<h3
+id="radio-test-your-recording-settings-for-30-seconds-2026-11-24">Radio:
+test your recording settings for 30 seconds (2026-11-24)</h3>
+<p>Quill Radio’s <strong>Recording Settings</strong> (Ctrl+Alt+Shift+I)
+now says what an hour of recording weighs at the format and quality you
+have chosen, in a new <strong>Test result</strong> box. <strong>Test
+These Settings</strong> (Alt+G) records the station that is playing for
+30 seconds with the format, quality and Sound Enhancements in the
+window, before you press OK, into a temporary folder. It then says what
+those seconds made and how large an hour will be, which is the only
+honest answer for a raw or lossless recording. <strong>Hear the
+Test</strong> (Alt+H) plays it. Nothing goes into your recordings
+folder, and a change of format, quality or Sound Enhancements afterwards
+marks the test out of date.</p>
 <h3
 id="the-first-useful-task-has-a-clear-beginning-in-weather-beacon-and-social-2026-11-24">The
 first useful task has a clear beginning in Weather, Beacon and Social

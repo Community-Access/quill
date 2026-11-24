@@ -46,9 +46,6 @@ class _CompareSession:
 
 class CompareMixin:
     def compare_start_with_file(self, path: object = None) -> None:
-        from quill.core.compare_service import CompareOptions, CompareService
-        from quill.ui.compare_dialog import CompareDialog
-
         wx = self._wx
         right_path: Path | None = path if isinstance(path, Path) else None
         if right_path is None:
@@ -67,10 +64,34 @@ class CompareMixin:
         except OSError as exc:
             self._set_status(f"Cannot read {right_path.name}: {exc}")
             return
+        self._run_compare_dialog(
+            left_text,
+            right_text,
+            left_label=self.document.name or "Left",
+            right_label=right_path.name,
+            right_path=right_path,
+        )
+
+    def _run_compare_dialog(
+        self,
+        left_text: str,
+        right_text: str,
+        *,
+        left_label: str,
+        right_label: str,
+        right_path: Path | None = None,
+    ) -> None:
+        """Compare the document's *left_text* with *right_text*, change by change.
+
+        Compare with File and Restore Previous Version's Compare both come
+        here. Take Changes in the window opens the shared review of the same
+        two texts (FUX-12), and only what was checked there is applied.
+        """
+        from quill.core.compare_service import CompareOptions, CompareService
+        from quill.ui.compare_dialog import TAKE_CHANGES, CompareDialog
+
         svc = CompareService()
         opts = getattr(self, "_compare_options", CompareOptions())
-        left_label = self.document.name or "Left"
-        right_label = right_path.name
         groups = svc.compare(
             left_text,
             right_text,
@@ -90,10 +111,26 @@ class CompareMixin:
             self._announce(msg)
             self._set_status(msg)
             return
-        dlg = CompareDialog(self.frame, svc)
-        self._show_modal_dialog(dlg, "Compare")
+        from quill.ui.compare_take import can_take
+
+        dlg = CompareDialog(self.frame, svc, announce=self._announce, can_take=can_take(self))
+        result = self._show_modal_dialog(dlg, "Compare")
+        ignore = dlg.ignores_trailing_whitespace
         dlg.Destroy()
         self._compare_service = None
+        if result == TAKE_CHANGES:
+            # Posted, so the editor focus the closed window queued settles
+            # before the review opens rather than landing inside it.
+            self._wx.CallAfter(
+                self._take_compare_changes, left_text, right_text, right_label, ignore
+            )
+
+    def _take_compare_changes(
+        self, left_text: str, right_text: str, right_label: str, ignore: bool = False
+    ) -> None:
+        from quill.ui.compare_take import take_changes
+
+        take_changes(self, left_text, right_text, right_label, ignore_trailing_whitespace=ignore)
 
     def compare_dialog_next(self) -> None:
         svc = getattr(self, "_compare_service", None)

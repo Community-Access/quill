@@ -2,6 +2,92 @@
 
 ## 1.0.0
 
+### Review the AI's chapter titles one by one (2026-11-24)
+
+In the Chapter Workbench, **Propose AI titles...** no longer replaces every
+title at once. The proposals open in **Review Proposed Titles**, one check box
+for each chapter whose title would change, read as "Chapter 3: "Track 03"
+becomes "The Storm"". Only the titles you leave checked go into the list;
+nothing is saved until Save, and **Restore original** still undoes them.
+
+### Read both versions of a sync conflict before choosing (2026-11-24)
+
+Sync History now shows the selected conflict below the list: this device's
+version, the other device's, each line that differs marked as removed or
+added, and what Use Merged keeps. Before, a conflict was only a row naming the
+beacon, so you chose a version without reading either.
+
+### Compare, then take only the changes you want (2026-11-24)
+
+In QUILL, the compare dialog (**Compare with File...**) has a **Take
+Changes...** button (`Alt+T`). It lists each difference as a check box. Each
+one says what changed and where, with the old and the new lines. Only the
+differences you leave checked go into your document, as one change that
+`Ctrl+Z` undoes.
+
+**File > Restore Previous Version...** has a **Compare...** button (`Alt+M`).
+It shows what an earlier save has that your current text does not, one
+difference at a time, and Take Changes brings back only the parts you choose.
+
+In the compare dialog, **Ignore trailing whitespace** and `Ctrl+Shift+F8` now
+compare again and say how many differences are left. Before, they only
+checked or unchecked the box.
+### F8 moves from one change to the next in every read-only diff (2026-11-24)
+
+In QUILL and QUILL Lite, the differences of a file in a pull request, Compare
+Branches' Changed Files, Compare Configuration and WordPress's **Compare with
+Site** now answer `F8` and `Shift+F8`, as the compare dialog already did. The
+caret moves to where the next or previous change starts, and QUILL says which
+one of how many it is, such as "Change 2 of 4. Lines 10 to 15:". Before, the
+only way to the next change was line by line.
+
+Compare Configuration now marks each line in your Line marks style ("Added:",
+"Removed:"), with where each change is. Before, it showed a raw diff whose
+"+" and "-" a screen reader may not speak.
+### Studio: hear a sample before a long narration (2026-11-24)
+
+The last page of the QUILL Studio wizard, Review and start, has a new button,
+**Try a Sample** (Alt+P). It is also in QUILL's Audiobook and Batch Speech.
+It speaks about the first 30 seconds of your first document with every choice
+you made: the engine, voice, pace, gaps, chapter sound, loudness,
+pronunciation dictionaries and voice rotation. Then it plays the sample.
+
+The **Sample result** box says what was made, how long it took on this
+computer, and what the whole run should take, play for and weigh at that
+pace. It also says that one opening does not prove the rest. The sample is
+made in a temporary folder and removed when the wizard closes. Nothing is
+saved beside your documents, and no setting changes.
+
+Press the button again to stop a sample that is being made or playing, or
+to hear it again. Going back to an earlier page stops it too. If you go back and change a setting, the result starts "Out of date",
+and the next press makes a new sample.
+### Transcribe and Converter: try a minute before an hour (2026-11-24)
+
+Transcribe a Recording (Shift+F5 in QUILL, and in QUILL Transcribe) has a new
+button, **Try the First Minute** (Alt+I). It transcribes only the first minute
+of the recording, with the model, language and options you chose. Then the
+**About this model and this recording** box shows the words it heard, how long
+that minute took on this computer, and what the whole recording should take
+at that pace. Nothing is queued or saved. Change a choice afterwards and the
+box says the result is out of date. OpenAI's models are not offered, because
+they charge for every minute.
+
+In Quill Converter, **Play Preview** (Ctrl+P) now also times its fifteen
+seconds. While it plays, the status bar says what the whole queue should take
+and how large it should be, and that one preview does not prove the rest.
+There is no estimate for a video format or for copying the sound unchanged.
+### Radio: test your recording settings for 30 seconds (2026-11-24)
+
+Quill Radio's **Recording Settings** (Ctrl+Alt+Shift+I) now says what an
+hour of recording weighs at the format and quality you have chosen, in a new
+**Test result** box. **Test These Settings** (Alt+G) records the station that
+is playing for 30 seconds with the format, quality and Sound Enhancements in
+the window, before you press OK, into a temporary folder. It then says what
+those seconds made and how large an hour will be, which is the only honest
+answer for a raw or lossless recording. **Hear the Test** (Alt+H) plays it.
+Nothing goes into your recordings folder, and a change of format, quality or
+Sound Enhancements afterwards marks the test out of date.
+
 ### The first useful task has a clear beginning in Weather, Beacon and Social (2026-11-24)
 
 Quill Weather, before the first place, opens on a Getting started line, "No

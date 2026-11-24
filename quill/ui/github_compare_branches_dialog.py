@@ -23,6 +23,7 @@ from typing import TYPE_CHECKING
 
 from quill.core.github import compare_words
 from quill.core.github.items_provider import GitHubBranchComparison, GitHubItemsError
+from quill.ui.change_walk_keys import bind_change_walk
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 from quill.ui.github_items_view import pull_diff_file_label, render_pull_file_diff
@@ -121,8 +122,11 @@ class GitHubCompareBranchesDialog:
             files_panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP | wx.TE_RICH2
         )
         self._detail.SetHelpText(
-            "The selected item in full, read-only. Arrow through it line by line."
+            "The differences of the selected file, read-only. Arrow through it line by line; "
+            "F8 and Shift+F8 move to the next and previous difference and say which one it is."
         )
+        # F8 / Shift+F8: difference by difference, as in Compare (FUX-12).
+        bind_change_walk(self._detail, self._announce)
         self._detail.SetName(
             f"Differences for the selected file, {comparison.base} vs {comparison.head}"
         )

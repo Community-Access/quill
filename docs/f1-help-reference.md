@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 343 audited sites (231 helped, 112 named-help).
+Control coverage: 346 audited sites (234 helped, 112 named-help).
 
 ### Every window, and what it is for
 
@@ -411,6 +411,10 @@ Control coverage: 343 audited sites (231 helped, 112 named-help).
 
 - `self._send`: Checks what you typed, then opens your mail program with the suggestion written to support@community-access.org. Nothing is sent until you press Send there.
 - `cancel`: Closes without sending anything.
+#### TestRecordingControls (`quill/ui/radio/test_recording_controls.py`)
+
+- `self.hear_button`: Plays the last test recording; before a test it says there is nothing to hear yet. Pause the station first to hear it clearly. Press again to stop.
+- `self.result`: How large an hour is at these settings, and what the last test recording made. It says out of date when a setting changed after the test.
 #### (module level) (`quill/ui/radio/upcoming_dialog.py`)
 
 - `snooze_btn`: Pushes a reminder out by a few minutes, counted from now. Only reminders can be snoozed -- a recording has a start time to keep.
@@ -1216,7 +1220,7 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ## QUILL Studio
 
-Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
+Control coverage: 308 audited sites (11 help-elsewhere, 297 helped).
 
 ### Every window, and what it is for
 
@@ -1367,7 +1371,7 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 - `rename_btn`: Applies the text in the Chapter title field to the highlighted chapter. The same as pressing Enter in that field.
 - `propose_btn`: Scans any recording -- a lecture or meeting as much as a book -- for silences with ffmpeg and proposes chapters there, titled Proposed chapter. You choose the noise threshold and minimum pause first. If the recording already has chapters you are asked whether to keep them and add only new boundaries, or replace them. Press again while it runs to stop; Restore original undoes a proposal.
 - `acx_btn`: Measures this book against Audible's ACX submission window -- loudness, true peak, and noise floor -- and shows the verdict with plain recommendations for anything failing. Measurement only; the file is not changed.
-- `titles_btn`: Transcribes the opening minute of each chapter with the local speech model (the audio never leaves this computer), then sends only that text to your configured AI for a short title per chapter. You consent first, the proposals land in the list for review, and Restore original undoes them. Needs an AI provider; unavailable in Safe Mode.
+- `titles_btn`: Transcribes the opening minute of each chapter with the local speech model (the audio never leaves this computer), then sends only that text to your configured AI for a short title per chapter. You consent first, then check the proposals you want, each beside the title it replaces; only those go into the list, and Restore original undoes them. Needs an AI provider; unavailable in Safe Mode.
 - `import_btn`: Replaces the chapter list with one read from a file: Audacity labels, a timestamps list, a CUE sheet, Podcasting 2.0 JSON, or CSV. The whole list is swapped for review; Restore original undoes it, and nothing is saved until Save.
 - `export_btn`: Writes the chapter list to a file of your choosing -- Audacity labels, timestamps, CUE sheet, Podcasting 2.0 JSON, or CSV -- for other tools or a podcast host. The audio is untouched.
 - `episodes_btn`: Writes each chapter out as its own audio file, numbered, into a folder you choose -- the reverse trip, for podcast episodes or track-based players. The book itself is untouched.
@@ -1559,6 +1563,10 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 - `ok`: Starts the export: the document is translated into each listed language and spoken by its voice, and every edition lands beside the source, named for its language. A cost estimate is confirmed first when a metered cloud service is involved.
 - `cancel`: Closes the window without exporting anything.
 - `open_studio`: Closes this window and opens the full Audio Studio wizard instead, where a whole folder can be narrated and a chaptered audiobook built and published.
+#### SampleControls (`quill/ui/audio_studio/try_sample.py`)
+
+- `self.button`: Speaks about the first 30 seconds of the first document with every setting above, plays it, and estimates how long the whole run takes and how large it will be. Nothing is saved beside your documents. Press again to stop a sample being made or playing, or to hear it again.
+- `self.result`: What the last sample made, what it measured on this computer, what the whole run should take, and what a sample cannot prove. It says out of date when a setting changed after the sample was made.
 #### AudioStudioWizard (`quill/ui/audio_studio/wizard.py`)
 
 - `self._back_btn`: Returns to the previous step. Nothing you have answered is lost.
@@ -2231,7 +2239,7 @@ Control coverage: 60 audited sites (60 helped).
 
 ## Quill Beacon
 
-Control coverage: 127 audited sites (127 helped).
+Control coverage: 128 audited sites (128 helped).
 
 ### Every window, and what it is for
 
@@ -2463,7 +2471,7 @@ Control coverage: 127 audited sites (127 helped).
 #### SyncHistoryDialog (`quill/apps/beacon/dialogs.py`)
 
 - `self.commit_list`: Everything sync has recorded: each row is one commit with its message, how many entries it carried, and which device made it.
-- `self.conflict_list`: Changes both sides edited, waiting for your decision. Select a row, then choose Use Local, Use Remote, or Use Merged below.
+- `self.conflict_list`: Changes both sides edited, waiting for your decision. Select a row, read both versions in the box below (Alt+V), then choose Use Local, Use Remote, or Use Merged.
 - `self.r_local`: Resolve the selected conflict by keeping this device's version.
 - `self.r_remote`: Resolve the selected conflict by taking the other device's version.
 - `self.r_merged`: Resolve the selected conflict with the merged combination of both versions.
@@ -2485,6 +2493,9 @@ Control coverage: 127 audited sites (127 helped).
 - `self.add_point_btn`: Save a time-point bookmark at the current position, tagged timepoint and filed under the current chapter when there is one. It appears in the main bookmarks list.
 - `self.chapter_list`: The episode's chapters with their start times, when the feed supplies them. Selecting a chapter jumps playback to its start. From anywhere in the window, Ctrl+Shift+Period goes to the next chapter and Ctrl+Shift+Comma to the previous one.
 - `self.transcript`: The episode's transcript as read-only text, when one is available. Empty otherwise.
+#### (module level) (`quill/apps/beacon/sync_conflicts.py`)
+
+- `detail`: The selected conflict as text: this device's version, the other device's, each line that differs marked as removed or added, and what Use Merged keeps. Read it before choosing Use Local, Use Remote or Use Merged.
 
 ## GitHub Workbench
 
@@ -4286,13 +4297,13 @@ Control coverage: 408 audited sites (408 helped).
 - `self._commits_list`: The commits the second branch has that the first does not, newest first. GitHub gives at most 250; the tab says when there are more.
 - `self._behind_list`: The commits the first branch has that the second lacks, newest first: what it is behind by. GitHub gives at most 250; the tab says when there are more.
 - `self._files`: The changed files, one per row. Arrow to a file to read its changes below.
-- `self._detail`: The selected item in full, read-only. Arrow through it line by line.
+- `self._detail`: The differences of the selected file, read-only. Arrow through it line by line; F8 and Shift+F8 move to the next and previous difference and say which one it is.
 - `self._browser_btn`: Open this on GitHub in your browser.
 - `self._pull_btn`: Open the pull request already open between these two, in your browser. Greyed when there is none.
 - `close_btn`: Close this window. Escape does the same.
 #### ConfigCompareDialog (`quill/ui/github_config_compare_dialog.py`)
 
-- `self.diff`: A unified diff: lines starting with + come from the source, lines starting with - are what this repository has now.
+- `self.diff`: Each change in the selected file: where it is, then its lines, each marked in your Diff Line Marks style. Added lines come from the source; removed lines are what this repository has now. F8 and Shift+F8 move to the next and previous change.
 - `ok`: Ask, then open one pull request with the checked files.
 - `cancel`: Close without changing anything.
 - `box`: Checked files go into one pull request. Its differences show below while it has focus.
@@ -4551,7 +4562,7 @@ Control coverage: 408 audited sites (408 helped).
 #### GitHubPullDiffDialog (`quill/ui/github_pr_diff_dialog.py`)
 
 - `self._files`: The changed files, one per row. Arrow to a file to read its changes below.
-- `self._detail`: The selected item in full, read-only. Arrow through it line by line.
+- `self._detail`: The differences of the selected file, read-only. Arrow through it line by line; F8 and Shift+F8 move to the next and previous difference and say which one it is.
 - `self._hunk`: Read the changed line and its surrounding patch context.
 - `close_btn`: Close this window. Escape does the same.
 - `self._explain_btn`: Sends this file's changes to the AI chosen in Choose Your AI; if they are very long, only the first part is sent. Under Auto, QUILL says which AI it will use first, and it asks before a different company is used. The answer names the file and the commit it explains.
@@ -5404,7 +5415,7 @@ Control coverage: 298 audited sites (298 helped).
 - `close`: Close this window. Changes to the list are kept.
 #### DiffReviewDialog (`quill/ui/ai_diff_review_dialog.py`)
 
-- `self.hunk_list`: Every change the AI proposes, one per line. A checked change will be applied; press Space to uncheck one you want to keep as it was. The details below say exactly what changed, word by word. Alt+C comes back here.
+- `self.hunk_list`: Every proposed change, one per line. A checked change will be applied; press Space to uncheck one you want to keep as it was. The details below say exactly what changed, word by word. Alt+C comes back here.
 - `self.word_list`: Each word edit inside the change you are on, with the sentence it is in. A checked edit is applied; press Space to drop one and keep the original words there while the rest of the change still goes in. Dropping every edit drops the change. Shown only when a change holds two or more word edits; Alt+W reaches it.
 - `self.details`: The change you are on, line by line: what was there, what would replace it, and for a small change the words that differ and the sentence they are in. Read-only.
 - `self.apply_button`: Applies the change as one edit; Control Z takes it back.

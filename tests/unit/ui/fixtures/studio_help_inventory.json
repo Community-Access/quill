@@ -156,6 +156,8 @@
   "quill/ui/audio_studio/translated_speech_export.py::TranslatedSpeechExportDialog.__init__::wx.Choice#3": "helped",
   "quill/ui/audio_studio/translated_speech_export.py::TranslatedSpeechExportDialog.__init__::wx.Choice#4": "helped",
   "quill/ui/audio_studio/translated_speech_export.py::TranslatedSpeechExportDialog.__init__::wx.ListBox": "helped",
+  "quill/ui/audio_studio/try_sample.py::SampleControls.__init__::wx.Button": "helped",
+  "quill/ui/audio_studio/try_sample.py::SampleControls.__init__::wx.TextCtrl": "helped",
   "quill/ui/audio_studio/wizard.py::AudioStudioWizard._build_ui::wx.Button": "helped",
   "quill/ui/audio_studio/wizard.py::AudioStudioWizard._build_ui::wx.Button#2": "helped",
   "quill/ui/audio_studio/wizard.py::AudioStudioWizard._build_ui::wx.Button#3": "helped",

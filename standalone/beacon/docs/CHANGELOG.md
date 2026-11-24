@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- **Read both versions of a sync conflict before choosing** (FUX-12,
+  2026-11-24). Sync History shows the selected conflict below the list
+  (Alt+V): this device's version, the other device's, each line that differs
+  marked as removed or added, and what Use Merged keeps.
+
 - **An empty library says how to fill it** (FUX-09, 2026-11-24). A new
   library opened on the search box over an empty list and said only "0
   results". While there is no bookmark, a **Getting started** line above the

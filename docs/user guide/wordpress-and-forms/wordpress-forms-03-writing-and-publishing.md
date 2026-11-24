@@ -313,7 +313,8 @@ the site, and "Unchanged" is the same in both. The marks follow the style you
 chose for every difference in QUILL (Kelly Ford's four: words, short words,
 diff symbols, or diff symbols with changed lines); in QUILL you choose it in
 Compare Files or in the GitHub Workbench's Line marks, and QUILL Lite uses the
-same saved choice.
+same saved choice. `F8` and `Shift+F8` move to the next and previous change and
+say which one of how many it is, such as "Change 2 of 4. Lines 10 to 15:".
 
 ## The Trash
 

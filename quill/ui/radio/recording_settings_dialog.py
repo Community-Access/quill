@@ -5,6 +5,7 @@ and filename pattern for every stream recording (Record Now and scheduled).
 from __future__ import annotations
 
 from collections.abc import Callable
+from typing import Any
 
 from quill.core.radio import settings_help
 from quill.core.radio.recording import (
@@ -21,6 +22,26 @@ from quill.ui.spin_value import spin_value
 _BITRATE_CHOICES = (96, 128, 160, 192, 256, 320)
 
 
+def open_recording_settings(host: Any) -> None:
+    """Recording Settings for Radio's *host*: show, then save what OK chose."""
+    from quill.core.paths import app_data_dir
+    from quill.core.radio.recording import save_recording_settings
+
+    dialog = RecordingSettingsDialog(
+        host.frame,
+        settings=host._radio_recording_settings,
+        announce_cb=host._announce,
+        host=host,  # FUX-11: Test These Settings records what is playing
+    )
+    updated = dialog.show()
+    if updated is None:
+        return
+    host._radio_recording_settings = updated
+    host._radio_scheduler.set_recording_settings(updated)
+    save_recording_settings(app_data_dir(), updated)
+    host._announce("Recording settings saved.")
+
+
 class RecordingSettingsDialog:
     """Returns the updated :class:`RecordingSettings`, or ``None`` on Cancel."""
 
@@ -30,6 +51,7 @@ class RecordingSettingsDialog:
         *,
         settings: RecordingSettings,
         announce_cb: Callable[[str], None] | None = None,
+        host: object | None = None,
     ) -> None:
         import wx
 
@@ -169,6 +191,18 @@ class RecordingSettingsDialog:
         self._split_songs_check.SetValue(settings.split_at_song_changes)
         root.Add(self._split_songs_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
+        # FUX-11: hear 30 seconds of these settings before an hour of them.
+        self.test: Any = None
+        if host is not None:
+            from quill.ui.radio.test_recording_controls import TestRecordingControls
+
+            self.test = TestRecordingControls(
+                self.dialog, root, host, self._choice_now, self._announce
+            )
+            for control in (self._format_choice, self._bitrate_choice):
+                control.Bind(wx.EVT_CHOICE, self._on_choice_changed)
+            self._apply_enhancements_check.Bind(wx.EVT_CHECKBOX, self._on_choice_changed)
+
         hint = wx.StaticText(
             self.dialog,
             label=(
@@ -219,6 +253,19 @@ class RecordingSettingsDialog:
 
     def _on_format_changed(self, _event: object) -> None:
         self._sync_bitrate_visibility()
+        if self.test is not None:
+            self.test.refresh()
+
+    def _on_choice_changed(self, event: Any) -> None:
+        if event.GetEventObject() is self._format_choice:
+            self._sync_bitrate_visibility()
+        self.test.refresh()
+
+    def _choice_now(self) -> tuple[str, int, bool]:
+        """The format, bit rate and Sound Enhancements choice in the window now."""
+        index = self._bitrate_choice.GetSelection()
+        bitrate = _BITRATE_CHOICES[index] if index >= 0 else 192
+        return self._current_format(), bitrate, self._apply_enhancements_check.GetValue()
 
     def show(self) -> RecordingSettings | None:
         self.dialog.CentreOnParent()

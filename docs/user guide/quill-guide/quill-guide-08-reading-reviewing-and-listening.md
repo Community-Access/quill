@@ -595,7 +595,28 @@ Once a comparison is open, these keys do most of the work:
 - `Ctrl+Alt+Shift+D` reads the current difference.
 
 The compare dialog is a list you can review with your screen reader, one
-difference at a time, entirely from the keyboard.
+difference at a time, entirely from the keyboard. Inside it, `F8` and
+`Shift+F8` move to the next and previous difference, `Ctrl+F8` reads the
+current one, and **Ignore trailing whitespace** (`Alt+I`, or `Ctrl+Shift+F8`)
+compares again leaving out spaces at the ends of lines and says how many
+differences are left.
+
+### Taking some of the other file's changes
+
+**Take Changes...** (`Alt+T` in the compare dialog) lets you bring some of
+the other file's differences into your document and leave the rest. It opens
+a list with one check box for each difference, and each one says what would
+change and where, with the old and the new lines in the details below it.
+Every difference starts out checked. Press `Space` to uncheck one you want to
+keep as it is, then choose **Apply Checked**. Only the checked differences go
+in, as one change that `Ctrl+Z` undoes. **Reject All** closes the list and
+takes nothing. When there is only one difference, the buttons are
+**Accept** and **Reject**. The list always holds the two texts you compared.
+If **Ignore trailing whitespace** is checked, a line that differs only in
+spaces at its end is not offered, and your version of it stays. If your
+document changed after you compared, the list does not open, and QUILL says
+so. Take Changes isn't offered for a read-only document, and the compare
+dialog says so.
 
 ### How changed lines are marked
 
@@ -679,6 +700,14 @@ when your saved project profile already fills every page, so a repeat run
 is three keystrokes. The work runs in the background with progress for each
 file, and you can cancel it. It uses the same speech engine as live Read
 Aloud, so the voice you audition is the voice you get.
+
+Before a long run, **Try a Sample** (Alt+P) on the summary page speaks about
+the first 30 seconds of the first document with every choice you made, plays
+it, and says in the **Sample result** box what the whole run should take,
+play for and weigh at that pace on this computer, and what one sample cannot
+prove. It is made in a temporary folder and kept only until the wizard
+closes; nothing is saved beside your documents. After you change a setting,
+the result says "Out of date" until you try again.
 
 The source pages offer a list of **recent source folders**, and the edit
 path's file picker remembers **recently opened audiobooks**. Both lists are
@@ -1083,9 +1112,11 @@ adding Shift moves ten steps at once.
   listening to them. The first minute of each chapter is transcribed on this
   computer by the local speech model, so the audio never leaves your
   computer. Only that text goes to the AI you have set up (a local model
-  keeps even the text on your computer). A short suggested title for each
-  chapter lands in the list for you to review, and **Restore original**
-  undoes the lot. Needs AI set up; not available in Safe Mode.
+  keeps even the text on your computer). The suggested titles open in
+  **Review Proposed Titles**, one check box for each chapter whose title would
+  change, with its title now and the proposed one. Only the checked titles go
+  into the list, and **Restore original** undoes them. Needs AI set up; not
+  available in Safe Mode.
 
 #### Checking, importing and splitting
 

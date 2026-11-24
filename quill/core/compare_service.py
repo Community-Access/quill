@@ -140,6 +140,23 @@ def _word_diff_label(left_line: str, right_line: str) -> str:
     return "; ".join(parts) if parts else "text changed"
 
 
+def keep_trailing_whitespace(mine: str, theirs: str) -> str:
+    """*theirs*, except that a line differing from *mine* only in trailing spaces keeps mine.
+
+    Take Changes with Ignore trailing whitespace on reviews this text, so a
+    difference the person chose not to count is not taken either (FUX-12).
+    """
+    old = mine.split("\n")
+    new = theirs.split("\n")
+    matcher = difflib.SequenceMatcher(
+        None, [line.rstrip() for line in old], [line.rstrip() for line in new], autojunk=False
+    )
+    out: list[str] = []
+    for tag, l0, l1, r0, r1 in matcher.get_opcodes():
+        out.extend(old[l0:l1] if tag == "equal" else new[r0:r1])
+    return "\n".join(out)
+
+
 class CompareService:
     """Runs a two-layer diff and owns navigation state.
 
@@ -156,6 +173,8 @@ class CompareService:
         self.left_path: Path | None = None
         self.right_path: Path | None = None
         self.options: CompareOptions = CompareOptions()
+        self.left_text: str = ""
+        self.right_text: str = ""
 
     # ------------------------------------------------------------------
     # Public API
@@ -177,10 +196,36 @@ class CompareService:
         self.right_label = right_label
         self.left_path = left_path
         self.right_path = right_path
+        self.left_text = left_text
+        self.right_text = right_text
         self.options = options or CompareOptions()
         self._groups = self._build_groups(left_text, right_text, self.options)
         self._cursor = -1
         return self._groups
+
+    def recompare(self, options: CompareOptions) -> list[DifferenceGroup]:
+        """The same two texts again under *options* (a whitespace toggle)."""
+        return self.compare(
+            self.left_text,
+            self.right_text,
+            left_label=self.left_label,
+            right_label=self.right_label,
+            left_path=self.left_path,
+            right_path=self.right_path,
+            options=options,
+        )
+
+    @property
+    def groups(self) -> list[DifferenceGroup]:
+        """Every difference, in order (a copy: navigation stays with the service)."""
+        return list(self._groups)
+
+    def select(self, position: int) -> DifferenceGroup | None:
+        """Make difference *position* (0-based) the current one."""
+        if not 0 <= position < len(self._groups):
+            return None
+        self._cursor = position
+        return self._groups[position]
 
     @property
     def group_count(self) -> int:

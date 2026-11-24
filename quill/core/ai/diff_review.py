@@ -33,6 +33,7 @@ __all__ = [
     "DiffReview",
     "WordChange",
     "build_diff_review",
+    "build_item_review",
 ]
 
 #: Above this many word-level edits a "changed" hunk is presented as lines: a
@@ -133,6 +134,9 @@ class DiffHunk:
     #: word groups is accepted, which is what keeps "accept everything"
     #: byte-identical to the AI's revision.
     spacing_edits: tuple[tuple[int, int, str], ...] = ()
+    #: What one position counts: "line" for a text, or a word such as
+    #: "chapter" for a list of items (:func:`build_item_review`).
+    unit: str = "line"
 
     @property
     def old_text(self) -> str:
@@ -169,6 +173,9 @@ class DiffHunk:
 
     def describe(self) -> str:
         """A one-line, screen-reader-friendly summary of this hunk."""
+        if self.unit != "line" and self.kind == "changed":
+            old, new = self.old_lines[0], self.new_lines[0]
+            return f'{self.unit.capitalize()} {self.old_line_no}: "{old}" becomes "{new}".'
         position = f"at line {self.old_line_no}"
         if self.kind == "added":
             count = len(self.new_lines)
@@ -192,6 +199,8 @@ class DiffHunk:
         """Readable detail for the pane: word edits with sentence context first
         (when available), then the whole old/new lines, which stay reviewable
         exactly as before."""
+        if self.unit != "line":  # one item: the row already says now and proposed
+            return [self.describe()]
         lines: list[str] = [self.describe()]
         for change in self.word_changes:
             lines.append(f"{change.action_phrase()}.")
@@ -267,6 +276,10 @@ class DiffReview:
         """A short overall summary for an opening announcement."""
         if not self.hunks:
             return "No changes to review."
+        unit = self.hunks[0].unit
+        if unit != "line":
+            count = len(self.hunks)
+            return f"{count} {unit}{'s' if count != 1 else ''} would change."
         added = sum(1 for h in self.hunks if h.kind == "added")
         removed = sum(1 for h in self.hunks if h.kind == "removed")
         changed = sum(1 for h in self.hunks if h.kind == "changed")
@@ -383,6 +396,42 @@ def _word_edits(
     if not changes:
         return (), ()
     return tuple(changes), tuple(spacing)
+
+
+def build_item_review(original: list[str], revised: list[str], *, unit: str = "item") -> DiffReview:
+    """One hunk for each item of *original* that *revised* changes, position by position.
+
+    For a list whose items are replaced but never added or removed (a
+    chapter's titles): every changed item is its own check box, however many
+    sit together, and :meth:`DiffReview.apply` gives the items back joined
+    by newlines. Line breaks inside an item become spaces. The two lists
+    must be the same length.
+    """
+    if len(original) != len(revised):
+        raise ValueError("an item review needs two lists of the same length")
+    old = [" ".join(item.splitlines()) for item in original]
+    new = [" ".join(item.splitlines()) for item in revised]
+    segments: list[_Segment] = []
+    hunks: list[DiffHunk] = []
+    for position, (before, after) in enumerate(zip(old, new, strict=True)):
+        if before == after:
+            segments.append(_Segment((before,), (after,), -1))
+            continue
+        index = len(hunks)
+        hunks.append(
+            DiffHunk(
+                index=index,
+                kind="changed",
+                old_lines=(before,),
+                new_lines=(after,),
+                old_line_no=position + 1,
+                unit=unit,
+            )
+        )
+        segments.append(_Segment((before,), (after,), index))
+    return DiffReview(
+        original="\n".join(old), revised="\n".join(new), hunks=hunks, _segments=segments
+    )
 
 
 def build_diff_review(original: str, revised: str) -> DiffReview:

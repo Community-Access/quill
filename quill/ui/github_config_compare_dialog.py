@@ -13,6 +13,7 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import Any
 
+from quill.ui.change_walk_keys import bind_change_walk
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 
@@ -79,9 +80,12 @@ class ConfigCompareDialog:
         )
         self.diff.SetName("Differences")
         self.diff.SetHelpText(
-            "A unified diff: lines starting with + come from the source, lines starting "
-            "with - are what this repository has now."
+            "Each change in the selected file: where it is, then its lines, each marked in "
+            "your Diff Line Marks style. Added lines come from the source; removed lines are "
+            "what this repository has now. F8 and Shift+F8 move to the next and previous change."
         )
+        # F8 / Shift+F8 and words for the marks, as every other diff (FUX-12).
+        bind_change_walk(self.diff, self._announce)
         root.Add(self.diff, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         same = sum(1 for d in rest if d.state == "same")
         only = sum(1 for d in rest if d.state == "only_here")
@@ -116,7 +120,18 @@ class ConfigCompareDialog:
         if found.state == "missing":
             self.diff.SetValue(found.source_text)
         else:
-            self.diff.SetValue("\n".join(found.diff_lines()))
+            from quill.core.diff_marks import render_texts
+            from quill.core.github.review_preferences import load_line_marks
+
+            self.diff.SetValue(
+                render_texts(
+                    found.target_text,
+                    found.source_text,
+                    "this repository's copy",
+                    "the source",
+                    style=load_line_marks(),
+                )
+            )
 
     def checked(self) -> list[Any]:
         return [d for d, box in zip(self.updatable, self.files, strict=True) if box.GetValue()]

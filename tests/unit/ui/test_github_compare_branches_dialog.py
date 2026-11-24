@@ -178,3 +178,21 @@ def test_pull_button_greyed_without_a_pull_request(wx_app) -> None:
     assert not dlg._pull_btn.IsEnabled()
     assert dlg._behind_list.GetItemCount() == 0
     dlg.dialog.Destroy()
+
+
+def test_f8_walks_the_differences_of_the_selected_file(wx_app, monkeypatch) -> None:
+    # FUX-12: the Differences box moves change by change, as Compare does.
+    bound: list[Any] = []
+    monkeypatch.setattr(
+        "quill.ui.github_compare_branches_dialog.bind_change_walk",
+        lambda ctrl, announce: bound.append((ctrl, announce)),
+    )
+    frame = wx.Frame(None)
+    spoken: list[str] = []
+    dlg = GitHubCompareBranchesDialog(
+        frame, _FakeProvider(), "owner/repo", _comparison(), announce_cb=spoken.append
+    )
+    assert [ctrl for ctrl, _ in bound] == [dlg._detail]
+    bound[0][1]("Change 1 of 1.")
+    assert spoken == ["Change 1 of 1."]
+    dlg.dialog.Destroy()

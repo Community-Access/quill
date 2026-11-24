@@ -219,6 +219,10 @@ These are all working in the app right now:
 - **Sync, smarter.** Sync only sends what changed (and any deletions), not the
   whole library every time. If two devices edit the same note, the conflict
   shows up in Sync History with Use Local / Use Remote / Use Merged buttons.
+  Below the list, **Selected conflict, both versions** (`Alt+V`) shows this
+  device's version, the other device's, each line that differs marked as
+  removed or added, and what Use Merged keeps, so you can read both before
+  you choose.
   To share your encrypted library with a second device, open
   **Sync > Sync Settings...** and press its Pair Device button: it exports a
   short code you enter on the other device, then unlock there with the same

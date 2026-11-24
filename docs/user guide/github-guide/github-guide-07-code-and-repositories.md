@@ -516,7 +516,9 @@ repository, or with the owner's `.github` repository, which it offers first.
 From an organization's `.github` repository its starter workflows count too.
 The window checks every file that is missing here or differs, each with the
 lines added and removed, and shows the selected file's differences to read
-line by line. Files that are the same, or only here, are counted and kept.
+line by line, each line marked in your Line marks style. `F8` and `Shift+F8`
+move to the next and previous change. Files that are the same, or only here,
+are counted and kept.
 **Propose Update** asks once more, then opens one pull request with the
 checked files and a summary of each. Nothing changes until that pull request
 is merged; QUILL never pushes these to the default branch.

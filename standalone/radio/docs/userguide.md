@@ -4073,6 +4073,20 @@ schedule can book a programme for you too. See Chapter 12.
    - **Split the recording at each song change** (Alt+N): off to begin with.
      Turn it on to get one file per song instead of one long file. See
      "Splitting a recording into songs" below.
+   - **Test result** (Alt+U) says what an hour weighs at the format and quality
+     chosen now, for example "An hour at 192 kbps is about 82.4 MB." For Raw
+     stream and the lossless formats the size depends on the station, so
+     press **Test These Settings** (Alt+G). It records the station that is
+     playing for 30 seconds with the format, quality and Sound Enhancements
+     chosen in the window, before you press OK, into a temporary folder.
+     Test result then says what those seconds made and how large an hour
+     will be, and **Hear the Test** (Alt+H) plays it; pause the station first
+     to hear it clearly. Press either button again to stop. Nothing goes
+     into your recordings folder or Radio Recordings, and the test is
+     removed when the window closes. If you change the format, quality or
+     Sound Enhancements afterwards, Test result says the test is out of
+     date. The exact OptiLab pass that follows a real recording is not part
+     of the test.
 3. Choose **OK**. You should hear "Recording settings saved".
 
 **Raw stream** saves exactly what the station sends, without changing it, so

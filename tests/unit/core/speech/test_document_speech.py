@@ -289,3 +289,36 @@ def test_pronunciation_dictionaries_reach_the_engine(
     )
     assert any("kwill" in t for t in spoken)
     assert not any("QUILL" in t for t in spoken)
+
+
+def test_first_words_keeps_headings_and_cuts_at_a_word() -> None:
+    """FUX-11: a sample is the document's own opening, through the same sections."""
+    from quill.core.speech.text_polish import DocumentSection
+
+    sections = [
+        DocumentSection("", "one two\nthree"),
+        DocumentSection("Story A", "four five six", 1),
+        DocumentSection("Story B", "seven", 1),
+    ]
+    kept = ds.first_words(sections, 5)
+    assert [(s.title, s.text) for s in kept] == [("", "one two\nthree"), ("Story A", "four five")]
+    assert ds.first_words(sections, 0) == sections
+
+
+def test_max_words_speaks_only_the_opening(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    spoken: list[str] = []
+
+    def fake_kokoro(text: str, out: Path, *, voice: str = "af_heart", speed: float = 1.0) -> None:
+        spoken.append(text)
+        _write_silence(out, ms=150)
+
+    monkeypatch.setattr(ds.read_aloud, "synthesize_with_kokoro", fake_kokoro)
+    md = tmp_path / "doc.md"
+    md.write_text("# Story A\nalpha beta gamma\n\n# Story B\ndelta epsilon\n", encoding="utf-8")
+    opts = ChapterAssembleOptions(article_gap_ms=0, output_format="wav", speak_headings=False)
+    result = ds.synthesize_document_to_chaptered_file(
+        md, tmp_path / "s.wav", ds.SynthesisSpec(engine="kokoro"), opts, max_words=2
+    )
+    assert [c.title for c in result.chapters] == ["Story A"]
+    joined = " ".join(spoken)
+    assert "alpha" in joined and "gamma" not in joined and "delta" not in joined

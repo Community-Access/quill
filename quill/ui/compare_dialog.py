@@ -7,6 +7,13 @@ parent frame's _announce() path so the active SR hears it.
 
 The dialog is modal; when it closes, the caller discards the
 CompareService state.
+
+**Taking changes (FUX-12, 2026-11-24).** Take Changes (Alt+T) closes the
+window with :data:`TAKE_CHANGES`, and the caller opens the one review window
+the family already has for a proposed text (``DiffReviewDialog``): each
+difference a check box, the old and new lines in its details, and only the
+checked ones applied, as one undo step. The ignore-whitespace check box and
+Ctrl+Shift+F8 now compare again; before, they only flipped the box.
 """
 
 from __future__ import annotations
@@ -16,7 +23,13 @@ from typing import TYPE_CHECKING
 from quill.ui.dpi import dip_size
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from quill.core.compare_service import CompareService, DifferenceGroup
+
+#: What :meth:`CompareDialog.ShowModal` returns when Take Changes was chosen
+#: (``wx.ID_APPLY``; a plain int so this module imports without wx).
+TAKE_CHANGES = 5102
 
 
 class CompareDialog:
@@ -26,13 +39,21 @@ class CompareDialog:
     stays importable even in headless test runs (wx is imported lazily).
     """
 
-    def __init__(self, parent: object, svc: CompareService) -> None:
+    def __init__(
+        self,
+        parent: object,
+        svc: CompareService,
+        *,
+        announce: Callable[[str], None] | None = None,
+        can_take: bool = False,
+    ) -> None:
         import wx
 
         from quill.ui.spoken_name import set_spoken_name
 
         self._svc = svc
         self._wx = wx
+        self._announce = announce or (lambda _message: None)
         g0 = svc.first()
 
         self.dialog = wx.Dialog(
@@ -50,8 +71,9 @@ class CompareDialog:
         right = svc.right_label
         self._status_label = wx.StaticText(
             panel,
-            label=f"Comparing {left!r} and {right!r}. {total} difference(s). "
-            f"Press F8 for next, Shift+F8 for previous, Escape to close.",
+            label=f"Comparing {left} and {right}. {total} difference(s). "
+            f"Press F8 for next, Shift+F8 for previous, Escape to close."
+            + ("" if can_take else " This document is read-only, so nothing can be taken."),
         )
         self._status_label.Wrap(780)
         root.Add(self._status_label, 0, wx.ALL | wx.EXPAND, 8)
@@ -59,10 +81,11 @@ class CompareDialog:
         # Difference list (stock wx.ListBox — accessible by construction).
         self._diff_list = wx.ListBox(panel, style=wx.LB_SINGLE)
         self._diff_list.SetName("Differences")
-        for g in svc._groups:
-            self._diff_list.Append(g.summary_short)
-        if total > 0:
-            self._diff_list.SetSelection(0)
+        self._diff_list.SetHelpText(
+            "Every difference, one per line: which one of how many, what kind, and "
+            "the line it is at. F8 and Shift+F8 move through them from anywhere here."
+        )
+        self._fill_list()
         root.Add(self._diff_list, 1, wx.ALL | wx.EXPAND, 8)
 
         # Detail area for current difference.
@@ -75,7 +98,12 @@ class CompareDialog:
         root.Add(self._detail, 1, wx.ALL | wx.EXPAND, 8)
 
         # Whitespace toggle checkbox.
-        self._ws_check = wx.CheckBox(panel, label="Ignore trailing whitespace")
+        self._ws_check = wx.CheckBox(panel, label="&Ignore trailing whitespace")
+        self._ws_check.SetValue(svc.options.ignore_trailing_whitespace)
+        self._ws_check.SetHelpText(
+            "Compares again leaving out spaces at the ends of lines, and says how many "
+            "differences are left. Ctrl+Shift+F8 does the same from anywhere here."
+        )
         root.Add(self._ws_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         # How each changed line is marked: Kelly Ford's four styles
@@ -113,10 +141,17 @@ class CompareDialog:
         self._btn_prev = wx.Button(panel, label="Previous (Shift+F8)")
         self._btn_next = wx.Button(panel, label="Next (F8)")
         self._btn_summary = wx.Button(panel, label="Read Current (Ctrl+F8)")
+        self._btn_take = wx.Button(panel, label="&Take Changes...")
+        self._btn_take.SetHelpText(
+            f"Choose which differences to take from {right} into your document: each one a "
+            "check box with its old and new lines, applied as one undo step."
+        )
+        self._btn_take.Show(can_take)
         self._btn_close = wx.Button(panel, id=wx.ID_CANCEL, label="Close (Escape)")
         btn_sizer.Add(self._btn_prev, 0, wx.RIGHT, 6)
         btn_sizer.Add(self._btn_next, 0, wx.RIGHT, 6)
         btn_sizer.Add(self._btn_summary, 0, wx.RIGHT, 6)
+        btn_sizer.Add(self._btn_take, 0, wx.RIGHT, 6)
         btn_sizer.AddStretchSpacer(1)
         btn_sizer.Add(self._btn_close, 0)
         root.Add(btn_sizer, 0, wx.ALL | wx.EXPAND, 8)
@@ -131,6 +166,8 @@ class CompareDialog:
         self._btn_next.Bind(wx.EVT_BUTTON, lambda _e: self._navigate(1))
         self._btn_prev.Bind(wx.EVT_BUTTON, lambda _e: self._navigate(-1))
         self._btn_summary.Bind(wx.EVT_BUTTON, lambda _e: self._speak_current())
+        self._btn_take.Bind(wx.EVT_BUTTON, lambda _e: self.take_changes())
+        self._ws_check.Bind(wx.EVT_CHECKBOX, lambda _e: self._recompare(from_box=True))
         self._btn_close.Bind(wx.EVT_BUTTON, lambda _e: self.dialog.EndModal(wx.ID_CANCEL))
         self._diff_list.Bind(wx.EVT_LISTBOX, self._on_list_select)
         self._marks_choice.Bind(wx.EVT_CHOICE, self._on_marks_changed)
@@ -196,10 +233,30 @@ class CompareDialog:
         if sel < 0:
             return
         # Drive the service cursor to match the list selection.
-        groups = self._svc._groups
-        if 0 <= sel < len(groups):
-            self._svc._cursor = sel
-            self._show_group(groups[sel])
+        g = self._svc.select(sel)
+        if g is not None:
+            self._show_group(g)
+
+    def _fill_list(self) -> None:
+        """The list from the service's differences, the first selected."""
+        self._diff_list.Set([g.summary_short for g in self._svc.groups])
+        first = self._svc.first()
+        if first is not None:
+            self._diff_list.SetSelection(0)
+
+    def take_changes(self) -> None:
+        """Close with :data:`TAKE_CHANGES`; the caller opens the review."""
+        if not self._btn_take.IsShown():
+            return
+        if not self._svc.has_differences:
+            self._announce("No differences to take.")
+            return
+        self.dialog.EndModal(TAKE_CHANGES)
+
+    @property
+    def ignores_trailing_whitespace(self) -> bool:
+        """The whitespace choice the person left the window with."""
+        return bool(self._svc.options.ignore_trailing_whitespace)
 
     def _show_group(self, g: DifferenceGroup) -> None:
         self._status_label.SetLabel(
@@ -229,6 +286,7 @@ class CompareDialog:
     def _speak_current(self) -> None:
         g = self._svc.current()
         if g is None:
+            self._announce("No differences.")
             return
         self._detail.SetValue(self._detail_text(g))
         # Re-set focus to detail so SR re-reads it.
@@ -261,10 +319,33 @@ class CompareDialog:
         event.Skip()
 
     def _toggle_whitespace(self) -> None:
-        current = self._ws_check.GetValue()
-        self._ws_check.SetValue(not current)
-        state = "on" if not current else "off"
-        self._status_label.SetLabel(f"Ignore trailing whitespace: {state}")
+        self._ws_check.SetValue(not self._ws_check.GetValue())
+        self._recompare()
+
+    def _recompare(self, *, from_box: bool = False) -> None:
+        """Compare again with the check box's whitespace choice, and say the count.
+
+        The count is said because it changed on controls that do not have
+        focus (the list and the status line). From the check box only the
+        count is said, since the box under focus speaks its own state; from
+        Ctrl+Shift+F8 the box is not focused, so the state is said too.
+        """
+        from dataclasses import replace
+
+        ignore = bool(self._ws_check.GetValue())
+        self._svc.recompare(replace(self._svc.options, ignore_trailing_whitespace=ignore))
+        self._fill_list()
+        total = self._svc.group_count
+        noun = "difference" if total == 1 else "differences"
+        state = "ignored" if ignore else "included"
+        message = f"Trailing whitespace {state}: {total} {noun}."
+        g = self._svc.current()
+        if g is not None:
+            self._show_group(g)
+        else:
+            self._detail.SetValue("No differences.")
+        self._status_label.SetLabel(message)
+        self._announce(f"{total} {noun}." if from_box else message)
 
     def _read_inline_change(self) -> None:
         g = self._svc.current()
