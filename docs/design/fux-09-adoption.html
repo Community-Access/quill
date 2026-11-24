@@ -427,9 +427,13 @@ With No Document Open, the status bar said “No document open. Use File
 <td><strong>Gap</strong>: that sentence is lost before the window shows
 and names no key. The Recent Documents window’s “No recent documents”
 names no next action</td>
-<td>Planned: the no-document sentence names New (Ctrl+N) and Open
-(Ctrl+O) and is said once the window is up; the empty Recent Documents
-row names Open</td>
+<td>The Start page’s sentence is written quietly while the window is
+built and said once, 300 ms after the window is shown: “No document
+open. New (Ctrl+N) starts one, or Open (Ctrl+O) opens a file.”, with the
+bound keys. (<code>quill/ui/main_frame_first_task.py</code>) The Recent
+Documents row is left: that window is opened by asking for recent
+documents, so “none yet” is the answer, and its Open is unusable while
+the window is up</td>
 </tr>
 <tr>
 <td><strong>QUILL Lite</strong></td>
@@ -438,8 +442,14 @@ row names Open</td>
 says nothing</td>
 <td><strong>Gap</strong>: nothing has focus and nothing names New, Open
 or Tutorials, although all three are on that menu bar</td>
-<td>Planned: when the last document closes, one sentence names New
-(Ctrl+N) and Open (Ctrl+O), said once and kept on the status bar</td>
+<td>When the window becomes empty (the last document closes, or nothing
+opened at launch), one sentence is said once: “No documents open. New
+(Ctrl+N) starts one, or Open (Ctrl+O) opens a file.”, with the bound
+keys, 300 ms after the window is given back to the screen reader and
+queued behind anything already being said (a recovery or update
+sentence); never while QUILL Lite is closing. The shell has no control
+to put a line on and no status bar, so this one is speech (and braille,
+through Lite’s voice). (<code>ShellMenuMixin.say_if_empty</code>)</td>
 </tr>
 <tr>
 <td><strong>Inkwell</strong></td>
@@ -449,8 +459,13 @@ abbreviations</td>
 the list is empty and silent</td>
 <td><strong>Gap</strong> (small): an emptied library names no next
 action</td>
-<td>Planned: a line before an empty list naming Manage Abbreviations
-(Ctrl+M)</td>
+<td>A line before an empty list, “No abbreviations yet. Manage
+Abbreviations (Ctrl+M) makes one, or New from Clipboard (Ctrl+Shift+N)
+saves the copied text as one.”, takes launch focus; it is refreshed each
+time the list is drawn. The built-in entries are not marked as samples;
+they are ordinary entries a person keeps or deletes, and marking them is
+a library format change left for its own work.
+(<code>quill/apps/inkwell_first_task.py</code>)</td>
 </tr>
 <tr>
 <td><strong>Beacon</strong></td>
@@ -499,6 +514,14 @@ status bar moves on the sentence is not on screen. Putting an
 <code>EmptyStateLine</code> in Cast’s content pane, which swaps between
 a tree and a report list for thirteen places, is a change to that pane
 rather than to the first task.</li>
+<li><strong>QUILL Lite: the empty window’s state as text.</strong> The
+empty MDI window has no control and no status bar, so its sentence is
+speech and braille only; a status bar or title change on the shell is a
+change to the shell’s layout, left for its own work.</li>
+<li><strong>QUILL: a tray launch with Start With No Document
+Open.</strong> The window is not shown, so the Start page’s sentence is
+not said, and restoring the window from the tray does not say it either;
+the Start tab itself is there.</li>
 <li><strong>Cast: Add Your First Podcast, then closed without
 adding.</strong> The Add Podcast window is a peer window with no “closed
 without adding” signal; closing it leaves the empty tree without its

@@ -28,7 +28,7 @@ from typing import Any
 
 import wx
 
-from quill.apps import inkwell_row_help
+from quill.apps import inkwell_first_task
 from quill.apps.inkwell_ai import InkwellAiMixin
 from quill.apps.inkwell_dictation import InkwellDictationMixin
 from quill.apps.inkwell_keys import InkwellKeysMixin
@@ -53,6 +53,7 @@ from quill.ui.dpi import dip, dip_size
 from quill.ui.inkwell_destination import InkwellDestinationMixin
 from quill.ui.inkwell_expansion import InkwellExpansionMixin
 from quill.ui.menu_palette import append_palette_row
+from quill.ui.spoken_name import set_spoken_name
 from quill.ui.whats_new import append_whats_new_item
 
 _TITLE = "Quill Inkwell"
@@ -319,8 +320,11 @@ class QuillInkwellFrame(
         self._status_text = wx.StaticText(panel, label="")
         root.Add(self._status_text, 0, wx.ALL, 10)
 
+        inkwell_first_task.build(self, panel, root)  # FUX-09: before the list, while empty
         self._list = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SUNKEN)
         self._list.SetName("Abbreviations")
+        # Its own name, not the text before it (the status line, or the FUX-09 line).
+        set_spoken_name(self._list, "Abbreviations")
         self._list.SetHelpText(
             "Your abbreviation library, read-only here: each row is a trigger "
             "word, the start of what it expands to, and its category, with "
@@ -361,10 +365,10 @@ class QuillInkwellFrame(
         self._reload_list()
 
     def _focus_initial_control(self) -> None:
-        self._list.SetFocus()
+        inkwell_first_task.focus_initial(self)
 
     def _reload_list(self) -> None:
-        inkwell_row_help.fill_list(self)  # rows, and F1 on a disabled entry (FUX-10)
+        inkwell_first_task.reload(self)  # rows and their F1 (FUX-10), then the line (FUX-09)
 
     def _refresh_status(self) -> None:
         count = len(self._library.abbreviations)

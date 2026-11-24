@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### The first useful task has a clear beginning in QUILL, QUILL Lite and Inkwell (2026-11-24)
+
+With **Start With No Document Open**, QUILL's Start page said "No document
+open. Use File > New or File > Open." while the window was still being
+built, so it was never heard. It now says, once the window is up, "No
+document open. New (Ctrl+N) starts one, or Open (Ctrl+O) opens a file.", with
+the keys you have. QUILL Lite says the same kind of sentence when its window
+becomes empty, which had nothing in it to focus and said nothing. Inkwell,
+with every abbreviation deleted, shows a Getting started line naming Manage
+Abbreviations (Ctrl+M) and New from Clipboard (Ctrl+Shift+N).
+
 ### The first useful task has a clear beginning in Converter, Transcribe and Studio (2026-11-24)
 
 Quill Converter opened on an empty, silent queue; now, while nothing is

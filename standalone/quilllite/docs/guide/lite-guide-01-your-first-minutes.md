@@ -14,6 +14,12 @@ Start QUILL Lite. You get one window with one empty document in it, called
 
 That really is all you need. Everything else in this guide is extra.
 
+If you close every document, the window stays open with nothing in it, and
+QUILL Lite says once how to begin: "No documents open. New (Ctrl+N) starts
+one, or Open (Ctrl+O) opens a file." It says the same when it starts with
+nothing to open, for example when you have turned off the blank document at
+startup. If you have changed either key, it says yours.
+
 Four keys are worth learning straight away, because they help you whenever you
 are unsure:
 

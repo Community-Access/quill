@@ -63,6 +63,12 @@ everything QUILL knows about -- and starts watching for typing. A handful of
 common shorthand entries (`btw`, `imo`, `asap`, and so on) come built in so
 there is something to try immediately.
 
+If you delete every entry, a line called **Getting started** appears just
+before the empty list, and the window opens with focus on it: "No
+abbreviations yet. Manage Abbreviations (Ctrl+M) makes one, or New from
+Clipboard (Ctrl+Shift+N) saves the copied text as one." It goes away with the
+first entry.
+
 If Windows refuses the keyboard hook, Inkwell says so in a dialog rather than
 sitting there looking like it works. See [Troubleshooting](#19-troubleshooting).
 
