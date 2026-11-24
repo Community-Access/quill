@@ -20,8 +20,8 @@ __all__ = ["back_to_where_i_was", "note_jump"]
 
 
 def _item(controller: Any) -> str:
-    state = controller.state
-    if not state.show_id or not state.episode_guid:
+    state = getattr(controller, "state", None)
+    if state is None or not state.show_id or not state.episode_guid:
         return ""
     return f"{state.show_id}|{state.episode_guid}"
 
