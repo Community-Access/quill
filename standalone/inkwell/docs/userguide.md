@@ -166,7 +166,7 @@ Every entry decides these for itself, in the edit dialog:
 
 | Setting | What it does |
 | --- | --- |
-| Enabled | Off keeps the entry without expanding it. |
+| Enabled | Off keeps the entry without expanding it. The main window's list marks it "(disabled)", and F1 there says it will not expand and where to turn it back on. You can also turn it on or off without opening the entry: Enable/Disable (Alt+B) in Manage Abbreviations. |
 | Case sensitive | On means only the exact spelling matches. |
 | Category | Free text; groups the list and Quick Insert. |
 | Expand after | A space or punctuation, a space only, punctuation only, or never. |

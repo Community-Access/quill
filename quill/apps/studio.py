@@ -24,8 +24,10 @@ from pathlib import Path
 import wx
 
 from quill.apps.studio_capture import StudioCaptureMixin
+from quill.apps.studio_library_window import enter_without_book
 from quill.apps.studio_scribe import StudioScribeMixin
 from quill.core.app_version import describe_version, installed_version
+from quill.core.audio_studio import library_row_help
 from quill.core.audio_studio.book_prefs import (
     get_prefs,
     load_prefs,
@@ -394,7 +396,8 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
             parent=self.frame,
             title=f"{_TITLE} Library",
             existing=existing,
-            reload_tree=self._reload_library_tree,
+            # Filled before the window is shown, once the app knows its tree.
+            reload_tree=lambda t: (setattr(self, "_library_tree", t), self._reload_library_tree()),
             on_activate=self._on_tree_activate,
             on_context_menu=self._on_tree_context_menu,
             on_key=self._on_tree_key,
@@ -459,7 +462,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
     def _open_selected_book(self) -> None:
         book = self._selected_book()
         if book is None:
-            self._announce("No book selected. Narrate documents or build from recordings first.")
+            self._announce(enter_without_book(getattr(self, "_library_tree", None)))
             return
         self.open_book(book)
 
@@ -467,7 +470,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
     def _missing_book_announcement(title: str) -> str:
         """The one spoken message for a book whose file is gone, so every path
         (resume, Recently Played, Reveal, auto-advance) says the same thing."""
-        return f"{title} is no longer where it was; it may have been moved or renamed."
+        return library_row_help.missing_book(title)
 
     def _maybe_resume_last_book(self, **_kw) -> None:
         """Reopen the most recently played book on launch (opt-in flag)."""

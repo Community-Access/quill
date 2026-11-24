@@ -4,8 +4,34 @@ from collections.abc import Callable
 
 import wx
 
-from quill.core.a11y import set_accessible_name
+from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dpi import dip_size
+
+
+def enter_without_book(tree: wx.TreeCtrl | None) -> str:
+    """What Enter says on a row that is not a book (a group row is not "no book")."""
+    from quill.core.audio_studio.library_row_help import enter_on
+    from quill.ui.audio_studio.library_tree import selected_key
+
+    key = selected_key(tree) if tree is not None else None
+    return enter_on(str(key[0]) if key else "")
+
+
+def describe_selected_row(tree: wx.TreeCtrl) -> str:
+    """F1's paragraph about the selected row (FUX-10): a group row, or a book that moved."""
+    from pathlib import Path
+
+    from quill.core.audio_studio.library_row_help import row_situation
+    from quill.ui.audio_studio.library_tree import selected_key
+
+    key = selected_key(tree)
+    if key is None:
+        return ""
+    kind, value = key
+    if kind != "book":
+        return row_situation(str(kind))
+    title = tree.GetItemText(tree.GetSelection())
+    return row_situation("book", title=title, exists=Path(str(value)).exists())
 
 
 def ensure_library_window(
@@ -49,6 +75,9 @@ def ensure_library_window(
         "Application key opens the folder menu",
     )
     root.Add(tree, 1, wx.EXPAND | wx.ALL, 8)
+    from quill.ui import app_context_help
+
+    app_context_help.set_selection_help(tree, lambda: describe_selected_row(tree))
 
     panel.SetSizer(root)
     frame.SetSize(dip_size(frame, 720, 520))
