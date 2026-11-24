@@ -401,8 +401,9 @@ says it “starts playing where you stopped as soon as Cast opens”: the
 person asked for it, so it is not a recovered recording playing by
 itself</td>
 <td>The Cast and Media Player pull request: <strong>Back to Where I
-Was</strong> (Alt+Left, Episode menu) after Go to Position, Next and
-Previous Chapter, and a chapter chosen in Now Playing</td>
+Was</strong> (Alt+Left, on the Episode menu and in the Now Playing
+window) after Go to Position, Next and Previous Chapter, and a chapter
+chosen in Now Playing</td>
 </tr>
 <tr>
 <td>Media Player</td>
@@ -416,8 +417,10 @@ end, so it reopened on the credits. Go to Position and chapter jumps had
 no way back</td>
 <td>The Cast and Media Player pull request: Back to Where I Was
 (Alt+Left, File menu) after Go to Position and a chapter chosen in the
-tree; each file keeps its own place; DAISY resumes; within 20 seconds of
-the end counts as finished (the margin Radio’s recordings use)</td>
+tree, even one in another file of the book; each file keeps its own
+place; a DAISY book resumes (one of several files, in its first file);
+within 20 seconds of the end counts as finished (the margin Radio’s
+recordings use)</td>
 </tr>
 <tr>
 <td>Radio</td>
@@ -495,6 +498,12 @@ is a change of their own; QUILL Lite, the pilot, has both.</li>
 <li><strong>A selection is not put back.</strong> Only the cursor. A
 restored selection would be replaced by the first key typed, which is
 the opposite of returning to your work.</li>
+<li><strong>Media Player’s Next and Previous Chapter keys</strong> (the
+transport and Winamp letters) do not note a place: they step one
+chapter, which the same keys undo. A DAISY book of several files reopens
+in its first file rather than the last one you were in; that needs the
+book’s own last file, which the position store (keyed by each file’s
+contents) does not hold.</li>
 <li><strong>Studio’s place on a crash</strong> needs a periodic write in
 the chapter workbench, which has no timer today.</li>
 <li><strong>Social</strong> and <strong>Beacon</strong>, as in the
