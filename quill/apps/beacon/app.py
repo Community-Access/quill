@@ -1746,21 +1746,9 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
             self._sync_timer.Stop()
 
     def _on_auto_sync_tick(self, _e) -> None:
-        if not self.sync.config.is_configured() or not self.sync.is_unlocked():
-            return  # not ready; leave the timer running for when it is
-        res = self.sync.sync_now()
-        if "error" in res:
-            self.announcer.say(f"Auto-sync failed: {res['error']}", "minimal")
-            return
-        gone = self._refresh_results()
-        conflicts = res.get("conflicts") or []
-        if not (res.get("pushed") or res.get("pulled") or conflicts):
-            return  # an automatic sync that changed nothing is not news (FUX-06)
-        msg = f"Auto-synced. Pushed {res.get('pushed', 0)}, pulled {res.get('pulled', 0)}."
-        if conflicts:
-            msg += f" {len(conflicts)} conflict(s) need review."
-        sound = SoundEvent.BEACON_SYNC_COMPLETE
-        results_follow.say_with(self, msg, gone, level="minimal", sound=sound)
+        from quill.apps.beacon.auto_sync import tick
+
+        tick(self)
 
     def _on_auto_sync(self, _e) -> None:
         """Choose an automatic sync interval (off by default)."""

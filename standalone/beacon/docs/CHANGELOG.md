@@ -17,6 +17,13 @@
   An auto-sync that pushed and pulled nothing says nothing. A beacon a sync
   removed is said once ("... is no longer in the list."), and you land on its
   neighbour.
+- **Auto-sync stays out of your way** (2026-11-24). Automatic sync used to say
+  "Auto-synced. Pushed 0, pulled 0." at every interval, refresh the list you
+  were reading even when nothing had changed, and run while a dialog was open.
+  Now a sync that brought nothing new is written on the status bar and not
+  spoken, the list is refreshed only when something arrived, and a sync
+  waits for the next interval while one of Beacon's dialogs is open. A
+  failure, new arrivals and conflicts are still said.
 - **Places in Scribe for Documents results** (2026-11-21). A Scribe
   Documents destination lists places in what Scribe for Documents made.
   Tools > Scribe for Documents > Add My Scribe Documents as Places
