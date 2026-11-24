@@ -40,6 +40,7 @@ import wx.lib.scrolledpanel as scrolled
 
 from quill.core.scribe.consent import consent_text, pages_text
 from quill.core.scribe.model import FORMATS, ScribeSettings, settings_summary
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 
 
@@ -157,6 +158,7 @@ class ScribeConvertDialog(wx.Dialog):
             check.SetValue(item.id in formats)
             check.SetHelpText(f"Ask Scribe for {item.label}. You can choose several.")
             check.Bind(wx.EVT_CHECKBOX, lambda _e: self._formats_changed())
+            describe_group(box, check)
             box.Add(check, 0, wx.ALL, 3)
             self.format_boxes[item.id] = check
         sizer.Add(box, 0, wx.EXPAND | wx.ALL, 6)
@@ -375,7 +377,7 @@ class ScribeConvertDialog(wx.Dialog):
             self._refresh_pages()  # after Buy Pages, silently
 
     def _stream_changed(self) -> None:
-        """Reading while it converts needs the HTML: tick it, silently (the label says so)."""
+        """Reading while it converts needs the HTML: check it, silently (the label says so)."""
         if self.stream is not None and self.stream.GetValue():
             self.format_boxes["html"].SetValue(True)
             self._formats_changed()

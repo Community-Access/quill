@@ -85,6 +85,13 @@ def _attach(ctrl: Any, name: str) -> Any | None:
     cls = _named_accessible_class()
     if cls is None:
         return None
+    group = getattr(ctrl, "_quill_group_helper", None)
+    if group is not None:
+        # quill.ui.accessible_group already owns this control's IAccessible;
+        # replacing it would drop the group description, so name it instead.
+        group.spoken_name = name
+        setattr(ctrl, _HELPER_ATTR, group)
+        return group
     existing = getattr(ctrl, _HELPER_ATTR, None)
     if existing is not None:
         # Renaming: update the live helper instead of replacing it, so a

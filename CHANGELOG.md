@@ -2,6 +2,20 @@
 
 ## 1.0.0
 
+### Scribe for Documents: groups of options say which group they are (2026-11-23)
+
+In Scribe Options, the "Default formats" check boxes read only "Word, check
+box, not checked", so you could not tell what Word was for. The choices under
+"Open each result when it is ready" read the same way, without the question.
+Each check box and radio button in a group now says its group after its own
+name and state, for example "Word, check box, not checked, Default formats".
+The same goes for "What you want back" and the settings groups in Convert with
+Scribe, and "Scribe for Documents makes" in a watch profile.
+
+Alt+W now moves to the "Open each result when it is ready" choices. Its
+underlined letter did nothing before.
+
+Help in these dialogs says "checked", not "ticked".
 ### QUILL Lite makes listening versions of WordPress pages (2026-11-23)
 
 **Tools > WordPress > More Media > Make a Listening Version** now works in
