@@ -269,6 +269,12 @@ class PodcastSessionMixin:
 
         go_to_position(self)
 
+    def podcast_back_to_where_i_was(self) -> None:
+        """Return to the place before the last jump in this episode (FUX-01)."""
+        from quill.ui.podcasts.jump_back_wiring import back_to_where_i_was
+
+        back_to_where_i_was(self)
+
     def podcast_current_show_unheard(self) -> int:
         """Unplayed count of the playing show; in-memory (EVT_UPDATE_UI-safe)."""
         controller = getattr(self, "_podcast_controller", None)

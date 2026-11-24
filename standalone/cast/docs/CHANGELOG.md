@@ -4,6 +4,14 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+### Back to where you were before a jump (2026-11-24)
+
+**Episode > Back to Where I Was** (Alt+Left) returns to where you were before
+Go to Position, Next or Previous Chapter, or a chapter chosen in the Now
+Playing window, and says the time. Press it again to return. Before, a jump
+was one-way, and the place you jumped from was saved over within fifteen
+seconds.
+
 ### An empty library says how to fill it, after the welcome (2026-11-24)
 
 The sentence an empty Podcasts place says was spoken while the window was

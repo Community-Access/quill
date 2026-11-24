@@ -18,13 +18,18 @@ def _install_peer(host: Any, window: Any) -> None:
     close_id = wx.NewIdRef()
     own.Append(close_id, "&Close\tCtrl+W")
     frame.Bind(wx.EVT_MENU, lambda _e: frame.Close(), id=close_id)
+    # Here as well as on the main window's Episode menu: a chapter chosen in
+    # this window is a jump, and the main bar's keys do not reach it (FUX-01).
+    back_id = wx.NewIdRef()
+    own.Append(back_id, "&Back to Where I Was\tAlt+Left")
+    frame.Bind(wx.EVT_MENU, lambda _e: host.podcast_back_to_where_i_was(), id=back_id)
     menu_bar.Append(own, "Now &Playing")
     if windows is not None:
         windows.install(frame, menu_bar)
     frame.SetMenuBar(menu_bar)
     keep = getattr(host, "_keep_menu_ids", None)
     if callable(keep):
-        keep(close_id)
+        keep(close_id, back_id)
     if windows is not None:
         # on_show: Ctrl+2, Ctrl+Tab and the Window menu show this hidden window
         # without its own show(), which is what loads the episode playing now

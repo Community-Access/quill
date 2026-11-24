@@ -31,6 +31,7 @@ from typing import Any
 
 import wx
 
+from quill.ui.podcasts.jump_back_wiring import note_jump
 from quill.ui.podcasts.now_playing_layout import SPEEDS, TITLE, build_controls
 from quill.ui.podcasts.now_playing_peer import _install_peer
 from quill.ui.podcasts.now_playing_time import (
@@ -332,6 +333,7 @@ class NowPlayingWindow:
         if index < 0 or index >= len(chapters) or controller is None:
             return
         chapter = chapters[index]
+        note_jump(self._host, int(getattr(chapter, "start_ms", 0)))  # FUX-01
         controller.seek(int(getattr(chapter, "start_ms", 0)))
         self._host._announce(f"Chapter: {getattr(chapter, 'title', '')}")
         wx.CallAfter(self.refresh)
@@ -359,6 +361,9 @@ class NowPlayingWindow:
     def _on_slider_key(self, event: Any) -> None:
         """Left/Right five seconds, Page keys thirty, Home/End the ends, said in time."""
         key = event.GetKeyCode()
+        if event.AltDown():  # Alt+Left is Back to Where I Was, not a nudge
+            event.Skip()
+            return
         if key == wx.WXK_RIGHT and event.ShiftDown():
             # The frame owns hold-to-scan; a focused slider must not turn that
             # gesture into a single five-second nudge.

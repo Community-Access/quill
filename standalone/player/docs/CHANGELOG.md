@@ -8,6 +8,23 @@ Quill Media Player runs the same player code as QUILL from the shared `quill` pa
 
 ## Unreleased
 
+### Back to where you were, and the right place to resume (2026-11-24)
+
+- **File > Back to Where I Was** (Alt+Left) returns to where you were before
+  Go to Position or a chapter chosen in the Chapters tree, even one in another
+  file of the book, and says the time. Press it again to return. Before, a
+  jump was one-way.
+- **Go to Position says where you landed once.** It said the time twice.
+- **A book of several files saved its place under the wrong file.** The time
+  in track four was saved as the place in track one, so reopening the book put
+  you in track one at track four's time. Each file now keeps its own place.
+- **A DAISY book now picks up where you left off.** It always started at the
+  beginning. One made of several files opens in its first file, at your place
+  in that file.
+- **A finished book starts again from the beginning.** The place kept saving
+  after the end, so the next open landed on the closing credits. Within twenty
+  seconds of the end now counts as finished.
+
 ### With nothing open, the player opens on what begins (2026-11-24)
 
 - With nothing open, every playback button is greyed, so focus fell to the

@@ -68,6 +68,11 @@ MAX_ENTRIES = 500
 #: is noise.
 MIN_RESUME_MS = 10_000
 
+#: Within this of the end, a file is finished and its place is cleared rather
+#: than kept, so the next open starts at the beginning instead of the closing
+#: credits. The margin Quill Radio's recordings use (``radio/resume.py``).
+END_MARGIN_MS = 20_000
+
 
 def media_identity(path: Path) -> str:
     """A machine-independent identity for a media file.
@@ -248,7 +253,8 @@ class PositionStore:
 
         A position under :data:`MIN_RESUME_MS` clears the entry instead of
         storing it: "three seconds in" is the start, and offering to resume
-        there is noise the listener has to dismiss.
+        there is noise the listener has to dismiss. So does one within
+        :data:`END_MARGIN_MS` of a known *duration_ms*: the file was finished.
         """
         media_id = media_identity(media)
         if not media_id:
@@ -264,7 +270,8 @@ class PositionStore:
             pass
         entries = self._read()
         entries.pop(_legacy_key(media), None)
-        if position_ms < MIN_RESUME_MS:
+        finished = duration_ms > 0 and position_ms >= duration_ms - END_MARGIN_MS
+        if position_ms < MIN_RESUME_MS or finished:
             entries.pop(media_id, None)
         else:
             entries[media_id] = ListeningPosition(
@@ -345,6 +352,7 @@ def _legacy_key(media: Path) -> str:
 
 __all__ = [
     "CONFLICT_GAP_MS",
+    "END_MARGIN_MS",
     "MAX_ENTRIES",
     "MIN_RESUME_MS",
     "ListeningPosition",
