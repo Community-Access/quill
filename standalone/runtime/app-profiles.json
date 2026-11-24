@@ -186,12 +186,15 @@
       "name": "QuillLite",
       "entry": "quill/apps/lite.py",
       "standalone": "standalone/quilllite",
-      "components": [],
+      "components": [
+        "ffmpeg"
+      ],
       "optional_components": [],
       "layers": [],
       "notes": [
         "The editor-only sibling: one document per window, plain text or rich",
-        "text, and nothing else. No media, so neither ffmpeg nor libmpv.",
+        "text. ffmpeg (with ffprobe) for one command, WordPress > More Media >",
+        "Make a Listening Version, which makes an MP3 (2026-11-23); no libmpv.",
         "It declares no layers, and that is worth stating rather than assuming:",
         "QUILL Lite reads .txt and .rtf only -- plain text is bytes, and RTF goes",
         "straight to the native control through the Text Object Model -- so it",

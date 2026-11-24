@@ -38,6 +38,8 @@ _STAGE_CALL = "Stage-QuillMediaTools"
 _DECLARES_MEDIA: dict[str, bool] = {
     "cast": True,
     "converter": True,
+    # QUILL Lite declares ("ffmpeg",) since 2026-11-23: Make a Listening Version.
+    "quilllite": True,
     "radio": True,
     "studio": True,
     "weather": False,

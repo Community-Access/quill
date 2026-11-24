@@ -13,9 +13,10 @@
 ; Runtime and launched through `{app}\QuillLite.exe`, the native launcher.
 ; See standalone\radio\installer\quill-radio.iss for the full rationale.
 ;
-; QUILL Lite is the leanest app in the family after Weather -- one editor
-; control, six small windows, no ffmpeg and no libmpv -- so the per-app payload
-; is just the icon, the C launcher, and (optionally) the docs.
+; QUILL Lite's per-app payload is just the icon, the C launcher, and
+; (optionally) the docs. Its one media tool, ffmpeg (Make a Listening Version,
+; 2026-11-23), lives in the shared runtime's tools\ffmpeg (ToolFfmpeg below);
+; it uses no libmpv.
 ;
 ; Build inputs (must exist before ISCC runs):
 ;   - the shared runtime at ..\..\runtime\dist\QuillVilleRuntime
@@ -58,6 +59,10 @@
 #define RuntimeVersion "3.14.8"
 #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"
 #define AppRefId "quilllite"
+; The media tools QUILL Lite declares (quill.apps.lite REQUIRED_COMPONENTS =
+; ("ffmpeg",)). shared-runtime.iss installs it unconditionally, so Make a
+; Listening Version works whatever order the apps were installed in.
+#define ToolFfmpeg
 
 [Setup]
 #ifdef Sign

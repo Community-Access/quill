@@ -273,3 +273,42 @@ def test_deep_tool_files_copy_past_the_path_limit(tmp_path: Path) -> None:
     )
     assert (copied / "stub.pyi").is_file()
     assert bp._long_path(Path(bp._long_path(tmp_path))) == bp._long_path(tmp_path)
+
+
+# -- ffmpeg, for Make a Listening Version (2026-11-23) -----------------------
+
+
+def test_both_downloads_carry_ffmpeg_for_the_listening_version() -> None:
+    """The table, the app's declared components, the portable and the installer agree."""
+    from quill.apps import lite
+
+    assert needs.bundled_media_tools() == ("ffmpeg",)
+    assert lite.REQUIRED_COMPONENTS == needs.bundled_media_tools()
+    assert "ffmpeg" in needs.MENU_NEEDS["&Tools|WordPress|M&ore Media"].media
+    assert LITE.stage_ffmpeg is True and LITE.stage_mpv is False
+    assert bp.media_tools(LITE) == needs.bundled_media_tools()
+    iss = (_ROOT / "standalone" / "quilllite" / "installer" / "quilllite.iss").read_text(
+        encoding="utf-8"
+    )
+    assert "#define ToolFfmpeg" in iss and "#define ToolMpv" not in iss
+
+
+def test_the_portable_build_proves_ffmpeg_and_ffprobe_are_found() -> None:
+    source = bp.runtime_tool_probe_source(LITE.runtime_tools, bp.media_tools(LITE))
+    compile(source, "<probe>", "exec")
+    assert "find_ffmpeg()" in source and "find_ffprobe()" in source
+    # A product with no media tools probes only its runtime tools.
+    assert "find_ffmpeg" not in bp.runtime_tool_probe_source(LITE.runtime_tools)
+
+
+def test_the_release_script_stages_the_pinned_ffmpeg_in_both_downloads() -> None:
+    text = (_ROOT / "standalone" / "quilllite" / "scripts" / "build_release.ps1").read_text(
+        encoding="utf-8"
+    )
+    assert 'fetch_build_deps.py") --only ffmpeg' in text
+    assert "Stage-QuillMediaTools -RuntimeDist $sharedRuntimeDist -FfmpegDir $FfmpegDir" in text
+    assert "--ffmpeg-dir $FfmpegDir" in text
+    assert "check_ffmpeg_notices.py" in text
+    # libmpv is still stripped from the communal runtime; ffmpeg no longer is.
+    assert 'foreach ($tool in @("mpv"))' in text
+    assert '@("ffmpeg", "mpv")' not in text

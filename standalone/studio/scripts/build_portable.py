@@ -154,6 +154,15 @@ RUNTIME_TOOL_PROBES: dict[str, str] = {
     "assert f().ready",
 }
 
+#: The same proof for the media tools step 6 stages (tools/ffmpeg): QUILL's own
+#: finders, so a product whose features need ffmpeg cannot ship without it. Run
+#: for products that carry runtime tools (QUILL Lite); the other portables are
+#: the next change (2026-11-23).
+MEDIA_TOOL_PROBES: dict[str, str] = {
+    "ffmpeg": "from quill.core.speech.ffmpeg import find_ffmpeg, find_ffprobe; "
+    "assert find_ffmpeg() and find_ffprobe()",
+}
+
 
 @dataclass(frozen=True)
 class Product:
@@ -345,7 +354,10 @@ PRODUCTS: dict[str, Product] = {
             "windows-media",
         ),
         stage_engines=False,
-        stage_ffmpeg=False,
+        # ffmpeg and ffprobe (2026-11-23, Jeff): Make a Listening Version
+        # turns the recorded speech into an MP3 and measures it. The installer
+        # stages the same pinned copy into the shared runtime.
+        stage_ffmpeg=True,
         stage_mpv=False,
         offline_portable_launcher=True,
         # Copilot and Codex for AI help and project tasks, Node.js and the
@@ -727,9 +739,16 @@ def stage_runtime_tools(out_dir: Path, names: tuple[str, ...], deps_dir: Path) -
     return staged
 
 
-def runtime_tool_probe_source(names: tuple[str, ...]) -> str:
+def runtime_tool_probe_source(names: tuple[str, ...], media: tuple[str, ...] = ()) -> str:
     """One probe for the bundle's Python: QUILL's own finder sees every staged tool."""
-    return "; ".join(RUNTIME_TOOL_PROBES[name] for name in names) + "; print('tools OK')"
+    probes = [RUNTIME_TOOL_PROBES[name] for name in names]
+    probes += [MEDIA_TOOL_PROBES[name] for name in media]
+    return "; ".join(probes) + "; print('tools OK')"
+
+
+def media_tools(product: Product) -> tuple[str, ...]:
+    """The media tools *product* stages that have a probe (ffmpeg)."""
+    return ("ffmpeg",) if product.stage_ffmpeg else ()
 
 
 def _tool_probe_env() -> dict[str, str]:
@@ -933,7 +952,7 @@ def main() -> int:
                 str(out_dir / "python.exe"),
                 "-B",
                 "-c",
-                runtime_tool_probe_source(product.runtime_tools),
+                runtime_tool_probe_source(product.runtime_tools, media_tools(product)),
             ],
             capture_output=True,
             text=True,

@@ -105,6 +105,20 @@ def test_an_empty_document_has_nothing_to_read(wp, engines) -> None:
     assert engines.spoken == []
 
 
+def test_a_copy_without_ffmpeg_says_so_before_recording(wp, wp_dialogs, engines) -> None:
+    """Without ffmpeg the speech used to be recorded and then fail to become an MP3."""
+    from dataclasses import replace
+
+    from quill.core.missing_parts import LISTENING_FFMPEG_MISSING
+
+    wp._listen_engines = replace(engines.bundle(), speak_problem=lambda: LISTENING_FFMPEG_MISSING)
+    open_document(wp, PARAGRAPH)
+    wp.cmd_listening_version()
+    assert LISTENING_FFMPEG_MISSING in wp.host.said
+    assert wp_dialogs.asked("confirm") == []
+    assert engines.spoken == []
+
+
 def test_listening_version_outside_a_document_says_so(wp, engines) -> None:
     wp.cmd_listening_version()
     assert "This is not a WordPress document" in wp.host.said

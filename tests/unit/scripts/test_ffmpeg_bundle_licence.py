@@ -152,7 +152,8 @@ def test_verify_only_reports_ffmpeg_without_its_licence_as_missing(
 
 # -- the build scripts and installers -------------------------------------------
 
-_MEDIA_BUILDS = ("cast", "converter", "radio", "studio")
+#: QUILL Lite since 2026-11-23: Make a Listening Version makes an MP3 with ffmpeg.
+_MEDIA_BUILDS = ("cast", "converter", "quilllite", "radio", "studio")
 
 
 def _ships_ffmpeg(script: str) -> bool:

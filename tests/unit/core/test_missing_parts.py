@@ -98,7 +98,9 @@ def test_github_says_what_to_do_without_pip(monkeypatch) -> None:
         _plain(sentence)
 
 
-@pytest.mark.parametrize("name", ["COPILOT_MISSING", "COPILOT_DAMAGED", "CODEX_MISSING"])
+@pytest.mark.parametrize(
+    "name", ["COPILOT_MISSING", "COPILOT_DAMAGED", "CODEX_MISSING", "LISTENING_FFMPEG_MISSING"]
+)
 def test_the_ai_engines_say_it_plainly(name: str) -> None:
     _plain(getattr(missing_parts, name))
 
@@ -113,3 +115,17 @@ def test_copilot_reports_a_missing_runtime_in_plain_words(monkeypatch) -> None:
     assert raised.value.args[0] == missing_parts.COPILOT_MISSING
     assert copilot_runtime.CopilotRuntimeUnavailable.user_hint == REPAIR_SENTENCE
     assert copilot_runtime.CopilotRuntimeUnverified.user_hint == REPAIR_SENTENCE
+
+
+def test_the_listening_version_names_ffmpeg_only_when_it_is_missing(monkeypatch) -> None:
+    from quill.core.speech import ffmpeg
+    from quill.core.wordpress import listen_engines
+
+    monkeypatch.setattr(ffmpeg, "find_ffmpeg", lambda: "ffmpeg.exe")
+    monkeypatch.setattr(ffmpeg, "find_ffprobe", lambda: "ffprobe.exe")
+    assert listen_engines.speak_problem() == ""
+    monkeypatch.setattr(ffmpeg, "find_ffprobe", lambda: None)
+    sentence = listen_engines.speak_problem()
+    assert sentence.startswith("Make a Listening Version cannot start. FFmpeg")
+    _plain(sentence)
+    assert listen_engines.default_engines().speak_problem is listen_engines.speak_problem

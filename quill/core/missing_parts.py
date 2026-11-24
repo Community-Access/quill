@@ -24,6 +24,7 @@ __all__ = [
     "COPILOT_DAMAGED",
     "COPILOT_MISSING",
     "CODEX_MISSING",
+    "LISTENING_FFMPEG_MISSING",
     "REPAIR_SENTENCE",
     "damaged_part",
     "missing_part",
@@ -59,4 +60,12 @@ COPILOT_MISSING = missing_part(
 COPILOT_DAMAGED = damaged_part("GitHub Copilot cannot start")
 CODEX_MISSING = missing_part(
     "Codex cannot start", "Its files are missing from this copy of the app"
+)
+
+#: WordPress > More Media > Make a Listening Version records the page with the
+#: Read Aloud voice and needs ffmpeg to make the MP3 (and ffprobe to time it).
+#: Both editors ship it since 2026-11-23, so its absence is a damaged copy.
+LISTENING_FFMPEG_MISSING = missing_part(
+    "Make a Listening Version cannot start",
+    "FFmpeg, the part that turns the recording into an MP3, is missing from this copy of the app",
 )

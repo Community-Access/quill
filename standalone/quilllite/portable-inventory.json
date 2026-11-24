@@ -199,6 +199,7 @@
   "tools": [
     "codex",
     "copilot",
+    "ffmpeg",
     "language-servers",
     "nodejs",
     "wp-playground-cli"

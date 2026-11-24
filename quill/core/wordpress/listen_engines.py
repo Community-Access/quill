@@ -47,6 +47,10 @@ class ListenEngines:
     convert: Callable[[Path], Converted]
     #: The same, by on-device OCR, for a scanned PDF (asked first).
     convert_ocr: Callable[[Path], Converted]
+    #: Why :attr:`speak` cannot run here, in words for the person ("" when it
+    #: can). Asked before anything is recorded: without ffmpeg the recording
+    #: used to be made, then fail to become an MP3 with a file-not-found error.
+    speak_problem: Callable[[], str] = lambda: ""
 
 
 def default_engines() -> ListenEngines:
@@ -55,7 +59,23 @@ def default_engines() -> ListenEngines:
         speak=_speak,
         convert=_convert,
         convert_ocr=_convert_ocr,
+        speak_problem=speak_problem,
     )
+
+
+def speak_problem() -> str:
+    """Why a listening version cannot be made on this computer, or "".
+
+    The MP3 is made by ffmpeg and timed by ffprobe, which QUILL and QUILL Lite
+    both ship (2026-11-23); the sentence for a copy that lost them is the
+    family's missing-part sentence (:mod:`quill.core.missing_parts`).
+    """
+    from quill.core.missing_parts import LISTENING_FFMPEG_MISSING
+    from quill.core.speech.ffmpeg import find_ffmpeg, find_ffprobe
+
+    if find_ffmpeg() is None or find_ffprobe() is None:
+        return LISTENING_FFMPEG_MISSING
+    return ""
 
 
 def _transcribe(path: Path) -> Any:

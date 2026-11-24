@@ -278,7 +278,9 @@ the transcript, choose whether it goes under the player folded away as
 
 **Make a Listening Version...** asks first, because the MP3 can be reached on
 the site as soon as it is uploaded, even before the page is published. Then
-it reads your page aloud with your Read Aloud voice, saves it as an MP3,
+it reads your page aloud with your Read Aloud voice (in QUILL Lite, which has
+no Read Aloud settings of its own, that is your Windows voice, the one chosen
+under Text to Speech in Control Panel), saves it as an MP3,
 uploads it, and puts a player at the top
 labelled, for example, "Listen to this post (6 minutes)". Run it again after
 you change the page: QUILL tells you the recording is out of date and offers

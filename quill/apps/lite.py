@@ -72,11 +72,11 @@ _TITLE = APP_NAME
 _VERSION = APP_VERSION
 _REPO = "Community-Access/quill"
 
-#: QUILL Lite is a text editor. It plays nothing, records nothing, converts
-#: nothing, and therefore stages neither ffmpeg nor libmpv into the shared
-#: runtime. Declared here and mirrored in ``standalone/runtime/app-profiles.json``,
-#: which ``tests/unit/structure/test_app_profiles.py`` checks cannot drift.
-REQUIRED_COMPONENTS: tuple[str, ...] = ()
+#: ffmpeg (and ffprobe) for Make a Listening Version's MP3 (Jeff, 2026-11-23),
+#: staged by QUILL Lite's own build in both downloads; no libmpv. Mirrored in
+#: ``standalone/runtime/app-profiles.json``, which
+#: ``tests/unit/structure/test_app_profiles.py`` checks cannot drift.
+REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg",)
 OPTIONAL_COMPONENTS: tuple[str, ...] = ()
 
 #: How often the inbox is checked for a request from a second launch. Half a

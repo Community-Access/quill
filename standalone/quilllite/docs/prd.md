@@ -1414,9 +1414,13 @@ Both come from `scripts/build_release.ps1`. The shared QuillVille Runtime at
 `%LOCALAPPDATA%\QuillVille\Runtime\3.13\` is reused: the installer ships it and
 lays it down only when what is already there is older, and the portable bundle
 carries its own interpreter and never touches it at all.
-**Neither ffmpeg nor libmpv is staged** —
-QUILL Lite declares no media components, and the build strips any a sibling app
-left in the shared work area, so build order cannot change what ships.
+**ffmpeg is staged, libmpv is not** —
+QUILL Lite declares one media component, ffmpeg (with ffprobe), for
+WordPress > More Media > Make a Listening Version, which turns the recorded
+speech into an MP3 (2026-11-23). The build stages the pinned copy into the
+shared runtime and into the portable's `tools\ffmpeg`, and strips any libmpv a
+sibling app left in the shared work area, so build order cannot change what
+ships.
 
 The installer is per-user: `PrivilegesRequired=lowest`, with no elevated
 all-users override. App files and the shared runtime are installed for the
