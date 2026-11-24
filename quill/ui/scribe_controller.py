@@ -394,7 +394,7 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
         if not existing:
             options.first_upload_done = True
         # This app's choices, as what differs from the account defaults (7.3);
-        # ticking "save as my account defaults" is never remembered.
+        # checking "save as my account defaults" is never remembered.
         options.remember_choice(
             self.app_name,
             choice.settings,

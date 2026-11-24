@@ -46,6 +46,7 @@ from quill.core.scribe.model import (
     nearest_rate,
     visible_groups,
 )
+from quill.ui.accessible_group import describe_group
 
 DETECT = "Detect automatically"
 SCRIBE_DEFAULT = "Scribe's default"
@@ -82,6 +83,7 @@ class SettingsGroups:
             "The settings this document's upload fixed: language, picture descriptions, "
             "mathematics and large print. They cannot be changed for it."
         )
+        describe_group(box, self.fixed)
         box.Add(self.fixed, 0, wx.EXPAND | wx.ALL, 4)
         self.fixed_label.Hide()
         self.fixed.Hide()
@@ -312,6 +314,7 @@ class SettingsGroups:
         choice.SetSelection(0)
         choice.SetName(label.replace("&", "").rstrip(":"))
         choice.SetHelpText(help_text)
+        describe_group(box, choice)
         target.Add(choice, 1 if into is not None else 0, wx.EXPAND | wx.ALL, 4)
         return choice
 
@@ -330,6 +333,7 @@ class SettingsGroups:
         check = wx.CheckBox(box.GetStaticBox(), label=label)
         check.SetValue(bool(value))
         check.SetHelpText(help_text)
+        describe_group(box, check)
         box.Add(check, 0, wx.ALL, 4)
         return check
 

@@ -23,6 +23,7 @@ from quill.core.scribe.consent import ABOUT_TEXT
 from quill.core.scribe.library import default_download_root
 from quill.core.scribe.model import FORMATS
 from quill.core.scribe.options import OPEN_CHOICES, SPEAK_CHOICES, ScribeOptions
+from quill.ui.accessible_group import GroupedRadioBox, describe_group
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 
 
@@ -64,7 +65,8 @@ class ScribeOptionsDialog(wx.Dialog):
         for item in FORMATS:
             check = wx.CheckBox(box.GetStaticBox(), label=item.label)
             check.SetValue(item.id in self._options.default_formats)
-            check.SetHelpText("Ticked in the convert dialog unless you chose otherwise last time.")
+            check.SetHelpText("Checked in the convert dialog unless you chose otherwise last time.")
+            describe_group(box, check)
             box.Add(check, 0, wx.ALL, 2)
             self.formats[item.id] = check
         sizer.Add(box, 0, wx.EXPAND | wx.ALL, 6)
@@ -84,7 +86,7 @@ class ScribeOptionsDialog(wx.Dialog):
         row.Add(browse, 0, wx.ALL, 6)
         sizer.Add(row, 0, wx.EXPAND)
 
-        self.open_results = wx.RadioBox(
+        self.open_results = GroupedRadioBox(
             self,
             label="Open each result &when it is ready",
             choices=[label for _key, label in OPEN_CHOICES],
