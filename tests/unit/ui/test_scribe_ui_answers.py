@@ -372,10 +372,15 @@ def test_a_document_already_in_the_account_starts_with_scribes_email_off(sync: A
 def test_saving_account_defaults_leaves_the_email_unless_it_was_changed(
     sync: Any,  # noqa: F811
     isolated: Path,  # noqa: F811
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     from quill.core.scribe.client import ScribeClient
+    from quill.ui import scribe_convert_settings
     from tests.unit.core.scribe.fake_scribe import BASE, StaticTokens
 
+    # No dialect suggested from this computer's language: one would be left
+    # out too (tests/unit/ui/test_scribe_voice_settings.py), and this is the email.
+    monkeypatch.setattr(scribe_convert_settings, "os_language_tags", lambda: [])
     dialog = _dialog(sync, paths=[_source(isolated)], formats=["docx"])
     try:
         dialog.defaults.SetValue(True)

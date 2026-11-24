@@ -40,6 +40,7 @@ import wx.lib.scrolledpanel as scrolled
 
 from quill.core.scribe.consent import consent_text, pages_text
 from quill.core.scribe.model import FORMATS, ScribeSettings, settings_summary
+from quill.core.scribe.voices import document_language
 from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 
@@ -57,6 +58,11 @@ class ConvertChoice:
     #: The person changed "Email me when it is finished" in this dialog: only
     #: then may "Also save as my Scribe account defaults" change the account's.
     email_changed: bool = False
+    #: What this app remembers: :attr:`settings` without a dialect that was only
+    #: suggested (from the document's or Windows' language), so it stays a suggestion.
+    remembered: ScribeSettings | None = None
+    #: The dialect is still only the suggestion: never saved as account defaults.
+    suggested_dialect: bool = False
 
 
 def pdf_needs_password(path: Path) -> bool:
@@ -196,6 +202,7 @@ class ScribeConvertDialog(wx.Dialog):
             options.starting_settings(None, app),
             ai_off=ai_off,
             app_name=app,
+            language_hints=[document_language(self._paths[0])] if self._paths else [],
         )
         if existing is not None:
             self.groups.fix_upload_settings(existing.display_title)
@@ -456,6 +463,8 @@ class ScribeConvertDialog(wx.Dialog):
                 self.stream is not None and self.stream.GetValue() and len(self._paths) == 1
             ),
             email_changed=self.groups.email_changed(),
+            remembered=self.groups.remembered(),
+            suggested_dialect=self.groups.suggested(),
         )
 
     def _on_destroy(self, event: wx.WindowDestroyEvent) -> None:

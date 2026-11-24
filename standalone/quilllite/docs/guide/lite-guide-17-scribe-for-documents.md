@@ -202,7 +202,17 @@ Tab order:
 3. **Settings shown**, a line naming the groups of settings below.
 4. **Language and voice**: Language (or Detect automatically), Dialect,
    Voice, **Play Sample** (Escape stops it), Gender of the voice when the
-   language is detected, and Speed, from 0.5 to 4 times.
+   language is detected, and Speed, from 0.5 to 4 times. Language and
+   Dialect come before Voice. When you have not chosen a dialect before,
+   Dialect starts on the dialect of the document's own language, or else
+   your Windows language and region, for this document only: it is never saved as your
+   Scribe account default. With Dialect on Scribe's default, Voice lists
+   every dialect's voices, each with its dialect, such as "Jenny, English
+   (United States)", and choosing one chooses its dialect. A voice without
+   a sample says so in its name, such as "Guy, no sample". Play Sample
+   always answers: it plays the sample, or says "Choose a voice to hear a
+   sample.", or "Guy has no sample.", or that the voices are still loading
+   or could not be loaded (then use **Retry Loading**).
 5. **Braille**, when Braille (BRF) is checked: Braille table, Cells per line
    (20 to 42), Split into pages, and Lines per page (20 to 30).
 6. **Print**, when Word or Tagged PDF is checked: Large print.

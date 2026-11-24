@@ -395,10 +395,11 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
             options.first_upload_done = True
         # This app's choices, as what differs from the account defaults (7.3);
         # checking "save as my account defaults" is never remembered.
+        remembered = getattr(choice, "remembered", None) or choice.settings
         options.remember_choice(
             self.app_name,
-            choice.settings,
-            choice.settings if choice.save_as_defaults else getattr(choice, "base", None),
+            remembered,
+            remembered if choice.save_as_defaults else getattr(choice, "base", None),
         )
         self.save_options(options)
         common = {
@@ -408,9 +409,12 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
             "save_as_defaults": bool(choice.save_as_defaults),
             "open_as": open_as,
             # Scribe's email goes into the account defaults only if changed (F8).
-            "defaults_leave_out": []
-            if getattr(choice, "email_changed", False)
-            else ["notify_when_complete"],
+            "defaults_leave_out": (
+                [] if getattr(choice, "email_changed", False) else ["notify_when_complete"]
+            )
+            # A dialect only suggested (the document's or Windows' language) is for
+            # this document; it never becomes the account's default.
+            + (["dialects"] if getattr(choice, "suggested_dialect", False) else []),
         }
         jobs: list[q.Job] = []
         if existing is not None:
