@@ -267,6 +267,11 @@ class QuillLiteShell(ShellMenuMixin, wx.MDIParentFrame):
                     return
             for frame in list(self.app.frames):
                 frame.modified = False
+        # Each document's cursor (FUX-01): the shell takes its windows down
+        # without their own close, which is where it was otherwise written,
+        # so Alt+F4 and signing out of Windows forgot where you were.
+        for frame in list(self.app.frames):
+            frame.remember_document_memory()
         # While the windows still exist: after Destroy there is nothing left to
         # ask which files were open, and Alt+F4 on the shell has to remember the
         # session exactly as Exit does.

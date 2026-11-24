@@ -549,6 +549,7 @@ class DocumentFileMixin(DocumentWordMixin):
 
     def _on_autosave_tick(self, _event: wx.TimerEvent) -> None:
         self._write_recovery_copy()
+        self.remember_caret_if_moved()  # a crash costs one tick of place (FUX-01)
 
     def stop_timers(self) -> None:
         """Stop everything that fires on a clock. Safe to call more than once.

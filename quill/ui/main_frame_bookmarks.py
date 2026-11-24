@@ -36,6 +36,12 @@ from quill.core.favorite_folders import (
 )
 from quill.core.marks import line_column_for_position
 from quill.core.pdf_open import outline_bookmark_offsets
+from quill.core.resume_place import (
+    PLACE_NOTE_DELAY_MS,
+    anchor_if_saved,
+    lost_place_sentence,
+    resume_place,
+)
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.navigator_node import _NavigatorNode
@@ -502,13 +508,23 @@ class BookmarksFoldsMixin:
                 pass
 
     def _remember_active_caret(self) -> None:
-        """Persist the active document's current caret offset as its last position."""
-        key = DocumentMemory.key_for(getattr(getattr(self, "document", None), "path", None))
+        """Persist the active document's caret, with the text around it when saved.
+
+        The text (FUX-01, :mod:`quill.core.resume_place`) is what lets the next
+        open find the place again after the file changes, and say so when it
+        cannot. Only for a saved document: unsaved text is not in the file the
+        next open reads, so it would report a change that never happened.
+        """
+        document = getattr(self, "document", None)
+        key = DocumentMemory.key_for(getattr(document, "path", None))
         editor = getattr(self, "editor", None)
-        if not key or editor is None:
-            return
+        if not key or editor is None or getattr(document, "modified", False):
+            return  # unsaved: the last place written is the one the file can confirm
         try:
-            self._doc_memory.set_last_position(key, editor.GetInsertionPoint())
+            position = editor.GetInsertionPoint()
+            text = editor.GetValue()
+            anchor = anchor_if_saved(text, text, position)
+            self._doc_memory.set_last_position(key, position, anchor=anchor)
         except Exception:  # noqa: BLE001
             pass
 
@@ -523,16 +539,38 @@ class BookmarksFoldsMixin:
             tab.bookmark_anchors = self._doc_memory.anchors_for(key)
             self._adopt_numbered_bookmarks(tab, self._doc_memory.numbered_for(key))
             last = self._doc_memory.last_position(key)
+            anchor = self._doc_memory.last_anchor(key)
         except Exception:  # noqa: BLE001
-            return
-        if last is None:
             return
         editor = tab.editor
         try:
-            clamped = max(0, min(int(last), editor.GetLastPosition()))
-            editor.SetInsertionPoint(clamped)
+            text = editor.GetValue()
+            place = resume_place(text, last, anchor)
+            if place is None:
+                return
+            editor.SetInsertionPoint(place.position)
             show = getattr(editor, "ShowPosition", None)
             if callable(show):
-                show(clamped)
+                show(place.position)
         except Exception:  # noqa: BLE001
-            pass
+            return
+        if place.lost:
+            # Said on arrival in this tab, not now: the tab is not in the
+            # notebook yet, may open behind another, and the open's own words
+            # and the reader's reading of the tab would cut it off.
+            notes = getattr(self, "_place_notes", None)
+            if notes is None:
+                notes = self._place_notes = {}
+            notes[id(tab)] = lost_place_sentence(text, place.position)
+            import wx
+
+            wx.CallAfter(self._say_place_note_if_active, tab)
+
+    def _say_place_note_if_active(self, tab: object) -> None:
+        """Say a tab's lost-place sentence once, when it is the tab you are in."""
+        notes = getattr(self, "_place_notes", None)
+        if not notes or id(tab) not in notes or self._active_tab() is not tab:
+            return
+        import wx
+
+        wx.CallLater(PLACE_NOTE_DELAY_MS, self._announce_result, notes.pop(id(tab)))

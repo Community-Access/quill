@@ -2275,6 +2275,7 @@ class MainFrame(
         self._refresh_contextual_menu_items()
         self._refresh_sessions_menu()
         self._refresh_read_only_state()
+        self._say_place_note_if_active(tab)  # a lost place, on arrival (FUX-01)
         # Said once, here, where a file has just been opened: a read-only file
         # typed into for twenty minutes refuses at Ctrl+S, which is the worst
         # moment to learn it (bad.md P2.12); and a file type the checker skips

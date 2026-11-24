@@ -8,9 +8,10 @@ type in it costs the person that one field, never the ability to start.
 
 from __future__ import annotations
 
+from dataclasses import asdict
 from typing import Any
 
-__all__ = ["MAX_SPELL_MS", "MIN_SPELL_MS", "clamp_ms", "coerce", "suffix_list"]
+__all__ = ["MAX_SPELL_MS", "MIN_SPELL_MS", "clamp_ms", "coerce", "deltas", "suffix_list"]
 
 #: Bounds for the spell-aloud pauses. The ceiling is deliberately generous: a
 #: listener on a slow synthesiser genuinely waits longer than three seconds to
@@ -71,3 +72,15 @@ def suffix_list(value: Any) -> list[str]:
         if suffix and suffix not in cleaned:
             cleaned.append(suffix)
     return cleaned
+
+
+def deltas(settings: Any) -> dict[str, Any]:
+    """Every field whose value differs from the code default.
+
+    The whole reason this function exists: a user who never chose a theme has no
+    ``theme`` in their file, so a later version that changes the default takes
+    them with it. Writing every field would freeze today's answer into their
+    profile forever. Moved here from ``settings.py`` (GATE-11, 2026-11-24).
+    """
+    default = asdict(type(settings)())
+    return {key: value for key, value in asdict(settings).items() if value != default[key]}

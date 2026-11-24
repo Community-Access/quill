@@ -53,6 +53,7 @@
   "lite:recover_untitled_documents": "shared",
   "lite:recovery_keep_days": "shared",
   "lite:restore_session": "shared",
+  "lite:session_active_file": "one_side",
   "lite:session_files": "shared",
   "lite:session_restore_ask": "shared",
   "lite:share_quill_abbreviations": "one_side",

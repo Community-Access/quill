@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### Back to the sentence you left, in QUILL and QUILL Lite (2026-11-24)
+
+Reopening a saved document puts the cursor back in the sentence you left, even
+if another program added or removed text above it. If that sentence was
+rewritten or deleted, the cursor goes to the start of the line it was on and
+the editor says so once, with the line number, when you arrive in that
+document, instead of landing somewhere else in silence. QUILL Lite also keeps the place when you close the whole app
+or Windows signs you out (before, it was forgotten in every open document),
+writes it each time it keeps a recovery copy, and reopens last session's
+documents with you in the one you were working in.
+
 ### Review the AI's chapter titles one by one (2026-11-24)
 
 In the Chapter Workbench, **Propose AI titles...** no longer replaces every
