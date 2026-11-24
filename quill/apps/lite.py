@@ -225,6 +225,7 @@ class QuillLiteApp(
         self._inbox_timer.Start(_INBOX_POLL_MS)
         # Everything that opens from here on is somebody's doing, and says so.
         self.starting_up = False
+        wx.CallLater(300, self.shell.say_if_empty)  # nothing opened: how to begin (FUX-09)
         # The quiet once-a-day update check; silent unless there is one.
         check_at_launch(self)
         self._start_sr_watchdog()  # a reader dying mid-session saves work first
@@ -412,7 +413,7 @@ class QuillLiteApp(
             # The empty bar shows again now, so bring it up to date with any key
             # or feature changed since it was built -- after the child is gone,
             # not while its bar still holds the slot (ShellMenuMixin).
-            wx.CallAfter(self.shell.rebuild_empty_menu)
+            wx.CallAfter(self.shell.now_empty)  # and say how to begin (FUX-09)
 
     def exit_all(self) -> None:
         """Close every document, asking about each. One refusal cancels the lot.

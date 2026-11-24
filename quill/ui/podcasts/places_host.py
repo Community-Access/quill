@@ -175,6 +175,8 @@ class CastPlacesHostMixin(CastPlaceContentMixin):
         self._fill_place(self._current_place, keep=key)
 
     def _say_empty_place_once(self, place_id: str) -> None:
+        if getattr(self, "_cast_launch_quiet", False):
+            return  # said after the window is up (launch_first_task, FUX-09)
         library = self._podcast_library  # type: ignore[attr-defined]
         counter = getattr(self, "_cast_place_count", None)
         count = (

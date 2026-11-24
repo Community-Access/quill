@@ -18,6 +18,7 @@ import sys
 
 import wx
 
+from quill.apps import weather_first_task
 from quill.apps.weather_ai import WeatherAiMixin
 from quill.apps.weather_options import WeatherOptionsMixin
 from quill.core import http_client
@@ -301,6 +302,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, WeatherOptionsMixin, WeatherA
         set_accessible_name(self._status_text, "Weather monitoring status")
         root.Add(self._status_text, 0, wx.ALL, 12)
 
+        weather_first_task.build(self, panel, root)  # FUX-09: first, while no place
         self._open_center_btn = wx.Button(panel, label="Open Weather &Center...")
         self._open_center_btn.SetHelpText(
             "Open the Weather Center: the full text report for a saved "
@@ -332,12 +334,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, WeatherOptionsMixin, WeatherA
         self._main_panel = panel
 
     def _focus_initial_control(self) -> None:
-        btn = getattr(self, "_open_center_btn", None)
-        if btn is not None:
-            try:
-                btn.SetFocus()
-            except Exception:  # noqa: BLE001 - initial focus is best-effort
-                pass
+        weather_first_task.focus_initial(self)  # the line while there is no place
 
     def _refresh_statusbar(self) -> None:
         active = self._weather_monitoring_active()
@@ -358,6 +355,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, WeatherOptionsMixin, WeatherA
         toggle_btn = getattr(self, "_toggle_monitor_btn", None)
         if toggle_btn is not None:
             toggle_btn.SetLabel("Stop &Monitoring" if active else "Start &Monitoring")
+        weather_first_task.refresh(self)  # a first place hides the line (FUX-09)
 
     def _toggle_and_refresh(self) -> None:
         self.toggle_weather_monitoring()
@@ -472,7 +470,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, WeatherOptionsMixin, WeatherA
         data_dir = self._weather_data_dir()
         store = loc_store.load_locations(data_dir)
         if store.primary() is None:
-            self._announce("Add a weather location to begin monitoring.")
+            weather_first_task.say_if_hidden(self)  # else the line says it (FUX-09)
             self._refresh_statusbar()
             return
         config = monitor.load_config(data_dir)

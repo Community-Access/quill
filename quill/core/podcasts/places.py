@@ -148,7 +148,9 @@ PLACES: tuple[Place, ...] = (
         "Podcasts",
         KIND_TREE,
         "",
-        "No podcasts yet. Add Podcast in the Podcasts menu, or Import OPML, fills this.",
+        # FUX-09: the action by its menu label and key, and what it needs.
+        "No podcasts yet. Add Podcast (Ctrl+N), in the Podcasts menu, finds one by "
+        "name or by its address, over the internet.",
     ),
 )
 

@@ -2,6 +2,10 @@
 
 ## 0.3.0
 
+- **The demo timeline says it is a demo** (FUX-09, 2026-11-24). While the
+  local demo account is your only account, the title ends with "(demo)" and
+  launch says "QUILL Social ready. Demo timeline only. Add Account (Ctrl+Shift+A) connects Mastodon or Bluesky.", on the status bar too. It
+  was explained only in F1 help.
 - **Next and previous unread** (2026-11-23). Item > Next unread (Alt+.) and
   Item > Previous unread (Alt+,) move to the next or previous unread post
   in the view; past the last one you hear "No more unread."

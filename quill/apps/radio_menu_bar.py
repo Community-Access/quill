@@ -563,14 +563,9 @@ class RadioMenuBarMixin(RadioAiMixin):  # Ask and the AI rows (Community)
             menu_bar.Append(self._build_quillins_menu(), "Quilli&ns")  # Alt+Q is QuillVille
         menu_bar.Append(help_menu, "&Help")
 
-        # Persistent &Window menu + Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9 on the
-        # main window; each modeless surface installs the same on its own bar so
-        # the numbered traversal reaches every open radio window.
-        self._windows.install(self.frame, menu_bar)
-        self.frame.SetMenuBar(menu_bar)
-        # focus= so Ctrl+Tab into the main window lands on the favorites tree
-        # (its default control), not on the bare frame.
-        self._windows.register(self.frame, _TITLE, focus=self._focus_initial_control)
+        from quill.apps.radio_menu_finish import install_menu_bar
+
+        install_menu_bar(self, menu_bar, _TITLE)  # Window menu, register, first-task line
         # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
         self._keep_menu_ids(
             sources_id,

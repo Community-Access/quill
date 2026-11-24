@@ -60,6 +60,7 @@ From a checkout of the repository:
 
 The window opens with keyboard focus on your books list. From top to bottom:
 
+- **Getting started** (read-only text, only until you have a book): "No books yet. Narrate Documents (Ctrl+Shift+N) reads documents into a book, or Build From Recordings (Ctrl+Shift+B) makes one from your recordings." While it is there, the window opens with focus on it.
 - **Studio activity** (read-only text): what the Studio is doing right now - "Ready", or live progress during a run. The same text is mirrored in the status bar.
 - Three buttons, one per journey: **Narrate Documents...**, **Build From Recordings...**, **Edit a Book...**
 - **Your books**: your audiobooks, organized as a tree (see below). Press **Enter** to open the selected book in the Chapter Workbench. A book whose file has been moved or renamed is marked "(missing)".

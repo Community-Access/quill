@@ -13,6 +13,13 @@ QUILL Social is built for the blind and low-vision community. It prioritizes key
 - **Textual State**: No critical information is conveyed by color or icons alone.
 - **Focus Management**: Focus is stable and predictable; it never "disappears" or jumps unexpectedly.
 
+### The demo timeline
+A new installation starts with a local demo account, "You (demo)", so every
+feature can be tried before you add a real one. While it is your only account,
+the window title ends with "(demo)", and QUILL Social says when it starts:
+"QUILL Social ready. Demo timeline only. Add Account (Ctrl+Shift+A) connects
+Mastodon or Bluesky." The same sentence is on the status bar.
+
 ### Account Management
 Connect to multiple identities across different networks:
 - **Supported Networks**: Mastodon (federated), Bluesky (AT Protocol), and GitHub.

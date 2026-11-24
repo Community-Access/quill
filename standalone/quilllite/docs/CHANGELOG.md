@@ -2,6 +2,15 @@
 
 ## 2.0.0
 
+### An empty window says how to begin (2026-11-24)
+
+With every document closed, or when nothing opened at startup, the window has
+no control in it, so nothing has focus and a screen reader read only the
+title. QUILL Lite now says once, as the window becomes empty, "No documents
+open. New (Ctrl+N) starts one, or Open (Ctrl+O) opens a file.", with your
+keys if you have changed them. It says nothing while QUILL Lite is closing
+(FUX-09).
+
 ### Dictation Settings: hear the feedback choices before keeping them (2026-11-24)
 
 Dictation Settings has a new button, **Hear Start, Phrase and Stop**, after

@@ -195,6 +195,47 @@ class ShellMenuMixin(GitHubFileOpenMixin, GitHubAccountsLiteMixin, GitHubWorkben
         except RuntimeError:
             pass  # the shell is on its way out
 
+    def now_empty(self) -> None:
+        """The last document closed: the empty bar again, and what to do first.
+
+        The sentence waits a moment: Windows gives the window back to the
+        screen reader as the last document goes, and its own speech would
+        cut a sentence said at once.
+        """
+        from quill.ui.main_frame_first_task import SAY_AFTER_MS
+
+        self.rebuild_empty_menu()
+        wx.CallLater(SAY_AFTER_MS, self.say_if_empty)
+
+    def say_if_empty(self) -> None:
+        """Name New and Open, once, when the window holds no document (FUX-09).
+
+        An empty QUILL Lite window has no control at all, so nothing has focus
+        and a screen reader reads only the title. This is the one sentence that
+        says how to begin. It is said when the window *becomes* empty -- after
+        the last document closes, or at launch when nothing opened -- and never
+        while the app is closing.
+        """
+        try:
+            app = getattr(self, "app", None)
+            if app is None or app.frames or self.IsBeingDeleted() or not self.IsShown():  # type: ignore[attr-defined]
+                return
+        except RuntimeError:
+            return  # the shell is on its way out
+        from quill.core.first_task import NextAction, first_task_line
+        from quill.core.lite.keymap import key_for
+
+        line = first_task_line(
+            "No documents open.",
+            (
+                NextAction("New", "cmd_new", "starts one"),
+                NextAction("Open", "cmd_open", "opens a file"),
+            ),
+            lambda handler: key_for(getattr(app, "keymap", None), handler),
+        )
+        # Queued behind anything already being said (recovery, an update).
+        self._announce(line, interrupt=False)
+
     def rebuild_workbench_menus(self) -> None:
         """GitHub Workbench Mode changed in the empty window: its bar again."""
         self.rebuild_empty_menu()

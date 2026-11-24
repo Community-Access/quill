@@ -194,7 +194,13 @@ class CastPlacesMixin:
         shown = [entry.id for entry in self._visible_places()]
         if view_id not in shown and shown:
             view_id = shown[0]
-        self.show_place(view_id, focus=True)
+        # Quiet while the window is built: the empty sentence is said once the
+        # window is up and the welcome is answered (launch_first_task, FUX-09).
+        self._cast_launch_quiet = True
+        try:
+            self.show_place(view_id, focus=True)
+        finally:
+            self._cast_launch_quiet = False
 
     # -- what the transport button would do -------------------------------- #
 

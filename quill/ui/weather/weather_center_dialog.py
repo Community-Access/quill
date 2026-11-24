@@ -30,6 +30,7 @@ from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import surface_tasks
 from quill.ui.weather import center_follow as follow
 from quill.ui.weather.center_text import (
+    NO_LOCATIONS,
     _alert_detail_text,
     _alert_list_label,
     _period_detail_text,
@@ -353,8 +354,8 @@ class WeatherCenterDialog:
             if focus_alerts:
                 self._alerts_list.SetFocus()
         else:
-            self._status.SetValue("No locations yet. Choose Add Location to begin.")
-            self._announce("No weather locations yet. Choose Add Location to begin.")
+            self._status.SetValue(NO_LOCATIONS)  # its key, and what it needs (FUX-09)
+            self._add_btn.SetFocus()  # the action itself, not a pre-show announcement
         if self._modeless:
             from quill.ui.dialog_contract import show_modeless_surface
 
@@ -631,7 +632,7 @@ class WeatherCenterDialog:
         ):
             self._show_field(label_ctrl, field, False)
         self._surface.Layout()
-        self._announce(f"Removed {label}. No locations left. Choose Add Location to begin.")
+        self._announce(f"Removed {label}. {NO_LOCATIONS}")
 
     # -- sub-dialogs ------------------------------------------------------------
 

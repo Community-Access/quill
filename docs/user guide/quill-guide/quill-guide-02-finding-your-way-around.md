@@ -669,7 +669,10 @@ changes what is in the document.
 Two switches that used to be on this menu are now in Preferences (`Ctrl+,`):
 **Wrap Find Searches** decides whether Find carries on from the top when it
 reaches the end, and **Start With No Document Open** makes QUILL open to an
-empty workspace instead of a starter document.
+empty workspace instead of a starter document. That workspace is a tab called
+**Start**, and once the window is up QUILL says how to begin: "No document
+open. New (Ctrl+N) starts one, or Open (Ctrl+O) opens a file." It names the
+keys you have, if you have changed them.
 
 Other settings that once lived here are in Preferences too, where they are saved
 in one place: the theme and dark mode, system tray mode, how the title bar shows

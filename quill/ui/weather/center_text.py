@@ -10,7 +10,10 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.first_task import NextAction, first_task_line
+
 __all__ = [
+    "NO_LOCATIONS",
     "_alert_detail_text",
     "_alert_list_label",
     "_period_detail_text",
@@ -73,3 +76,17 @@ def _alert_detail_text(alert: Any) -> str:
         lines.append("")
         lines.append(f"Issued by {alert.sender_name}.")
     return "\n".join(lines)
+
+
+#: An empty Weather Center (FUX-09): its own Add Location button's key, and
+#: what finding a place needs.
+NO_LOCATIONS = first_task_line(
+    "No weather location yet.",
+    (
+        NextAction(
+            "Add Location",
+            does="finds a US place by ZIP code, city or address, over the internet",
+            key="Alt+A",
+        ),
+    ),
+)

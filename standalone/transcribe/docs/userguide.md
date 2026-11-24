@@ -64,6 +64,10 @@ It has one page:
 Press **Finish** to keep your choices or **Skip** to change nothing. You can
 open setup again at any time from the Help menu (Ctrl+Alt+S).
 
+Either way, QUILL Transcribe then names the place to try dictation safely:
+"Practice Dictation (Ctrl+Shift+P) types only into its own box, a safe place to begin." Practice Dictation types only into its own box, never into another
+program, so it is a good first dictation.
+
 ### The tray
 
 QUILL Transcribe lives in the notification area, the system tray. To reach it

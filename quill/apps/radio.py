@@ -33,7 +33,7 @@ from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_weather import WeatherMixin
-from quill.ui.radio import dial_tuning_ui
+from quill.ui.radio import dial_tuning_ui, favorites_first_task
 from quill.ui.radio.volume_keys import volume_chord_handled
 from quill.ui.slider_keys import bind_up_means_more
 from quill.ui.spoken_name import set_spoken_name
@@ -315,7 +315,7 @@ class RadioAppFrame(
         self._main_view_host = MainViewHost(self, wx)
         favorites_page = wx.Panel(panel, style=wx.TAB_TRAVERSAL)
         book = self._main_view_host.build(panel, favorites_page)
-        favorites_sizer = wx.BoxSizer(wx.VERTICAL)
+        favorites_sizer = favorites_first_task.build(self, favorites_page)  # FUX-09 line first
         favorites_label = wx.StaticText(favorites_page, label="&Favorite stations:")
         favorites_sizer.Add(favorites_label, 0, wx.LEFT | wx.RIGHT, 8)
         # The same nested folder tree the Favorites Manager shows -- the

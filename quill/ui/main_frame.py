@@ -1390,6 +1390,9 @@ class MainFrame(
         )
         if focus_target is not None and hasattr(focus_target, "SetFocus"):
             self._wx.CallAfter(focus_target.SetFocus)
+        from quill.ui.main_frame_first_task import say_start_page_later
+
+        say_start_page_later(self)  # the Start page says how to begin (FUX-09)
 
     def _load_quillins_and_refresh_menu(self) -> None:
         """Load enabled Quillins, then rebuild the menu bar (#974).
@@ -1610,7 +1613,9 @@ class MainFrame(
         self._empty_workspace_active = True
         self.editor.SetEditable(False)
         self._set_tab_page_text(0, "Start")
-        self._set_status("No document open. Use File > New or File > Open.")
+        from quill.ui.main_frame_first_task import start_page_line
+
+        self._set_status_quiet(start_page_line(self))  # said once the window is up (FUX-09)
 
     def _clear_empty_workspace_state(self) -> None:
         if not self._empty_workspace_active:

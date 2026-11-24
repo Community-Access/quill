@@ -2,6 +2,54 @@
 
 ## 1.0.0
 
+### The first useful task has a clear beginning in Weather, Beacon and Social (2026-11-24)
+
+Quill Weather, before the first place, opens on a Getting started line, "No
+weather location yet. Add Location (Ctrl+Alt+Shift+L) finds a US place by ZIP
+code, city or address, over the internet.", instead of a sentence spoken while
+the window was being built; Weather Center names its Alt+A. QuillBeacon, with
+no bookmark, opens on "No bookmarks yet. New Bookmark (Ctrl+N) saves one, or
+Import (Ctrl+I) brings bookmarks or subscriptions in." QUILL Social, while its
+demo account is the only one, shows "(demo)" in its title and says at launch
+"Demo timeline only. Add Account (Ctrl+Shift+A) connects Mastodon or Bluesky."
+
+### The first useful task has a clear beginning in QUILL, QUILL Lite and Inkwell (2026-11-24)
+
+With **Start With No Document Open**, QUILL's Start page said "No document
+open. Use File > New or File > Open." while the window was still being
+built, so it was never heard. It now says, once the window is up, "No
+document open. New (Ctrl+N) starts one, or Open (Ctrl+O) opens a file.", with
+the keys you have. QUILL Lite says the same kind of sentence when its window
+becomes empty, which had nothing in it to focus and said nothing. Inkwell,
+with every abbreviation deleted, shows a Getting started line naming Manage
+Abbreviations (Ctrl+M) and New from Clipboard (Ctrl+Shift+N).
+
+### The first useful task has a clear beginning in Converter, Transcribe and Studio (2026-11-24)
+
+Quill Converter opened on an empty, silent queue; now, while nothing is
+queued, a Getting started line before it says "Nothing to convert yet. Add
+Files (Ctrl+O) chooses audio or video files, or Add Folder (Ctrl+Shift+O)
+brings a whole folder." and takes focus. QUILL Studio, before its first book,
+says "No books yet. Narrate Documents (Ctrl+Shift+N) reads documents into a
+book, or Build From Recordings (Ctrl+Shift+B) makes one from your recordings." on a
+line that takes focus, where focus used to fall to the status bar. QUILL
+Transcribe's Set Up ends, whether finished or skipped, with "Practice Dictation (Ctrl+Shift+P) types only into its own box, a safe place to begin."
+
+### The first useful task has a clear beginning in Cast, Radio and Media Player (2026-11-24)
+
+An empty list is the first thing somebody new meets, and now it says how to
+fill it, by the menu's own label and the key you have for it, once and never
+as a tour. Quill Radio puts a line before an empty Favorite stations list:
+"No favorite stations yet. Browse Stations (Ctrl+B) finds one online, or Add
+Custom Station (Ctrl+N) takes its address", and opens with your cursor on
+it. QUILL Cast says what fills an empty place after
+its welcome is answered, instead of while the window was still being built,
+where nobody heard it, and Podcasts now names Add Podcast (Ctrl+N) and that
+finding one uses the internet. The Media Player opens on a line before Now
+Playing while nothing is open, naming Open File (Ctrl+O) and Open Folder as
+Book (Ctrl+Shift+O); before, focus fell to the Volume slider. The audit of
+every app is `docs/design/fux-09-adoption.md`.
+
 ### Dictation Settings: hear the feedback choices before keeping them (2026-11-24)
 
 Dictation Settings has a new button, **Hear Start, Phrase and Stop**, after
@@ -14,6 +62,7 @@ again, or Escape, to stop it; Escape then leaves the window open. If the app's
 sounds are off, or every choice is silent, it says so in one sentence. The
 same window is Dictation Settings in QUILL, QUILL Lite, QUILL Transcribe and
 Quill Inkwell.
+
 ### Voice and alert sound previews stop when you ask, and never change a setting (2026-11-24)
 
 - **Speech Settings, Preview Selected Voice.** Escape now stops a playing

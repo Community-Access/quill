@@ -13,6 +13,11 @@ new in 1.0.0, including what the first test builds (builds 1 and 2) already
 did. Build 3 adds Help > What's New and keeps everything else. The changes are
 grouped by area; most say where in the user guide to read more.
 
+### Setup names the place to try dictation first (2026-11-24)
+
+- Finish and Skip in **Set Up QUILL Transcribe** now end with "Practice Dictation (Ctrl+Shift+P) types only into its own box, a safe place to begin.", and
+  Skip names Set Up's key, Ctrl+Alt+S (FUX-09).
+
 ### Dictation Settings: hear the feedback choices before keeping them (2026-11-24)
 
 Dictation Settings has a new button, **Hear Start, Phrase and Stop**, after

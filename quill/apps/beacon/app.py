@@ -23,6 +23,7 @@ from quill.apps.beacon import (
     db,
     exporters,
     external_player,
+    first_task,
     importers,
     results_follow,
     routing,
@@ -696,6 +697,7 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
         right = wx.Panel(self.splitter, style=wx.TAB_TRAVERSAL)
         right.SetName("Results and details")
         right_sizer = wx.BoxSizer(wx.VERTICAL)
+        first_task.build(self, right, right_sizer)  # FUX-09: before search, while empty
 
         search_row = wx.BoxSizer(wx.HORIZONTAL)
         self.search_box = wx.SearchCtrl(right)
@@ -787,7 +789,6 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
         self.results.Bind(wx.EVT_KEY_DOWN, self._on_results_key)
 
         self._results_cache: list = []
-        self.search_box.SetFocus()
 
     # -- sidebar --------------------------------------------------------------
 
@@ -1894,6 +1895,7 @@ def run() -> int:
     app = wx.App()
     frame = BeaconFrame()
     frame.Show()
+    wx.CallAfter(first_task.focus_initial, frame)  # after Show, so it sticks (FUX-09)
     # OS custom-scheme handoff: a quillsync://verify link may be passed as the
     # first argv when the OS launches us to handle the scheme.
     for arg in sys.argv[1:]:

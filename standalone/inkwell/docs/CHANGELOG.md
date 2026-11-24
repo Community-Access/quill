@@ -6,6 +6,14 @@ Quill Inkwell 1.0.0 is its first public release, and it has not been published
 yet. The testing build is **1.0.0 (build 2)**. First, the work since the first
 build, grouped by subject; then the first build itself.
 
+### An empty list says how to make a first entry (2026-11-24)
+
+With every abbreviation deleted, the list said nothing. A **Getting started**
+line before it now says "No abbreviations yet. Manage Abbreviations (Ctrl+M)
+makes one, or New from Clipboard (Ctrl+Shift+N) saves the copied text as
+one.", and the window opens with focus on it until there is an entry
+(FUX-09).
+
 ### Dictation Settings: hear the feedback choices before keeping them (2026-11-24)
 
 Dictation Settings has a new button, **Hear Start, Phrase and Stop**, after
@@ -24,6 +32,7 @@ Quill Inkwell.
 F1 on an entry marked "(disabled)" in the main window's list says that typing
 it does not expand it, and that Enable/Disable (Alt+B) in Manage Abbreviations
 (Ctrl+M), or Enabled in the entry's Edit dialog, turns it back on.
+
 ### The actual result, said once (2026-11-23)
 
 - **Import and Export in Manage Abbreviations say where, and no box.** Export

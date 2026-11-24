@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **An empty library says how to fill it** (FUX-09, 2026-11-24). A new
+  library opened on the search box over an empty list and said only "0
+  results". While there is no bookmark, a **Getting started** line above the
+  search box says "No bookmarks yet. New Bookmark (Ctrl+N) saves one, or
+  Import (Ctrl+I) brings bookmarks or subscriptions in.", and the window
+  opens with focus on it.
 - **Export says where the file went** (2026-11-23). File > Export now ends
   with the format, the file and its folder, for example "Exported your library
   as HTML bookmarks to quillbeacon-export.html in Downloads.", instead of

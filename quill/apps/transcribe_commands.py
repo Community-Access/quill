@@ -17,6 +17,12 @@ __all__ = ["TranscribeCommandsMixin"]
 
 _DOC_REPO = "quill-transcribe"
 
+#: Where a first dictation is tried safely, named after Set Up (FUX-09): the
+#: Practice window types into its own box, never into another app.
+PRACTICE_FIRST = (
+    "Practice Dictation (Ctrl+Shift+P) types only into its own box, a safe place to begin."
+)
+
 
 class TranscribeCommandsMixin:
     """On ``QuillTranscribeFrame``."""
@@ -354,7 +360,10 @@ class TranscribeCommandsMixin:
                 if not self._settings.setup_done:
                     self._settings.setup_done = True
                     self._save()
-                self._announce("Setup skipped. It is on the Help menu whenever you want it.")  # type: ignore[attr-defined]
+                self._announce(  # type: ignore[attr-defined]
+                    "Setup skipped. It is on the Help menu (Ctrl+Alt+S) whenever you want "
+                    f"it. {PRACTICE_FIRST}"
+                )
                 return
             problem = show_hide_key_problem(
                 key,
@@ -391,7 +400,8 @@ class TranscribeCommandsMixin:
         how = f"press {key} in the field you want" if key else "use the tray menu"
         commands = f" For a command, press {command} first." if command else ""
         self._announce(  # type: ignore[attr-defined]
-            f"Ready. Model: {model_name(self.chosen_engine())}. To dictate, {how}.{commands}"
+            f"Ready. Model: {model_name(self.chosen_engine())}. To dictate, {how}.{commands} "
+            f"{PRACTICE_FIRST}"
         )
 
     def _setup_command_key_problem(self, command: str, key: str) -> str:

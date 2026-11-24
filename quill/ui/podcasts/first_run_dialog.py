@@ -224,6 +224,8 @@ def maybe_run_first_run(host: Any) -> bool:
             on_launch_place=_land,
         )
         dialog.show()
+        # Add Your First Podcast opens next: the launch says nothing over it (FUX-09).
+        host._cast_adding_first_podcast = bool(dialog._wants_add)
         saver = getattr(host, "_save_podcast_history", None)
         if callable(saver):
             saver()

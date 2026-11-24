@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Before the first place, the window says how to add one** (FUX-09,
+  2026-11-24). It used to speak "Add a weather location to begin monitoring."
+  while the window was still being built. Now a **Getting started** line says
+  "No weather location yet. Add Location (Ctrl+Alt+Shift+L) finds a US place
+  by ZIP code, city or address, over the internet.", and the window opens
+  with focus on it, and goes as soon as you have a place. An empty Weather
+  Center shows the same with its own button's key, Alt+A, and opens on Add
+  Location.
 - **The Weather Center keeps your place** (FUX-06, 2026-11-23). Refresh used
   to empty all four lists and put each detail box on the first row with
   nothing selected. Now each list keeps the alert, period, hour or day you

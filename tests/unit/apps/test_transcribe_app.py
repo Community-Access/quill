@@ -666,6 +666,11 @@ def test_setup_skip_changes_nothing_but_is_remembered(
     assert host._settings.setup_done and host.chosen_engine() == "windows"
     assert host.frame.hotkeys == {}
     assert "Setup skipped" in host.said[-1]
+    # FUX-09: where Setup's key is, and where to try dictation safely first
+    assert "Help menu (Ctrl+Alt+S)" in host.said[-1]
+    assert host.said[-1].endswith(
+        "Practice Dictation (Ctrl+Shift+P) types only into its own box, a safe place to begin."
+    )
 
 
 def test_setup_finish_keeps_every_choice(host: Host, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -703,9 +708,9 @@ def test_setup_finish_keeps_every_choice(host: Host, monkeypatch: pytest.MonkeyP
     assert saved.dictation["windows_dictation_microphone"] == "Headset"
     assert saved.dictation["windows_dictation_engine"] == "whisper"
     assert host.dictation_key() == "Ctrl+Alt+PageDown" and startup == [True]
-    assert (
-        host.said[-1]
-        == "Ready. Model: Whisper. To dictate, press Ctrl+Alt+PageDown in the field you want."
+    assert host.said[-1] == (
+        "Ready. Model: Whisper. To dictate, press Ctrl+Alt+PageDown in the field you want. "
+        "Practice Dictation (Ctrl+Shift+P) types only into its own box, a safe place to begin."
     )
 
 
@@ -745,7 +750,7 @@ def test_setup_offers_the_command_key_beside_the_start_key(
     assert load_settings(host._data_dir).command_hotkey == "Ctrl+Alt+PageUp"
     assert host.command_key() == "Ctrl+Alt+PageUp"
     assert len(host.frame.hotkeys) == 2
-    assert host.said[-1].endswith("For a command, press Ctrl+Alt+PageUp first.")
+    assert "For a command, press Ctrl+Alt+PageUp first. Practice Dictation" in host.said[-1]
 
 
 def test_the_command_key_is_registered_at_launch_and_released(host: Host) -> None:

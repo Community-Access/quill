@@ -8,6 +8,16 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased] - 2026-11-07
 
+### An empty Favorites list says how to fill it (2026-11-24)
+
+- **A line before an empty Favorite stations list** names the two ways to a
+  first station, with your keys: "No favorite stations yet. Browse Stations
+  (Ctrl+B) finds one online, or Add Custom Station (Ctrl+N) takes its
+  address." While the list is empty, the window
+  opens with your cursor on that line instead of on a silent, empty tree. It
+  is never spoken by Radio, only read when you reach it, and it goes away
+  when you keep your first station (FUX-09).
+
 ### F1 on Favorites says what Enter does on this row (2026-11-23)
 
 F1 on the Favorites tree now also says what Enter does on the row you are on:

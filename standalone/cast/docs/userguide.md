@@ -155,6 +155,12 @@ QUILL Cast**. It asks one question and then gets out of your way.
 counts as done, so it will not come back next time. If you already have
 podcasts, from a backup or another QUILL app, Cast does not show it at all.
 
+When the welcome closes with Done or Skip, your cursor is on Podcasts, and
+Cast says once what fills it: "No podcasts yet. Add Podcast (Ctrl+N), in the
+Podcasts menu, finds one by name or by its address, over the internet." Cast
+says the same each time it opens on an empty place, until you follow your
+first podcast.
+
 The welcome also has a checkbox, **Show me a tip now and then** (Alt+T).
 Leave it checked. The first time you reach somewhere new, such as the Play
 Queue, Cast says one helpful sentence about it. Each tip is said once, ever.

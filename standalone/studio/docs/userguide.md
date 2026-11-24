@@ -73,6 +73,7 @@ so your books are not front-and-center unless you choose to open one.
 
 From top to bottom:
 
+- **Getting started** (read-only text, only until you have a book): "No books yet. Narrate Documents (Ctrl+Shift+N) reads documents into a book, or Build From Recordings (Ctrl+Shift+B) makes one from your recordings." While it is there, the window opens with focus on it. Both run on this computer with the voices Windows already has.
 - **Studio activity** (read-only text): what the Studio is doing right now — "Ready", or live progress during a run.
 - **Status bar** (optional): an arrow-navigable summary you can reach with **F6**.
 

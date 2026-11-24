@@ -32,6 +32,7 @@ from typing import Any
 
 import wx
 
+from quill.apps import converter_first_task
 from quill.apps.converter_actions import ConverterActionsMixin
 from quill.apps.converter_ai import ConverterAiMixin
 from quill.apps.converter_auphonic import ConverterAuphonicMixin
@@ -136,7 +137,7 @@ class QuillConverterFrame(
 
     def _build_main_panel(self) -> None:
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
-        root = wx.BoxSizer(wx.VERTICAL)
+        root = converter_first_task.build(self, panel)  # FUX-09: its line comes first
 
         root.Add(wx.StaticText(panel, label="Files to convert:"), 0, wx.ALL, 8)
         self._list = wx.ListBox(panel, name="Files to convert")
@@ -344,7 +345,7 @@ class QuillConverterFrame(
         self._list.Bind(wx.EVT_KEY_DOWN, self._on_list_key)
 
     def _focus_initial_control(self) -> None:
-        self._list.SetFocus()
+        converter_first_task.focus_initial(self)  # the line while the queue is empty
 
     # -- remembered choices ----------------------------------------------------
 
@@ -402,13 +403,7 @@ class QuillConverterFrame(
     # -- queue -----------------------------------------------------------------
 
     def _reload(self, *, select: int | None = None) -> None:
-        self._list.Clear()
-        for entry, _root in self._entries:
-            self._list.Append(entry.name if not entry.is_dir() else f"{entry.name} (folder)")
-        if self._entries:
-            index = select if select is not None else len(self._entries) - 1
-            self._list.SetSelection(max(0, min(index, len(self._entries) - 1)))
-        self._set_status(f"{len(self._entries)} item(s) queued.")
+        converter_first_task.reload(self, select=select)
 
     def _add_entry(self, path: Path, *, is_folder: bool) -> bool:
         pair = (path, path if is_folder else None)
