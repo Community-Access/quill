@@ -141,7 +141,6 @@ Alt+W now moves to the "Open each result when it is ready" choices. Its
 underlined letter did nothing before.
 
 Help in these dialogs says "checked", not "ticked".
-
 ### QUILL Lite makes listening versions of WordPress pages (2026-11-23)
 
 **Tools > WordPress > More Media > Make a Listening Version** now works in
