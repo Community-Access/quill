@@ -1403,18 +1403,18 @@ Start a WordPress site on this computer and connect the Workbench to it, so the 
    - Keys: Ctrl+Alt+Shift+Grave, H
    - You should hear: WordPress Workbench, and the tree of your sites.
 
-3. **Open Practice Site.** In the Workbench's Tools menu, choose Practice Site. It is one short list of what you can do with the site right now.
+3. **Open Practice Site.** In the Workbench's Tools menu, open Practice Site and choose All Practice Site Choices. It is one short list of what you can do with the site right now.
    - Keys: Ctrl+Alt+P
    - You should hear: Practice Site, and Start the Practice Site.
 
-4. **Start it.** Choose Start the Practice Site and press Enter. The first start builds a fresh WordPress with a welcome page, a first post and a draft, so give it two or three minutes. Later starts take under a minute.
+4. **Start it.** Choose Start the Practice Site and press Enter. The first time, QUILL asks before it starts whether the Practice Site should be your default site once it is connected. If you have no other site, it is your default anyway, and QUILL does not ask.
    - Keys: Enter
-   - You should hear: The Practice Site is running at http://127.0.0.1:9400. Connect it in a moment.
-   - Worth knowing: If something else on this computer is using its port, it says so and does not start. Stop the other copy first.
+   - You should hear: Default Site, and the question.
 
-5. **Connect it.** Open Practice Site again and choose Connect It as Practice Site. The site made a one-time password for QUILL when it started; the Workbench keeps it in Windows Credential Manager, so you type nothing.
-   - Keys: Ctrl+Alt+P
-   - You should hear: Practice Site is connected. It is under Sites.
+5. **Choose where new pages start.** Make It My Default means New Page and New Post start on the Practice Site while you learn. No is selected, and keeps your default as it is. Then wait: the first start builds a fresh WordPress with a welcome page, a first post and a draft, so give it two or three minutes. When it answers, QUILL connects it, so it is under Sites. You type no password.
+   - Keys: Enter
+   - You should hear: The Practice Site is running and connected. It is under Sites.
+   - Worth knowing: You can change the default whenever you like: Make It My Default Site is on the Practice Site's context menu, and Switch Site is in the editor's File > WordPress menu. If something else on this computer is using the site's port, it says so and does not start.
 
 The Practice Site is now one of your sites in the tree. It stays there, with everything you do to it, until you reset it.
 
@@ -1535,7 +1535,7 @@ Find the Practice Site's menu, add the welcome page to it, put its items in orde
 4. **Open Menus and Navigation.** Arrow down the tree to Menus and Navigation. Each row is one menu, and the details say where on the site it shows.
    - Keys: Down
    - You should hear: Practice Menu, and how many items it has.
-   - Worth knowing: This lesson uses the lesson material: Tools > Practice Site, Set Up the Lesson Material. The first Break It on Purpose lesson walks you through it.
+   - Worth knowing: This lesson uses the lesson material: Tools > Practice Site > All Practice Site Choices, Set Up the Lesson Material. The first Break It on Purpose lesson walks you through it.
 
 5. **Add a menu item.** On Practice Menu, press Shift+F10 and choose Add Menu Item. Pick the page called Welcome to Your Practice Site. The Workbench shows what it is about to add and adds it only when you say yes.
    - Keys: Shift+F10
@@ -1649,7 +1649,7 @@ Tell a held spam comment from a real question, approve and answer the real one, 
 3. **Open Held as Spam.** Go to Needs My Attention, then arrow to Held as Spam. It gathers the comments and form entries every site doubted, with who sent them.
    - Keys: Ctrl+1, Down
    - You should hear: Held as Spam, and Cheap Watches Today, Practice Site.
-   - Worth knowing: This lesson uses the lesson material: Tools > Practice Site, Set Up the Lesson Material. The first Break It on Purpose lesson walks you through it.
+   - Worth knowing: This lesson uses the lesson material: Tools > Practice Site > All Practice Site Choices, Set Up the Lesson Material. The first Break It on Purpose lesson walks you through it.
 
 4. **Read why it was held.** Next Pane moves to the details, which say what the comment says and why the site held it. This one is spam: leave it where it is.
    - Keys: F6
@@ -1692,7 +1692,7 @@ Hear what kinds of content the Practice Site has beyond posts and pages, open an
 3. **Open the Content Model.** Under the Practice Site, arrow to Content Model. Each row is one kind of content or one field, who registered it, and whether QUILL can reach it.
    - Keys: Down
    - You should hear: Practice Events, post type, and the plugin that registered it.
-   - Worth knowing: This lesson uses the lesson material: Tools > Practice Site, Set Up the Lesson Material. The first Break It on Purpose lesson walks you through it.
+   - Worth knowing: This lesson uses the lesson material: Tools > Practice Site > All Practice Site Choices, Set Up the Lesson Material. The first Break It on Purpose lesson walks you through it.
 
 4. **Open Practice Events.** Arrow up to More Content Types and then into Practice Events. A custom type gets a list of its own, like Posts and Pages.
    - Keys: Up, Right
@@ -1802,7 +1802,7 @@ Put four problems on the Practice Site on purpose, after hearing exactly what wi
    - Keys: Ctrl+Alt+Shift+Grave, H
    - You should hear: WordPress Workbench, and the tree of your sites.
 
-3. **Open Practice Site.** In the Workbench's Tools menu, choose Practice Site. Once the site has been started at least once, the list ends with Set Up the Lesson Material.
+3. **Open Practice Site.** In the Workbench's Tools menu, open Practice Site and choose All Practice Site Choices. Once the site has been started at least once, the list ends with Set Up the Lesson Material.
    - Keys: Ctrl+Alt+P
    - You should hear: Practice Site, and what you can do with it now.
 

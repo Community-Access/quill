@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core.counted import plural
-from quill.core.workbench.list_place import landing_index, row_identity
+from quill.core.workbench.list_place import changed_cells, landing_index, row_identity
 
 __all__ = ["GroupRef", "WorkbenchGroupsMixin"]
 
@@ -108,6 +108,27 @@ class WorkbenchGroupsMixin:
             places[self.current] = found
         else:
             places.pop(self.current, None)
+
+    def update_in_place(self, rows: Sequence[object], cells: list[list[str]]) -> bool:
+        """Set only the cells that changed, when the same rows came back (FUX-06).
+
+        False when the rows are not the same ones, in the same order: then the
+        list is filled again. True leaves selection and focus alone, so a value
+        that changed on a row you are not on is not read, and no row is read again.
+        """
+        shown = getattr(self, "_shown_cells", [])
+        changes = changed_cells(shown, cells)
+        old_rows = getattr(self, "rows", [])
+        if changes is None or self.list.GetItemCount() != len(cells) or len(old_rows) != len(rows):
+            return False
+        if changes and any(
+            row_identity(a) != row_identity(b) for a, b in zip(old_rows, rows, strict=True)
+        ):
+            return False  # other items under the same names: fill it again
+        for index, column, text in changes:
+            self.list.SetItem(index, column, text)
+        self._shown_cells = cells
+        return True
 
     def landing_for(self, rows: Sequence[object]) -> int:
         """The row a fill lands on: the place kept in this list, or the one kept on leaving."""

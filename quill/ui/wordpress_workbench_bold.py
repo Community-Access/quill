@@ -39,7 +39,6 @@ from quill.core.wordpress.workbench_bold import (
     run_copy,
 )
 from quill.core.wordpress.workbench_carry import copy_left_out, left_out_section
-from quill.core.wordpress.workbench_practice import find_cli, missing_words, site_url
 from quill.core.wordpress.workbench_read_site import ReadScope, document_pages, site_document
 from quill.core.wordpress.workbench_rows import WbRow
 from quill.core.wordpress.workbench_snapshot import (
@@ -511,24 +510,7 @@ class WorkbenchBoldCommands(
                     for when, sentence in recent(state)
                 ]
             return fact_rows("", facts)
-        tools = find_cli()
-        process = getattr(self, "_practice", None)
-        running = process is not None and process.poll() is None
-        # "Missing", not "not in this build" / "not bundled": the label names
-        # the part, and "What to do" says how to get it back. WordPress ships
-        # as its pinned archive, so the row names that when nothing is
-        # unpacked -- it said "not bundled" beside a ready site.
-        wordpress = tools.wordpress or tools.wordpress_archive
-        return fact_rows(
-            "",
-            [
-                ("Playground's tool", str(tools.cli) if tools.cli else "Missing"),
-                ("Node.js", str(tools.node) if tools.node else "Missing"),
-                ("WordPress core", str(wordpress) if tools.has_wordpress else "Missing"),
-                ("Running", f"yes, at {site_url()}" if running else "no"),
-                ("What to do", missing_words(tools) or "Tools > Practice Site starts it."),
-            ],
-        )
+        return self.practice_rows()  # type: ignore[attr-defined]
 
     def _days_changed(self) -> None:
         if self.frame is not None:

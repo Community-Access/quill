@@ -33,8 +33,9 @@ CHANGED = "practice-site-changed"
 
 #: Said wherever a lesson needs what Set Up the Lesson Material adds.
 MATERIAL_NOTE = (
-    "This lesson uses the lesson material: Tools > Practice Site, Set Up the Lesson "
-    "Material. The first Break It on Purpose lesson walks you through it."
+    "This lesson uses the lesson material: Tools > Practice Site > All Practice Site "
+    "Choices, Set Up the Lesson Material. The first Break It on Purpose lesson walks you "
+    "through it."
 )
 
 

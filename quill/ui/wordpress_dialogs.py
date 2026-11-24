@@ -561,13 +561,23 @@ def ask_text(
 
 
 def confirm(
-    parent: wx.Window, show_modal: ShowModal, *, title: str, message: str, yes_label: str
+    parent: wx.Window,
+    show_modal: ShowModal,
+    *,
+    title: str,
+    message: str,
+    yes_label: str,
+    no_label: str = "Cancel",
 ) -> bool:
-    """A named confirmation: the sentence says the site and the item (4.4)."""
+    """A named confirmation: the sentence says the site and the item (4.4). No is the default.
+
+    *no_label* is "Cancel" for an action; a question that offers a choice
+    rather than guarding one says "No" (the Practice Site's default offer).
+    """
     dialog = wx.MessageDialog(
         parent, message, title, style=wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION
     )
-    dialog.SetYesNoLabels(yes_label, "Cancel")
+    dialog.SetYesNoLabels(yes_label, no_label)
     try:
         return show_modal(dialog, title) == wx.ID_YES
     finally:

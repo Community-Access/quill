@@ -381,25 +381,59 @@ The Practice Site is a real WordPress site that runs on your own computer,
 so you can try anything here with nothing at stake. It comes with QUILL, and
 needs no download.
 
-1. Choose **Tools > Practice Site...** (`Ctrl+Alt+P`) in the Workbench, or
+1. Choose **Tools > Practice Site > Start the Practice Site** in the
+   Workbench. Or press `Ctrl+Alt+P` for all the Practice Site choices, or
    press Ctrl+6 to go to its place in the tree.
-2. Choose **Start the Practice Site**. The first start takes two or three
-   minutes, while it unpacks WordPress and makes a welcome page, a sample
-   post and a draft. Later starts take under a minute.
-3. Choose Practice Site again, then **Connect It as Practice Site**. It joins
-   your sites under Sites.
+2. The first time, QUILL asks whether it should be your default site once it
+   is connected, so **File > WordPress > New Page** and **New Post** start
+   there while you learn. No is already chosen, and keeps your default as it
+   is. If you have no other site, it is your default anyway, and QUILL does
+   not ask. QUILL asks now, before it starts, so no question pops up later
+   while you are doing something else.
+3. The first start takes two or three minutes, while it unpacks WordPress
+   and makes a welcome page, a sample post and a draft. Later starts take
+   under a minute.
+4. When the site answers, QUILL connects it for you. You hear "The Practice
+   Site is running and connected. It is under Sites." You type no password.
+
+If it could not connect, QUILL says why, and **Connect It as Practice
+Site** tries again.
+
+The Practice Site list (Ctrl+6) shows whether it is running and connected,
+and changes as the site starts and stops. You do not have to refresh it.
+
+Wherever QUILL lists your sites, such as New Page, Switch Site and the Sites
+window, it is called **Practice Site (on this computer)**, so you never
+mistake it for a real site.
 
 It answers only on this computer, at `http://127.0.0.1:9400`. That is the one
 address QUILL will use without HTTPS. If something else on your computer is
 using that port, QUILL says so before it starts anything.
 
-When you are done, choose **Stop the Practice Site**. Closing the Workbench
-stops it too.
+### Its context menu
 
-**Reset the Practice Site**, offered while it is stopped, wipes it clean:
+Press Shift+F10 or the Applications key on the Practice Site node in the
+tree, on any row of its list, on its row in the Sites list, or on its own
+node under Sites. The context menu has:
+
+- **Start the Practice Site**
+- **Stop the Practice Site**
+- **Connect It as Practice Site**
+- **Make It My Default Site**
+- **Reset the Practice Site...**
+
+The same five are in **Tools > Practice Site**. A command that cannot run
+now is greyed, and says why when you reach it. For example, Stop is greyed
+when the site is not running.
+
+When you are done, choose **Stop the Practice Site**. Closing the Workbench
+stops it too. If it stops on its own, QUILL tells you once.
+
+**Reset the Practice Site...**, offered while it is stopped, wipes it clean:
 every post, page, upload, comment, person, plugin and setting on it is
-deleted for good, and its connection is forgotten. It asks first. Your real sites are not touched. The
-next start builds a fresh site.
+deleted for good, and its connection is forgotten. It asks first, and No is
+the default. Your real sites are not touched. The next start builds a fresh
+site, and asks again about your default site.
 
 If a command would change the Practice Site and a real site in one step,
 such as Revoke Everywhere, QUILL asks you by name first, and the answer
@@ -407,8 +441,9 @@ starts on No.
 
 ### Lesson material, and Break It on Purpose
 
-Once the Practice Site has been started, Practice Site also offers **Set Up
-the Lesson Material**. It shows you everything it will add before it adds any
+Once the Practice Site has been started, **Tools > Practice Site > All
+Practice Site Choices** (`Ctrl+Alt+P`) also offers **Set Up the Lesson
+Material**. It shows you everything it will add before it adds any
 of it, and adds it to the Practice Site only: a picture with no alt text, a
 post with a link to a page that is not there, two plugins that fight over the
 same shortcode, a Contact Us page with a misspelt address, a spam comment and
