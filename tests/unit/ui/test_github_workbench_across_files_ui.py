@@ -136,8 +136,16 @@ def _workflow_api() -> FakeApi:
         ("GET", "/repos/o/two"): _repo(),
         ("GET", "/repos/o/one/contents/.github/workflows"): listing("aaaaaaa1"),
         ("GET", "/repos/o/two/contents/.github/workflows"): listing("bbbbbbb2"),
-        ("GET", "/repos/o/one/contents/.github/workflows/ci.yml"): {"content": _b64("run: a\n")},
-        ("GET", "/repos/o/two/contents/.github/workflows/ci.yml"): {"content": _b64("run: b\n")},
+        ("GET", "/repos/o/one/contents/.github/workflows/ci.yml"): {
+            "content": _b64("run: a\n"),
+            "encoding": "base64",
+            "sha": "aaaaaaa1",
+        },
+        ("GET", "/repos/o/two/contents/.github/workflows/ci.yml"): {
+            "content": _b64("run: b\n"),
+            "encoding": "base64",
+            "sha": "bbbbbbb2",
+        },
     })
 
 

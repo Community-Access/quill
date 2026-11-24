@@ -11,9 +11,15 @@ import hashlib
 from types import SimpleNamespace
 from typing import Any
 
+import pytest
+
 from quill.core.github.across_by_name import survey
 from quill.core.github.across_files import apply_files, file_diff, plan_files, source_copy
-from quill.core.github.across_people_settings import apply_settings, plan_settings_same
+from quill.core.github.across_people_settings import (
+    apply_settings,
+    plan_settings_same,
+    read_place_copies,
+)
 
 
 class NotFound(Exception):
@@ -91,7 +97,9 @@ class FakeApi:
         if where in files:
             text = files[where]
             content = base64.b64encode(text.encode()).decode()
-            return SimpleNamespace(data={"content": content, "sha": _sha(text)}, headers={})
+            return SimpleNamespace(
+                data={"content": content, "encoding": "base64", "sha": _sha(text)}, headers={}
+            )
         prefix = f"{where}/" if where else ""
         names = {p[len(prefix) :].split("/", 1)[0] for p in files if p.startswith(prefix)}
         if not names:
@@ -228,6 +236,51 @@ def test_a_file_changed_since_the_survey_is_not_proposed() -> None:
     assert not api.repos["o/two"].pulls
 
 
+def test_a_source_changed_since_the_survey_is_not_proposed() -> None:
+    api = _files_api()
+    found = survey(api, "workflows", SET)
+    row = found.row("ci.yml")
+    assert row is not None
+    source = next(c for c in row.copies if c.repository == "o/one")
+    api.repos["o/one"].branches["main"][".github/workflows/ci.yml"] = "changed source\n"
+    _one, two = apply_files(
+        api, plan_files(found, row, source.props), source, api.repos.__getitem__
+    )
+    assert not two.ok and "changed in o/one since it was compared" in two.said
+    assert not api.repos["o/two"].pulls
+
+
+@pytest.mark.parametrize(
+    "answer",
+    [
+        {"sha": _sha(CI), "encoding": "none", "content": ""},
+        {"sha": _sha(CI), "encoding": "base64"},
+        {"sha": _sha(CI), "encoding": "base64", "content": "not base64!"},
+    ],
+)
+def test_unreadable_source_is_not_proposed(answer: dict[str, str]) -> None:
+    api = _files_api()
+    found = survey(api, "workflows", SET)
+    row = found.row("ci.yml")
+    assert row is not None
+    source = next(c for c in row.copies if c.repository == "o/one")
+    api.answers[("GET", "/repos/o/one/contents/.github/workflows/ci.yml")] = answer
+    _one, two = apply_files(
+        api, plan_files(found, row, source.props), source, api.repos.__getitem__
+    )
+    assert not two.ok
+    assert not api.repos["o/two"].pulls
+
+
+def test_versions_with_the_same_short_sha_are_distinct() -> None:
+    from quill.core.github.across_by_name import ByNameRow
+    from quill.core.github.across_files import _copy
+
+    one = _copy("o/one", "ci.yml", {"path": "ci.yml", "sha": "1234567a"})
+    two = _copy("o/two", "ci.yml", {"path": "ci.yml", "sha": "1234567b"})
+    assert len(ByNameRow("workflows", "ci.yml", (one, two)).variants()) == 2
+
+
 def test_a_repository_you_may_not_write_to_is_blocked_in_the_preview() -> None:
     api = _files_api()
     api.answers[("GET", "/repos/o/two")] = _repo(admin=False, push=False)
@@ -274,6 +327,51 @@ def _people_api() -> FakeApi:
             ("GET", "/repos/o/two/collaborators?direct"): [],
         },
     )
+
+
+def test_people_include_collaborators_after_the_first_page() -> None:
+    class PagedPeople(FakeApi):
+        def rest(self, method: str, path: str, *, body: Any = None, query: Any = None) -> Any:
+            if path.endswith("/collaborators"):
+                page = int(query["page"])
+                if query["affiliation"] == "direct":
+                    rows = [{"login": "person100"}] if page == 1 else []
+                else:
+                    indexes = range(100) if page == 1 else range(100, 101)
+                    rows = [{"login": f"person{i}", "role_name": "write"} for i in indexes]
+                return SimpleNamespace(data=rows)
+            return super().rest(method, path, body=body, query=query)
+
+    people = read_place_copies(PagedPeople({}, {}), "people", "o/repo")
+    assert len(people) == 101
+    assert people[-1].name == "person100"
+    assert people[-1].prop("source") == "directly"
+
+
+def test_packages_include_entries_after_the_first_page() -> None:
+    class PagedPackages(FakeApi):
+        def rest(self, method: str, path: str, *, body: Any = None, query: Any = None) -> Any:
+            if path == "/users/o":
+                return SimpleNamespace(data={"type": "Organization"})
+            if path == "/orgs/o/packages":
+                if query["package_type"] != "container":
+                    return SimpleNamespace(data=[])
+                indexes = range(100) if query["page"] == "1" else range(100, 101)
+                return SimpleNamespace(
+                    data=[
+                        {
+                            "name": f"package{i}",
+                            "package_type": "container",
+                            "repository": {"full_name": "o/repo"},
+                        }
+                        for i in indexes
+                    ]
+                )
+            return super().rest(method, path, body=body, query=query)
+
+    packages = read_place_copies(PagedPackages({}, {}), "packages", "o/repo")
+    assert len(packages) == 101
+    assert packages[-1].name == "package100"
 
 
 def test_people_by_name_is_the_access_matrix_from_a_person_s_side() -> None:

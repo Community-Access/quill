@@ -28,6 +28,7 @@ wx-free and strict-typed.
 from __future__ import annotations
 
 import base64
+import binascii
 from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
@@ -97,11 +98,20 @@ def _listing(api: Any, repo: str, folder: str) -> list[Mapping[str, Any]]:
     return [e for e in data if isinstance(e, Mapping) and e.get("type") == "file"]
 
 
-def file_text(api: Any, repo: str, path: str) -> str:
+def file_text(api: Any, repo: str, path: str, *, expected_sha: str = "") -> str:
     """One file's text, from ``GET .../contents/{path}``."""
     data = api.rest("GET", _contents(repo, path)).data
-    raw = str(data.get("content") or "") if isinstance(data, Mapping) else ""
-    return base64.b64decode(raw).decode("utf-8", errors="replace") if raw else ""
+    if not isinstance(data, Mapping):
+        raise ValueError(f"GitHub did not return the contents of {path} in {repo}.")
+    if expected_sha and data.get("sha") != expected_sha:
+        raise ValueError(f"{path} changed in {repo} since it was compared; look again.")
+    raw = data.get("content")
+    if data.get("encoding") != "base64" or not isinstance(raw, str):
+        raise ValueError(f"GitHub did not return readable contents for {path} in {repo}.")
+    try:
+        return base64.b64decode("".join(raw.split()), validate=True).decode("utf-8")
+    except (binascii.Error, UnicodeDecodeError) as exc:
+        raise ValueError(f"Could not read {path} in {repo} as UTF-8 text.") from exc
 
 
 def _folder(where: str) -> str:
@@ -113,7 +123,9 @@ def _folder(where: str) -> str:
 def _copy(repo: str, name: str, entry: Mapping[str, Any], *extra: tuple[str, str]) -> Copy:
     sha = str(entry.get("sha") or "")
     path = str(entry.get("path") or "")
-    return Copy(repo, name, (("version", sha[:7]),), path, (*extra, ("sha", sha)))
+    if not sha or not path:
+        raise ValueError(f"GitHub did not identify {name} in {repo}.")
+    return Copy(repo, name, (("version", sha),), path, (*extra, ("sha", sha)))
 
 
 def _workflows(api: Any, repo: str) -> list[Copy]:
@@ -143,8 +155,9 @@ def _dependabot(api: Any, repo: str, places: Mapping[str, list[Mapping[str, Any]
 
     for entry in places[".github"]:
         if str(entry.get("name") or "") in ("dependabot.yml", "dependabot.yaml"):
+            text = file_text(api, repo, str(entry.get("path")))
             try:
-                entries = load_config(file_text(api, repo, str(entry.get("path")))).entries
+                entries = load_config(text).entries
                 said = ", ".join(
                     f"{e.get('package-ecosystem')} in {_folder(str(e.get('directory') or ''))}"
                     for e in entries
@@ -207,11 +220,11 @@ def _sha(copy: Copy | None) -> str:
 
 def file_diff(api: Any, kind: str, source: Copy, target: str, here: Copy | None) -> FileDiff:
     """Compare Configuration's difference of *source* and *target*'s copy (or its absence)."""
-    text = file_text(api, source.repository, source.ident)
+    text = file_text(api, source.repository, source.ident, expected_sha=_sha(source))
     word = _KIND_WORDS[kind]
     if here is None:
         return FileDiff(source.ident, source.ident, word, "missing", text)
-    mine = file_text(api, target, here.ident)
+    mine = file_text(api, target, here.ident, expected_sha=_sha(here))
     same = mine.replace("\r\n", "\n") == text.replace("\r\n", "\n")
     state = "same" if same else "different"
     return FileDiff(here.ident, source.ident, word, state, text, mine, _sha(here))

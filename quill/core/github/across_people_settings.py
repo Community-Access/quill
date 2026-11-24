@@ -73,9 +73,17 @@ def _people(api: Any, repo: str) -> list[Copy]:
     from quill.core.github.access_matrix import role_of
 
     def page(affiliation: str) -> list[Mapping[str, Any]]:
-        query = {"affiliation": affiliation, "per_page": "100"}
-        data = api.rest("GET", f"/repos/{repo}/collaborators", query=query).data
-        return [row for row in data or () if isinstance(row, Mapping)]
+        found: list[Mapping[str, Any]] = []
+        number = 1
+        while True:
+            query = {"affiliation": affiliation, "per_page": "100", "page": str(number)}
+            data = api.rest("GET", f"/repos/{repo}/collaborators", query=query).data
+            if not isinstance(data, list) or not all(isinstance(row, Mapping) for row in data):
+                raise ValueError(f"GitHub returned an unreadable collaborator list for {repo}.")
+            found.extend(data)
+            if len(data) < 100:
+                return found
+            number += 1
 
     direct = {str(row.get("login") or "").casefold() for row in page("direct")}
     found = []
@@ -106,7 +114,7 @@ def _packages(api: Any, repo: str, memo: MutableMapping[str, Any]) -> list[Copy]
     owner = repo.partition("/")[0].casefold()
     with memo.setdefault("packages lock", threading.Lock()):  # repositories read in parallel
         if owner not in memo:  # one owner's packages serve every repository it owns
-            memo[owner] = owner_packages(api, repo.partition("/")[0], repo)[0]
+            memo[owner] = owner_packages(api, repo.partition("/")[0], repo, all_pages=True)[0]
     found = []
     for raw in memo[owner]:
         source = raw.get("repository")
