@@ -1453,15 +1453,11 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         wizard's first page -- just one dialog sooner.
         """
         from quill.ui import batch_speech_runner as runner
+        from quill.ui.audio_studio import voice_preview_for
         from quill.ui.audio_studio.wizard import RELOAD_WITH_JOB, AudioStudioWizard
         from quill.ui.preview_guard import guard_preview
 
-        def on_preview(engine: str, voice: str) -> None:
-            if voice:
-                self._preview_voice(engine, voice)
-            else:
-                self._announce("Choose a voice to preview")
-
+        on_preview = voice_preview_for(self, self._announce)  # GATE-11 extract
         while True:
             dlg = AudioStudioWizard(
                 self.frame,

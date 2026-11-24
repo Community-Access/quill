@@ -11,9 +11,26 @@ not a second pipeline.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any
+
 from quill.ui.audio_studio.request import BatchSpeechRequest
 
-__all__ = ["BatchSpeechRequest", "show_audio_studio"]
+__all__ = ["BatchSpeechRequest", "show_audio_studio", "voice_preview_for"]
+
+
+def voice_preview_for(host: Any, say: Callable[[str], None]) -> Callable[[str, str], None]:
+    """The wizard's Preview voice: *host* plays the voice; *say* answers a
+    press with no voice chosen. For QUILL Studio's Open Job File entry, which
+    opens the wizard itself; moved out of ``quill/apps/studio.py`` (GATE-11)."""
+
+    def on_preview(engine: str, voice: str) -> None:
+        if voice:
+            host._preview_voice(engine, voice)
+        else:
+            say("Choose a voice to preview")
+
+    return on_preview
 
 
 def show_audio_studio(frame: object) -> BatchSpeechRequest | None:

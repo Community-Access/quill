@@ -180,3 +180,16 @@ def test_speech_hub_gives_back_the_first_saved_values_after_both_tabs_preview() 
     online._borrowed = voice_browser_settings.borrow(settings)
     SpeechHubDialog._end_previews(hub, give_back=True)
     assert settings.read_aloud_volume == 100
+
+
+def test_voice_preview_for_plays_or_says_choose_a_voice() -> None:
+    from quill.ui.audio_studio import voice_preview_for
+
+    played: list[tuple] = []
+    said: list[str] = []
+    host = SimpleNamespace(_preview_voice=lambda engine, voice: played.append((engine, voice)))
+    preview = voice_preview_for(host, said.append)
+    preview("piper", "amy")
+    preview("piper", "")
+    assert played == [("piper", "amy")]
+    assert said == ["Choose a voice to preview"]
