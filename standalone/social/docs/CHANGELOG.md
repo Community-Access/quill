@@ -4,7 +4,7 @@
 
 - **Scribe for Documents** (2026-11-21). Item > Convert Linked Document with
   Scribe for Documents... (Alt+Shift+F6) converts a document a post links;
-  Tools holds Scribe Conversions and the other Scribe rows, on Alt+Shift+F7 to
+  Tools holds Conversions on This Computer and the other Scribe rows, on Alt+Shift+F7 to
   F11.
 - **Help > What's New** (Ctrl+Alt+F1) opens this changelog. The family's
   usual key for it, Ctrl+Shift+F1, is the Keyboard Reference here.

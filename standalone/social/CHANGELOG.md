@@ -18,7 +18,7 @@ comes first, grouped by subject; the 0.3.0 build of 2026-07-19 follows it.
   own link or its media, to Scribe for Documents, which rebuilds it as
   accessible Word, HTML, EPUB, DAISY, MP3 or braille. With several links a
   list asks which.
-- **Tools** gains Scribe Conversions, My Scribe Documents, Scribe Status,
+- **Tools** gains Conversions on This Computer, Documents in My Scribe Account, Scribe Status,
   Repeat Last Scribe Message and Scribe for Documents Options, on
   Alt+Shift+F7 to F11, and F1 in those windows says what each is for.
 

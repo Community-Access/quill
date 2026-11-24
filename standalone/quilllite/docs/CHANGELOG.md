@@ -30,9 +30,9 @@ whole story.
   WordPad 6 and Notepad 3.
 - **File > Scribe for Documents** (Alt+F, then B) has Convert a File,
   Convert This Document, Export with Scribe for Documents, Convert from a
-  Link, My Scribe Documents, Conversions, Scribe Status, Repeat Last Scribe
+  Link, Documents in My Scribe Account, Conversions on This Computer, Scribe Status, Repeat Last Scribe
   Message, Sign In, Sign Out, Open My Scribe Account in Browser, Options and
-  About. **Window > Scribe Conversions** (Alt+W, then V) lists every job.
+  About. **Window > Conversions on This Computer** (Alt+W, then V) lists every job.
   None has a key; give one in the Keyboard Manager if you like.
 - **Offered when it is needed.** When File > Import / Convert Document (OCR)
   finds a PDF with little or no text, the question offers Scribe after the

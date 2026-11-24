@@ -171,7 +171,10 @@ def test_sign_in_is_said_once_per_profile_not_once_a_file(isolated: Path) -> Non
 def test_a_file_that_needs_its_password_waits_without_a_dialog(isolated: Path) -> None:
     queue = q.FamilyQueue(isolated / "scribe")
     outcome = _action(queue, _Runner(queue, q.NEEDS_PASSWORD)).run(_arriving(isolated), {})
-    assert outcome.status == "failed" and "Open Conversions on This Computer" in outcome.message
+    assert (
+        outcome.status == "failed"
+        and "Open the Conversions on This Computer window" in outcome.message
+    )
     assert queue.jobs()[0].state == q.NEEDS_PASSWORD  # still waiting there
 
 
