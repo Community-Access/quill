@@ -8077,8 +8077,9 @@ that the second lacks, newest first: what it is behind by. GitHub gives
 at most 250; the tab says when there are more.</li>
 <li><code>self._files</code>: The changed files, one per row. Arrow to a
 file to read its changes below.</li>
-<li><code>self._detail</code>: The selected item in full, read-only.
-Arrow through it line by line.</li>
+<li><code>self._detail</code>: The differences of the selected file,
+read-only. Arrow through it line by line; F8 and Shift+F8 move to the
+next and previous difference and say which one it is.</li>
 <li><code>self._browser_btn</code>: Open this on GitHub in your
 browser.</li>
 <li><code>self._pull_btn</code>: Open the pull request already open
@@ -8090,9 +8091,10 @@ same.</li>
 id="configcomparedialog-quilluigithub_config_compare_dialogpy">ConfigCompareDialog
 (<code>quill/ui/github_config_compare_dialog.py</code>)</h4>
 <ul>
-<li><code>self.diff</code>: A unified diff: lines starting with + come
-from the source, lines starting with - are what this repository has
-now.</li>
+<li><code>self.diff</code>: Each change in the selected file: where it
+is, then its lines, each marked in your Diff Line Marks style. Added
+lines come from the source; removed lines are what this repository has
+now. F8 and Shift+F8 move to the next and previous change.</li>
 <li><code>ok</code>: Ask, then open one pull request with the checked
 files.</li>
 <li><code>cancel</code>: Close without changing anything.</li>
@@ -8642,8 +8644,9 @@ id="githubpulldiffdialog-quilluigithub_pr_diff_dialogpy">GitHubPullDiffDialog
 <ul>
 <li><code>self._files</code>: The changed files, one per row. Arrow to a
 file to read its changes below.</li>
-<li><code>self._detail</code>: The selected item in full, read-only.
-Arrow through it line by line.</li>
+<li><code>self._detail</code>: The differences of the selected file,
+read-only. Arrow through it line by line; F8 and Shift+F8 move to the
+next and previous difference and say which one it is.</li>
 <li><code>self._hunk</code>: Read the changed line and its surrounding
 patch context.</li>
 <li><code>close_btn</code>: Close this window. Escape does the

@@ -506,9 +506,19 @@ class ReportDialog(wx.Dialog):
 
 
 def show_report(
-    parent: wx.Window, show_modal: ShowModal, *, title: str, text: str, help_text: str
+    parent: wx.Window,
+    show_modal: ShowModal,
+    *,
+    title: str,
+    text: str,
+    help_text: str,
+    announce: Callable[[str], None] | None = None,
 ) -> None:
     dialog = ReportDialog(parent, title=title, text=text, help_text=help_text)
+    if announce is not None:  # a report of differences: F8 walks them (FUX-12)
+        from quill.ui.change_walk_keys import bind_change_walk
+
+        bind_change_walk(dialog.text, announce)
     try:
         show_modal(dialog, title)
     finally:

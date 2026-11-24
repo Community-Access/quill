@@ -457,9 +457,11 @@ class WordPressCommands(
                 title="Compare with Site",
                 text=report,
                 help_text=(
-                    "The differences between the site's copy and yours. Lines starting 'Site:' "
-                    "are the site's; 'Yours:' are yours."
+                    "The differences between the site's copy and yours, each with where it is. "
+                    "Removed lines are only on the site; added lines are only in yours. F8 and "
+                    "Shift+F8 move to the next and previous change."
                 ),
+                announce=self.host.announce,
             )
 
         self.background(

@@ -2,6 +2,19 @@
 
 ## 1.0.0
 
+### F8 moves from one change to the next in every read-only diff (2026-11-24)
+
+In QUILL and QUILL Lite, the differences of a file in a pull request, Compare
+Branches' Changed Files, Compare Configuration and WordPress's **Compare with
+Site** now answer `F8` and `Shift+F8`, as the compare dialog already did. The
+caret moves to where the next or previous change starts, and QUILL says which
+one of how many it is, such as "Change 2 of 4. Lines 10 to 15:". Before, the
+only way to the next change was line by line.
+
+Compare Configuration now marks each line in your Line marks style ("Added:",
+"Removed:"), with where each change is. Before, it showed a raw diff whose
+"+" and "-" a screen reader may not speak.
+
 ### The first useful task has a clear beginning in Weather, Beacon and Social (2026-11-24)
 
 Quill Weather, before the first place, opens on a Getting started line, "No

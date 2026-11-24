@@ -279,7 +279,8 @@ history, not just what QUILL happened to keep.
 
 **File > WordPress > Compare with Site** shows the lines that differ between
 your copy and the site's, starting with a count such as "3 lines only on
-Community Radio, 1 only in yours."
+Community Radio, 1 only in yours." `F8` and `Shift+F8` move to the next and
+previous change and say which one of how many it is.
 
 ## The Trash
 

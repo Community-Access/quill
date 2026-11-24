@@ -191,7 +191,8 @@ title.
   Select one to hear its changes.
 - **Differences** reads the changes through the same engine as QUILL's Compare
   Documents: "Difference 2 of 5. Text changed at line 41", with both sides
-  named and the changed words described.
+  named and the changed words described. `F8` and `Shift+F8` move to the next
+  and previous difference and say which one it is.
 - **Selected review hunk** shows the part of the file a thread is about, when
   you came here from a thread.
 - **Line marks:** (`Alt+M`) chooses how changed lines are marked in the patch
