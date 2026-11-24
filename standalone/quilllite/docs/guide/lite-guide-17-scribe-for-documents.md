@@ -111,6 +111,11 @@ into any browser. **Try Again** starts over after "Sign-in timed out. Try
 again?". One sign-in covers QUILL Lite and QUILL. **Sign Out** forgets it
 for both, and asks first if conversions are waiting.
 
+QUILL Lite finishes only a sign-in it started itself. If a sign-in it did
+not start reaches it, or you leave Scribe's page without signing in, the
+browser tab says "Sign-in did not complete", nothing is saved, and you hear
+"Scribe for Documents did not sign you in. Try again." Press **Try Again**.
+
 ## What you can send and get back
 
 Scribe takes 23 kinds of file, up to 500 MB each: PDF (locked ones too);
@@ -303,8 +308,10 @@ in your Scribe account, with **Show: Documents / Trash** at the top.
   format of a document already there uses no pages.
 - **Open in QUILL Lite** opens a file you already downloaded.
 - **Rename...**, **Move to Trash** (Delete), **Recover** and **Delete
-  Forever...**. Delete Forever asks first, with Cancel as the default, and
-  cannot be undone. Scribe empties the Trash after 7 days.
+  Forever...**. Rename takes a name of up to 255 characters, and asks again,
+  with what you typed still there, if it is longer. Delete Forever asks
+  first, with Cancel as the default, and cannot be undone. Scribe empties
+  the Trash after 7 days.
 - **Ask for Human Review...**, **Copy Details** and **Refresh**.
 
 ## Scribe for Documents Options

@@ -63,6 +63,8 @@ _UPLOAD_TIMEOUT_S = 600.0
 _CHUNK = 64 * 1024
 _DOWNLOAD_ATTEMPTS = 4
 USER_AGENT = "QUILL (Scribe for Documents)"
+#: Scribe refuses a document title longer than this (Pneuma's client, 0.3.1).
+TITLE_LIMIT = 255
 
 
 class Response(Protocol):
@@ -290,6 +292,17 @@ class ScribeClient:
         self._json("DELETE", f"/api/documents/{_seg(document_id)}")
 
     def rename(self, document_id: str, title: str) -> DocumentSummary | None:
+        """``PATCH /api/documents/{id}``. Scribe refuses a blank title and one
+        over :data:`TITLE_LIMIT` characters; both are refused here first, so
+        nothing is sent and the sentence is ours."""
+        if not title.strip():
+            raise ScribeError("A document needs a name. Nothing was changed.", reason="blank_title")
+        if len(title) > TITLE_LIMIT:
+            raise ScribeError(
+                f"A document's name can be at most {TITLE_LIMIT} characters, and this "
+                f"one has {len(title):,}. Nothing was changed.",
+                reason="title_too_long",
+            )
         data = self._json(
             "PATCH", f"/api/documents/{_seg(document_id)}", {"document": {"title": title}}
         )
@@ -554,6 +567,7 @@ def _log_path(path: str) -> str:
 
 
 __all__ = [
+    "TITLE_LIMIT",
     "USER_AGENT",
     "Response",
     "ScribeClient",

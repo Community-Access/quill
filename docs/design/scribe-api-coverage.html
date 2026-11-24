@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Scribe for Documents API coverage</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="scribe-for-documents-api-coverage">Scribe for Documents API
+coverage</h1>
+<p>Date: 24 November 2026.</p>
+<p>This audit lists every endpoint, field and channel message that the
+Scribe for Documents API offers. For each one it says whether QUILL uses
+it, and, if QUILL does not, whether people need it from QUILL.</p>
+<h2 id="sources">Sources</h2>
+<p>There is still no published HTTP reference, so the audit is read from
+these sources:</p>
+<ul>
+<li><strong>Pneuma’s client library.</strong>
+<code>github.com/PneumaSolutions/scribe-api-client</code>, the Rust
+crate <code>crates/scribe-client/src</code> (<code>client.rs</code>,
+<code>channel.rs</code>, <code>model.rs</code>, <code>auth.rs</code>,
+<code>error.rs</code>). It was read at commit <code>c74a2dc</code> of 23
+November 2026, “Send state with the authorize request, and carry the
+documents channel’s chunk index”. PRD section 7.1 names this crate as
+the reference.</li>
+<li><strong>The PRD.</strong>
+<code>docs/planning/scribe-for-documents-prd.md</code>, sections 3, 7
+and 16 (Pneuma’s answers of 21 November 2026).</li>
+<li><strong>Pneuma’s test corpus README.</strong>
+<code>D:\scribe-corpus\corpus\scribe-test-corpus-2026-11\README.md</code>,
+for the settings names and default values.</li>
+<li><strong>QUILL’s own client.</strong> <code>quill/core/scribe/</code>
+(<code>client.py</code>, <code>auth.py</code>, <code>channel.py</code>,
+<code>model.py</code>, <code>runner.py</code>).</li>
+</ul>
+<p>No endpoint is guessed. Anything not in the crate is not listed.</p>
+<p>Line numbers below are on branch
+<code>feat/scribe-api-coverage</code>, after this change.</p>
+<h2 id="summary">Summary</h2>
+<ul>
+<li><strong>Used before this audit:</strong> every REST endpoint a
+desktop app can use, every setting, every output format and every
+channel event.</li>
+<li><strong>Built now:</strong> three gaps, in the shared core, so QUILL
+and QUILL Lite get them together.
+<ul>
+<li><strong>Sign-in <code>state</code>.</strong> Sign-in sends a random
+<code>state</code> and refuses a redirect that does not bring it
+back.</li>
+<li><strong>Preview chunk replay.</strong> The channel join asks for the
+preview chunks already streamed (<code>replay_chunks</code>), and the
+chunk <code>index</code> stops a chunk being shown twice. Before this
+change, a preview joined after the upload, or rejoined after a dropped
+connection, lost the chunks streamed in between.</li>
+<li><strong>Rename limits.</strong> Rename refuses a blank title, or one
+over 255 characters, before sending anything. In the Documents window, a
+name that is too long is asked for again, with what was typed still
+there.</li>
+<li><strong>A failed sign-in is said when the person comes
+back.</strong> The sign-in window already waited for the person to come
+back from the browser before saying a successful sign-in. It now does
+the same for a failed one, <code>state</code> refusals included
+(<code>quill/ui/scribe_signin_dialog.py</code>,
+<code>_say_when_seen</code>).</li>
+</ul></li>
+<li><strong>Needed, waiting on #2038.</strong> Two fields:
+<code>suggest_buying_pages</code> on the documents list, and
+<code>subscription</code> on billing. Both belong in the windows and the
+Scribe Status dialog that #2038 rewrites. They are listed here so that
+#2038, or a PR after it, picks them up.</li>
+<li><strong>Not needed.</strong> Push devices, push notification
+settings, App Store products and transactions, the account-deletion
+link, and the phone number. All of these serve Apple devices or are
+website-only actions. The reasons are in the table.</li>
+</ul>
+<h2 id="rest-endpoints">REST endpoints</h2>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>What it does</th>
+<th>QUILL</th>
+<th>Do people need it from QUILL?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST /api/documents</code> (file or
+<code>document[url]</code>, <code>document[password]</code>,
+<code>document[settings][...]</code>)</td>
+<td>Upload a document or a link; starts the free
+<code>html_stream</code> preview</td>
+<td>Used: <code>client.py:262</code> (<code>create_document</code>)</td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /api/documents</code> (<code>documents</code>,
+<code>pages_remaining</code>)</td>
+<td>Every document with its outputs</td>
+<td>Used: <code>client.py:275</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /api/documents</code> field
+<code>suggest_buying_pages</code></td>
+<td>The server’s hint to offer a purchase</td>
+<td>Not used</td>
+<td><strong>Yes, waiting on #2038.</strong> It is the server’s own
+signal for when to offer “Buy pages”. It goes beside the pages count
+that #2038’s Scribe Status dialog and the renamed “Documents in My
+Scribe Account” window show.</td>
+</tr>
+<tr>
+<td><code>GET /api/documents/trash</code> (<code>trashed_at</code>,
+<code>permanently_delete_at</code>)</td>
+<td>Documents in the trash</td>
+<td>Used: <code>client.py:281</code>; dates shown in
+<code>scribe_documents_dialog.py:175</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>POST /api/documents/{id}/trash</code></td>
+<td>Move to the trash</td>
+<td>Used: <code>client.py:285</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>POST /api/documents/{id}/recover</code></td>
+<td>Recover from the trash</td>
+<td>Used: <code>client.py:288</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>DELETE /api/documents/{id}</code></td>
+<td>Delete for good (from the trash)</td>
+<td>Used: <code>client.py:292</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>PATCH /api/documents/{id}</code>
+<code>{"document": {"title"}}</code></td>
+<td>Rename; a blank title or one over 255 characters is refused</td>
+<td>Used: <code>client.py:294</code>. <strong>Built now:</strong> both
+limits are checked before sending</td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>POST /api/documents/{id}/feedback</code>
+<code>{"comment"}</code></td>
+<td>Send for human review (paid remediation)</td>
+<td>Used: <code>client.py:313</code>; Conversions and Documents
+windows</td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /api/documents/{id}/outputs</code> (<code>outputs</code>,
+<code>is_password_needed</code>)</td>
+<td>A document’s outputs</td>
+<td>Used: <code>client.py:317</code>; the runner’s fallback poll</td>
+<td>(used)</td>
+</tr>
+<tr>
+<td>Output fields <code>format</code>, <code>stage</code>,
+<code>progress</code>, <code>estimated_time_remaining</code>,
+<code>is_preview</code>, <code>downloadable</code></td>
+<td>Each output’s state</td>
+<td>Used: <code>model.py:341</code>; time remaining goes to the job’s
+<code>eta_seconds</code> (<code>runner.py:414</code>)</td>
+<td>(used)</td>
+</tr>
+<tr>
+<td>Document fields <code>id</code>, <code>title</code>,
+<code>page_count</code>, <code>inserted_at</code>,
+<code>is_password_needed</code></td>
+<td>Each document</td>
+<td>Used: <code>model.py:375</code>; pages shown in
+<code>scribe_documents_dialog.py:179</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /api/documents/{id}/outputs/{format}/download</code></td>
+<td>Download, through a redirect to storage, resumable with
+<code>Range</code></td>
+<td>Used: <code>client.py:427</code>; the token is never sent to
+storage; <code>Range</code> at <code>client.py:455</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /api/documents/{id}/settings</code></td>
+<td>A document’s settings</td>
+<td>Used: <code>client.py:326</code>; reuse from My Scribe
+Documents</td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>PATCH /api/documents/{id}/settings</code></td>
+<td>Change settings for formats not made yet</td>
+<td>Used: <code>client.py:335</code>; <code>runner.py:334</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /api/document_settings</code></td>
+<td>The account’s default settings</td>
+<td>Used: <code>client.py:342</code>; the convert dialog’s starting
+values</td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>PATCH /api/document_settings</code></td>
+<td>Change the account’s defaults</td>
+<td>Used: <code>client.py:350</code>; only when the person asks
+(<code>runner.py:336</code>)</td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /api/settings/languages</code></td>
+<td>Language list</td>
+<td>Used: <code>client.py:353</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /api/settings/dialects</code></td>
+<td>Dialects per language</td>
+<td>Used: <code>client.py:356</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /api/settings/voices</code>
+(<code>[name, short_name, has_sample]</code>)</td>
+<td>Voices per dialect</td>
+<td>Used: <code>client.py:360</code>; #2036 shows every voice</td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /api/settings/braille_tables</code></td>
+<td>Braille tables</td>
+<td>Used: <code>client.py:364</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /sounds/tts-samples/{short_name}.mp3</code> (no
+token)</td>
+<td>A voice’s sample</td>
+<td>Used: <code>client.py:366</code>; Play Sample in voice settings</td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /api/account_info</code> (<code>first_name</code>,
+<code>last_name</code>, <code>email</code>,
+<code>organization_name</code>)</td>
+<td>Who is signed in</td>
+<td>Used: <code>client.py:387</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /api/account_info</code> field
+<code>phone_number</code></td>
+<td>The account’s phone number</td>
+<td>Not used</td>
+<td><strong>No.</strong> QUILL never shows or needs it, and keeping it
+out keeps personal data out of memory and logs.</td>
+</tr>
+<tr>
+<td><code>GET /api/billing</code> field
+<code>pages_remaining</code></td>
+<td>Pages left</td>
+<td>Used: <code>client.py:388</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>GET /api/billing</code> field <code>subscription</code>
+(<code>store</code>, <code>renews_at</code>)</td>
+<td>The active subscription, if any</td>
+<td>Not used</td>
+<td><strong>Yes, waiting on #2038.</strong> “Subscription renews on 3
+March 2027” belongs in #2038’s Scribe Status dialog, beside the pages
+count. Account usage is #2038’s, so it is not built here.</td>
+</tr>
+<tr>
+<td><code>GET /api/billing</code> field
+<code>app_account_token</code></td>
+<td>Apple’s App Store account token</td>
+<td>Not used</td>
+<td><strong>No.</strong> It is for Apple’s StoreKit only.</td>
+</tr>
+<tr>
+<td><code>/auth/browser_from_oauth?token=&amp;state={"return_to"}</code></td>
+<td>Opens a page of the website, already signed in</td>
+<td>Used: <code>client.py:399</code>; Open My Scribe Account in Browser
+and Buy Pages</td>
+<td>(used)</td>
+</tr>
+<tr>
+<td>Account deletion page (<code>/settings/delete_account</code>, the
+crate’s <code>delete_account_url</code>)</td>
+<td>The website’s account-deletion page, signed in</td>
+<td>Not used</td>
+<td><strong>No.</strong> Apple requires in-app account deletion; Windows
+does not. Deleting the account is a website action, already one step
+away through Open My Scribe Account in Browser. A delete-account command
+in a document editor invites an irreversible mistake.</td>
+</tr>
+<tr>
+<td><code>POST /api/devices</code>,
+<code>DELETE /api/devices/{token}</code></td>
+<td>Register an Apple push (APNs) device token</td>
+<td>Not used</td>
+<td><strong>No.</strong> APNs is Apple’s push service. Windows has no
+APNs token, and QUILL says when a conversion finishes on its own.</td>
+</tr>
+<tr>
+<td><code>GET</code> and <code>PATCH /api/notification_settings</code>
+(<code>push_notify_when_complete</code>)</td>
+<td>Push notifications for that device</td>
+<td>Not used</td>
+<td><strong>No.</strong> This is the same Apple push channel. Scribe’s
+email notice is the <code>notify_when_complete</code> setting, which
+QUILL uses.</td>
+</tr>
+<tr>
+<td><code>GET /api/app_store/products</code>,
+<code>POST /api/app_store/transactions</code></td>
+<td>Buying pages through Apple’s App Store</td>
+<td>Not used</td>
+<td><strong>No.</strong> QUILL never takes payment (PRD 3.6). Buying is
+on Scribe’s website, through Buy Pages.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="settings-per-document-upload-and-account-defaults">Settings (per
+document, upload and account defaults)</h2>
+<p>Every field is in <code>ScribeSettings</code>
+(<code>model.py:215</code>). It is sent at upload by
+<code>to_upload_fields</code> (<code>model.py:265</code>), and later by
+<code>to_update</code> (<code>model.py:237</code>). These are the
+fields:</p>
+<p><code>language</code>, <code>dialects</code>, <code>voices</code>,
+<code>tts_gender</code>, <code>tts_rate</code>,
+<code>braille_translation_table</code>,
+<code>braille_cells_per_line</code>,
+<code>braille_split_into_pages</code>,
+<code>braille_lines_per_page</code>, <code>large_print</code>,
+<code>add_image_descriptions</code>, <code>math</code>,
+<code>notify_when_complete</code>.</p>
+<p>All 13 are used. The crate has no setting that QUILL lacks.</p>
+<h2 id="output-formats">Output formats</h2>
+<p>QUILL uses all ten: <code>html</code>, <code>html_stream</code>,
+<code>offline_html</code>, <code>pdf</code>, <code>docx</code>,
+<code>epub</code>, <code>mobi</code>, <code>daisy</code>,
+<code>mp3</code> and <code>brf</code> (<code>model.py</code>,
+<code>FORMATS</code>). The crate has no format that QUILL lacks.</p>
+<h2 id="sign-in-oauth-with-pkce">Sign-in (OAuth with PKCE)</h2>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>QUILL</th>
+<th>Do people need it?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/auth/logout?next=/oauth/authorize?...</code> with PKCE
+S256</td>
+<td>Used: <code>auth.py:99</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>state</code> on the authorize request, checked on the redirect
+(crate, 23 November 2026)</td>
+<td><strong>Built now:</strong> <code>auth.py:67</code>
+(<code>new_state</code>), <code>auth.py:94</code>, and the check in the
+listener (<code>auth.py:131</code>)</td>
+<td><strong>Yes.</strong> PKCE stops a stolen code being used. It does
+not stop someone else’s code being slipped into QUILL, so a person could
+end up signed in to an account that is not theirs. A redirect without
+the right <code>state</code> is now refused before its code is
+exchanged. The person sees the existing sentence: “Scribe for Documents
+did not sign you in. Try again.”</td>
+</tr>
+<tr>
+<td><code>locale</code> on sign-in</td>
+<td>Used: <code>auth.py:98</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>POST /oauth/token</code> (code exchange and refresh)</td>
+<td>Used: <code>auth.py:251</code>, <code>auth.py:303</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>POST /oauth/revoke</code> on sign-out</td>
+<td>Used: <code>auth.py:346</code></td>
+<td>(used)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="document-channel-phoenix-websocket">Document channel (Phoenix
+WebSocket)</h2>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>QUILL</th>
+<th>Do people need it?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/socket/websocket?vsn=2.0.0&amp;token=&amp;locale=</code>,
+topic <code>documents:{id}</code></td>
+<td>Used: <code>channel.py:90</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>phx_join</code> payload
+<code>{"replay_chunks": true}</code></td>
+<td><strong>Built now:</strong> <code>channel.py:231</code></td>
+<td><strong>Yes.</strong> Without it, the preview loses the chunks
+streamed before QUILL joined (the gap between the upload and the join),
+and every chunk streamed while the connection was down. A person reading
+the preview as it arrives misses text without knowing it.</td>
+</tr>
+<tr>
+<td>Push <code>chunk</code> with <code>index</code></td>
+<td><strong>Built now:</strong> <code>ChannelEvent.index</code> and
+<code>ChunkLedger</code> in <code>channel.py</code></td>
+<td><strong>Yes.</strong> A replay sends again the chunks already shown.
+The index lets QUILL drop those, so nothing is read twice. Chunks from a
+server without <code>index</code> pass through unchanged. The ledger
+forgets a document when its preview completes, so a later preview of the
+same document, whose indexes start at 0 again, is passed on whole.</td>
+</tr>
+<tr>
+<td>Heartbeat every 30 seconds</td>
+<td>Used: <code>channel.py:256</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td><code>start_conversion</code> <code>{format, password}</code></td>
+<td>Used: <code>channel.py:324</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td>Pushes <code>status</code>, <code>conversion_complete</code>,
+<code>error</code>, <code>password_required</code></td>
+<td>Used: <code>channel.py:parse_event</code>; the runner says each one
+(SCR-POL-4)</td>
+<td>(used)</td>
+</tr>
+<tr>
+<td>Channel errors <code>not_found</code>, <code>forbidden</code>,
+<code>conversion_in_progress</code>, <code>rate_limited</code>,
+<code>password_required</code>, <code>needs_purchase</code> (with
+<code>purchase_url</code>), <code>invalid_password</code></td>
+<td>Used: <code>errors.py:error_from_server</code></td>
+<td>(used)</td>
+</tr>
+<tr>
+<td>A refused handshake is retried once with a fresh token</td>
+<td>Used: <code>channel.py:default_channel_opener</code></td>
+<td>(used)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="rate-limits-webhooks-and-email">Rate limits, webhooks and
+email</h2>
+<ul>
+<li><strong>Rate limit.</strong> 10 actions a minute, with no
+Retry-After header. Used: the family queue keeps under 8 a minute and
+waits 60 seconds after <code>rate_limited</code> (PRD 3.5).</li>
+<li><strong>Webhooks.</strong> None exist. The channel, plus polling
+<code>GET .../outputs</code>, is the whole story (PRD 3.5).</li>
+<li><strong>Email.</strong> The <code>notify_when_complete</code>
+setting is used. Push is Apple-only (see above).</li>
+<li><strong>Retention.</strong> The API cannot read it (PRD 3.4). QUILL
+describes the rule and links to the setting.</li>
+</ul>
+<h2 id="what-needs-a-live-check-with-jeffs-account">What needs a live
+check with Jeff’s account</h2>
+<ol type="1">
+<li><strong>Sign in once.</strong> Signing in should complete as before.
+If Scribe’s server did not send <code>state</code> back, sign-in would
+now fail with “Scribe for Documents did not sign you in. Try again.”
+Pneuma’s own client relies on the server sending it back, so it should
+work, but this has not been tried against production.</li>
+<li><strong>Watch a preview live, then drop the connection.</strong>
+Convert a several-page PDF with the preview open, and turn Wi-Fi off and
+on during the preview. The preview should start at the document’s first
+heading, and nothing should be missing or repeated after the reconnect.
+With the preview tab focused, check with NVDA, JAWS and Narrator that a
+burst of 20 or more replayed blocks is not spoken and does not move the
+caret.</li>
+<li><strong>Refuse a sign-in while in the browser.</strong> Start a
+sign-in and close Scribe’s page without signing in. On coming back to
+QUILL, the sign-in window should say “Scribe for Documents did not sign
+you in. Try again.” once, with focus on Try Again.</li>
+</ol>
+</main>
+</body>
+</html>

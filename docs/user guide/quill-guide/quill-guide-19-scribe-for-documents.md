@@ -123,6 +123,13 @@ sense at the time:
 - **Continue** closes the window once you are signed in.
 - **Cancel** stops waiting. You are not signed in.
 
+QUILL finishes only a sign-in it started itself. If a sign-in it did not
+start reaches it, or you leave Scribe's page without signing in, the browser
+tab says "Sign-in did not complete. Return to QUILL and try again." and
+nothing is saved. The sign-in window says "Scribe for Documents did not sign
+you in. Try again." Focus is on **Try Again**. Press it to start a new
+sign-in.
+
 One sign-in covers every QUILL app on this computer, QUILL Lite included.
 It is kept in Windows' secure store, never in a settings file.
 
@@ -720,7 +727,7 @@ In Tab order:
 |---|---|
 | **Download Formats...** | The Convert dialog for this document, with nothing uploaded. Download a format already made, or make a new one |
 | **Open in QUILL** | Opens a file you already downloaded from this document |
-| **Rename...** | Changes the document's title in your Scribe account |
+| **Rename...** | Changes the document's title in your Scribe account. A name can have up to 255 characters. A longer one is not sent: Rename asks again, with what you typed still there |
 | **Move to Trash** | Moves it to the Trash. Scribe deletes it after 7 days |
 | **Recover** | In the Trash: takes it out again |
 | **Delete Forever...** | In the Trash: deletes it now |
@@ -817,6 +824,10 @@ start reading at once.
 - Text is added only a whole paragraph, heading or list item at a time, at
   the end. Your place does not move, the braille line does not change under
   you, and nothing new is spoken.
+- The tab starts at the beginning of the document, even when Scribe started
+  sending before QUILL was listening. If the connection drops, QUILL picks up
+  where it stopped when it reconnects: nothing is missed, and nothing is
+  added twice.
 - When the text is all there, the tab is named "Notes (Scribe, complete)".
   If the conversion fails partway, it is named "Notes (Scribe, incomplete)"
   and keeps what arrived.

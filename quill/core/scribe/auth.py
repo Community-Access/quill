@@ -5,7 +5,11 @@
 * **The authorize URL** is Pneuma's shape: ``/oauth/authorize?...`` wrapped in
   ``/auth/logout?next=...``, so a browser session left from an earlier
   account is dropped before the sign-in page (SCR-POL-2: QUILL opens Scribe's
-  own page in the person's browser and never sees what is typed).
+  own page in the person's browser and never sees what is typed). It carries a
+  fresh random ``state`` (RFC 6749 10.12, as Pneuma's client does since
+  2026-11-23), and a redirect that does not bring the same ``state`` back is
+  refused before its code is exchanged: PKCE stops a stolen code being used,
+  but not someone else's code being slipped into QUILL.
 * **The redirect** lands on a one-shot loopback listener bound *before* the
   browser opens, on a free port of ``127.0.0.1`` (or ``[::1]``), at
   ``/scribe/callback`` -- the two registered redirect URIs, any port.
@@ -17,13 +21,15 @@
   namespace. The token exchange, refresh and revoke go through the reviewed
   :func:`quill.core.ai.oauth_poster.post_form` (an injected poster).
 
-Nothing here logs a token, a code or a verifier. wx-free.
+Nothing here logs a token, a code, a state or a verifier. wx-free.
 """
 
 from __future__ import annotations
 
+import hmac
 import http.server
 import logging
+import secrets
 import socket
 import threading
 import time
@@ -58,20 +64,35 @@ def _default_poster(url: str, fields: dict[str, str]) -> dict[str, Any]:
     return post_form(url, fields)
 
 
+def new_state() -> str:
+    """A fresh, unguessable ``state`` for one sign-in (32 random bytes, URL-safe)."""
+    return secrets.token_urlsafe(32)
+
+
 def authorization_url(
-    base_url: str, client_id: str, redirect_uri: str, challenge: str, *, locale: str = ""
+    base_url: str,
+    client_id: str,
+    redirect_uri: str,
+    challenge: str,
+    *,
+    locale: str = "",
+    state: str = "",
 ) -> str:
     """Pneuma's sign-in address: ``/auth/logout?next=/oauth/authorize?...``.
 
     ``next`` is a path and query only (the server refuses absolute targets).
+    *state* goes in the authorize query; the redirect must bring it back.
     """
-    authorize_query = urlencode({
+    authorize_fields = {
         "response_type": "code",
         "client_id": client_id,
         "redirect_uri": redirect_uri,
         "code_challenge": challenge,
         "code_challenge_method": "S256",
-    })
+    }
+    if state:
+        authorize_fields["state"] = state
+    authorize_query = urlencode(authorize_fields)
     outer: dict[str, str] = {"next": f"/oauth/authorize?{authorize_query}"}
     if locale:
         outer["locale"] = locale
@@ -83,10 +104,13 @@ class LoopbackListener:
 
     Bound in the constructor, so the redirect URI (with its port) is known
     before the browser opens and a fast redirect cannot arrive to nothing.
+    Given a *state*, a redirect whose ``state`` differs is captured as the
+    error ``state_mismatch`` with no code, so its code is never exchanged.
     """
 
-    def __init__(self, *, app_name: str = "QUILL") -> None:
+    def __init__(self, *, app_name: str = "QUILL", state: str = "") -> None:
         self._app_name = app_name
+        self._state = state
         self.captured: AuthRedirect | None = None
         self._done = threading.Event()
         listener = self
@@ -99,8 +123,15 @@ class LoopbackListener:
                     return
                 query = parse_qs(request.query)
                 code = (query.get("code") or [""])[0]
+                came_back = (query.get("state") or [""])[0]
                 error = (query.get("error") or [""])[0] or ("" if code else "no_code")
-                listener.captured = AuthRedirect(code=code, error=error)
+                if (
+                    code
+                    and listener._state
+                    and not hmac.compare_digest(came_back.encode(), listener._state.encode())
+                ):
+                    code, error = "", "state_mismatch"
+                listener.captured = AuthRedirect(code=code, state=came_back, error=error)
                 text = (SIGNED_IN_PAGE if code else REFUSED_PAGE).format(app=listener._app_name)
                 body = (
                     "<!doctype html><html lang=en><meta charset=utf-8>"
@@ -204,10 +235,16 @@ class ScribeSession:
         """Bind the listener and build the URL; the caller opens the browser."""
         if not self._client_id:
             raise ScribeError("Scribe for Documents is not available in this build yet.")
-        listener = LoopbackListener(app_name=app_name)
+        state = new_state()
+        listener = LoopbackListener(app_name=app_name, state=state)
         pkce = generate_pkce_pair()
         url = authorization_url(
-            self.base_url, self._client_id, listener.redirect_uri, pkce.challenge, locale=locale
+            self.base_url,
+            self._client_id,
+            listener.redirect_uri,
+            pkce.challenge,
+            locale=locale,
+            state=state,
         )
         return SignInAttempt(self, listener, pkce, url)
 
@@ -379,4 +416,5 @@ __all__ = [
     "ScribeSession",
     "SignInAttempt",
     "authorization_url",
+    "new_state",
 ]
