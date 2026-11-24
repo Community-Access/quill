@@ -297,7 +297,7 @@ class TestRecordingControls:
             winsound.PlaySound(str(wav), winsound.SND_FILENAME | winsound.SND_ASYNC)
         except Exception as exc:  # noqa: BLE001 - no FFmpeg, no device, or not Windows
             _log.info("Could not play the test recording: %s", exc)
-            self._announce(f"The test recording could not be played: {exc}")
+            self._announce(f"The test recording could not be played ({exc}).")
             return
         self._playing = True
         self.hear_button.SetLabel("Stop &Hearing")

@@ -189,4 +189,4 @@ def test_open_recording_settings_saves_what_ok_chose(
     rsd.open_recording_settings(host)
     assert host._radio_recording_settings is chosen
     assert saved == [chosen, chosen]
-    assert host.said[-1] == "Recording settings saved"
+    assert host.said[-1] == "Recording settings saved."

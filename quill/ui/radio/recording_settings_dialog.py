@@ -39,7 +39,7 @@ def open_recording_settings(host: Any) -> None:
     host._radio_recording_settings = updated
     host._radio_scheduler.set_recording_settings(updated)
     save_recording_settings(app_data_dir(), updated)
-    host._announce("Recording settings saved")
+    host._announce("Recording settings saved.")
 
 
 class RecordingSettingsDialog:
