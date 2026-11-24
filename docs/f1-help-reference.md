@@ -1356,8 +1356,7 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 
 #### ChapterWorkbenchDialog (`quill/ui/audio_studio/chapter_workbench.py`)
 
-- `self._chapter_list`: Every chapter of the book, numbered, with its start time and length. Selecting a row loads its title into the Chapter title field; Enter plays the chapter. Edits made with the buttons below apply to the highlighted row and are written to disk only on Save.
-- `self._chapter_list`: Every chapter, with where it starts and how long it runs. Alt with Left or Right arrow nudges the highlighted chapter's start earlier or later by one step; hold Shift as well to move ten steps at once. The step size is the Step box below.
+- `self._chapter_list`: Every chapter of the book, numbered, with its start time and length. Selecting a row loads its title into the Chapter title field; Enter plays the chapter. Alt with Left or Right arrow nudges the highlighted chapter's start earlier or later by one step; hold Shift as well to move ten steps at once. The step size is the Nudge step choice below (Alt+P). Edits made with the buttons below apply to the highlighted row and are written to disk only on Save.
 - `self._title_edit`: The highlighted chapter's title, ready to edit. Type the new title and press Enter (or the Rename button) to apply it to the selected row. It cannot be empty, and nothing reaches the file until Save.
 - `rename_btn`: Applies the text in the Chapter title field to the highlighted chapter. The same as pressing Enter in that field.
 - `propose_btn`: Scans any recording -- a lecture or meeting as much as a book -- for silences with ffmpeg and proposes chapters there, titled Proposed chapter. You choose the noise threshold and minimum pause first. If the recording already has chapters you are asked whether to keep them and add only new boundaries, or replace them. Press again while it runs to stop; Restore original undoes a proposal.

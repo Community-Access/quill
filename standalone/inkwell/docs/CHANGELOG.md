@@ -6,6 +6,12 @@ Quill Inkwell 1.0.0 is its first public release, and it has not been published
 yet. The testing build is **1.0.0 (build 2)**. First, the work since the first
 build, grouped by subject; then the first build itself.
 
+### F1 says why an abbreviation will not expand (2026-11-24)
+
+F1 on an entry marked "(disabled)" in the main window's list says that typing
+it does not expand it, and that Enable/Disable (Alt+B) in Manage Abbreviations
+(Ctrl+M), or Enabled in the entry's Edit dialog, turns it back on.
+
 ### Settings that stick, and a damaged settings file (2026-11-20)
 
 A preference you changed from the Options menu could be saved after a newer

@@ -143,20 +143,20 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
         )
         self._chapter_list = wx.ListBox(self, style=wx.LB_SINGLE)
         self._chapter_list.SetName(_("Chapters"))
+        # One help text: a second SetHelpText here used to replace this one, so
+        # F1 never said that Enter plays the chapter (FUX-10 audit).
         self._chapter_list.SetHelpText(
             "Every chapter of the book, numbered, with its start time and length. "
             "Selecting a row loads its title into the Chapter title field; Enter "
-            "plays the chapter. Edits made with the buttons below apply to the "
-            "highlighted row and are written to disk only on Save."
+            "plays the chapter. Alt with Left or Right arrow nudges the highlighted "
+            "chapter's start earlier or later by one step; hold Shift as well to "
+            "move ten steps at once. The step size is the Nudge step choice below "
+            "(Alt+P). Edits "
+            "made with the buttons below apply to the highlighted row and are "
+            "written to disk only on Save."
         )
         self._chapter_list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_selected())
         self._chapter_list.Bind(wx.EVT_KEY_DOWN, self._nudge_key_handler)
-        self._chapter_list.SetHelpText(
-            "Every chapter, with where it starts and how long it runs. Alt "
-            "with Left or Right arrow nudges the highlighted chapter's start "
-            "earlier or later by one step; hold Shift as well to move ten "
-            "steps at once. The step size is the Step box below."
-        )
         set_accessible_name(self._chapter_list, str(_("Chapters")))
         apply_listbox_activation(self._chapter_list, lambda _e: self._play_selected())
         root.Add(self._chapter_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)

@@ -28,6 +28,7 @@ from typing import Any
 
 import wx
 
+from quill.apps import inkwell_row_help
 from quill.apps.inkwell_ai import InkwellAiMixin
 from quill.apps.inkwell_dictation import InkwellDictationMixin
 from quill.apps.inkwell_keys import InkwellKeysMixin
@@ -363,6 +364,7 @@ class QuillInkwellFrame(
         self._list.SetFocus()
 
     def _reload_list(self) -> None:
+        inkwell_row_help.install(self)  # F1 says why a disabled entry will not expand
         self._list.DeleteAllItems()
         for i, entry in enumerate(self._library.abbreviations):
             label = entry.abbreviation if entry.enabled else f"{entry.abbreviation} (disabled)"

@@ -192,6 +192,14 @@ Ctrl+Enter stops as well.
 Press F1 on any control to hear what it does, after a sentence about what the
 window is for.
 
+After a conversion, F1 on a row of the queue also says what happened to that
+file last time: what it converted to, why it failed, or that it was skipped
+because you stopped. On a folder it counts its files, and after Split by
+Chapters it says how many parts the file was split into. A file left out
+before the run started (a name already taken, or a sound file for a video
+format) is counted only in the spoken summary. The rows stay in the queue, so
+you can check each one without opening the report.
+
 ### What you learned, and where to go next
 
 You can install Quill Converter, add files, choose a format, and press

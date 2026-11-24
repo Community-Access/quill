@@ -12,6 +12,14 @@ engine under `quill/core/audio/` -- so a fix to the engine lands in QUILL's
 Audio Studio at the same time. The `standalone/converter` folder carries only
 the launcher, installer, icon and these documents.
 
+## Unreleased
+
+### F1 on the queue says what happened to that file (2026-11-23)
+
+After a conversion, F1 on a row of the queue says what that file converted
+to, why it failed, or that it was skipped when you stopped. On a folder it
+counts its files, and after Split by Chapters it says how many parts. The result used to be only in the Conversion Report.
+
 ## Planned, not released
 
 - Studio's consolidated plan proposes an accessible project-to-Converter

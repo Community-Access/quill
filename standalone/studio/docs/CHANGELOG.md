@@ -12,6 +12,17 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
 
+### The Library Window opens, with your books in it (2026-11-23)
+
+- **View > Library Window...** (Ctrl+Alt+Y) did not open, because of two
+  mistakes in how it was started. It now opens with your books in it.
+- F1 on a group or folder there says that Enter opens nothing and that the
+  context menu offers New Folder, and Enter there now says it is a group
+  rather than "No book selected". F1 on a book whose file has moved says so
+  and how to remove it from the library.
+- F1 on the Chapter Workbench's chapter list says again that Enter plays the
+  chapter. A second help text had replaced the first.
+
 ### Narration from Scribe for Documents (2026-11-21)
 
 - **Studio > Narration from Scribe for Documents...** (Alt+Shift+F6) has

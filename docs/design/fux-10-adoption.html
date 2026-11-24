@@ -353,39 +353,46 @@ why it is dimmed</td>
 <tr>
 <td>Media Player</td>
 <td>F1 through the shell</td>
-<td>F1 on the Chapters tree did not say which chapter is playing or that
-Enter on a section of another file loads that file</td>
-<td>Planned, in the next pull request</td>
+<td>F1 on the Chapters tree already says what Enter does for both kinds
+of row (a seek, or the section’s own file), and the status bar says
+which chapter is playing</td>
+<td>None needed</td>
 </tr>
 <tr>
 <td>Converter</td>
 <td>F1 is Help for This Window; Shift+F1 is the release notes</td>
-<td>The queue forgot each file’s result after a run, so F1 on a row
-could not say whether it converted, failed or was skipped</td>
-<td>Planned, in the next pull request</td>
+<td>The queue forgot each file’s result after a run, so a row read the
+same whether it converted, failed or was skipped</td>
+<td>F1 on a queue row says its last result; a folder row counts its
+files</td>
 </tr>
 <tr>
 <td>Studio</td>
 <td>F1 through the shell</td>
-<td>The Your Books tree said “Enter opens the selected book” on folders
-and views too. The Chapter Workbench list’s help was overwritten by a
-second <code>SetHelpText</code>, so F1 never said that Enter plays the
+<td>The Library Window (Ctrl+Alt+Y) did not open at all: it imported a
+module that does not exist, then filled itself before the app knew its
+tree. Its tree said “Enter opens the selected book” on group rows too.
+The Chapter Workbench list’s help was replaced by a second
+<code>SetHelpText</code>, so F1 never said that Enter plays the
 chapter</td>
-<td>Planned, in the next pull request</td>
+<td>The window opens with your books; F1 on a group row says Enter opens
+nothing, and on a moved book says so; the Chapter Workbench list has one
+help text</td>
 </tr>
 <tr>
 <td>Transcribe</td>
 <td>F1 through the shell</td>
-<td>Choose Model’s list showed readiness in a details box, but F1 on the
-list did not say whether the selected model is downloaded</td>
-<td>Planned</td>
+<td>Choose Model shows the selected model’s readiness in a details box
+beside the list; Resume and Discard Held Words say in their help that
+they work while dictation is paused</td>
+<td>None needed</td>
 </tr>
 <tr>
 <td>Inkwell</td>
 <td>F1 through the shell and its catalogue</td>
-<td>The Abbreviations list marks an entry that is turned off, but F1
-does not say that it will not expand or where to turn it back on</td>
-<td>Planned</td>
+<td>The Abbreviations list marks an entry that is turned off, but F1 did
+not say that it will not expand or where to turn it back on</td>
+<td>F1 on a disabled entry says both</td>
 </tr>
 <tr>
 <td>Beacon</td>

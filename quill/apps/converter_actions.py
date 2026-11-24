@@ -26,6 +26,7 @@ from typing import Any
 
 import wx
 
+from quill.apps import converter_row_help
 from quill.apps.converter_lifecycle import ConverterLifecycleMixin
 from quill.apps.converter_scribe import ConverterScribeMixin
 from quill.core.audio.batch_progress import BatchProgress
@@ -168,6 +169,7 @@ class ConverterActionsMixin(ConverterLifecycleMixin, ConverterScribeMixin):
         notes = self._skip_notes(spec, skipped)
         if not jobs:
             message = "Nothing to convert." + (f" {notes}" if notes else "")
+            self._last_results = {}  # F1 must not report an older run as the last
             self._set_status(message)
             self._announce(message)
             return
@@ -233,6 +235,7 @@ class ConverterActionsMixin(ConverterLifecycleMixin, ConverterScribeMixin):
         if result.failed:
             summary += " Press Ctrl+R for the report."
         self._last_report = self._report_text(result, total, dest, notes, seconds)
+        converter_row_help.remember(self, result.results)  # F1 on a row says its result
         self._last_output = dest
         self._set_status(summary)
         self._announce(summary, force=True)
