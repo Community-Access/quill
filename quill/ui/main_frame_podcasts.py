@@ -615,34 +615,14 @@ class PodcastsMixin(
         analyse_playing_episode(self)
 
     def podcast_next_chapter(self) -> None:
-        from quill.core.podcasts.chapters import next_chapter
+        from quill.ui.podcasts.chapter_moves import step_chapter
 
-        if not self._podcast_current_chapters:
-            self._announce("This episode has no chapters.")
-            return
-        target = next_chapter(
-            self._podcast_current_chapters, self._podcast_controller.position_ms()
-        )
-        if target is None:
-            self._announce("Already at the last chapter.")
-            return
-        self._podcast_controller.seek(target.start_ms)
-        self._announce(f"Chapter: {target.title}")
+        step_chapter(self, 1)
 
     def podcast_previous_chapter(self) -> None:
-        from quill.core.podcasts.chapters import previous_chapter
+        from quill.ui.podcasts.chapter_moves import step_chapter
 
-        if not self._podcast_current_chapters:
-            self._announce("This episode has no chapters.")
-            return
-        target = previous_chapter(
-            self._podcast_current_chapters, self._podcast_controller.position_ms()
-        )
-        if target is None:
-            self._announce("Already at the first chapter.")
-            return
-        self._podcast_controller.seek(target.start_ms)
-        self._announce(f"Chapter: {target.title}")
+        step_chapter(self, -1)
 
     def _podcast_skip_settings(self) -> PodcastSettings:
         """The effective skip settings for whatever is playing (that show's

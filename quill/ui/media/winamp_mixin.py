@@ -219,7 +219,9 @@ class MediaWinampKeysMixin:
         target = max(0, self._player.playhead_ms() + delta_ms)
         if length > 0:
             target = min(length, target)
-        self._player.seek_to(target)
+        # Said once: the panel's own timestamp is off, because this sentence
+        # (elapsed or remaining, as T chose) is the one the person asked for.
+        self._player.seek_to(target, announce=False)
         self._announce(self._winamp_position_text())
 
     def _winamp_volume(self, *, up: bool) -> None:

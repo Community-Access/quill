@@ -10,6 +10,17 @@ F1 on the episode list now also says which menu items are unavailable for the
 selected episode or podcast, and why, from the same reasons the row's menu
 has. Pause Download was dimmed with no reason; it now says nothing is
 downloading.
+### Chapter moves say where you are (2026-11-23)
+
+- **Next and Previous Chapter** (Ctrl+Alt+Right, Ctrl+Alt+Left) say the
+  chapter's name and place, "The interview, chapter 3 of 7.", and
+  "estimated" for a chapter Cast worked out rather than one the podcast
+  published.
+- **Previous Chapter restarts the chapter you are in** when you are more than
+  three seconds into it, as Radio and the Media Player do. Twenty minutes into
+  the first chapter it used to say "Already at the first chapter."
+- At either end the chapter keys say "This is the first chapter." or "This
+  is the last chapter.", the words Radio and the Media Player use.
 
 ### A linked document, made accessible (2026-11-21)
 

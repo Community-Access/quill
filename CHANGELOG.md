@@ -36,6 +36,23 @@ and reads your note on the station.
 
 Nothing is said while you arrow through the list. The words come only when you
 press F1.
+### Moving by chapter or bookmark says where you landed, once (2026-11-23)
+
+- **The family's chapter keys say the same sentence**: the name, the kind and
+  the place, "The interview, chapter 3 of 7." In Quill Cast, the Media Player,
+  QUILL Studio and QUILL's built-in player this replaces "Chapter: title" or
+  "Chapter 3: title"; Quill Radio already said it this way. A chapter worked
+  out from a transcript or from pauses ends with "estimated"
+  (`quill/core/structure_landing.py`, FUX-14).
+- **Previous Chapter restarts the chapter you are in** in Quill Cast as well,
+  and says so in the built-in player, where a restart used to be silent.
+- **Quill Radio's Next Chapter in the last chapter** says "This is the last
+  chapter." instead of jumping back, and the chapter keys reach the chapters
+  the Chapters list finds when none were published.
+- **The Media Player moves by bookmark** with F2 and Shift+F2, the keys QUILL
+  uses, and its arrow keys say the new position once instead of twice.
+- The audit behind this, app by app: `docs/design/fux-14-adoption.md`.
+
 ### Scribe for Documents: the voices are there, and Play Sample answers (2026-11-23)
 
 In Convert with Scribe for Documents, in QUILL and QUILL Lite:

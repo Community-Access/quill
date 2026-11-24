@@ -56,8 +56,9 @@ class _Player:
     def length_ms(self) -> int:
         return self._length
 
-    def seek_to(self, ms: int) -> None:
+    def seek_to(self, ms: int, *, announce: bool = True) -> None:
         self.position = ms
+        self.seek_announced = announce
 
     def volume(self) -> int:
         return self._volume

@@ -13,6 +13,17 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 F1 on the Favorites tree now also says what Enter does on the row you are on:
 on the playing station it pauses, on a paused one it resumes, and on a folder
 it plays nothing. It also names a station marked for move and reads your note.
+### The chapter keys land where they say (2026-11-23)
+
+- **Next Chapter in the last chapter** says "This is the last chapter." and
+  stays put. It used to jump back to the start of the chapter you were in and
+  announce it as if it had moved.
+- **The chapter keys find the chapters the Chapters list finds.** When nothing
+  was published, Ctrl+Shift+. and Ctrl+Shift+, now move through the file's own
+  chapter marks, or the chapters QUILL Cast worked out, instead of saying there
+  are none. Worked-out chapters are said with "estimated".
+- "This has no chapters." replaces "This video has no chapters.", which was
+  said for podcast episodes, recordings and files too.
 
 ### Infinity or NaN in the settings file no longer stops Radio (2026-11-20)
 

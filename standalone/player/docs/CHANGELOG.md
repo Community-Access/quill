@@ -8,6 +8,18 @@ Quill Media Player runs the same player code as QUILL from the shared `quill` pa
 
 ## Unreleased
 
+### Move by bookmark, and hear where you landed once (2026-11-23)
+
+- **Navigation > Next Bookmark** (F2) and **Previous Bookmark** (Shift+F2) move
+  from bookmark to bookmark without opening the list, the keys QUILL uses. Each
+  says the note, "bookmark 2 of 5" and the time. Choosing a bookmark in the list
+  now says its note too, not only the time.
+- **Chapter moves say their place**: "The Return, chapter 12 of 30, 14 minutes 5 seconds long.".
+  Previous that restarts the chapter you are in used to say nothing; it says
+  the chapter now.
+- **The arrow keys say the new position once.** They said the time twice, once
+  as a timestamp and once as elapsed or remaining.
+
 ### Listen to a document with Scribe for Documents (2026-11-21)
 
 - **File > Listen to a Document with Scribe for Documents...** (Alt+Shift+F6)

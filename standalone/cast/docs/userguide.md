@@ -995,9 +995,15 @@ the listener questions. When an episode has them, you can hop straight from
 one part to the next.
 
 - **Ctrl+Alt+Right** goes to the next chapter.
-- **Ctrl+Alt+Left** goes to the previous one.
+- **Ctrl+Alt+Left** goes to the previous one. More than three seconds into a
+  chapter, it goes back to the start of that chapter first, like a CD player;
+  press it again to go to the one before. At either end Cast says "This is
+  the first chapter." or "This is the last chapter."
 
-Cast says each chapter's name as you arrive.
+Cast says each chapter's name and its place as you arrive: "The interview,
+chapter 3 of 7." A chapter Cast worked out for itself, from the transcript or
+by listening for pauses, ends with "estimated", so you can tell it from one the
+podcast published.
 
 To see the whole list:
 

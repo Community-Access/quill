@@ -184,7 +184,7 @@ Each row reads in full: "3. The Long Road - starts 1:02:03, runs 12:40". Press *
 The built-in player anchors everything. All controls are buttons with access keys, fully reachable with Tab and screen-reader-friendly:
 
 - **Play / Pause** (one button whose label follows the state) and **Stop**.
-- **Previous chapter** and **Next chapter** - within the first three seconds of a chapter, Previous means the one before.
+- **Previous chapter** and **Next chapter** - within the first three seconds of a chapter, Previous means the one before; later than that, it goes back to the start of the chapter you are in. Each press says where you landed, once: "The Long Road, chapter 4 of 24, 12 minutes 40 seconds long.".
 - **Rewind** and **Forward** - ten-second skips, position spoken after each.
 - **Where am I?** - the full audible glance: "Chapter 4 of 24: The Long Road. 3:12 into the chapter, 9:28 left in it. 1:02:03 of 7:41:00 in the book, 6:38:57 remaining."
 - **Speed** - 0.75x to 2x, pitch preserved.

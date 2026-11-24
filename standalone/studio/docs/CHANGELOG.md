@@ -10,6 +10,10 @@ QUILL Studio 2.0.0 is the next Studio release after Audio Studio 1.0.0. The prev
 
 This version is built but not yet published: Audio Studio is not offered in the QuillVille menu, and there is no 2.0.0 download page. Everything below is in the build.
 
+### The player says where a chapter move landed (2026-11-23)
+
+- **Previous chapter and Next chapter** say the chapter with its place, "The Long Road, chapter 4 of 24, 12 minutes 40 seconds long." Previous that restarted the chapter you were in used to say nothing, and Previous in the first seconds of the first chapter replayed it; it now says "This is the first chapter."
+
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
 
 ### The Library Window opens, with your books in it (2026-11-23)

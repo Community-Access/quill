@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FUX-14: navigate meaningful structure, app by app</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="fux-14-navigate-meaningful-structure-app-by-app">FUX-14:
+navigate meaningful structure, app by app</h1>
+<p><strong>Date:</strong> 2026-11-23 <strong>Source:</strong> FUX-14,
+“Navigate meaningful structure, not just distances”, in the family UX
+plan (<code>git show b7c6a1a04^:complete2.md</code>), held to <a
+href="family-interaction-contracts.md">family-interaction-contracts.md</a>.
+It is not one of the promoted pilots (<a
+href="2026-11-19-family-ux-pilots.md">2026-11-19-family-ux-pilots.md</a>,
+section 5), so the work here is limited to gaps in structure the family
+already has. It reuses each app’s chapters, bookmarks, headings and
+lists, and their key conventions. It adds no new outline, tree or panel.
+Earshot and the macOS apps are out of scope.</p>
+<h2 id="the-rule-every-move-follows">The rule every move follows</h2>
+<p>A structural move says where it landed <strong>once</strong>: the
+name of the thing, what kind of thing it is, and its place in the whole.
+A structure the app worked out, rather than one a person published or
+placed, says “estimated”. A move past the end says so and leaves you
+where you are.</p>
+<blockquote>
+<p>Interview with the author, chapter 3 of 12. The news, chapter 2 of 5,
+estimated. The storm starts, bookmark 1 of 4, 12 minutes 5 seconds. This
+is the last chapter.</p>
+</blockquote>
+<p>The sentence is <code>quill/core/structure_landing.py</code>
+(<code>describe_landing</code>, <code>describe_boundary</code>). Quill
+Radio had already said its chapters this way; the module gives that
+sentence a name, so the other apps say it too. Which chapter sources
+count as estimated is
+<code>quill/core/podcasts/chapter_scoring.py</code>
+(<code>ESTIMATED_SOURCES</code>, <code>is_estimated</code>): the
+transcript, the silence scan and the show-notes running order matched to
+the audio. Published, file and edited chapters are not estimated.</p>
+<p>At the start of the first chapter, Previous says “This is the first
+chapter.” rather than replaying it as if it had moved; further in, it
+restarts the chapter, as every media player does.</p>
+<p>Only the move the person asked for is announced. Playback that
+crosses into a new chapter on its own keeps the existing
+once-per-chapter latch, and a list that has focus is left to the screen
+reader, which already says the row it moved to (GATE-13).</p>
+<h2 id="what-the-family-already-had">What the family already had</h2>
+<ul>
+<li><strong>QUILL</strong> moves by heading (Ctrl+Alt+H, with level and
+“3 of 12”), bookmark (F2), highlight (Alt+PageDown), inline note
+(Alt+Shift+J), section fold (Alt+Shift+]), table cell (Ctrl+Alt+arrows,
+“Row r of R, column c of C”), problem, indent, misspelling (Ctrl+F7) and
+region (F6). Browse mode (Ctrl+Shift+Grave, then N) adds single letters
+for heading, heading level, link, list, list item, table, quote, code
+block, page, paragraph and sentence. The caret cue
+(<code>StructureAnnouncer</code>) and the page latch say a boundary
+once.</li>
+<li><strong>QUILL Lite</strong> has the same chords for headings,
+sections, table cells, bookmarks, highlights, inline notes, misspellings
+and code, with no browse mode.</li>
+<li><strong>Quill Radio</strong> moves by chapter (Ctrl+Shift+. and
+Ctrl+Shift+,), by song in the time-shift buffer (Alt+Shift+Right and
+Alt+Shift+Left), by Lineup or playlist item on the chapter keys, and
+back to live (Ctrl+Shift+L).</li>
+<li><strong>Quill Cast</strong> moves by chapter (Ctrl+Alt+Right and
+Ctrl+Alt+Left) and by queue item (Ctrl+Alt+Down and Ctrl+Alt+Up).</li>
+<li><strong>Media Player and QUILL Studio</strong> share one player
+panel with Previous and Next chapter buttons, the Winamp B and Z keys in
+the Player, and a Chapters tree with DAISY levels.</li>
+<li><strong>GitHub Workbench</strong> moves by unread row (Ctrl+. and
+Ctrl+Shift+.). Group By makes each group a tree node with its count, so
+F6 to the tree and Up or Down moves by group.</li>
+<li><strong>Quill Social</strong> moves by pane (F6), by search match
+(F3, “3 of 12”) and by read-aloud article (Ctrl+Shift+. and
+Ctrl+Shift+,); Open Conversation (Ctrl+G) shows a thread.</li>
+</ul>
+<h2 id="app-by-app">App by app</h2>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Structure today</th>
+<th>Only by distance, or a gap</th>
+<th>Done</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL</td>
+<td>Headings, levels, lists, tables, links, footnote insertion, pages,
+bookmarks, notes, highlights; browse letters</td>
+<td>Alt+Down (Next Structure) said only “Moved to next structure”;
+browse-mode heading levels said the level and line but not the title.
+Footnotes, comments and tracked changes are detected on import but not
+kept as structure, so there is nothing to move through</td>
+<td>#2044</td>
+</tr>
+<tr>
+<td>QUILL Lite</td>
+<td>The shared chords; Go To (Ctrl+G) lists headings, pages and the PDF
+outline</td>
+<td>No browse mode and no next/previous link, list, table, page or
+sentence. Lite is behind QUILL here, never ahead</td>
+<td>Left: adding browse mode to Lite is its own piece of work, not a gap
+fix</td>
+</tr>
+<tr>
+<td>Quill Radio</td>
+<td>Chapters, songs, Lineup and playlist items</td>
+<td>Next Chapter in the last chapter jumped back to its start and
+announced it as a move. The chapter keys read only published chapters,
+while the Chapters list also found the file’s marks and Cast’s
+worked-out ones, so the list offered chapters the keys said did not
+exist. “This video has no chapters.” was said for episodes and
+files</td>
+<td>#2043</td>
+</tr>
+<tr>
+<td>Quill Cast</td>
+<td>Chapters, queue items</td>
+<td>Chapter moves said “Chapter: title” with no place. Previous Chapter
+never restarted the current chapter: twenty minutes into chapter 1 it
+said “Already at the first chapter”. Worked-out chapters were not told
+apart on landing</td>
+<td>#2043</td>
+</tr>
+<tr>
+<td>Media Player</td>
+<td>Chapters (buttons, B and Z, tree), bookmarks list</td>
+<td>Bookmarks only through the list (Ctrl+Alt+M, arrow, Enter), and
+choosing one said only the time. The arrow seeks said the time twice.
+Previous that restarted the chapter, or Previous on chapter 1, said
+nothing</td>
+<td>#2043: Next and Previous Bookmark on F2 and Shift+F2, the editors’
+keys</td>
+</tr>
+<tr>
+<td>QUILL Studio</td>
+<td>The shared player panel; the Chapter Workbench list</td>
+<td>The same panel fixes as the Player. Recording markers are written to
+a sidecar only the picture-video dialog reads, and silence ranges become
+proposed chapters directly</td>
+<td>#2043 for the panel. Left: a marker list needs a place to show it,
+which is Studio’s recording work</td>
+</tr>
+<tr>
+<td>Quill Converter</td>
+<td>Chapters through Studio’s Chapter Workbench (Ctrl+H)</td>
+<td>None of its own: the queue is files, and chapters are edited in the
+Workbench</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>Quill Transcribe</td>
+<td>Paragraph start times and diarized speaker turns, flattened to text
+in Review Transcript</td>
+<td>No next/previous segment or speaker, and nothing marks a time as
+measured or estimated</td>
+<td>Left: Review Transcript is a read-only text box, and turning it into
+a list of segments is Transcribe’s review work</td>
+</tr>
+<tr>
+<td>Quill Inkwell</td>
+<td>Abbreviations and lists</td>
+<td>No document structure</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>Quill Beacon</td>
+<td>Episode chapters in the player’s list</td>
+<td>The chapter list’s name promised “N next, P previous”, and no key
+did either. The 30 seconds forward button skipped 15</td>
+<td>#2045</td>
+</tr>
+<tr>
+<td>Quill Social</td>
+<td>Panes, search matches, conversations, unread counts on folders</td>
+<td>No next or previous unread post</td>
+<td>#2045</td>
+</tr>
+<tr>
+<td>Quill Weather</td>
+<td>Alerts, periods, hourly and daily lists, each with a detail
+field</td>
+<td>Rows are few and each list is one mnemonic away</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>GitHub Workbench</td>
+<td>Unread rows, groups as tree nodes</td>
+<td>Covered: groups are tree nodes, and the Workbench frame is being
+reworked in parallel</td>
+<td>None needed now</td>
+</tr>
+</tbody>
+</table>
+<h2 id="keys">Keys</h2>
+<p>New keys were chosen only after checking
+<code>keymap.DEFAULT_KEYMAP</code>, <code>APP_KEYMAPS</code>, the QUILL
+Lite command table, <code>quill/core/data/family_menu_chords.json</code>
+and the screen-reader keys (NVDA and JAWS use Insert or Caps Lock with
+these, never plain F2).</p>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Command</th>
+<th>Key</th>
+<th>Why this key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Media Player</td>
+<td>Navigation &gt; Next Bookmark, Previous Bookmark</td>
+<td>F2, Shift+F2</td>
+<td>Next and Previous Bookmark in QUILL and QUILL Lite; nothing in the
+Player claimed them</td>
+</tr>
+<tr>
+<td>Quill Beacon (player window)</td>
+<td>Next Chapter, Previous Chapter</td>
+<td>Ctrl+Shift+Period, Ctrl+Shift+Comma</td>
+<td>Quill Radio’s chapter keys. Plain N and P, which the list’s name had
+promised, would have taken type-ahead from the chapter list</td>
+</tr>
+<tr>
+<td>Quill Social</td>
+<td>Item &gt; Next unread, Previous unread</td>
+<td>Alt+Period, Alt+Comma</td>
+<td>The GitHub Workbench’s Ctrl+Period pair could not be used: its
+Previous, Ctrl+Shift+Period, is Listen &gt; Next article in Social, and
+Ctrl+Alt+Period is AltGr+Period, which types a character on some
+European layouts. Punctuation is never a menu letter, and no screen
+reader uses Alt+Period or Alt+Comma</td>
+</tr>
+</tbody>
+</table>
+<h2 id="acceptance-from-the-plan">Acceptance (from the plan)</h2>
+<ul>
+<li><strong>Available structure is navigable and announced with name,
+type and position:</strong> <code>describe_landing</code> in every app
+above that moves by chapter or bookmark.</li>
+<li><strong>Next and previous keep the expected playback
+behaviour:</strong> Previous restarts the current chapter after its
+first three seconds in Radio, Cast, the Player and Studio; Next in the
+last chapter stays put.</li>
+<li><strong>Timed evidence is told apart from estimated
+alignment:</strong> worked-out chapters say “estimated”. Transcribe is
+left, above.</li>
+<li><strong>Navigation after edits:</strong> chapters and bookmarks are
+read fresh on each press, so an edited list is what the next press moves
+through.</li>
+<li><strong>No established key is reassigned silently:</strong> the only
+new keys are in the table above, and no existing chord changed.</li>
+<li><strong>Readable lists accompany visual timelines:</strong> the
+family has no waveform view; Studio’s sections dialog says so and uses
+list rows.</li>
+</ul>
+</main>
+</body>
+</html>

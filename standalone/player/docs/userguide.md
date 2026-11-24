@@ -237,9 +237,12 @@ Chapters come from M4B chapter atoms, MP3 chapter tags, Podcasting 2.0 lists, an
 while a flat book shows a single level.
 
 - Move by chapter with **Z** and **B** (previous and next), or the Previous
-  chapter and Next chapter buttons; entering a new chapter is announced
-  ("Chapter 12: The Return"). In a book of one file per chapter, Z and B step
-  by file, which is the same thing.
+  chapter and Next chapter buttons; entering a new chapter is announced with its
+  place in the book ("The Return, chapter 12 of 30, 14 minutes 5 seconds long."). Previous restarts
+  the chapter you are in, and says so, unless you are in its first three
+  seconds; then it goes to the one before, or says "This is the first
+  chapter." In a book of one file per chapter, Z and B step by file, which is the
+  same thing.
 - Open the **Chapters** tree, arrow through it (in and out of levels), and press
   **Enter** to jump. Each row reads as a full sentence with its title and time.
 - For a book split across several files (LibriVox sections, multi-file DAISY),
@@ -298,8 +301,14 @@ Bookmarks mark a moment you want to return to, with an optional label and note.
   Bookmarks list next to the time.
 - **Edit a bookmark's note** — select it and choose **Navigation > Edit Bookmark
   Note...** (Ctrl+Alt+N).
+- **Move from bookmark to bookmark** — **F2** (**Navigation > Next Bookmark**)
+  and **Shift+F2** (**Navigation > Previous Bookmark**), from anywhere in the
+  window, the same keys as in QUILL. Each says the note, its place and its time
+  once: "The storm starts, bookmark 1 of 4, 12 minutes 5 seconds." Past the last
+  one you hear "This is the last bookmark."
 - **Jump to a bookmark** — press **Ctrl+Alt+M** (**Navigation > Go to Bookmarks
-  List**) to land in the Bookmarks list, arrow to one, press **Enter**.
+  List**) to land in the Bookmarks list, arrow to one, press **Enter**. The note
+  is said with the time.
   **Ctrl+Alt+P** (**Navigation > Go to Player Controls**) takes you back.
 - **Remove** — select it and press the **Remove Bookmark** button below the list.
 - **Send a bookmark into your document** — **Ctrl+Shift+C** copies a paste-ready line

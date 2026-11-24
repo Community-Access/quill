@@ -90,11 +90,16 @@ class MediaPlayerMenuMixin(PlayerScribeMixin):
             read_status_id,
             review_field_id,
         ) = (wx.NewIdRef() for _ in range(8))
+        next_bm_id, prev_bm_id = wx.NewIdRef(), wx.NewIdRef()
         nav_menu.Append(add_bm_id, "Add &Bookmark\tCtrl+B")
         nav_menu.Append(note_bm_id, "Add Bookmark with &Note...\tCtrl+Shift+B")
         nav_menu.Append(edit_bm_id, "&Edit Bookmark Note...\tCtrl+Alt+N")
         nav_menu.Append(copy_bm_id, "&Copy Bookmark to Clipboard\tCtrl+Shift+C")
         nav_menu.Append(focus_bm_id, "Go to Book&marks List\tCtrl+Alt+M")
+        # F2 and Shift+F2 are Next and Previous Bookmark in QUILL and QUILL
+        # Lite too; nothing in the Player claimed them (FUX-14, 2026-11-23).
+        nav_menu.Append(next_bm_id, "Ne&xt Bookmark\tF2")
+        nav_menu.Append(prev_bm_id, "Pre&vious Bookmark\tShift+F2")
         nav_menu.Append(focus_player_id, "Go to &Player Controls\tCtrl+Alt+P")
         nav_menu.Append(review_field_id, "Review Status &Field\tF6")
         nav_menu.Append(read_status_id, "&Read Status Bar\tShift+F6")
@@ -180,6 +185,8 @@ class MediaPlayerMenuMixin(PlayerScribeMixin):
             note_bm_id,
             edit_bm_id,
             copy_bm_id,
+            next_bm_id,
+            prev_bm_id,
         )
 
         for item_id, handler in (
@@ -193,6 +200,8 @@ class MediaPlayerMenuMixin(PlayerScribeMixin):
             (edit_bm_id, self._on_edit_bookmark),
             (copy_bm_id, self._on_copy_bookmark),
             (focus_bm_id, lambda _e: self._bookmarks_list.SetFocus()),
+            (next_bm_id, lambda _e: self._step_bookmark(1)),
+            (prev_bm_id, lambda _e: self._step_bookmark(-1)),
             (focus_player_id, lambda _e: self._player.SetFocus()),
             (review_field_id, lambda _e: self._review_next_field()),
             (read_status_id, lambda _e: self._read_status_bar()),
