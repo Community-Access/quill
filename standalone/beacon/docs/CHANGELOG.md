@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- **Export says where the file went** (2026-11-23). File > Export now ends
+  with the format, the file and its folder, for example "Exported your library
+  as HTML bookmarks to quillbeacon-export.html in Downloads.", instead of
+  reading the whole path aloud. An export that could not be written says so,
+  where it used to say nothing.
 - **Places in Scribe for Documents results** (2026-11-21). A Scribe
   Documents destination lists places in what Scribe for Documents made.
   Tools > Scribe for Documents > Add My Scribe Documents as Places

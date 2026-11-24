@@ -1371,6 +1371,13 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
             if fd.ShowModal() == wx.ID_CANCEL:
                 return
             path = fd.GetPath()
+        self._write_export(path, fmt, dict((f, label) for label, f in formats)[fmt])
+
+    def _write_export(self, path: str, fmt: str, label: str) -> bool:
+        """Write the export; say what is now true, once (FUX-04): the format, the
+        file and its folder -- not a whole path read aloud -- or that it failed."""
+        from quill.core.action_feedback import place_of, written_result
+
         text = {
             "json": exporters.export_json,
             "html": exporters.export_html,
@@ -1380,8 +1387,16 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
             "m3u": exporters.export_m3u,
             "txt": exporters.export_text,
         }[fmt](self.store)
-        Path(path).write_text(text, encoding="utf-8")
-        self.announcer.say(f"Exported to {path}")
+        try:
+            Path(path).write_text(text, encoding="utf-8")
+        except OSError as ex:
+            # strerror, not str(ex): the latter reads the whole path aloud again.
+            why = ex.strerror or str(ex)
+            self.announcer.say(f"Could not export to {place_of(path)}: {why}.", "minimal")
+            return False
+        label = "plain text" if label == "Plain text" else label
+        self.announcer.say(written_result(f"Exported your library as {label}", path))
+        return True
 
     def _on_a11y_settings(self, _e) -> None:
         dlg = A11ySettingsDialog(self, self.a11y)
