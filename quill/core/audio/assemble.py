@@ -24,6 +24,7 @@ from __future__ import annotations
 import re
 import shutil
 import tempfile
+import time
 from collections.abc import Callable, Sequence
 from dataclasses import replace
 from pathlib import Path
@@ -140,8 +141,14 @@ def render_preview(
     original: bool,
     run: Callable[[list[str]], object] | None = None,
     duration_s: float | None = None,
+    measured: Callable[[float, int], None] | None = None,
 ) -> Path:
-    """Render a preview WAV of *source*; raises ``RuntimeError`` with a reason."""
+    """Render a preview WAV of *source*; raises ``RuntimeError`` with a reason.
+
+    *measured*, when given, hears ``(seconds, bytes)`` for the encode with the
+    batch's settings: how long it took here and how large it came out, which
+    is what an estimate of the whole queue is scaled from (FUX-11).
+    """
     runner = run or _run
     length = duration_s if duration_s is not None else probe(source).duration_s
     start = preview_start(length, float(spec.start_s or 0.0))
@@ -151,7 +158,11 @@ def render_preview(
     pspec = preview_audio_spec(spec, start)
     encoded = out_wav.with_name(out_wav.stem + "-encoded" + pspec.output_extension())
     job = ConversionJob(source=source, dest=encoded, spec=pspec)
+    began = time.monotonic()
     _check(runner(build_convert_command(ffmpeg, job)))
+    if measured is not None:
+        size = encoded.stat().st_size if encoded.is_file() else 0
+        measured(time.monotonic() - began, size)
     _check(runner(build_decode_to_wav_command(ffmpeg, encoded, out_wav)))
     encoded.unlink(missing_ok=True)
     return out_wav

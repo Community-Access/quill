@@ -62,6 +62,7 @@ __all__ = [
     "Segment",
     "TranscriptionCancelled",
     "done_sentence",
+    "first_seconds",
     "plain",
     "timestamp",
 ]
@@ -520,6 +521,39 @@ def _joined(unit: list[Segment]) -> Any:
         parts.append(np.asarray(segment.samples, dtype=np.float32))
         previous = segment
     return np.concatenate(parts) if parts else np.zeros(0, dtype=np.float32)
+
+
+def first_seconds(
+    seconds: float, opener: Callable[[Path], AudioSource] = open_audio
+) -> Callable[[Path], AudioSource]:
+    """An opener that reads only the first *seconds* of a recording (FUX-11).
+
+    Everything else -- the decoder, the voice detector, the engine, the
+    writer -- is the job's own, so a sample of the first minute is made exactly
+    as the whole recording would be. Its duration is the clip's, so progress
+    and the measured pace describe the clip.
+    """
+    limit = max(0, int(seconds * RATE))
+
+    def open_clip(path: Path) -> AudioSource:
+        source = opener(path)
+
+        def blocks() -> Iterator[Any]:
+            left = limit
+            for block in source.blocks():
+                if left <= 0:
+                    return
+                if len(block) > left:
+                    block = block[:left]
+                left -= len(block)
+                yield block
+
+        duration = min(source.duration, seconds) if source.duration > 0 else 0.0
+        return AudioSource(
+            path=source.path, duration=duration, decoder=source.decoder, _blocks=blocks
+        )
+
+    return open_clip
 
 
 def _real_engine(job: FileJob) -> tuple[Recognize, str]:

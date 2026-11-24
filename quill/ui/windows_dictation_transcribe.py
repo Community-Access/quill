@@ -125,7 +125,11 @@ class DictationTranscribeMixin:
 
     def cmd_transcribe_audio_file(self, paths: list[Path] | None = None) -> None:
         """Choose a recording and a model; the text arrives when it is ready."""
-        from quill.ui.dictation_transcribe_dialog import STOP_TRANSCRIBING, TranscribeFileDialog
+        from quill.ui.dictation_transcribe_dialog import (
+            STOP_TRANSCRIBING,
+            TranscribeFileDialog,
+            job_for,
+        )
 
         preferences = self._dictation_preferences()  # type: ignore[attr-defined]
         dialog = TranscribeFileDialog(
@@ -133,6 +137,11 @@ class DictationTranscribeMixin:
             language=preferences.speech_language,
             paths=paths or (),
             running=queue_text(),
+            sample_job=lambda choice, path: (
+                job_for(choice, path, preferences),
+                preferences.rewrite,
+            ),
+            announce=self._dictation_say,  # type: ignore[attr-defined]
         )
         try:
             answer = self._dictation_run_modal(dialog, "Transcribe a Recording")  # type: ignore[attr-defined]
@@ -153,23 +162,11 @@ class DictationTranscribeMixin:
                 return
             if not self._transcribe_consent():
                 return
-        from quill.core.windows_dictation.file_transcribe import FileJob
-
         keywords: tuple[str, ...] = ()
         if choice.model.cloud:
             keywords = self._transcribe_keywords()
         for path in choice.paths:
-            job = FileJob(
-                path=path,
-                model=choice.model.id,
-                language=choice.language,
-                timestamps=choice.timestamps,
-                obey_commands=choice.obey_commands,
-                translate=choice.translate,
-                remove_fillers=preferences.remove_fillers,
-                dash=preferences.dash,
-                keywords=keywords,
-            )
+            job = job_for(choice, path, preferences, keywords)
             entry = _Entry(job, self, preferences.rewrite)
             _QUEUE.waiting.append(entry)
             _queue_notice(

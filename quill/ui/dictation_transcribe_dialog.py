@@ -41,7 +41,7 @@ from quill.core.windows_dictation.speech_language import SPEECH_LANGUAGES
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 
-__all__ = ["STOP_TRANSCRIBING", "TranscribeChoice", "TranscribeFileDialog"]
+__all__ = ["STOP_TRANSCRIBING", "TranscribeChoice", "TranscribeFileDialog", "job_for"]
 
 #: What Stop Transcribing ends the window with.
 STOP_TRANSCRIBING = 5811
@@ -60,6 +60,25 @@ class TranscribeChoice:
     obey_commands: bool
     #: Into English instead of the words said (multilingual Whisper only).
     translate: bool = False
+
+
+def job_for(
+    choice: TranscribeChoice, path: Path, preferences: Any, keywords: tuple[str, ...] = ()
+) -> Any:
+    """The job the queue runs for *path*; Try the First Minute runs the same one."""
+    from quill.core.windows_dictation.file_transcribe import FileJob
+
+    return FileJob(
+        path=path,
+        model=choice.model.id,
+        language=choice.language,
+        timestamps=choice.timestamps,
+        obey_commands=choice.obey_commands,
+        translate=choice.translate,
+        remove_fillers=preferences.remove_fillers,
+        dash=preferences.dash,
+        keywords=keywords,
+    )
 
 
 class _Drop(wx.FileDropTarget):
@@ -87,6 +106,8 @@ class TranscribeFileDialog(wx.Dialog):
         weak: bool | None = None,
         load_openai: bool = True,
         warn: Callable[[str], None] | None = None,
+        sample_job: Callable[[TranscribeChoice, Path], Any] | None = None,
+        announce: Callable[[str], None] | None = None,
     ) -> None:
         super().__init__(parent, title="Transcribe a Recording")
         self._paths: list[Path] = [Path(path) for path in paths]
@@ -99,6 +120,7 @@ class TranscribeFileDialog(wx.Dialog):
         self._weak = _weak_computer() if weak is None else weak
         self._warn = warn
         self.chosen: TranscribeChoice | None = None
+        self.first_minute: Any = None
         root = wx.BoxSizer(wx.VERTICAL)
 
         if running:
@@ -167,7 +189,7 @@ class TranscribeFileDialog(wx.Dialog):
             "waiting for each phrase, and you can keep working."
         )
         self.model.Bind(wx.EVT_CHOICE, self._on_model_choice)
-        about_label = wx.StaticText(self, label="About this model and this recording:")
+        about_label = wx.StaticText(self, label="&About this model and this recording:")
         self.about = wx.TextCtrl(
             self, style=wx.TE_READONLY | wx.TE_MULTILINE, size=dip_size(self, -1, 90)
         )
@@ -180,6 +202,10 @@ class TranscribeFileDialog(wx.Dialog):
         root.Add(self.model, 0, wx.EXPAND | wx.ALL, _PAD)
         root.Add(about_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.about, 0, wx.EXPAND | wx.ALL, _PAD)
+        if sample_job is not None:  # FUX-11: hear the job before committing an hour to it
+            from quill.ui.transcribe_first_minute import FirstMinute
+
+            self.first_minute = FirstMinute(self, root, sample_job, announce)
 
         self.output = wx.StaticText(
             self,
@@ -218,6 +244,8 @@ class TranscribeFileDialog(wx.Dialog):
         root.Add(self.timestamps, 0, wx.ALL, _PAD)
         root.Add(self.obey, 0, wx.ALL, _PAD)
         root.Add(self.translate, 0, wx.ALL, _PAD)
+        for box in (self.timestamps, self.obey, self.translate):
+            box.Bind(wx.EVT_CHECKBOX, lambda _e: self._describe())
 
         buttons = self.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
         ok = self.FindWindowById(wx.ID_OK, self)
@@ -343,6 +371,12 @@ class TranscribeFileDialog(wx.Dialog):
         model = self.selected_model()
         return model is not None and model.translates and self._language() != "en"
 
+    def refresh_about(self, extra: Sequence[str] = ()) -> None:
+        """Rewrite the details box, with *extra* lines after it."""
+        self._describe()
+        if extra:
+            self._set_about("\n".join([self.about.GetValue(), *extra]))
+
     def _describe(self) -> None:
         if getattr(self, "translate", None) is not None:
             can = self._can_translate()
@@ -358,7 +392,7 @@ class TranscribeFileDialog(wx.Dialog):
             )
             if self._model_scan_error:
                 message += f"\nCould not check downloaded speech models: {self._model_scan_error}"
-            self.about.SetValue(message)
+            self._set_about(message)
             return
         from quill.core.windows_dictation.audio_file import duration_of
 
@@ -377,7 +411,18 @@ class TranscribeFileDialog(wx.Dialog):
         elif len(self._paths) > 1:
             total = sum(duration_of(path) for path in self._paths if path.is_file())
             lines.append(estimate_sentence(model, total, weak=self._weak))
-        self.about.SetValue("\n".join(lines))
+        if getattr(self, "first_minute", None) is not None:
+            lines.extend(self.first_minute.lines())
+        self._set_about("\n".join(lines))
+
+    def _set_about(self, text: str) -> None:
+        """Rewrite the details box without losing the reader's place in it."""
+        if self.about.GetValue() == text:
+            return
+        keep = self.about.GetInsertionPoint() if self.about.HasFocus() else None
+        self.about.SetValue(text)
+        if keep is not None:
+            self.about.SetInsertionPoint(min(keep, self.about.GetLastPosition()))
 
     def _load_openai(self) -> None:
         """OpenAI's list for the saved key, read on a worker; never on this thread."""
@@ -442,6 +487,39 @@ class TranscribeFileDialog(wx.Dialog):
 
     def choice(self) -> TranscribeChoice | None:
         return self.chosen
+
+    def current_choice(self) -> TranscribeChoice | None:
+        """What OK would choose now, without choosing it (for a sample)."""
+        model = self.selected_model()
+        if model is None:
+            return None
+        return TranscribeChoice(
+            paths=tuple(self._paths),
+            model=model,
+            language=self._language(),
+            timestamps=self.timestamps.GetValue(),
+            obey_commands=self.obey.GetValue(),
+            translate=self._can_translate() and self.translate.GetValue(),
+        )
+
+    def sample_problem(self) -> str:
+        """Why the first minute cannot be tried now, or ""."""
+        problem = self._problem()
+        if problem:
+            return problem
+        model = self.selected_model()
+        if model is not None and model.cloud:
+            return (
+                "Try the First Minute uses models on this computer; OpenAI charges "
+                "for every minute."
+            )
+        return ""
+
+    def total_seconds(self) -> float:
+        """The length of every recording chosen, from their headers."""
+        from quill.core.windows_dictation.audio_file import duration_of
+
+        return sum(duration_of(path) for path in self._paths if path.is_file())
 
 
 def _weak_computer() -> bool:

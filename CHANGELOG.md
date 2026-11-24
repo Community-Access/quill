@@ -61,6 +61,21 @@ saved beside your documents, and no setting changes.
 Press the button again to stop a sample that is being made or playing, or
 to hear it again. Going back to an earlier page stops it too. If you go back and change a setting, the result starts "Out of date",
 and the next press makes a new sample.
+### Transcribe and Converter: try a minute before an hour (2026-11-24)
+
+Transcribe a Recording (Shift+F5 in QUILL, and in QUILL Transcribe) has a new
+button, **Try the First Minute** (Alt+I). It transcribes only the first minute
+of the recording, with the model, language and options you chose. Then the
+**About this model and this recording** box shows the words it heard, how long
+that minute took on this computer, and what the whole recording should take
+at that pace. Nothing is queued or saved. Change a choice afterwards and the
+box says the result is out of date. OpenAI's models are not offered, because
+they charge for every minute.
+
+In Quill Converter, **Play Preview** (Ctrl+P) now also times its fifteen
+seconds. While it plays, the status bar says what the whole queue should take
+and how large it should be, and that one preview does not prove the rest.
+There is no estimate for a video format or for copying the sound unchanged.
 
 ### The first useful task has a clear beginning in Weather, Beacon and Social (2026-11-24)
 
