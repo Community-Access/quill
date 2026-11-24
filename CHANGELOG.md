@@ -2,6 +2,22 @@
 
 ## 1.0.0
 
+### Compare, then take only the changes you want (2026-11-24)
+
+In QUILL, the compare dialog (**Compare with File...**) has a **Take
+Changes...** button (`Alt+T`). It lists each difference as a check box. Each
+one says what changed and where, with the old and the new lines. Only the
+differences you leave checked go into your document, as one change that
+`Ctrl+Z` undoes.
+
+**File > Restore Previous Version...** has a **Compare...** button (`Alt+M`).
+It shows what an earlier save has that your current text does not, one
+difference at a time, and Take Changes brings back only the parts you choose.
+
+In the compare dialog, **Ignore trailing whitespace** and `Ctrl+Shift+F8` now
+compare again and say how many differences are left. Before, they only
+checked or unchecked the box.
+
 ### The first useful task has a clear beginning in Weather, Beacon and Social (2026-11-24)
 
 Quill Weather, before the first place, opens on a Getting started line, "No

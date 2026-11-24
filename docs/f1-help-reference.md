@@ -5404,7 +5404,7 @@ Control coverage: 298 audited sites (298 helped).
 - `close`: Close this window. Changes to the list are kept.
 #### DiffReviewDialog (`quill/ui/ai_diff_review_dialog.py`)
 
-- `self.hunk_list`: Every change the AI proposes, one per line. A checked change will be applied; press Space to uncheck one you want to keep as it was. The details below say exactly what changed, word by word. Alt+C comes back here.
+- `self.hunk_list`: Every proposed change, one per line. A checked change will be applied; press Space to uncheck one you want to keep as it was. The details below say exactly what changed, word by word. Alt+C comes back here.
 - `self.word_list`: Each word edit inside the change you are on, with the sentence it is in. A checked edit is applied; press Space to drop one and keep the original words there while the rest of the change still goes in. Dropping every edit drops the change. Shown only when a change holds two or more word edits; Alt+W reaches it.
 - `self.details`: The change you are on, line by line: what was there, what would replace it, and for a small change the words that differ and the sentence they are in. Read-only.
 - `self.apply_button`: Applies the change as one edit; Control Z takes it back.
