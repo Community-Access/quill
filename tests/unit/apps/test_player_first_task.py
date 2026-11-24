@@ -14,8 +14,6 @@ import pytest
 
 wx = pytest.importorskip("wx")
 
-pytestmark = pytest.mark.machine_global
-
 
 @pytest.fixture
 def player(quill_data_dir: Path, wx_session_app):

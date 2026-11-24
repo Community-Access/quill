@@ -144,10 +144,15 @@ def test_a_host_whose_history_has_no_onboarding_state_is_refused() -> None:
 def test_the_app_actually_calls_it() -> None:
     """The whole bug: a dialog nothing invoked."""
     source = (REPO / "quill" / "apps" / "podcasts.py").read_text(encoding="utf-8")
-    assert "maybe_run_first_run" in source
     # The library loads in the background, so the welcome waits for it: queued
-    # until the load lands, or posted with CallAfter when it already has.
-    assert "self._when_cast_library_ready(lambda: maybe_run_first_run(self))" in source
+    # until the load lands, or posted with CallAfter when it already has. Since
+    # FUX-09 the welcome runs inside launch_first_task, which then says what
+    # fills the place Cast landed on.
+    assert "self._when_cast_library_ready(lambda: launch_first_task(self))" in source
+    chain = (REPO / "quill" / "ui" / "podcasts" / "launch_first_task.py").read_text(
+        encoding="utf-8"
+    )
+    assert "maybe_run_first_run(host)" in chain
 
 
 def test_the_launch_path_shows_the_window_before_it_runs_the_loop() -> None:

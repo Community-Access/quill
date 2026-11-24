@@ -16,8 +16,6 @@ import pytest
 
 wx = pytest.importorskip("wx")
 
-pytestmark = pytest.mark.machine_global
-
 
 @pytest.fixture
 def later(monkeypatch):
