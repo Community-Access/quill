@@ -11,6 +11,23 @@ since the first 0.3.0 build belongs to 0.3.0. In it QUILL Social became a feed
 reader as well as a social client, and grew an installer of its own. That work
 comes first, grouped by subject; the 0.3.0 build of 2026-07-19 follows it.
 
+### A timeline that stays still (FUX-06, 2026-11-23)
+
+- **Refreshes no longer move you.** When posts arrive in the background or
+  the scheduler publishes, the list changes row by row around the post you
+  are on. You stay on it, on the same line; it is not read out again and not
+  marked read again. Before, every refresh rebuilt the list, said "Home. 120
+  items, 14 unread." again, and put you back on the saved post.
+- **New posts wait for you.** They are counted once ("3 new posts. Press F5
+  to show them.") and join the list when you press F5, which says how many
+  arrived ("Refreshed. 3 new posts.") instead of the total pulled.
+- **A post that has gone** is said once, and you land on the post that took
+  its place, not the first unread one. A post you just read stays put in
+  the Unread view until you leave it.
+- **Conversations stay open.** A refresh behind an open conversation no
+  longer takes you back to the timeline, or saves a thread post as the
+  timeline's place.
+
 ### Scribe for Documents (2026-11-21)
 
 - **Item > Convert Linked Document with Scribe for Documents...**

@@ -223,7 +223,15 @@ These are all working in the app right now:
   **Sync > Sync Settings...** and press its Pair Device button: it exports a
   short code you enter on the other device, then unlock there with the same
   passphrase. **Sync > Auto Sync...** lets you set an automatic interval (off by default), and the Status Center shows how
-  many new changes are waiting on the server.
+  many new changes are waiting on the server. An automatic sync that changed
+  nothing says nothing.
+- **The results list stays still.** A capture from your browser, a sync, or
+  an action refills the list without moving you: your cursor stays on the same
+  beacon, with anything else you selected, and the details pane follows it.
+  The number of results is said when you change the search, the sort or the
+  destination, not every time the list refills. If a sync removes the beacon
+  you were on, you hear "... is no longer in the list." once, and you are on
+  the beacon that took its place.
 - **Publish a collection to a web page.** Select a collection in the sidebar,
   then **Tools > Publish Collection...** (Ctrl+Shift+W) to render it as a
   self-contained, read-only, accessible web page. You get a portable HTML file

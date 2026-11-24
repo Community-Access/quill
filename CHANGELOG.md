@@ -269,6 +269,22 @@ already have it.
   transcribing meeting.mp3. No transcript was kept; transcribe it again to
   start over." The same in QUILL and QUILL Lite.
 
+### QUILL Social and QuillBeacon: lists that stay still (FUX-06, 2026-11-23)
+
+Second of the M2 changes; the rule and the audit of every live list are in
+`docs/design/fux-06-adoption.md`.
+
+- **QUILL Social's timeline** refreshes around the post you are on instead
+  of rebuilding: no repeated "Home. 120 items" sentence, no second mark-read,
+  and new posts wait behind a count ("3 new posts. Press F5 to show them.")
+  until you press F5. A post that has gone is said once and you land on its
+  neighbour. A refresh no longer closes an open conversation.
+- **QuillBeacon's results** keep you on your own beacon after a capture or a
+  sync. The selection used to stay on the old row number, which was another
+  beacon, while the details showed the first row. The count is said only when
+  you change the search, sort or destination, and an auto-sync that changed
+  nothing is silent.
+
 ### Shared runtime: the Practice Site's WordPress Playground ships again (2026-11-23)
 
 - **The cause.** The WordPress Playground tool behind the Practice Site
