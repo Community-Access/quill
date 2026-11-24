@@ -61,7 +61,11 @@ NODE_HELP: Mapping[str, str] = {
         "WordPress search results from every connected site, with the source site and "
         "content type shown."
     ),
-    "practice": "A practice WordPress site on this computer, where nothing is at stake.",
+    "practice": (
+        "A practice WordPress site on this computer, where nothing is at stake. Starting it "
+        "connects it, so it is under Sites. Shift+F10 has Start, Stop, Connect, Make It My "
+        "Default Site and Reset."
+    ),
     "calendar_day": "What was published or is scheduled on one day, on every site.",
     "help": (
         "Words, keys, how WordPress thinks, jobs in plain words, the guide, what changed, and "
@@ -256,6 +260,22 @@ ROW_HELP: Mapping[str, str] = {
     "dashboard": "A job REST cannot do. Enter opens the wp-admin screen that does it.",
     "app_password": "An application password. Delete revokes it.",
     "site": "A connected site. Enter selects it in the tree.",
+    "practice_site": (
+        "The Practice Site, the WordPress site on this computer. Enter selects it in the tree; "
+        "its context menu starts, stops or connects it, makes it your default site, or resets it."
+    ),
+    "practice_node": (
+        "The Practice Site in the tree. Shift+F10 starts, stops or connects it, makes it "
+        "your default site, or resets it."
+    ),
+    "practice_site_node": (
+        "The Practice Site under Sites. Shift+F10 has Start, Stop, Connect, Make It My "
+        "Default Site and Reset first, then this place's other commands."
+    ),
+    "practice_fact": (
+        "A fact about the Practice Site. Enter reads it; the context menu starts, stops or "
+        "connects it, makes it your default site, or resets it."
+    ),
     "writing_type": "A kind of content. Enter opens its list.",
     "taxonomy": "A way of grouping. Enter opens its terms.",
     "form": "A form. Enter lists its responses.",

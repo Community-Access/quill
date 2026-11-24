@@ -348,6 +348,7 @@ PRODUCTS: dict[str, Product] = {
             "github",
             "live-dictation",
             "math",
+            "mp3",
             "ocr",
             "office-text",
             "spellcheck",
@@ -355,8 +356,9 @@ PRODUCTS: dict[str, Product] = {
         ),
         stage_engines=False,
         # ffmpeg and ffprobe (2026-11-23, Jeff): Make a Listening Version
-        # turns the recorded speech into an MP3 and measures it. The installer
-        # stages the same pinned copy into the shared runtime.
+        # turns the recorded speech into an MP3 and measures it, and "mp3"
+        # (mutagen) writes its chapter markers. The installer stages the same
+        # pinned ffmpeg into the shared runtime, which already carries mutagen.
         stage_ffmpeg=True,
         stage_mpv=False,
         offline_portable_launcher=True,
@@ -385,6 +387,7 @@ PRODUCTS: dict[str, Product] = {
             "latex2mathml.converter",
             "github",
             "copilot",
+            "mutagen",
             "quill.core.spellcheck",
             "quill.core.github.items_provider",
             "quill.ai_packs.copilot",

@@ -13,6 +13,7 @@ disagree. Wx-free.
 from __future__ import annotations
 
 from quill.core.wordpress.workbench_gravity_actions import GRAVITY_SUB
+from quill.core.wordpress.workbench_practice_actions import PRACTICE_SUB
 from quill.core.wordpress.workbench_site_files_actions import WXR_SUB
 from quill.core.workbench.menus import MenuRow, MenuSpec, MenuSub, command_key_rows, rows
 
@@ -302,9 +303,7 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
                 "Ctrl+Alt+B",
                 "Say a change in words; check the exact items it means, then send them.",
             ),
-            _row(
-                "practice", "&Practice Site...", "Ctrl+Alt+P", "Start, stop, connect or reset it."
-            ),
+            PRACTICE_SUB,  # Start, Stop, Connect, Default, Reset (workbench_practice_actions)
             WXR_SUB,
         ),
     ),

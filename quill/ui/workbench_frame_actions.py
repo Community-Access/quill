@@ -156,7 +156,10 @@ class WorkbenchActionsMixin:
         self._popup(self.list, *self.row_actions(row))
 
     def show_node_menu(self) -> None:
-        self._popup(self.tree, *self.provider.actions.menu_for("node"))
+        # A provider may give one node a menu of its own (the Practice Site's).
+        kind_for = getattr(self.provider, "node_menu_kind", None)
+        kind = kind_for(self.current) if callable(kind_for) and self.current else "node"
+        self._popup(self.tree, *self.provider.actions.menu_for(kind or "node"))
 
     def switch_to_editor(self) -> None:
         editor = self._editor

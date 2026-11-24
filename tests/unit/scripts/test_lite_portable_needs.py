@@ -152,6 +152,7 @@ def test_the_group_imports_name_modules_of_their_group() -> None:
         "winrt.windows.media.playback": "winrt-Windows.Media.Playback",
         "latex2mathml.converter": "latex2mathml",
         "soundfile": "soundfile",
+        "mutagen": "mutagen",
         "github": "PyGithub",
         "copilot": "microsoft-copilot-sdk",
     }

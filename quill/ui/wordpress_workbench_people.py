@@ -178,6 +178,9 @@ class WorkbenchPeopleCommands:
         A command not on *row*'s own menu (the menu bar's, a node's, Delete on
         a person) is checked by its tier all the same (``unlisted_refusal``).
         """
+        practice = self.practice_refusal(command_id)  # type: ignore[attr-defined]
+        if practice:
+            return practice  # Start while it runs, Stop while it does not, and so on
         if row is not None:
             command_id = effective_command(command_id, row.kind)  # Delete on a person: Remove
             if command_id == workbench_command("revoke") and row.status == "current":

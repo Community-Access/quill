@@ -329,7 +329,7 @@ class WordPressCommands(
                 self.host.parent,
                 self.host.show_modal,
                 kind_label="Page" if kind == "page" else "Post",
-                sites=[s.name for s in store.sites],
+                sites=[s.listed for s in store.sites],  # the Practice Site says so
                 site_index=store.sites.index(default),
                 last_format=self._last_format,
                 categories=[(t.id, t.name) for t in categories],

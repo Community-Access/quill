@@ -81,6 +81,11 @@ and the rest.
 The Workbench's own Tools menu has the **Practice Site**, a WordPress site on
 your own computer for learning with nothing at stake. **Help > Tutorials**
 has lessons that use it.
+**Start the Practice Site** connects it too, so it is under Sites, and the
+first time it asks whether to make it your default site (No is the default).
+Lists of your sites call it **Practice Site (on this computer)**. Its context
+menu (Shift+F10) starts, stops, connects or resets it, or makes it your
+default site.
 
 The manual's [Chapter 2](../wordpress-and-forms/wordpress-forms-02-the-workbench.html)
 is a full tour of the Workbench, and

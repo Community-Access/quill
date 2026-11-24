@@ -29,6 +29,31 @@ In Convert with Scribe for Documents, in QUILL and QUILL Lite:
   filled in; when it fails again, it says so.
 - Language and Dialect come before Voice and Play Sample, in Tab order and
   on the screen.
+### The Practice Site connects when it starts (2026-11-23)
+
+Starting the Practice Site used to leave it off your list of sites until you
+also chose Connect, so it was not there in File > WordPress > New Page. And
+the Practice Site list still said it was not running until you connected it.
+
+- **Start connects it.** When the site answers, QUILL connects it and says
+  once: "The Practice Site is running and connected. It is under Sites." If it
+  cannot connect, it says why, and Connect It as Practice Site tries again.
+- **The first time, QUILL asks** whether to make it your default site, so New
+  Page and New Post start there while you learn. It asks when you choose Start,
+  not minutes later. No is the default. QUILL never changes your default site
+  without asking.
+- **The Practice Site list keeps up.** Running and Connected change as the
+  site starts, stops, fails or stops on its own, without moving you in the
+  list.
+- **A context menu.** Shift+F10 on the Practice Site, on its rows, or on its
+  entry under Sites has Start, Stop, Connect, Make It My Default Site and
+  Reset. Tools > Practice Site has the same five. Ctrl+Alt+P still opens all
+  the choices.
+- **It says where it is.** New Page, New Post, Switch Site and the Sites
+  window call it "Practice Site (on this computer)", so it is never mistaken
+  for a real site.
+
+This is the same in QUILL and QUILL Lite.
 
 ### Scribe for Documents: groups of options say which group they are (2026-11-23)
 

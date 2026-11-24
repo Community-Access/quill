@@ -79,8 +79,12 @@ has its posts and pages, media, comments, people, menus, plugins, settings
 and the rest.
 
 The Workbench's own Tools menu has the **Practice Site**, a WordPress site on
-your own computer for learning with nothing at stake, in builds that include
-it.
+your own computer for learning with nothing at stake.
+**Start the Practice Site** connects it too, so it is under Sites, and the
+first time it asks whether to make it your default site (No is the default).
+Lists of your sites call it **Practice Site (on this computer)**. Its context
+menu (Shift+F10) starts, stops, connects or resets it, or makes it your
+default site.
 
 The manual's [Chapter 2](https://community-access.github.io/quill/docs/wordpress-forms-02-the-workbench.html)
 is a full tour of the Workbench, and

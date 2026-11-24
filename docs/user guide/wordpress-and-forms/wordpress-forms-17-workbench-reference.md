@@ -313,7 +313,10 @@ Snapshot... (`Ctrl+Alt+Shift+S`), Read Site as Document (`Ctrl+Alt+D`).
 **Tools:** Workbench Options... (`Ctrl+Shift+O`), REST Console...
 (`Ctrl+Shift+T`), Run a Saved Request... (`Ctrl+Alt+Q`), Saved Requests,
 Forget a Saved Request... (`Ctrl+Alt+Shift+F`), Plain-Language Batch...
-(`Ctrl+Alt+B`), Practice Site... (`Ctrl+Alt+P`), and the WXR Files submenu:
+(`Ctrl+Alt+B`), the Practice Site submenu (All Practice Site Choices...
+(`Ctrl+Alt+P`), Start, Stop, Connect It as Practice Site, Make It My Default
+Site and Reset..., reached with Alt+T, P, then A, S, T, C, D or R), and the
+WXR Files submenu:
 Export Site as WXR..., Archive a Static Copy..., Import WXR as Drafts... and
 Import from Blogger, Medium, Substack or Squarespace..., reached with Alt+T,
 W, then E, S, I or B.
