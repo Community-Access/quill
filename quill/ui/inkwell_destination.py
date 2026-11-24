@@ -36,6 +36,17 @@ FOCUS_SETTLE_MS = 150
 
 _NOWHERE = "Nothing to insert into; copied to the clipboard instead."
 _NO_CLIPBOARD = "Nothing to insert into, and the clipboard could not be opened."
+_COPIED = "Copied the text to the clipboard."
+_COPY_FAILED = "The clipboard could not be opened."
+#: The action name these outcomes are kept under, for F9 and Activity (FUX-04).
+_ACTION = "Insert Text"
+
+
+def _keep(summary: str, *, failed: bool = False) -> None:
+    """Keep an outcome already said, so F9 and Activity (Shift+F9) find it."""
+    from quill.ui.outcome_report import keep_outcome
+
+    keep_outcome(_ACTION, summary, failed=failed)
 
 
 class InkwellDestinationMixin:
@@ -145,7 +156,10 @@ class InkwellDestinationMixin:
         *after* runs once the text is typed (an expansion's undo and sound).
         """
         if held.target is None:
-            self._announce(_NOWHERE if self._copy_to_clipboard(held.text) else _NO_CLIPBOARD)
+            copied = self._copy_to_clipboard(held.text)
+            said = _NOWHERE if copied else _NO_CLIPBOARD
+            _keep(said, failed=not copied)
+            self._announce(said)
             return
         try:
             self._bring_back(held.window)
@@ -195,7 +209,8 @@ class InkwellDestinationMixin:
         said = ""
         if choice == COPY:
             copied = self._copy_to_clipboard(held.text)
-            said = "Copied." if copied else "The clipboard could not be opened."
+            said = _COPIED if copied else _COPY_FAILED
+            _keep(said, failed=not copied)
         # Copy or Cancel: back to where you were, so a paste is one key away,
         # and the sentence after the focus lands, so the reader's announcement
         # of that program does not cut it off.

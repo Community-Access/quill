@@ -473,7 +473,11 @@ class TranscribeDictationMixin(TranscribeTalkMixin, FieldHoldMixin):
             logging.getLogger(__name__).info(
                 "Dictate Here from %s not started: pressed in %s, now %s", sender, place, now
             )
-            self._announce(left_sentence(), force=True)  # type: ignore[attr-defined]
+            from quill.ui.outcome_report import keep_outcome
+
+            refused = left_sentence()
+            keep_outcome("Dictate Here", refused, failed=True)  # F9 and Activity find it
+            self._announce(refused, force=True)  # type: ignore[attr-defined]
             return
         self.start_dictation()
 

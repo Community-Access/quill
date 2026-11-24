@@ -214,6 +214,11 @@ somewhere else, and it is never read aloud.
   of window, which two edit boxes in one dialog share, so moving from one
   to the other kept typing. They now compare the box's own window, and a
   moment when Windows cannot say which window is in front holds the words.
+- **Kept for F9 and Activity.** Text Not Typed's Copy now says "Copied the
+  text to the clipboard." instead of "Copied.", and that sentence, the
+  "Nothing to insert into" one and Transcribe's Dictate Here refusal are kept
+  like any other result, so Repeat Last Result (F9) and Activity (Shift+F9)
+  find them. The words you typed or dictated are never kept.
 
 ### The actual result, said once, in Quill Radio, Media Player and Converter (2026-11-23)
 

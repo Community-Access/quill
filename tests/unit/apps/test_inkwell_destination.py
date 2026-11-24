@@ -141,8 +141,23 @@ def test_copy_keeps_the_text_on_the_clipboard() -> None:
 
     assert host.typed == []
     assert host.clipboard == [_PRIVATE]
-    assert host.said == ["Copied."]
+    assert host.said == ["Copied the text to the clipboard."]
     assert host.brought_back == [11, 11]  # back where you were, ready to paste
+
+
+def test_the_copy_is_kept_for_f9_and_activity() -> None:
+    from quill.core import activity
+
+    activity.LOG.clear()
+    host = _Host(_OTHER_FIELD)
+    host.answers = [COPY]
+
+    host._insert_held(_held(host))
+
+    latest = activity.LOG.recent()[0]
+    assert (latest.action, latest.summary) == ("Insert Text", "Copied the text to the clipboard.")
+    assert _PRIVATE not in latest.summary  # the words themselves are never kept
+    activity.LOG.clear()
 
 
 def test_insert_goes_back_to_the_same_place_and_types_only_there() -> None:
