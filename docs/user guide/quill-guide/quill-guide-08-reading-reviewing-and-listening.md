@@ -680,6 +680,14 @@ is three keystrokes. The work runs in the background with progress for each
 file, and you can cancel it. It uses the same speech engine as live Read
 Aloud, so the voice you audition is the voice you get.
 
+Before a long run, **Try a Sample** (Alt+P) on the summary page speaks about
+the first 30 seconds of the first document with every choice you made, plays
+it, and says in the **Sample result** box what the whole run should take,
+play for and weigh at that pace on this computer, and what one sample cannot
+prove. It is made in a temporary folder and kept only until the wizard
+closes; nothing is saved beside your documents. After you change a setting,
+the result says "Out of date" until you try again.
+
 The source pages offer a list of **recent source folders**, and the edit
 path's file picker remembers **recently opened audiobooks**. Both lists are
 kept between sessions, are separate from your recent documents, and never

@@ -95,6 +95,12 @@ Check the spoken credits if you want the book to introduce itself.
 
 Read the summary. If you like, choose **Save a job file** to keep all your
 choices in a `.quilljob` file you can load next time (or edit in Notepad).
+Before a long run, choose **Try a Sample** (Alt+P). QUILL speaks about the
+first 30 seconds of your first document with exactly these choices, plays it,
+and writes in the **Sample result** box how long the whole run should take
+and how large it will be on this computer. Nothing is saved beside your
+documents. If you go back and change something, the result says it is out of
+date, so you know to try again.
 Then press **Start**. QUILL tells you how it is going, file by file. You can
 cancel at any time, or tuck the progress into the status bar.
 

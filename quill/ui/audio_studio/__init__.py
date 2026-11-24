@@ -81,6 +81,7 @@ def show_audio_studio(frame: object) -> BatchSpeechRequest | None:
             on_preview=on_preview,
             announce_cb=frame._announce,
             initial_journey=last_journey,
+            host=frame,
         )
         # A voice preview stops with Escape, on leaving the wizard and when it
         # closes, so it never plays on over what comes next (FUX-08).

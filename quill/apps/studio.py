@@ -1465,8 +1465,8 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
                 engine_available=runner._engine_available(self),
                 voices_for=runner._voices_for,
                 on_preview=on_preview,
-                announce_cb=self._announce,
                 initial_journey="documents",
+                host=self,  # announces through the host; FUX-11 Try a Sample uses it too
             )
             guard_preview(dlg, lambda: bool(self._stop_active_voice_preview()))  # FUX-08
             try:

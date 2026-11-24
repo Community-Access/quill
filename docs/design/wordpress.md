@@ -5263,3 +5263,7 @@ built.
   live with a screen reader (writing on the test host is outside this
   session's permissions).
 
+- **Try a sample first (FUX-11):** Make a Listening Version records the whole
+  page and uploads it at once. Add a sample of the opening, spoken with
+  `listen_engines.speak` into a temporary file and played, with no upload,
+  before the full run. See `docs/design/fux-11-adoption.md`, section 4.

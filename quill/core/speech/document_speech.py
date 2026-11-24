@@ -31,7 +31,7 @@ from quill.core.speech.chapter_assemble import (
     Synthesizer,
     assemble_chaptered_audio,
 )
-from quill.core.speech.text_polish import extract_sections
+from quill.core.speech.text_polish import DocumentSection, extract_sections
 from quill.core.speech.translate_sections import Translator, translate_sections
 
 # Engine ids accepted by :func:`make_synthesizer`. These mirror the
@@ -334,6 +334,36 @@ def _build_casting(
     return synthesizer_for
 
 
+_WORD = re.compile(r"\S+")
+
+
+def first_words(sections: list[DocumentSection], max_words: int) -> list[DocumentSection]:
+    """The opening *max_words* words of *sections*, headings and line breaks kept.
+
+    This is a sample's text (FUX-11, "Try a Sample"): the same sections the
+    whole document would speak, cut at a word boundary, so the sample goes
+    through exactly the pipeline the real run does. Words are counted the way
+    the batch progress counts them (whitespace-delimited). *max_words* of 0 or
+    less keeps everything.
+    """
+    if max_words <= 0:
+        return list(sections)
+    kept: list[DocumentSection] = []
+    left = max_words
+    for section in sections:
+        if left <= 0:
+            break
+        words = list(_WORD.finditer(section.text))
+        if len(words) <= left:
+            kept.append(section)
+            left -= len(words)
+            continue
+        cut = words[left - 1].end()
+        kept.append(replace(section, text=section.text[:cut]))
+        left = 0
+    return kept
+
+
 def synthesize_document_to_chaptered_file(
     source: Path,
     output_path: Path,
@@ -349,6 +379,7 @@ def synthesize_document_to_chaptered_file(
     translate: Translator | None = None,
     voice_blacklist: Any | None = None,
     on_progress: Any | None = None,
+    max_words: int = 0,
 ) -> ChapterAssembleResult:
     """Convert one document to a chaptered audio file using a real engine.
 
@@ -363,10 +394,14 @@ def synthesize_document_to_chaptered_file(
     marker titles stay the raw heading text. Returns the
     :class:`ChapterAssembleResult` (the clean file plus, when the sounder is
     enabled, the with-tones variant carrying identical chapter timing).
+
+    *max_words* above 0 speaks only the document's opening words
+    (:func:`first_words`), for a sample made with the same settings.
     """
     sections = extract_sections(
         source, combine_headings=combine_headings, max_heading_level=max_heading_level
     )
+    sections = first_words(sections, max_words)
     if not sections:
         raise DocumentSpeechError(f"No readable text found in {source.name}.")
     if translate is not None:

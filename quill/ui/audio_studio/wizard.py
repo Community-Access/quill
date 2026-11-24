@@ -64,6 +64,7 @@ class AudioStudioWizard(wx.Dialog):
         on_preview: Callable[[str, str], None],
         announce_cb: Callable[[str], None] | None = None,
         initial_journey: str = "documents",
+        host: object | None = None,
     ) -> None:
         super().__init__(
             parent,
@@ -71,13 +72,14 @@ class AudioStudioWizard(wx.Dialog):
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
             name="audio_studio.wizard",
         )
-        self._announce_cb = announce_cb
+        # The host's announcer when none is given (Studio's Open Job File).
+        self._announce_cb = announce_cb or getattr(host, "_announce", None)
         self._defaults = defaults
         self._result: BatchSpeechRequest | None = None
         self._current_idx = -1
 
         self.start_page = StartPage(self, initial_journey=initial_journey)
-        self.doc_source = DocSourcePage(self, defaults, announce=announce_cb)
+        self.doc_source = DocSourcePage(self, defaults, announce=self._announce_cb)
         self.voices = VoicesPage(
             self,
             defaults,
@@ -92,7 +94,7 @@ class AudioStudioWizard(wx.Dialog):
         self.audio_source = AudioSourcePage(self, defaults)
         self.audio_book = BookPage(self, defaults, forced=True, source_provider=self.build_request)
         self.edit_source = EditSourcePage(self)
-        self.summary = SummaryPage(self)
+        self.summary = SummaryPage(self, host)
 
         self._sequences: dict[str, list[StudioPage]] = {
             "documents": [
@@ -255,6 +257,8 @@ class AudioStudioWizard(wx.Dialog):
         seq = self._sequence()
         if 0 <= self._current_idx < len(seq):
             old = seq[self._current_idx]
+            if old is self.summary:
+                self.summary.on_hidden()  # FUX-11: leaving stops a sample
             old.Hide()
             old.Disable()
         self._current_idx = idx

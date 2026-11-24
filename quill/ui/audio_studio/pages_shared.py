@@ -440,7 +440,7 @@ class BookPage(StudioPage):
 class SummaryPage(StudioPage):
     """Review every choice in plain sentences, then Start."""
 
-    def __init__(self, parent: wx.Window) -> None:
+    def __init__(self, parent: wx.Window, host: object | None = None) -> None:
         super().__init__(
             parent,
             "audio_studio.summary",
@@ -470,10 +470,23 @@ class SummaryPage(StudioPage):
         )
         save_job_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_save_job())
         self.sizer.Add(save_job_btn, 0, wx.LEFT | wx.BOTTOM, 12)
+        # FUX-11: hear the run before it starts (needs the host for engines).
+        self.sample = None
+        if host is not None:
+            from quill.ui.audio_studio.try_sample import SampleControls
+
+            self.sample = SampleControls(self, self.sizer, host)
 
     def on_shown(self, req: BatchSpeechRequest) -> None:
         self._latest = req
         self._text.SetValue("\n".join(summary_lines(req)))
+        if self.sample is not None:
+            self.sample.show_for(req)
+
+    def on_hidden(self) -> None:
+        """Leaving the page stops a sample being made or played (FUX-11)."""
+        if self.sample is not None:
+            self.sample.halt()
 
     def _on_save_job(self) -> None:
         """Pin this exact run to a portable, hand-editable .quilljob file."""
