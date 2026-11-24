@@ -14,10 +14,10 @@ Scribe Message says it again.
 
 Scribe for Documents Options has a new **Progress and results** group, in
 QUILL, QUILL Lite and every app with Scribe: for when a conversion starts,
-each stage, when it finishes, and when it fails or needs you, choose **Play
+each stage, milestone or delay, when it finishes, and when it fails or needs you, choose **Play
 a sound**, **Speak the action**, **Both a sound and speech** or **Neither**.
-**Stage feedback plays** chooses whether stage feedback comes only while a
-Scribe for Documents window has focus, or everywhere. **Play Success Sound**
+**Stage feedback applies** chooses whether stage feedback comes only while a
+Scribe for Documents window is in front, or everywhere. **Play Success Sound**
 and **Play Failure Sound** let you hear the two sounds, at your App Sounds
 volume. The three new sounds are in the sound scheme, in the group **Scribe
 for Documents**, where you can change or silence each one. Words go to your
@@ -93,6 +93,7 @@ Alt+W now moves to the "Open each result when it is ready" choices. Its
 underlined letter did nothing before.
 
 Help in these dialogs says "checked", not "ticked".
+
 ### QUILL Lite makes listening versions of WordPress pages (2026-11-23)
 
 **Tools > WordPress > More Media > Make a Listening Version** now works in
