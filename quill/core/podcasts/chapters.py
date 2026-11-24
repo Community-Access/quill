@@ -170,11 +170,22 @@ def next_chapter(chapters: list[PodcastChapter], position_ms: int) -> PodcastCha
     return None
 
 
-def previous_chapter(chapters: list[PodcastChapter], position_ms: int) -> PodcastChapter | None:
+def previous_chapter(
+    chapters: list[PodcastChapter], position_ms: int, *, restart_ms: int = 0
+) -> PodcastChapter | None:
     """The chapter before the current one at *position_ms*, or None if already
-    at (or before) the first chapter."""
+    at (or before) the first chapter.
+
+    With *restart_ms*, a playhead more than that far into its chapter gets the
+    current chapter back instead: "previous" restarts the chapter you are in,
+    the way Radio, Player and every other media player mean it. Without it,
+    twenty minutes into chapter 1 said "Already at the first chapter" (FUX-14
+    audit, 2026-11-23).
+    """
     current = chapter_at_position(chapters, position_ms)
     if current is None:
         return None
+    if restart_ms > 0 and position_ms - current.start_ms > restart_ms:
+        return current
     index = chapters.index(current)
     return chapters[index - 1] if index > 0 else None

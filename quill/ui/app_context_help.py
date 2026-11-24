@@ -18,6 +18,10 @@ The answer composes from three layers, each with a graceful floor:
 3. **How to drive its kind** -- one role sentence per wx class, from
    :func:`quill.core.control_help.role_usage`.
 
+A list or tree can add one more paragraph, about its **selected row** right
+now (FUX-10, :func:`set_selection_help`): what Enter does on this row, and what
+is greyed for it and why. It is asked only when F1 is pressed.
+
 **Wiring is central.** :func:`activate` registers a handler with
 ``dialog_contract.set_context_help_handler``; the contract's two show paths
 bind F1 on every window they open, which -- by the existing dialog gate -- is
@@ -93,6 +97,33 @@ def guide_route_for(title: str) -> tuple[str, Callable[[], None]] | None:
         except Exception:  # noqa: BLE001 - a bad predicate must not kill F1
             continue
     return None
+
+
+#: The attribute a list or tree carries when F1 should also describe its
+#: selected row (FUX-10). Set by :func:`set_selection_help`.
+_SELECTION_HELP = "_quill_selection_help"
+
+
+def set_selection_help(control: Any, describe: Callable[[], str]) -> None:
+    """F1 on *control* also says what its selected row is, right now.
+
+    *describe* runs only when F1 is pressed, never on selection, so arrowing
+    the list computes and says nothing new (GATE-13). It answers "" when the
+    list's own help already covers the row.
+    """
+    setattr(control, _SELECTION_HELP, describe)
+
+
+def selection_help_of(control: Any) -> str:
+    """What *control*'s registered describer says about its selection, or ""."""
+    describe = getattr(control, _SELECTION_HELP, None)
+    if not callable(describe):
+        return ""
+    try:
+        text = describe()
+    except Exception:  # noqa: BLE001 - a describer bug must not kill F1
+        return ""
+    return text.strip() if isinstance(text, str) else ""
 
 
 def ensure_help_provider(wx: Any = None) -> None:
@@ -220,6 +251,7 @@ def topics_for(window: Any, wx: Any = None) -> tuple[Any, Any]:
         accessible_name="" if name == heading else name,
         help_text=_help_text_of(focused, top),
         usage=control_help.role_usage(type(focused).__name__),
+        selection=selection_help_of(focused),
     )
     control_topic = HelpTopic(id="", title=heading, body=body)
     return surface_topic, control_topic

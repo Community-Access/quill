@@ -13,6 +13,17 @@ new in 1.0.0, including what the first test builds (builds 1 and 2) already
 did. Build 3 adds Help > What's New and keeps everything else. The changes are
 grouped by area; most say where in the user guide to read more.
 
+### The actual result, said once (2026-11-23)
+
+- **Activity...** (Shift+F9) and **Repeat Last Result** (F9) are on the
+  Help menu. Before, no menu carried them.
+- **Save As** in Review Transcript says the file and its folder ("Saved
+  meeting.txt in Documents.") and keeps it in Activity (Shift+F9) with Open
+  Folder; F9 says it again.
+- Stopping a recording's transcription says what is left: "Stopped
+  transcribing meeting.mp3. No transcript was kept; transcribe it again to
+  start over."
+
 ### A setting that cannot be saved is said (2026-11-20)
 
 - A failed settings save is now reported once in Activity, with Retry and

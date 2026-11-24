@@ -252,6 +252,55 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
 <h2 id="unreleased---2026-11-07">[Unreleased] - 2026-11-07</h2>
+<h3 id="f1-on-favorites-says-what-enter-does-on-this-row-2026-11-23">F1
+on Favorites says what Enter does on this row (2026-11-23)</h3>
+<p>F1 on the Favorites tree now also says what Enter does on the row you
+are on: on the playing station it pauses, on a paused one it resumes,
+and on a folder it plays nothing. It also names a station marked for
+move and reads your note.</p>
+<h3 id="the-chapter-keys-land-where-they-say-2026-11-23">The chapter
+keys land where they say (2026-11-23)</h3>
+<ul>
+<li><strong>Next Chapter in the last chapter</strong> says “This is the
+last chapter.” and stays put. It used to jump back to the start of the
+chapter you were in and announce it as if it had moved.</li>
+<li><strong>The chapter keys find the chapters the Chapters list
+finds.</strong> When nothing was published, Ctrl+Shift+. and
+Ctrl+Shift+, now move through the file’s own chapter marks, or the
+chapters QUILL Cast worked out, instead of saying there are none.
+Worked-out chapters are said with “estimated”.</li>
+<li>“This has no chapters.” replaces “This video has no chapters.”,
+which was said for podcast episodes, recordings and files too.</li>
+</ul>
+<h3 id="saves-and-exports-say-where-once-2026-11-23">Saves and exports
+say where, once (2026-11-23)</h3>
+<ul>
+<li>Exports name the file and its folder: “Exported 42 stations to
+quill-radio-favorites.m3u in Music.” The same goes for a favorites
+folder, a Local Media playlist, podcasts to OPML, Find Streams’ Save as
+Playlist, the calendar, listening statistics, a backup and a snapshot.
+Each is kept in Activity (Shift+F9) with Open Folder.</li>
+<li>A single download says “Saved Chapter 1 as chapter-01.mp3 in
+Middlemarch.” rather than reading out the whole folder path, and the
+queue no longer adds “1 saved.” after it. A batch says how many saved
+and failed, and the folder when they all went into one, and is kept in
+Activity.</li>
+<li>Songs saved from the time-shift buffer are kept in Activity with
+Open Folder.</li>
+</ul>
+<h3 id="the-update-offer-waits-until-you-stop-listening-2026-11-24">The
+update offer waits until you stop listening (2026-11-24)</h3>
+<p>The daily update check used to open its window as soon as it came
+back, which at launch was right on top of the station Quill Radio had
+just resumed, and it could open during a recording or while Radio sat in
+the tray. Now the offer waits: never in the first minute, never while a
+station plays or a recording runs, never while you are typing, and never
+while Quill Radio is not the window you are using. It waits about 20
+seconds more after you stop. While it waits, the status bar and Update
+History say once what is waiting, and nothing is spoken over the
+station. <strong>Help &gt; Check for Updates</strong> opens the waiting
+update at once. On Beta and Dev, “Update downloaded” is written on the
+status bar instead of spoken.</p>
 <h3
 id="infinity-or-nan-in-the-settings-file-no-longer-stops-radio-2026-11-20">Infinity
 or NaN in the settings file no longer stops Radio (2026-11-20)</h3>

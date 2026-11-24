@@ -459,7 +459,11 @@ def take_snapshot(host: Any) -> None:
         host._announce("The snapshot folder could not be created.")
         return
     if engine.take_snapshot(str(target)):
-        host._announce(f"Snapshot saved as {target.name}.")
+        from quill.core.action_feedback import place_of
+        from quill.ui.outcome_report import report_outcome
+
+        # The file and its folder, kept with Open Folder (FUX-04).
+        report_outcome(host, "Snapshot", f"Snapshot saved as {place_of(target)}.", path=target)
     else:
         host._announce("The snapshot could not be saved.")
 

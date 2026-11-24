@@ -851,3 +851,33 @@ def test_download_release_asset_rejects_digest_mismatch(monkeypatch, tmp_path) -
             expected_sha256="b" * 64,
         )
     assert not target.exists()
+
+
+def test_a_broken_download_leaves_no_half_installer_and_keeps_a_good_copy(
+    monkeypatch, tmp_path
+) -> None:
+    """FUX-15: a failed download leaves the current usable setup intact."""
+    import io
+
+    import pytest
+
+    import quill.core.updates as updates_mod
+
+    class _Dropped(io.BytesIO):
+        headers = {"Content-Length": "100"}
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    monkeypatch.setattr(updates_mod, "urlopen", lambda *a, **k: _Dropped(b"half"))
+    target = tmp_path / "QUILL-Setup.exe"
+    target.write_bytes(b"the good copy")
+    with pytest.raises(OSError, match="stopped after 4 of 100 bytes"):
+        updates_mod.download_release_asset(
+            "https://github.com/x/y/releases/download/v1/QUILL-Setup.exe", target
+        )
+    assert target.read_bytes() == b"the good copy"
+    assert list(tmp_path.iterdir()) == [target]

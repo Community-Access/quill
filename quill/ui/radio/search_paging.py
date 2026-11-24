@@ -27,6 +27,12 @@ def fetch_more(host: Any) -> None:
     host._status.SetLabel("Loading more stations...")
     offset = host._search_offset
     name, tag, country = host._search_query, host._search_tag, host._search_country
+    request = getattr(host, "_search_request", 0)
+
+    def _done(stations: list, error: BaseException | None) -> None:
+        # A page of the search the listener has since replaced is not merged.
+        if request == getattr(host, "_search_request", 0):
+            host._on_more_done(stations, error)
 
     def _do_more(**_kwargs: Any) -> list:
         return radio_browser.search_stations(
@@ -41,21 +47,22 @@ def fetch_more(host: Any) -> None:
     host._task_manager.submit(
         "radio-search-more",
         _do_more,
-        on_success=lambda _op, stations: host._on_more_done(stations, None),
-        on_failure=lambda _op, exc: host._on_more_done([], exc),
+        on_success=lambda _op, stations: _done(stations, None),
+        on_failure=lambda _op, exc: _done([], exc),
     )
 
 
 def more_arrived(host: Any, stations: list, error: BaseException | None) -> None:
     """Merge the new page in and put the cursor on its first row."""
     from quill.core.radio.directory_search import merge_and_rank
+    from quill.ui.radio.results_view import station_key
     from quill.ui.radio.station_browser_dialog import _SEARCH_LIMIT, _SEARCH_RESULTS
 
     if error is not None:
         host._status.SetLabel(f"Could not load more: {error}")
         host._more_btn.Enable(True)  # let the user try again
         return
-    first_new_index = len(host._search_results)
+    shown_before = list(host._search_results)
     host._search_rb = host._search_rb + stations
     host._search_results = merge_and_rank(
         [host._search_rb, host._search_extras], host._search_query
@@ -63,13 +70,13 @@ def more_arrived(host: Any, stations: list, error: BaseException | None) -> None
     host._search_offset += len(stations)
     host._search_more_available = len(stations) >= _SEARCH_LIMIT
     host._more_btn.Enable(host._search_more_available)
-    host._show_category(_SEARCH_RESULTS)
     # Land on the first newly added station, so the reader picks up where the
-    # previous page ended rather than back at the top.
-    if stations and first_new_index < len(host._current_results):
-        host._results.Select(first_new_index)
-        host._results.Focus(first_new_index)
-        host._results.EnsureVisible(first_new_index)
+    # previous page ended rather than back at the top -- the one row selected,
+    # since Enter plays the first selected row.
+    new = {station_key(s) for s in stations} - {station_key(s) for s in shown_before}
+    landing = next((s for s in host._search_results if station_key(s) in new), None)
+    host._results_keep = "" if landing is None else station_key(landing)
+    host._show_category(_SEARCH_RESULTS)
     host._announce(
         f"Added {len(stations)} more; {len(host._search_results)} stations now."
         if stations

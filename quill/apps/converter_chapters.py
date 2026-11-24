@@ -19,6 +19,7 @@ from pathlib import Path
 
 import wx
 
+from quill.core.action_feedback import place_of
 from quill.core.audio.convert import CancelToken, ConversionJob
 from quill.core.audio.formats import format_label
 
@@ -88,14 +89,17 @@ class ConverterChaptersMixin:
                     progress=progress,
                     cancelled=cancel.is_cancelled,
                 )
-                message = f"Joined {len(sources)} files into {out_path.name}{chapters}."
+                # The file and its folder (FUX-04), kept in Activity with Open Folder.
+                message = f"Joined {len(sources)} files into {place_of(out_path)}{chapters}."
+                made: Path | None = out_path
             except Exception as error:  # noqa: BLE001 - said out loud on the UI thread
                 message = (
                     "Join stopped. Nothing was saved."
                     if cancel.is_cancelled()
                     else f"Join failed. {error}"
                 )
-            wx.CallAfter(self._finish_simple, message, out_path.parent)
+                made = None
+            wx.CallAfter(self._finish_simple, message, out_path.parent, action="Join", made=made)
 
         self._work_thread = threading.Thread(target=worker, daemon=True, name="converter-join")
         self._work_thread.start()

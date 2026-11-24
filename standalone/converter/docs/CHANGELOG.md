@@ -12,6 +12,14 @@ engine under `quill/core/audio/` -- so a fix to the engine lands in QUILL's
 Audio Studio at the same time. The `standalone/converter` folder carries only
 the launcher, installer, icon and these documents.
 
+## Unreleased
+
+### F1 on the queue says what happened to that file (2026-11-23)
+
+After a conversion, F1 on a row of the queue says what that file converted
+to, why it failed, or that it was skipped when you stopped. On a folder it
+counts its files, and after Split by Chapters it says how many parts. The result used to be only in the Conversion Report.
+
 ## Planned, not released
 
 - Studio's consolidated plan proposes an accessible project-to-Converter
@@ -24,6 +32,23 @@ the launcher, installer, icon and these documents.
 The first public release. The app was first built in July 2026 as an audio
 converter; that build was never published as an installer, and everything it
 had is included here.
+
+### A batch ends with the actual result (2026-11-23)
+
+- **The end of a run says where.** "Converted all 12 files into the folder
+  Converted in Music." One file names the file it made. Failed files are
+  named, with their folders when two have the same name.
+- **Stop says what is left.** "Stopped. Converted 2 of 4 files into the folder
+  Converted in Music; they are kept. 2 files were not converted, and nothing
+  half-finished was left behind." It used to end with ". cancelled."
+- **Retry converts only the rest.** The result is kept in Help > Activity...
+  (Shift+F9, new on the Help menu with Repeat Last Result, F9). Its Retry
+  converts only the files that failed or were not reached, to the names they
+  would have had; pressing Convert again converted every file a second time.
+- **Join and Auphonic are kept too.** A Join names the file and its folder,
+  and both are in Activity with Open Folder.
+- The Conversion Report shows whole paths, so two files with the same name can
+  be told apart.
 
 ### Documents, with Scribe for Documents (2026-11-21)
 

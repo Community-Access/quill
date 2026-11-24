@@ -24,8 +24,11 @@ from pathlib import Path
 import wx
 
 from quill.apps.studio_capture import StudioCaptureMixin
+from quill.apps.studio_library_window import ensure_library_window, enter_without_book
+from quill.apps.studio_results import append_result_items, diagnostics_saved  # FUX-04
 from quill.apps.studio_scribe import StudioScribeMixin
 from quill.core.app_version import describe_version, installed_version
+from quill.core.audio_studio import library_row_help
 from quill.core.audio_studio.book_prefs import (
     get_prefs,
     load_prefs,
@@ -383,8 +386,6 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
             pass
 
     def _open_library_window(self) -> None:
-        from quill.apps.studio_library_window import ensure_library_window
-
         def clear_refs() -> None:
             self._library_window = None
             self._library_tree = None
@@ -394,7 +395,8 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
             parent=self.frame,
             title=f"{_TITLE} Library",
             existing=existing,
-            reload_tree=self._reload_library_tree,
+            # Filled before the window is shown, once the app knows its tree.
+            reload_tree=lambda t: (setattr(self, "_library_tree", t), self._reload_library_tree()),
             on_activate=self._on_tree_activate,
             on_context_menu=self._on_tree_context_menu,
             on_key=self._on_tree_key,
@@ -411,13 +413,16 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         except Exception:  # noqa: BLE001 - an unreadable MRU is an empty library
             return []
 
-    def _reload_library_tree(self) -> None:
+    def _reload_library_tree(self, tree: wx.TreeCtrl | None = None) -> None:
         """Rebuild the library tree from the persisted state + recent files.
 
         Kept under the original list name so the many call sites that refresh
         after a mutation (open, narrate, publish, delete) still work unchanged.
+        *tree* is the new Library Window's tree, filled before it is remembered;
+        the window used to pass it to a method that took none, so opening the
+        Library Window failed.
         """
-        tree = getattr(self, "_library_tree", None)
+        tree = tree if tree is not None else getattr(self, "_library_tree", None)
         if tree is None:
             return
         keep = selected_key(tree)
@@ -459,7 +464,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
     def _open_selected_book(self) -> None:
         book = self._selected_book()
         if book is None:
-            self._announce("No book selected. Narrate documents or build from recordings first.")
+            self._announce(enter_without_book(getattr(self, "_library_tree", None)))
             return
         self.open_book(book)
 
@@ -467,7 +472,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
     def _missing_book_announcement(title: str) -> str:
         """The one spoken message for a book whose file is gone, so every path
         (resume, Recently Played, Reveal, auto-advance) says the same thing."""
-        return f"{title} is no longer where it was; it may have been moved or renamed."
+        return library_row_help.missing_book(title)
 
     def _maybe_resume_last_book(self, **_kw) -> None:
         """Reopen the most recently played book on launch (opt-in flag)."""
@@ -1082,6 +1087,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         help_menu.Append(whats_new_id, "&What's New\tCtrl+Shift+F1")
         help_menu.AppendSeparator()
         help_menu.Append(palette_id, "&Command Palette...\tCtrl+Shift+P")
+        result_items = append_result_items(self, help_menu)  # Activity, F9
         help_menu.AppendSeparator()
         help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
         help_menu.Append(bug_id, "Get Help from &Support...\tCtrl+Alt+F2")
@@ -1128,6 +1134,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
             (notes_id, lambda: self._open_studio_doc("release-notes-1.0")),
             (whats_new_id, lambda: open_whats_new("studio", _TITLE, self._announce)),
             (palette_id, self.open_command_palette),
+            *result_items,
             (updates_id, self.check_updates_manual),
             (bug_id, lambda: self.report_app_bug(source_app=_TITLE, app_version=_VERSION)),
             (log_id, self._view_log),
@@ -2104,10 +2111,9 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
                 logs_path=log_file if log_file.exists() else None,
             )
 
-        def _done(_result: object) -> None:
-            self._announce(f"Diagnostics bundle saved to {target}")
-
-        self._run_background_task("Building diagnostics bundle", _build, _done)
+        self._run_background_task(
+            "Building diagnostics bundle", _build, lambda _r: diagnostics_saved(self, target)
+        )
 
     # -- background tasks (MainFrame protocol, on the shell's own thread model) ---
 

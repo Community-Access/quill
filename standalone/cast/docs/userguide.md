@@ -995,9 +995,15 @@ the listener questions. When an episode has them, you can hop straight from
 one part to the next.
 
 - **Ctrl+Alt+Right** goes to the next chapter.
-- **Ctrl+Alt+Left** goes to the previous one.
+- **Ctrl+Alt+Left** goes to the previous one. More than three seconds into a
+  chapter, it goes back to the start of that chapter first, like a CD player;
+  press it again to go to the one before. At either end Cast says "This is
+  the first chapter." or "This is the last chapter."
 
-Cast says each chapter's name as you arrive.
+Cast says each chapter's name and its place as you arrive: "The interview,
+chapter 3 of 7." A chapter Cast worked out for itself, from the transcript or
+by listening for pauses, ends with "estimated", so you can tell it from one the
+podcast published.
 
 To see the whole list:
 
@@ -1835,6 +1841,10 @@ types wherever the focus is.
   once it is ready. The very first time, QUILL Transcribe opens its own window
   instead, to set itself up. Finish that, come back to Cast, and press
   Ctrl+F11 again.
+- **You leave the box before QUILL Transcribe is ready.** Dictation does not
+  start anywhere else. QUILL Transcribe says "Dictation did not start, because
+  you moved away from the box you pressed Dictate Here in; go back to that box
+  and press Dictate Here again."
 - **Quill Inkwell is dictating.** Nothing starts, and Cast says "Quill
   Inkwell is dictating. Stop it there, then try again." Only one program uses
   the microphone at a time.
@@ -4686,6 +4696,10 @@ what the control you are on does. On a checkbox and not sure what checking it
 changes? Press F1 before you check it. Try it now on anything in the main
 window.
 
+On the episode list, F1 also says which menu items are dimmed for the episode
+or podcast you are on, and why: "Download Episode: this episode is already
+downloaded." Your screen reader calls them unavailable.
+
 ### Finding a command you have forgotten
 
 You know Cast can do something, and you cannot remember where it is. Three
@@ -4832,6 +4846,12 @@ unless it finds one. To check now:
 Help > About shows your version with a build number, such as 2.0.0 (build 6). The
 build number tells you which build of a version you have: when a fix comes out
 without a new version number, it is a newer build, and Check for Updates offers it.
+
+The daily check never interrupts an episode. When it finds a new version,
+the offer waits until nothing is playing, the first minute after Cast opens
+has passed, you have stopped typing and Cast is the window you are using.
+While it waits, the status bar and Update History say once what is
+waiting; nothing is spoken. Check for Updates opens it at once.
 
 If you are already up to date, Cast tells you so. To turn the daily check
 off, open Preferences (Ctrl+,), choose **When Cast opens**, and clear

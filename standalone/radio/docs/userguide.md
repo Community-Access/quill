@@ -479,6 +479,14 @@ If you cannot remember a key, you never need to.
    to the recording that took its place in the list.
 8. Press **Escape** to close Radio Recordings.
 
+The list keeps itself up to date while it is open, and it never moves you.
+A recording that starts, or a schedule that begins, adds a row without taking
+your cursor off the recording you were on. When a scheduled recording starts,
+your cursor follows it to its Recording row. If a recording you were on goes
+from the list some other way, for example you delete the file in File
+Explorer, Quill Radio says "... is no longer in the list." once and puts you
+on the next one.
+
 Good to know: recordings are saved in your Music folder, in a folder called
 `Quill Radio Recordings`. A portable copy saves them in its own `Recordings`
 folder. **Open in Folder** in Radio Recordings shows you the file in File
@@ -591,7 +599,7 @@ moved, not gone. Play is **Enter** on a station, or **Ctrl+P**. Record is
 2. Arrow **Up** and **Down** to move. **Right Arrow** opens a folder and **Left
    Arrow** closes it.
 3. Press **Enter** on a station to play it. Press **Enter** on the station that
-   is playing to stop it.
+   is playing to pause it, and again to resume.
 4. Press **Space** on the playing station to pause or resume it, when it is
    something that can be paused. Live radio cannot be paused.
 5. Press **F2** to rename a station or folder. Leave a station's name blank to
@@ -600,6 +608,13 @@ moved, not gone. Play is **Enter** on a station, or **Ctrl+P**. Record is
 7. Press **Ctrl+Up** or **Ctrl+Down** to change the volume without leaving the
    tree.
 8. Press **Shift+F10**, or the Applications key, for everything you can do.
+
+The tree redraws itself when your favorites change, here or in another window
+such as Browse Stations. Your cursor stays on the station or folder you were
+on, and folders you closed stay closed. If the station you were on was
+removed, your cursor goes to the one after it. The Favorites branch in Browse
+Stations works the same way, and redraws without saying anything over the
+"Added" or "Removed" you just heard.
 
 #### The menu on a station or a folder
 
@@ -1607,7 +1622,14 @@ episode, a recording or a downloaded file.
   chapter you are in.
 - **Next Chapter** (Ctrl+Shift+.) and **Previous Chapter** (Ctrl+Shift+,) move
   by chapter. Like a CD player, Previous Chapter first goes back to the start
-  of the chapter you are in.
+  of the chapter you are in. Each move says the chapter's name and its place,
+  "The problem, chapter 2 of 5." In the last chapter, Next Chapter says "This is
+  the last chapter." and leaves you where you are, and Previous Chapter at the
+  start of the first one says "This is the first chapter."
+- When the uploader published no chapters, the chapter keys use the same ones
+  the **Chapters...** list finds: the file's own chapter marks, or chapters
+  QUILL Cast worked out earlier. Chapters that were worked out rather than
+  published end with "estimated", so you know a person did not place them.
 - **Skip Silence** (Ctrl+Shift+9) shortens long pauses. It works straight away,
   with no break in the sound.
 
@@ -2313,7 +2335,8 @@ The rest of the Video menu:
   whether captions and described audio are available.
 - **Take a Snapshot** (Ctrl+Shift+Alt+H) saves the current picture into your
   recordings folder, for example so you can read a slide with OCR (optical character recognition). You should
-  hear "Snapshot saved as" and its name.
+  hear "Snapshot saved as", its name and its folder, and it is kept in Activity
+  (Shift+F9) with Open Folder.
 - **Describe the Video** (Ctrl+F5) asks the AI you chose what is on screen. See
   Chapter 13.
 - **Start Watching for Changes** (Ctrl+F9) tells you each time the picture
@@ -2985,6 +3008,10 @@ the focus is.
   dictating once it is ready. The very first time, QUILL Transcribe opens its
   own window instead, to set itself up. Finish that, come back, and press
   Ctrl+F11 again.
+- **You leave the box before QUILL Transcribe is ready:** dictation does not
+  start anywhere else, and you hear "Dictation did not start, because you
+  moved away from the box you pressed Dictate Here in; go back to that box and
+  press Dictate Here again."
 - **Quill Inkwell is dictating:** nothing starts, and you hear "Quill Inkwell
   is dictating. Stop it there, then try again." Only one program uses the
   microphone at a time.
@@ -3045,7 +3072,9 @@ To narrow things down:
 - **Source** (Alt+U) shows results from just one directory: All sources, Radio
   Browser, iHeart, TuneIn, Podcasts, ACB Media, Community M3U, Xiph,
   Spotify, YouTube or Website. It filters what you have without searching
-  again.
+  again. Your cursor stays on the station you were on when that source still
+  shows it; when it does not, Quill Radio says so, for example "WNYC is not
+  shown with this filter."
 - **Category** (Alt+Y) switches the window to a list instead of a search:
   Favorites, Popular Stations, ACB Media, TuneIn, Music Genres, Xiph
   Directory or Search Results. The window opens on Favorites.
@@ -3054,6 +3083,10 @@ To narrow things down:
   together. It remembers fifteen.
 - When Radio Browser has more than 200 results, the **More Stations** button
   loads the next lot and puts your cursor on the first new station.
+- Results that arrive later, such as books and podcasts from the libraries,
+  join the list around you: your cursor stays on the same station, on the same
+  line, and only one row is ever selected. An answer for a search you have
+  already replaced, or for a category you have left, is dropped.
 
 After the results, Tab reaches a **Station details** box, the status line,
 **Radio volume**, **Mute**, **Play** (reads **Stop** while the selected station
@@ -3654,7 +3687,7 @@ Want your favorites in another media player, or to share them with a friend?
    `quill-radio-favorites.m3u`.
 2. Choose a folder and a name, then choose **Save**.
 3. You should hear, for example, "Exported 42 stations to
-   quill-radio-favorites.m3u."
+   quill-radio-favorites.m3u in Music.", the file and the folder it is in.
 
 Export writes an **M3U** file, which almost every media player can open. Each
 station is written with the name you see and its stream address, so importing
@@ -4596,6 +4629,10 @@ are, such as "4 of 40". At the end of the last chapter, it tells you so.
    Preferences). None of them deletes a file already saved on your computer.
 5. Press **Escape** to close Downloads. Your downloads keep going.
 
+The list updates as downloads start and finish, and your cursor stays on the
+row you are reading. When a row you were on is removed or cleared, you land
+on the one after it, not back at the top.
+
 If you send Quill Radio to the tray with downloads still going, it either
 finishes them in the background or stops them, as Download Preferences says,
 and tells you which.
@@ -4963,6 +5000,12 @@ what to do with it.
 Type the first letters of a title to jump to it. To select several items,
 hold **Shift** and arrow, or press **Ctrl+A** (**Edit > Select All**) for every
 item in the playlist.
+
+When the list changes on its own, because the folder gained files or another
+window changed the playlist, your cursor and anything you selected stay where
+they were, on the same line. If the item you were on has gone from the
+playlist, you hear "... is no longer in the list." once, and you are on the
+item that took its place.
 
 #### The menus in the window
 
@@ -6763,7 +6806,11 @@ Each one is listed with how it starts:
   Station > Start Quill Radio with Windows; both controls stay in sync.
   Preferences reports when Windows does not allow the setting to change.
 - **Check for updates automatically on launch**: on. A quiet check once a day,
-  which says nothing unless it finds something.
+  which says nothing unless it finds something. When it does, the offer
+  waits until no station is playing and nothing is recording, and never
+  comes in the first minute or while you are typing. The status bar and
+  Update History say what is waiting, and Help > Check for Updates opens it
+  at once.
 - **Announce dialog transitions (more spoken detail)**: off. When it is on,
   Quill Radio says "Entered ..." and "Exited ..." as windows open and close.
 - **Share these choices with my other Quill apps**: off. When it is on,
@@ -7222,8 +7269,13 @@ together with what you can do about them.
 Finished recordings are in the list too, with the file name, how long they
 are, and Open Folder to find the file. A recording that ended early is listed
 as partial with its reason, and a scheduled recording that could not start is
-listed with why. So are exports: the calendar, a playlist, and your
-listening statistics.
+listed with why. So are exports and saves: the calendar, a playlist, a
+favorites folder, a Local Media playlist, podcasts to OPML, Find Streams' Save
+as Playlist, your listening statistics, a backup, a snapshot, songs saved from
+the time-shift buffer, and downloads. Each one says the file and the folder it
+went to, once, and has Open Folder here. A single download says its file and
+folder when it lands, and nothing more; a batch says how many were saved, how
+many failed, and the folder when they all went into one.
 
 **Help > Repeat Last Result** (F9) says the newest result that mattered again.
 That is the last thing Quill Radio itself told you, not the last thing your
@@ -7377,6 +7429,9 @@ Quill Radio comes with.
    what the control you are on does and how to use it.
 3. Arrow through the text. You can copy it if you like.
 4. Press **Escape**. You are back exactly where you were.
+
+On the Favorites tree, F1 also says what Enter does on the station you are on,
+names a station you marked for move, and reads your note.
 
 ### Check for Updates, step by step
 

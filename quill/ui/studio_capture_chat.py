@@ -300,7 +300,9 @@ class ScreenshotChatDialog(wx.Dialog):
                 if not description
                 else method(self.evidence, self.observations)
             )
-            self._say(f"Saved: {path}")
+            from quill.core.action_feedback import saved_result
+
+            self._say(saved_result(path))  # the file and its folder, not a path (FUX-04)
         except Exception as error:
             self._say(f"Could not save: {error}")
 

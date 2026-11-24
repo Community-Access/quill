@@ -3287,14 +3287,12 @@ id="chapterworkbenchdialog-quilluiaudio_studiochapter_workbenchpy">ChapterWorkbe
 <ul>
 <li><code>self._chapter_list</code>: Every chapter of the book,
 numbered, with its start time and length. Selecting a row loads its
-title into the Chapter title field; Enter plays the chapter. Edits made
-with the buttons below apply to the highlighted row and are written to
-disk only on Save.</li>
-<li><code>self._chapter_list</code>: Every chapter, with where it starts
-and how long it runs. Alt with Left or Right arrow nudges the
-highlighted chapter’s start earlier or later by one step; hold Shift as
-well to move ten steps at once. The step size is the Step box
-below.</li>
+title into the Chapter title field; Enter plays the chapter. Alt with
+Left or Right arrow nudges the highlighted chapter’s start earlier or
+later by one step; hold Shift as well to move ten steps at once. The
+step size is the Nudge step choice below (Alt+P). Edits made with the
+buttons below apply to the highlighted row and are written to disk only
+on Save.</li>
 <li><code>self._title_edit</code>: The highlighted chapter’s title,
 ready to edit. Type the new title and press Enter (or the Rename button)
 to apply it to the selected row. It cannot be empty, and nothing reaches
@@ -4379,9 +4377,9 @@ and says the new state.</p>
 <p><strong>Manage Abbreviations.</strong> Your whole abbreviation
 library in one place: create, edit, delete, and switch entries on or
 off, with search and a category filter to find the one you mean. Import
-and Export move the library as a file. Every change saves immediately
-and reaches QUILL’s editor too, because both apps read the same
-library.</p>
+and Export move the library as a file and say which file and folder; F9
+says it again. Every change saves immediately and reaches QUILL’s editor
+too, because both apps read the same library.</p>
 <p><strong>New Abbreviation.</strong> Create one abbreviation: the
 trigger word you will type, and the expansion that replaces it. The
 expansion may carry placeholders – ${cursor} for where the caret lands,
@@ -4392,8 +4390,8 @@ shared library at once.</p>
 its expansion into the window you were just working in – the way to use
 an entry set to expand only manually, or one whose trigger you cannot
 recall. Filter, choose, press Enter; focus returns to where you were and
-the text is typed there. If there is nowhere to type, the expansion is
-copied to the clipboard instead.</p>
+the text is typed there, and only there. If there is nowhere to type,
+the expansion is copied to the clipboard instead.</p>
 <p><strong>Quick Insert Key.</strong> Choose one key that opens Quick
 Insert from any program, so an entry you only insert by hand is always a
 keystroke away. There is none until you choose one. Type it, or leave
@@ -4423,6 +4421,10 @@ suggested from your document, one check box each, all starting cleared.
 Check the ones you want and press OK to add them to the library QUILL
 shares; Cancel adds none. An abbreviation you already have is never
 suggested, so nothing here can replace one of yours.</p>
+<p><strong>Text Not Typed.</strong> The text was kept, not typed,
+because the focus is not in the field you started in, or that field
+refused it. Insert goes back to that field and types it there; Copy puts
+it on the clipboard; Escape lets it go.</p>
 <p><strong>Update downloaded.</strong> A new Quill Inkwell is on disk
 and ready. Install and restart now applies it and relaunches – your
 abbreviations and settings are kept – or Open folder shows you the
@@ -6043,14 +6045,15 @@ id="collectioneditordialog-quillappsbeacondialogspy-1">CollectionEditorDialog
 playing. The change is announced.</li>
 <li><code>self.back_btn</code>: Jump back 15 seconds and announce the
 new position.</li>
-<li><code>self.fwd_btn</code>: Jump forward by the skip interval (15
-seconds) and announce the new position.</li>
+<li><code>self.fwd_btn</code>: Jump forward 30 seconds and announce the
+new position.</li>
 <li><code>self.add_point_btn</code>: Save a time-point bookmark at the
 current position, tagged timepoint and filed under the current chapter
 when there is one. It appears in the main bookmarks list.</li>
 <li><code>self.chapter_list</code>: The episode’s chapters with their
 start times, when the feed supplies them. Selecting a chapter jumps
-playback to its start.</li>
+playback to its start. From anywhere in the window, Ctrl+Shift+Period
+goes to the next chapter and Ctrl+Shift+Comma to the previous one.</li>
 <li><code>self.transcript</code>: The episode’s transcript as read-only
 text, when one is available. Empty otherwise.</li>
 </ul>

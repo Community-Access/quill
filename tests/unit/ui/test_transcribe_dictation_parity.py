@@ -88,6 +88,15 @@ class _Host:
     def _keep_menu_ids(self, *refs: Any) -> None:
         self._ids.extend(refs)
 
+    def _menu_label(self, title: str, command_id: str) -> str:
+        # As AppShellFrame._menu_label: the default chord after a tab, and no
+        # chord text for a comma chord (#612). Help > Activity and Repeat Last
+        # Result use it (FUX-04).
+        binding = DEFAULT_KEYMAP.get(command_id, "")
+        if not binding or "," in binding:
+            return title
+        return f"{title}	{binding}"
+
     def dictation_armed(self) -> bool:
         return False
 

@@ -303,13 +303,19 @@ class PlayerPanel(OutputDeviceMixin, PlayerVolumeMixin, wx.Panel):
         setter(",".join(filters))
         return True
 
-    def seek_to(self, ms: int) -> None:
-        """Seek to an absolute position in ms (used by 'Go to Position')."""
+    def seek_to(self, ms: int, *, announce: bool = True) -> None:
+        """Seek to an absolute position in ms (used by 'Go to Position').
+
+        *announce* False is for a caller that says the landing itself -- the
+        Player's arrow keys say elapsed or remaining, and a bookmark says its
+        note -- so the move is spoken once, not twice (FUX-14 audit).
+        """
         if self._engine is None or not self._loaded:
             return
         target = max(0, int(ms))
         self._engine.seek(target, resume=False)
-        self._announce(format_timestamp(target))
+        if announce:
+            self._announce(format_timestamp(target))
 
     def current_chapter_index(self) -> int:
         """The chapter the playhead is in (-1 when no chapters loaded)."""
@@ -321,7 +327,10 @@ class PlayerPanel(OutputDeviceMixin, PlayerVolumeMixin, wx.Panel):
             return
         chapter = self._chapters[index]
         self._engine.seek(chapter.start_ms, resume=True)
-        self._announce_chapter(index)
+        # Asked for, so always said -- even when it is the chapter already
+        # latched (Previous restarting this one, or Previous on chapter 1),
+        # which the playback latch below used to swallow in silence.
+        self._announce_chapter(index, asked=True)
         self._sync_play_label()
         self._timer.Start(_TICK_MS)
 
@@ -362,15 +371,29 @@ class PlayerPanel(OutputDeviceMixin, PlayerVolumeMixin, wx.Panel):
                 return i
         return len(self._chapters) - 1 if self._chapters else -1
 
-    def _announce_chapter(self, index: int) -> None:
-        if 0 <= index < len(self._chapters) and index != self._announced_chapter:
-            self._announced_chapter = index
-            c = self._chapters[index]
-            self._announce(
-                _("Chapter {num}: {title}, {duration}").format(
-                    num=index + 1, title=c.title, duration=format_timestamp(c.duration_ms)
-                )
+    def _announce_chapter(self, index: int, *, asked: bool = False) -> None:
+        """Say a chapter once: on a jump the person asked for (*asked*), or when
+        playback crosses into a new one -- never again for the same crossing."""
+        if not 0 <= index < len(self._chapters):
+            return
+        if index == self._announced_chapter and not asked:
+            return
+        self._announced_chapter = index
+        c = self._chapters[index]
+        # The family's landing sentence (FUX-14): name, place, and how long the
+        # chapter runs in words -- "4:05" read as a position or a time of day.
+        from quill.core.media import format_spoken
+        from quill.core.structure_landing import describe_landing
+
+        self._announce(
+            describe_landing(
+                "chapter",
+                c.title,
+                index,
+                len(self._chapters),
+                detail=f"{format_spoken(c.duration_ms)} long",
             )
+        )
 
     def _sync_enabled(self) -> None:
         on = self._loaded and self._engine is not None
@@ -493,7 +516,13 @@ class PlayerPanel(OutputDeviceMixin, PlayerVolumeMixin, wx.Panel):
         """Jump to the previous chapter (first-seconds rule applies)."""
         idx = self._chapter_at(self.playhead_ms())
         # Within the first seconds of a chapter, previous means the one before.
-        if idx > 0 and self.playhead_ms() - self._chapters[idx].start_ms < 3_000:
+        if idx >= 0 and self.playhead_ms() - self._chapters[idx].start_ms < 3_000:
+            if idx == 0:
+                # Not a replay of chapter 1 said as if it moved (FUX-14).
+                from quill.core.structure_landing import describe_boundary
+
+                self._announce(describe_boundary("chapter", forward=False))
+                return
             idx -= 1
         self.play_chapter(max(0, idx))
 

@@ -393,11 +393,11 @@ def _run(
         return chapters
 
     def on_success(result: object) -> None:
+        # Said once and kept with Open Folder, not a status line nobody hears (FUX-04).
+        from quill.ui.audio_studio.run_result import report_translated
+
         count = int(result) if isinstance(result, int) else 0
-        langs = len(request.targets)
-        frame._set_status(
-            f"Translated speech export complete: {langs} language(s), {count} chapter(s)"
-        )
+        report_translated(frame, read_source, len(request.targets), count)
 
     frame._run_background_task(
         f"Translated speech export ({len(request.targets)} language(s))",

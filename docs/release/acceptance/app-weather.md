@@ -389,6 +389,9 @@ alert sounder (covered on its own in WEATHER-13/14). No network needed.
   visible on reopen and in the next reading (Celsius temperatures, changed alert
   filtering, etc.). **Escape** / **Cancel** discards changes and closes with no
   save.
+- If the settings file cannot be written (a read-only data folder), **Save**
+  says **"Weather settings were not saved: the data folder could not be written.
+  Your choices are still in this window."** and the window stays open.
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________

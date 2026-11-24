@@ -72,6 +72,24 @@ BASE_CONFIDENCE: dict[str, float] = {
     SOURCE_SILENCE: 0.35,
 }
 
+#: Sources whose *times* a machine worked out, so a jump to one of their
+#: boundaries is said as "estimated" (FUX-14). ``audio`` and ``suggested`` are
+#: :mod:`quill.core.podcasts.chapter_sources`' spellings of the same two tiers.
+#: An edited chapter is not here: a person placed it.
+ESTIMATED_SOURCES: frozenset[str] = frozenset({
+    SOURCE_NOTE_ANCHORS,
+    SOURCE_TRANSCRIPT,
+    SOURCE_SILENCE,
+    "audio",
+    "suggested",
+})
+
+
+def is_estimated(chapter: object) -> bool:
+    """Whether *chapter*'s start was worked out rather than published or placed."""
+    return str(getattr(chapter, "source", "") or "") in ESTIMATED_SOURCES
+
+
 #: Below this, an answer is not worth showing at all. "No chapters could be
 #: found" is a good answer, and the code already says it well.
 MIN_USEFUL_CONFIDENCE = 0.2

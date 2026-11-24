@@ -645,9 +645,12 @@ while a flat book shows a single level.</p>
 <ul>
 <li>Move by chapter with <strong>Z</strong> and <strong>B</strong>
 (previous and next), or the Previous chapter and Next chapter buttons;
-entering a new chapter is announced (“Chapter 12: The Return”). In a
-book of one file per chapter, Z and B step by file, which is the same
-thing.</li>
+entering a new chapter is announced with its place in the book (“The
+Return, chapter 12 of 30, 14 minutes 5 seconds long.”). Previous
+restarts the chapter you are in, and says so, unless you are in its
+first three seconds; then it goes to the one before, or says “This is
+the first chapter.” In a book of one file per chapter, Z and B step by
+file, which is the same thing.</li>
 <li>Open the <strong>Chapters</strong> tree, arrow through it (in and
 out of levels), and press <strong>Enter</strong> to jump. Each row reads
 as a full sentence with its title and time.</li>
@@ -709,13 +712,23 @@ confirms the time it saved.</li>
 list next to the time.</li>
 <li><strong>Edit a bookmark’s note</strong> — select it and choose
 <strong>Navigation &gt; Edit Bookmark Note…</strong> (Ctrl+Alt+N).</li>
+<li><strong>Move from bookmark to bookmark</strong> —
+<strong>F2</strong> (<strong>Navigation &gt; Next Bookmark</strong>) and
+<strong>Shift+F2</strong> (<strong>Navigation &gt; Previous
+Bookmark</strong>), from anywhere in the window, the same keys as in
+QUILL. Each says the note, its place and its time once: “The storm
+starts, bookmark 1 of 4, 12 minutes 5 seconds.” Past the last one you
+hear “This is the last bookmark.”</li>
 <li><strong>Jump to a bookmark</strong> — press
 <strong>Ctrl+Alt+M</strong> (<strong>Navigation &gt; Go to Bookmarks
 List</strong>) to land in the Bookmarks list, arrow to one, press
-<strong>Enter</strong>. <strong>Ctrl+Alt+P</strong> (<strong>Navigation
-&gt; Go to Player Controls</strong>) takes you back.</li>
+<strong>Enter</strong>. The note is said with the time.
+<strong>Ctrl+Alt+P</strong> (<strong>Navigation &gt; Go to Player
+Controls</strong>) takes you back.</li>
 <li><strong>Remove</strong> — select it and press the <strong>Remove
-Bookmark</strong> button below the list.</li>
+Bookmark</strong> button below the list. Your cursor moves to the next
+bookmark. Adding or editing a bookmark leaves your cursor where it
+was.</li>
 <li><strong>Send a bookmark into your document</strong> —
 <strong>Ctrl+Shift+C</strong> copies a paste-ready line
 (<code>[1:23:45] your note — Title</code>) to the clipboard; paste it
@@ -729,6 +742,11 @@ Bundle</strong> moves your bookmarks between machines as a portable file
 (merged on import, never overwriting). Automatic server-side sync
 (QuilleSync) is a future item.</li>
 </ul>
+<p>Both exports say the file and the folder it went to, once the file is
+written: “Exported 4 bookmarks to marks.md in Documents.” If you missed
+it, <strong>Help &gt; Repeat Last Result</strong> (F9) says it again,
+and <strong>Help &gt; Activity…</strong> (Shift+F9) keeps it with
+<strong>Open Folder</strong>.</p>
 <p>Bookmarks are saved per book and survive between sessions.</p>
 <h3 id="hearing-your-notes-as-you-reach-them">Hearing your notes as you
 reach them</h3>

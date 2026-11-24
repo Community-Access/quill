@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FUX-10: help that explains the selected situation, app by
+app</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="fux-10-help-that-explains-the-selected-situation-app-by-app">FUX-10:
+help that explains the selected situation, app by app</h1>
+<p><strong>Date:</strong> 2026-11-23 <strong>Source:</strong> FUX-10 in
+the family UX plan (<code>git show b7c6a1a04^:complete2.md</code>), held
+to <a
+href="family-interaction-contracts.md">family-interaction-contracts.md</a>.
+It is not one of the promoted pilots (<a
+href="2026-11-19-family-ux-pilots.md">2026-11-19-family-ux-pilots.md</a>,
+section 5), so the work here is limited to gaps in help the family
+already has. It adds no new help centre, panel, key or search.</p>
+<h2 id="what-the-family-already-has">What the family already has</h2>
+<ul>
+<li><strong>F1 everywhere.</strong> Every app answers F1 through one
+engine, <code>quill/ui/app_context_help.py</code>. The answer is the
+window’s purpose, from the app’s gated catalogue
+(<code>surface_help.py</code>), then the focused control’s help text or
+accessible name, then one sentence on how to drive that kind of control.
+QUILL’s editor answers from <code>topics.json</code>
+(<code>ContextHelpMixin</code>), which <code>build_help_reference</code>
+publishes.</li>
+<li><strong>Reasons for greyed actions.</strong> Radio and Cast put a
+reason on every dimmed row action
+(<code>quill/core/dimmed_reason.py</code>,
+<code>RowAction.reason</code>, <code>ResolvedAction.reason</code>), and
+a source scan fails any dimmed action without one
+(<code>tests/unit/ui/test_dimmed_action_reasons.py</code>). The context
+menu carries the reason as the item’s help string, and the Quick Action
+keys say it when asked.</li>
+<li><strong>Command discovery.</strong> What Can I Say Here
+(Ctrl+Alt+Shift+F1) and the Command Key in QUILL, QUILL Lite and Radio
+list what can be done now, and list the rest under “elsewhere” with the
+registry’s reason
+(<code>CommandRegistry.unavailable_reason</code>).</li>
+<li><strong>The Workbenches</strong> are the full model. F1 follows the
+selected node, Shift+F1 (What Can I Do Here?) lists every action for the
+selected row with “greyed:” and why, Alt+F1 explains the provider’s word
+for the row, Shift+F9 (Explain That) explains the last result,
+Ctrl+Shift+F1 searches places, commands, words and tasks, and a task can
+be walked through step by step.</li>
+</ul>
+<h2 id="the-gap">The gap</h2>
+<p>Outside the Workbenches, F1 on a list or tree said only what the list
+is for. It said nothing about the row under the cursor. The reasons
+Radio and Cast had already written reached a person only through a
+context menu’s help string, which most screen readers do not speak in a
+menu, and some help sentences were wrong for the row you were on
+(Radio’s “Enter plays” on a folder or on the station already
+playing).</p>
+<h2 id="the-change-in-the-engine">The change, in the engine</h2>
+<p><code>app_context_help.set_selection_help(control, describe)</code>
+lets a list or tree add a paragraph about its selected row to F1.
+<em>describe</em> runs only when F1 is pressed, never while someone
+arrows the list, so nothing is computed or spoken on selection
+(GATE-13). It answers ““ when the list’s own help already covers the
+row. The paragraph goes between the control’s help and the role
+sentence, in the same help window, so nothing new opens and focus is not
+moved. The Workbench F1 composes through the same engine, so it gets the
+paragraph too.</p>
+<h2 id="app-by-app">App by app</h2>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>F1, Shift+F1, What Is This, Explain That today</th>
+<th>The gap</th>
+<th>What changed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL</td>
+<td>F1 from <code>topics.json</code>; What Is This Document? describes
+the document and anything that will stop you; Command Key and What Can I
+Say Here list commands with the registry’s reasons</td>
+<td>A command the registry cannot explain is listed as “isn’t available
+here right now” with no next step
+(<code>command_key_hosts._dimmed</code>)</td>
+<td>Left: the reason must come from each command’s own probe, which is
+the Command Key work’s to add, command by command</td>
+</tr>
+<tr>
+<td>QUILL Lite</td>
+<td>As QUILL, through the shared engine and Lite’s catalogue</td>
+<td>As QUILL</td>
+<td>Left, for the same reason</td>
+</tr>
+<tr>
+<td>Radio</td>
+<td>F1 is What Is This?; What Can I Say Here; Shift+F1 is the release
+notes</td>
+<td>F1 on the Favorites tree said “Enter plays” on every row, including
+folders and the station already playing, and never mentioned a note or a
+station marked for move</td>
+<td>F1 says what Enter does on this row, whether it is marked for move,
+and your note</td>
+</tr>
+<tr>
+<td>Cast</td>
+<td>F1 through the shell; no Shift+F1</td>
+<td>Every greyed episode and podcast action has a reason, but only the
+context menu’s help string carried it. Pause Download was dimmed with no
+reason at all</td>
+<td>F1 on the episode list says which menu items are unavailable for the
+selected episode or podcast, and why; Pause Download’s menu item says
+why it is dimmed</td>
+</tr>
+<tr>
+<td>Media Player</td>
+<td>F1 through the shell</td>
+<td>F1 on the Chapters tree already says what Enter does for both kinds
+of row (a seek, or the section’s own file), and the status bar says
+which chapter is playing</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>Converter</td>
+<td>F1 is Help for This Window; Shift+F1 is the release notes</td>
+<td>The queue forgot each file’s result after a run, so a row read the
+same whether it converted, failed or was skipped</td>
+<td>F1 on a queue row says its last result; a folder row counts its
+files</td>
+</tr>
+<tr>
+<td>Studio</td>
+<td>F1 through the shell</td>
+<td>The Library Window (Ctrl+Alt+Y) did not open at all: it imported a
+module that does not exist, then filled itself before the app knew its
+tree. Its tree said “Enter opens the selected book” on group rows too.
+The Chapter Workbench list’s help was replaced by a second
+<code>SetHelpText</code>, so F1 never said that Enter plays the
+chapter</td>
+<td>The window opens with your books; F1 on a group row says Enter opens
+nothing, and on a moved book says so; the Chapter Workbench list has one
+help text</td>
+</tr>
+<tr>
+<td>Transcribe</td>
+<td>F1 through the shell</td>
+<td>Choose Model shows the selected model’s readiness in a details box
+beside the list; Resume and Discard Held Words say in their help that
+they work while dictation is paused</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>Inkwell</td>
+<td>F1 through the shell and its catalogue</td>
+<td>The Abbreviations list marks an entry that is turned off, but F1 did
+not say that it will not expand or where to turn it back on</td>
+<td>F1 on a disabled entry says both</td>
+</tr>
+<tr>
+<td>Beacon</td>
+<td>F1 through the shell; the results list has a details pane that
+follows the selection</td>
+<td>Covered by the details pane. Beacon is not released yet, and
+<code>app.py</code> is over its size budget</td>
+<td>None needed now</td>
+</tr>
+<tr>
+<td>Social</td>
+<td>F1 is Social’s Keyboard Guide, from its own package; the shared
+engine only for the Scribe windows</td>
+<td>Social keeps its own help model</td>
+<td>Left: a change belongs with Social’s own help work</td>
+</tr>
+<tr>
+<td>Weather</td>
+<td>F1 through the shell; every list has a detail field beside it that
+follows the selection</td>
+<td>Covered by the detail fields</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>GitHub and WordPress Workbenches</td>
+<td>The full model above</td>
+<td>Search Help matches a command only by its label, so a word from its
+description does not find it</td>
+<td>Left: the Workbench frame work is active in those files, and tasks
+and glossary entries already match on their own words</td>
+</tr>
+</tbody>
+</table>
+<h2 id="acceptance">Acceptance</h2>
+<ul>
+<li><strong>A disabled action has a readable reason and next
+step:</strong> Radio and Cast rows, the Workbenches already. QUILL and
+Lite commands without a probe are left, as above.</li>
+<li><strong>Existing users keep menu paths and command
+identities:</strong> no menu, key or command id changes.</li>
+<li><strong>Search matches intent and synonyms:</strong> unchanged; see
+the Workbench row.</li>
+<li><strong>Context help knows the state:</strong> F1 now reads the
+selected row’s state where a list has one.</li>
+<li><strong>Help does not interrupt reading:</strong> F1 is still a
+window the person opens; nothing is said on selection.</li>
+<li><strong>A short explanation expands to a worked example:</strong>
+each F1 window keeps its Open User Guide button where the topic names a
+section.</li>
+</ul>
+</main>
+</body>
+</html>

@@ -8,6 +8,47 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased] - 2026-11-07
 
+### F1 on Favorites says what Enter does on this row (2026-11-23)
+
+F1 on the Favorites tree now also says what Enter does on the row you are on:
+on the playing station it pauses, on a paused one it resumes, and on a folder
+it plays nothing. It also names a station marked for move and reads your note.
+### The chapter keys land where they say (2026-11-23)
+
+- **Next Chapter in the last chapter** says "This is the last chapter." and
+  stays put. It used to jump back to the start of the chapter you were in and
+  announce it as if it had moved.
+- **The chapter keys find the chapters the Chapters list finds.** When nothing
+  was published, Ctrl+Shift+. and Ctrl+Shift+, now move through the file's own
+  chapter marks, or the chapters QUILL Cast worked out, instead of saying there
+  are none. Worked-out chapters are said with "estimated".
+- "This has no chapters." replaces "This video has no chapters.", which was
+  said for podcast episodes, recordings and files too.
+### Saves and exports say where, once (2026-11-23)
+
+- Exports name the file and its folder: "Exported 42 stations to
+  quill-radio-favorites.m3u in Music." The same goes for a favorites folder, a
+  Local Media playlist, podcasts to OPML, Find Streams' Save as Playlist, the
+  calendar, listening statistics, a backup and a snapshot. Each is kept in
+  Activity (Shift+F9) with Open Folder.
+- A single download says "Saved Chapter 1 as chapter-01.mp3 in Middlemarch."
+  rather than reading out the whole folder path, and the queue no longer adds
+  "1 saved." after it. A batch says how many saved and failed, and the folder
+  when they all went into one, and is kept in Activity.
+- Songs saved from the time-shift buffer are kept in Activity with Open Folder.
+### The update offer waits until you stop listening (2026-11-24)
+
+The daily update check used to open its window as soon as it came back,
+which at launch was right on top of the station Quill Radio had just
+resumed, and it could open during a recording or while Radio sat in the
+tray. Now the offer waits: never in the first minute, never while a
+station plays or a recording runs, never while you are typing, and never
+while Quill Radio is not the window you are using. It waits about 20
+seconds more after you stop. While it waits, the status bar and Update
+History say once what is waiting, and nothing is spoken over the station.
+**Help > Check for Updates** opens the waiting update at once. On Beta and
+Dev, "Update downloaded" is written on the status bar instead of spoken.
+
 ### Infinity or NaN in the settings file no longer stops Radio (2026-11-20)
 
 A hand-edited or damaged settings file with `Infinity` or `NaN` in a number

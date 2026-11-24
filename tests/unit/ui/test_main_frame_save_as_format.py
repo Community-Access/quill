@@ -153,6 +153,13 @@ def test_announce_save_as_conversion_wording() -> None:
         "each save converts it to Word."
     ]
     spoken.clear()
+    # The folder too, when there is one (FUX-04): a picked folder is not obvious later.
+    frame._announce_save_as_conversion(Path("Documents") / "report.rtf")
+    assert spoken == [
+        "Saved as report.rtf in Documents, rich text format. You are still editing QUILL "
+        "text; each save converts it to rich text."
+    ]
+    spoken.clear()
     # Non-converting formats stay quiet: the status line already covers them.
     frame._announce_save_as_conversion(Path("notes.md"))
     frame._announce_save_as_conversion(Path("notes.txt"))

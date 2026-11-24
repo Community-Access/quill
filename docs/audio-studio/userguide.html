@@ -643,7 +643,9 @@ access keys, fully reachable with Tab and screen-reader-friendly:</p>
 state) and <strong>Stop</strong>.</li>
 <li><strong>Previous chapter</strong> and <strong>Next chapter</strong>
 - within the first three seconds of a chapter, Previous means the one
-before.</li>
+before; later than that, it goes back to the start of the chapter you
+are in. Each press says where you landed, once: “The Long Road, chapter
+4 of 24, 12 minutes 40 seconds long.”.</li>
 <li><strong>Rewind</strong> and <strong>Forward</strong> - ten-second
 skips, position spoken after each.</li>
 <li><strong>Where am I?</strong> - the full audible glance: “Chapter 4
@@ -1128,7 +1130,12 @@ unzip and no folder to swap by hand.</p>
 recognizes its own download, so an update to Quill Radio is never
 offered to the Studio and each app updates on its own schedule. The
 automatic startup check (on by default, throttled to once a day) is
-silent unless it actually finds something.</p>
+silent unless it actually finds something. Even then it never interrupts
+a live broadcast, a recording, a capture or a book that is playing: the
+offer waits until they stop, and never comes in the first minute after
+the Studio opens or while you are typing. While it waits, the status bar
+says once what is waiting, and <strong>Help &gt; Check for
+Updates</strong> opens it at once.</p>
 <h2 id="the-command-palette">The Command Palette</h2>
 <p><strong>Help &gt; Command Palette…</strong> (Ctrl+Shift+P) lists
 every Studio command in one searchable list: the three journeys, Open

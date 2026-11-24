@@ -1362,8 +1362,7 @@ Control coverage: 306 audited sites (11 help-elsewhere, 295 helped).
 
 #### ChapterWorkbenchDialog (`quill/ui/audio_studio/chapter_workbench.py`)
 
-- `self._chapter_list`: Every chapter of the book, numbered, with its start time and length. Selecting a row loads its title into the Chapter title field; Enter plays the chapter. Edits made with the buttons below apply to the highlighted row and are written to disk only on Save.
-- `self._chapter_list`: Every chapter, with where it starts and how long it runs. Alt with Left or Right arrow nudges the highlighted chapter's start earlier or later by one step; hold Shift as well to move ten steps at once. The step size is the Step box below.
+- `self._chapter_list`: Every chapter of the book, numbered, with its start time and length. Selecting a row loads its title into the Chapter title field; Enter plays the chapter. Alt with Left or Right arrow nudges the highlighted chapter's start earlier or later by one step; hold Shift as well to move ten steps at once. The step size is the Nudge step choice below (Alt+P). Edits made with the buttons below apply to the highlighted row and are written to disk only on Save.
 - `self._title_edit`: The highlighted chapter's title, ready to edit. Type the new title and press Enter (or the Rename button) to apply it to the selected row. It cannot be empty, and nothing reaches the file until Save.
 - `rename_btn`: Applies the text in the Chapter title field to the highlighted chapter. The same as pressing Enter in that field.
 - `propose_btn`: Scans any recording -- a lecture or meeting as much as a book -- for silences with ffmpeg and proposes chapters there, titled Proposed chapter. You choose the noise threshold and minimum pause first. If the recording already has chapters you are asked whether to keep them and add only new boundaries, or replace them. Press again while it runs to stop; Restore original undoes a proposal.
@@ -1784,11 +1783,11 @@ Control coverage: 5 audited sites (5 helped).
 
 **Find a Setting or Command.** Every menu command in this app, searchable by name. Type part of a name; Down moves into the matches; Enter does the highlighted one, exactly as choosing it from its menu would. An option says whether it is on, and doing it switches it and says the new state.
 
-**Manage Abbreviations.** Your whole abbreviation library in one place: create, edit, delete, and switch entries on or off, with search and a category filter to find the one you mean. Import and Export move the library as a file. Every change saves immediately and reaches QUILL's editor too, because both apps read the same library.
+**Manage Abbreviations.** Your whole abbreviation library in one place: create, edit, delete, and switch entries on or off, with search and a category filter to find the one you mean. Import and Export move the library as a file and say which file and folder; F9 says it again. Every change saves immediately and reaches QUILL's editor too, because both apps read the same library.
 
 **New Abbreviation.** Create one abbreviation: the trigger word you will type, and the expansion that replaces it. The expansion may carry placeholders -- ${cursor} for where the caret lands, ${date}, ${time}, and ${clipboard} -- and Expand after chooses which keys fire it, including never, for Quick Insert only. OK saves it into the shared library at once.
 
-**Quick Insert.** Pick an abbreviation and Inkwell types its expansion into the window you were just working in -- the way to use an entry set to expand only manually, or one whose trigger you cannot recall. Filter, choose, press Enter; focus returns to where you were and the text is typed there. If there is nowhere to type, the expansion is copied to the clipboard instead.
+**Quick Insert.** Pick an abbreviation and Inkwell types its expansion into the window you were just working in -- the way to use an entry set to expand only manually, or one whose trigger you cannot recall. Filter, choose, press Enter; focus returns to where you were and the text is typed there, and only there. If there is nowhere to type, the expansion is copied to the clipboard instead.
 
 **Quick Insert Key.** Choose one key that opens Quick Insert from any program, so an entry you only insert by hand is always a keystroke away. There is none until you choose one. Type it, or leave the box empty for no key; a key another QuillVille app already uses is refused, and you are told whose it is.
 
@@ -1801,6 +1800,8 @@ Control coverage: 5 audited sites (5 helped).
 **Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
 
 **Suggest Abbreviations.** The abbreviations the AI suggested from your document, one check box each, all starting cleared. Check the ones you want and press OK to add them to the library QUILL shares; Cancel adds none. An abbreviation you already have is never suggested, so nothing here can replace one of yours.
+
+**Text Not Typed.** The text was kept, not typed, because the focus is not in the field you started in, or that field refused it. Insert goes back to that field and types it there; Copy puts it on the clipboard; Escape lets it go.
 
 **Update downloaded.** A new Quill Inkwell is on disk and ready. Install and restart now applies it and relaunches -- your abbreviations and settings are kept -- or Open folder shows you the installer to run later.
 
@@ -2480,9 +2481,9 @@ Control coverage: 127 audited sites (127 helped).
 
 - `self.play_btn`: Play the episode, or pause it if it is playing. The change is announced.
 - `self.back_btn`: Jump back 15 seconds and announce the new position.
-- `self.fwd_btn`: Jump forward by the skip interval (15 seconds) and announce the new position.
+- `self.fwd_btn`: Jump forward 30 seconds and announce the new position.
 - `self.add_point_btn`: Save a time-point bookmark at the current position, tagged timepoint and filed under the current chapter when there is one. It appears in the main bookmarks list.
-- `self.chapter_list`: The episode's chapters with their start times, when the feed supplies them. Selecting a chapter jumps playback to its start.
+- `self.chapter_list`: The episode's chapters with their start times, when the feed supplies them. Selecting a chapter jumps playback to its start. From anywhere in the window, Ctrl+Shift+Period goes to the next chapter and Ctrl+Shift+Comma to the previous one.
 - `self.transcript`: The episode's transcript as read-only text, when one is available. Empty otherwise.
 
 ## GitHub Workbench

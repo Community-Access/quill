@@ -223,7 +223,7 @@ class DocumentAbbreviationsMixin:
             return
         from quill.ui.dialog_contract import show_modal_dialog
 
-        dialog = AbbreviationManagerDialog(self, library)
+        dialog = AbbreviationManagerDialog(self, library, self)
         try:
             show_modal_dialog(dialog.dialog, "Manage Abbreviations")
         finally:

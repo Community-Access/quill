@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Changelog</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="changelog">Changelog</h1>
+<p>All notable changes to QUILL Social are documented here. The format
+follows <a href="https://keepachangelog.com/">Keep a Changelog</a>, and
+the project aims to follow semantic versioning once it reaches a stable
+release.</p>
+<h2 id="030---2026-07-19">[0.3.0] - 2026-07-19</h2>
+<p>Version 0.3.0 (build 2) is QUILL Social’s first public release, so
+the work since the first 0.3.0 build belongs to 0.3.0. In it QUILL
+Social became a feed reader as well as a social client, and grew an
+installer of its own. That work comes first, grouped by subject; the
+0.3.0 build of 2026-07-19 follows it.</p>
+<h3 id="next-and-previous-unread-2026-11-23">Next and previous unread
+(2026-11-23)</h3>
+<ul>
+<li><strong>Item &gt; Next unread</strong> (Alt+.) and <strong>Item &gt;
+Previous unread</strong> (Alt+,) move to the next or previous unread
+post in the view you are in, so you no longer arrow past everything you
+have read. The screen reader reads the post; past the last one you hear
+“No more unread.”</li>
+</ul>
+<h3 id="a-timeline-that-stays-still-fux-06-2026-11-23">A timeline that
+stays still (FUX-06, 2026-11-23)</h3>
+<ul>
+<li><strong>Refreshes no longer move you.</strong> When posts arrive in
+the background or the scheduler publishes, the list changes row by row
+around the post you are on. You stay on it, on the same line; it is not
+read out again and not marked read again. Before, every refresh rebuilt
+the list, said “Home. 120 items, 14 unread.” again, and put you back on
+the saved post.</li>
+<li><strong>New posts wait for you.</strong> They are counted once (“3
+new posts. Press F5 to show them.”) and join the list when you press F5,
+which says how many arrived (“Refreshed. 3 new posts.”) instead of the
+total pulled.</li>
+<li><strong>A post that has gone</strong> is said once, and you land on
+the post that took its place, not the first unread one. A post you just
+read stays put in the Unread view until you leave it.</li>
+<li><strong>Conversations stay open.</strong> A refresh behind an open
+conversation no longer takes you back to the timeline, or saves a thread
+post as the timeline’s place.</li>
+</ul>
+<h3 id="scribe-for-documents-2026-11-21">Scribe for Documents
+(2026-11-21)</h3>
+<ul>
+<li><strong>Item &gt; Convert Linked Document with Scribe for
+Documents…</strong> (Alt+Shift+F6) sends a document the focused post
+links, in its text, its own link or its media, to Scribe for Documents,
+which rebuilds it as accessible Word, HTML, EPUB, DAISY, MP3 or braille.
+With several links a list asks which.</li>
+<li><strong>Tools</strong> gains Scribe Conversions, My Scribe
+Documents, Scribe Status, Repeat Last Scribe Message and Scribe for
+Documents Options, on Alt+Shift+F7 to F11, and F1 in those windows says
+what each is for.</li>
+</ul>
+<h3 id="display-scaling-and-licensing-2026-10-31">Display scaling and
+licensing (2026-10-31)</h3>
+<ul>
+<li><strong>Shared-runtime licensing.</strong> Installed editions use
+the QuillVille Runtime, which includes PyMuPDF 1.28.2 under AGPL-3.0
+through the shared GLOW dependency; Social does not itself expose GLOW.
+Its exact source, and that of every other GPL, LGPL or AGPL part, is
+published with each release. Portable editions leave GLOW, and with it
+PyMuPDF, out. See Licences and Notices.</li>
+<li><strong>Sharp text at any display scaling</strong> (2026-10-31).
+QUILL Social now handles each monitor’s scaling itself instead of
+letting Windows stretch it, so text stays sharp at 125, 150 and 200
+percent and on monitors with different scaling, and windows and list
+columns keep their proportions. Setting the environment variable
+<code>QUILL_DPI_UNAWARE</code> to <code>1</code> turns this off, for
+diagnosing a display problem (#1702).</li>
+<li><strong>Pygments in the notices</strong> (2026-10-31). The shared
+runtime now bundles Pygments, which QUILL and QUILL Lite use to read
+code and web pages for spell check, so QUILL Social’s third-party
+notices list it.</li>
+</ul>
+<h3 id="keys-and-menus">Keys and menus</h3>
+<ul>
+<li><p><strong>Every menu command has a key you can change</strong>
+(2026-10-17). Thirty-one commands could only be reached by walking the
+menus. Each now has a key, shown beside its name: in the Item menu
+<strong>Item &gt; Flag for follow-up</strong> (Ctrl+Shift+G),
+<strong>Item &gt; Accessibility check</strong> (F7) and <strong>Item
+&gt; Send to QUILL</strong> (Ctrl+Shift+Q); in the Feeds menu
+<strong>Feeds &gt; New Folder…</strong> (Ctrl+Alt+F), <strong>Feeds &gt;
+New smart folder…</strong> (Ctrl+Shift+M), <strong>Feeds &gt; Edit smart
+folder…</strong> (Ctrl+Alt+M), <strong>Feeds &gt; Delete smart
+folder</strong> (Ctrl+Shift+Delete), <strong>Feeds &gt; Import
+OPML…</strong> (Ctrl+I), <strong>Feeds &gt; Export OPML…</strong>
+(Ctrl+E) and <strong>Feeds &gt; Unsubscribe from feed</strong>
+(Ctrl+Alt+U), the last two asking first as before; in the Listen menu
+<strong>Listen &gt; Play / Pause</strong> (Ctrl+Shift+Space),
+<strong>Listen &gt; Next article</strong> (Ctrl+Shift+Period),
+<strong>Listen &gt; Previous article</strong> (Ctrl+Shift+Comma) and
+<strong>Listen &gt; Stop listening</strong> (Ctrl+Shift+S); in the
+Studio menu <strong>Studio &gt; Drafts…</strong> (Ctrl+Shift+D),
+<strong>Studio &gt; Agenda / Calendar…</strong> (Ctrl+Shift+Y),
+<strong>Studio &gt; Queue schedule…</strong> (Ctrl+Shift+U) and
+<strong>Studio &gt; Approvals…</strong> (Ctrl+Shift+W); in the Tools
+menu <strong>Tools &gt; Catch Up</strong> (Ctrl+Shift+H), <strong>Tools
+&gt; Insights / Analytics</strong> (Ctrl+Alt+I), <strong>Tools &gt;
+Safety Center</strong> (Ctrl+Alt+T), <strong>Tools &gt; Notification
+policies</strong> (Ctrl+Alt+P), <strong>Tools &gt; Plugins</strong>
+(Ctrl+Alt+G), <strong>Tools &gt; Outbox</strong> (Ctrl+Shift+B) and
+<strong>Tools &gt; Summarize this feed (AI)</strong> (Ctrl+Alt+R);
+<strong>File &gt; Preferences…</strong> (Ctrl+Comma); and in the Help
+menu <strong>Help &gt; User Guide</strong> (Ctrl+F1), <strong>Help &gt;
+Keyboard Reference</strong> (Ctrl+Shift+F1), <strong>Help &gt; Product
+Requirements</strong> (Alt+Shift+F1) and <strong>Help &gt;
+About</strong> (Alt+F1).</p>
+<p>The menus now read their keys from your keymap, so a key you change
+in <code>keymap.json</code> moves in the menu too, and every command can
+be changed, not only the ones F1 used to list. Before, the menus kept
+showing the shipped key after a change. If a <code>keymap.json</code>
+saved by an earlier version already gives one of the new keys to another
+command, your choice stands and the new command waits for a key of its
+own. The Command Center shows every command’s key as well.</p>
+<p>Every command also has its own letter in its menu now: <strong>Item
+&gt; Bookmark</strong> is K, <strong>Feeds &gt; New smart
+folder…</strong> is T, <strong>Feeds &gt; Unsubscribe from feed</strong>
+is B, <strong>Tools &gt; Notification policies</strong> is L and
+<strong>Tools &gt; Plugins</strong> is G, because each shared its letter
+with another command. For example, Alt+L, then N skips to the next
+article, and Alt+I, then K bookmarks the focused post. The keys work in
+the main window, not inside dialogs. A check that runs during testing
+now walks QUILL Social’s real menu bar and fails on any command without
+a key, any key shown twice, any key Windows cannot bind and any letter
+two commands in one menu share. <strong>Help &gt; Keyboard
+Reference</strong> has every key in tables by task, with a listening
+example.</p></li>
+<li><p><strong>Find Text moved to Ctrl+Shift+F, and the Keyboard
+Reference teaches only keys that work</strong> (2026-10-17). Ctrl+F was
+shown on two menu rows, Item &gt; Favourite and Tools &gt; Find Text,
+and only Favourite ever answered it, so Find Text could not be reached
+from the keyboard at all. <strong>Tools &gt; Find Text…</strong> is now
+<strong>Ctrl+Shift+F</strong>: it asks for a word or phrase and a
+direction, moves to the first row of the current list that contains it,
+and says where it is (“3 of 20”); F3 and Shift+F3 go to the next and
+previous match. For example, in Unified Home press Ctrl+Shift+F, type
+<code>release</code> and press Enter, then F3 for the next post about a
+release. Find looks only at the list you are in; <strong>Tools &gt;
+Search</strong> (Ctrl+L) searches more widely. Favourite keeps
+Ctrl+F.</p>
+<p><strong>Help &gt; Keyboard Reference</strong> was the keyboard’s
+design specification, and it promised keys that were never bound: F6 and
+Shift+F6 between panes, Ctrl with a number to jump to a destination, F7
+to spell check and Ctrl+S to save a draft in the composer, among others.
+Pressing them did nothing. It is now a reference to the keys this
+version really has, grouped by task, with the menu each command lives
+on, how to change a key by editing <code>keymap.json</code> (with QUILL
+Social closed), and the limits of doing so. The planned keys are listed
+at the end as plans, without keys. The User Guide gained <strong>Where
+every command lives</strong>, a walk through every menu with its keys,
+and a section on finding text. A check now builds QUILL Social’s real
+menus during testing and fails if either document names a menu path or a
+key the menus do not have, or if two menu rows show the same
+key.</p></li>
+</ul>
+<h3 id="added--quill-social-has-an-application-icon">Added — QUILL
+Social has an application icon</h3>
+<ul>
+<li><strong>An icon of its own, for the app and the installer.</strong>
+QUILL Social shipped with none at all, so the build wore PyInstaller’s
+generic default – the same generic default as any other unbranded Python
+app, which in a taskbar or an Alt+Tab list is indistinguishable from
+software the listener never installed. Its icon is now two overlapping
+speech bubbles on a plum tile, sharing the QuillVille family’s rounded
+tile shape and amber accent. The overlap is the point: QUILL Social is
+feeds and conversations from several places at once, and a single bubble
+would have said “messaging”. <code>Setup.exe</code> carries it too.</li>
+</ul>
+<h3 id="added--the-documentation-is-reachable-from-inside-the-app">Added
+— the documentation is reachable from inside the app</h3>
+<ul>
+<li><strong>Help &gt; User Guide</strong>, <strong>Help &gt; Keyboard
+Reference</strong>, and <strong>Help &gt; Product Requirements</strong>
+open the documents QUILL Social already installs beside itself. Until
+now the Help menu offered only the in-app shortcut list and About, so
+the user guide the installer places in <code>docs\</code> – and puts a
+Start-menu shortcut to – could not be opened from the app at all. They
+open in your browser, where a screen reader already has heading, link
+and find-in-page navigation, and they need no internet connection.</li>
+<li>The in-app shortcut list is now named <strong>Keyboard Guide
+(shortcuts)</strong> rather than just “Help”, because it and the User
+Guide are different things: it lists the shortcuts <em>currently in
+effect</em>, including any you have remapped, while the Keyboard
+Reference documents the shipped defaults. <code>F1</code> still opens
+it.</li>
+<li>The Start-menu <strong>User Guide</strong> shortcut now opens the
+HTML copy rather than the Markdown one. A stock Windows install has no
+default handler for <code>.md</code>, so that shortcut could open
+nothing at all; both formats are installed.</li>
+</ul>
+<h3 id="added--rss-atom-and-json-feed-reading">Added — RSS, Atom and
+JSON Feed reading</h3>
+<ul>
+<li>A full <strong>feed reader</strong>, built on the same store, list,
+and announcer the social timeline already used. New
+<code>adapters/rss.py</code> parses RSS 2.0, Atom, RSS 1.0, and JSON
+Feed 1.0/1.1 with the standard library alone – no new dependency.
+Entries map to the same item model, so everything the app already does
+(read state, bookmarks, search, folders, field-by-field reading) works
+on articles unchanged.</li>
+<li><strong>Subscriptions</strong> with per-feed settings: title,
+refresh cadence, retention in days (0 = keep forever),
+announce-new-articles, fetch-full-article, and keyword rules.
+Subscribing is idempotent by URL; unsubscribing removes the feed’s
+cached items with it.</li>
+<li><strong>Feed discovery</strong>: paste a site address rather than a
+feed address and the app reads the page’s
+<code>&lt;link rel="alternate"&gt;</code> tags, then probes the ten
+usual feed paths, and offers what it found.</li>
+<li><strong>Nested folders</strong> for feeds, to any depth, with live
+unread counts spoken in each tree node’s own label
+(<code>News (12 unread)</code>) rather than shown only in colour. Counts
+update in place, so marking a folder read never moves your focus.</li>
+<li><strong>Smart folders</strong> are now reachable: a
+<code>Smart Folders</code> group in the navigation tree plus New / Edit
+/ Delete dialogs. Rules cover keyword, author, unread-only, has-media,
+bookmarked-only, and a minimum engagement threshold; an all-blank rule
+is refused rather than silently matching everything.</li>
+<li><strong>OPML import and export</strong>, nested folders included, so
+a library moves in and out of other readers intact.</li>
+<li><strong>Per-feed keyword rules</strong>, applied to new articles in
+list order, first match wins: <strong>hide</strong> (never stored),
+<strong>mark read</strong> (stored already read, and not counted as
+new), or <strong>star</strong> (stored flagged, and protected from
+retention pruning).</li>
+<li><strong>Full-article fetch</strong> for feeds that only publish a
+summary: the article page is fetched, narrowed to its
+<code>&lt;article&gt;</code> or <code>&lt;main&gt;</code> content,
+stripped of navigation chrome, and used in place of the truncated body –
+but only when the result is genuinely longer. Capped at 20 articles per
+refresh so a large backlog cannot stall a tick.</li>
+<li><strong>Background auto-refresh</strong> on the existing 30-second
+timer, running on its own thread with its own database connection so the
+window never freezes. Feeds are refreshed only when their own interval
+has elapsed, a feed set to “Manual only” is never refreshed
+automatically, and a failure backs off that one feed instead of aborting
+the batch. New articles are announced politely (“N new article(s).”)
+without stealing focus. Manual F5 now runs feeds through the same path,
+so rules, full-text, and retention apply either way.</li>
+<li><strong>Conditional polling</strong>: feeds are fetched with
+<code>If-None-Match</code> and <code>If-Modified-Since</code> and a 304
+skips parsing entirely, with transparent gzip/deflate handling. Feed
+fetches are HTTPS-only, TLS-verified, size- capped, and reject DOCTYPE
+and ENTITY declarations.</li>
+<li><strong>Articles render as accessible plain text</strong>, never
+HTML and never a web view: scripts, styles, and embedded frames are
+discarded outright, block elements become line breaks, list items become
+“- “, links read as <code>text (url)</code>, and images read as
+<code>[Image: alt]</code>.</li>
+<li><strong>Reading-position memory</strong>: reopening a feed or folder
+puts focus back on the article you were last on, or on the first unread
+one.</li>
+<li><strong>Mark all read</strong>, scoped to the current view, with a
+real <strong>undo</strong> (Ctrl+Z) that restores exactly the items that
+changed, and an announcement that says how many.</li>
+<li>Unread rows are shown in bold as a secondary low-vision cue; read
+state is still spoken, never colour-only.</li>
+<li><strong>Feeds check certificates the way Windows does</strong>
+(2026-10-15). Feed downloads now use the same certificate check as every
+other QUILL app, so a feed served behind a school’s or company’s own
+certificate loads, and a certificate that really is bad gets the same
+plain sentence everywhere.</li>
+</ul>
+<h3 id="added--lemmy-and-adapter-groundwork-for-more">Added — Lemmy, and
+adapter groundwork for more</h3>
+<ul>
+<li><strong>Lemmy</strong> joins the Add Account network list. Reading a
+community works from the public instance with no credential at all; the
+Add Account dialog says so, and says that posting and voting arrive
+later.</li>
+<li>Mastodon-compatible servers – Pixelfed, GoToSocial, Firefish,
+Sharkey, Iceshrimp – are now recognised and reuse the Mastodon adapter
+and its browser sign-in flow. Pixelfed, GoToSocial, and Firefish appear
+in the Add Account network list.</li>
+<li>Per-network <strong>guidance text</strong> in the Add Account dialog
+explains, in plain language, what each network is and what you need to
+connect to it.</li>
+<li>Read-only adapters for <strong>Hacker News</strong>, <strong>OPDS
+book catalogues</strong>, and <strong>Telegram</strong> channels are
+implemented and tested but not yet reachable: there is no way to add an
+account for them, and Telegram’s api-id/api-hash sign-in is still to
+come. Groundwork only.</li>
+</ul>
+<h3 id="added--listen-to-your-queue">Added — Listen to your queue</h3>
+<ul>
+<li><strong>Listen</strong>: continuous, hands-free read-aloud of the
+unread articles in the current view, auto-advancing from one to the next
+– your reading list as a podcast. Between articles it speaks a short
+handoff (“Title, from Feed.”).</li>
+<li>Transport controls for listening: play/pause, next article, previous
+article, and stop. Transport confirmations (“Paused”, “Playing”,
+“Stopped”, “End of the listen queue.”) go through the screen-reader
+announcement channel rather than the reading voice, so nothing is ever
+said twice at once.</li>
+<li>Narration uses Windows SAPI 5 and runs off the UI thread. If no
+speech engine is available the app says so instead of failing.</li>
+</ul>
+<h3 id="added--find">Added — Find</h3>
+<ul>
+<li><strong>Find Text</strong>, <strong>Find Next</strong> (F3), and
+<strong>Find Previous</strong> (Shift+F3) on the Tools menu, with a Find
+dialog that has a real Direction radio group (Forward / Backward).</li>
+</ul>
+<h3 id="added--menus-and-dialogs">Added — menus and dialogs</h3>
+<ul>
+<li>New <strong>Feeds</strong> menu: Add Feed… (Ctrl+Shift+N), New
+Folder…, Feed settings… (Ctrl+Shift+P), Mark all read (Ctrl+Shift+K),
+Undo mark all read (Ctrl+Z), New smart folder…, Edit smart folder…,
+Delete smart folder, Import OPML…, Export OPML…, Unsubscribe from
+feed.</li>
+<li>New <strong>Listen</strong> menu: Listen to this view
+(Ctrl+Shift+L), Play / Pause, Next article, Previous article, Stop
+listening.</li>
+<li>New dialogs – Add Feed, New Folder, Feed settings, New/Edit Smart
+Folder, Find Text – each with every control labelled and named,
+keyboard-complete, and no checkboxes inside a list. The Add Feed
+dialog’s status line is spoken as well as displayed, and focus moves to
+the results list when feeds are found.</li>
+</ul>
+<h3 id="added--packaging">Added — packaging</h3>
+<ul>
+<li>A QUILL Social installer: per-user by default, x64, with
+<strong>Full / Compact / Custom</strong> setup types, a fixed program
+component, and an optional <strong>Documentation</strong> component that
+also gates the Start-menu User Guide shortcut. An optional desktop icon,
+off by default. Upgrades wipe the app’s own internal tree first so a
+renamed module cannot leave a stale copy behind, and uninstalling never
+deletes your data.</li>
+<li>A release build script producing the staged app folder, a portable
+zip with its own <code>data</code> folder, and the installer in one
+pass.</li>
+<li>Rendered HTML documentation now uses a shared accessible template: a
+language attribute, a descriptive page title taken from the document’s
+own heading, a skip link, and a <code>main</code> landmark.</li>
+<li><strong>Two downloads, nothing else</strong> (2026-10-11). QUILL
+Social now comes as the installer and the portable zip. The small Lite
+installer and the Companion zip are gone. If you used the Lite
+installer, take the installer; if you used the Companion zip, take the
+portable zip. Check for Updates already offers the right one.</li>
+<li><strong>Every release build checks its version against what is
+published</strong> (2026-10-15). The shared QuillVille runtime carries
+every app’s version number, so a build of one app could make another
+report a version nobody can download yet, and Check for Updates would
+then never offer the real one. QUILL Social’s release builds now run the
+same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already
+did, and a build of every app at once checks them all again instead of
+stopping at an app it did not know.</li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>One server was removed from the Add Account instance-preset
+list.</li>
+<li>The item store gained scoped bulk read-state changes, so marking a
+view read reports an accurate count and can be undone exactly; per-feed
+retention pruning never touches bookmarked or flagged items.</li>
+</ul>
+<h3 id="known-issues">Known issues</h3>
+<ul>
+<li>The keys work in the main window, not inside dialogs, and are
+changed by editing <code>keymap.json</code> with QUILL Social closed;
+there is no key editor yet.</li>
+<li>Until 2026-10-17 the Feeds, Listen and Find commands were menu-only,
+not in the command center, and their keys could not be changed, so the
+F1 Keyboard Guide did not show them. Every command now has a key you can
+change and the Command Center shows it (see “Keys and menus” above);
+<strong>Help &gt; Keyboard Reference</strong> and the User Guide list
+every key.</li>
+<li>QUILL Social has no What’s New command yet: Ctrl+Shift+F1, the key
+the other QuillVille apps give it, is Keyboard Reference here.</li>
+</ul>
+<h3 id="the-030-build-of-2026-07-19">The 0.3.0 build of 2026-07-19</h3>
+<p>Made the full roadmap reachable from the app and wired live network
+sign-in. 409 tests passing, ruff-clean.</p>
+<h4 id="added--every-service-now-reachable-in-the-shell">Added — every
+service now reachable in the shell</h4>
+<ul>
+<li>New <strong>Studio</strong> menu: Drafts (open a draft back into the
+composer), Agenda / Calendar, Queue schedule, Approvals.</li>
+<li><strong>Tools</strong> menu now opens the real Safety Center,
+Notification policies, Plugin manager, and Outbox dialogs (plus Insights
+and AI summary).</li>
+<li><strong>Item</strong> menu gains Play media (accessible player with
+transcript sync) and keeps Accessibility check / Send to QUILL.</li>
+<li>All of the above are also searchable in the command center.</li>
+<li>Accessible dialogs for each area (<code>ui/studio.py</code>,
+<code>ui/manage.py</code>, <code>ui/media_player.py</code>): every
+control labelled and named, report-mode lists, keyboard-complete, no
+mouse-only paths.</li>
+</ul>
+<h4 id="added--deeper-composer-prd-15">Added — deeper composer (PRD
+15)</h4>
+<ul>
+<li>Media attachments with per-attachment alt-text editing, a poll
+builder (options, single/multiple, duration), a schedule date/time, and
+a template picker sourced from the saved-reply library. The composition
+report reflects media, alt-text gaps, and poll options live.</li>
+</ul>
+<h4 id="added--live-network-sign-in-prd-22-23-24-31">Added — live
+network sign-in (PRD 22, 23, 24, 31)</h4>
+<ul>
+<li>Mastodon, Bluesky, and GitHub adapters now have real dual-mode
+implementations: with a client (built by the registry from a stored
+credential, or injected in tests) they call the network and map
+responses into the domain model; with no client/credential they keep the
+clear “not enabled” boundary. Response→model mapping is pure and
+unit-tested with fixtures, without importing the optional SDKs.</li>
+<li><code>registry.adapter_for(account, credentials=None)</code>
+resolves the account’s secret at the boundary and builds a connected
+client (lazy SDK import). Secrets are stored in the OS credential vault
+(Windows Credential Manager via <code>keyring</code>); the database only
+ever holds a reference.</li>
+<li>Add Account collects an access token / app password and stores it
+securely.</li>
+</ul>
+<h4 id="added--live-local-scheduler">Added — live local scheduler</h4>
+<ul>
+<li>A <code>wx.Timer</code> drives the local scheduler every 30 seconds
+while the app is open, so due plans actually publish (with the same
+backoff and transient-vs-review policy), and the timeline refreshes with
+an announcement.</li>
+</ul>
+<h2 id="020---2026-07-18">[0.2.0] - 2026-07-18</h2>
+<p>Full roadmap build: every PRD phase and priority (P0–P2, phases 0–8)
+now has a tested implementation. See <a
+href="docs/PHASES.md">docs/PHASES.md</a> for the phase→module map. 363
+tests passing, ruff-clean, 57 package modules.</p>
+<h3 id="added--phase-3-organization-safety-analytics">Added — Phase 3
+organization, safety, analytics</h3>
+<ul>
+<li><strong>Moderation / Safety Center</strong>
+(<code>services/moderation.py</code>, PRD 27): local filters
+(text/regex/author/domain/network/type/media/language/label/time) with
+hide/warn/collapse/mute-speech/replace-slurs/require-reveal actions,
+mutes, blocks, domain blocks, reports that exclude private notes by
+default, and a slur-to-placeholder helper.</li>
+<li><strong>Notifications</strong>
+(<code>services/notifications.py</code>, PRD 25): categories, per
+account/category policies, duplicate grouping, quiet hours
+(midnight-crossing), focus modes, and plain-language digests; critical
+categories bypass quiet hours.</li>
+<li><strong>Templates / saved replies</strong>
+(<code>services/templates.py</code>, PRD 13.5): variables, network
+variants, signatures, and a persisted library.</li>
+<li><strong>Analytics</strong> (<code>services/analytics.py</code>, PRD
+33): measured metrics as accessible data tables, CSV/Markdown export,
+and period comparison kept separate from measurement.</li>
+</ul>
+<h3 id="added--phase-4-publishing-studio">Added — Phase 4 publishing
+studio</h3>
+<ul>
+<li>Queue schedules with DST-correct slot math
+(<code>services/queue_schedule.py</code>), accessible
+agenda/day/week/month calendar with conflict detection
+(<code>services/calendar.py</code>), optimal-time suggestions that avoid
+false certainty (<code>services/optimal_time.py</code>), an approval
+workflow with a role matrix and audit trail
+(<code>services/approvals.py</code>), recurring content with safeguards
+(<code>services/recurring.py</code>), and CSV/TSV/JSON/Markdown bulk
+import with dry-run and duplicate detection
+(<code>services/bulk_import.py</code>).</li>
+</ul>
+<h3 id="added--phase-5-media-and-ecosystem">Added — Phase 5 media and
+ecosystem</h3>
+<ul>
+<li>Media engine interface with a deterministic null backend and an mpv
+boundary, player state machine with position memory / A-B loop / queue
+(<code>services/media.py</code>); transcripts with SRT/VTT/TXT/Markdown
+import-export, search, and time-point quotes
+(<code>services/transcripts.py</code>); the QUILL ecosystem bridge as
+inspectable intents for QUILL / Radio / Cast / Audio Studio / Beacon
+(<code>services/ecosystem.py</code>); and QUILL Longform with a safe
+Markdown→semantic-HTML renderer and teaser-thread generation
+(<code>services/longform.py</code>).</li>
+</ul>
+<h3 id="added--phase-6-ai-assistance">Added — Phase 6 AI assistance</h3>
+<ul>
+<li><code>services/ai/</code>: a provider gateway with disclosure and a
+deterministic mock provider; prompt-injection defense that fences
+untrusted social text as data, detects injection, and redacts secrets;
+writing tools that always return draft proposals; understanding tools
+whose summaries always list their sources; and a heuristic accessibility
+assistant. AI never publishes and is fully optional.</li>
+</ul>
+<h3 id="added--phase-78-github-plugins-resilience-security">Added —
+Phase 7–8 GitHub, plugins, resilience, security</h3>
+<ul>
+<li>GitHub adapter + deterministic MockGitHub
+(<code>adapters/github.py</code>) and social↔︎ GitHub bridge that
+excludes private notes and turns releases/PRs into campaigns and threads
+(<code>services/github_bridge.py</code>); a plugin system with manifest
+validation, permission enforcement, safe mode, and crash isolation
+(<code>services/plugins.py</code>, <code>plugins/</code>); an offline
+outbox that never silently publishes expired posts, plus a circuit
+breaker (<code>services/outbox.py</code>); a credential store that
+persists references not tokens, and redacted diagnostic bundles
+(<code>security/</code>).</li>
+</ul>
+<h3 id="added--ui-integration">Added — UI integration</h3>
+<ul>
+<li>New navigation feeds for GitHub (notifications, issues, PRs,
+discussions, releases); Tools menu entries and command-center commands
+for Insights, Safety Center, and AI summary; Item menu entries for
+Accessibility check and Send to QUILL; and a reusable accessible
+text-report dialog.</li>
+</ul>
+<h2 id="010---2026-07-18">[0.1.0] - 2026-07-18</h2>
+<p>The P0 foundational slice: a self-contained engine plus an accessible
+wxPython shell that runs against local storage and a deterministic mock
+network, so the whole experience works before any credential is
+entered.</p>
+<h3 id="added">Added</h3>
+<ul>
+<li><strong>Layered architecture</strong> (PRD 29): wx-free
+<code>model</code>, <code>capabilities</code>, <code>db</code>,
+<code>keymap</code>, <code>fields</code>, <code>whereami</code>,
+<code>a11y</code>, <code>adapters/</code>, and <code>services/</code>,
+with the wxPython shell as a thin presentation layer on top.</li>
+<li><strong>Accessible shell</strong> (<code>ui/app.py</code>):
+navigation tree, configurable item list with field-by-field Left/Right
+reading, details pane, status-bar announcer, and full
+keyboard/menu/command-center dispatch. Focus is preserved across
+refreshes.</li>
+<li><strong>Capability registry</strong> (PRD 6.3, 11.4): per-account
+capabilities seeded per network (Mastodon, Bluesky, GitHub, mock) with a
+live-probe refine path. The UI adapts to what each account
+supports.</li>
+<li><strong>Network adapters</strong> (PRD 22, 23): a common
+<code>NetworkAdapter</code> contract; a deterministic in-memory
+<code>MockNetwork</code> that drives the P0 experience; Mastodon and
+Bluesky descriptors that declare capabilities and mark the boundary
+where a live client is required.</li>
+<li><strong>Intelligent thread splitter</strong> (PRD 16.1):
+paragraph/sentence/word boundary preference, never breaks
+links/mentions/hashtags/Markdown links/inline code, <code>1/n</code>
+numbering reserved out of the limit, pluggable counter with a Mastodon
+URL/mention weighting.</li>
+<li><strong>Thread publisher</strong> (PRD 16.2): ordered reply-chain
+publishing that pauses on the first failure without republishing
+successes, with repair/resume and per-segment idempotency keys.</li>
+<li><strong>Scheduler</strong> (PRD 18.8, 18.12): a state machine with a
+validated transition table, exponential backoff for transient errors,
+and a stop-and-review policy for validation/permission/privacy failures.
+One plan per account so a failure on one destination never blocks or
+duplicates the others.</li>
+<li><strong>Composer model</strong> (PRD 15.3, 15.6): live per-network
+character counts, thread segment counts, and capability/accessibility
+checks.</li>
+<li><strong>Local-first store</strong> (PRD 30): SQLite with WAL and
+FTS5, re-fetch that preserves local read/flag/folder state, and cache
+pruning that never removes drafts, notes, schedules, folders, or
+bookmarked posts.</li>
+<li><strong>Catch-up</strong> (PRD 12.6) and <strong>smart
+folders</strong> (PRD 13.2): repost and cross-network collapse,
+people/conversation grouping, and inspectable rules.</li>
+<li><strong>Command center, Where Am I, context help, remappable
+keymap</strong> (PRD 10).</li>
+<li><strong>Accessibility settings</strong> (PRD 28): verbosity, high
+contrast, text scale, and social-specific speech toggles, persisted next
+to the database.</li>
+<li><strong>Headless CLI</strong> (<code>quill-social-cli</code>):
+<code>accounts</code>, <code>refresh</code>, <code>search</code>,
+<code>split</code>.</li>
+<li><strong>Test suite</strong>: 119 tests across the domain, services,
+adapters, persistence, and a guarded wx smoke test; ruff-clean.</li>
+</ul>
+<h3 id="known-limitations">Known limitations</h3>
+<ul>
+<li>Live Mastodon/Bluesky sign-in, QUILL Cloud scheduling, AI, GitHub,
+media playback, and QuilleSync are architected for but not enabled in
+this slice.</li>
+</ul>
+</main>
+</body>
+</html>

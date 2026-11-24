@@ -97,7 +97,14 @@ def _save_beside(host: Any, result: object, source: Path) -> None:
         target = unique_path(source.with_name(source.stem + ext))
         write_text_atomic(target, text, encoding="utf-8", newline="\n")
         written.append(target.name)
-    host._announce(f"Captions and a transcript saved beside {source.name}.")
+    # Each file by the name it was given (a second run gets "(2)"), and the
+    # folder they are in; kept with Open Folder (FUX-04).
+    from quill.ui.outcome_report import report_outcome
+
+    names = ", ".join(written[:-1]) + f" and {written[-1]}"
+    folder = source.parent.name or str(source.parent)
+    said = f"Saved {names} in {folder}."
+    report_outcome(host, "Generate Captions", said, object_name=source.name, path=source.parent)
 
 
 def _save_captions(host: Any, result: object, source: Path) -> None:
@@ -134,10 +141,15 @@ def _save_captions(host: Any, result: object, source: Path) -> None:
     def work(_progress):
         write_text_atomic(target, text, encoding="utf-8", newline="\n")
 
+    from quill.core.action_feedback import saved_result
+    from quill.ui.outcome_report import report_outcome
+
     host._run_background_task(
         f"Saving captions to {target.name}",
         work,
-        lambda _result: host._announce(f"Captions saved to {target.name}."),
+        lambda _result: report_outcome(
+            host, "Generate Captions", saved_result(target), object_name=target.name, path=target
+        ),
     )
 
 

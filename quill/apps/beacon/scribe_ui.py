@@ -103,10 +103,13 @@ class BeaconScribeMixin(AppScribeMixin):
 
     # -- the destination -----------------------------------------------------
 
-    def _scribe_scope_results(self) -> bool:
+    def _scribe_scope_results(self, say_count: bool = True) -> bool:
         """Fill the results with Scribe places when that destination is chosen."""
         if self.current_scope != SCOPE:  # type: ignore[attr-defined]
             return False
+        if not say_count:  # a refill the reader did not ask for (FUX-06)
+            self._scribe_refresh_quietly()
+            return True
         places, query = self._scribe_listed()
         self._results_cache = places  # type: ignore[attr-defined]
         self.results.SetItemCount(len(places))  # type: ignore[attr-defined]

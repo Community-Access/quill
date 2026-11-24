@@ -44,6 +44,7 @@ from quill.core.lite import (
     RELEASE_REPO,
 )
 from quill.core.net import certificate_problem
+from quill.core.versioning import ReleaseVersion
 from quill.ui.dialog_contract import show_message_box, show_modal_dialog
 
 __all__ = [
@@ -94,11 +95,18 @@ def check_for_updates(window: Any, *, silent_no_update: bool = False) -> None:
     *window* is the document window the dialog belongs to. ``silent_no_update``
     is the launch check: "checking", "up to date" and a failed check all stay
     quiet, because a launch is not the place to announce that nothing happened.
-    A genuine available update still shows the same dialog either way -- there
-    is no notification centre in QUILL Lite to defer it to.
+    A genuine available update still shows the same dialog, but on the launch
+    check only at a quiet moment (:func:`_offer_when_quiet`, FUX-15); asking
+    opens an offer that is waiting straight away.
     """
     from quill.core.updates import fetch_app_releases, is_newer_version
+    from quill.ui.maintenance_moment_ui import take_held
 
+    if not silent_no_update:
+        held = take_held("quilllite", "update")
+        if held is not None:
+            held()
+            return
     announce = getattr(window, "_announce", lambda _msg: None)
     api_url = f"https://api.github.com/repos/{RELEASE_REPO}/releases"
     prefer_portable = _running_portable_build()
@@ -148,18 +156,25 @@ def check_for_updates(window: Any, *, silent_no_update: bool = False) -> None:
             return
         if silent_no_update and _update_in_background(window, newest, result.state, current):
             return
-        from quill.ui.update_notice import show_update_available
 
-        choice = show_update_available(
-            window,
-            app_name=APP_NAME,
-            current_version=current,
-            release=newest,
-            show_modal_dialog=show_modal_dialog,
-            announce=announce,
-        )
-        if choice == "update":
-            _download(window, newest, announce)
+        def _offer(parent: Any = window) -> None:
+            from quill.ui.update_notice import show_update_available
+
+            choice = show_update_available(
+                parent,
+                app_name=APP_NAME,
+                current_version=current,
+                release=newest,
+                show_modal_dialog=show_modal_dialog,
+                announce=announce,
+            )
+            if choice == "update":
+                _download(parent, newest, getattr(parent, "_announce", announce))
+
+        if silent_no_update:
+            _offer_when_quiet(window, str(newest.version), _offer)
+        else:
+            _offer()
 
     def _report(_name: str, releases: object) -> None:
         wx.CallAfter(_show, releases)
@@ -187,27 +202,88 @@ def _update_in_background(window: Any, release: Any, state: Any, current: str) -
     from quill.ui.updates.background import offer_downloaded, silent_found
 
     announce = getattr(window, "_announce", lambda _msg: None)
+    version = str(getattr(release, "version", "") or "")
     return silent_found(
         app_key="quilllite",
         release=release,
         state=state,
         target_dir=data_dir() / "updates",
         submit=thread_submit,
-        announce=announce,
-        on_ready=lambda path: offer_downloaded(
+        # "Downloaded" is written, not spoken, on the launch check (FUX-15).
+        announce=getattr(window, "_set_status_message", lambda _msg: None),
+        on_ready=lambda path: _offer_when_quiet(
             window,
-            app_name=APP_NAME,
-            current_version=current,
-            release=release,
-            target=path,
-            portable=_running_portable_build(),
-            announce=announce,
-            show_message_box=lambda message, caption, style: show_message_box(
-                message, caption, style, window
+            version,
+            lambda parent: offer_downloaded(
+                parent,
+                app_name=APP_NAME,
+                current_version=current,
+                release=release,
+                target=path,
+                portable=_running_portable_build(),
+                announce=getattr(parent, "_announce", announce),
+                show_message_box=lambda message, caption, style: show_message_box(
+                    message, caption, style, parent
+                ),
+                show_modal_dialog=show_modal_dialog,
+                close_app=lambda: wx.GetTopLevelParent(parent).Close(),
             ),
-            show_modal_dialog=show_modal_dialog,
-            close_app=lambda: wx.GetTopLevelParent(window).Close(),
         ),
+    )
+
+
+def _top(window: Any) -> Any:
+    try:
+        return window.GetTopLevelParent()
+    except Exception:  # noqa: BLE001 - a stand-in, or already a top-level window
+        return window
+
+
+def _current(shell: Any, window: Any) -> Any:
+    """The document in use when a held offer opens: the shell's active one,
+    else the one the check began in, else the shell itself."""
+    try:
+        active = shell.GetActiveChild()
+    except Exception:  # noqa: BLE001 - no MDI shell (a stand-in in tests)
+        active = None
+    if active:
+        return active
+    try:
+        return window if window else shell
+    except Exception:  # noqa: BLE001 - wx raises on a destroyed window
+        return shell
+
+
+def _offer_when_quiet(window: Any, version: str, offer: Any) -> None:
+    """The launch check's offer, at a quiet moment (FUX-15).
+
+    Held while dictating, in the first minute after launch, while QUILL Lite
+    is not the window in front, and while typing. The one sentence saying
+    what waits goes to the status bar's message cell and Update History,
+    never spoken. *offer* is given the document window in use when it opens:
+    the one the check began in may have been closed meanwhile.
+    """
+    from quill.core.updater import history
+    from quill.ui.maintenance_moment_ui import offer_when_quiet
+    from quill.ui.maintenance_probes import probes_for
+
+    def _note(line: str) -> None:
+        setter = getattr(window, "_set_status_message", None)
+        if callable(setter):
+            setter(line)
+        history.record("quilllite", "held_back", to_version=version, detail=line)
+
+    shown = ReleaseVersion.try_parse(version)
+    shell = _top(window)
+    offer_when_quiet(
+        "quilllite",
+        kind="update",
+        label=f"Update {shown.display() if shown is not None else version}",
+        run=lambda: offer(_current(shell, window)),
+        route="Help, Check for Updates (Ctrl+Alt+U) offers it now.",
+        window=shell,
+        note=_note,
+        probes=probes_for("quilllite", window),
     )
 
 
@@ -321,7 +397,9 @@ def check_at_launch(app: Any) -> None:
     channels, Phase 0) -- before the check, and whether or not it runs.
     """
     from quill.core.data_format_ledger import record_running_build
+    from quill.ui.maintenance_moment_ui import note_launch
 
+    note_launch("quilllite")  # FUX-15: the first minute starts as the window opens
     record_running_build("quilllite", APP_VERSION)
     if wx.GetApp() is not None:
         wx.CallAfter(_confirm_update_started, app)

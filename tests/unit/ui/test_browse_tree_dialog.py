@@ -297,6 +297,29 @@ def test_favorites_branch_lists_unfiled_stations_then_folders() -> None:
     assert "News" in labels[-1]
 
 
+def test_a_favorites_refresh_keeps_the_reader_and_says_nothing() -> None:
+    # FUX-06: removing a favorite from another window rebuilt the branch under
+    # the reader, left them on the folder and said "N items." over "Removed".
+    d = _dialog()
+    names = ["Alpha", "Bravo", "Charlie"]
+    d._favorites = RadioFavoritesStore(
+        favorites=[FavoriteStation(station=_station(n, f"https://a/{n}")) for n in names]
+    )
+    root = _Node()
+    d._tree.SetItemData(root, {"node_id": "favorites", "label": "Favorites", "loaded": True})
+    d._favorites_root = root
+    d._add_favorites(root)
+    d._announced.clear()
+    d._tree.SelectItem(d._tree.children[root][1][0])  # Bravo
+    d._favorites.remove(d._favorites.favorites[0].key)  # Alpha, elsewhere
+    d._refresh_favorites_branch()
+    assert d._tree.GetItemText(d._tree.GetSelection()) == "Bravo"
+    d._favorites.remove(d._favorites.favorites[0].key)  # now Bravo itself
+    d._refresh_favorites_branch()
+    assert d._tree.GetItemText(d._tree.GetSelection()) == "Charlie"
+    assert d._announced == []
+
+
 def test_an_empty_favorites_branch_explains_how_to_fill_it() -> None:
     d = _dialog()
     root = _Node()

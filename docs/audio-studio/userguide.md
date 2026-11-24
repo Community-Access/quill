@@ -184,7 +184,7 @@ Each row reads in full: "3. The Long Road - starts 1:02:03, runs 12:40". Press *
 The built-in player anchors everything. All controls are buttons with access keys, fully reachable with Tab and screen-reader-friendly:
 
 - **Play / Pause** (one button whose label follows the state) and **Stop**.
-- **Previous chapter** and **Next chapter** - within the first three seconds of a chapter, Previous means the one before.
+- **Previous chapter** and **Next chapter** - within the first three seconds of a chapter, Previous means the one before; later than that, it goes back to the start of the chapter you are in. Each press says where you landed, once: "The Long Road, chapter 4 of 24, 12 minutes 40 seconds long.".
 - **Rewind** and **Forward** - ten-second skips, position spoken after each.
 - **Where am I?** - the full audible glance: "Chapter 4 of 24: The Long Road. 3:12 into the chapter, 9:28 left in it. 1:02:03 of 7:41:00 in the book, 6:38:57 remaining."
 - **Speed** - 0.75x to 2x, pitch preserved.
@@ -440,7 +440,7 @@ These settings are shared with QUILL rather than repeated in the Studio's own Pr
 
 **Help > Check for Updates...** compares your version with the newest Quill release, works out which download matches the flavor you run (the installer for an installed copy, the portable zip for a portable one), and fetches it with spoken progress. Then choose **Install and restart now** and the Studio does the rest itself: it applies the update - unpacking the new portable files over your folder, or running the installer quietly - and relaunches, keeping every setting, voice, and saved listening position. There is nothing to unzip and no folder to swap by hand.
 
-All the Quill apps are published from one place, and each one recognizes its own download, so an update to Quill Radio is never offered to the Studio and each app updates on its own schedule. The automatic startup check (on by default, throttled to once a day) is silent unless it actually finds something.
+All the Quill apps are published from one place, and each one recognizes its own download, so an update to Quill Radio is never offered to the Studio and each app updates on its own schedule. The automatic startup check (on by default, throttled to once a day) is silent unless it actually finds something. Even then it never interrupts a live broadcast, a recording, a capture or a book that is playing: the offer waits until they stop, and never comes in the first minute after the Studio opens or while you are typing. While it waits, the status bar says once what is waiting, and **Help > Check for Updates** opens it at once.
 
 ## The Command Palette
 

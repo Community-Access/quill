@@ -295,8 +295,10 @@ fastest way around a long one.
   (`Ctrl+Alt+Shift+H`) move between headings only: the `#`, `##` and `###`
   lines in Markdown, and real headings elsewhere.
 - **Next Structure** (`Alt+Down`) and **Previous Structure** (`Alt+Up`) move
-  between every structural element: headings, and also list items, code
-  blocks, tables and block quotes. This steps you through the full outline.
+  between headings and the brackets `(`, `[` and `{` and their partners, which
+  is where code and nested text open and close. Each stop says what it is: a
+  heading the way Next Heading says it ("Heading 2, 3 of 12: Installing"), a
+  bracket by name ("Opening brace"), then the line and column.
 - **Next Region** (`F6`) and **Previous Region** (`Shift+F6`) cycle the larger
   parts of the window.
 
@@ -588,7 +590,9 @@ A few things to know:
 
 - If there is nothing of that kind to move to, QUILL tells you.
 - Find and replace commands take you back to normal editing on their own.
-- After each move QUILL tells you where you landed. **QUILL browse move
+- After each move QUILL tells you what you landed on and its place, once:
+  "Link, 3 of 12", or for `1` to `6` the heading itself, "Heading 2, 4 of 9:
+  Installing", counted among all the headings as `H` counts them. **QUILL browse move
   detail**, in **Settings > Navigation and QUILL Key**, sets how much it says:
   *Line and column* (the default), *Line only* or *Say nothing*.
 - **Preload QUILL browse cache in background**, on the same page, is on by

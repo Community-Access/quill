@@ -326,7 +326,9 @@ class BrowseModeMixin(BrowsePagesMixin):
         if not headings:
             self._browse_not_found(f"heading level {level}", markup_kind)
             return
-        self._browse_jump_to_positions(headings, f"heading level {level}", reverse=reverse)
+        self._browse_jump_to_positions(
+            headings, f"heading level {level}", reverse=reverse, heading_level=level
+        )
 
     def _browse_link(self, *, reverse: bool) -> None:
         context = self._browse_navigation_context()
@@ -491,7 +493,9 @@ class BrowseModeMixin(BrowsePagesMixin):
             return
         self._browse_jump_to_positions(positions, "sentence", reverse=reverse)
 
-    def _browse_jump_to_positions(self, positions: list[int], noun: str, *, reverse: bool) -> None:
+    def _browse_jump_to_positions(
+        self, positions: list[int], noun: str, *, reverse: bool, heading_level: int = 0
+    ) -> None:
         cursor = self.editor.GetInsertionPoint()
         sorted_positions = sorted(pos for pos in positions if pos >= 0)
         if not sorted_positions:
@@ -525,9 +529,38 @@ class BrowseModeMixin(BrowsePagesMixin):
         self._move_point(target)
         self.editor.SetFocus()
         self._location_ring.record(target)
-        line, column = line_column_for_position(self.editor.GetValue(), target)
-        direction = "previous" if reverse else "next"
-        self._browse_feedback_move(f"Moved to {direction} {noun}", line, column)
+        text = self.editor.GetValue()
+        line, column = line_column_for_position(text, target)
+        self._browse_feedback_move(
+            self._browse_landing(text, target, noun, sorted_positions, heading_level), line, column
+        )
+
+    def _browse_landing(
+        self, text: str, target: int, noun: str, positions: list[int], heading_level: int
+    ) -> str:
+        """What a browse letter says on arrival: the kind and its place (FUX-14).
+
+        "Moved to next link" said only that the key worked; "Link, 3 of 12" says
+        where you are. A heading level says what H says, title included, with
+        H's count among all headings, and latches the caret cue so the heading
+        is not said twice -- only when something is said at all.
+        """
+        ordinal, total = positions.index(target) + 1, len(positions)
+        if heading_level:
+            from quill.core.markdown_sections import heading_context_at
+            from quill.core.structure_announce import describe_heading_arrival
+
+            markup_kind = str(self._browse_navigation_context().get("markup_kind", ""))
+            context = heading_context_at(text, target, markup_kind)
+            if context is not None:
+                ordinal, total = context.ordinal, context.total
+            title = context.title if context is not None else ""
+            detail = str(getattr(self.settings, "browse_mode_move_detail", "position"))
+            latch = getattr(self, "sync_structure_announcer", None)
+            if callable(latch) and detail.strip().lower() != "none":
+                latch()
+            return describe_heading_arrival(heading_level, title, ordinal=ordinal, total=total)
+        return f"{noun[:1].upper()}{noun[1:]}, {ordinal} of {total}"
 
     def _browse_feedback_move(self, prefix: str, line: int, column: int) -> None:
         detail = str(getattr(self.settings, "browse_mode_move_detail", "position")).strip().lower()

@@ -188,6 +188,9 @@ class CastEpisodeListMixin:
             "Shift+F10 offers everything else. Tab and Shift+Tab move between "
             "Places and this content."
         )
+        from quill.ui.podcasts import selection_help
+
+        selection_help.install(self, self._episodes)
         self._current_show: PodcastShow | None = None
         self._current_episodes: list[PodcastEpisode] = []
         self._pair_shows: list[PodcastShow] = []

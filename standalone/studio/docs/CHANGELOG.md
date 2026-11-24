@@ -6,11 +6,48 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [2.0.0] - built, not yet released
 
+- **The Library Window opens, and keeps your place** (FUX-06, 2026-11-23).
+  Opening it failed, because the window handed its tree to a method that took
+  none. A reload now keeps you on the same copy of a book that shows under both
+  a view and its folder, lands you on the next book when yours was removed, and
+  leaves the tree alone when a job finishes and nothing changed.
+### The update offer never interrupts a broadcast or a recording (2026-11-24)
+
+The daily update check used to open its window as soon as it came back, even
+over a live broadcast, a demonstration recording, a capture or a book that
+was playing, and even while QUILL Studio was in the tray. Now it waits until
+none of those is running, the first minute after launch has passed, you have
+stopped typing and QUILL Studio is the window you are using, and then about
+20 seconds more. While it waits, the status bar says once what is waiting;
+nothing is spoken. **Help > Check for Updates** opens the waiting update at
+once.
+
 QUILL Studio 2.0.0 is the next Studio release after Audio Studio 1.0.0. The previously unpublished 2.2.0 build is renumbered to 2.0.0 for the QUILL Studio rename. Shared-runtime compatibility does not require matching the other apps' version numbers.
 
 This version is built but not yet published: Audio Studio is not offered in the QuillVille menu, and there is no 2.0.0 download page. Everything below is in the build.
 
+### The player says where a chapter move landed (2026-11-23)
+
+- **Previous chapter and Next chapter** say the chapter with its place, "The Long Road, chapter 4 of 24, 12 minutes 40 seconds long." Previous that restarted the chapter you were in used to say nothing, and Previous in the first seconds of the first chapter replayed it; it now says "This is the first chapter."
+
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
+
+### The Library Window opens, with your books in it (2026-11-23)
+
+- **View > Library Window...** (Ctrl+Alt+Y) did not open, because of two
+  mistakes in how it was started. It now opens with your books in it.
+- F1 on a group or folder there says that Enter opens nothing and that the
+  context menu offers New Folder, and Enter there now says it is a group
+  rather than "No book selected". F1 on a book whose file has moved says so
+  and how to remove it from the library.
+- F1 on the Chapter Workbench's chapter list says again that Enter plays the
+  chapter. A second help text had replaced the first.
+### The actual result, said once (2026-11-23)
+
+- **A run ends with a sentence.** Audio Studio runs used to end on a status line nobody heard. Now you hear what was made and where ("Made audio for 10 documents in Reports."), with skipped and failed documents counted. A book's check is its own sentence after the build, and a cancelled run says how many are kept, how many have no audio yet, and how to make the rest. The translated speech export ends the same way. Both stay in Activity (Shift+F9) with Open Folder; F9 says them again.
+- **Saves say the file and its folder**, after the write: the Chapter Workbench, the Tag Editor, Copy Sections, Generate Captions, Save Diagnostics and screenshot reports. Each is kept in Activity with Open Folder. Captions made beside a recording name each file.
+- **Help > Activity...** (Shift+F9) and **Help > Repeat Last Result** (F9) are on the Help menu. Before, no menu carried them.
+- **A screenshot, a broadcast's saved copy and a checked demonstration** stay in Activity after their sentence or window is gone. A screenshot is still shown, not spoken.
 
 ### Narration from Scribe for Documents (2026-11-21)
 

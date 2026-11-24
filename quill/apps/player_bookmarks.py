@@ -16,10 +16,15 @@ import wx
 
 from quill.core.media import format_spoken
 from quill.core.media.bookmarks import MediaBookmark
+from quill.core.structure_landing import describe_boundary, describe_landing
 
 __all__ = ["PlayerBookmarksMixin"]
 
 _PLAYER_TITLE = "Quill Media Player"
+
+#: How close to a bookmark still counts as "on" it, so Next after landing on
+#: one moves on rather than finding the same one again.
+_ON_MARK_MS = 1500
 
 
 class PlayerBookmarksMixin:
@@ -102,7 +107,50 @@ class PlayerBookmarksMixin:
     def _on_bookmark_activate(self, _control: object) -> None:
         mark = self._selected_bookmark()
         if mark is not None:
-            self._player.seek_to(mark.position_ms)
+            self._land_on_bookmark(mark)
+
+    def _step_bookmark(self, direction: int) -> None:
+        """Next (1) or Previous (-1) Bookmark from the playhead (F2, Shift+F2)."""
+        if not self._book_key:
+            self._announce("Open a file first.")
+            return
+        marks = self._bookmarks.list(self._book_key)
+        if not marks:
+            self._announce("This book has no bookmarks.")
+            return
+        position = self._player.playhead_ms()
+        if direction > 0:
+            ahead = [m for m in marks if m.position_ms > position + _ON_MARK_MS]
+            target = ahead[0] if ahead else None
+        else:
+            behind = [m for m in marks if m.position_ms < position - _ON_MARK_MS]
+            target = behind[-1] if behind else None
+        if target is None:
+            self._announce(describe_boundary("bookmark", forward=direction > 0))
+            return
+        self._land_on_bookmark(target)
+
+    def _land_on_bookmark(self, mark: MediaBookmark) -> None:
+        """Seek to *mark* and say it once: its note, its place, its time.
+
+        The panel's own timestamp is switched off, because this sentence
+        already carries the time -- choosing a bookmark used to say only the
+        timestamp, and never the note that made it worth keeping.
+        """
+        marks = self._bookmarks.list(self._book_key) if self._book_key else []
+        index = next((i for i, m in enumerate(marks) if m.position_ms == mark.position_ms), 0)
+        self._player.seek_to(mark.position_ms, announce=False)
+        if self._bookmarks_list.GetSelection() != index:
+            self._bookmarks_list.SetSelection(index)
+            if self._bookmarks_list.HasFocus():
+                return  # the reader says the row it moved to; once is enough
+        when = format_spoken(mark.position_ms)
+        name = mark.note or mark.label
+        self._announce(
+            describe_landing(
+                "bookmark", name or when, index, len(marks), detail=when if name else ""
+            )
+        )
 
     def _selected_bookmark(self) -> MediaBookmark | None:
         index = self._bookmarks_list.GetSelection()
@@ -112,8 +160,24 @@ class PlayerBookmarksMixin:
         return marks[index]
 
     def _refresh_bookmarks(self) -> None:
-        self._bookmarks_list.Clear()
-        for mark in self._bookmarks.list(self._book_key) if self._book_key else []:
+        """Row by row, keeping the reader on their bookmark (FUX-06).
+
+        Clearing the list lost the selection after every Add, Edit and Remove;
+        now an edited bookmark stays selected, a new one leaves the reader
+        where they were, and Remove lands on the bookmark after it.
+        """
+        from quill.ui.list_stay_still import refill_listbox
+
+        marks = self._bookmarks.list(self._book_key) if self._book_key else []
+        labels = []
+        for mark in marks:
             when = format_spoken(mark.position_ms)
             note = mark.note or mark.label
-            self._bookmarks_list.Append(f"{note} ({when})" if note else when)
+            labels.append(f"{note} ({when})" if note else when)
+        old = list(getattr(self, "_bookmark_keys", []))
+        index = self._bookmarks_list.GetSelection()
+        wanted = old[index] if 0 <= index < len(old) else None
+        # Scoped to the book, and numbered when two share a millisecond.
+        keys = [f"{self._book_key}:{mark.position_ms}" for mark in marks]
+        self._bookmark_keys = [f"{key}:{keys[:n].count(key)}" for n, key in enumerate(keys)]
+        refill_listbox(self._bookmarks_list, old, self._bookmark_keys, labels, wanted)

@@ -36,6 +36,8 @@ In the post list, **Up** and **Down** move between posts, **Left** and **Right**
 | **Ctrl+G** | Open conversation | Item | Opens the whole thread the focused post belongs to. |
 | **Ctrl+O** | Open links | Item | Opens the links in the focused post in your browser. |
 | **Ctrl+K** | Mark read | Item | Marks the focused post read. |
+| **Alt+.** | Next unread | Item | Moves to the next unread post in this view. Past the last one it says "No more unread." |
+| **Alt+,** | Previous unread | Item | Moves to the previous unread post in this view. Not Ctrl+Shift+., which is Next article in Listen. |
 | **Ctrl+F** | Favourite | Item | Favourites (likes) the focused post, or takes the favourite off again. |
 | **Alt+B** | Bookmark | Item | Bookmarks the focused post, or removes the bookmark; bookmarked posts gather under Bookmarks in the navigation tree. |
 | **Ctrl+Shift+R** | Boost / Repost | Item | Boosts (reposts) the focused post to your followers, or undoes the boost. |

@@ -24,6 +24,7 @@ from quill import __version__, build_info
 from quill.branding import APP_SHORT_NAME
 from quill.core import thesaurus as thesaurus_engine
 from quill.core.a11y_regions import RegionTracker
+from quill.core.action_feedback import place_of
 from quill.core.ai import Assistant
 from quill.core.ai.agent import allowed_tools
 from quill.core.announce import Channel as AnnounceChannel
@@ -225,6 +226,7 @@ from quill.core.spoken_echo import (
 from quill.core.sticky_notes import save_sticky_note
 from quill.core.structure_announce import describe_heading_arrival
 from quill.core.structure_nav import (
+    describe_structure_target,
     find_matching_bracket,
     next_structure_position,
     previous_structure_position,
@@ -410,6 +412,7 @@ from quill.ui.main_frame_recent_documents import RecentDocumentsMixin
 from quill.ui.main_frame_recording_chapters import RecordingChaptersMixin
 from quill.ui.main_frame_remote_files import RemoteFilesMixin
 from quill.ui.main_frame_restore_points import RestorePointsMixin
+from quill.ui.main_frame_results import DocumentResultsMixin
 from quill.ui.main_frame_reveal_codes import RevealCodesMixin
 from quill.ui.main_frame_review import ReviewToolsMixin
 from quill.ui.main_frame_rich_mode import RichModeMixin
@@ -455,6 +458,7 @@ from quill.ui.main_frame_wordpress import WordPressMenuMixin
 from quill.ui.main_frame_work_persona import WorkPersonaMixin
 from quill.ui.main_frame_worktrees import WorktreesMixin
 from quill.ui.main_frame_write_safety import WriteSafetyMixin
+from quill.ui.maintenance_moment_ui import note_launch
 from quill.ui.markdown_tag_row import MARKDOWN_TAG_REFUSAL, sync_menu_row
 from quill.ui.navigator_node import _NavigatorNode
 from quill.ui.notebook_panel import NotebookEntriesPanel
@@ -743,6 +747,7 @@ class MainFrame(
     CrashRecoveryMixin,
     DiagnosticsMixin,
     ConvertFileMixin,
+    DocumentResultsMixin,
     GlowEditorMixin,
     KeymapEditorMixin,
     KeybindingParseMixin,
@@ -1354,6 +1359,7 @@ class MainFrame(
         if editor_starts_hidden(self, start_minimized):  # --tray: a login launch
             return
         self.frame.Show(True)
+        note_launch("quill")  # FUX-15: the first minute starts now
         # The longest silence in the product is a launch: a window appears, the
         # reader announces a title, and nothing before that says the
         # double-click worked.
@@ -1490,8 +1496,10 @@ class MainFrame(
             ("crash recovery", self._offer_crash_recovery),
             ("first-run onboarding", self._maybe_run_first_run_onboarding),
             ("migration notice", self._surface_migration_notice),
-            ("braille pack prompt", self._maybe_prompt_braille_pack_install),
-            ("kokoro package prompt", self._maybe_prompt_kokoro_package_install),
+            # One-time component questions wait for a quiet moment, never the
+            # first minute after launch (FUX-15, main_frame_updates.py).
+            ("braille pack prompt", self._braille_pack_prompt_when_quiet),
+            ("kokoro package prompt", self._kokoro_package_prompt_when_quiet),
             ("startup profile prompt", self.run_startup_profile_prompt),
             ("watch-folder startup", self._maybe_start_watch_folder),
             ("live settings (wake word, right-click menu)", lambda: start_live_settings(self)),
@@ -5261,7 +5269,7 @@ class MainFrame(
             return
 
         self._record_recent(target)
-        self._announce(f"Exported {target.name}")
+        self._report_written("Export", "Exported", target)  # and where (FUX-04)
 
         if prompt_open_in_new_window(
             self.frame,
@@ -5355,7 +5363,7 @@ class MainFrame(
             self._set_status("DAISY export failed")
             return
 
-        self._announce(f"Exported DAISY talking book {book_dir.name}")
+        self._report_written("Export", "Exported the DAISY talking book", book_dir)
         self._set_status(f"Exported DAISY talking book to {book_dir / NCC_FILENAME}")
 
     def run_batch_conversion_wizard(self) -> None:
@@ -5417,18 +5425,8 @@ class MainFrame(
                 )
 
         def _on_done(result: object) -> None:
-            if not isinstance(result, _BatchReport):
-                return
-            self._announce(
-                f"Batch conversion complete: {result.converted} of {result.total} files in "
-                f"{result.duration_seconds:.1f} seconds. "
-                f"{result.failed} failed, {result.skipped} skipped."
-            )
-            self._set_status(
-                f"Batch conversion complete: {result.converted} converted, "
-                f"{result.failed} failed, {result.skipped} skipped."
-            )
-            self.show_help_status_page()
+            if isinstance(result, _BatchReport):  # said and kept, no window (FUX-04)
+                self._report_batch_conversion(result)
 
         self._run_background_task(
             "Batch conversion",
@@ -6804,16 +6802,6 @@ class MainFrame(
         # into the cached index so backlinks/search/tags reflect the save immediately.
         self._vault_on_document_saved(path)
 
-    def save_all_files(self) -> None:
-        for index in range(len(self._document_tabs)):
-            self._select_tab(index)
-            if self.document.modified:
-                self.save_file()
-                if self.document.modified:
-                    self._set_status("Save all cancelled")
-                    return
-        self._set_status("Saved all documents")
-
     def reload_from_disk(self) -> None:
         if self.document.path is None:
             self._set_status("No file to reload")
@@ -7003,7 +6991,7 @@ class MainFrame(
                 pass
         self._refresh_title()
         self._refresh_sessions_menu()
-        self._set_status(f"Saved as {target.name} ({format_label_for_path(target)})")
+        self._set_status(f"Saved as {place_of(target)} ({format_label_for_path(target)})")
         self._announce_save_as_conversion(target)
 
     #: Suffixes whose file cannot hold real formatting: saving a rich document
@@ -7056,7 +7044,7 @@ class MainFrame(
             return
         label = format_label_for_path(target)
         self._announce(
-            f"Saved as {target.name}, {label} format. You are still editing "
+            f"Saved as {place_of(target)}, {label} format. You are still editing "
             f"QUILL text; each save converts it to {label}."
         )
 
@@ -7131,7 +7119,7 @@ class MainFrame(
             _write_plain()
             sidecar = write_illumination(target, build_illumination(text))
             self._set_status(
-                f"Saved plain text to {target.name} with an Illumination ({sidecar.name})"
+                f"Saved plain text to {place_of(target)} with an Illumination ({sidecar.name})"
             )
 
         def _drop_and_clear_sidecar() -> None:
@@ -7142,11 +7130,11 @@ class MainFrame(
                     stale.unlink()
             except OSError:
                 pass
-            self._set_status(f"Saved plain text to {target.name} (formatting not kept)")
+            self._set_status(f"Saved plain text to {place_of(target)} (formatting not kept)")
 
         if not markup_has_formatting(text):
             _write_plain()
-            self._set_status(f"Saved plain text to {target.name}")
+            self._set_status(f"Saved plain text to {place_of(target)}")
             return True
 
         policy = str(getattr(self.settings, "plain_text_with_formatting", "ask"))
@@ -8701,14 +8689,16 @@ class MainFrame(
             if target is None:
                 self._set_status("No previous structure")
                 return
-            label = "Moved to previous structure"
         else:
             target = next_structure_position(text, cursor, markup_kind)
             if target is None:
                 self._set_status("No next structure")
                 return
-            label = "Moved to next structure"
-        self._jump_to(target, label)
+        # Name what was reached (FUX-14): a heading as heading navigation says
+        # it, a bracket by name, with the line and column like every browse move.
+        said, heading = describe_structure_target(text, target, markup_kind)
+        self._jump_to(target, said, announce=False)
+        self._announce_navigation_move(said, target, latch_structure=heading)
 
     def navigate_next_region(self) -> None:
         self._cycle_region(reverse=False)
@@ -9338,12 +9328,13 @@ class MainFrame(
             return None
         return selected_payload
 
-    def _jump_to(self, position: int, message: str) -> None:
+    def _jump_to(self, position: int, message: str, *, announce: bool = True) -> None:
         self._record_location_before_jump()
         self._move_point(position)
         self.editor.SetFocus()
         self._location_ring.record(position)
-        self._set_status(message)
+        if announce:
+            self._set_status(message)
 
     def _record_location_before_jump(self) -> None:
         self._location_ring.record(self.editor.GetInsertionPoint())

@@ -558,6 +558,11 @@ paused, not lost</h2>
 <p>If you move to another field, another program or another window while
 dictating, QUILL Transcribe stops typing. It does not follow you. You
 hear “Dictation paused” and the reason.</p>
+<p>The field you started in is known by its program, its window and the
+field itself, never by what it says. The same program closed and opened
+again counts as a different place, and so does a moment when Windows
+cannot say which field has the focus: in both cases the words are held,
+not typed.</p>
 <p>While it is paused, it keeps listening and holds what you say.
 Nothing is typed anywhere. Then you choose:</p>
 <ul>
@@ -2090,8 +2095,10 @@ any other model, or for an English recording, the box is
 unavailable.</p>
 <p>When it finishes, you hear how long the recording was and how many
 words came out. Open <strong>Notifications</strong> (Ctrl+Shift+N) and
-press Enter on the transcript to review it. The <strong>Review
-Transcript</strong> window shows it read-only, with:</p>
+press Enter on the transcript to review it. If you stop it, you hear
+“Stopped transcribing meeting.mp3. No transcript was kept; transcribe it
+again to start over.” The <strong>Review Transcript</strong> window
+shows it read-only, with:</p>
 <ul>
 <li><strong>Type into a Field</strong> - types the transcript, or only
 the part you selected, into another program. QUILL Transcribe says
@@ -2099,8 +2106,11 @@ the part you selected, into another program. QUILL Transcribe says
 once you are there, with the same checks as dictation;</li>
 <li><strong>Copy All</strong> - puts the whole transcript on the
 clipboard;</li>
-<li><strong>Save As</strong> - saves it as a text file where you
-choose;</li>
+<li><strong>Save As</strong> - saves it as a text file where you choose.
+You hear the file and its folder, for example “Saved meeting.txt in
+Documents.”, and the same sentence stays in <strong>Activity</strong>
+(Shift+F9), where <strong>Open Folder</strong> shows you the file.
+<strong>Repeat Last Result</strong> (F9) says it again;</li>
 <li><strong>Open in QUILL</strong> - opens it in QUILL to edit.</li>
 </ul>
 <p>Nothing is typed, copied or saved unless you choose it.</p>
@@ -2138,6 +2148,12 @@ Transcribe opens its window to set up, it does not start dictating;
 finish setting up, go back to the field and press Ctrl+F11 again.</li>
 <li>If Quill Inkwell is dictating, you hear that Inkwell is dictating,
 and nothing starts.</li>
+<li>If you move away from the box before QUILL Transcribe is ready – to
+another box or another program – dictation does not start anywhere else.
+You hear “Dictation did not start, because you moved away from the box
+you pressed Dictate Here in; go back to that box and press Dictate Here
+again.” The box is known by its program, its window and the box itself,
+never by what it says.</li>
 </ul>
 <p>Your words, commands and never-type list all work as usual, because
 it is QUILL Transcribe doing the dictating. Stop with your start and
@@ -2524,6 +2540,14 @@ app.</p>
 <tr>
 <td>What’s new</td>
 <td>Ctrl+Shift+F1</td>
+</tr>
+<tr>
+<td>Activity: this session’s results, with Open Folder (Help menu)</td>
+<td>Shift+F9</td>
+</tr>
+<tr>
+<td>Repeat Last Result (Help menu)</td>
+<td>F9</td>
 </tr>
 <tr>
 <td>Check for updates</td>
