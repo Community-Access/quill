@@ -18,19 +18,30 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-__all__ = ["guard_preview"]
+__all__ = ["STOPPED", "guard_preview"]
 
 
-def guard_preview(window: Any, stop: Callable[[], bool]) -> None:
+#: Said when Escape stops a preview: focus does not move, so the screen reader
+#: says nothing, and without it Escape would seem to have done nothing at all.
+STOPPED = "Preview stopped."
+
+
+def guard_preview(
+    window: Any, stop: Callable[[], bool], announce: Callable[[str], None] | None = None
+) -> None:
     """Escape stops a playing preview without closing *window*; closing or
     leaving it stops it.
 
     *stop* stops the preview and answers True when something was playing.
+    *announce* (the app's announcement service, so it is brailled too) says
+    :data:`STOPPED` when Escape stopped one.
     """
     import wx
 
     def on_key(event: Any) -> None:
         if event.GetKeyCode() == wx.WXK_ESCAPE and not event.HasAnyModifiers() and stop():
+            if announce is not None:
+                announce(STOPPED)
             return
         event.Skip()
 

@@ -134,7 +134,7 @@ def test_escape_stops_the_preview_and_leaves_the_window_open(wx_session_app) -> 
         assert not sequence.playing
         assert reached == []  # Escape stopped the preview and went no further
         clock.run_all()
-        assert said == []
+        assert said == ["Preview stopped."]  # said, since focus does not move
         _escape(dialog)  # with nothing playing, Escape is the window's again
         assert reached == [True]
     finally:

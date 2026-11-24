@@ -158,7 +158,7 @@ class PreviewSequence:
         """Stop on Escape (without closing *window*) and when *window* closes."""
         from quill.ui.preview_guard import guard_preview
 
-        guard_preview(window, self.stop)
+        guard_preview(window, self.stop, self._say)
 
     def _run(self, step: PreviewStep) -> None:
         if step.sound:
