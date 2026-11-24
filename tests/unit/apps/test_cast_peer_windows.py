@@ -258,6 +258,108 @@ def test_sound_enhancements_is_a_peer_whose_apply_keeps_it_open(cast) -> None:
     assert not window.frame.IsShown()
 
 
+def _record_enhancements(cast, monkeypatch) -> list[dict]:
+    heard: list[dict] = []
+    monkeypatch.setattr(
+        cast._podcast_controller, "set_enhancement", lambda **values: heard.append(values)
+    )
+    return heard
+
+
+def test_sound_enhancements_is_heard_before_apply_and_saves_nothing(cast, monkeypatch) -> None:
+    """FUX-08: a change is heard on the episode a moment after it moves."""
+    heard = _record_enhancements(cast, monkeypatch)
+    cast.open_podcast_sound_enhancements()
+    editor = cast._sound_enhancements_window._editor
+    before = cast._podcast_library.settings.eq_bass_db
+    editor._bass_slider.SetValue(editor._bass_slider.GetValue() + 4)
+    editor._compressor_check.SetValue(True)
+    editor._emit_live_preview()  # what the debounce timer does once a change settles
+    assert heard[-1]["bass_db"] == editor._current_band_values()[0]
+    assert heard[-1]["compressor_enabled"]  # on, at the podcast's own level
+    assert cast._podcast_library.settings.eq_bass_db == before  # nothing saved
+    assert not any(line.startswith("Sound Enhancements for") for line in cast.said)
+
+
+def test_closing_sound_enhancements_puts_back_what_was_not_applied(cast, monkeypatch) -> None:
+    heard = _record_enhancements(cast, monkeypatch)
+    cast.open_podcast_sound_enhancements()
+    window = cast._sound_enhancements_window
+    editor = window._editor
+    opened_with = editor._current_band_values()[0]
+    editor._bass_slider.SetValue(editor._bass_slider.GetValue() + 4)
+    editor._emit_live_preview()
+    _escape(window.frame)
+    assert not window.frame.IsShown()
+    assert heard[-1]["bass_db"] == opened_with  # Close put it back
+    heard.clear()
+    cast.open_podcast_sound_enhancements()
+    _escape(window.frame)
+    assert heard == []  # nothing heard, nothing to put back
+
+
+def test_a_change_during_a_reload_waits_for_it(cast, monkeypatch) -> None:
+    """Stepping a slider a press at a time must not reload again mid-reload:
+    that reload would come up paused, or from the start of the episode."""
+    from quill.ui.podcasts import sound_enhance_window as module
+    from quill.ui.podcasts.player_controller import PodcastPlayerState
+
+    heard = _record_enhancements(cast, monkeypatch)
+    later: list[tuple] = []
+    monkeypatch.setattr(
+        module.wx, "CallLater", lambda _ms, fn, *a: later.append((fn, a)) or object()
+    )
+    cast.open_podcast_sound_enhancements()
+    editor = cast._sound_enhancements_window._editor
+    state = cast._podcast_controller.state
+    monkeypatch.setattr(state, "state", PodcastPlayerState.LOADING)
+    editor._bass_slider.SetValue(editor._bass_slider.GetValue() + 1)
+    editor._emit_live_preview()
+    editor._bass_slider.SetValue(editor._bass_slider.GetValue() + 1)
+    editor._emit_live_preview()
+    assert heard == [] and len(later) == 1  # one wait, holding the latest change
+    monkeypatch.setattr(state, "state", PodcastPlayerState.PLAYING)
+    fn, args = later.pop()
+    fn(*args)
+    assert [values["bass_db"] for values in heard] == [editor._current_band_values()[0]]
+
+
+def test_closing_says_that_changes_were_put_back(cast, monkeypatch) -> None:
+    _record_enhancements(cast, monkeypatch)
+    cast.open_podcast_sound_enhancements()
+    window = cast._sound_enhancements_window
+    window._editor._bass_slider.SetValue(window._editor._bass_slider.GetValue() + 2)
+    window._editor._emit_live_preview()
+    _escape(window.frame)
+    assert "Changes not applied were put back." in cast.said
+
+
+def test_another_podcast_playing_is_not_changed(cast, monkeypatch) -> None:
+    heard = _record_enhancements(cast, monkeypatch)
+    cast.open_podcast_sound_enhancements()
+    window = cast._sound_enhancements_window
+    monkeypatch.setattr(
+        cast, "_podcast_enhance_context_show", lambda: type("Show", (), {"id": "other"})()
+    )
+    window._editor._emit_live_preview()
+    assert heard == []
+
+
+def test_closing_after_apply_keeps_what_was_applied(cast, monkeypatch) -> None:
+    heard = _record_enhancements(cast, monkeypatch)
+    cast.open_podcast_sound_enhancements()
+    window = cast._sound_enhancements_window
+    editor = window._editor
+    editor._bass_slider.SetValue(editor._bass_slider.GetValue() + 4)
+    applied = editor._current_band_values()[0]
+    editor._emit_live_preview()
+    editor._on_apply(None)
+    count = len(heard)
+    _escape(window.frame)
+    assert len(heard) == count  # Close did not undo the Apply
+    assert cast._podcast_library.settings.eq_bass_db == applied
+
+
 def test_every_folder_name_is_asked_through_the_one_prompt(cast, monkeypatch) -> None:
     """qc.md section 6: the six raw New Folder / Rename Folder prompts are one."""
     import re
