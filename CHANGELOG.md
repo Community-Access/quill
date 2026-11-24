@@ -2,6 +2,18 @@
 
 ## 1.0.0
 
+### Next Structure and browse letters say what they reached (2026-11-23)
+
+- **Next Structure and Previous Structure** (Alt+Down, Alt+Up) said only "Moved
+  to next structure". They now name the stop: a heading the way Next Heading
+  says it, "Heading 2, 3 of 12: Installing", or a bracket by name, "Opening
+  brace", then the line and column. A bracket on a heading line is named as
+  the bracket, not the heading again.
+- **Quick Nav letters say the kind and the place**, "Link, 3 of 12", instead of
+  "Moved to next link". The heading-level digits 1 to 6 say the heading itself,
+  title included, and the caret's heading cue is not said a second time.
+- FUX-14, app by app: `docs/design/fux-14-adoption.md`.
+
 ### Scribe for Documents: the voices are there, and Play Sample answers (2026-11-23)
 
 In Convert with Scribe for Documents, in QUILL and QUILL Lite:

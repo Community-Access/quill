@@ -2927,3 +2927,65 @@ def test_describe_indent_depth_says_so_when_there_is_none() -> None:
     frame.describe_indent_depth()
 
     assert frame._status_message == "No indentation"
+
+
+# -- FUX-14: a structural move names what it reached (2026-11-23) --------------
+
+
+def test_next_structure_names_the_heading_it_reached() -> None:
+    """It said "Moved to next structure", which only says the key worked."""
+    text = "intro\n## Heading\nbody"
+    frame = _build_frame(text, insertion_point=0)
+    said: list[str] = []
+    frame._quill_feedback = lambda message, **_kw: said.append(message)  # type: ignore[method-assign]
+    frame._effective_markup_kind = lambda: "markdown"  # type: ignore[method-assign]
+    frame.settings.browse_mode_move_detail = "position"
+    frame.navigate_next_structure()
+    assert said == ["Heading 2, 1 of 1: Heading at line 2, column 1"]
+
+
+def test_next_structure_names_a_bracket() -> None:
+    text = "alpha (one)"
+    frame = _build_frame(text, insertion_point=0)
+    said: list[str] = []
+    frame._quill_feedback = lambda message, **_kw: said.append(message)  # type: ignore[method-assign]
+    frame._effective_markup_kind = lambda: "markdown"  # type: ignore[method-assign]
+    frame.settings.browse_mode_move_detail = "line"
+    frame.navigate_next_structure()
+    assert said == ["Opening parenthesis at line 1"]
+
+
+def test_a_browse_letter_says_its_place_not_that_it_moved() -> None:
+    text = "See [a](x) and [b](y) and [c](z)."
+    frame = _build_frame(text, insertion_point=0)
+    said: list[str] = []
+    frame._quill_feedback = lambda message, **_kw: said.append(message)  # type: ignore[method-assign]
+    frame.settings.browse_mode_move_detail = "line"
+    frame._browse_jump_to_positions([4, 15, 26], "link", reverse=False)
+    frame._browse_jump_to_positions([4, 15, 26], "link", reverse=False)
+    assert said == ["Link, 1 of 3 at line 1", "Link, 2 of 3 at line 1"]
+
+
+def test_a_heading_level_letter_says_the_title() -> None:
+    text = "# Top\nIntro\n## Child\nBody\n## Second\n"
+    frame = _build_frame(text, insertion_point=0)
+    said: list[str] = []
+    frame._quill_feedback = lambda message, **_kw: said.append(message)  # type: ignore[method-assign]
+    frame._browse_navigation_context = lambda: {"markup_kind": "markdown"}  # type: ignore[method-assign]
+    frame.sync_structure_announcer = lambda: None  # type: ignore[method-assign]
+    frame.settings.browse_mode_move_detail = "line"
+    frame._browse_jump_to_positions(
+        [text.index("## Child"), text.index("## Second")],
+        "heading level 2",
+        reverse=False,
+        heading_level=2,
+    )
+    assert said == ["Heading 2, 2 of 3: Child at line 3"]  # H's count, among all headings
+
+
+def test_a_bracket_on_a_heading_line_is_named_as_the_bracket() -> None:
+    from quill.core.structure_nav import describe_structure_target
+
+    text = "## Install (Windows)\n"
+    said, heading = describe_structure_target(text, text.index("("), "markdown")
+    assert (said, heading) == ("Opening parenthesis", False)

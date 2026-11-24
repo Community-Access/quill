@@ -225,6 +225,7 @@ from quill.core.spoken_echo import (
 from quill.core.sticky_notes import save_sticky_note
 from quill.core.structure_announce import describe_heading_arrival
 from quill.core.structure_nav import (
+    describe_structure_target,
     find_matching_bracket,
     next_structure_position,
     previous_structure_position,
@@ -8700,14 +8701,16 @@ class MainFrame(
             if target is None:
                 self._set_status("No previous structure")
                 return
-            label = "Moved to previous structure"
         else:
             target = next_structure_position(text, cursor, markup_kind)
             if target is None:
                 self._set_status("No next structure")
                 return
-            label = "Moved to next structure"
-        self._jump_to(target, label)
+        # Name what was reached (FUX-14): a heading as heading navigation says
+        # it, a bracket by name, with the line and column like every browse move.
+        said, heading = describe_structure_target(text, target, markup_kind)
+        self._jump_to(target, said, announce=False)
+        self._announce_navigation_move(said, target, latch_structure=heading)
 
     def navigate_next_region(self) -> None:
         self._cycle_region(reverse=False)
@@ -9337,12 +9340,13 @@ class MainFrame(
             return None
         return selected_payload
 
-    def _jump_to(self, position: int, message: str) -> None:
+    def _jump_to(self, position: int, message: str, *, announce: bool = True) -> None:
         self._record_location_before_jump()
         self._move_point(position)
         self.editor.SetFocus()
         self._location_ring.record(position)
-        self._set_status(message)
+        if announce:
+            self._set_status(message)
 
     def _record_location_before_jump(self) -> None:
         self._location_ring.record(self.editor.GetInsertionPoint())

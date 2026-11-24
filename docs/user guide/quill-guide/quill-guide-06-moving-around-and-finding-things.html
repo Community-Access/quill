@@ -578,8 +578,11 @@ between headings only: the <code>#</code>, <code>##</code> and
 <code>###</code> lines in Markdown, and real headings elsewhere.</li>
 <li><strong>Next Structure</strong> (<code>Alt+Down</code>) and
 <strong>Previous Structure</strong> (<code>Alt+Up</code>) move between
-every structural element: headings, and also list items, code blocks,
-tables and block quotes. This steps you through the full outline.</li>
+headings and the brackets <code>(</code>, <code>[</code> and
+<code>{</code> and their partners, which is where code and nested text
+open and close. Each stop says what it is: a heading the way Next
+Heading says it (“Heading 2, 3 of 12: Installing”), a bracket by name
+(“Opening brace”), then the line and column.</li>
 <li><strong>Next Region</strong> (<code>F6</code>) and <strong>Previous
 Region</strong> (<code>Shift+F6</code>) cycle the larger parts of the
 window.</li>
@@ -907,9 +910,12 @@ are the up-to-date reference.</p>
 <li>If there is nothing of that kind to move to, QUILL tells you.</li>
 <li>Find and replace commands take you back to normal editing on their
 own.</li>
-<li>After each move QUILL tells you where you landed. <strong>QUILL
-browse move detail</strong>, in <strong>Settings &gt; Navigation and
-QUILL Key</strong>, sets how much it says: <em>Line and column</em> (the
+<li>After each move QUILL tells you what you landed on and its place,
+once: “Link, 3 of 12”, or for <code>1</code> to <code>6</code> the
+heading itself, “Heading 2, 4 of 9: Installing”, counted among all the
+headings as <code>H</code> counts them. <strong>QUILL browse move
+detail</strong>, in <strong>Settings &gt; Navigation and QUILL
+Key</strong>, sets how much it says: <em>Line and column</em> (the
 default), <em>Line only</em> or <em>Say nothing</em>.</li>
 <li><strong>Preload QUILL browse cache in background</strong>, on the
 same page, is on by default. If you turn it off, QUILL builds the cache

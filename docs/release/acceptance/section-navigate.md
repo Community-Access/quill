@@ -137,7 +137,9 @@ block), a coarser step than a line and finer than a heading.
 
 **You should see and hear**
 - The caret advances to each successive structural element and QUILL announces
-  "Moved to next structure at line N, column C". At the end a further press reports
+  what it reached, then the line and column: a heading as Next Heading says it
+  ("Heading 2, 3 of 12: Title at line N, column C"), a bracket by name
+  ("Opening brace at line N, column C"). At the end a further press reports
   **"No next structure"**; the caret holds.
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`

@@ -39,6 +39,47 @@ def previous_structure_position(text: str, cursor: int, markup_kind: str) -> int
     return None
 
 
+#: What Next and Previous Structure (Alt+Down, Alt+Up) call a bracket it lands
+#: on. "Moved to next structure" said only that the key worked (FUX-14 audit).
+BRACKET_NAMES: dict[str, str] = {
+    "(": "Opening parenthesis",
+    ")": "Closing parenthesis",
+    "[": "Opening bracket",
+    "]": "Closing bracket",
+    "{": "Opening brace",
+    "}": "Closing brace",
+}
+
+
+def describe_structure_target(text: str, position: int, markup_kind: str) -> tuple[str, bool]:
+    """What a Next or Previous Structure landing says, and whether it is a heading.
+
+    A heading says what heading navigation says (level, place and title), so
+    the caller latches the caret cue and it is not said twice. A bracket is
+    named; anything else in the outline (a YAML key) says its title. The caller
+    adds the line and column the way every other browse move does.
+    """
+    from quill.core.markdown_sections import heading_context_at
+    from quill.core.structure_announce import describe_heading_arrival
+
+    # A bracket first: on "## Install (Windows)" the stop at "(" is the
+    # parenthesis, not the heading the previous stop already named.
+    if 0 <= position < len(text) and text[position] in BRACKET_NAMES:
+        return BRACKET_NAMES[text[position]], False
+    at_line_start = position == 0 or text[position - 1 : position] == "\n"
+    if markup_kind in {"markdown", "html"} and at_line_start:
+        context = heading_context_at(text, position, markup_kind)
+        if context is not None:
+            arrival = describe_heading_arrival(
+                context.level, context.title, ordinal=context.ordinal, total=context.total
+            )
+            return arrival, True
+    for entry in extract_outline_entries(text, markup_kind):
+        if entry.position == position:
+            return entry.title or "Structure", False
+    return "Structure", False
+
+
 def _structure_markers(text: str, markup_kind: str) -> list[int]:
     markers = {entry.position for entry in extract_outline_entries(text, markup_kind)}
     markers.update(index for index, char in enumerate(text) if char in "()[]{}")
