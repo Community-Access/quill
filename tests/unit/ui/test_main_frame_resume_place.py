@@ -53,11 +53,17 @@ class _Host(BookmarksFoldsMixin):
 
 
 def _reopen(
-    store: DocumentMemory, path: Path, text: str, monkeypatch, *, active: bool = True
+    store: DocumentMemory,
+    path: Path,
+    text: str,
+    monkeypatch,
+    wx_call_after,
+    *,
+    active: bool = True,
 ) -> _Host:
     import wx
 
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *args: fn(*args))
+    wx_call_after()  # inline
     monkeypatch.setattr(wx, "CallLater", lambda _ms, fn, *args: fn(*args))
     host = _Host(store, path, text, modified=False)
     host.tab = SimpleNamespace(document=host.document, editor=host.editor)
@@ -67,7 +73,9 @@ def _reopen(
     return host
 
 
-def test_quill_finds_the_sentence_after_an_edit_above(tmp_path: Path, monkeypatch) -> None:
+def test_quill_finds_the_sentence_after_an_edit_above(
+    tmp_path: Path, monkeypatch, wx_call_after
+) -> None:
     store = DocumentMemory.load(tmp_path / DOCUMENT_MEMORY_FILENAME)
     doc = tmp_path / "doc.txt"
     host = _Host(store, doc, TEXT, modified=False)
@@ -75,13 +83,13 @@ def test_quill_finds_the_sentence_after_an_edit_above(tmp_path: Path, monkeypatc
     host._remember_active_caret()
 
     edited = "A heading added later.\n\n" + TEXT
-    reopened = _reopen(DocumentMemory.load(store.path), doc, edited, monkeypatch)
+    reopened = _reopen(DocumentMemory.load(store.path), doc, edited, monkeypatch, wx_call_after)
 
     assert reopened.editor.caret == edited.index("line 18")
     assert reopened.said == []
 
 
-def test_quill_says_when_the_place_is_gone(tmp_path: Path, monkeypatch) -> None:
+def test_quill_says_when_the_place_is_gone(tmp_path: Path, monkeypatch, wx_call_after) -> None:
     store = DocumentMemory.load(tmp_path / DOCUMENT_MEMORY_FILENAME)
     doc = tmp_path / "doc.txt"
     host = _Host(store, doc, TEXT, modified=False)
@@ -89,7 +97,7 @@ def test_quill_says_when_the_place_is_gone(tmp_path: Path, monkeypatch) -> None:
     host._remember_active_caret()
 
     other = "".join(f"Rewritten {n}.\n" for n in range(30))
-    reopened = _reopen(DocumentMemory.load(store.path), doc, other, monkeypatch)
+    reopened = _reopen(DocumentMemory.load(store.path), doc, other, monkeypatch, wx_call_after)
 
     assert reopened.editor.caret == other.index("Rewritten 4.")
     assert reopened.said == [
@@ -98,7 +106,7 @@ def test_quill_says_when_the_place_is_gone(tmp_path: Path, monkeypatch) -> None:
 
 
 def test_quill_says_it_in_a_background_tab_only_when_you_arrive(
-    tmp_path: Path, monkeypatch
+    tmp_path: Path, monkeypatch, wx_call_after
 ) -> None:
     store = DocumentMemory.load(tmp_path / DOCUMENT_MEMORY_FILENAME)
     doc = tmp_path / "doc.txt"
@@ -107,7 +115,9 @@ def test_quill_says_it_in_a_background_tab_only_when_you_arrive(
     host._remember_active_caret()
 
     other = "".join(f"Rewritten {n}.\n" for n in range(30))
-    reopened = _reopen(DocumentMemory.load(store.path), doc, other, monkeypatch, active=False)
+    reopened = _reopen(
+        DocumentMemory.load(store.path), doc, other, monkeypatch, wx_call_after, active=False
+    )
     assert reopened.said == []
 
     reopened.active = reopened.tab
