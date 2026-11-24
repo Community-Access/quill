@@ -43,6 +43,7 @@ __all__ = [
     "MENU_NEEDS",
     "Need",
     "bundled_groups",
+    "bundled_media_tools",
     "bundled_tools",
 ]
 
@@ -54,6 +55,9 @@ class Need:
     groups: tuple[str, ...] = ()
     tools: tuple[str, ...] = ()
     why: str = ""
+    #: Media tools (ffmpeg): not runtime tools, because each app stages its own
+    #: copy (quill.apps.lite REQUIRED_COMPONENTS, quilllite.iss ToolFfmpeg).
+    media: tuple[str, ...] = ()
 
 
 #: Groups every copy carries whatever is switched on: the window, the screen
@@ -146,8 +150,11 @@ MENU_NEEDS: dict[str, Need] = {
     "&Tools|WordPress|M&ore Media": Need(
         ("live-dictation", "audio-files"),
         why="Captions for Video and Transcript for Audio read the recording and "
-        "transcribe it with dictation's engines. Make a Listening Version also "
-        "needs ffmpeg, which neither QUILL Lite download carries.",
+        "transcribe it with dictation's engines. Make a Listening Version records "
+        "the page with the Windows voice (SAPI 5 through comtypes, a base "
+        "dependency; Read Aloud's other engines are QUILL's) and makes the MP3 "
+        "with ffmpeg, timing it with ffprobe (Jeff, 2026-11-23).",
+        media=("ffmpeg",),
     ),
     "&View": Need(
         ("windows-media", "github"),
@@ -231,3 +238,8 @@ def bundled_groups() -> tuple[str, ...]:
 def bundled_tools() -> tuple[str, ...]:
     """The runtime tools QUILL Lite's portable must carry in its tools folder."""
     return tuple(sorted({tool for need in _all_needs() for tool in need.tools}))
+
+
+def bundled_media_tools() -> tuple[str, ...]:
+    """The media tools both QUILL Lite downloads must carry (ffmpeg)."""
+    return tuple(sorted({tool for need in _all_needs() for tool in need.media}))

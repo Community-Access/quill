@@ -2,6 +2,18 @@
 
 ## 1.0.0
 
+### QUILL Lite makes listening versions of WordPress pages (2026-11-23)
+
+**Tools > WordPress > More Media > Make a Listening Version** now works in
+QUILL Lite, installed or portable. It reads your page aloud with your Windows
+voice, turns the recording into an MP3, uploads it and puts a player at the
+top of the page. QUILL Lite now ships FFmpeg, the part that makes the MP3,
+in both downloads, so nothing is downloaded when you first use it.
+
+If FFmpeg is missing from a copy of QUILL or QUILL Lite, the command now says
+so before anything is recorded, and says how to get it back. It used to
+record the page and then fail with a file error.
+
 ### QUILL Lite's portable copy does everything the installed one does (2026-11-23)
 
 The portable zip of QUILL Lite left out parts the installed copy has always

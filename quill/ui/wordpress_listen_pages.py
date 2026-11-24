@@ -67,6 +67,10 @@ class WordPressListenPages:
                 "listening version."
             )
             return
+        problem = self.listen_engines().speak_problem()
+        if problem:
+            self.host.announce(problem)
+            return
         stamp = ls.fingerprint(copy.title + " " + wp.plain_text(html_text))
         previous = copy.properties.get("listening_version") or {}
         if previous:

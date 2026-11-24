@@ -26,9 +26,14 @@
 #   .\scripts\build_release.ps1 [-Python <python.exe>] [-Iscc <path>]
 #                               [-SkipSharedRuntime] [-Sign]
 #
-# QUILL Lite uses no ffmpeg and no libmpv. -FfmpegDir/-LibmpvDir are still
-# accepted so an existing build command keeps working; they are unused here.
-# It does use five of the shared runtime's tools (Copilot, Codex, Node.js, the
+# QUILL Lite uses ffmpeg (and ffprobe) for one command, WordPress > More Media
+# > Make a Listening Version, which turns the recorded speech into an MP3
+# (2026-11-23). It stages the same pinned copy Radio and QUILL ship: into the
+# shared runtime's tools\ffmpeg for the installer, and into the portable's own
+# tools\ffmpeg. -FfmpegDir picks a vetted directory; without it the pinned
+# build\deps\ffmpeg is used. It uses no libmpv; -LibmpvDir is still accepted
+# so an existing build command keeps working, and is unused.
+# It also uses five of the shared runtime's tools (Copilot, Codex, Node.js, the
 # language servers and WordPress Playground): the installer gets them from the
 # runtime, and the portable zip carries its own copy in tools\, staged from the
 # same pinned build\deps cache (quill\core\lite\portable_needs.py says which
@@ -37,11 +42,8 @@
 
 param(
     [string]$Python = "",
-    # QUILL Lite's own payload bundles neither ffmpeg nor mpv, and the shared
-    # QuillVille Runtime no longer bundles them either -- the apps that declare
-    # them (Radio, Cast, Studio) stage them in themselves. Both switches are
-    # still accepted so an existing build command keeps working; they are simply
-    # unused here, which is exactly the 304 MB QUILL Lite stops installing.
+    # A vetted ffmpeg directory (ffmpeg.exe, ffprobe.exe); default: the pinned
+    # build\deps\ffmpeg from scripts\fetch_build_deps.py. libmpv is unused.
     [string]$FfmpegDir = "",
     [string]$LibmpvDir = "",
     [string]$Iscc = "",
@@ -148,6 +150,25 @@ if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVille
 # that catches it, and it runs whether or not the runtime was rebuilt here.
 Assert-QuillRuntimeHasModule -RuntimeDir $sharedRuntimeDist -Module "quill.apps.lite" -ProbeArgs "--check"
 
+# -- ffmpeg (Make a Listening Version), in both downloads ---------------------
+# quill.apps.lite REQUIRED_COMPONENTS = ("ffmpeg",), so QUILL Lite stages it the
+# way Radio and Cast do: the pinned, SHA-256-verified copy from
+# scripts\fetch_build_deps.py (never PATH), into the shared runtime for the
+# installer (quilllite.iss sets ToolFfmpeg) and into the portable below.
+if (-not $FfmpegDir) {
+    & $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") --only ffmpeg
+    if ($LASTEXITCODE -ne 0) { throw "Could not stage ffmpeg (see scripts/fetch_build_deps.py)." }
+    $FfmpegDir = Join-Path $QuillRepo "build\deps\ffmpeg"
+}
+if (-not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
+    throw "ffmpeg.exe not found in -FfmpegDir '$FfmpegDir'."
+}
+if (-not (Test-Path (Join-Path $FfmpegDir "ffprobe.exe"))) {
+    throw "ffprobe.exe not found in -FfmpegDir '$FfmpegDir' (it measures the listening version)."
+}
+. (Join-Path $QuillRepo "scripts\StageMediaTools.ps1")
+Stage-QuillMediaTools -RuntimeDist $sharedRuntimeDist -FfmpegDir $FfmpegDir
+
 # -- dictation models -------------------------------------------------------
 # Fetched from sherpa-onnx's releases and checked against the SHA-256 digests
 # pinned in quill/core/windows_dictation/engines.py; a mismatch fails the build.
@@ -176,13 +197,14 @@ if ($LASTEXITCODE -ne 0) { throw "Could not stage the portable's runtime tools (
 # NOT a PyInstaller onedir and NOT a stamped pythonw.exe. See build_portable.py
 # and docs/design/native-launcher-2026-07-24.md: genuine unmodified
 # python.exe/pythonw.exe + the native C launcher (QuillLite.exe) spawning
-# `pythonw.exe -m quill.apps.lite`. No ffmpeg, mpv or speech engines; the
-# runtime tools above go in its tools\.
+# `pythonw.exe -m quill.apps.lite`. ffmpeg and the runtime tools above go in
+# its tools\; no mpv and no speech engines.
 $appDir = Join-Path $repoRoot "dist\QuillLite"
 & $Python (Join-Path $QuillRepo "standalone\studio\scripts\build_portable.py") `
     --product quilllite `
     --out $appDir `
     --source-root $QuillRepo `
+    --ffmpeg-dir $FfmpegDir `
     --version $version
 if ($LASTEXITCODE -ne 0) { throw "Portable bundle build failed." }
 if (-not (Test-Path (Join-Path $appDir "QuillLite.exe"))) {
@@ -204,6 +226,11 @@ $portableModels = Join-Path $appDir "dictation-models"
 if (Test-Path $portableModels) { Remove-Item $portableModels -Recurse -Force }
 Copy-Item $modelsDir $portableModels -Recurse
 
+# FFmpeg ships with its licence: fail here, before anything is zipped or
+# compiled, if any ffmpeg.exe in the portable or the runtime payload lacks it.
+& $Python (Join-Path $QuillRepo "scripts\check_ffmpeg_notices.py") $appDir $sharedRuntimeDist
+if ($LASTEXITCODE -ne 0) { throw "A bundle ships ffmpeg.exe without its licence notices." }
+
 # -- code signing (payload) ---------------------------------------------------
 # Sign every exe/dll in the shared runtime and the portable app BEFORE they are
 # zipped or embedded in the installer. Opt-in via -Sign / QUILL_SIGN; else no-op.
@@ -222,19 +249,18 @@ Write-Host "Compressing portable bundle -> $zipPath ..."
 Complete-QuillDocsFolders -Python $Python -Root (Join-Path (Split-Path -Parent $PSScriptRoot) "dist") -QuillRepo $QuillRepo
 Compress-Archive -Path $appDir -DestinationPath $zipPath
 
-# -- strip staged media tools from the runtime payload -----------------------
-# QUILL Lite declares no media components, but the shared runtime dist is a
-# COMMUNAL work area: a media app's build (Radio, Studio, Cast) stages
-# ffmpeg/libmpv into its tools\ and leaves them there. Packed wholesale,
-# they cost this installer 304 MB for tools QUILL Lite can never call -- the
-# 2026-08-18 rebuild shipped exactly that because it ran after Radio's.
-# Stripping here makes build order irrelevant; a media app's own build
-# re-stages what it declares every time.
-foreach ($tool in @("ffmpeg", "mpv")) {
+# -- strip staged libmpv from the runtime payload -----------------------------
+# The shared runtime dist is a COMMUNAL work area: a media app's build (Radio,
+# Studio, Converter) stages libmpv into its tools\ and leaves it there. Packed
+# wholesale, it costs this installer 110 MB for a player QUILL Lite never
+# calls -- the 2026-08-18 rebuild shipped exactly that because it ran after
+# Radio's. ffmpeg stays: QUILL Lite declares it (staged above) since
+# 2026-11-23, and quilllite.iss packs only what ToolFfmpeg names.
+foreach ($tool in @("mpv")) {
     $staged = Join-Path $sharedRuntimeDist "tools\$tool"
     if (Test-Path $staged) {
         Remove-Item $staged -Recurse -Force
-        Write-Host "Stripped staged $tool from the runtime payload (QUILL Lite declares no media tools)."
+        Write-Host "Stripped staged $tool from the runtime payload (QUILL Lite does not declare it)."
     }
 }
 

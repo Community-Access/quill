@@ -11,8 +11,8 @@ is the part live dictation never needed: reading a file.
    Ogg Vorbis, Opus and MP3.
 2. **Windows Media Foundation** (:mod:`~quill.core.windows_dictation.media_foundation`),
    which every Windows has: MP3, M4A and AAC, MP4 sound, WMA, WAV and FLAC.
-3. **ffmpeg**, only where the program has one (QUILL does; QUILL Lite does
-   not), for anything the first two refused.
+3. **ffmpeg**, only where the program has one (QUILL does, and QUILL Lite
+   has since 2026-11-23), for anything the first two refused.
 
 So every format the dialog offers is read in both editors without ffmpeg; the
 third is a last resort for unusual files, never a requirement.

@@ -153,6 +153,7 @@ MEDIA_TOOL_DEFINES = {
     "standalone/cast/installer/quill-cast-shared.iss": {"ToolFfmpeg"},
     "standalone/converter/installer/quill-converter.iss": {"ToolFfmpeg", "ToolMpv"},
     "standalone/studio/installer/quill-audio-studio.iss": {"ToolFfmpeg", "ToolMpv"},
+    "standalone/quilllite/installer/quilllite.iss": {"ToolFfmpeg"},
 }
 
 #: ``quill/apps/<module>.py`` for each of the above, so the two lists cannot
@@ -163,6 +164,7 @@ APP_MODULE_FOR_INSTALLER = {
     "standalone/cast/installer/quill-cast-shared.iss": "podcasts",
     "standalone/converter/installer/quill-converter.iss": "converter",
     "standalone/studio/installer/quill-audio-studio.iss": "studio",
+    "standalone/quilllite/installer/quilllite.iss": "lite",
 }
 
 _DEFINE_FOR_COMPONENT = {"ffmpeg": "ToolFfmpeg", "mpv": "ToolMpv"}
