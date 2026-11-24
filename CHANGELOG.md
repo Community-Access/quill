@@ -2,6 +2,21 @@
 
 ## 1.0.0
 
+### The first useful task has a clear beginning in Cast, Radio and Media Player (2026-11-24)
+
+An empty list is the first thing somebody new meets, and now it says how to
+fill it, by the menu's own label and the key you have for it, once and never
+as a tour. Quill Radio puts a line before an empty Favorite stations list:
+"No favorite stations yet. Browse Stations (Ctrl+B) finds one online, or Add
+Custom Station (Ctrl+N) takes its address", and opens with your cursor on
+it. QUILL Cast says what fills an empty place after
+its welcome is answered, instead of while the window was still being built,
+where nobody heard it, and Podcasts now names Add Podcast (Ctrl+N) and that
+finding one uses the internet. The Media Player opens on a line before Now
+Playing while nothing is open, naming Open File (Ctrl+O) and Open Folder as
+Book (Ctrl+Shift+O); before, focus fell to the Volume slider. The audit of
+every app is `docs/design/fux-09-adoption.md`.
+
 ### Dictation Settings: hear the feedback choices before keeping them (2026-11-24)
 
 Dictation Settings has a new button, **Hear Start, Phrase and Stop**, after
@@ -14,6 +29,7 @@ again, or Escape, to stop it; Escape then leaves the window open. If the app's
 sounds are off, or every choice is silent, it says so in one sentence. The
 same window is Dictation Settings in QUILL, QUILL Lite, QUILL Transcribe and
 Quill Inkwell.
+
 ### Voice and alert sound previews stop when you ask, and never change a setting (2026-11-24)
 
 - **Speech Settings, Preview Selected Voice.** Escape now stops a playing

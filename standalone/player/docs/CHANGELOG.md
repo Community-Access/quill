@@ -8,6 +8,15 @@ Quill Media Player runs the same player code as QUILL from the shared `quill` pa
 
 ## Unreleased
 
+### With nothing open, the player opens on what begins (2026-11-24)
+
+- With nothing open, every playback button is greyed, so focus fell to the
+  Volume slider. Now the player opens with focus on a **Getting started**
+  line before Now Playing, which says "Nothing is open yet. Open File (Ctrl+O)
+  plays a file, or Open Folder as Book (Ctrl+Shift+O) plays a folder in
+  order." It goes away when something opens, and from then on focus goes to
+  the playback controls as before (FUX-09).
+
 ### Move by bookmark, and hear where you landed once (2026-11-23)
 
 - **Navigation > Next Bookmark** (F2) and **Previous Bookmark** (Shift+F2) move

@@ -218,9 +218,9 @@ class PodcastsAppFrame(
         # which is exactly the failure Quill Radio's equivalent carries a
         # docstring about; this is that caller. Scheduled last so it opens over
         # a window everything else has already finished with.
-        from quill.ui.podcasts.first_run_dialog import maybe_run_first_run
+        from quill.ui.podcasts.launch_first_task import launch_first_task  # FUX-09 after it
 
-        self._when_cast_library_ready(lambda: maybe_run_first_run(self))
+        self._when_cast_library_ready(lambda: launch_first_task(self))
         # What this installation cannot do, said once. Every Cast feature that
         # needs FFmpeg fails by producing a plausible result -- an untrimmed
         # download, an analysis that finds no chapters -- so without this the

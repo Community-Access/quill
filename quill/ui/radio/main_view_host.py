@@ -158,6 +158,11 @@ class MainViewHost:
             focus()
             return
         # Favorites: the frame has owned that tree since the first version.
+        # Empty, its first-task line comes first (FUX-09).
+        from quill.ui.radio import favorites_first_task
+
+        if favorites_first_task.focus(self._app):
+            return
         tree = getattr(self._app, "_favorites_tree", None)
         if tree is not None:
             try:

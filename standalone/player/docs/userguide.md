@@ -43,9 +43,12 @@ A book you start in one continues in the other, at the same place.
 
 ### First run
 
-When the player opens, focus lands on the **playback controls**. Until you open a
-book, the Now Playing area reads "Open a file or a folder to begin." Press
-**Ctrl+O** to choose a file.
+Until you open something, the player opens with focus on a line called
+**Getting started**, just before Now Playing, which reads "Nothing is open
+yet. Open File (Ctrl+O) plays a file, or Open Folder as Book (Ctrl+Shift+O)
+plays a folder in order." Now Playing says "Nothing open." Press **Ctrl+O** to
+choose a file. The Getting started line goes away as soon as something opens. Once a book or file is open, the player opens with focus on
+the **playback controls**.
 
 ---
 

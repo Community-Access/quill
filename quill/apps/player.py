@@ -24,7 +24,7 @@ from typing import Any
 
 import wx
 
-from quill.apps import player_close
+from quill.apps import player_close, player_first_task
 from quill.apps.player_address import PlayerAddressMixin, hand_over, launch_arguments
 from quill.apps.player_ai import PlayerAiMixin
 from quill.apps.player_bookmarks import PlayerBookmarksMixin
@@ -172,6 +172,7 @@ class QuillMediaPlayerFrame(
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 
+        player_first_task.build(self, panel, root)  # FUX-09: first in the Tab order
         self._now_playing = wx.TextCtrl(
             panel, style=wx.TE_READONLY | wx.TE_MULTILINE, size=dip_size(panel, -1, 44)
         )
@@ -182,7 +183,7 @@ class QuillMediaPlayerFrame(
             "arrow through and copy. It fills in when you open something; "
             "nothing is typed here."
         )
-        self._now_playing.SetValue("Open a file or a folder to begin.")
+        player_first_task.attach(self)  # FUX-09: the first-task line follows it
         root.Add(self._now_playing, 0, wx.EXPAND | wx.ALL, 8)
 
         self._player = PlayerPanel(
@@ -279,8 +280,7 @@ class QuillMediaPlayerFrame(
         self._status_timer.Start(1_000)
 
     def _focus_initial_control(self) -> None:
-        # Focus opens on the transport (Play/Pause is inside PlayerPanel).
-        self._player.SetFocus()
+        player_first_task.focus_initial(self)  # what begins, or the transport (FUX-09)
 
     def _on_chapter_activate(self, event: Any) -> None:
         item = event.GetItem()

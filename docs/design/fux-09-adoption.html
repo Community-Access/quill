@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FUX-09: the first useful task, app by app</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="fux-09-the-first-useful-task-app-by-app">FUX-09: the first
+useful task, app by app</h1>
+<p><strong>Date:</strong> 2026-11-24 <strong>Feature:</strong> FUX-09,
+“Give the first useful task a clear beginning”, from the family UX plan
+(read it with <code>git show b7c6a1a04^:complete2.md</code>). It is held
+to <a
+href="family-interaction-contracts.md">family-interaction-contracts.md</a>.
+It is not one of the promoted pilots (<a
+href="2026-11-19-family-ux-pilots.md">2026-11-19-family-ux-pilots.md</a>,
+section 5), so the work is limited to gaps in what the family already
+has: no new tour, welcome, sample library or training product.
+<strong>Out of scope:</strong> Earshot and the macOS apps.</p>
+<p>The moment: “I installed this. What can I do successfully right now?”
+The first thing a new person meets is usually an empty list: no
+podcasts, no favorites, nothing queued, nothing open. That place should
+name the one or two actions that fill it, by the label the menu uses and
+the key that runs it, so a first useful result comes before the
+product’s vocabulary.</p>
+<h2 id="1-the-shared-pieces">1. The shared pieces</h2>
+<ul>
+<li><strong><code>quill/core/first_task.py</code></strong> (wx-free,
+strict-typed) builds the sentence:
+<code>first_task_line("No podcasts yet.", [NextAction("Add Podcast", command_id, "finds one by name")], key_for)</code>
+gives “No podcasts yet. Add Podcast (Ctrl+N) finds one by name.” The key
+is read from the app’s <em>live</em> bindings when the line is built, so
+a rebound key is the key that is said. An unbound command is named by
+its label alone, never with a key that does nothing. Two actions read as
+a choice (“A, or B.”). A third is a menu, not a beginning, and is left
+out.</li>
+<li><strong><code>quill/ui/empty_state_line.py</code></strong> is the wx
+side for a list that had nothing to say when empty.
+<code>EmptyStateLine</code> is one read-only, single-line text box,
+named “Getting started”, placed just before the list in the Tab order
+and shown only while the list is empty. It is on screen for
+magnification, in the Tab order for the keyboard, and read by the screen
+reader when it gets focus, so the app never has to speak it (GATE-13).
+It is single-line because a screen reader reads the whole value of a
+single-line edit on focus, but only the wrapped line under the caret of
+a multi-line one. Its name is set with <code>set_spoken_name</code>, the
+name Windows screen readers read. It keeps a normal border, so it looks
+like a field and shows a focus ring, and the whole sentence is its
+tooltip, for a magnifier view that cuts it short. When the list fills,
+the line hides, and if it had focus, focus goes to the list; if it was
+the window’s last focus when a dialog opened (Add Custom Station), focus
+goes to the list when the window is active again. Launch focus goes to
+the line while the list is empty, and to the list otherwise.</li>
+<li><strong>Where an app already has a place for the sentence</strong>,
+that place is used instead of a new control: Cast’s spoken arrival in an
+empty place, Radio’s Local Media window, and Weather Center’s status
+line. Cast’s arrival sentence is said, not shown; a line before its
+Podcasts tree is left for now (section 3).</li>
+</ul>
+<p>Rules every change keeps:</p>
+<ul>
+<li>The line is a genuine action: the menu’s label and the key that runs
+it.</li>
+<li>It is said once, or shown on one focusable control. It is never a
+modal, a tour, a welcome message or a reminder, and it never blocks the
+normal window.</li>
+<li>A first task that needs the internet, an account or a download says
+so in the same sentence (“over the internet”).</li>
+<li>Sample content stays marked as sample and separate from personal
+work.</li>
+</ul>
+<h2 id="2-app-by-app">2. App by app</h2>
+<p>“Launch focus” is where the keyboard lands when the main window first
+appears on a new installation. “Empty” is what an empty list says.
+<strong>Gap</strong> marks what was wrong before this work.</p>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Launch focus, and any first-run window</th>
+<th>Empty state before</th>
+<th>Gap</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>QUILL Cast</strong></td>
+<td>The landing place’s content (the Podcasts tree when the library is
+empty). A one-screen welcome, “Welcome to QUILL Cast”, with Add Your
+First Podcast, Done and Skip</td>
+<td>Each place has a sentence, said once on arrival: Podcasts said “No
+podcasts yet. Add Podcast in the Podcasts menu, or Import OPML, fills
+this.”</td>
+<td><strong>Gap</strong>: the arrival was made while the window was
+still being built, before it was on screen and before the welcome opened
+over it, so a new listener never heard it; after the welcome closed they
+were on a silent, empty tree. The sentence named no key, and named
+Import OPML, which the default Simple menus hide</td>
+<td>The launch is quiet while the window is built. After the welcome is
+answered (or at once, for somebody who has had it), focus goes to the
+landing place and its empty sentence is said once, 300 ms later so the
+screen reader’s own focus speech does not cut it, and only if Cast is
+still the window in front. Choosing Add Your First Podcast opens that
+window and nothing is said over it. Podcasts now says “No podcasts yet.
+Add Podcast (Ctrl+N), in the Podcasts menu, finds one by name or by its
+address, over the internet.”
+(<code>quill/ui/podcasts/launch_first_task.py</code>)</td>
+</tr>
+<tr>
+<td><strong>Quill Radio</strong></td>
+<td>The Favorite stations tree. A three-screen welcome on first run,
+whose keys come from the live keymap</td>
+<td>Nothing: the empty tree said “Favorite stations, tree view” and
+stopped. Radio’s Local Media already has its own empty sentence, and the
+Browse tree’s Favorites folder a placeholder row</td>
+<td><strong>Gap</strong>: after the welcome, or on any launch with no
+favorites, the listener landed on a silent, empty tree</td>
+<td>A line before the tree, shown while it has no folder or station,
+takes launch focus: “No favorite stations yet. Browse Stations (Ctrl+B)
+finds one online, or Add Custom Station (Ctrl+N) takes its address.” The
+keys are the live ones, and the line is rebuilt when a key is rebound.
+(<code>quill/ui/radio/favorites_first_task.py</code>)</td>
+</tr>
+<tr>
+<td><strong>Media Player</strong></td>
+<td>The transport panel, whose buttons are all greyed with nothing open,
+so focus fell to the Volume slider. No first-run window</td>
+<td>The Now Playing line read “Open a file or a folder to begin.”</td>
+<td><strong>Gap</strong>: focus on a volume slider is not a beginning,
+and the line named no command or key</td>
+<td>A line before Now Playing says “Nothing is open yet. Open File
+(Ctrl+O) plays a file, or Open Folder as Book (Ctrl+Shift+O) plays a
+folder in order.” and launch focus lands on it while nothing is open;
+Now Playing says “Nothing open.” The line goes when something opens, and
+focus goes to the transport as before.
+(<code>quill/apps/player_first_task.py</code>)</td>
+</tr>
+<tr>
+<td><strong>Converter</strong></td>
+<td>The “Files to convert” list. No first-run window</td>
+<td>Nothing: an empty list, no status text, nothing spoken. Convert on
+an empty queue opens “Add some files or a folder first.”</td>
+<td><strong>Gap</strong>: the first thing met is a silent empty
+list</td>
+<td>Planned in the next pull request: a line before the list, “Nothing
+to convert yet. Add Files (Ctrl+O), or Add Folder (Ctrl+Shift+O).”,
+taking launch focus while the queue is empty</td>
+</tr>
+<tr>
+<td><strong>Transcribe</strong></td>
+<td>The read-only Dictation state field. A one-page Set Up QUILL
+Transcribe window on first run, with the bundled Moonshine model, so
+nothing is downloaded</td>
+<td>Setup’s Finish says the dictation key; Skip says Setup is on the
+Help menu</td>
+<td><strong>Gap</strong>: neither names the place to try dictation
+safely, Practice Dictation, which types into its own scratch box and
+never into another app</td>
+<td>Planned: Finish and Skip name Practice Dictation (Ctrl+Shift+P) as
+the place to try it first</td>
+</tr>
+<tr>
+<td><strong>QUILL Studio</strong></td>
+<td>Set on a static text, “Ready - use the menu bar to begin”, which
+cannot take focus, so focus fell to the status bar cells. No first-run
+window</td>
+<td>That static text; the Your Books cell’s Enter goes back to it</td>
+<td><strong>Gap</strong>: focus lands nowhere useful and nothing names a
+first task</td>
+<td>Planned: a focusable line naming Narrate Documents (Ctrl+Shift+N)
+and the Studio Wizard (Ctrl+N) while there are no books, taking launch
+focus</td>
+</tr>
+<tr>
+<td><strong>QUILL</strong></td>
+<td>The “Personalise QUILL” wizard over an empty window on first run,
+then a blank document with focus in it</td>
+<td>A blank document needs no line: the editor is the task. With Start
+With No Document Open, the status bar said “No document open. Use File
+&gt; New or File &gt; Open.” while the window was still hidden</td>
+<td><strong>Gap</strong>: that sentence is lost before the window shows
+and names no key. The Recent Documents window’s “No recent documents”
+names no next action</td>
+<td>Planned: the no-document sentence names New (Ctrl+N) and Open
+(Ctrl+O) and is said once the window is up; the empty Recent Documents
+row names Open</td>
+</tr>
+<tr>
+<td><strong>QUILL Lite</strong></td>
+<td>The editor of a blank document. No first-run window, by design</td>
+<td>With every document closed, the window has no control at all and
+says nothing</td>
+<td><strong>Gap</strong>: nothing has focus and nothing names New, Open
+or Tutorials, although all three are on that menu bar</td>
+<td>Planned: when the last document closes, one sentence names New
+(Ctrl+N) and Open (Ctrl+O), said once and kept on the status bar</td>
+</tr>
+<tr>
+<td><strong>Inkwell</strong></td>
+<td>The Abbreviations list, already holding 15 built-in
+abbreviations</td>
+<td>A library is never empty on first launch. With every entry deleted,
+the list is empty and silent</td>
+<td><strong>Gap</strong> (small): an emptied library names no next
+action</td>
+<td>Planned: a line before an empty list naming Manage Abbreviations
+(Ctrl+M)</td>
+</tr>
+<tr>
+<td><strong>Beacon</strong></td>
+<td>The search box. No first-run window</td>
+<td>A new library’s results list is empty; “0 results” is spoken while
+the window is still being built</td>
+<td><strong>Gap</strong>: no next action named. Beacon is not released
+yet</td>
+<td>Planned: a line before an empty results list naming New Bookmark
+(Ctrl+N) and Import (Ctrl+I)</td>
+</tr>
+<tr>
+<td><strong>Social</strong></td>
+<td>Left to the default control. A demo account, “You (demo)”, is
+created whenever there are no accounts, so the timeline is never
+empty</td>
+<td>Each empty scope says “<Label>. 0 items, 0 unread.” The demo is
+explained only inside the F1 help window</td>
+<td><strong>Gap</strong>: the demo timeline is sample content and is not
+marked as sample where it is met; Add Account is named only in F1 help,
+without its key</td>
+<td>Planned: at launch, while the demo is the only account, the ready
+sentence says the timeline is a local demo and names Add Account
+(Ctrl+Shift+A)</td>
+</tr>
+<tr>
+<td><strong>Weather</strong></td>
+<td>The “Open Weather Center” button. No first-run window</td>
+<td>“Add a weather location to begin monitoring.” is spoken at launch;
+Weather Center’s status line reads “No locations yet. Choose Add
+Location to begin.”</td>
+<td><strong>Gap</strong>: neither names a key or says that finding a
+place uses the internet and covers US places only; launch focus is not
+on Add Location</td>
+<td>Planned: launch focus on Add Location while there is none, and both
+sentences name its key and the dependency</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-left-with-the-reason">3. Left, with the reason</h2>
+<ul>
+<li><strong>Cast: a line before an empty place, not only
+speech.</strong> Cast’s empty places say their sentence on arrival and
+keep it on the status bar; there is no line before the tree, so once the
+status bar moves on the sentence is not on screen. Putting an
+<code>EmptyStateLine</code> in Cast’s content pane, which swaps between
+a tree and a report list for thirteen places, is a change to that pane
+rather than to the first task.</li>
+<li><strong>Cast: Add Your First Podcast, then closed without
+adding.</strong> The Add Podcast window is a peer window with no “closed
+without adding” signal; closing it leaves the empty tree without its
+sentence until the next launch or the next arrival at Podcasts.</li>
+</ul>
+<h2 id="4-existing-pieces-reused-not-duplicated">4. Existing pieces
+reused, not duplicated</h2>
+<ul>
+<li><strong>Tutorials</strong> (Help &gt; Tutorials, Ctrl+Alt+F1) in
+QUILL, QUILL Lite, Radio, Cast, Transcribe and Weather, each with a
+first lesson (“Write and save your first document”, “Open a file, and
+give it back unchanged”, “Play your first station”, “The first hour”,
+“Your first dictation, in the Practice window”, “Add your first place”).
+The empty-state lines name the action itself rather than a lesson,
+because the action is the first useful result; the welcomes already
+point to Tutorials. “Your First Week” is the WordPress track and has no
+empty state of its own here.</li>
+<li><strong>The welcomes</strong> in Cast and Radio are kept as they
+are. They run once; the line is what is there every time after.</li>
+<li><strong>Practice Dictation</strong> in Transcribe is the scratch
+document the plan’s example asks for.</li>
+</ul>
+<h2 id="5-acceptance">5. Acceptance</h2>
+<ul>
+<li><strong>First-task wording is a genuine action with a keyboard path
+and visible label:</strong> every line names the menu’s label and its
+live key, and is on screen.</li>
+<li><strong>Sample content is clearly marked, removable and never mixed
+into personal work:</strong> no sample is added. Social’s existing demo
+is the one sample in the family; its marking is planned above.</li>
+<li><strong>Declining the sample leaves the normal app ready to
+use:</strong> the line never blocks anything; the list, menus and keys
+work as before.</li>
+<li><strong>First tasks name a network, account or download dependency
+before asking:</strong> Cast’s and Radio’s lines say “over the
+internet”; Player, Converter, Studio and Transcribe’s first tasks are
+local.</li>
+<li><strong>Observe time to first result and where new users
+stop:</strong> this needs people, not code. It belongs with the pilot
+observation in <a
+href="2026-11-19-family-ux-pilots.md">2026-11-19-family-ux-pilots.md</a>;
+no telemetry is added.</li>
+</ul>
+</main>
+</body>
+</html>

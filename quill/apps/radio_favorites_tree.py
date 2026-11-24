@@ -11,7 +11,7 @@ import wx
 
 from quill.core.list_follow import land
 from quill.core.radio.row_marks import RowMarks
-from quill.ui.radio import dial_tuning_ui, favorites_marks
+from quill.ui.radio import dial_tuning_ui, favorites_first_task, favorites_marks
 from quill.ui.radio.volume_keys import volume_chord_handled
 
 #: The keys favorites_marks answers: "." (and the keypad's), and Delete.
@@ -123,6 +123,7 @@ class RadioFavoritesTreeMixin:
         landing = land([repr(data) for data, _item in after], wanted, previous)
         if landing.index >= 0:
             tree.SelectItem(after[landing.index][1])
+        favorites_first_task.refresh(self)  # the line before an empty tree (FUX-09)
 
     def _selected_tree_data(self) -> tuple[str, str] | None:
         tree = getattr(self, "_favorites_tree", None)

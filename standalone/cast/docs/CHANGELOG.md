@@ -4,6 +4,19 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+### An empty library says how to fill it, after the welcome (2026-11-24)
+
+The sentence an empty Podcasts place says was spoken while the window was
+still being built, before it was on screen and before the welcome opened
+over it, so nobody new ever heard it, and closing the welcome left you on a
+silent, empty tree. Now Cast waits: once the welcome is answered (or at once,
+if you have had it), your cursor is on the place Cast opened on, and an empty
+place says once what fills it. Choosing Add Your First Podcast opens that
+window with nothing said over it. Podcasts now names the key and the
+internet: "No podcasts yet. Add Podcast (Ctrl+N), in the Podcasts menu, finds
+one by name or by its address, over the internet." It no longer names Import
+OPML, which the default Simple menus do not show (FUX-09).
+
 ### Sound Enhancements: hear a change before you keep it (2026-11-24)
 
 In the Sound Enhancements window (Ctrl+E), each change to a preset, a slider,

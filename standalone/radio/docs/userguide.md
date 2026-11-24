@@ -345,6 +345,12 @@ your keyboard away. If you would rather not hear them, uncheck the box.
 
 Open Quill Radio from the Start menu, or run `QuillRadio.exe` in the portable
 folder. The window opens with your cursor in the **Favorite stations** list.
+While that list is empty, your cursor is on a line just before it instead,
+called **Getting started**, which reads "No favorite stations yet. Browse
+Stations (Ctrl+B) finds one online, or Add Custom Station (Ctrl+N) takes its
+address." If you have changed either key, the line says yours. The line goes
+away as soon as you keep your first station, and your cursor moves to the
+list.
 
 - **No favorites yet?** Press **Ctrl+B** to open Browse Stations. It is a tree
   of everything: popular stations, NOAA (National Oceanic and Atmospheric Administration) Weather Radio, radio reading services,
