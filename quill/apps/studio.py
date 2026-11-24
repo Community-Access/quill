@@ -23,6 +23,7 @@ from pathlib import Path
 
 import wx
 
+from quill.apps import studio_first_task
 from quill.apps.studio_capture import StudioCaptureMixin
 from quill.apps.studio_library_window import ensure_library_window, enter_without_book
 from quill.apps.studio_results import append_result_items, diagnostics_saved  # FUX-04
@@ -366,6 +367,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 
+        studio_first_task.build(self, panel, root)  # FUX-09: first in the Tab order
         self._activity_text = wx.StaticText(panel, label="Ready - use the menu bar to begin")
         set_accessible_name(self._activity_text, "Studio activity")
         root.Add(self._activity_text, 0, wx.EXPAND | wx.ALL, 8)
@@ -380,10 +382,6 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         panel.SetSizer(root)
         self._main_panel = panel
         self._status_bar.refresh()
-        try:
-            self._activity_text.SetFocus()
-        except Exception:  # noqa: BLE001 - focus is best-effort
-            pass
 
     def _open_library_window(self) -> None:
         def clear_refs() -> None:
@@ -422,6 +420,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         the window used to pass it to a method that took none, so opening the
         Library Window failed.
         """
+        studio_first_task.refresh(self)  # the first book hides the first-task line
         tree = tree if tree is not None else getattr(self, "_library_tree", None)
         if tree is None:
             return
@@ -2513,6 +2512,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         self._run_progress = None
         self._update_tray_tooltip(_TITLE)
         self._set_status_quiet("Ready - use the menu bar to begin")
+        studio_first_task.refresh(self)  # a book just made hides the first-task line
 
     # -- arrow-navigable status bar (F6) ------------------------------------------
 
@@ -2523,14 +2523,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
             bar.refresh()
 
     def _focus_library(self) -> None:
-        control = getattr(self, "_activity_text", None)
-        if control is None:
-            control = getattr(self, "_main_panel", None)
-        if control is not None:
-            try:
-                control.SetFocus()
-            except Exception:  # noqa: BLE001 - focus is best-effort
-                pass
+        studio_first_task.focus_home(self)  # the first-task line, else the home window
 
     #: The bar's Escape/leave path hands focus back to the home window.
     _focus_initial_control = _focus_library
@@ -2544,11 +2537,12 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         if bar is None or not bar.is_shown():
             return
         if bar.has_focus():
-            self._focus_library()
-            self._announce("Returned to the Studio window")
+            if not studio_first_task.focus(self):  # the line reads itself (FUX-09)
+                self._focus_library()
+                self._announce("Returned to the Studio window")
             return
         bar.refresh()
-        bar.focus_bar(return_focus=getattr(self, "_activity_text", None))
+        bar.focus_bar()  # Escape goes back through _focus_library, line first
 
     def _toggle_show_status_bar(self) -> None:
         """Flip Show Status Bar, persist it, and show/hide the bar right away."""
@@ -2819,6 +2813,7 @@ def main() -> int:
     frame = StudioAppFrame(safe_mode=safe_mode)
     frame._log_listener = log_listener
     frame.frame.Show()
+    wx.CallAfter(frame._focus_initial_control)  # a pre-show SetFocus does not stick
     app.MainLoop()
     log_listener.stop()
     return 0

@@ -380,9 +380,11 @@ focus goes to the transport as before.
 an empty queue opens “Add some files or a folder first.”</td>
 <td><strong>Gap</strong>: the first thing met is a silent empty
 list</td>
-<td>Planned in the next pull request: a line before the list, “Nothing
-to convert yet. Add Files (Ctrl+O), or Add Folder (Ctrl+Shift+O).”,
-taking launch focus while the queue is empty</td>
+<td>A line before the list, “Nothing to convert yet. Add Files (Ctrl+O)
+chooses audio or video files, or Add Folder (Ctrl+Shift+O) brings a
+whole folder.”, takes launch focus while the queue is empty and goes
+when anything is queued. Redrawing the queue moved to the same module
+(GATE-11). (<code>quill/apps/converter_first_task.py</code>)</td>
 </tr>
 <tr>
 <td><strong>Transcribe</strong></td>
@@ -394,8 +396,11 @@ Help menu</td>
 <td><strong>Gap</strong>: neither names the place to try dictation
 safely, Practice Dictation, which types into its own scratch box and
 never into another app</td>
-<td>Planned: Finish and Skip name Practice Dictation (Ctrl+Shift+P) as
-the place to try it first</td>
+<td>Finish and Skip end with “Practice Dictation (Ctrl+Shift+P) types
+only into its own box, a safe place to begin.”, and Skip names Set Up’s
+key, Ctrl+Alt+S. Nothing new is spoken: the sentence joins the outcome
+Setup already says.
+(<code>quill/apps/transcribe_commands.py</code>)</td>
 </tr>
 <tr>
 <td><strong>QUILL Studio</strong></td>
@@ -405,9 +410,12 @@ window</td>
 <td>That static text; the Your Books cell’s Enter goes back to it</td>
 <td><strong>Gap</strong>: focus lands nowhere useful and nothing names a
 first task</td>
-<td>Planned: a focusable line naming Narrate Documents (Ctrl+Shift+N)
-and the Studio Wizard (Ctrl+N) while there are no books, taking launch
-focus</td>
+<td>While there is no book, a line at the top of the home window, “No
+books yet. Narrate Documents (Ctrl+Shift+N) reads documents into a book,
+or Build From Recordings (Ctrl+Shift+B) makes one from your
+recordings.”, takes launch focus, now set after the window is shown. It
+goes once a run leaves a book. Both run on this computer with the
+Windows voices. (<code>quill/apps/studio_first_task.py</code>)</td>
 </tr>
 <tr>
 <td><strong>QUILL</strong></td>

@@ -33,6 +33,14 @@ The first public release. The app was first built in July 2026 as an audio
 converter; that build was never published as an installer, and everything it
 had is included here.
 
+### An empty queue says how to fill it (2026-11-24)
+
+- The window opened on an empty **Files to convert** list that said nothing.
+  While nothing is queued, a **Getting started** line before the list now
+  says "Nothing to convert yet. Add Files (Ctrl+O) chooses audio or video
+  files, or Add Folder (Ctrl+Shift+O) brings a whole folder.", and the window
+  opens with focus on it. It goes as soon as something is queued (FUX-09).
+
 ### A batch ends with the actual result (2026-11-23)
 
 - **The end of a run says where.** "Converted all 12 files into the folder

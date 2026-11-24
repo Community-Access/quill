@@ -116,8 +116,12 @@ opens Quill Converter. You do not need both.
 
 ### Your first conversion
 
-1. Start Quill Converter from the Start Menu. Focus is on the **Files to
-   convert** list.
+1. Start Quill Converter from the Start Menu. While nothing is queued, focus
+   is on a line called **Getting started**, just before the list, which reads
+   "Nothing to convert yet. Add Files (Ctrl+O) chooses audio or video files,
+   or Add Folder (Ctrl+Shift+O) brings a whole folder." The line goes away as
+   soon as something is in the queue; after that, Quill Converter opens on
+   the **Files to convert** list.
 2. Press Alt+A (**Add Files...**) and choose one or more files. Or press Alt+O
    (**Add Folder...**) to add a whole folder, sub-folders included. You can
    also paste files you copied in File Explorer with Ctrl+V, or drop them on

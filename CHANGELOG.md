@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### The first useful task has a clear beginning in Converter, Transcribe and Studio (2026-11-24)
+
+Quill Converter opened on an empty, silent queue; now, while nothing is
+queued, a Getting started line before it says "Nothing to convert yet. Add
+Files (Ctrl+O) chooses audio or video files, or Add Folder (Ctrl+Shift+O)
+brings a whole folder." and takes focus. QUILL Studio, before its first book,
+says "No books yet. Narrate Documents (Ctrl+Shift+N) reads documents into a
+book, or Build From Recordings (Ctrl+Shift+B) makes one from your recordings." on a
+line that takes focus, where focus used to fall to the status bar. QUILL
+Transcribe's Set Up ends, whether finished or skipped, with "Practice Dictation (Ctrl+Shift+P) types only into its own box, a safe place to begin."
+
 ### The first useful task has a clear beginning in Cast, Radio and Media Player (2026-11-24)
 
 An empty list is the first thing somebody new meets, and now it says how to

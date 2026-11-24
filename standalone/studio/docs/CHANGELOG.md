@@ -11,6 +11,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   none. A reload now keeps you on the same copy of a book that shows under both
   a view and its folder, lands you on the next book when yours was removed, and
   leaves the tree alone when a job finishes and nothing changed.
+
+### Before the first book, the home window says how to make one (2026-11-24)
+
+The home window put focus on a static text that cannot take focus, so focus
+fell to the status bar and nothing said what to do first. Until you have a
+book, a **Getting started** line at the top says "No books yet. Narrate
+Documents (Ctrl+Shift+N) reads documents into a book, or Build From
+Recordings (Ctrl+Shift+B) makes one from your recordings.", and the window opens with
+focus on it. Once you have a book it goes (FUX-09).
+
 ### Voice previews stop when you ask (2026-11-24)
 
 - **Preview voice** in the Audio Studio wizard stops on Escape, when you leave
