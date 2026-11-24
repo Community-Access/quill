@@ -2,6 +2,33 @@
 
 ## 2.0.0
 
+### Scribe Status opens a dialog, and the two Scribe windows have clearer names (2026-11-23)
+
+**Scribe Status** (File > Scribe for Documents, and the same command in QUILL) now opens a dialog instead of saying one sentence. Everything is in
+one text field you can arrow through or pan in braille. The first line is who
+you are signed in as and the pages left, for example "Signed in as Pat
+Reader, using credits from Acme. 412 pages left." Then come Account (name,
+email, phone, organization, subscription and when it renews, and whether your
+sign-in renews by itself), Usage (pages left, when a subscription renews, a note when Scribe
+says pages are running low, and the pace against Scribe's limit of 10
+actions a minute), Now converting, Waiting and Recent. Refresh
+reads it again; Sign In appears when you are not signed in; Open My Scribe
+Account in Browser and Conversions on This Computer are buttons. Your account
+is read in the background, so the dialog opens at once, and if it cannot be
+read you hear why once. Repeat Last Scribe Message is unchanged.
+
+The two Scribe windows are renamed so it is clear which is which:
+
+- **My Scribe Documents** is now **Documents in My Scribe Account**: what is
+  kept on Scribe's servers.
+- **Scribe Conversions** (and the Conversions menu item) is now
+  **Conversions on This Computer**: the jobs this computer is running. The
+  Window menu row has the same name.
+
+The access keys are the ones you had (Alt+M and Alt+C in the submenu, Alt+U in
+QUILL's File menu, Alt+W, V in QUILL Lite's Window menu), and the Command
+Palette still finds both windows by their old names.
+
 ### Scribe for Documents: a safer sign-in (2026-11-24)
 
 - **Sign-in accepts only the sign-in QUILL Lite started.** QUILL Lite now

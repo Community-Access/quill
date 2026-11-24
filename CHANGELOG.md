@@ -11,8 +11,9 @@ one text field you can arrow through or pan in braille. The first line is who
 you are signed in as and the pages left, for example "Signed in as Pat
 Reader, using credits from Acme. 412 pages left." Then come Account (name,
 email, phone, organization, subscription and when it renews, and whether your
-sign-in renews by itself), Usage (pages left and the pace against Scribe's
-limit of 10 actions a minute), Now converting, Waiting and Recent. Refresh
+sign-in renews by itself), Usage (pages left, when a subscription renews, a note when Scribe
+says pages are running low, and the pace against Scribe's limit of 10
+actions a minute), Now converting, Waiting and Recent. Refresh
 reads it again; Sign In appears when you are not signed in; Open My Scribe
 Account in Browser and Conversions on This Computer are buttons. Your account
 is read in the background, so the dialog opens at once, and if it cannot be
