@@ -20,6 +20,8 @@ from typing import TYPE_CHECKING
 
 from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control
 from quill.ui.dpi import dip_size
+from quill.ui.voice_browser_settings import borrow
+from quill.ui.voice_browser_settings import give_back as give_back_settings
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -68,6 +70,7 @@ class SpeechHubDialog:
         dictation_offline_kwargs: dict,
         dictation_online_kwargs: dict | None,
         initial_tab: int = TAB_SPEECH_OFFLINE,
+        announce: Callable[[str], None] | None = None,
     ) -> None:
         import wx
 
@@ -146,6 +149,31 @@ class SpeechHubDialog:
 
         apply_modal_ids(self.dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
         self.dialog.SetSizer(root)
+        # Escape stops a voice preview before it closes the hub; closing stops it (FUX-08).
+        from quill.ui.preview_guard import guard_preview
+
+        guard_preview(self.dialog, self._end_previews, announce)
+        # Both Speech tabs preview through one settings object, so its saved
+        # values are taken once, here, and given back once, after the hub.
+        browsers = (self._voice_browser_offline, self._voice_browser_online)
+        shared = {id(b._settings): b._settings for b in browsers}.values()
+        self._borrowed = [(settings, borrow(settings)) for settings in shared]
+        # A preview on one tab ends when the other tab is chosen.
+        self._nb.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self._on_page_changed)
+
+    def _on_page_changed(self, event: object) -> None:
+        self._end_previews()
+        event.Skip()  # type: ignore[attr-defined]
+
+    def _end_previews(self, *, give_back: bool = False) -> bool:
+        stopped = False
+        for browser in (self._voice_browser_offline, self._voice_browser_online):
+            stopped = browser.end_preview() or stopped
+            if give_back:
+                browser._borrowed = None  # the hub gives back, once
+        for settings, saved in self._borrowed if give_back else ():
+            give_back_settings(settings, saved)
+        return stopped
 
     # ------------------------------------------------------------------
     # Internal callbacks from embedded panels
@@ -178,6 +206,7 @@ class SpeechHubDialog:
         """
         focus_primary_control(self.dialog)
         result_code = show_modal_dialog(self.dialog, "Speech Settings")
+        self._end_previews(give_back=True)  # a preview's rate is never the saved one
         ra_result = self._ra_action
         dict_result = self._dict_action
         if result_code == self._wx.ID_OK and ra_result is None and dict_result is None:

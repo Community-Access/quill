@@ -114,6 +114,8 @@ class VoiceBrowserDialog:
         self._preview_fn = preview_fn
         self._preview_stop_fn = preview_stop_fn or (lambda: None)
         self._previewing = False
+        #: The saved values a preview overwrote, given back on close (FUX-08).
+        self._borrowed: dict | None = None
         self._engine_available: dict[str, bool] = engine_available or {}
         # Whether a bundled pre-recorded preview clip exists for (engine, voice).
         self._has_preview_sample = has_preview_sample or (lambda _e, _v: False)
@@ -138,6 +140,10 @@ class VoiceBrowserDialog:
             self._embed_mode = False
 
         self._build_ui()
+        if not self._embed_mode:  # the Speech Hub guards its own window
+            from quill.ui.preview_guard import guard_preview
+
+            guard_preview(self.dialog, self.end_preview)
 
     # ------------------------------------------------------------------
     # UI construction
@@ -262,6 +268,10 @@ class VoiceBrowserDialog:
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         self._preview_btn = wx.Button(parent, label="&Preview Selected Voice")
         self._preview_btn.SetName("Preview selected voice")
+        self._preview_btn.SetHelpText(
+            "Hear the selected voice with the rate, speed and volume set here, before you "
+            "keep them. Press it again, or Escape, to stop. Nothing is saved until OK."
+        )
         self._download_btn = wx.Button(parent, label="&Download Voice...")
         self._download_btn.SetName("Download voice model")
         self._export_btn = wx.Button(parent, label="E&xport to Audio File...")
@@ -567,6 +577,8 @@ class VoiceBrowserDialog:
         adjustments. Only the current engine's rate is written; Kokoro uses its
         own speed spin; Piper exposes no rate control so nothing is written."""
         s = self._settings
+        if self._borrowed is None:
+            self._borrowed = voice_browser_settings.borrow(s)
         s.read_aloud_volume = spin_value(self._vol_spin)
         voice_browser_settings.store_speed(eng, s, spin_value(self._kok_spin))
         rate = spin_value(self._rate_spin)
@@ -589,6 +601,17 @@ class VoiceBrowserDialog:
         """Cancel the active preview via the same path a new preview would use."""
         self._preview_stop_fn()
         self._on_preview_state("idle")
+
+    def end_preview(self, *, give_back: bool = False) -> bool:
+        """Stop a playing preview; True when one was playing. With *give_back*
+        (the window is closing), also restore the saved values it borrowed."""
+        playing = self._previewing
+        if playing:
+            self._stop_preview()
+        if give_back:
+            voice_browser_settings.give_back(self._settings, self._borrowed)
+            self._borrowed = None
+        return playing
 
     def _do_download(self) -> None:
         eng = self._current_engine_id()
@@ -693,6 +716,7 @@ class VoiceBrowserDialog:
             raise RuntimeError("VoiceBrowserDialog.show() cannot be called in embed mode")
         focus_primary_control(self.dialog)
         result_code = show_modal_dialog(self.dialog, "Manage Voices & Reading Aloud")
+        self.end_preview(give_back=True)  # before collecting: the saved values stand
         if result_code == self._wx.ID_OK and self._result is None:
             # User clicked OK without using a special action button.
             eng = self._current_engine_id()

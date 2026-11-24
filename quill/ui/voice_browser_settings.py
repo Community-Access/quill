@@ -40,6 +40,26 @@ def store_speed(eng: str, settings: object, value: float) -> None:
     setattr(settings, attr, max(low, min(high, float(value))))
 
 
+def borrow(settings: object) -> dict[str, Any]:
+    """The rate, speed and volume values a preview may write, to give back after.
+
+    Preview Selected Voice writes the unsaved controls into the live settings,
+    because that is what the synthesizer reads (FUX-08). :func:`give_back`
+    puts these back when the window closes, so a preview never becomes the
+    saved value; OK then applies the window's own result as before.
+    """
+    attrs = ["read_aloud_volume", "read_aloud_rate"]
+    attrs += [attr for attr, _default in _RATE_ATTRS.values()]
+    attrs += [entry[4] for entry in SPEED_RANGES.values()]
+    return {attr: getattr(settings, attr) for attr in attrs if hasattr(settings, attr)}
+
+
+def give_back(settings: object, borrowed: dict[str, Any] | None) -> None:
+    """Put back the values :func:`borrow` took."""
+    for attr, value in (borrowed or {}).items():
+        setattr(settings, attr, value)
+
+
 def collect(
     eng: str, settings: object, *, rate: int, volume: int, pitch: int, speed: float
 ) -> dict:

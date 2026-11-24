@@ -13,6 +13,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   the end of the summary, and you land on its neighbour. A slow answer for the
   place you chose before is ignored, and redrawing after Settings says the
   summary again only when it changed.
+- **The alert sound's Play button stops** (FUX-08, 2026-11-24). In Weather
+  Settings, **Play** pressed again, or Escape, stops the alert sound, repeats
+  and all, and Escape then leaves the window open. Closing Weather Settings
+  stops it too. Before, with a repeat count above one, the sound could not be
+  stopped, it went on after the window closed, and each press of Play started
+  another set of repeats on top. Stopping a preview never cuts off a real
+  alert.
 
 ## [2.2.1] - 2026-10-08
 

@@ -185,3 +185,59 @@ def test_preview_button_stays_enabled_after_selecting_a_not_ready_voice(wx_app) 
     assert stop_calls == ["stopped"]
     assert dlg._preview_btn.GetLabel() == "&Preview Selected Voice"
     frame.Destroy()
+
+
+# -- FUX-08: a preview never becomes the saved value, and Escape stops it ----
+
+
+def _escape(window) -> None:
+    event = wx.KeyEvent(wx.wxEVT_CHAR_HOOK)
+    event.SetKeyCode(wx.WXK_ESCAPE)
+    event.SetEventObject(window)
+    window.ProcessEvent(event)
+
+
+def test_a_preview_gives_back_the_saved_rate_and_volume_on_close(wx_app) -> None:
+    def fake_preview(engine, voice_id, *, live=False, on_state_change=None):
+        on_state_change("playing")
+
+    frame = wx.Frame(None)
+    try:
+        dlg = _make_dialog(frame, preview_fn=fake_preview, preview_stop_fn=lambda: None)
+        dlg._rate_spin.SetValue(dlg._rate_spin.GetValue() + 3)
+        dlg._vol_spin.SetValue(50)
+        dlg._do_preview()
+        assert dlg._settings.read_aloud_volume == 50  # what the synthesizer reads
+        assert dlg.end_preview(give_back=True) is True
+        assert dlg._settings.read_aloud_rate == 200
+        assert dlg._settings.read_aloud_volume == 100  # Cancel keeps what was saved
+        dlg.dialog.Destroy()
+    finally:
+        frame.Destroy()
+
+
+def test_escape_stops_a_preview_and_leaves_the_window_open(wx_app) -> None:
+    stops: list[bool] = []
+
+    def fake_preview(engine, voice_id, *, live=False, on_state_change=None):
+        on_state_change("playing")
+
+    frame = wx.Frame(None)
+    try:
+        dlg = _make_dialog(
+            frame, preview_fn=fake_preview, preview_stop_fn=lambda: stops.append(True)
+        )
+        reached: list[bool] = []
+        dlg._do_preview()
+        dlg.dialog.Bind(wx.EVT_CHAR_HOOK, lambda _e: reached.append(True))
+        from quill.ui.preview_guard import guard_preview
+
+        guard_preview(dlg.dialog, dlg.end_preview)  # bound last, as in __init__
+        _escape(dlg.dialog)
+        assert stops == [True] and reached == []
+        assert dlg._preview_btn.GetLabel() == "&Preview Selected Voice"
+        _escape(dlg.dialog)  # nothing playing: Escape is the window's own again
+        assert reached == [True]
+        dlg.dialog.Destroy()
+    finally:
+        frame.Destroy()

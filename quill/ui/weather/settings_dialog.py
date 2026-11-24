@@ -232,7 +232,7 @@ class WeatherSettingsDialog:
         play_btn.SetHelpText(
             "Hear the alert sound as it is currently set -- your chosen "
             "file or the default chime, repeated the number of times set "
-            "below -- before you save."
+            "below -- before you save. Press it again, or Escape, to stop it."
         )
         default_btn = wx.Button(self.dialog, label="Use De&fault")
         default_btn.SetHelpText(
@@ -335,11 +335,27 @@ class WeatherSettingsDialog:
 
     def _preview_alert_sound(self) -> None:
         """Play the currently-selected sound (or the default) so the user can
-        hear it before saving."""
+        hear it before saving; pressed again while it plays, stop it."""
         from quill.platform import alert_sound
 
-        alert_sound.play_alert_sound(self._alert_sound_value, spin_value(self._alert_sound_repeat))
+        if self._stop_alert_preview():
+            self._announce("Alert sound stopped.")  # focus stays on Play: nothing else says it
+            return
+        if alert_sound.is_playing():  # a real alert is sounding: never cut it off
+            self._announce("An alert sound is playing. Try again when it ends.")
+            return
+        self._alert_preview = alert_sound.play_alert_sound(
+            self._alert_sound_value, spin_value(self._alert_sound_repeat)
+        )
         self._announce("Playing the alert sound.")
+
+    def _stop_alert_preview(self) -> bool:
+        """Stop this window's preview, repeats and all (FUX-08); True if it was playing.
+        Escape and closing the window call it too (``preview_guard``)."""
+        from quill.platform import alert_sound
+
+        play, self._alert_preview = getattr(self, "_alert_preview", 0), 0
+        return bool(play) and alert_sound.stop_alert_sound(play)
 
     def show(self) -> bool:
         """Modal; returns True if settings were saved."""
@@ -352,7 +368,11 @@ class WeatherSettingsDialog:
             cancel_label="Cancel",
         )
         from quill.ui.dialog_contract import show_modal_dialog
+        from quill.ui.preview_guard import guard_preview
 
+        guard_preview(
+            self.dialog, self._stop_alert_preview, self._announce
+        )  # after apply_modal_ids
         try:
             show_modal_dialog(self.dialog, "Weather Settings", announce=self._announce)
         finally:
