@@ -150,16 +150,16 @@ class ScribeStatusDialog(wx.Dialog):
     # ------------------------------------------------------------ layout
 
     def _capped_width(self, width: int) -> int:
-        """Never wider than the display, whatever the font scale."""
-        area = wx.Display(max(0, wx.Display.GetFromWindow(self))).GetClientArea()
-        return max(1, min(width, int(area.width * 0.9)))
+        """Never wider than the display's work area, whatever the font scale."""
+        from quill.ui.dpi import work_area
+
+        return max(1, min(width, int(work_area(self)[2] * 0.9)))
 
     def _fit_to_display(self) -> None:
-        area = wx.Display(max(0, wx.Display.GetFromWindow(self))).GetClientArea()
-        size = self.GetSize()
-        fitted = wx.Size(min(size.width, area.width), min(size.height, area.height))
-        if fitted != size:
-            self.SetSize(fitted)
+        """The dialog on one screen, as the Workbench windows are (#2034)."""
+        from quill.ui.dpi import fit_to_work_area
+
+        fit_to_work_area(self)
         self.Layout()
 
     def _mark_shown(self) -> None:
