@@ -604,6 +604,19 @@ A few things worth knowing:
   folder. QUILL Lite keeps the list in its own settings folder.
 - **If the file got shorter while it was closed,** for example because another
   program edited it, any bookmark past the new end is moved to the end.
+- **The cursor follows its sentence.** If another program added or removed
+  text above where you stopped, the cursor still comes back to the same
+  sentence. If that sentence itself was rewritten or deleted, the cursor goes
+  to the start of the line it was on, and QUILL Lite tells you once, when you
+  arrive in the document: "The text where you left off has changed. The cursor
+  is at the start of line 42."
+- **The place is the last one the file can confirm.** While a document has
+  changes you have not saved, the place it remembers stays where it was when
+  the file last matched; it moves on again once you save.
+- **The place is kept even if QUILL Lite stops suddenly.** Where the cursor is
+  is written each time QUILL Lite keeps its recovery copy (every 30 seconds
+  unless you changed that), if the cursor moved, and again when you close QUILL
+  Lite itself or Windows signs you out.
 
 If you switch bookmarks off in **Tools > Customize Features**, none of this is
 saved at all.

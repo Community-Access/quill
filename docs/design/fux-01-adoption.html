@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FUX-01: return to the exact place, with a useful way back, app
+by app</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="fux-01-return-to-the-exact-place-with-a-useful-way-back-app-by-app">FUX-01:
+return to the exact place, with a useful way back, app by app</h1>
+<p><strong>Date:</strong> 2026-11-24 <strong>Source:</strong> FUX-01 in
+the family UX plan (<code>git show b7c6a1a04^:complete2.md</code>), held
+to <a
+href="family-interaction-contracts.md">family-interaction-contracts.md</a>.
+The QUILL Lite pilot task is “Reopen a long document and get back to the
+sentence you left” (<a
+href="2026-11-19-family-ux-pilots.md">2026-11-19-family-ux-pilots.md</a>,
+section 1). Jeff’s order: QUILL Lite reading and editing first, then
+Cast and Media Player, then the rest only where a gap is clearly real.
+It adds no Start screen, panel or new store: places go into the stores
+each app already has.</p>
+<h2 id="what-the-exact-place-has-to-mean">What “the exact place” has to
+mean</h2>
+<ol type="1">
+<li><strong>The place, not only the file.</strong> The sentence in a
+document, the time in an episode or a file, the station, the row you
+were on.</li>
+<li><strong>Found again, not guessed.</strong> An offset or a time can
+drift when the source changes. Where the app can check the place, it
+checks; where it cannot find it, it says what it restored, once, and
+puts you somewhere you can verify (the start of the line it was on),
+never somewhere else in silence.</li>
+<li><strong>Kept through an interruption.</strong> A clean close,
+closing the whole app, Windows signing out, and a crash, where the app
+can afford a periodic write.</li>
+<li><strong>Nothing starts by itself.</strong> A recovered recording or
+draft is not played, sent or published because it was recovered. Live
+radio is never offered as a seekable recording.</li>
+<li><strong>A way back after a jump.</strong> After Go To, a search hit,
+a heading, a link or a chapter jump, one command returns to where you
+were, said once.</li>
+</ol>
+<h2 id="what-the-family-already-has">What the family already has</h2>
+<ul>
+<li><strong>QUILL and QUILL Lite</strong> keep each saved document’s
+bookmarks and last cursor position in <code>DocumentMemory</code>
+(<code>quill/core/bookmarks.py</code>), one file per app. Bookmarks
+re-anchor by the text around them
+(<code>quill/core/bookmark_anchor.py</code>). Last session’s documents
+reopen through the shared <code>quill/core/session_restore.py</code> and
+its window. <strong>Alt+Left / Alt+Right</strong> (Go Back, Go Forward)
+walk a per-window ring of jumps (<code>quill/core/locations.py</code>),
+recorded at one seam for Go To Line, headings, bookmarks and search
+hits.</li>
+<li><strong>Cast</strong> keeps each episode’s position in its library
+and writes it on pause, stop, switch and shutdown, and every 15 seconds
+while playing; the selected episode in each show is kept
+(<code>episode_cursor.py</code>).</li>
+<li><strong>Media Player</strong> keeps a position per file
+(<code>quill/core/media/positions.py</code>), every 15 seconds and on
+close, and loads a file paused at it.</li>
+<li><strong>Radio</strong> remembers the last station and the position
+in finite recordings; live audio goes back only through the timeshift
+buffer, which says how far behind live you are.</li>
+<li><strong>Studio</strong> reopens the last book paused at its place,
+when asked to.</li>
+<li><strong>Social</strong> keeps the reading position per
+timeline.</li>
+</ul>
+<h2 id="the-shared-helpers">The shared helpers</h2>
+<p><code>quill/core/resume_place.py</code> is the one rule for putting
+the cursor back in a reopened document, used by QUILL and QUILL
+Lite:</p>
+<ul>
+<li><code>anchor_if_saved(text, saved_text, position)</code> takes the
+text around the cursor, only when the text is what the file holds. While
+a document has unsaved changes, neither editor writes its place at all:
+the last place written is the one the file can confirm, and a place in
+text that is then discarded is one nothing can check.</li>
+<li><code>resume_place(text, last, anchor)</code> finds the place again:
+still there, or moved because text above it changed, means the cursor
+goes to it and nothing is said. Gone means the start of the line it was
+on, marked <code>lost</code>; an emptied file stays at its start, which
+the reader already calls blank. No anchor (an older build) means the
+offset, as before.</li>
+<li><code>lost_place_sentence(text, position)</code> is the one sentence
+for the lost case: “The text where you left off has changed. The cursor
+is at the start of line 42.” Both editors say it when you arrive in that
+document or tab, <code>PLACE_NOTE_DELAY_MS</code> after the reader has
+said the window and the line, and without interrupting it: said while
+the window was still loading, the reader’s own reading, the next
+document’s load or another open notice cut it off, and in a session
+restore it would have been about a document you were not in.</li>
+</ul>
+<p><code>quill/core/media/jump_back.py</code> is the players’ one place
+to go back to, used by Cast and Media Player:
+<code>JumpBack.before_jump(item, position, target)</code> notes the time
+a jump leaves (not for a nudge under two seconds, which the skip keys
+undo), and <code>back(item, position)</code> returns it and keeps where
+you are for the return trip, so pressing <strong>Back to Where I
+Was</strong> twice comes back. The place belongs to the episode or file
+it was in; another one forgets it. It is on <strong>Alt+Left</strong>,
+the key the editors’ Go Back already uses, and says one sentence: “Back
+to 12 minutes 30 seconds.”</p>
+<p><code>DocumentMemory</code> stores the anchor as
+<code>last_anchor</code> next to <code>last_position</code>, and now
+keeps any per-document key it does not know, so a newer build’s fields
+survive an older one (GATE-DATAFMT).
+<code>bookmark_anchor.locate_anchor</code> is
+<code>resolve_anchor</code> plus whether the text was found;
+<code>resolve_anchor</code> is unchanged.</p>
+<h2 id="app-by-app">App by app</h2>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>What is remembered</th>
+<th>Where you land</th>
+<th>The gap</th>
+<th>What changed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL Lite</td>
+<td>Open documents; each one’s cursor and bookmarks; unsaved work in the
+recovery store</td>
+<td>The last document to open, at its cursor</td>
+<td>(1) The cursor was a bare offset: after another program edited the
+file it landed in a different sentence, silently. (2) Closing the whole
+app (Alt+F4 on the shell) or Windows signing out forgot the cursor in
+every open document: the shell’s <code>Destroy</code> takes the windows
+down without their own close, and only that close wrote it (checked
+against wx). (3) A crash lost every cursor move since the window opened.
+(4) With several documents back, you landed in the last one numbered,
+not the one you were in</td>
+<td>This pull request: the shared helper above; the shell writes each
+document’s place on close, vetoable or not; each recovery copy also
+writes the cursor when it moved; <code>session_active_file</code> puts
+you back in the document you were in</td>
+</tr>
+<tr>
+<td>QUILL</td>
+<td>Open tabs; each one’s cursor, bookmarks and inline notes; persistent
+undo</td>
+<td>The tabs in order, the last one active</td>
+<td>(1) as in QUILL Lite. Closing writes the active tab’s cursor, and
+every other tab’s was written when you left it, so (2) does not apply.
+(3) a crash loses the active tab’s cursor since it became active. (4)
+the last tab, not the one you were in</td>
+<td>This pull request: (1) through the same helper. (3) and (4) are left
+(below)</td>
+</tr>
+<tr>
+<td>Cast</td>
+<td>Episode position (pause, stop, switch, shutdown, every 15 seconds);
+the queue; the selected episode in each show</td>
+<td>The launch place (configured, or “what is new”), first row</td>
+<td>Go to Position and chapter jumps had no way back, and the 15-second
+checkpoint wrote the new time over the place you jumped from. Resume on
+launch plays the last episode, but only when turned on, and its own help
+says it “starts playing where you stopped as soon as Cast opens”: the
+person asked for it, so it is not a recovered recording playing by
+itself</td>
+<td>The Cast and Media Player pull request: <strong>Back to Where I
+Was</strong> (Alt+Left, on the Episode menu and in the Now Playing
+window) after Go to Position, Next and Previous Chapter, and a chapter
+chosen in Now Playing</td>
+</tr>
+<tr>
+<td>Media Player</td>
+<td>Position per file (every 15 seconds and on close); loaded
+paused</td>
+<td>The transport, with no file unless one was opened</td>
+<td>A DAISY book never resumed. A book of several files saved the
+playing file’s time under the first file’s name, so reopening put you in
+track one at track four’s time. A finished file kept saving near its
+end, so it reopened on the credits. Go to Position and chapter jumps had
+no way back</td>
+<td>The Cast and Media Player pull request: Back to Where I Was
+(Alt+Left, File menu) after Go to Position and a chapter chosen in the
+tree, even one in another file of the book; each file keeps its own
+place; a DAISY book resumes (one of several files, in its first file);
+within 20 seconds of the end counts as finished (the margin Radio’s
+recordings use)</td>
+</tr>
+<tr>
+<td>Radio</td>
+<td>Last station; position in finite recordings; timeshift for live</td>
+<td>The main list</td>
+<td>Resume on launch, when turned on, plays the last station: that is
+what the setting asks for, and a live station is not a recovered
+recording. Live audio is never offered as seekable</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>Studio</td>
+<td>Last book and its place, saved when the Chapter Workbench
+closes</td>
+<td>The Workbench, paused, when Resume Last Book is on</td>
+<td>The Workbench saved the place only in its <code>EVT_CLOSE</code>
+handler, and its Close button and Escape end the window with
+<code>wx.ID_CANCEL</code> and no close event (checked against wx):
+leaving that way kept no place, did not update Studio’s history, and did
+not stop the player. A crash also loses the place, since it is written
+only on leaving</td>
+<td>The Cast and Media Player pull request: the Workbench keeps its
+place and stops however it is left (the same window in QUILL’s Audio
+Studio). The crash case is left (below)</td>
+</tr>
+<tr>
+<td>Transcribe</td>
+<td>Held and rescued words on disk; recent phrases for this run</td>
+<td>The state text</td>
+<td>Nothing that is a place to return to</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>Inkwell</td>
+<td>Its list of snippets</td>
+<td>The list, first row</td>
+<td>The selected row is not restored; the list is short and reached by
+first letter</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>Converter</td>
+<td>Format, preset, effect and chapter choices</td>
+<td>The file list</td>
+<td>The file queue is a task, not a place, and is not kept across
+restarts on purpose</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>Beacon</td>
+<td>Window size and position</td>
+<td>The search box</td>
+<td>Scope, sort and selection reset; Beacon is not released</td>
+<td>None now</td>
+</tr>
+<tr>
+<td>Weather</td>
+<td>Saved locations</td>
+<td>Open Center</td>
+<td>Nothing that is a place to return to</td>
+<td>None needed</td>
+</tr>
+<tr>
+<td>Social</td>
+<td>Reading position per timeline (on switch, thread and close)</td>
+<td>Home, all</td>
+<td>A crash loses movement since the last switch; Social keeps its own
+model in <code>standalone/social</code></td>
+<td>Left, for Social’s own work</td>
+</tr>
+</tbody>
+</table>
+<h2 id="left-and-why">Left, and why</h2>
+<ul>
+<li><strong>QUILL’s crash cadence and active tab.</strong> QUILL writes
+the active tab’s cursor on close and on save and every other tab’s when
+you leave it, so only a crash in the middle of reading costs a place. A
+periodic write and an “active tab” field both belong in
+<code>main_frame.py</code> and QUILL’s versioned settings groups, which
+is a change of their own; QUILL Lite, the pilot, has both.</li>
+<li><strong>A selection is not put back.</strong> Only the cursor. A
+restored selection would be replaced by the first key typed, which is
+the opposite of returning to your work.</li>
+<li><strong>Media Player’s Next and Previous Chapter keys</strong> (the
+transport and Winamp letters) do not note a place: they step one
+chapter, which the same keys undo. A DAISY book of several files reopens
+in its first file rather than the last one you were in; that needs the
+book’s own last file, which the position store (keyed by each file’s
+contents) does not hold.</li>
+<li><strong>Studio’s place on a crash</strong> needs a periodic write in
+the Chapter Workbench, which has no timer today; leaving it any normal
+way now keeps the place.</li>
+<li><strong>Social</strong> and <strong>Beacon</strong>, as in the
+table.</li>
+</ul>
+<h2 id="the-acceptance-list">The acceptance list</h2>
+<ul>
+<li><strong>The original passage and reading context are restored where
+supported:</strong> the cursor returns to its sentence in QUILL and
+QUILL Lite, with bookmarks, and to the document you were in (QUILL
+Lite).</li>
+<li><strong>Missing or moved content stays visible and
+understandable:</strong> moved text is followed silently; gone text is
+said once, with the line, and the cursor starts that line. A file that
+has gone is shown in the Reopen Last Session window as before.</li>
+<li><strong>Live radio is not represented as a seekable
+recording:</strong> unchanged; see Radio.</li>
+<li><strong>A recovered recording or draft is not played, sent or
+published:</strong> recovered drafts in both editors open as before,
+unsaved and unsent. Media Player and Studio load a book paused at its
+place. Cast and Radio play on launch only when their Resume on Launch
+setting, off by default, says to.</li>
+<li><strong>A way back after a jump, said once:</strong> Alt+Left in
+QUILL and QUILL Lite (Go Back, unchanged) and now in Cast and Media
+Player (Back to Where I Was).</li>
+<li><strong>Observe time and wrong turns needed to resume:</strong> a
+live check, listed in the pull request.</li>
+</ul>
+</main>
+</body>
+</html>

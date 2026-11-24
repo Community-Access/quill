@@ -34,7 +34,6 @@ from __future__ import annotations
 import json
 from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
-from typing import Any
 
 from quill.core.action_feedback import coerce as _coerce_action_feedback
 from quill.core.ai.connection_choice import load_connection_fields
@@ -42,7 +41,7 @@ from quill.core.inline_note_cue import coerce_note_line_cue
 from quill.core.lite.paths import settings_path
 from quill.core.lite.settings_values import clamp_ms as _clamp_ms
 from quill.core.lite.settings_values import coerce as _coerce
-from quill.core.lite.settings_values import suffix_list
+from quill.core.lite.settings_values import deltas, suffix_list
 from quill.core.markdown_breaks import normalise_hard_break_style
 from quill.core.recent_documents import clamp_limit, remember
 from quill.core.recovery_triage import DEFAULT_KEEP_DAYS as RECOVERY_KEEP_DAYS
@@ -126,7 +125,7 @@ class Settings(DictationSettings):
     #: QUILL and QUILL Lite got two different-looking editors on day one, from
     #: one setting spelled one way.
     #:
-    #: Existing users come with it, and that is deliberate -- see ``_deltas``:
+    #: Existing users come with it, and that is deliberate -- see ``settings_values.deltas``:
     #: somebody who never chose a theme has no ``theme`` in their file, so a
     #: changed default reaches them. Anybody who *did* choose dark keeps dark.
     theme: str = "system"
@@ -237,6 +236,8 @@ class Settings(DictationSettings):
     #: The files open at the last clean exit, in the order they were numbered.
     #: Written on exit and read once at start; never used for anything else.
     session_files: list[str] = field(default_factory=list)
+    #: Which of them you were in, so a reopen lands there (FUX-01).
+    session_active_file: str = ""
     #: Offer unsaved work back from windows that never had a file. On by
     #: default, because an untitled window is where a lot of real work starts.
     #: Off means those copies are **discarded** rather than kept -- keeping
@@ -514,6 +515,7 @@ LOCAL_SETTINGS: frozenset[str] = frozenset({
     "recent_files",
     "pinned_recent_files",
     "session_files",
+    "session_active_file",
     "last_update_check",
     "window_width",
     "window_height",
@@ -570,17 +572,5 @@ def save(settings: Settings, path: Path | None = None) -> None:
     """
     from quill.core.persistence_outcome import guarded_write
 
-    target, document = path or settings_path(), {"schema": SCHEMA, **_deltas(settings.normalized())}
+    target, document = path or settings_path(), {"schema": SCHEMA, **deltas(settings.normalized())}
     guarded_write("QUILL Lite settings", target, lambda: write_json_atomic(target, document))
-
-
-def _deltas(settings: Settings) -> dict[str, Any]:
-    """Every field whose value differs from the code default.
-
-    The whole reason this function exists: a user who never chose a theme has no
-    ``theme`` in their file, so a later version that changes the default takes
-    them with it. Writing every field would freeze today's answer into their
-    profile forever.
-    """
-    default = asdict(Settings())
-    return {key: value for key, value in asdict(settings).items() if value != default[key]}

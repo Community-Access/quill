@@ -115,6 +115,7 @@ def test_shell_close_stops_app_sources_only_after_consent(monkeypatch, can_veto,
         modified=True,
         confirm_discard=lambda: consent,
         stop_timers=lambda: calls.append("child"),
+        remember_document_memory=lambda: calls.append("place"),
     )
     app = SimpleNamespace(
         frames=[child],
@@ -125,5 +126,10 @@ def test_shell_close_stops_app_sources_only_after_consent(monkeypatch, can_veto,
     event = SimpleNamespace(CanVeto=lambda: can_veto, Veto=lambda: calls.append("veto"))
     monkeypatch.setattr("quill.ui.sound_manager.post_sound_and_wait", lambda *_args: None)
     QuillLiteShell._on_close(shell, event)
-    expected = ["veto"] if can_veto and not consent else ["session", "app", "child", "destroy"]
+    # "place" (FUX-01): each document's cursor, which the shell's Destroy would
+    # otherwise take down without the window's own close ever writing it --
+    # including the close Windows sends at sign-out, which cannot be vetoed.
+    expected = (
+        ["veto"] if can_veto and not consent else ["place", "session", "app", "child", "destroy"]
+    )
     assert calls == expected

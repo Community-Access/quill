@@ -25,6 +25,8 @@ from quill.core.storage import read_json, write_json_atomic
 
 DEFAULT_VAULT_FILENAME = "bookmarks.json"
 DOCUMENT_MEMORY_FILENAME = "document_memory.json"
+#: The per-document keys this build reads and cleans; any other key is kept.
+_KNOWN_KEYS = frozenset({"bookmarks", "numbered", "last_position", "last_anchor", "anchors"})
 
 
 @dataclass(slots=True)
@@ -121,9 +123,17 @@ class DocumentMemory:
 
         {"<doc-key>": {"bookmarks": {"intro": 0, ...},
                        "numbered": [{"number": 1, "position": 0, "label": "..."}],
-                       "last_position": 1234}}
+                       "last_position": 1234,
+                       "last_anchor": {"offset": 1234, "before": "...", ...}}}
 
     Forgiving load (missing/malformed -> empty), atomic save via core.storage.
+    A key this build does not know (one a newer build added) is kept as it was
+    and written back, so going back a version does not erase it (GATE-DATAFMT).
+
+    ``last_anchor`` (FUX-01, 2026-11-24) is the text around ``last_position``,
+    written only when the document matched its file, so a reopen can tell "the
+    place is still here" from "the text you left has gone" and say the second
+    rather than land somewhere else in silence. Absent from older files.
 
     ``numbered`` is the second kind of bookmark
     (:class:`~quill.core.numbered_bookmarks.BookmarkSet` -- nine slots addressed
@@ -165,7 +175,10 @@ class DocumentMemory:
                     if isinstance(name, str) and isinstance(pos, int) and name.strip():
                         marks[name.strip()] = max(0, pos)
                 last = entry.get("last_position")
-                clean: dict[str, object] = {"bookmarks": marks}
+                clean: dict[str, object] = {
+                    name: value for name, value in entry.items() if name not in _KNOWN_KEYS
+                }
+                clean["bookmarks"] = marks
                 # Numbered bookmarks are validated on the way back out by
                 # BookmarkSet.from_records, so the raw list is kept as-is here
                 # rather than checked twice in two places that could disagree.
@@ -174,6 +187,8 @@ class DocumentMemory:
                     clean["numbered"] = numbered
                 if isinstance(last, int):
                     clean["last_position"] = max(0, last)
+                    if BookmarkAnchor.from_dict(entry.get("last_anchor")) is not None:
+                        clean["last_anchor"] = entry["last_anchor"]
                 # Optional edit-surviving anchors, keyed by the same bookmark
                 # names. Backward-compatible: absent in older files, and the int
                 # `bookmarks` map above remains the fallback position.
@@ -273,10 +288,28 @@ class DocumentMemory:
         value = self.documents.get(key, {}).get("last_position")
         return value if isinstance(value, int) else None
 
-    def set_last_position(self, key: str | None, position: int) -> None:
+    def last_anchor(self, key: str | None) -> BookmarkAnchor | None:
+        """The text around the last position, when it was remembered with one."""
+        if not key:
+            return None
+        return BookmarkAnchor.from_dict(self.documents.get(key, {}).get("last_anchor"))
+
+    def set_last_position(
+        self, key: str | None, position: int, *, anchor: BookmarkAnchor | None = None
+    ) -> None:
+        """Remember where the cursor was, and the text around it when known.
+
+        No *anchor* forgets any earlier one: an anchor that described a
+        different position would send the next reopen to the wrong place.
+        """
         if not key:
             return
-        self._entry(key)["last_position"] = max(0, int(position))
+        entry = self._entry(key)
+        entry["last_position"] = max(0, int(position))
+        if anchor is None:
+            entry.pop("last_anchor", None)
+        else:
+            entry["last_anchor"] = anchor.to_dict()
         self.save()
 
 
