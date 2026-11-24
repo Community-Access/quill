@@ -21,6 +21,18 @@ downloading.
   the first chapter it used to say "Already at the first chapter."
 - At either end the chapter keys say "This is the first chapter." or "This
   is the last chapter.", the words Radio and the Media Player use.
+### The update offer waits until you stop listening (2026-11-24)
+
+The daily update check used to open its window as soon as it came back,
+which at launch was right on top of the episode QUILL Cast had just
+resumed, and it could open while Cast sat in the tray. Now the offer
+waits: never in the first minute, never while an episode plays, never
+while you are typing, and never while QUILL Cast is not the window you are
+using. It waits about 20 seconds more after you stop. While it waits, the
+status bar and Update History say once what is waiting, and nothing is
+spoken over the episode. **Help > Check for Updates** opens the waiting
+update at once. On Beta and Dev, "Update downloaded" is written on the
+status bar instead of spoken.
 
 ### A linked document, made accessible (2026-11-21)
 

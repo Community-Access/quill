@@ -36,6 +36,18 @@ it plays nothing. It also names a station marked for move and reads your note.
   "1 saved." after it. A batch says how many saved and failed, and the folder
   when they all went into one, and is kept in Activity.
 - Songs saved from the time-shift buffer are kept in Activity with Open Folder.
+### The update offer waits until you stop listening (2026-11-24)
+
+The daily update check used to open its window as soon as it came back,
+which at launch was right on top of the station Quill Radio had just
+resumed, and it could open during a recording or while Radio sat in the
+tray. Now the offer waits: never in the first minute, never while a
+station plays or a recording runs, never while you are typing, and never
+while Quill Radio is not the window you are using. It waits about 20
+seconds more after you stop. While it waits, the status bar and Update
+History say once what is waiting, and nothing is spoken over the station.
+**Help > Check for Updates** opens the waiting update at once. On Beta and
+Dev, "Update downloaded" is written on the status bar instead of spoken.
 
 ### Infinity or NaN in the settings file no longer stops Radio (2026-11-20)
 

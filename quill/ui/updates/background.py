@@ -10,7 +10,9 @@ straight away. Nothing is ever installed without that button.
 
 When the download has to wait -- a metered connection, Quiet Hours, or a
 Quill Radio recording -- Update History says why, and during Quiet Hours or a
-recording no dialog appears at all (plan 6.7, "no surprise popups").
+recording no dialog appears at all (plan 6.7, "no surprise popups"). In a shell
+app the offer after a download also waits for a quiet moment, and "downloaded"
+is written to the status bar rather than spoken (FUX-15, :mod:`.quiet`).
 """
 
 from __future__ import annotations
@@ -133,6 +135,7 @@ def shell_found(shell: Any, app_key: str, release: Any, state: Any, current_vers
     """
     from quill.core.paths import app_data_dir
     from quill.core.updater.profiles import PROFILES
+    from quill.ui.updates.quiet import shell_offer_when_quiet
 
     if app_key not in PROFILES:
         return False
@@ -142,17 +145,23 @@ def shell_found(shell: Any, app_key: str, release: Any, state: Any, current_vers
         state=state,
         target_dir=app_data_dir() / "updates",
         submit=shell._task_manager.submit,
-        announce=shell._announce,
-        on_ready=lambda path: offer_downloaded(
-            shell.frame,
-            app_name=shell._update_app_name(),
-            current_version=current_version,
-            release=release,
-            target=path,
-            portable=shell._running_portable_build(),
-            announce=shell._announce,
-            show_message_box=shell._show_message_box,
-            show_modal_dialog=shell._show_modal_dialog,
-            close_app=shell.frame.Close,
+        # Written, not spoken, and offered at a quiet moment (FUX-15).
+        announce=shell._set_status,
+        on_ready=lambda path: shell_offer_when_quiet(
+            shell,
+            app_key,
+            release,
+            lambda: offer_downloaded(
+                shell.frame,
+                app_name=shell._update_app_name(),
+                current_version=current_version,
+                release=release,
+                target=path,
+                portable=shell._running_portable_build(),
+                announce=shell._announce,
+                show_message_box=shell._show_message_box,
+                show_modal_dialog=shell._show_modal_dialog,
+                close_app=shell.frame.Close,
+            ),
         ),
     )

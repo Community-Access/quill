@@ -440,7 +440,7 @@ These settings are shared with QUILL rather than repeated in the Studio's own Pr
 
 **Help > Check for Updates...** compares your version with the newest Quill release, works out which download matches the flavor you run (the installer for an installed copy, the portable zip for a portable one), and fetches it with spoken progress. Then choose **Install and restart now** and the Studio does the rest itself: it applies the update - unpacking the new portable files over your folder, or running the installer quietly - and relaunches, keeping every setting, voice, and saved listening position. There is nothing to unzip and no folder to swap by hand.
 
-All the Quill apps are published from one place, and each one recognizes its own download, so an update to Quill Radio is never offered to the Studio and each app updates on its own schedule. The automatic startup check (on by default, throttled to once a day) is silent unless it actually finds something.
+All the Quill apps are published from one place, and each one recognizes its own download, so an update to Quill Radio is never offered to the Studio and each app updates on its own schedule. The automatic startup check (on by default, throttled to once a day) is silent unless it actually finds something. Even then it never interrupts a live broadcast, a recording, a capture or a book that is playing: the offer waits until they stop, and never comes in the first minute after the Studio opens or while you are typing. While it waits, the status bar says once what is waiting, and **Help > Check for Updates** opens it at once.
 
 ## The Command Palette
 

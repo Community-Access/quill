@@ -4847,6 +4847,12 @@ Help > About shows your version with a build number, such as 2.0.0 (build 6). Th
 build number tells you which build of a version you have: when a fix comes out
 without a new version number, it is a newer build, and Check for Updates offers it.
 
+The daily check never interrupts an episode. When it finds a new version,
+the offer waits until nothing is playing, the first minute after Cast opens
+has passed, you have stopped typing and Cast is the window you are using.
+While it waits, the status bar and Update History say once what is
+waiting; nothing is spoken. Check for Updates opens it at once.
+
 If you are already up to date, Cast tells you so. To turn the daily check
 off, open Preferences (Ctrl+,), choose **When Cast opens**, and clear
 **Check for updates on launch**.

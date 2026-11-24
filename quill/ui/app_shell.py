@@ -105,7 +105,10 @@ class AppShellFrame(
             # before its first save (a no-op for an app without any).
             record_running_build(app_id, "")
             # Phase 4: once the window is up, tell the update helper so.
+            from quill.ui.maintenance_moment_ui import note_launch
             from quill.ui.updates.started import confirm_for_shell
+
+            note_launch(app_id)  # FUX-15: the first minute starts now
 
             wx.CallAfter(confirm_for_shell, self, app_id)
         # F1 context help, on every shell app from day one: install the wx
@@ -235,9 +238,13 @@ class AppShellFrame(
         return service
 
     def _set_status(self, message: str) -> None:
+        # A held update's one line stays after whatever the app writes, until
+        # the offer opens (FUX-15, quill/ui/updates/quiet.py).
+        self._status_base = message
+        note = getattr(self, "_maintenance_note", "")
         bar = self.frame.GetStatusBar()
         if bar is not None:
-            bar.SetStatusText(message)
+            bar.SetStatusText(f"{message}  {note}".strip() if note else message)
 
     def _show_message_box(
         self, message: str, caption: str, style: int | None = None, parent: object = None
@@ -882,6 +889,10 @@ class AppShellFrame(
         from quill.core.updates import fetch_app_releases, fetch_releases, is_newer_version
 
         api_url = f"https://api.github.com/repos/{repo_slug}/releases"
+        from quill.ui.updates.quiet import run_held, shell_offer_when_quiet
+
+        if not silent_no_update and run_held(app_key):
+            return  # an offer held for a quiet moment: asked for, so now (FUX-15)
         if not silent_no_update:
             self._announce("Checking for updates")
         prefer_portable = self._running_portable_build()
@@ -944,23 +955,28 @@ class AppShellFrame(
 
                     if shell_found(self, app_key, newest, result.state, current_version):
                         return
-                # The same dialog QUILL shows, with the release notes in it.
-                # This used to be a Yes/No box asking "Download it now?" and
-                # saying nothing about what was in the release -- a question
-                # whose only honest answer is "what changed?", asked by the one
-                # party that already knew.
-                from quill.ui.update_notice import show_update_available
 
-                choice = show_update_available(
-                    self.frame,
-                    app_name=self._update_app_name(),
-                    current_version=current_version,
-                    release=newest,
-                    show_modal_dialog=self._show_modal_dialog,
-                    announce=self._announce,
-                )
-                if choice == "update":
-                    self._download_app_update(newest)
+                # The same dialog QUILL shows, with the release notes in it
+                # (it replaced a Yes/No "Download it now?" that said nothing
+                # about what was in the release).
+                def _offer() -> None:
+                    from quill.ui.update_notice import show_update_available
+
+                    choice = show_update_available(
+                        self.frame,
+                        app_name=self._update_app_name(),
+                        current_version=current_version,
+                        release=newest,
+                        show_modal_dialog=self._show_modal_dialog,
+                        announce=self._announce,
+                    )
+                    if choice == "update":
+                        self._download_app_update(newest)
+
+                if silent_no_update:  # FUX-15: never over playback or recording
+                    shell_offer_when_quiet(self, app_key, newest, _offer)
+                else:
+                    _offer()
 
             wx.CallAfter(_show)
 

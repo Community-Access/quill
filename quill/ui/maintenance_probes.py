@@ -13,7 +13,15 @@ from typing import Any
 
 from quill.core.maintenance_moment import Probe
 
-__all__ = ["DICTATION_ENDS", "READ_ALOUD_STOPS", "probes_for"]
+__all__ = [
+    "BROADCAST_ENDS",
+    "DICTATION_ENDS",
+    "PLAYBACK_STOPS",
+    "READ_ALOUD_STOPS",
+    "RECORDING_ENDS",
+    "WORK_FINISHES",
+    "probes_for",
+]
 
 DICTATION_ENDS = "dictation ends"
 READ_ALOUD_STOPS = "reading aloud stops"
@@ -41,9 +49,80 @@ def _lite(_host: Any) -> list[Probe]:
     return [_windows_dictation]
 
 
+RECORDING_ENDS = "the recording ends"
+PLAYBACK_STOPS = "playback stops"
+BROADCAST_ENDS = "the live broadcast ends"
+WORK_FINISHES = "the work in progress finishes"
+
+
+def _radio(host: Any) -> list[Probe]:
+    def recording() -> str:
+        recorder = getattr(host, "_radio_recorder", None)
+        return RECORDING_ENDS if recorder is not None and recorder.is_recording else ""
+
+    def playing() -> str:
+        from quill.ui.radio.playback_state import RadioPlayerState
+
+        controller = getattr(host, "_radio_controller", None)
+        if controller is None:
+            return ""
+        audible = {
+            RadioPlayerState.CONNECTING,
+            RadioPlayerState.BUFFERING,
+            RadioPlayerState.PLAYING,
+            RadioPlayerState.RECONNECTING,
+        }
+        return PLAYBACK_STOPS if controller.state.state in audible else ""
+
+    return [recording, playing]
+
+
+def _cast(host: Any) -> list[Probe]:
+    def playing() -> str:
+        from quill.ui.podcasts.player_controller import PodcastPlayerState
+
+        controller = getattr(host, "_podcast_controller", None)
+        if controller is None:
+            return ""
+        # Loading counts: the episode is about to be heard (and between
+        # auto-advanced episodes the engine briefly reports not playing).
+        audible = {PodcastPlayerState.LOADING, PodcastPlayerState.PLAYING}
+        busy = controller.is_playing() or controller.state.state in audible
+        return PLAYBACK_STOPS if busy else ""
+
+    return [playing]
+
+
+def _studio(host: Any) -> list[Probe]:
+    def broadcasting() -> str:
+        live = getattr(host, "_live", None) is not None or getattr(host, "_live_starting", False)
+        return BROADCAST_ENDS if live else ""
+
+    def recording() -> str:
+        busy = (
+            getattr(host, "_demo", None) is not None
+            or bool(getattr(host, "_demo_busy", ""))
+            or bool(getattr(host, "_capture_pending", False))
+        )
+        return RECORDING_ENDS if busy else ""
+
+    def working() -> str:
+        return WORK_FINISHES if getattr(host, "_protected_background_jobs", None) else ""
+
+    def playing() -> str:
+        player = getattr(host, "_active_player", None)
+        is_playing = getattr(player, "is_playing", None)
+        return PLAYBACK_STOPS if callable(is_playing) and is_playing() else ""
+
+    return [broadcasting, recording, working, playing]
+
+
 _BY_APP: dict[str, Callable[[Any], list[Probe]]] = {
     "quill": _quill,
     "quilllite": _lite,
+    "radio": _radio,
+    "cast": _cast,
+    "studio": _studio,
 }
 
 
