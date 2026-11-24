@@ -1466,7 +1466,7 @@ will be sent, and where, and waits for you to press **Send and Convert**.
 | Menu | What is there |
 |---|---|
 | **File > Convert Documents with Scribe for Documents...** | Choose one or more documents to convert |
-| **File > Scribe for Documents** | Scribe Conversions, My Scribe Documents, Scribe Status, Repeat Last Scribe Message, Scribe for Documents Options |
+| **File > Scribe for Documents** | Conversions on This Computer, Documents in My Scribe Account, Scribe Status, Repeat Last Scribe Message, Scribe for Documents Options |
 
 ### Signing in
 
@@ -1502,8 +1502,8 @@ there is never written over; the new one gets "(2)" in its name.
 
 ### Document jobs and the audio queue
 
-The documents do not join the audio queue. They are in **Scribe
-Conversions** (File > Scribe for Documents > Scribe Conversions, or
+The documents do not join the audio queue. They are in **Conversions on This
+Computer** (File > Scribe for Documents > Conversions on This Computer, or
 Alt+Shift+F7), the window every QUILL app shares for Scribe jobs, with each
 job's stage, its percent and every command on it. The audio queue stays the
 list you edit, and nothing in it moves while a document converts. Effect
@@ -1519,7 +1519,7 @@ Scribe for Documents."
 
 When Scribe has made MP3 audio, or a DAISY book, you can take it on through
 Converter as a second step you choose: louder and more even, another
-format, chapters. In Scribe Conversions, choose the row, press **Next
+format, chapters. In Conversions on This Computer, choose the row, press **Next
 Steps...**, and choose **Add to the Converter Queue (MP3 audio)** or **Add
 to the Converter Queue (DAISY (text and audio))**. You hear, for example,
 "Notes.mp3 added to the Converter queue, 3 in all." and focus stays where it
@@ -1528,7 +1528,7 @@ was. Then use Convert Now as usual. Scribe is not used again.
 Next Steps also offers **Open in QUILL** for a Word, HTML or EPUB result
 (QUILL Lite when QUILL is not installed), and **Send to Media Player** for
 audio. Converter never opens a result by itself: the result sentence ends
-"Open it from Scribe Conversions.", and Open Result or Next Steps opens it
+"Open it from the Conversions on This Computer window.", and Open Result or Next Steps opens it
 when you choose.
 
 ### Keys and commands
@@ -1536,8 +1536,8 @@ when you choose.
 | Command | Menu | Key | What it does |
 |---|---|---|---|
 | Convert Documents with Scribe for Documents | File | **Alt+Shift+F6** | Chooses documents and opens the Convert dialog |
-| Scribe Conversions | File > Scribe for Documents | **Alt+Shift+F7** | Every Scribe job on this computer, and what it is doing |
-| My Scribe Documents | File > Scribe for Documents | **Alt+Shift+F8** | Your documents on Scribe, and the Trash |
+| Conversions on This Computer | File > Scribe for Documents | **Alt+Shift+F7** | Every Scribe job on this computer, and what it is doing |
+| Documents in My Scribe Account | File > Scribe for Documents | **Alt+Shift+F8** | Your documents on Scribe, and the Trash |
 | Scribe Status | File > Scribe for Documents | **Alt+Shift+F9** | Says what the running job is doing, once |
 | Repeat Last Scribe Message | File > Scribe for Documents | **Alt+Shift+F10** | Says the last Scribe message again |
 | Scribe for Documents Options | File > Scribe for Documents | **Alt+Shift+F11** | Sign in or out, your account, the download folder, how much is spoken |
@@ -1546,11 +1546,11 @@ Inside the Scribe windows:
 
 | Where | Key | What it does |
 |---|---|---|
-| Scribe Conversions list | Enter | Open Result |
-| Scribe Conversions list | Delete | Remove from List |
-| Scribe Conversions and My Scribe Documents lists | Applications key or Shift+F10 | Every command for the row |
-| Scribe Conversions | Escape | Closes it, back to where you were |
-| My Scribe Documents list | Enter | Download Formats |
+| Conversions on This Computer list | Enter | Open Result |
+| Conversions on This Computer list | Delete | Remove from List |
+| Conversions on This Computer and Documents in My Scribe Account lists | Applications key or Shift+F10 | Every command for the row |
+| Conversions on This Computer | Escape | Closes it, back to where you were |
+| Documents in My Scribe Account list | Enter | Download Formats |
 | Convert dialog, What will be sent | Enter | Send and Convert |
 | Convert dialog, while a voice sample plays | Escape | Stops the sample |
 | Any Scribe window | F1 | What the window is for, then the control you are on |
@@ -1565,14 +1565,14 @@ Scribe commands have no key until you give them one in the Keymap Editor.
 When something goes wrong, you hear one sentence that names Scribe for
 Documents and the file, and usually Scribe's own reason. Quill Converter adds a code,
 such as QUILL-SCRIBE-PAGES, which you never hear. It is in the Details box in
-Scribe Conversions and in **Copy Details**, for when you ask for help.
+Conversions on This Computer and in **Copy Details**, for when you ask for help.
 
 | Code | What you hear | What to do |
 |---|---|---|
-| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended. Conversions are paused until you sign in again." | In Scribe Conversions, press **Sign In...** on the job. It carries on when you are signed in. |
+| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended. Conversions are paused until you sign in again." | In Conversions on This Computer, press **Sign In...** on the job. It carries on when you are signed in. |
 | QUILL-SCRIBE-SIGNIN-LOCAL | That no port could be opened to receive the sign-in, or that the browser could not be opened | Allow QUILL apps in your security software, then **Try Again**. Or press **Copy Sign-in Link** and paste it into any browser. |
-| QUILL-SCRIBE-PAGES | "Scribe for Documents could not convert Notes.pdf:", Scribe's message, then "Use Buy Pages in Scribe Conversions, then Retry." | Press **Buy Pages**, buy pages in your browser, then **Retry**. Without pages, Scribe still makes a free preview of the first two pages. |
-| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open Scribe Conversions to enter it." | Press **Enter Password...** on the job. After three wrong tries, press **Retry** for three more. |
+| QUILL-SCRIBE-PAGES | "Scribe for Documents could not convert Notes.pdf:", Scribe's message, then "Use Buy Pages in the Conversions on This Computer window, then Retry." | Press **Buy Pages**, buy pages in your browser, then **Retry**. Without pages, Scribe still makes a free preview of the first two pages. |
+| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open the Conversions on This Computer window to enter it." | Press **Enter Password...** on the job. After three wrong tries, press **Retry** for three more. |
 | QUILL-SCRIBE-BUSY | "Scribe for Documents asked Quill Converter to slow down; trying again in a minute." | Nothing. Quill Converter waits a minute and carries on. |
 | QUILL-SCRIBE-NOTDOC | "Scribe for Documents cannot convert Data.xml: it takes PDF, pictures, Office, OpenDocument, text, EPUB and MOBI files, not web pages." | Save the file as Word or PDF and send that. |
 | QUILL-SCRIBE-TOOBIG | "Video.pdf is 612 MB. Scribe for Documents takes files up to 500 MB." | Split the document, or save a copy with smaller pictures. Nothing was sent. |
@@ -1589,14 +1589,14 @@ and Convert** in the Convert dialog, which first says exactly what will be
 sent and where. There is no "don't ask again".
 
 **Will a second format cost more pages?** No. Pages are charged once for each
-document. Use **Download Formats...** in My Scribe Documents for another
+document. Use **Download Formats...** in Documents in My Scribe Account for another
 format of a document already in your account.
 
 **Can I use Quill Converter and QUILL at the same time?** Yes. Every QUILL app on this
 computer shares one sign-in, one queue and one Options window. Only one
 sends at a time, and only the app running the job speaks; the others show
 the same rows quietly. If another QUILL app is running the job, the result
-sentence ends "Open it from Scribe Conversions."
+sentence ends "Open it from the Conversions on This Computer window."
 
 **Can I stop a conversion?** Scribe cannot be stopped once it starts.
 **Cancel Waiting** stops Quill Converter waiting and downloading, and says so.
@@ -1609,16 +1609,16 @@ next QUILL app to start downloads what was made and tells you once.
 Documents chapter: where documents go, how long they are kept, and how to
 delete them.
 
-**Why is my document not in the queue list?** Document jobs are in Scribe
-Conversions, not the audio queue. Press Alt+Shift+F7.
+**Why is my document not in the queue list?** Document jobs are in Conversions on This
+Computer, not the audio queue. Press Alt+Shift+F7.
 
 ### F1 in the Scribe windows
 
 | Window | What F1 tells you |
 |---|---|
 | Convert with Scribe for Documents | What is sent and where, the formats, the settings, and the pages it uses |
-| Scribe Conversions | The jobs, their stages, and every command on a job |
-| My Scribe Documents | Your documents and the Trash, and what each button does |
+| Conversions on This Computer | The jobs, their stages, and every command on a job |
+| Documents in My Scribe Account | Your documents and the Trash, and what each button does |
 | Scribe for Documents Options | The family's one set of Scribe choices |
 | Sign In to Scribe for Documents | Signing in on Scribe's own page, in your browser |
 | Password for Notes.pdf | A PDF's password, used once and never saved |
@@ -1626,7 +1626,7 @@ Conversions, not the audio queue. Press Alt+Shift+F7.
 ### What you learned, and where to go next
 
 You can convert documents with Scribe for Documents, find the results in
-Converter's output folder, follow them in Scribe Conversions, and take the
+Converter's output folder, follow them in Conversions on This Computer, and take the
 audio on through Converter. The QUILL user guide's Scribe for Documents
 chapter has the Convert dialog control by control, and the privacy notes.
 

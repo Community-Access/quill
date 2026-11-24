@@ -1,4 +1,4 @@
-"""Scribe Conversions: the family queue, in a modeless window (PRD 7.4, 12).
+"""Conversions on This Computer: the family queue, in a modeless window (PRD 7.4, 12).
 
 Each app shows its own instance, read from the shared queue file (refreshed
 on the runner's events and every two seconds, for jobs another app runs).
@@ -34,7 +34,7 @@ from quill.core.scribe import queue as q
 from quill.core.scribe.model import formats_phrase
 from quill.ui.dialog_contract import bind_close_button, show_modeless_surface
 
-TITLE = "Scribe Conversions"
+TITLE = "Conversions on This Computer"
 EMPTY = "No Scribe for Documents conversions."
 
 #: (label, method, needs a job) -- buttons and the context menu, one table.
@@ -127,7 +127,7 @@ class ScribeConversionsWindow(wx.Frame):
             grid.Add(button, 0, wx.ALL, 4)
             self.buttons[method] = button
         close = wx.Button(panel, wx.ID_CLOSE, label="Close")
-        close.SetHelpText("Closes Scribe Conversions. Jobs carry on.")
+        close.SetHelpText("Closes Conversions on This Computer. Jobs carry on.")
         grid.Add(close, 0, wx.ALL, 4)
         sizer.Add(grid, 0, wx.EXPAND)
         panel.SetSizer(sizer)

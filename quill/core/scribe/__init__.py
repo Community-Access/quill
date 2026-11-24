@@ -34,6 +34,14 @@ import os
 #: Pneuma's product name, said by every command, title and result (SCR-POL-1).
 PRODUCT_NAME = "Scribe for Documents"
 
+#: The two Scribe windows, named for where the documents are (Jeff, 2026-11-23:
+#: "I do not mind two but they should be clearly named"). The account's library
+#: is on Scribe's servers; the conversions are the jobs this computer is running.
+DOCUMENTS_TITLE = "Documents in My Scribe Account"
+CONVERSIONS_TITLE = "Conversions on This Computer"
+#: The Scribe Status dialog (who is signed in, pages left, what is converting).
+STATUS_TITLE = "Scribe Status"
+
 #: The issued client ID (Pneuma, 2026-11-21). A public OAuth (PKCE) client ID, not a
 #: secret, so secret scanners are told to allow it (gitleaks:allow).
 CLIENT_ID = "ec9bd0194b2e5f518924993b4d37ad050690e30e3c46cd39000e75f17344ac2f"  # gitleaks:allow
@@ -108,9 +116,12 @@ def unavailable_reason(app_name: str = "QUILL") -> str:
 __all__ = [
     "BASE_URL",
     "CLIENT_ID",
+    "CONVERSIONS_TITLE",
+    "DOCUMENTS_TITLE",
     "LINKS",
     "NOT_AVAILABLE_SENTENCE",
     "PRODUCT_NAME",
+    "STATUS_TITLE",
     "base_url",
     "client_id",
     "safe_mode_active",

@@ -1,6 +1,6 @@
 """Enter Password..., for a Scribe job waiting for its password (PRD 7.3 part 4, 7.4a).
 
-Opened only by the person's own command on the job in Scribe Conversions,
+Opened only by the person's own command on the job in Conversions on This Computer,
 never by a background job. The field is never pre-filled, saved or logged;
 "Show password" swaps in a plain field with its own label. After a wrong
 password the first line says "Password not accepted. 2 tries left."

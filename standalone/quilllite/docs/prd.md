@@ -2840,14 +2840,14 @@ The family requirements are in `docs/planning/scribe-for-documents-prd.md`
   Documents and convert". Choosing it turns the area on, converts, and then
   says once "Scribe for Documents is on. It is in the File menu."
 - **File > Scribe for Documents** (Alt+F, B): Convert a File, Convert This
-  Document, Export with Scribe for Documents, Convert from a Link, My Scribe
-  Documents, Conversions, Scribe Status, Repeat Last Scribe Message, Sign In,
+  Document, Export with Scribe for Documents, Convert from a Link, Documents in My Scribe
+  Account, Conversions, Scribe Status, Repeat Last Scribe Message, Sign In,
   Sign Out, Open My Scribe Account in Browser, Options and About. **Window >
-  Scribe Conversions** (Alt+W, V). No chords, as in QUILL.
+  Conversions on This Computer** (Alt+W, V). No chords, as in QUILL.
 - **Shared code only.** Every command is `quill/ui/scribe_entry.py`'s, which
   QUILL uses too; `quill/apps/lite_window_scribe.py` is an adapter with one
   controller for the app. Every window is the shared one.
 - **Not in QUILL Lite:** the braille view's Translate with Scribe, the watch
   folder, the streaming tab and the chained AI commands. Next Steps in
-  Scribe Conversions offers Send to Media Player and Open in QUILL Lite.
+  Conversions on This Computer offers Send to Media Player and Open in QUILL Lite.
 - **Safe Mode** turns every Scribe command off.

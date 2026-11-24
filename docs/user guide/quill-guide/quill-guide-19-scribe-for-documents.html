@@ -273,15 +273,15 @@ own guide has a full chapter on Scribe in QUILL Lite.</p>
 <tbody>
 <tr>
 <td><strong>Tools &gt; Scribe for Documents</strong></td>
-<td>Convert a File, Convert This Document, Convert from a Link, My
-Scribe Documents, Conversions, Scribe Status, Repeat Last Scribe
-Message, Replace with Finished Document (for a tab that is reading a
-conversion), Sign In, Sign Out, Open My Scribe Account in Browser,
-Options, About Scribe for Documents</td>
+<td>Convert a File, Convert This Document, Convert from a Link,
+Documents in My Scribe Account, Conversions on This Computer, Scribe
+Status, Repeat Last Scribe Message, Replace with Finished Document (for
+a tab that is reading a conversion), Sign In, Sign Out, Open My Scribe
+Account in Browser, Options, About Scribe for Documents</td>
 </tr>
 <tr>
 <td><strong>File</strong></td>
-<td>My Scribe Documents</td>
+<td>Documents in My Scribe Account</td>
 </tr>
 <tr>
 <td><strong>File &gt; Import</strong></td>
@@ -297,7 +297,7 @@ Options, About Scribe for Documents</td>
 </tr>
 <tr>
 <td><strong>Window</strong></td>
-<td>Scribe Conversions</td>
+<td>Conversions on This Computer</td>
 </tr>
 </tbody>
 </table>
@@ -403,9 +403,9 @@ may change them.</p>
 is first converted. After that, <strong>another format of the same
 document uses no pages</strong>. Convert a book to Word today, and you
 can have it as DAISY audio tomorrow for nothing.</p>
-<p>QUILL shows how many pages you have left in the Convert dialog, in My
-Scribe Documents and in Options. <strong>Buy Pages</strong> opens
-Scribe’s purchase page in your browser.</p>
+<p>QUILL shows how many pages you have left in the Convert dialog, in
+Documents in My Scribe Account and in Options. <strong>Buy
+Pages</strong> opens Scribe’s purchase page in your browser.</p>
 <h3 id="signing-in-to-scribe">Signing in to Scribe</h3>
 <p>You sign in on Scribe’s own page, in your own web browser. QUILL
 never shows that page inside itself, and it never sees what you type
@@ -603,16 +603,16 @@ the accessible HTML, and Next Steps opens the offline web page in your
 browser, pictures and all; the result sentence ends: “Its pictures are
 in the Web page for offline reading; Next Steps opens that in your
 browser.” When you ask for the accessible HTML alone, the sentence ends:
-“The accessible HTML came without its pictures; Download Formats in My
-Scribe Documents can add the Web page for offline reading, which has
-them.”</p>
+“The accessible HTML came without its pictures; Download Formats in
+Documents in My Scribe Account can add the Web page for offline reading,
+which has them.”</p>
 <p>The Web page for offline reading never opens in QUILL as text: every
 picture is inside it, so each would be a single very long line. When it
 is the only thing there is to open, <strong>Open Result</strong>, and
-<strong>Open</strong> in My Scribe Documents, open it in your browser:
-“Opening the Web page for offline reading in your browser.”
-<strong>Open</strong> in My Scribe Documents opens what Open Result
-would, Word before the Kindle book, not just the file downloaded
+<strong>Open</strong> in Documents in My Scribe Account, open it in your
+browser: “Opening the Web page for offline reading in your browser.”
+<strong>Open</strong> in Documents in My Scribe Account opens what Open
+Result would, Word before the Kindle book, not just the file downloaded
 last.</p>
 <p><strong>A Kindle (MOBI) book</strong> is for older Kindles. The
 result sentence says so: “A Kindle (MOBI) book is for older Kindles:
@@ -620,8 +620,8 @@ copy it to the Kindle’s documents folder over USB. Amazon’s Send to
 Kindle takes the EPUB instead.” QUILL opens it too, as a document you
 can read here and save as Markdown, HTML, Word or EPUB: see <em>Kindle
 books</em> in <em>Opening, saving and converting files</em>. When
-nothing that was made opens by itself, the sentence ends “Open Folder in
-Scribe Conversions shows it.”</p>
+nothing that was made opens by itself, the sentence ends “To find it,
+use Open Folder in the Conversions on This Computer window.”</p>
 <p><strong>The braille Scribe makes</strong> is American English Braille
 (EBAE) grade 2, not UEB, unless you choose another table. If a BRF has
 characters that are not braille cells, such as a tab or an accented
@@ -894,13 +894,77 @@ Documents…</strong> sends the document you are working on for braille,
 with Scribe’s tables and page settings. The braille opens in QUILL’s
 braille view, where the proofing and checking tools work on it like any
 braille file.</p>
-<h3 id="scribe-status-and-repeat-last-scribe-message">Scribe Status and
-Repeat Last Scribe Message</h3>
+<h3 id="scribe-status">Scribe Status</h3>
 <p><strong>Tools &gt; Scribe for Documents &gt; Scribe Status</strong>
-says what the conversion running now is doing, once, without opening
-anything: “Notes.pdf, adding image descriptions, 40 percent, about 2
-minutes.” With nothing running it says “No Scribe for Documents
-conversions are running.”</p>
+opens the Scribe Status dialog: everything QUILL knows about your Scribe
+account and your conversions, in one read-only text field. Arrow through
+it line by line, or pan it on a braille display; the text wraps to the
+dialog at any size and text scale.</p>
+<p>The first line is the fact most people open it for, for example
+“Signed in as Pat Reader, using credits from Acme. 412 pages left.” Then
+come five sections, each starting with its name on a line of its
+own:</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>What it says</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Account</td>
+<td>Your name, email, phone and organization as Scribe has them; whether
+you have a subscription, where it was bought and when it renews; and
+whether your sign-in renews by itself</td>
+</tr>
+<tr>
+<td>Usage</td>
+<td>The pages left (for an organization member, the organization’s
+shared pages), and the pace: how many of the 8 uploads and conversions a
+minute the QUILL apps allow themselves are used, or, after Scribe asked
+them to slow down, when the next one starts</td>
+</tr>
+<tr>
+<td>Now converting</td>
+<td>The job under way: its stage, percent and time left, Scribe’s latest
+message, and which QUILL app is doing the work</td>
+</tr>
+<tr>
+<td>Waiting</td>
+<td>Queued jobs, and jobs waiting for you, such as a PDF that needs its
+password</td>
+</tr>
+<tr>
+<td>Recent</td>
+<td>The last five finished jobs on this computer, with what went wrong
+for a failed one</td>
+</tr>
+</tbody>
+</table>
+<p>Scribe tells apps the pages left, not the pages used, a plan name or
+a page limit, so Scribe Status cannot show those; Open My Scribe Account
+in Browser shows your account on the website. The sign-in itself is
+never shown.</p>
+<p>What is on this computer shows at once. Your account is read from
+Scribe in the background, so the dialog never waits; when the account
+arrives you hear the new first line once. If it cannot be read, you hear
+why once, and the first line keeps the reason with its code, such as
+QUILL-SCRIBE-OFFLINE.</p>
+<p>The buttons:</p>
+<ul>
+<li><strong>Refresh</strong> (Alt+R) reads your account and this
+computer’s conversions again, and says once that it did, with the new
+first line.</li>
+<li><strong>Sign In…</strong> (Alt+I) appears only when you are not
+signed in, or your sign-in has ended.</li>
+<li><strong>Open My Scribe Account in Browser</strong> (Alt+A).</li>
+<li><strong>Conversions on This Computer</strong> (Alt+C) closes Scribe
+Status and opens that window.</li>
+<li><strong>Close</strong>, or Escape, closes it, and you are back where
+you were.</li>
+</ul>
+<h3 id="repeat-last-scribe-message">Repeat Last Scribe Message</h3>
 <p><strong>Tools &gt; Scribe for Documents &gt; Repeat Last Scribe
 Message</strong> says the last Scribe for Documents message again,
 whether or not it was spoken: the last result or problem, or the last
@@ -935,12 +999,17 @@ pages)</strong></li>
 so you still see what will be sent before anything goes. To leave Scribe
 out of this question, uncheck <strong>Offer Scribe when a PDF has little
 or no text</strong> in Options.</p>
-<h2 id="scribe-conversions">Scribe Conversions</h2>
-<p><strong>Window &gt; Scribe Conversions</strong>, or <strong>Tools
-&gt; Scribe for Documents &gt; Conversions</strong>, opens a window that
-lists every Scribe job on this computer, from every QUILL app. It stays
-open beside your document. Jobs carry on when you close it, and when you
-close QUILL.</p>
+<h2 id="conversions-on-this-computer">Conversions on This Computer</h2>
+<p>Two windows, two names: <strong>Conversions on This Computer</strong>
+is the jobs this computer is running, and <strong>Documents in My Scribe
+Account</strong> is what is kept on Scribe’s servers. Until November
+2026 they were called Scribe Conversions and My Scribe Documents; the
+Command Palette still finds them by those names.</p>
+<p><strong>Window &gt; Conversions on This Computer</strong>, or
+<strong>Tools &gt; Scribe for Documents &gt; Conversions on This
+Computer…</strong>, opens a window that lists every Scribe job on this
+computer, from every QUILL app. It stays open beside your document. Jobs
+carry on when you close it, and when you close QUILL.</p>
 <p>The window has:</p>
 <ul>
 <li><strong>Conversions</strong>, a list with three columns: File,
@@ -1132,7 +1201,8 @@ Documents\Notes. Word is open in QUILL.”</td>
 </tr>
 <tr>
 <td>It is finished, and nothing opened</td>
-<td>The same, ending “Open it from Scribe Conversions.”</td>
+<td>The same, ending “Open it from the Conversions on This Computer
+window.”</td>
 </tr>
 <tr>
 <td>It failed</td>
@@ -1184,9 +1254,9 @@ sentence in the status bar and Notifications, for example “Scribe for
 Documents finished 2 documents while QUILL was closed: Notes and Chapter
 2, in Documents\Scribe for Documents.”</p>
 <h2 id="next-steps">Next Steps</h2>
-<p>When a job has made something, <strong>Next Steps…</strong> in Scribe
-Conversions lists what you can do with it. Nothing runs until you choose
-it, and each one is a separate choice.</p>
+<p>When a job has made something, <strong>Next Steps…</strong> in
+Conversions on This Computer lists what you can do with it. Nothing runs
+until you choose it, and each one is a separate choice.</p>
 <table>
 <thead>
 <tr>
@@ -1233,8 +1303,8 @@ Beacon Place…</strong> keeps one in a Scribe result: its start, or one
 of its headings. It is offered for Word and accessible HTML, when Quill
 Beacon is installed.</p>
 <ol type="1">
-<li>In Scribe Conversions, choose the job and press <strong>Next
-Steps…</strong>.</li>
+<li>In Conversions on This Computer, choose the job and press
+<strong>Next Steps…</strong>.</li>
 <li>Choose <strong>Save a Beacon Place…</strong>. When the job made both
 Word and HTML, each names its format, such as <strong>Save a Beacon
 Place (Word)…</strong>.</li>
@@ -1252,12 +1322,13 @@ Documents</strong>. It remembers the Scribe document, so if the file is
 ever gone Beacon offers to download it again from your Scribe account,
 with no pages used. A running Beacon shows the new place the next time
 it reads its list, without a word.</p>
-<h2 id="my-scribe-documents">My Scribe Documents</h2>
-<p><strong>File &gt; My Scribe Documents</strong>, or <strong>Tools &gt;
-Scribe for Documents &gt; My Scribe Documents</strong>, lists every
-document in your Scribe account. That includes those you made on the
-Scribe website or on an iPhone. It is read when it opens; press
-<strong>Refresh</strong> to read it again.</p>
+<h2 id="documents-in-my-scribe-account">Documents in My Scribe
+Account</h2>
+<p><strong>File &gt; Documents in My Scribe Account</strong>, or
+<strong>Tools &gt; Scribe for Documents &gt; Documents in My Scribe
+Account</strong>, lists every document in your Scribe account. That
+includes those you made on the Scribe website or on an iPhone. It is
+read when it opens; press <strong>Refresh</strong> to read it again.</p>
 <p>In Tab order:</p>
 <ul>
 <li><strong>Show</strong>: Documents or Trash.</li>
@@ -1463,11 +1534,11 @@ the new defaults.</p>
 With <strong>Open it</strong>, a result opens by itself, but only in the
 app that asked for it, and only if that app is in front. With
 <strong>Ask me first</strong>, nothing opens, and the result sentence
-ends “Open it from Scribe Conversions.” With <strong>Don’t
-open</strong>, the result is only saved. You can always open it later
-with <strong>Open Result</strong>. The tagged PDF never opens by itself,
-whichever you choose: it opens when you use <strong>Open Result</strong>
-or Next Steps.</p>
+ends “Open it from the Conversions on This Computer window.” With
+<strong>Don’t open</strong>, the result is only saved. You can always
+open it later with <strong>Open Result</strong>. The tagged PDF never
+opens by itself, whichever you choose: it opens when you use
+<strong>Open Result</strong> or Next Steps.</p>
 <p>The accessible HTML opens once. Use <strong>Open Result</strong>
 again while its “Notes (Scribe)” tab is open and QUILL goes to that tab,
 saying “The accessible HTML is already open.” A result that opens in
@@ -1530,8 +1601,8 @@ Documents (Pneuma Solutions)</strong>, and press
 <p>Things to know:</p>
 <ul>
 <li><strong>One at a time.</strong> Files go through the same queue as
-everything else, one after another, and they show in Scribe
-Conversions.</li>
+everything else, one after another, and they show in Conversions on This
+Computer.</li>
 <li><strong>Only what Scribe takes.</strong> Any other file is left
 alone for the profile’s other work.</li>
 <li><strong>What you hear</strong> is the watch folder’s usual result,
@@ -1543,7 +1614,7 @@ once for the profile, not once a file: “Watch profile needs you to sign
 in to Scribe for Documents before it can send files. Choose Tools,
 Scribe for Documents, Sign In.”</li>
 <li><strong>No dialogs.</strong> A file that needs a password waits in
-Scribe Conversions.</li>
+Conversions on This Computer.</li>
 <li><strong>Settings.</strong> The profile chooses the formats. The
 other settings, such as language and voice, are your Scribe account’s
 defaults, read when each file is sent, with any you set in Scribe for
@@ -1582,9 +1653,9 @@ Lite’s installer does not add it yet.</p>
 <h2 id="scribe-for-documents-in-the-other-quill-apps">Scribe for
 Documents in the other QUILL apps</h2>
 <p>The same Scribe for Documents is in five more QUILL apps. They share
-your sign-in, your Options, the queue and Scribe Conversions with QUILL:
-a job started in one shows in all of them, one at a time, and only the
-app running it speaks.</p>
+your sign-in, your Options, the queue and Conversions on This Computer
+with QUILL: a job started in one shows in all of them, one at a time,
+and only the app running it speaks.</p>
 <table>
 <thead>
 <tr>
@@ -1632,15 +1703,16 @@ the MP3</td>
 </tbody>
 </table>
 <p>Each app also has a <strong>Scribe for Documents</strong> submenu
-with Scribe Conversions, My Scribe Documents, Scribe Status, Repeat Last
-Scribe Message and Options. In those apps every menu row has a key, and
-the Scribe rows are on Alt+Shift with F6 to F11, the same in each. QUILL
-keeps those keys for its own commands, so in QUILL the Scribe commands
-still have no key until you give them one. Each app’s own user guide has
-its Scribe for Documents section, with the steps and what you hear.</p>
+with Conversions on This Computer, Documents in My Scribe Account,
+Scribe Status, Repeat Last Scribe Message and Options. In those apps
+every menu row has a key, and the Scribe rows are on Alt+Shift with F6
+to F11, the same in each. QUILL keeps those keys for its own commands,
+so in QUILL the Scribe commands still have no key until you give them
+one. Each app’s own user guide has its Scribe for Documents section,
+with the steps and what you hear.</p>
 <p>A result that would open in another app, such as Word from Quill
 Converter opening in QUILL, never opens by itself: the result sentence
-ends “Open it from Scribe Conversions.”, and <strong>Open
+ends “Open it from Conversions on This Computer.”, and <strong>Open
 Result</strong> or <strong>Next Steps…</strong> opens it when you
 choose. From those apps the accessible HTML opens readable in your
 browser (the Web page for offline reading, when it was made, because it
@@ -1691,16 +1763,16 @@ stop the sample.</li>
 <li>Tab to <strong>Pages</strong> and check you have enough. Then press
 <strong>Send and Convert</strong>.</li>
 <li>You hear “Scribe for Documents: sending Biology.pdf, for DAISY (text
-and audio).” A long book takes a while. Press <strong>Window &gt; Scribe
-Conversions</strong> to watch it, or use <strong>Scribe Status</strong>
-at any time.</li>
+and audio).” A long book takes a while. Press <strong>Window &gt;
+Conversions on This Computer</strong> to watch it, or use <strong>Scribe
+Status</strong> at any time.</li>
 <li>You hear each stage, and each quarter of the way.</li>
 <li>When it is done, QUILL opens the book in Quill Media Player, with
 its chapters: “Scribe for Documents made Biology.zip in Documents\Scribe
 for Documents\Biology. The DAISY book is open in Media Player.”</li>
-<li>If it did not open, choose the row in Scribe Conversions, press
-<strong>Next Steps…</strong> and choose <strong>Send to Media Player
-(DAISY (text and audio))</strong>.</li>
+<li>If it did not open, choose the row in Conversions on This Computer,
+press <strong>Next Steps…</strong> and choose <strong>Send to Media
+Player (DAISY (text and audio))</strong>.</li>
 </ol>
 <h3 id="a-pdf-to-braille-proofed-in-the-braille-view">A PDF to braille,
 proofed in the braille view</h3>
@@ -1734,9 +1806,10 @@ password. Type it, then press Send and Convert.” You are in
 password</strong> and read it with braille or the arrow keys.</li>
 <li>Press <strong>Send and Convert</strong> again.</li>
 <li>If the password was wrong, you hear “Statement.pdf needs its
-password. Open Scribe Conversions to enter it.”</li>
-<li>Open <strong>Window &gt; Scribe Conversions</strong>. The row says
-“Waiting for you: needs its password”. Press <strong>Enter
+password. Open the Conversions on This Computer window to enter
+it.”</li>
+<li>Open <strong>Window &gt; Conversions on This Computer</strong>. The
+row says “Waiting for you: needs its password”. Press <strong>Enter
 Password…</strong>. The window says “Password not accepted. 2 tries
 left.”</li>
 <li>Type the right password and press OK. The job carries on.</li>
@@ -1748,7 +1821,8 @@ again with three more tries.</p>
 a document in your account</h3>
 <p>This uses no pages.</p>
 <ol type="1">
-<li>Choose <strong>File &gt; My Scribe Documents</strong>.</li>
+<li>Choose <strong>File &gt; Documents in My Scribe
+Account</strong>.</li>
 <li>Arrow to the document, here “Notes”. The Formats ready column says
 what you already have, such as “Word”.</li>
 <li>Press Enter, or <strong>Download Formats…</strong>.</li>
@@ -1770,13 +1844,13 @@ href="#the-watch-folder">The watch folder</a>, with the action
 <li>Make sure you are signed in: <strong>Tools &gt; Scribe for Documents
 &gt; Sign In…</strong>.</li>
 <li>Copy three scanned PDFs into the folder.</li>
-<li>The watch folder sends them one after another. Each shows in Scribe
-Conversions.</li>
+<li>The watch folder sends them one after another. Each shows in
+Conversions on This Computer.</li>
 <li>As each finishes, you hear the watch folder’s result, such as
 “Scribe for Documents made Scan1.docx in Documents\Scribe for
 Documents\Scan1”.</li>
 <li>Find the Word files in your download folder, or use <strong>Open
-Folder</strong> in Scribe Conversions.</li>
+Folder</strong> in Conversions on This Computer.</li>
 </ol>
 <h2 id="keys-and-commands">Keys and commands</h2>
 <p>No Scribe command has a key to start with. They are used now and
@@ -1811,28 +1885,29 @@ any of them a key in the Keymap Editor, in More Preferences.</p>
 <td>Scribe fetches a file from its address</td>
 </tr>
 <tr>
-<td>My Scribe Documents</td>
+<td>Documents in My Scribe Account</td>
 <td>Tools &gt; Scribe for Documents, and File</td>
 <td>None; assign one in the Keymap Editor</td>
-<td>Your documents on Scribe, and the Trash</td>
+<td>Your documents on Scribe’s servers, and the Trash</td>
 </tr>
 <tr>
-<td>Conversions</td>
+<td>Conversions on This Computer</td>
 <td>Tools &gt; Scribe for Documents</td>
 <td>None; assign one in the Keymap Editor</td>
-<td>Opens Scribe Conversions</td>
+<td>The jobs this computer is running</td>
 </tr>
 <tr>
-<td>Scribe Conversions</td>
+<td>Conversions on This Computer</td>
 <td>Window</td>
 <td>None; assign one in the Keymap Editor</td>
-<td>Opens Scribe Conversions</td>
+<td>The same window, from the Window menu</td>
 </tr>
 <tr>
 <td>Scribe Status</td>
 <td>Tools &gt; Scribe for Documents</td>
 <td>None; assign one in the Keymap Editor</td>
-<td>Says what the running job is doing</td>
+<td>Opens the Scribe Status dialog: account, pages left and
+conversions</td>
 </tr>
 <tr>
 <td>Repeat Last Scribe Message</td>
@@ -1907,32 +1982,33 @@ any of them a key in the Keymap Editor, in More Preferences.</p>
 </thead>
 <tbody>
 <tr>
-<td>Scribe Conversions list</td>
+<td>Conversions on This Computer list</td>
 <td>Enter</td>
 <td>Open Result</td>
 </tr>
 <tr>
-<td>Scribe Conversions list</td>
+<td>Conversions on This Computer list</td>
 <td>Delete</td>
 <td>Remove from List</td>
 </tr>
 <tr>
-<td>Scribe Conversions and My Scribe Documents lists</td>
+<td>Conversions on This Computer and Documents in My Scribe Account
+lists</td>
 <td>Applications key or Shift+F10</td>
 <td>Every command for the row</td>
 </tr>
 <tr>
-<td>Scribe Conversions</td>
+<td>Conversions on This Computer</td>
 <td>Escape</td>
 <td>Closes it, back to where you were</td>
 </tr>
 <tr>
-<td>My Scribe Documents list</td>
+<td>Documents in My Scribe Account list</td>
 <td>Enter</td>
 <td>Download Formats</td>
 </tr>
 <tr>
-<td>My Scribe Documents list</td>
+<td>Documents in My Scribe Account list</td>
 <td>Delete</td>
 <td>Move to Trash, or Delete Forever in the Trash</td>
 </tr>
@@ -1973,10 +2049,10 @@ Account in Browser</strong>.</li>
 <li><strong>Picture descriptions.</strong> Pictures can be described by
 AI. Pneuma is reviewing its picture-description provider, and makes no
 promise yet about how long that provider keeps data.</li>
-<li><strong>Deleting.</strong> Open My Scribe Documents, choose
-<strong>Move to Trash</strong>, then in the Trash choose <strong>Delete
-Forever</strong>. Something left in the Trash is deleted after 7
-days.</li>
+<li><strong>Deleting.</strong> Open Documents in My Scribe Account,
+choose <strong>Move to Trash</strong>, then in the Trash choose
+<strong>Delete Forever</strong>. Something left in the Trash is deleted
+after 7 days.</li>
 </ul>
 <p>And on your own computer:</p>
 <ul>
@@ -2022,7 +2098,7 @@ and in <strong>Copy Details</strong>, for when you ask for help.</p>
 ended. Conversions are paused until you sign in again.”</p>
 <p><strong>Why:</strong> your sign-in ran out, or was taken back on the
 Scribe website.</p>
-<p><strong>What to do:</strong> in Scribe Conversions, press
+<p><strong>What to do:</strong> in Conversions on This Computer, press
 <strong>Sign In…</strong> on the job. Once you are signed in again, the
 job carries on.</p>
 <h3 id="sign-in-could-not-reach-quill-quill-scribe-signin-local">Sign-in
@@ -2041,8 +2117,8 @@ in there. QUILL is still waiting.</p>
 <h3 id="not-enough-pages-quill-scribe-pages">Not enough pages
 (QUILL-SCRIBE-PAGES)</h3>
 <p><strong>You hear:</strong> “Scribe for Documents could not convert
-Notes.pdf:” then Scribe’s message, then “Use Buy Pages in Scribe
-Conversions, then Retry.”</p>
+Notes.pdf:” then Scribe’s message, then “Use Buy Pages in the
+Conversions on This Computer window, then Retry.”</p>
 <p><strong>Why:</strong> your account does not have enough pages.</p>
 <p><strong>What to do:</strong> press <strong>Buy Pages</strong>, buy
 pages in your browser, come back and press <strong>Retry</strong>.
@@ -2050,10 +2126,10 @@ Without pages, Scribe still makes a free preview of the first two pages;
 you can read it in your account on the Scribe website.</p>
 <h3 id="pdf-needs-its-password-quill-scribe-password">PDF needs its
 password (QUILL-SCRIBE-PASSWORD)</h3>
-<p><strong>You hear:</strong> “Notes.pdf needs its password. Open Scribe
-Conversions to enter it.” After three wrong tries: “Scribe for Documents
-could not convert Notes.pdf: Notes.pdf was not sent: password not
-accepted”.</p>
+<p><strong>You hear:</strong> “Notes.pdf needs its password. Open
+Conversions on This Computer to enter it.” After three wrong tries:
+“Scribe for Documents could not convert Notes.pdf: Notes.pdf was not
+sent: password not accepted”.</p>
 <p><strong>Why:</strong> the PDF is locked, and the password was missing
 or wrong.</p>
 <p><strong>What to do:</strong> press <strong>Enter Password…</strong>
@@ -2151,11 +2227,11 @@ yourself.</p>
 <p>Scribe cannot be stopped once it has started. <strong>Cancel
 Waiting</strong> stops QUILL waiting and downloading, and says so:
 “QUILL stopped waiting for Notes.pdf. Scribe will still finish it and
-may use pages; it stays in My Scribe Documents.”</p>
+may use pages; it stays in Documents in My Scribe Account.”</p>
 <h3 id="will-a-second-format-cost-more-pages">Will a second format cost
 more pages?</h3>
 <p>No. Pages are charged once for each document. Use <strong>Download
-Formats…</strong> in My Scribe Documents.</p>
+Formats…</strong> in Documents in My Scribe Account.</p>
 <h3 id="is-scribe-the-same-as-quills-ai">Is Scribe the same as QUILL’s
 AI?</h3>
 <p>No. Scribe is a document service with its own consent. It does not go
@@ -2164,7 +2240,7 @@ through Choose Your AI. Turning AI off in QUILL only changes whether
 <h3 id="where-are-my-files">Where are my files?</h3>
 <p>In Documents\Scribe for Documents, in a folder for each document,
 unless you chose another folder in Options. <strong>Open Folder</strong>
-in Scribe Conversions takes you there.</p>
+in Conversions on This Computer takes you there.</p>
 <h3 id="can-i-convert-a-file-straight-from-explorer">Can I convert a
 file straight from Explorer?</h3>
 <p>Yes, if you checked <strong>Add “Convert with Scribe for Documents”

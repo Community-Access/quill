@@ -510,7 +510,7 @@ the list.
 | **Timestamped backups** | A dated copy kept every time you save | **off** |
 | **Go To Anything** | One box that searches everything at once | **off** |
 | **AI help (sends your text to QUILL's servers)** | Tools > AI: summarize, rewrite, proofread, explain, and questions about a document | **off** |
-| **Scribe for Documents (sends the documents you choose to Pneuma Solutions)** | File > Scribe for Documents and Window > Scribe Conversions: accessible Word, HTML, tagged PDF, EPUB, DAISY, MP3 and braille from Pneuma Solutions' service | **off** |
+| **Scribe for Documents (sends the documents you choose to Pneuma Solutions)** | File > Scribe for Documents and Window > Conversions on This Computer: accessible Word, HTML, tagged PDF, EPUB, DAISY, MP3 and braille from Pneuma Solutions' service | **off** |
 | **Form Payments** | Form Payments Setup and Check Payment Setup in Tools > Forms | **off** |
 | **Coding: project tasks with an AI** | Open Project Folder, project tasks, Review Changes and coach mode | **off** |
 
@@ -557,8 +557,8 @@ again.
 
 **Scribe for Documents is off for the same reason as AI help.** It sends a
 document you choose to Pneuma Solutions, and that is your choice to make.
-While it is off, there is no File > Scribe for Documents, no Scribe
-Conversions row in Window, and no connection of any kind.
+While it is off, there is no File > Scribe for Documents, no Conversions on This
+Computer row in Window, and no connection of any kind.
 
 Check its box here, or choose **Turn on Scribe for Documents and convert**
 when QUILL Lite asks about a scanned PDF. Even then, nothing is sent until

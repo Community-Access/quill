@@ -136,8 +136,8 @@ give their Scribe commands no key.)
 
 | Key | Command | Menu | What it does |
 | :--- | :--- | :--- | :--- |
-| **Alt+Shift+F7** | Scribe Conversions | Tools | Every Scribe for Documents job on this computer, and what it is doing. |
-| **Alt+Shift+F8** | My Scribe Documents | Tools | Your documents in your Scribe account, and the Trash. |
+| **Alt+Shift+F7** | Conversions on This Computer | Tools | Every Scribe for Documents job on this computer, and what it is doing. |
+| **Alt+Shift+F8** | Documents in My Scribe Account | Tools | Your documents in your Scribe account, and the Trash. |
 | **Alt+Shift+F9** | Scribe Status | Tools | Says what the running Scribe job is doing, once. |
 | **Alt+Shift+F10** | Repeat Last Scribe Message | Tools | Says the last Scribe for Documents sentence again. |
 | **Alt+Shift+F11** | Scribe for Documents Options | Tools | Sign in or out, your account, the download folder and how much is spoken. |

@@ -39,7 +39,7 @@ PRIVACY_LINES = (
     "an organization sets 1 to 30 days. Change it with Open My Scribe Account in Browser.",
     "- Pictures can be described by AI. Pneuma is reviewing its picture-description "
     "provider and makes no promise yet about how long that provider keeps data.",
-    "- To delete it: My Scribe Documents, Move to Trash, then Delete Forever.",
+    "- To delete it: Documents in My Scribe Account, Move to Trash, then Delete Forever.",
 )
 
 AI_OFF_LINE = (

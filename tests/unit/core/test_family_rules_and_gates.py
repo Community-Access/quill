@@ -117,7 +117,8 @@ NOT_EDITOR_COMMANDS: dict[str, str] = {
     "commands a listener presses (repeat, self-test) are in app.* and are "
     "deliberately user-bound below.",
     "scribe.": "Scribe for Documents is a document service beside the editor, with its own "
-    "windows (Convert, Scribe Conversions, My Scribe Documents): once-in-a-while commands, "
+    "windows (Convert, Conversions on This Computer, Documents in My Scribe Account): "
+    "once-in-a-while commands, "
     "reached from Tools > Scribe for Documents and the Command Palette, assignable in the "
     "Keymap Editor (rules 7 and 9). Status, Repeat and Replace have their own rows below.",
     "file.github_": "GitHub file operations reached from the File menu: still repository work "

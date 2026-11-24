@@ -5,7 +5,7 @@ itself (PRD 24.1) -- with three things more:
 
 * the Resource remembers the Scribe document in ``provider_ids["scribe"]``
   and the format in ``metadata["scribe_format"]``, so a place whose local file
-  is gone can be downloaded again from My Scribe Documents;
+  is gone can be downloaded again from Documents in My Scribe Account;
 * its Location carries the heading it points at (``heading_path``), the
   structural layer of the universal location model (PRD 10.1);
 * ``capture_source`` is ``"scribe"``.
@@ -14,7 +14,7 @@ They are written straight to the store, as Beacon's own command line does
 (the database is WAL, so a running Beacon is not disturbed and picks the new
 place up on its next refresh, silently). QUILL's Next Steps write here through
 :func:`save_place` (Save a Beacon Place), and Beacon's Tools > Scribe for
-Documents > Add My Scribe Documents as Places through :func:`add_library`.
+Documents > Add Documents in My Scribe Account as Places through :func:`add_library`.
 
 wx-free.
 """

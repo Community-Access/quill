@@ -146,8 +146,9 @@ KEYLESS_WITH_REASON: dict[str, str] = {
             "cmd_scribe_about",
         )
     },
-    "cmd_scribe_window": "As in QUILL (rule 2), where Window > Scribe Conversions has no "
-    "default key: Alt+W, V reaches it, and so does File > Scribe for Documents > Conversions.",
+    "cmd_scribe_window": "As in QUILL (rule 2), where Window > Conversions on This Computer has no "
+    "default key: Alt+W, V reaches it, and so does File > Scribe for Documents > "
+    "Conversions on This Computer.",
     "cmd_open_studio": "Rule 7: launching another app does not take an editor chord. "
     "Lite already uses QUILL's positional QuillVille keys for editing commands. "
     "Alt+T, Q reaches Studio when the shared release gate permits it; the user can "

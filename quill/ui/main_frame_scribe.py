@@ -4,23 +4,23 @@ Everything shared lives in :class:`quill.ui.scribe_controller.ScribeController`;
 this mixin is QUILL's host adapter and its entry points:
 
 * **Tools > Scribe for Documents**: Convert a File..., Convert This
-  Document..., Convert from a Link..., My Scribe Documents, Conversions,
+  Document..., Convert from a Link..., Documents in My Scribe Account, Conversions on This Computer,
   Scribe Status, Repeat Last Scribe Message, Sign In..., Sign Out, Open My
   Scribe Account in Browser, Options..., About Scribe for Documents.
-* **File > My Scribe Documents**, **File > Import > Convert with Scribe for
+* **File > Documents in My Scribe Account**, **File > Import > Convert with Scribe for
   Documents...** (the Scribe tier of Import / Convert: Word by default, opened
   as a new unsaved tab "<stem> (Scribe)"), **File > Export > With Scribe for
   Documents...** (tagged PDF, MOBI, DAISY with audio, large print: what QUILL's
   own export cannot make; its own EPUB, Word, BRF and text-only DAISY stay).
 * **Tools > Braille > Translate with Scribe for Documents...** (BRF with
   Scribe's table and page settings, opened in QUILL's braille view).
-* **Window > Scribe Conversions**.
+* **Window > Conversions on This Computer**.
 * The scanned-PDF and Import questions offer Scribe when "Offer Scribe when
   a PDF has little or no text" is on and Scribe is available.
 
 * **Tools > Scribe for Documents > Replace with Finished Document**, in the streaming tab
   (:mod:`quill.ui.main_frame_scribe_stream`, 8.1.3).
-* **Next Steps** in Scribe Conversions (8.1.7): Read Aloud with QUILL's
+* **Next Steps** in Conversions on This Computer (8.1.7): Read Aloud with QUILL's
   voices, the GLOW accessibility check, the braille view, Summarize with the
   person's own AI, and the Media Player -- each a separate, chosen command.
 
@@ -59,8 +59,8 @@ ROWS: tuple[tuple[str, str, str, str], ...] = (
     ("scribe.convert_file", "Convert a &File...", "scribe_convert_file", "tools"),
     ("scribe.convert_this", "Convert &This Document...", "scribe_convert_this", "tools"),
     ("scribe.convert_link", "Convert from a &Link...", "scribe_convert_link", "tools"),
-    ("scribe.my_documents", "&My Scribe Documents", "scribe_my_documents", "tools"),
-    ("scribe.conversions", "&Conversions", "scribe_conversions", "tools"),
+    ("scribe.my_documents", "Documents in &My Scribe Account...", "scribe_my_documents", "tools"),
+    ("scribe.conversions", "&Conversions on This Computer...", "scribe_conversions", "tools"),
     ("scribe.status", "Scribe &Status", "scribe_status", "tools"),
     ("scribe.repeat", "&Repeat Last Scribe Message", "scribe_repeat", "tools"),
     # Not in File: with WordPress and Forms on, File has no letter left (all 36
@@ -76,11 +76,11 @@ ROWS: tuple[tuple[str, str, str, str], ...] = (
     ("scribe.account", "Open My Scribe &Account in Browser", "scribe_account", "tools"),
     ("scribe.options", "O&ptions...", "scribe_options", "tools"),
     ("scribe.about", "A&bout Scribe for Documents", "scribe_about", "tools"),
-    ("scribe.file_documents", "My Scribe Doc&uments", "scribe_my_documents", "file"),
+    ("scribe.file_documents", "Documents in My Scribe Acco&unt...", "scribe_my_documents", "file"),
     ("scribe.import", "Convert with &Scribe for Documents...", "scribe_import_file", "import"),
     ("scribe.export", "With &Scribe for Documents...", "scribe_export", "export"),
     ("scribe.braille", "Translate with &Scribe for Documents...", "scribe_braille", "braille"),
-    ("scribe.window", "Scribe &Conversions", "scribe_conversions", "window"),
+    ("scribe.window", "&Conversions on This Computer", "scribe_conversions", "window"),
 )
 
 
@@ -127,7 +127,7 @@ class QuillScribeHost:
         self._after = AfterSentence(still_here=lambda: self.scribe_in_front())
 
     def scribe_parent(self) -> Any:
-        """The active window (Conversions, My Scribe Documents...) so a nested
+        """The active window (Conversions, Documents in My Scribe Account...) so a nested
         dialog returns focus to it, else the main window."""
         import wx
 

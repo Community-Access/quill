@@ -3,7 +3,7 @@
 * **Scribe Documents** in the Destinations list shows every place that points
   into a Scribe result (:mod:`quill.apps.beacon.scribe_places`), in Beacon's
   own results list and details.
-* **Tools > Scribe for Documents > Add My Scribe Documents as Places** reads
+* **Tools > Scribe for Documents > Add Documents in My Scribe Account as Places** reads
   the person's Scribe library (on their command, off the UI thread) and makes
   a place for each document that is not one yet, then says one sentence: "Added
   5 Scribe documents as places; 2 were already there." The submenu also holds
@@ -47,7 +47,7 @@ _TITLE = "Quill Beacon"
 SCOPE = "scribe"
 ASK_TITLE = "Download Again from Scribe for Documents"
 EMPTY = (
-    "No Scribe places yet. Use Tools, Scribe for Documents, Add My Scribe Documents "
+    "No Scribe places yet. Use Tools, Scribe for Documents, Add Documents in My Scribe Account "
     f"as Places, {ENTRY_KEY}."
 )
 
@@ -89,12 +89,12 @@ class BeaconScribeMixin(AppScribeMixin):
             tools,
             wx,
             title="Scribe for &Documents",
-            first=("&Add My Scribe Documents as Places", self.scribe_add_places),
+            first=("&Add Documents in My Scribe Account as Places", self.scribe_add_places),
         )
 
     def _scribe_palette(self, command: Any) -> list[Any]:
         """The Command Palette's rows for the submenu, with their keys."""
-        rows = [("Add My Scribe Documents as Places", ENTRY_KEY, self.scribe_add_places)]
+        rows = [("Add Documents in My Scribe Account as Places", ENTRY_KEY, self.scribe_add_places)]
         rows += [
             (label.replace("&", "").removesuffix("..."), key, getattr(self, handler))
             for _command_id, label, handler, key in COMMON_ROWS
@@ -148,7 +148,7 @@ class BeaconScribeMixin(AppScribeMixin):
             results.EnsureVisible(index)
         results.Refresh()
 
-    # -- Add My Scribe Documents as Places ----------------------------------
+    # -- Add Documents in My Scribe Account as Places ----------------------------------
 
     def scribe_add_places(self) -> None:
         controller = self._scribe()
@@ -313,8 +313,8 @@ class BeaconScribeMixin(AppScribeMixin):
                 self._scribe_say(f"{b.title} can be downloaded again. Press Enter on it to choose.")
                 return
             answer = show_message_box(
-                f"{b.title} {where}. Download it again from My Scribe Documents? Nothing is "
-                "uploaded and no pages are used.",
+                f"{b.title} {where}. Download it again from Documents in My Scribe Account? "
+                "Nothing is uploaded and no pages are used.",
                 ASK_TITLE,
                 wx.YES_NO | wx.ICON_QUESTION,
                 self,

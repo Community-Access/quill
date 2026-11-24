@@ -326,7 +326,7 @@ def test_the_sentence_says_once_where_the_pictures_are(tmp_path: Path) -> None:
         == ZIPPED_PICTURES_NOTE
         == (
             "Its pictures are in the Web page for offline reading, saved as a zip; "
-            "Open Folder in Scribe Conversions shows it."
+            "To find it, use Open Folder in the Conversions on This Computer window."
         )
     )
     job = q.Job(file_name="N.pdf", formats=["html"], outputs={"html": str(html)})
