@@ -125,5 +125,6 @@
   "quill/apps/beacon/player.py::PlayerFrame._build::wx.Button#3": "helped",
   "quill/apps/beacon/player.py::PlayerFrame._build::wx.Button#4": "helped",
   "quill/apps/beacon/player.py::PlayerFrame._build::wx.ListBox": "helped",
-  "quill/apps/beacon/player.py::PlayerFrame._build::wx.TextCtrl": "helped"
+  "quill/apps/beacon/player.py::PlayerFrame._build::wx.TextCtrl": "helped",
+  "quill/apps/beacon/sync_conflicts.py::add_conflict_detail::wx.TextCtrl": "helped"
 }
