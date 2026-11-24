@@ -1012,7 +1012,7 @@ Control coverage: 343 audited sites (247 helped, 96 named-help).
 #### _PeerEditor (`quill/ui/podcasts/sound_enhance_window.py`)
 
 - `apply_btn`: Puts these settings into effect for the podcast named above and keeps the window open, so you can listen and adjust again.
-- `close_btn`: Closes this window and returns to where you were. Anything not applied is left as it was.
+- `close_btn`: Closes this window and returns to where you were. A change you heard but did not apply is put back as it was.
 #### PodcastStatsWindow (`quill/ui/podcasts/stats_dialog.py`)
 
 - `self._period_choice`: Which stretch of time the report covers. The report below changes as soon as you choose.
@@ -2017,7 +2017,7 @@ Control coverage: 40 audited sites (40 helped).
 - `self._refresh`: How many minutes pass between automatic re-fetches of the weather data, 1 to 180. A shorter interval is fresher; the default of 15 is plenty for observations that update about hourly.
 - `self._alert_sound_path`: The sound file that plays when a new alert is announced -- read-only; use Choose to pick a different .wav file. It reads (default chime) when no file of your own is set.
 - `choose_btn`: Pick your own alert sound: a .wav file from anywhere on this computer. It is not copied -- moving or deleting the file later falls back to the default chime.
-- `play_btn`: Hear the alert sound as it is currently set -- your chosen file or the default chime, repeated the number of times set below -- before you save.
+- `play_btn`: Hear the alert sound as it is currently set -- your chosen file or the default chime, repeated the number of times set below -- before you save. Press it again, or Escape, to stop it.
 - `default_btn`: Forget the chosen sound file and go back to the built-in default chime.
 - `self._alert_sound_repeat`: How many times the alert sound plays in a row when a new alert arrives, 1 to 10. The default is once; more repeats make an alert harder to miss from another room.
 - `self._muted`: Alert events you never want to see or hear, one exact event name per line -- for example Rip Current Statement. The name must match what the National Weather Service issues, as shown in the Weather Center's alerts list. Empty (the default) hides nothing.

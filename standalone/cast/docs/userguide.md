@@ -1201,10 +1201,13 @@ roar. **Sound Enhancements** lets you shape the sound.
    Settings for This Podcast: **Light** (the start), **Balanced**, or
    **Strong**, which brings a whisper nearly up to a shout for a car or a
    noisy kitchen. These are the same three levels as Earshot on the iPhone.
-5. Press **Apply** (Alt+Y). Playback picks up at the same spot with the new
-   sound, and the window stays open so you can try something else.
-6. When it sounds right, press **Close**, Escape or Ctrl+W. You are back where
-   you were.
+   You hear each change on the episode a moment after you make it, before
+   you keep it: playback picks up at the same spot with the new sound.
+5. Press **Apply** (Alt+Y) to keep it. The window stays open so you can try
+   something else.
+6. Press **Close**, Escape or Ctrl+W to go back where you were. A change you
+   heard but did not apply is put back, and Cast says "Changes not applied
+   were put back."
 
 Sound Enhancements is a window of its own, so you can leave it open and go
 back to your library while you listen. Press Ctrl+E again and it comes to

@@ -10,8 +10,13 @@ What changed from the dialog, and what did not:
 
 * **OK became Apply.** It puts the values into effect for the podcast named at
   the top (or the shared default) exactly as OK did, and the window stays open.
-* **Cancel became Close.** Nothing is applied until Apply, as before; Close,
+* **Cancel became Close.** Nothing is saved until Apply, as before; Close,
   Escape and Ctrl+W hide the window and return focus to where you were.
+* **Heard as you change it** (FUX-08, 2026-11-24). Each slider and box is
+  heard on the playing episode a moment after it moves, the way Radio's Sound
+  Enhancements works, through the controller's ``set_enhancement``, which
+  saves nothing. Apply saves and keeps it. Close puts back what the window
+  opened with, or what was last applied, so trying a change never keeps it.
 * **Asked for again**, the window is raised and re-read for whatever is playing
   now, so it never shows one podcast's values while naming another.
 """
@@ -29,6 +34,9 @@ __all__ = ["TITLE", "SoundEnhancementsWindow", "open_sound_enhancements_window"]
 
 TITLE = "Sound Enhancements"
 
+#: How long a change waits, at most per try, for an episode reload to finish.
+_WAIT_MS = 250
+
 
 class _PeerEditor(SoundEnhanceDialog):
     """The shared controls in a panel, with Apply and Close for a peer."""
@@ -45,8 +53,8 @@ class _PeerEditor(SoundEnhanceDialog):
         close_btn = wx.Window.FindWindowById(wx.ID_CANCEL, self.dialog)
         close_btn.SetLabel("Close")
         close_btn.SetHelpText(
-            "Closes this window and returns to where you were. Anything not applied "
-            "is left as it was."
+            "Closes this window and returns to where you were. A change you heard "
+            "but did not apply is put back as it was."
         )
         from quill.ui.dialog_contract import bind_close_button
 
@@ -58,6 +66,24 @@ class _PeerEditor(SoundEnhanceDialog):
     def _on_apply(self, _event: object) -> None:
         self._collect()
         self._peer_apply(self._result)
+        # What was just applied is what Close keeps from now on.
+        self._original_snapshot = self._live_snapshot()
+        self._previewed = False
+
+    def put_back(self) -> bool:
+        """Undo what was heard but not applied. True when there was something."""
+        try:
+            self._live_timer.Stop()  # a change still waiting is not heard after Close
+        except Exception:  # noqa: BLE001 - a timer already gone is stopped
+            pass
+        if not self._previewed or self._on_live_change is None:
+            return False
+        self._previewed = False
+        try:
+            self._on_live_change(self._original_snapshot)
+        except Exception:  # noqa: BLE001 - putting back must never break Close
+            return False
+        return True
 
 
 class SoundEnhancementsWindow:
@@ -80,6 +106,7 @@ class SoundEnhancementsWindow:
         """Read the values afresh for what is playing now (or the shared default)."""
         host = self._host
         if self._editor is not None:
+            self._editor.put_back()
             self._sizer.Clear(delete_windows=True)
         show = host._podcast_enhance_context_show()
         library = host._podcast_library
@@ -96,6 +123,7 @@ class SoundEnhancementsWindow:
             show_smart_speed=True,
             smart_speed_enabled=settings.smart_speed_enabled,
             announce_cb=host._announce,
+            on_live_change=self._hear,
         )
         self._sizer.Add(self._editor.dialog, 1, wx.EXPAND)
         self.frame.Fit()
@@ -105,6 +133,54 @@ class SoundEnhancementsWindow:
 
     def _apply(self, result: Any) -> None:
         self._host._podcast_apply_sound_enhancements(self._show, result)
+
+    def _hear(self, snapshot: Any) -> None:
+        """Play the window's values on the episode now, saving nothing."""
+        host = self._host
+        controller = getattr(host, "_podcast_controller", None)
+        if controller is None or self._other_podcast():
+            return
+        from quill.ui.podcasts.player_controller import PodcastPlayerState
+
+        if controller.state.state is PodcastPlayerState.LOADING:
+            # A reload is still under way: the latest change waits for it. A
+            # second reload started now would come up paused, and from a raw
+            # source at the start of the episode.
+            self._waiting = snapshot
+            if getattr(self, "_wait_timer", None) is None:
+                self._wait_timer = wx.CallLater(_WAIT_MS, self._hear_waiting)
+            return
+        bass, mid, treble, compressor, smart_speed, _options = snapshot
+        from quill.core.audio.compressor_levels import compressor_value
+
+        library = host._podcast_library
+        settings = library.effective_settings(self._show) if self._show else library.settings
+        controller.set_enhancement(
+            bass_db=bass,
+            mid_db=mid,
+            treble_db=treble,
+            compressor_enabled=compressor_value(compressor, settings.compression_level),
+            smart_speed_enabled=smart_speed,
+        )
+
+    def _hear_waiting(self) -> None:
+        self._wait_timer = None
+        snapshot, self._waiting = getattr(self, "_waiting", None), None
+        if snapshot is not None:
+            self._hear(snapshot)
+
+    def _other_podcast(self) -> bool:
+        """True when what is playing now is not the podcast this window names:
+        its values are not tried on, or put back onto, another podcast."""
+        now = self._host._podcast_enhance_context_show()
+        return getattr(now, "id", None) != getattr(self._show, "id", None)
+
+    def before_hide(self) -> None:
+        """Close: put back what was heard but not applied, and say so."""
+        if self._editor is not None and self._editor.put_back():
+            announce = getattr(self._host, "_announce", None)
+            if callable(announce):
+                announce("Changes not applied were put back.")
 
 
 def open_sound_enhancements_window(

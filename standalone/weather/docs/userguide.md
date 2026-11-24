@@ -490,7 +490,10 @@ alerts list, so you can review warnings with the fewest keystrokes.
   per line).
 - **Alert sound** -- turn the sound on or off, **Choose** your own `.wav` (with a
   **Play** button to hear it and **Use Default** to go back), and set how many
-  times it plays for each alert (1 to 10).
+  times it plays for each alert (1 to 10). Play uses the sound and the count
+  as they are in the window, before you save. Press Play again, or Escape, to
+  stop it, repeats and all; Escape then leaves the window open. Closing Weather
+  Settings stops it too.
 - **Refresh interval** -- how often Weather Now refreshes (never faster than the
   minimum the National Weather Service, NWS, recommends).
 - **Quick Weather line** -- turn feels-like temperature, wind, humidity, the

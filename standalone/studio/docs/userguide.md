@@ -141,7 +141,7 @@ Seven steps: Start, What should I read?, Who should read it?, How should chapter
 ### Who should read it?
 
 - **Engine** - Windows (SAPI 5), DECtalk, Piper (neural, offline), Kokoro (neural, offline), Phonon (neural, offline), eSpeak-NG (many languages); on a Mac, the macOS system voice as well. An engine that is not installed yet is labeled "(not installed)" - see "Voices" below. DECtalk must be installed separately.
-- **Voice** and **Preview voice** - hear the chosen voice before committing. Previews play a bundled sample when one ships, or synthesize live with the real engine when it is installed.
+- **Voice** and **Preview voice** - hear the chosen voice before committing. Previews play a bundled sample when one ships, or synthesize live with the real engine when it is installed. Escape, leaving the wizard or closing it stops a preview, so it never plays on over what comes next.
 - **Rate (WPM)** and **Kokoro speed** - pace controls. Phonon uses the speed control too, from 0.85 to 1.3.
 - **Round-robin voices** (optional) - build an ordered rotation; article 1 gets voice 1, article 2 voice 2, wrapping around. **Add voice**, **Move Up**, **Move Down**, **Remove**. The rotation uses voices of the selected engine; switching engines clears it.
 - **Voice casting** (optional) - explicit assignment layered over the rotation. Add a rule: a pattern plus the voice that should read every matching chapter. Patterns match the heading title as a glob (`Chapter *`, `*interview*`) or a section number (`#1` for the opener). The first matching rule wins; unmatched chapters fall through to the rotation or the single voice. This is how dialogue-heavy fiction gets cast deliberately.
