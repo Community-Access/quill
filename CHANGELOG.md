@@ -2,6 +2,34 @@
 
 ## 1.0.0
 
+### Scribe for Documents: the voices are there, and Play Sample answers (2026-11-23)
+
+In Convert with Scribe for Documents, in QUILL and QUILL Lite:
+
+- **The voices are listed straight away.** When you have not chosen a
+  dialect for a language before, Dialect starts on the dialect of the
+  document's own language when the file says what it is (Word, PDF, web page or EPUB), or
+  else on your Windows language and region, such as English (United
+  States). This works with Language on Detect automatically too. A dialect
+  you chose, or one in your Scribe account, always wins, and one chosen for
+  you is used for that document only: it is never saved as your Scribe
+  account default.
+- **Every voice, even on Scribe's default dialect.** With Dialect on
+  Scribe's default, Voice lists every dialect's voices, each with its
+  dialect, such as "Jenny, English (United States)". Choosing one chooses
+  its dialect too. A voice Scribe has no sample of says so in its name,
+  such as "Guy, no sample".
+- **Play Sample always answers.** It plays the sample, or says "Choose a
+  voice to hear a sample.", or that the voice has no sample, or that the
+  voices are still loading or could not be loaded. A second press while a
+  sample downloads does not start another. Before, with no voice
+  chosen, it could seem to do nothing.
+- **Retry Loading puts you on the lists.** When it works, you land on
+  Language (or Dialect, for a document already uploaded) with the lists
+  filled in; when it fails again, it says so.
+- Language and Dialect come before Voice and Play Sample, in Tab order and
+  on the screen.
+
 ### Scribe for Documents: groups of options say which group they are (2026-11-23)
 
 In Scribe Options, the "Default formats" check boxes read only "Word, check
