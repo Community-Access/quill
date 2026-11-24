@@ -3324,7 +3324,7 @@ Two operational refinements landed in the Beacon build:
   an unconfigured install never touches the network. The user picks the
   interval (Off / 5 / 15 / 30 / 60 min) from Sync > Auto Sync; it persists and
   restarts with the app. It keeps maintenance away from the moment that
-  matters (FUX-15, `docs/design/fux-15-adoption.md`): a tick is skipped while
+  matters (FUX-15, `docs/design/fux-15-adoption.md`): a timed sync is skipped while
   one of Beacon's dialogs is open, a sync that pulled nothing and found no
   conflict is written to the status bar and not spoken, and the results list
   is refreshed only when something arrived.
