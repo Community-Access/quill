@@ -2592,6 +2592,15 @@ Transcribe Audio File is the one for Transcript Actions such as meeting minutes.
    about how long it should take on your computer, for example "The recording
    is 12 minutes long. With NVIDIA Parakeet TDT 0.6B v3, transcribing it should
    take about 6 minutes on this computer."
+
+   Before a long recording, press **Try the First Minute** (Alt+I). It
+   transcribes only the first minute, with the model, language and options
+   chosen in this window, and adds to the same box the words it heard, how
+   long that minute took, and what the whole recording should take at that
+   pace. Nothing is queued and nothing goes to Notifications. Press it again to
+   stop. If you change the recording, the model or an option afterwards, the
+   box says the result is out of date. It is unavailable for OpenAI's models,
+   which charge for every minute sent.
 5. The transcript is not inserted into the document you are editing. When it
    is ready, its completion notice appears in **Notifications**; activate that
    notice when you are ready to open the privately saved transcript.

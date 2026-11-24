@@ -70,7 +70,7 @@ class ConverterLifecycleMixin:
             return
         from quill.core.audio.assemble import render_preview
 
-        spec = self.current_spec()
+        spec = batch_spec = self.current_spec()
         if spec.copy_video:
             spec = replace(spec, copy_video=False, filters=())
         what = "the original" if original else "with your settings"
@@ -82,8 +82,26 @@ class ConverterLifecycleMixin:
             f"quill-converter-preview-{os.getpid()}-{number}.wav"
         )
 
+        queue = self._preview_queue() if not original else []
+        measured: list[tuple[float, int]] = []
+
         def work() -> None:
-            render_preview(ffmpeg, source, spec, out_wav, original=original)
+            render_preview(
+                ffmpeg,
+                source,
+                spec,
+                out_wav,
+                original=original,
+                measured=lambda seconds, size: measured.append((seconds, size)),
+            )
+
+        def show_estimate(estimate: Any, error: Any) -> None:
+            if error is None and estimate and number == self._preview_number:
+                # Written, not spoken: the preview is playing (FUX-11). The
+                # line stays until the next action replaces it, and the end
+                # of the preview says where it is.
+                self._preview_estimated = number
+                self._set_status(f"Preview estimate: {estimate}")
 
         def deliver(_result: Any, error: Any) -> None:
             if error is not None:
@@ -92,8 +110,43 @@ class ConverterLifecycleMixin:
                     self._preview_failed(str(error))
                 return
             self._play_preview(out_wav, what, number)
+            if queue and measured:  # probing the queue must not hold the preview back
+                _off_ui_thread(
+                    lambda: self._preview_estimate(source, batch_spec, queue, measured),
+                    show_estimate,
+                )
 
         _off_ui_thread(work, deliver)
+
+    def _preview_queue(self) -> list[Path]:
+        """Every file Convert Now would convert, read on the UI thread."""
+        from quill.core.audio.assemble import join_inputs
+
+        return join_inputs(self._entries, recurse=self._recurse.GetValue())
+
+    @staticmethod
+    def _preview_estimate(
+        source: Path, spec: Any, queue: list[Path], measured: list[tuple[float, int]]
+    ) -> str:
+        """The queue's estimate from the preview's encode (worker thread), or ""."""
+        if not measured or not queue:
+            return ""
+        from quill.core.audio.assemble import PREVIEW_SECONDS
+        from quill.core.audio.media_probe import probe
+        from quill.core.audio.preview_estimate import queue_estimate
+
+        durations = [probe(path).duration_s for path in queue]
+        length = probe(source).duration_s
+        clip = min(PREVIEW_SECONDS, length) if length > 0 else PREVIEW_SECONDS
+        seconds, size = measured[-1]
+        return queue_estimate(
+            source_name=source.name,
+            spec=spec,
+            clip_seconds=clip,
+            encode_seconds=seconds,
+            encoded_bytes=size,
+            durations=durations,
+        )
 
     def _preview_source(self) -> Path | None:
         from quill.core.audio.assemble import join_inputs
@@ -125,6 +178,8 @@ class ConverterLifecycleMixin:
             return  # a later preview owns the flag now
         self._previewing = False
         self._forget_preview_file()
+        if number and getattr(self, "_preview_estimated", 0) == number:
+            self._announce("The estimate for the whole queue is in the status bar.")
 
     def _preview_failed(self, reason: str) -> None:
         self._previewing = False

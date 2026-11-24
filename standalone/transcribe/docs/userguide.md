@@ -1359,6 +1359,12 @@ Ctrl+O still works) turns an audio or video file
 into text with the same models, using the same window as QUILL. Choose the file
 and the model; it is transcribed in the background while you carry on.
 
+Before a long recording, **Try the First Minute** (Alt+I) transcribes only its
+first minute with the model, language and options you chose, and shows the words
+and a measured estimate for the whole recording in **About this model and this
+recording**. Nothing is queued or saved. It is unavailable for OpenAI's models,
+which charge for every minute.
+
 For a recording in Spanish, check **Translate into English** (Alt+E) and the
 transcript is written in English instead. It needs a model that translates: the
 built-in Whisper, or a multilingual Whisper you downloaded (not the ones marked
