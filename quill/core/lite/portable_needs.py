@@ -148,12 +148,14 @@ MENU_NEEDS: dict[str, Need] = {
     "&Tools|WordPress|&Plugin Extras": _NOTHING,
     "&Tools|WordPress|&Your Sites": _WORDPRESS,
     "&Tools|WordPress|M&ore Media": Need(
-        ("live-dictation", "audio-files"),
+        ("live-dictation", "audio-files", "mp3"),
         why="Captions for Video and Transcript for Audio read the recording and "
         "transcribe it with dictation's engines. Make a Listening Version records "
         "the page with the Windows voice (SAPI 5 through comtypes, a base "
         "dependency; Read Aloud's other engines are QUILL's) and makes the MP3 "
-        "with ffmpeg, timing it with ffprobe (Jeff, 2026-11-23).",
+        "with ffmpeg, timing it with ffprobe (Jeff, 2026-11-23). The MP3 carries "
+        "a chapter marker per heading, written with mutagen (mp3): the built "
+        "portable's end-to-end check failed without it.",
         media=("ffmpeg",),
     ),
     "&View": Need(
@@ -186,7 +188,6 @@ ALWAYS_NEEDS: dict[str, Need] = {
 EXCLUDED_GROUPS: dict[str, str] = {
     "speech": "Its one package, sounddevice, already arrives with live-dictation.",
     "dictation": "SpeechRecognition: nothing in QUILL imports it any more.",
-    "mp3": "mutagen tags and cover art: Audio Studio, Converter and Cast.",
     "glow": "The GLOW structured-document engine: QUILL's Check Accessibility. QUILL "
     "Lite's Markdown checks use the built-in text audit, which needs no package.",
     "social-app": "Quill Social only.",
@@ -219,6 +220,7 @@ GROUP_IMPORTS: dict[str, str] = {
     "windows-media": "winrt.windows.media.playback",
     "math": "latex2mathml.converter",
     "audio-files": "soundfile",
+    "mp3": "mutagen",
     "github": "github",
     "ai-copilot": "copilot",
 }
