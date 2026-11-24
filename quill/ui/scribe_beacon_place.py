@@ -1,4 +1,4 @@
-"""Save a Beacon Place, a Next Step in QUILL's Scribe Conversions (PRD 8.1.7, 8.7).
+"""Save a Beacon Place, a Next Step in QUILL's Conversions on This Computer (PRD 8.1.7, 8.7).
 
 For a Word or accessible HTML result, "Save a Beacon Place (Word)..." asks
 where the place should point -- "Save a Beacon Place", a standard choice

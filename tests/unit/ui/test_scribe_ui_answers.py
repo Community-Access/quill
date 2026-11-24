@@ -241,7 +241,7 @@ def test_the_last_file_of_a_batch_says_what_was_made_and_what_was_not(controller
     summary = [s for s in controller.host.said if "finished 2 files" in s]
     assert summary == [
         "Scribe for Documents finished 2 files. Made: a.pdf. Not made: b.pdf; "
-        "Scribe Conversions has the details."
+        "the Conversions on This Computer window has the details."
     ]
 
 

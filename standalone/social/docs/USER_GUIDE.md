@@ -107,8 +107,8 @@ QUILL Social is a hub for the wider QUILL ecosystem:
 Posts often link a PDF, a document or a picture of text. Scribe for Documents, a service from Pneuma Solutions, can turn it into an accessible document: Word, accessible HTML, tagged PDF, EPUB, DAISY with audio, MP3 audio or braille, with the headings, reading order and tables rebuilt and the pictures described. This part of QUILL Social is Powered by Scribe for Documents. Nothing leaves your computer until you press **Send and Convert** in the Convert dialog, which first says exactly what will be fetched and where it goes.
 
 - **Item > Convert Linked Document with Scribe for Documents...** (Alt+Shift+F6): the focused post's linked documents, from its text, its own link and its pictures and other media.
-- **Tools > Scribe Conversions** (Alt+Shift+F7): every Scribe job on this computer, from every QUILL app.
-- **Tools > My Scribe Documents** (Alt+Shift+F8): your documents on Scribe, and the Trash.
+- **Tools > Conversions on This Computer** (Alt+Shift+F7): every Scribe job on this computer, from every QUILL app.
+- **Tools > Documents in My Scribe Account** (Alt+Shift+F8): your documents on Scribe, and the Trash.
 - **Tools > Scribe Status** (Alt+Shift+F9) and **Tools > Repeat Last Scribe Message** (Alt+Shift+F10).
 - **Tools > Scribe for Documents Options...** (Alt+Shift+F11): sign in or out, your account, the download folder and how much is spoken.
 
@@ -142,8 +142,8 @@ Step by step:
    press **Send and Convert**. You hear each stage once.
 6. When it is done you hear one sentence, for example: "Scribe for
    Documents made Notes.docx in Documents\Scribe for Documents\Notes. Open
-   it from Scribe Conversions."
-7. Open Scribe Conversions (Alt+Shift+F7), choose the row and press Enter.
+   it from Conversions on This Computer."
+7. Open Conversions on This Computer (Alt+Shift+F7), choose the row and press Enter.
    Word, HTML and EPUB open in QUILL, or in QUILL Lite when QUILL is not
    installed; MP3 and DAISY open in Quill Media Player. **Next Steps...**
    lists the same choices by name, such as **Open in QUILL (Word)**.
@@ -160,11 +160,11 @@ Inside the Scribe windows:
 
 | Where | Key | What it does |
 |---|---|---|
-| Scribe Conversions list | Enter | Open Result |
-| Scribe Conversions list | Delete | Remove from List |
-| Scribe Conversions and My Scribe Documents lists | Applications key or Shift+F10 | Every command for the row |
-| Scribe Conversions | Escape | Closes it, back to where you were |
-| My Scribe Documents list | Enter | Download Formats |
+| Conversions on This Computer list | Enter | Open Result |
+| Conversions on This Computer list | Delete | Remove from List |
+| Conversions on This Computer and Documents in My Scribe Account lists | Applications key or Shift+F10 | Every command for the row |
+| Conversions on This Computer | Escape | Closes it, back to where you were |
+| Documents in My Scribe Account list | Enter | Download Formats |
 | Convert dialog, What will be sent | Enter | Send and Convert |
 | Convert dialog, while a voice sample plays | Escape | Stops the sample |
 | Any Scribe window | F1 | What the window is for, then the control you are on |
@@ -179,14 +179,14 @@ When something goes wrong:
 When something goes wrong, you hear one sentence that names Scribe for
 Documents and the file, and usually Scribe's own reason. QUILL Social adds a code,
 such as QUILL-SCRIBE-PAGES, which you never hear. It is in the Details box in
-Scribe Conversions and in **Copy Details**, for when you ask for help.
+Conversions on This Computer and in **Copy Details**, for when you ask for help.
 
 | Code | What you hear | What to do |
 |---|---|---|
-| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended. Conversions are paused until you sign in again." | In Scribe Conversions, press **Sign In...** on the job. It carries on when you are signed in. |
+| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended. Conversions are paused until you sign in again." | In Conversions on This Computer, press **Sign In...** on the job. It carries on when you are signed in. |
 | QUILL-SCRIBE-SIGNIN-LOCAL | That no port could be opened to receive the sign-in, or that the browser could not be opened | Allow QUILL apps in your security software, then **Try Again**. Or press **Copy Sign-in Link** and paste it into any browser. |
-| QUILL-SCRIBE-PAGES | "Scribe for Documents could not convert Notes.pdf:", Scribe's message, then "Use Buy Pages in Scribe Conversions, then Retry." | Press **Buy Pages**, buy pages in your browser, then **Retry**. Without pages, Scribe still makes a free preview of the first two pages. |
-| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open Scribe Conversions to enter it." | Press **Enter Password...** on the job. After three wrong tries, press **Retry** for three more. |
+| QUILL-SCRIBE-PAGES | "Scribe for Documents could not convert Notes.pdf:", Scribe's message, then "Use Buy Pages in the Conversions on This Computer window, then Retry." | Press **Buy Pages**, buy pages in your browser, then **Retry**. Without pages, Scribe still makes a free preview of the first two pages. |
+| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open the Conversions on This Computer window to enter it." | Press **Enter Password...** on the job. After three wrong tries, press **Retry** for three more. |
 | QUILL-SCRIBE-BUSY | "Scribe for Documents asked QUILL Social to slow down; trying again in a minute." | Nothing. QUILL Social waits a minute and carries on. |
 | QUILL-SCRIBE-NOTDOC | "Scribe for Documents cannot convert Data.xml: it takes PDF, pictures, Office, OpenDocument, text, EPUB and MOBI files, not web pages." | Save the file as Word or PDF and send that. |
 | QUILL-SCRIBE-TOOBIG | "Video.pdf is 612 MB. Scribe for Documents takes files up to 500 MB." | Split the document, or save a copy with smaller pictures. Nothing was sent. |
@@ -203,14 +203,14 @@ and Convert** in the Convert dialog, which first says exactly what will be
 sent and where. There is no "don't ask again".
 
 **Will a second format cost more pages?** No. Pages are charged once for each
-document. Use **Download Formats...** in My Scribe Documents for another
+document. Use **Download Formats...** in Documents in My Scribe Account for another
 format of a document already in your account.
 
 **Can I use QUILL Social and QUILL at the same time?** Yes. Every QUILL app on this
 computer shares one sign-in, one queue and one Options window. Only one
 sends at a time, and only the app running the job speaks; the others show
 the same rows quietly. If another QUILL app is running the job, the result
-sentence ends "Open it from Scribe Conversions."
+sentence ends "Open it from the Conversions on This Computer window."
 
 **Can I stop a conversion?** Scribe cannot be stopped once it starts.
 **Cancel Waiting** stops QUILL Social waiting and downloading, and says so.
@@ -228,8 +228,8 @@ F1 in the Scribe windows:
 | Window | What F1 tells you |
 |---|---|
 | Convert with Scribe for Documents | What is sent and where, the formats, the settings, and the pages it uses |
-| Scribe Conversions | The jobs, their stages, and every command on a job |
-| My Scribe Documents | Your documents and the Trash, and what each button does |
+| Conversions on This Computer | The jobs, their stages, and every command on a job |
+| Documents in My Scribe Account | Your documents and the Trash, and what each button does |
 | Scribe for Documents Options | The family's one set of Scribe choices |
 | Sign In to Scribe for Documents | Signing in on Scribe's own page, in your browser |
 | Password for Notes.pdf | A PDF's password, used once and never saved |
@@ -296,7 +296,7 @@ Every command is on a menu, so you can always find it by walking the menu bar wi
 - **Feeds** (Alt+D): **Feeds > Add Feed...** (Ctrl+Shift+N), **Feeds > New Folder...** (Ctrl+Alt+F), **Feeds > Feed settings...** (Ctrl+Shift+P), **Feeds > Mark all read** (Ctrl+Shift+K) and **Feeds > Undo mark all read** (Ctrl+Z), then **Feeds > New smart folder...** (Ctrl+Shift+M), **Feeds > Edit smart folder...** (Ctrl+Alt+M), **Feeds > Delete smart folder** (Ctrl+Shift+Delete), **Feeds > Import OPML...** (Ctrl+I), **Feeds > Export OPML...** (Ctrl+E) and **Feeds > Unsubscribe from feed** (Ctrl+Alt+U). Delete smart folder and Unsubscribe ask before they remove anything. Export OPML says how many feeds went to which file in which folder once the file is written, for example "Exported 12 feeds to quill-social-feeds.opml in Downloads."
 - **Listen** (Alt+L): **Listen > Listen to this view** (Ctrl+Shift+L) reads the unread articles in the current view aloud, one after another; **Listen > Play / Pause** (Ctrl+Shift+Space), **Listen > Next article** (Ctrl+Shift+Period), **Listen > Previous article** (Ctrl+Shift+Comma) and **Listen > Stop listening** (Ctrl+Shift+S) control it.
 - **Studio** (Alt+S): **Studio > Drafts...** (Ctrl+Shift+D), **Studio > Agenda / Calendar...** (Ctrl+Shift+Y), **Studio > Queue schedule...** (Ctrl+Shift+U) and **Studio > Approvals...** (Ctrl+Shift+W).
-- **Tools** (Alt+T): **Tools > Command Center** (Ctrl+Shift+C), **Tools > Where Am I** (Ctrl+Shift+I), **Tools > Search** (Ctrl+L), **Tools > Find Text...** (Ctrl+Shift+F), **Tools > Find Next** (F3), **Tools > Find Previous** (Shift+F3), **Tools > Refresh** (F5), **Tools > Catch Up** (Ctrl+Shift+H), **Tools > Insights / Analytics** (Ctrl+Alt+I), **Tools > Safety Center** (Ctrl+Alt+T), **Tools > Notification policies** (Ctrl+Alt+P), **Tools > Plugins** (Ctrl+Alt+G), **Tools > Outbox** (Ctrl+Shift+B), **Tools > Summarize this feed (AI)** (Ctrl+Alt+R), then the Scribe for Documents rows: **Tools > Scribe Conversions** (Alt+Shift+F7), **Tools > My Scribe Documents** (Alt+Shift+F8), **Tools > Scribe Status** (Alt+Shift+F9), **Tools > Repeat Last Scribe Message** (Alt+Shift+F10) and **Tools > Scribe for Documents Options...** (Alt+Shift+F11).
+- **Tools** (Alt+T): **Tools > Command Center** (Ctrl+Shift+C), **Tools > Where Am I** (Ctrl+Shift+I), **Tools > Search** (Ctrl+L), **Tools > Find Text...** (Ctrl+Shift+F), **Tools > Find Next** (F3), **Tools > Find Previous** (Shift+F3), **Tools > Refresh** (F5), **Tools > Catch Up** (Ctrl+Shift+H), **Tools > Insights / Analytics** (Ctrl+Alt+I), **Tools > Safety Center** (Ctrl+Alt+T), **Tools > Notification policies** (Ctrl+Alt+P), **Tools > Plugins** (Ctrl+Alt+G), **Tools > Outbox** (Ctrl+Shift+B), **Tools > Summarize this feed (AI)** (Ctrl+Alt+R), then the Scribe for Documents rows: **Tools > Conversions on This Computer** (Alt+Shift+F7), **Tools > Documents in My Scribe Account** (Alt+Shift+F8), **Tools > Scribe Status** (Alt+Shift+F9), **Tools > Repeat Last Scribe Message** (Alt+Shift+F10) and **Tools > Scribe for Documents Options...** (Alt+Shift+F11).
 - **Help** (Alt+H): the documents described below, and **Help > About** (Alt+F1).
 
 Example: to plan the week's posts, press Ctrl+Shift+Y for Studio > Agenda / Calendar... and read what is scheduled, then Ctrl+Shift+D for your drafts. Without chords, the same two are Alt+S, then A, and Alt+S, then D. Limits: the keys work in the main window, not inside the composer or another dialog, which have their own buttons and access keys. Rarely used commands have longer keys on purpose. On keyboard layouts where the right Alt key types accented letters, a Ctrl+Alt key may run its command instead of typing the letter while the search box has focus; the menu always works.

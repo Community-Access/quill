@@ -326,7 +326,7 @@ def test_the_result_sentence_carries_the_note_before_the_folder() -> None:
     text = say.result_sentence(job, app_name="QUILL Studio", note="with 12 chapter markers")
     assert text == (
         "Scribe for Documents made Notes.mp3 in C:/x, with 12 chapter markers. "
-        "Open it from Scribe Conversions."
+        "Open it from the Conversions on This Computer window."
     )
 
 
@@ -351,7 +351,7 @@ def test_every_app_catalogue_explains_the_scribe_windows(module: str) -> None:
     catalogue = importlib.import_module(module)
     for title in (*SCRIBE_PURPOSES, "Password for Notes.pdf"):
         assert catalogue.is_known_title(title), (module, title)
-    assert "Scribe" in catalogue.purpose_for_title("Scribe Conversions")
+    assert "Scribe" in catalogue.purpose_for_title("Conversions on This Computer")
 
 
 # -------------------------------------------------------------- Beacon places

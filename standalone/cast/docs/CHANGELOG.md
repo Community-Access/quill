@@ -41,9 +41,9 @@ finds the links in the selected episode's show notes that point straight at
 a PDF or another document, and sends the one you choose to Scribe for
 Documents, which rebuilds it as accessible Word, HTML, EPUB, DAISY, MP3 or
 braille. With one link the Convert dialog opens at once; with several, a
-list asks which. The result opens in QUILL, or QUILL Lite, from Scribe
-Conversions. The Podcasts menu's Scribe for Documents submenu holds Scribe
-Conversions, My Scribe Documents, Scribe Status, Repeat Last Scribe Message
+list asks which. The result opens in QUILL, or QUILL Lite, from Conversions on This
+Computer. The Podcasts menu's Scribe for Documents submenu holds Conversions on This
+Computer, Documents in My Scribe Account, Scribe Status, Repeat Last Scribe Message
 and Scribe for Documents Options, on Alt+Shift+F7 to F11.
 
 ### The newest choice is the one saved (2026-11-20)

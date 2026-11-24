@@ -473,6 +473,7 @@
   "quill.ui.scribe_documents_dialog": "reachable",
   "quill.ui.scribe_options_dialog": "reachable",
   "quill.ui.scribe_signin_dialog": "reachable",
+  "quill.ui.scribe_status_dialog": "reachable",
   "quill.ui.searchable_picker": "reachable",
   "quill.ui.session_browser": "reachable",
   "quill.ui.session_restore_dialog": "reachable",

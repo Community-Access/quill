@@ -40,15 +40,15 @@ _TABLE: tuple[tuple[str, str, tuple[str, ...], str, str], ...] = (
     ),
     (
         "scribe.my_documents",
-        "My Scribe Documents",
-        ("scribe documents", "scribe library"),
+        "Documents in My Scribe Account",
+        ("my scribe documents", "scribe documents", "scribe library"),
         "Tools",
         _TOOLS_MENU,
     ),
     (
         "scribe.conversions",
-        "Scribe Conversions",
-        ("scribe conversions", "scribe progress"),
+        "Conversions on This Computer",
+        ("conversions", "scribe conversions", "scribe progress"),
         "Tools",
         _TOOLS_MENU,
     ),
@@ -98,8 +98,8 @@ _TABLE: tuple[tuple[str, str, tuple[str, ...], str, str], ...] = (
     ),
     (
         "scribe.file_documents",
-        "My Scribe Documents (File)",
-        (),
+        "Documents in My Scribe Account (File)",
+        ("my scribe documents",),
         "File",
         "File",
     ),
@@ -124,7 +124,13 @@ _TABLE: tuple[tuple[str, str, tuple[str, ...], str, str], ...] = (
         "Tools",
         "Tools, Braille",
     ),
-    ("scribe.window", "Scribe Conversions Window", (), "Window", "Window"),
+    (
+        "scribe.window",
+        "Conversions on This Computer (Window)",
+        ("scribe conversions",),
+        "Window",
+        "Window",
+    ),
 )
 
 SCRIBE_ROWS: tuple[CommandSpec, ...] = tuple(

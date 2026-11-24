@@ -35,7 +35,7 @@ failed sentence also goes to the status bar and to Notifications, and Repeat
 Last Scribe Message says it again, whatever was chosen here (FUX-04).
 
 Stage feedback has one more choice, :data:`STAGE_SCOPES`: only while a Scribe
-for Documents window (Conversions, Status, My Scribe Documents) is in front --
+for Documents window (Conversions, Status, Documents in My Scribe Account) is in front --
 the default -- or everywhere, even with another program in front.
 
 **A deliberate exception to one family rule.** :mod:`~quill.core.
@@ -120,7 +120,7 @@ STAGE_SCOPES: tuple[tuple[str, str], ...] = (
 DEFAULT_STAGE_SCOPE = SCRIBE_WINDOWS
 
 #: A top-level window with this attribute true is a Scribe for Documents
-#: window for :data:`SCRIBE_WINDOWS` (Conversions, Status, My Scribe Documents).
+#: window for :data:`SCRIBE_WINDOWS` (Conversions, Status, Documents in My Scribe Account).
 SCRIBE_WINDOW_ATTR = "is_scribe_window"
 
 _DEFAULTS: Mapping[Moment, ActionFeedback] = {

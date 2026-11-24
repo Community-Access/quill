@@ -7,8 +7,8 @@
   can start with a library stamp (F6, Pneuma's corpus). Its extension comes
   from the bytes that arrived (F1). It is made safe, and an existing file is
   never overwritten -- ``Notes (2).docx``.
-* :class:`Library` remembers which Scribe document made which file, so My
-  Scribe Documents can say "downloaded to ..." and Beacon can find it. It
+* :class:`Library` remembers which Scribe document made which file, so Documents in
+  My Scribe Account can say "downloaded to ..." and Beacon can find it. It
   holds document IDs, formats and paths only: never a document's text.
 
 wx-free.

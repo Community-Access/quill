@@ -6,8 +6,8 @@ point straight at a file Scribe takes, and sends the one the person chooses
 by its address, as QUILL Cast does for an episode (8.6). None: one sentence;
 one: the shared Convert dialog at once; several: "Choose a Linked Document".
 
-**Tools** gains the family's shared rows -- Scribe Conversions, My Scribe
-Documents, Scribe Status, Repeat Last Scribe Message and Scribe for Documents
+**Tools** gains the family's shared rows -- Conversions on This Computer, Documents in My Scribe
+Account, Scribe Status, Repeat Last Scribe Message and Scribe for Documents
 Options -- on the keys they have in every app (``keymap.DEFAULT_BINDINGS``).
 
 Everything else is the shared code in ``quill.ui`` and ``quill.core.scribe``:
@@ -31,8 +31,8 @@ _TITLE = "QUILL Social"
 #: The Item menu's row, and the Tools menu's, as ``(label, command id)``.
 ITEM_ROW = ("Convert Linked Document with &Scribe for Documents...", "scribe_convert_linked")
 TOOLS_ROWS = (
-    ("Scri&be Conversions", "scribe_conversions"),
-    ("My Scribe &Documents", "scribe_my_documents"),
+    ("Con&versions on This Computer...", "scribe_conversions"),
+    ("&Documents in My Scribe Account...", "scribe_my_documents"),
     ("Scribe St&atus", "scribe_status"),
     ("Repeat Last Scribe &Message", "scribe_repeat"),
     ("Scrib&e for Documents Options...", "scribe_options"),
@@ -41,8 +41,8 @@ TOOLS_ROWS = (
 #: Command Center names, by command id.
 _NAMES = {
     "scribe_convert_linked": "Convert linked document with Scribe for Documents",
-    "scribe_conversions": "Scribe Conversions",
-    "scribe_my_documents": "My Scribe Documents",
+    "scribe_conversions": "Conversions on This Computer",
+    "scribe_my_documents": "Documents in My Scribe Account",
     "scribe_status": "Scribe status",
     "scribe_repeat": "Repeat last Scribe message",
     "scribe_options": "Scribe for Documents options",

@@ -3,7 +3,7 @@
 Consent (nothing is queued without Send and Convert), Safe Mode and a build
 with no client ID (nothing is queued, the reason is said), what the holding
 app says and what a non-holding app keeps silent, the convert dialog's parts,
-the Scribe Conversions window updating rows in place, and every QUILL entry
+the Conversions on This Computer window updating rows in place, and every QUILL entry
 point reaching the shared controller with the right formats.
 """
 
@@ -252,7 +252,7 @@ def test_a_result_for_another_app_is_offered_not_opened(controller: Any, isolate
     made.write_text("x")
     controller._on_event("done", _job(app="QUILL Lite", outputs={"docx": str(made)}))
     assert controller.host.opened == []
-    assert controller.host.said[0].endswith("Open it from Scribe Conversions.")
+    assert controller.host.said[0].endswith("Open it from the Conversions on This Computer window.")
 
 
 def test_a_job_that_needs_the_person_says_so_once(controller: Any) -> None:
@@ -261,7 +261,7 @@ def test_a_job_that_needs_the_person_says_so_once(controller: Any) -> None:
     controller._on_event("needs_you", job)
     controller._on_event("needs_you", job)
     assert controller.host.said == [
-        "Notes.pdf needs its password. Open Scribe Conversions to enter it."
+        "Notes.pdf needs its password. Open the Conversions on This Computer window to enter it."
     ]
 
 
@@ -493,8 +493,10 @@ def test_the_rows_land_in_their_menus(isolated: Path) -> None:
         made._place_scribe_rows(bar)
         assert made.commands.ids == [row[0] for row in ROWS]
         labels = [i.GetItemLabelText() for i in file_menu.GetMenuItems()]
-        assert labels[-1] == "Exit" and "My Scribe Documents" in labels
-        assert [i.GetItemLabelText() for i in window.GetMenuItems()][1] == "Scribe Conversions"
+        assert labels[-1] == "Exit" and "Documents in My Scribe Account..." in labels
+        assert [i.GetItemLabelText() for i in window.GetMenuItems()][
+            1
+        ] == "Conversions on This Computer"
         submenu = tools.GetMenuItems()[-1]
         assert submenu.GetItemLabelText() == "Scribe for Documents"
         # The twelve commands and Replace with Finished Document (File has no letter left).

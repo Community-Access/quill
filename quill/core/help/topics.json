@@ -4463,39 +4463,39 @@
   },
   {
     "id": "scribe.my_documents",
-    "title": "My Scribe Documents",
+    "title": "Documents in My Scribe Account",
     "body": "Every document in your Scribe account, including those made on the Scribe website or an iPhone, with its pages, date and the formats ready. Show switches between Documents and the Trash. Download Formats (Enter) makes or downloads a format, and another format of a document already there uses no pages. Open in QUILL, Rename, Move to Trash (Delete), Recover, Delete Forever, Ask for Human Review, Copy Details and Refresh. Delete Forever asks first and cannot be undone; the Trash is emptied after 7 days.",
-    "user_guide_section": "my-scribe-documents"
+    "user_guide_section": "documents-in-my-scribe-account"
   },
   {
     "id": "scribe.file_documents",
-    "title": "My Scribe Documents",
-    "body": "Every document in your Scribe account, and the Trash. The same window as Tools, Scribe for Documents, My Scribe Documents: Download Formats, Open in QUILL, Rename, Move to Trash, Recover and Delete Forever.",
-    "user_guide_section": "my-scribe-documents"
+    "title": "Documents in My Scribe Account",
+    "body": "Every document in your Scribe account, and the Trash. The same window as Tools, Scribe for Documents, Documents in My Scribe Account: Download Formats, Open in QUILL, Rename, Move to Trash, Recover and Delete Forever.",
+    "user_guide_section": "documents-in-my-scribe-account"
   },
   {
     "id": "scribe.conversions",
-    "title": "Scribe Conversions",
+    "title": "Conversions on This Computer",
     "body": "Every Scribe for Documents job on this computer, from every QUILL app, with its formats and stage. Details below the list has the percent, time left and Scribe's latest message. Enter opens the result, Delete removes the row, and the Applications key lists every command: Open Result, Next Steps, Open Folder, Cancel Waiting, Retry, Buy Pages, Enter Password, Sign In, Ask for Human Review, Copy Details and Remove from List. Each stage is said once. Jobs carry on when you close the window or QUILL. Escape closes it.",
-    "user_guide_section": "scribe-conversions"
+    "user_guide_section": "conversions-on-this-computer"
   },
   {
     "id": "scribe.window",
-    "title": "Scribe Conversions",
-    "body": "Opens Scribe Conversions from the Window menu: every Scribe for Documents job on this computer and what it is doing. Enter opens a result and the Applications key lists every command. Escape closes it and returns you to where you were.",
-    "user_guide_section": "scribe-conversions"
+    "title": "Conversions on This Computer",
+    "body": "Opens Conversions on This Computer from the Window menu: every Scribe for Documents job on this computer and what it is doing. Enter opens a result and the Applications key lists every command. Escape closes it and returns you to where you were.",
+    "user_guide_section": "conversions-on-this-computer"
   },
   {
     "id": "scribe.status",
     "title": "Scribe Status",
-    "body": "Says what the running Scribe for Documents job is doing, once, without opening anything: for example, Notes.pdf, adding image descriptions, 40 percent, about 2 minutes. With nothing running it says so. It has no key to start with; give it one in the Keymap Editor.",
-    "user_guide_section": "scribe-status-and-repeat-last-scribe-message"
+    "body": "Opens the Scribe Status dialog: who is signed in, the pages left, and every Scribe for Documents conversion on this computer, in one text field to arrow through. The first line says who you are signed in as and the pages left. Refresh reads it again, and Conversions on This Computer opens that window. It has no key to start with; give it one in the Keymap Editor.",
+    "user_guide_section": "scribe-status"
   },
   {
     "id": "scribe.repeat",
     "title": "Repeat Last Scribe Message",
     "body": "Says the last Scribe for Documents sentence again: a stage, a result or a problem. It has no key to start with; give it one in the Keymap Editor.",
-    "user_guide_section": "scribe-status-and-repeat-last-scribe-message"
+    "user_guide_section": "repeat-last-scribe-message"
   },
   {
     "id": "scribe.sign_in",
@@ -4559,21 +4559,27 @@
   },
   {
     "id": "scribe_conversions_window",
-    "title": "Scribe Conversions",
+    "title": "Conversions on This Computer",
     "body": "Every Scribe for Documents job on this computer. The list has the file, its formats and its stage; Details has the rest. The buttons act on the job you are on, and say why when they cannot. Escape closes the window.",
-    "user_guide_section": "scribe-conversions"
+    "user_guide_section": "conversions-on-this-computer"
   },
   {
     "id": "scribe_documents_dialog",
-    "title": "My Scribe Documents",
+    "title": "Documents in My Scribe Account",
     "body": "Your documents on Scribe, or the Trash. Choose one in the list, then use the buttons, or the Applications key for the same commands.",
-    "user_guide_section": "my-scribe-documents"
+    "user_guide_section": "documents-in-my-scribe-account"
   },
   {
     "id": "scribe_options_dialog",
     "title": "Scribe for Documents Options",
     "body": "The Scribe for Documents choices for every QUILL app on this computer. OK saves them; Cancel leaves them as they were.",
     "user_guide_section": "scribe-for-documents-options"
+  },
+  {
+    "id": "scribe_status_dialog",
+    "title": "Scribe Status",
+    "body": "Everything QUILL knows about your Scribe for Documents account and conversions, in one read-only text field: the first line is who is signed in and the pages left, then Account, Usage, Now converting, Waiting and Recent. Arrow through it, or pan it on a braille display. Refresh reads your account again; Sign In appears when you are not signed in; Open My Scribe Account in Browser and Conversions on This Computer are buttons. Escape closes it.",
+    "user_guide_section": "scribe-status"
   },
   {
     "id": "scribe_signin_dialog",
@@ -4584,7 +4590,7 @@
   {
     "id": "scribe_password_dialog",
     "title": "Password for a Scribe document",
-    "body": "A PDF waiting in Scribe Conversions needs its password. Type it and press OK. Show password lets you check it with braille. It is used once and never saved. After three wrong tries the job stops; Retry starts again.",
+    "body": "A PDF waiting in Conversions on This Computer needs its password. Type it and press OK. Show password lets you check it with braille. It is used once and never saved. After three wrong tries the job stops; Retry starts again.",
     "user_guide_section": "a-password-protected-pdf"
   },
   {

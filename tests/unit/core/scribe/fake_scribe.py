@@ -112,6 +112,9 @@ class FakeScribe:
         self.requests: list[tuple[str, str, dict[str, str], bytes]] = []
         self.sockets: list[FakeSocket] = []
         self.pages_remaining = 100
+        self.suggest_buying_pages = False
+        #: ``GET /api/billing``'s ``subscription``: None, or {"store", "renews_at"}.
+        self.subscription: dict[str, str] | None = None
         self.access_token = "access-token-1"
         self.refresh_token = "refresh-token-1"
         self.reject_token_once = False
@@ -216,7 +219,7 @@ class FakeScribe:
                 {
                     "documents": docs,
                     "pages_remaining": self.pages_remaining,
-                    "suggest_buying_pages": False,
+                    "suggest_buying_pages": self.suggest_buying_pages,
                 },
             )
         if path == "/api/documents/trash":
@@ -245,7 +248,7 @@ class FakeScribe:
                 200,
                 {
                     "pages_remaining": self.pages_remaining,
-                    "subscription": None,
+                    "subscription": self.subscription,
                     "app_account_token": "x",
                 },
             )

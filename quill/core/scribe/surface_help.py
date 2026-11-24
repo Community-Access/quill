@@ -25,7 +25,7 @@ SCRIBE_PURPOSES: dict[str, str] = {
         "for language, voice, braille and pictures follow the formats, and Pages says "
         "how many of your Scribe pages it uses."
     ),
-    "Scribe Conversions": (
+    "Conversions on This Computer": (
         f"Every {PRODUCT_NAME} job on this computer, from every QUILL app, with its "
         "formats and stage. Details below the list has the percent, time left and "
         "Scribe's latest message. Enter opens the result, Delete removes the row, and "
@@ -33,7 +33,7 @@ SCRIBE_PURPOSES: dict[str, str] = {
         "never move under you, and nothing is spoken unless you choose it in Options. "
         "Escape closes it."
     ),
-    "My Scribe Documents": (
+    "Documents in My Scribe Account": (
         "Every document in your Scribe account, and the Trash. Download Formats "
         "(Enter) downloads a format or makes a new one, which uses no pages for a "
         "document already there. Rename, Move to Trash, Recover, Delete Forever, Ask "
@@ -48,6 +48,12 @@ SCRIBE_PURPOSES: dict[str, str] = {
         "starting, each stage, finishing, and failing or needing you, with a button to "
         "hear the success and the failure sound. OK saves; Cancel leaves things as "
         "they were."
+    ),
+    "Scribe Status": (
+        f"Who is signed in to {PRODUCT_NAME}, the pages left, and every conversion on "
+        "this computer, in one text field to arrow through or pan in braille. The first "
+        "line is the most important fact; Account, Usage, Now converting, Waiting and "
+        "Recent follow. Refresh reads your account again. Escape closes it."
     ),
     "Sign In to Scribe for Documents": (
         "Your browser is open at Scribe's own sign-in page; sign in there and come "

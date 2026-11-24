@@ -113,7 +113,7 @@ def test_a_failed_file_does_not_stop_the_rest_and_the_last_sentence_says_both(
     assert not [r for r in server.requests if b"Page.html" in r[3]]  # never sent
     assert say.batch_sentence(service.queue.batch_jobs(jobs[0].batch)) == (
         "Scribe for Documents finished 2 files. Made: b.pdf. Not made: Page.html; "
-        "Scribe Conversions has the details."
+        "the Conversions on This Computer window has the details."
     )
 
 

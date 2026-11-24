@@ -7,7 +7,7 @@ the upload, one conversion at a time in Scribe's order, the family's pace of
 8 actions a minute, a minute's wait on ``rate_limited``, reconnecting without
 uploading again, and the download with our names (F1, F6). The only
 difference is the queue folder: a private one in the run folder, so the
-run's jobs never appear in the person's Scribe Conversions window or library.
+run's jobs never appear in the person's Conversions on This Computer window or library.
 That is why the run refuses to start while a QUILL app is working through
 the family queue: the two would not share Scribe's limit.
 

@@ -64,7 +64,9 @@ def test_a_result_that_opens_elsewhere_never_opens_by_itself(
     controller.host.scribe_opens_on_its_own = False
     controller._on_event("done", _done_job(tmp_path))
     assert controller.host.opened == []
-    assert controller.host.said[-1].endswith("Open it from Scribe Conversions.")
+    assert controller.host.said[-1].endswith(
+        "Open it from the Conversions on This Computer window."
+    )
     # Open Result, the person's own command, still opens it.
     controller.open_job_result(_done_job(tmp_path))
     assert [f for f, _p in controller.host.opened] == ["docx"]

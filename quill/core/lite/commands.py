@@ -1065,7 +1065,7 @@ COMMANDS: list[CommandRow] = [
     # prompt on each. Ctrl+F4 closes this one; Ctrl+Shift+F4 closes the others.
     ("&Window", "&Close Other Documents", "Ctrl+Shift+F4", "cmd_close_other_windows", ""),
     *WINDOW_SAY_ROWS,  # Say Windows Open (commands_say.py)
-    *SCRIBE_WINDOW_ROWS,  # Window > Scribe Conversions (commands_scribe.py)
+    *SCRIBE_WINDOW_ROWS,  # Window > Conversions on This Computer (commands_scribe.py)
     *HELP_ROWS,  # the Help menu (commands_help.py)
     *wordpress_menu.lite_placed_rows(),  # WordPress, at the foot of Edit to Tools
     *forms_menu.lite_placed_rows(),  # Forms, at the foot of Insert to Tools

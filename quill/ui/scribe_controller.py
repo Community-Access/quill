@@ -4,14 +4,14 @@ QUILL and QUILL Lite (and later the other apps) each make one
 :class:`ScribeController` with a small :class:`ScribeHost` adapter, and get
 the whole family integration from it: the availability check (Safe Mode, no
 client ID), sign-in, the convert dialog, the family queue's runner, the
-Scribe Conversions window, My Scribe Documents, the options and every
+Conversions on This Computer window, Documents in My Scribe Account, the options and every
 sentence. An app adds only its own entry points (PRD goal 5).
 
 **Who speaks** (7.4a): only while this app holds the queue's runner lock,
 and only what the person chose to hear (:mod:`quill.core.scribe.feedback`;
 by default nothing in the main window, and a sound at the end of a job).
 **Dialogs** open only straight after the person's own command; a background
-job that needs the person waits in Scribe Conversions and says so once.
+job that needs the person waits in Conversions on This Computer and says so once.
 """
 
 from __future__ import annotations
@@ -89,8 +89,8 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
         save_options(options)
 
     def _scribe_window_in_front(self) -> bool:
-        """A Scribe for Documents window (Conversions, Status, My Scribe
-        Documents) is the active window: where stage feedback goes by default."""
+        """A Scribe for Documents window (Conversions, Status, Documents in My Scribe
+        Account) is the active window: where stage feedback goes by default."""
         from quill.core.scribe.feedback import SCRIBE_WINDOW_ATTR
 
         active = wx.GetActiveWindow()
@@ -475,7 +475,7 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
     # --------------------------------------------------------- the commands
 
     def open_conversions(self) -> None:
-        """Window > Scribe Conversions (modeless)."""
+        """Window > Conversions on This Computer (modeless)."""
         if not self.check_available():
             return
         self.ensure_service()
@@ -496,7 +496,7 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
 
         dialog = ScribeDocumentsDialog(self.host.scribe_parent(), self)
         try:
-            show_modal_dialog(dialog, "My Scribe Documents")
+            show_modal_dialog(dialog, "Documents in My Scribe Account")
         finally:
             dialog.Destroy()
 
@@ -525,10 +525,30 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
         return running[0] if running else None
 
     def status(self) -> None:
-        """Scribe Status: the current job, once."""
+        """Scribe Status: the account, pages, pace and queue, in a dialog."""
         if not self.check_available():
             return
-        self._say(say.status_sentence(self.current_job()))
+        from quill.core.scribe import STATUS_TITLE
+        from quill.ui.dialog_contract import show_modal_dialog
+        from quill.ui.scribe_status_dialog import ScribeStatusDialog
+
+        opener = wx.Window.FindFocus()
+        dialog = ScribeStatusDialog(self.host.scribe_parent(), self)
+        try:
+            show_modal_dialog(dialog, STATUS_TITLE)
+            then = dialog.then_open
+        finally:
+            dialog.Destroy()
+        if then == "conversions":
+            # Straight on to that window: focus does not stop at the opener on
+            # the way, which a screen reader would start reading (GATE-13).
+            self.open_conversions()
+            return
+        try:
+            if opener is not None and opener:
+                opener.SetFocus()  # back where the person was
+        except RuntimeError:
+            pass
 
     def repeat_last(self) -> None:
         self.host.scribe_announce(self._last_sentence or f"Nothing from {scribe.PRODUCT_NAME} yet.")

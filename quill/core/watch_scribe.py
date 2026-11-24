@@ -24,7 +24,7 @@ after this one has finished.
   profile, not once per file: a folder of forty files waiting for sign-in is
   one sentence (accessibility review, 2026-11-21).
 * **Background jobs never open a dialog.** A file that needs its password
-  waits in Scribe Conversions, and the outcome says so.
+  waits in Conversions on This Computer, and the outcome says so.
 
 wx-free; the app gives the action ``on_wake`` (start its runner) and
 ``signed_in`` once it has a Scribe controller.
@@ -43,7 +43,7 @@ from .watch_actions import WatchActionOutcome, WatchItem, _BaseAction
 #: The open_as marker of a watch job: the controller speaks nothing for it.
 WATCH_OPEN_AS = "watch"
 #: How long one file may take before the folder moves on (it carries on in
-#: Scribe Conversions either way).
+#: Conversions on This Computer either way).
 _WAIT_LIMIT_S = 4 * 60 * 60.0
 _POLL_S = 2.0
 
@@ -171,7 +171,9 @@ class ScribeConvertAction(_BaseAction):
         while True:
             found = queue.get(job.id)
             if found is None:
-                return WatchActionOutcome.skipped(f"{name} was removed from Scribe Conversions.")
+                return WatchActionOutcome.skipped(
+                    f"{name} was removed from Conversions on This Computer."
+                )
             state = found.state
             if state == q.DONE:
                 made = ", ".join(Path(p).name for p in found.outputs.values()) or name
@@ -183,7 +185,8 @@ class ScribeConvertAction(_BaseAction):
                 )
             if state == q.NEEDS_PASSWORD:
                 return WatchActionOutcome.failed(
-                    f"{name} needs its password. Open Scribe Conversions to enter it."
+                    f"{name} needs its password. Open the Conversions on This Computer "
+                    "window to enter it."
                 )
             if state == q.NEEDS_SIGNIN:
                 return self._once(item, "signin", signin_message)
@@ -195,7 +198,7 @@ class ScribeConvertAction(_BaseAction):
                 return WatchActionOutcome.skipped(f"Stopped waiting for {name}.")
             if self.clock() >= deadline:
                 return WatchActionOutcome.skipped(
-                    f"{name} is still converting; it carries on in Scribe Conversions."
+                    f"{name} is still converting; it carries on in Conversions on This Computer."
                 )
             self.sleep(_POLL_S)
 

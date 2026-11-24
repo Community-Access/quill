@@ -4,7 +4,7 @@ QUILL Studio's "Narration from Scribe for Documents..." asks Scribe for MP3
 audio and DAISY (text and audio). The DAISY book's navigation says where each
 heading starts in its audio, and those times become chapter markers written
 into the MP3 itself (ID3 CHAP frames, in place: the audio is not touched). The
-marked file is the one the Scribe library records, so My Scribe Documents and
+marked file is the one the Scribe library records, so Documents in My Scribe Account and
 Beacon still find it.
 
 **One audio file.** A heading's time is its time in the MP3, when that file

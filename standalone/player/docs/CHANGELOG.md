@@ -34,9 +34,9 @@ Quill Media Player runs the same player code as QUILL from the shared `quill` pa
   as chapters when it is ready: "The DAISY book is open in Media Player, 24
   headings, at the start. Press Alt+A to play." It opens by itself only when
   the Player is the window you are in, with no dialog open and nothing
-  playing; otherwise the sentence says to open it from Scribe Conversions.
-- **File > Scribe for Documents** holds Scribe Conversions, My Scribe
-  Documents, Scribe Status, Repeat Last Scribe Message and Scribe for
+  playing; otherwise the sentence says to open it from Conversions on This Computer.
+- **File > Scribe for Documents** holds Conversions on This Computer, Documents in My Scribe
+  Account, Scribe Status, Repeat Last Scribe Message and Scribe for
   Documents Options, on Alt+Shift+F7 to F11.
 - **A DAISY zip or `.ncx` on the command line opens as a book.** QUILL's Send
   to Media Player used to hand the Player a `.ncx` it tried to play as audio.

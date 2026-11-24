@@ -254,12 +254,12 @@ account. This part of QuillBeacon is Powered by Scribe for Documents.
 | Where | What is there |
 |---|---|
 | **Scribe Documents**, in the Destinations list | Every place in a Scribe result |
-| **Tools > Scribe for Documents** | Add My Scribe Documents as Places, then Scribe Conversions, My Scribe Documents, Scribe Status, Repeat Last Scribe Message and Scribe for Documents Options |
-| QUILL's Scribe Conversions, **Next Steps...** | **Save a Beacon Place...**, for a Word or HTML result |
+| **Tools > Scribe for Documents** | Add Documents in My Scribe Account as Places, then Conversions on This Computer, Documents in My Scribe Account, Scribe Status, Repeat Last Scribe Message and Scribe for Documents Options |
+| QUILL's Conversions on This Computer, **Next Steps...** | **Save a Beacon Place...**, for a Word or HTML result |
 
 ### Saving a place from QUILL
 
-1. In QUILL, open Window, Scribe Conversions, and choose a job that made
+1. In QUILL, open Window, Conversions on This Computer, and choose a job that made
    Word or accessible HTML.
 2. Press **Next Steps...** and choose **Save a Beacon Place...** (when the job
    made both, it says which: **Save a Beacon Place (Word)...**).
@@ -275,7 +275,7 @@ account. This part of QuillBeacon is Powered by Scribe for Documents.
 
 ### Your whole Scribe library as places
 
-**Tools > Scribe for Documents > Add My Scribe Documents as Places**
+**Tools > Scribe for Documents > Add Documents in My Scribe Account as Places**
 (Alt+Shift+F6) reads the list of documents in your Scribe account and makes
 a place for each one that is not a place yet. It uses the network, only when
 you choose it. If it takes more than a second you hear "Reading your Scribe
@@ -295,7 +295,7 @@ Press Enter on a Scribe place as on any other.
   more than a second you hear "Checking your Scribe account...".
 - **Still in your account:** a question, **Download Again from Scribe for
   Documents**: "Notes is no longer on this computer. Download it again from
-  My Scribe Documents? Nothing is uploaded and no pages are used." **Yes**
+  Documents in My Scribe Account? Nothing is uploaded and no pages are used." **Yes**
   is the default. It opens the Convert dialog for the document already in
   your account, which says "No file is sent" and has a **Convert** button.
   When the download is done, open the place again.
@@ -316,9 +316,9 @@ pay Scribe for your own pages; a new account has 100 free pages.
 
 | Command | Menu | Key |
 |---|---|---|
-| Add My Scribe Documents as Places | Tools > Scribe for Documents | **Alt+Shift+F6** |
-| Scribe Conversions | Tools > Scribe for Documents | **Alt+Shift+F7** |
-| My Scribe Documents | Tools > Scribe for Documents | **Alt+Shift+F8** |
+| Add Documents in My Scribe Account as Places | Tools > Scribe for Documents | **Alt+Shift+F6** |
+| Conversions on This Computer | Tools > Scribe for Documents | **Alt+Shift+F7** |
+| Documents in My Scribe Account | Tools > Scribe for Documents | **Alt+Shift+F8** |
 | Scribe Status | Tools > Scribe for Documents | **Alt+Shift+F9** |
 | Repeat Last Scribe Message | Tools > Scribe for Documents | **Alt+Shift+F10** |
 | Scribe for Documents Options | Tools > Scribe for Documents | **Alt+Shift+F11** |
@@ -329,11 +329,11 @@ Inside the Scribe windows:
 
 | Where | Key | What it does |
 |---|---|---|
-| Scribe Conversions list | Enter | Open Result |
-| Scribe Conversions list | Delete | Remove from List |
-| Scribe Conversions and My Scribe Documents lists | Applications key or Shift+F10 | Every command for the row |
-| Scribe Conversions | Escape | Closes it, back to where you were |
-| My Scribe Documents list | Enter | Download Formats |
+| Conversions on This Computer list | Enter | Open Result |
+| Conversions on This Computer list | Delete | Remove from List |
+| Conversions on This Computer and Documents in My Scribe Account lists | Applications key or Shift+F10 | Every command for the row |
+| Conversions on This Computer | Escape | Closes it, back to where you were |
+| Documents in My Scribe Account list | Enter | Download Formats |
 | Convert dialog, What will be sent | Enter | Send and Convert |
 | Convert dialog, while a voice sample plays | Escape | Stops the sample |
 | Any Scribe window | F1 | What the window is for, then the control you are on |
@@ -348,14 +348,14 @@ Scribe commands have no key until you give them one in the Keymap Editor.
 When something goes wrong, you hear one sentence that names Scribe for
 Documents and the file, and usually Scribe's own reason. QuillBeacon adds a code,
 such as QUILL-SCRIBE-PAGES, which you never hear. It is in the Details box in
-Scribe Conversions and in **Copy Details**, for when you ask for help.
+Conversions on This Computer and in **Copy Details**, for when you ask for help.
 
 | Code | What you hear | What to do |
 |---|---|---|
-| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended. Conversions are paused until you sign in again." | In Scribe Conversions, press **Sign In...** on the job. It carries on when you are signed in. |
+| QUILL-SCRIBE-SIGNIN | "Your Scribe for Documents sign-in has ended. Conversions are paused until you sign in again." | In Conversions on This Computer, press **Sign In...** on the job. It carries on when you are signed in. |
 | QUILL-SCRIBE-SIGNIN-LOCAL | That no port could be opened to receive the sign-in, or that the browser could not be opened | Allow QUILL apps in your security software, then **Try Again**. Or press **Copy Sign-in Link** and paste it into any browser. |
-| QUILL-SCRIBE-PAGES | "Scribe for Documents could not convert Notes.pdf:", Scribe's message, then "Use Buy Pages in Scribe Conversions, then Retry." | Press **Buy Pages**, buy pages in your browser, then **Retry**. Without pages, Scribe still makes a free preview of the first two pages. |
-| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open Scribe Conversions to enter it." | Press **Enter Password...** on the job. After three wrong tries, press **Retry** for three more. |
+| QUILL-SCRIBE-PAGES | "Scribe for Documents could not convert Notes.pdf:", Scribe's message, then "Use Buy Pages in the Conversions on This Computer window, then Retry." | Press **Buy Pages**, buy pages in your browser, then **Retry**. Without pages, Scribe still makes a free preview of the first two pages. |
+| QUILL-SCRIBE-PASSWORD | "Notes.pdf needs its password. Open the Conversions on This Computer window to enter it." | Press **Enter Password...** on the job. After three wrong tries, press **Retry** for three more. |
 | QUILL-SCRIBE-BUSY | "Scribe for Documents asked QuillBeacon to slow down; trying again in a minute." | Nothing. QuillBeacon waits a minute and carries on. |
 | QUILL-SCRIBE-NOTDOC | "Scribe for Documents cannot convert Data.xml: it takes PDF, pictures, Office, OpenDocument, text, EPUB and MOBI files, not web pages." | Save the file as Word or PDF and send that. |
 | QUILL-SCRIBE-TOOBIG | "Video.pdf is 612 MB. Scribe for Documents takes files up to 500 MB." | Split the document, or save a copy with smaller pictures. Nothing was sent. |
@@ -372,14 +372,14 @@ and Convert** in the Convert dialog, which first says exactly what will be
 sent and where. There is no "don't ask again".
 
 **Will a second format cost more pages?** No. Pages are charged once for each
-document. Use **Download Formats...** in My Scribe Documents for another
+document. Use **Download Formats...** in Documents in My Scribe Account for another
 format of a document already in your account.
 
 **Can I use QuillBeacon and QUILL at the same time?** Yes. Every QUILL app on this
 computer shares one sign-in, one queue and one Options window. Only one
 sends at a time, and only the app running the job speaks; the others show
 the same rows quietly. If another QUILL app is running the job, the result
-sentence ends "Open it from Scribe Conversions."
+sentence ends "Open it from the Conversions on This Computer window."
 
 **Can I stop a conversion?** Scribe cannot be stopped once it starts.
 **Cancel Waiting** stops QuillBeacon waiting and downloading, and says so.
@@ -393,8 +393,8 @@ Documents chapter: where documents go, how long they are kept, and how to
 delete them.
 
 **Does a Scribe place go to the web?** No more than any other place: it
-lives in QuillBeacon's own library on this computer. Only Add My Scribe
-Documents as Places and Download Again reach Scribe, and only when you
+lives in QuillBeacon's own library on this computer. Only Add Documents in My Scribe
+Account as Places and Download Again reach Scribe, and only when you
 choose them.
 
 ### F1 in the Scribe windows
@@ -402,8 +402,8 @@ choose them.
 | Window | What F1 tells you |
 |---|---|
 | Convert with Scribe for Documents | What is sent and where, the formats, the settings, and the pages it uses |
-| Scribe Conversions | The jobs, their stages, and every command on a job |
-| My Scribe Documents | Your documents and the Trash, and what each button does |
+| Conversions on This Computer | The jobs, their stages, and every command on a job |
+| Documents in My Scribe Account | Your documents and the Trash, and what each button does |
 | Scribe for Documents Options | The family's one set of Scribe choices |
 | Sign In to Scribe for Documents | Signing in on Scribe's own page, in your browser |
 | Password for Notes.pdf | A PDF's password, used once and never saved |
@@ -466,8 +466,8 @@ The keys that were added, by menu:
 - **Tools > External Player...** (Ctrl+Alt+Shift+X) chooses the player.
 - **Tools > Status Center...** (Ctrl+Alt+I).
 - **Tools > Scribe for Documents** (2026-11-21), on Alt+Shift with F6 to F11:
-  Add My Scribe Documents as Places, Scribe Conversions, My Scribe
-  Documents, Scribe Status, Repeat Last Scribe Message and Scribe for
+  Add Documents in My Scribe Account as Places, Conversions on This Computer, Documents in My Scribe
+  Account, Scribe Status, Repeat Last Scribe Message and Scribe for
   Documents Options. See [Places in Scribe for Documents
   results](#places-in-scribe-for-documents-results).
 - **The Sync menu is F9.** **Sync > Sync Now** (F9), **Sync > Sync Settings...**
