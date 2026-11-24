@@ -346,8 +346,9 @@ WAV Preview</td>
 the unsaved rate and volume into the live settings and kept playing
 after Escape or Close</td>
 <td>Dictation Settings: <strong>Hear Start, Phrase and Stop</strong>
-(this pull request). The Speech Hub: planned, in the voices pull
-request</td>
+(this pull request). The Speech Hub: the voices pull request (#2053)
+gives the values back on close and stops the preview on Escape, leaving
+or closing</td>
 </tr>
 <tr>
 <td>QUILL Lite</td>
@@ -374,8 +375,9 @@ feedback</td>
 which also saves</td>
 <td>A pilot task (“change a podcast’s speed and hear it take effect”)
 had no way to hear an equaliser change before keeping it</td>
-<td>Planned, in the Cast pull request: the Sound Enhancements window is
-heard live, and Close puts back what was not applied</td>
+<td>The Cast pull request (#2054): the Sound Enhancements window is
+heard live, a change during a reload waits for it, and Close puts back
+what was not applied and says so</td>
 </tr>
 <tr>
 <td>Media Player</td>
@@ -415,7 +417,8 @@ window)</td>
 <td>Speech Hub Preview; the Audio Studio wizard’s Preview voice</td>
 <td>Both previews kept playing after Escape or closing the window; the
 Speech Hub’s also changed the saved rate and volume</td>
-<td>Planned, in the voices pull request (the Speech Hub is shared with
+<td>The voices pull request (#2053): both stop on Escape, on leaving and
+on close; the Speech Hub gives back the saved values (it is shared with
 QUILL)</td>
 </tr>
 <tr>
@@ -441,10 +444,26 @@ released</td>
 <td>Play with a repeat count above one looped on a thread nothing could
 stop: Escape and closing Weather Settings left it playing, and each
 press added another loop</td>
-<td>Planned, in the voices pull request</td>
+<td>The voices pull request (#2053): the button again, Escape or closing
+stops it, repeats and all, and a real alert is never cut off</td>
 </tr>
 </tbody>
 </table>
+<h2 id="left-and-why">Left, and why</h2>
+<ul>
+<li><strong>QUILL’s browse-mode WAV Preview</strong>
+(<code>main_frame_preferences.py</code>) plays on the UI thread until
+the clip ends, so the window cannot be used meanwhile. It is QUILL’s
+Preferences, which <code>main_frame_preferences.py</code>’s size budget
+and the generic settings-spec builder make a change of its own.</li>
+<li><strong>Action and search-miss feedback</strong> in QUILL and QUILL
+Lite has no Hear button. QUILL draws that chooser from the generic
+settings specs, which have no place for a button, and QUILL Lite may not
+get one first. The shared <code>feedback_step</code> is ready for
+it.</li>
+<li><strong>Converter Custom Effects</strong>, <strong>Social</strong>
+and <strong>Beacon</strong>, as in the table.</li>
+</ul>
 <h2 id="the-acceptance-list">The acceptance list</h2>
 <ul>
 <li><strong>A preview has a clear end and puts things back:</strong> the
