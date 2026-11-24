@@ -7,7 +7,6 @@
   as HTML bookmarks to quillbeacon-export.html in Downloads.", instead of
   reading the whole path aloud. An export that could not be written says so,
   where it used to say nothing.
-
 - **The results list stays still** (FUX-06, 2026-11-23). The list is virtual,
   so after a capture from the browser or a sync the selection used to stay on
   the old row number, which was now another beacon, while the details showed
