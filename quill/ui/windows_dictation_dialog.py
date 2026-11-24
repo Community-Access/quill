@@ -35,9 +35,6 @@ from typing import Any
 
 import wx
 
-from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
-from quill.core.action_feedback import coerce as coerce_feedback
-from quill.core.windows_dictation.controller import DEFAULT_PHRASE_FEEDBACK
 from quill.core.windows_dictation.engines import (
     coerce_engine,
     engine_choices,
@@ -74,6 +71,7 @@ from quill.ui.windows_dictation_devices import (
     microphone_names,
     recognizer_names,
 )
+from quill.ui.windows_dictation_feedback import DictationFeedbackMixin
 from quill.ui.windows_dictation_mic_test import MicrophoneTestMixin
 from quill.ui.windows_dictation_style import DictationStyleMixin
 
@@ -101,7 +99,11 @@ _PAD = 8
 
 
 class WindowsDictationDialog(
-    CloudProvidersMixin, MicrophoneTestMixin, DictationStyleMixin, wx.Dialog
+    CloudProvidersMixin,
+    MicrophoneTestMixin,
+    DictationStyleMixin,
+    DictationFeedbackMixin,
+    wx.Dialog,
 ):
     """The dictation settings. Read with :meth:`apply` after OK."""
 
@@ -306,46 +308,7 @@ class WindowsDictationDialog(
         root.Add(advice_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.advice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
         self._show_advice()  # the speech language above is set by now
-        # What you hear after each phrase sits with the other sounds, in the
-        # right column: the left one gave its height to Dictation style (D-20).
-        feedback_label = wx.StaticText(self, label="After each &phrase is written, give me:")
-        self._feedback_values = [str(mode) for mode, _label in ACTION_FEEDBACK_LABELS]
-        self.feedback = wx.Choice(self, choices=[label for _mode, label in ACTION_FEEDBACK_LABELS])
-        self.feedback.SetHelpText(
-            "What you hear each time a phrase goes into the document. A sound is "
-            "a short tone. Speech reads back the words that were written, so you "
-            "can hear whether they are the words you said. Use headphones if you "
-            "choose speech: read back through speakers, the microphone can hear "
-            "it and write it down again."
-        )
-        mode = str(
-            coerce_feedback(
-                getattr(settings, "windows_dictation_phrase_feedback", DEFAULT_PHRASE_FEEDBACK)
-            )
-        )
-        self.feedback.SetSelection(self._feedback_values.index(mode))
-        root.Add(feedback_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
-        root.Add(self.feedback, 0, wx.EXPAND | wx.ALL, _PAD)
-
-        self.cue_sounds = wx.CheckBox(
-            self, label="Play &sounds when dictation starts, stops or fails"
-        )
-        self.cue_sounds.SetValue(bool(getattr(settings, "windows_dictation_cue_sounds", True)))
-        self.cue_sounds.SetHelpText(
-            "A rising pair of tones when dictation starts listening, a falling "
-            "pair when it stops, and a low double tone when something goes wrong. "
-            "A failure is always spoken as well, whatever this is set to."
-        )
-        root.Add(self.cue_sounds, 0, wx.ALL, _PAD)
-
-        self.announce = wx.CheckBox(self, label='Say "Dictation on" and "Dictation &off"')
-        self.announce.SetValue(bool(getattr(settings, "windows_dictation_announce", True)))
-        self.announce.SetHelpText(
-            "Speak the words as well as, or instead of, the sounds when dictation "
-            "starts and stops. With both off, the check mark on the Dictation "
-            "menu item still shows whether it is on."
-        )
-        root.Add(self.announce, 0, wx.ALL, _PAD)
+        self._add_feedback_controls(root, settings, _PAD)  # windows_dictation_feedback.py
 
         self.wake = wx.CheckBox(self, label="Listen for the wake p&hrase while dictation is off")
         self.wake.SetValue(bool(getattr(settings, "windows_dictation_wake_enabled", False)))

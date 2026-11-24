@@ -13,6 +13,19 @@ new in 1.0.0, including what the first test builds (builds 1 and 2) already
 did. Build 3 adds Help > What's New and keeps everything else. The changes are
 grouped by area; most say where in the user guide to read more.
 
+### Dictation Settings: hear the feedback choices before keeping them (2026-11-24)
+
+Dictation Settings has a new button, **Hear Start, Phrase and Stop**, after
+"After each phrase is written, give me", the start and stop sounds, and "Say
+Dictation on and Dictation off". It plays what dictation will do with those
+three choices as they are in the window now, before you press OK: dictation
+starting, a phrase being written, and dictation stopping, a moment apart.
+Nothing is saved until OK, so Cancel keeps what you had. Press the button
+again, or Escape, to stop it; Escape then leaves the window open. If the app's
+sounds are off, or every choice is silent, it says so in one sentence. The
+same window is Dictation Settings in QUILL, QUILL Lite, QUILL Transcribe and
+Quill Inkwell.
+
 ### The actual result, said once (2026-11-23)
 
 - **Activity...** (Shift+F9) and **Repeat Last Result** (F9) are on the

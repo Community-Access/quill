@@ -290,10 +290,11 @@
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.Choice#5": "helped",
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.Choice#6": "helped",
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.Choice#7": "helped",
-  "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.Choice#8": "helped",
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl": "helped",
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#2": "helped",
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#3": "helped",
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#4": "helped",
+  "quill/ui/windows_dictation_feedback.py::DictationFeedbackMixin._add_feedback_controls::wx.Button": "helped",
+  "quill/ui/windows_dictation_feedback.py::DictationFeedbackMixin._add_feedback_controls::wx.Choice": "helped",
   "quill/ui/windows_dictation_style.py::DictationStyleMixin._add_style_controls::wx.Choice": "helped"
 }

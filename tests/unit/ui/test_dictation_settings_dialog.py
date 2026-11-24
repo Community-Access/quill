@@ -201,3 +201,105 @@ def test_polished_with_ai_on_also_allows_polish_and_review_first(wx_app) -> None
         assert settings.windows_dictation_review_first is True
     finally:
         dialog.Destroy()
+
+
+# -- FUX-08: hear the feedback choices before keeping them ------------------
+
+
+def _preview_dialog(
+    monkeypatch,
+    *,
+    loaded=("windows_dictation_on", "windows_dictation_phrase", "windows_dictation_off"),
+):
+    import quill.ui.windows_dictation_feedback as feedback
+    from quill.ui.windows_dictation_dialog import WindowsDictationDialog
+
+    monkeypatch.setattr(feedback, "_has_sound", lambda event: str(event) in loaded)
+    said: list[str] = []
+    settings = _Settings()
+    settings.windows_dictation_phrase_feedback = "sound"
+    settings.windows_dictation_cue_sounds = True
+    settings.windows_dictation_announce = True
+    dialog = WindowsDictationDialog(None, settings, said.append)
+    return dialog, settings, said
+
+
+def test_hear_plays_the_choices_on_screen_not_the_saved_ones(wx_app, monkeypatch) -> None:
+    from quill.ui.setting_preview import PreviewStep
+    from quill.ui.windows_dictation_feedback import PREVIEW_PHRASE
+
+    dialog, settings, _said = _preview_dialog(monkeypatch)
+    try:
+        dialog.feedback.SetSelection(dialog._feedback_values.index("speech"))
+        dialog.cue_sounds.SetValue(False)
+        steps = dialog.feedback_preview_steps()
+        assert steps == [
+            PreviewStep(words="Dictation on."),
+            PreviewStep(words=PREVIEW_PHRASE),
+            PreviewStep(words="Dictation off."),
+        ]
+        # Hearing them saved nothing.
+        assert settings.windows_dictation_phrase_feedback == "sound"
+        assert settings.windows_dictation_cue_sounds is True
+    finally:
+        dialog.Destroy()
+
+
+def test_hear_follows_just_write_what_i_say(wx_app, monkeypatch) -> None:
+    dialog, _settings, _said = _preview_dialog(monkeypatch)
+    try:
+        dialog.continuous.SetValue(True)
+        assert dialog.feedback_preview_steps()[1].silent  # a pause does nothing
+    finally:
+        dialog.Destroy()
+
+
+def test_hear_button_plays_then_a_second_press_stops(wx_app, monkeypatch) -> None:
+    import quill.ui.setting_preview as preview
+
+    played: list[str] = []
+    monkeypatch.setattr(preview, "_post_cue", played.append)
+    monkeypatch.setattr(preview, "_sounds_on", lambda: True)
+    dialog, _settings, said = _preview_dialog(monkeypatch)
+    try:
+        dialog.announce.SetValue(False)
+        dialog._on_hear_feedback(None)
+        assert played == ["windows_dictation_on"]  # the first step at once
+        assert dialog._feedback_preview.playing
+        dialog._on_hear_feedback(None)
+        assert not dialog._feedback_preview.playing
+        assert said == []
+    finally:
+        dialog.Destroy()
+
+
+def test_hear_button_is_labelled_helped_and_after_the_choices(wx_app, monkeypatch) -> None:
+    dialog, _settings, _said = _preview_dialog(monkeypatch)
+    try:
+        button = dialog.hear_feedback
+        assert button.GetLabel().replace("&", "") == "Hear Start, Phrase and Stop"
+        assert "Nothing is saved until OK" in button.GetHelpText()
+        order = list(dialog.GetChildren())
+        assert order.index(dialog.announce) < order.index(button)  # Tab reaches it next
+    finally:
+        dialog.Destroy()
+
+
+def test_test_microphone_stops_a_preview_first(wx_app, monkeypatch) -> None:
+    import quill.core.windows_dictation.local_recognizer as local
+    import quill.ui.setting_preview as preview
+    import quill.ui.update_download as download
+
+    monkeypatch.setattr(preview, "_post_cue", lambda _event: None)
+    monkeypatch.setattr(preview, "_sounds_on", lambda: True)
+    monkeypatch.setattr(local, "record_and_hear", lambda _mic, _engine, **_kw: (0.5, ""))
+    monkeypatch.setattr(download, "thread_submit", _run_now)
+    patch_call_after(monkeypatch, lambda fn, *args: fn(*args))
+    dialog, _settings, _said = _preview_dialog(monkeypatch)
+    try:
+        dialog._on_hear_feedback(None)
+        assert dialog._feedback_preview.playing
+        dialog._on_test_microphone(None)
+        assert not dialog._feedback_preview.playing  # its tones would be recorded
+    finally:
+        dialog.Destroy()

@@ -4812,7 +4812,7 @@ Control coverage: 408 audited sites (408 helped).
 
 ## QUILL Lite
 
-Control coverage: 297 audited sites (297 helped).
+Control coverage: 298 audited sites (298 helped).
 
 ### Every window, and what it is for
 
@@ -5287,9 +5287,6 @@ Control coverage: 297 audited sites (297 helped).
 - `self.pause`: How long you can stop talking before what you said is written. Choose Long if dictation cuts you off while you are still thinking; Short writes sooner after you stop. Longer and Longest are for speaking slowly: every phrase then waits two or three seconds before it is written.
 - `self.continuous`: For talking in one long run and pausing wherever you like. A pause then puts in no full stop, plays no sound and reads nothing back, and voice commands are written as words -- only the stop phrase still stops dictation. Punctuation you say still works.
 - `self.advice`: The model that suits this computer, and why. Only advice.
-- `self.feedback`: What you hear each time a phrase goes into the document. A sound is a short tone. Speech reads back the words that were written, so you can hear whether they are the words you said. Use headphones if you choose speech: read back through speakers, the microphone can hear it and write it down again.
-- `self.cue_sounds`: A rising pair of tones when dictation starts listening, a falling pair when it stops, and a low double tone when something goes wrong. A failure is always spoken as well, whatever this is set to.
-- `self.announce`: Speak the words as well as, or instead of, the sounds when dictation starts and stops. With both off, the check mark on the Dictation menu item still shows whether it is on.
 - `self.wake`: Start dictation by saying the wake phrase instead of pressing a key. While this is on, the microphone stays open whenever this program is the window in front -- nothing it hears is written, kept or sent anywhere until it hears the wake phrase -- and it closes whenever another program comes to the front. Off unless you turn it on.
 - `self.wake_phrase`: The words that start dictation, at least two of them. Choose words you would not say in passing: a name and a verb works well, like the default, Quill dictate. Anything you say after it in the same breath is written.
 - `self.stop_phrase`: The words that stop dictation, at least two of them, said on their own after a pause. Stop dictation always works as well. With the wake phrase on, stopping goes back to listening for the wake phrase.
@@ -5297,6 +5294,12 @@ Control coverage: 297 audited sites (297 helped).
 - `commands`: The list of everything dictation understands: punctuation, layout, the commands, spelling, and your own phrases. Saying what can I say while dictating opens the same list.
 - `words`: Add, change and remove your own words for dictation in a window: names and jargon to spell your way, phrases that write whatever you choose, and corrections for what the engine keeps hearing wrong. Saves these settings first.
 - `self.more_button`: Holding Ctrl+F11 to talk, the words heard so far while you speak, how dictation behaves when you talk to the AI, OpenAI with your own key, and My Dictation Instructions.
+#### DictationFeedbackMixin (`quill/ui/windows_dictation_feedback.py`)
+
+- `self.feedback`: What you hear each time a phrase goes into the document. A sound is a short tone. Speech reads back the words that were written, so you can hear whether they are the words you said. Use headphones if you choose speech: read back through speakers, the microphone can hear it and write it down again.
+- `self.cue_sounds`: A rising pair of tones when dictation starts listening, a falling pair when it stops, and a low double tone when something goes wrong. A failure is always spoken as well, whatever this is set to.
+- `self.announce`: Speak the words as well as, or instead of, the sounds when dictation starts and stops. With both off, the check mark on the Dictation menu item still shows whether it is on.
+- `self.hear_feedback`: Hear what dictation will do with the three choices above as they are now: dictation starting, a phrase being written, and dictation stopping. Nothing is saved until OK. Press it again, or Escape, to stop what is left. With Just write what I say on, a phrase plays nothing, so you hear only the start and the stop.
 #### DictationStyleMixin (`quill/ui/windows_dictation_style.py`)
 
 - `self.style`: A name for how your words are written. Verbatim: every word as you say it. Clean: filler words left out, and when you correct yourself, like Thursday, no, Friday, only Friday is written. Polished, offered when AI is on: Clean, and your dictation goes to Review Dictation first, where QUILL polish that asks the AI to tidy punctuation and small slips, only when you ask and only after you agree to send. Choosing a style sets the check boxes below; changing them shows Your own mix.

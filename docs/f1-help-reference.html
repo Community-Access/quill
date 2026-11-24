@@ -9199,7 +9199,7 @@ id="workbenchstatusbar-quilluiworkbench_status_barpy">WorkbenchStatusBar
 across its cells.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 297 audited sites (297 helped).</p>
+<p>Control coverage: 298 audited sites (298 helped).</p>
 <h3 id="every-window-and-what-it-is-for-10">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -10355,18 +10355,6 @@ only the stop phrase still stops dictation. Punctuation you say still
 works.</li>
 <li><code>self.advice</code>: The model that suits this computer, and
 why. Only advice.</li>
-<li><code>self.feedback</code>: What you hear each time a phrase goes
-into the document. A sound is a short tone. Speech reads back the words
-that were written, so you can hear whether they are the words you said.
-Use headphones if you choose speech: read back through speakers, the
-microphone can hear it and write it down again.</li>
-<li><code>self.cue_sounds</code>: A rising pair of tones when dictation
-starts listening, a falling pair when it stops, and a low double tone
-when something goes wrong. A failure is always spoken as well, whatever
-this is set to.</li>
-<li><code>self.announce</code>: Speak the words as well as, or instead
-of, the sounds when dictation starts and stops. With both off, the check
-mark on the Dictation menu item still shows whether it is on.</li>
 <li><code>self.wake</code>: Start dictation by saying the wake phrase
 instead of pressing a key. While this is on, the microphone stays open
 whenever this program is the window in front – nothing it hears is
@@ -10395,6 +10383,29 @@ hearing wrong. Saves these settings first.</li>
 <li><code>self.more_button</code>: Holding Ctrl+F11 to talk, the words
 heard so far while you speak, how dictation behaves when you talk to the
 AI, OpenAI with your own key, and My Dictation Instructions.</li>
+</ul>
+<h4
+id="dictationfeedbackmixin-quilluiwindows_dictation_feedbackpy">DictationFeedbackMixin
+(<code>quill/ui/windows_dictation_feedback.py</code>)</h4>
+<ul>
+<li><code>self.feedback</code>: What you hear each time a phrase goes
+into the document. A sound is a short tone. Speech reads back the words
+that were written, so you can hear whether they are the words you said.
+Use headphones if you choose speech: read back through speakers, the
+microphone can hear it and write it down again.</li>
+<li><code>self.cue_sounds</code>: A rising pair of tones when dictation
+starts listening, a falling pair when it stops, and a low double tone
+when something goes wrong. A failure is always spoken as well, whatever
+this is set to.</li>
+<li><code>self.announce</code>: Speak the words as well as, or instead
+of, the sounds when dictation starts and stops. With both off, the check
+mark on the Dictation menu item still shows whether it is on.</li>
+<li><code>self.hear_feedback</code>: Hear what dictation will do with
+the three choices above as they are now: dictation starting, a phrase
+being written, and dictation stopping. Nothing is saved until OK. Press
+it again, or Escape, to stop what is left. With Just write what I say
+on, a phrase plays nothing, so you hear only the start and the
+stop.</li>
 </ul>
 <h4
 id="dictationstylemixin-quilluiwindows_dictation_stylepy">DictationStyleMixin

@@ -24,6 +24,9 @@ class MicrophoneTestMixin:
     ``_speech_languages`` and ``_announce`` on the dialog."""
 
     def _on_test_microphone(self, _event: Any) -> None:
+        preview = getattr(self, "_feedback_preview", None)
+        if preview is not None:
+            preview.stop()  # a preview's tones must not be recorded by the test (FUX-08)
         engine_row = self.engine.GetSelection()
         engine = self._engine_ids[engine_row] if 0 <= engine_row < len(self._engine_ids) else ""
         if engine == "voice_typing":
