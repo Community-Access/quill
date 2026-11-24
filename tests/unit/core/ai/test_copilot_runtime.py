@@ -37,7 +37,7 @@ def no_overrides(monkeypatch: pytest.MonkeyPatch, tmp_path: Path, absent_env) ->
 
 def test_none_when_the_build_carries_no_runtime(no_overrides: Path) -> None:
     assert rt.find_copilot_runtime() is None
-    with pytest.raises(rt.CopilotRuntimeUnavailable, match="will not download"):
+    with pytest.raises(rt.CopilotRuntimeUnavailable, match="missing from this copy of the app"):
         rt.runtime_path_for_launch()
 
 

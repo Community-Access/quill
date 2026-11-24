@@ -105,6 +105,7 @@ from quill.core.ai.copilot_runtime import (
     resolve_runtime_path,
 )
 from quill.core.ai.harness import AgentSpec, AIContext, HarnessCapabilities, TurnUsage
+from quill.core.missing_parts import COPILOT_DAMAGED, COPILOT_MISSING
 from quill.stability.safe_mode import should_enable_safe_mode
 
 if TYPE_CHECKING:
@@ -385,9 +386,9 @@ class CopilotHarness(SdkHarness):
         """Report a missing SDK or runtime without trying to download either."""
         try:
             if resolve_runtime_path() is None:
-                return False, "The in-process Copilot runtime is not installed with this build."
+                return False, COPILOT_MISSING
         except OSError:
-            return False, "The in-process Copilot runtime could not be read."
+            return False, COPILOT_DAMAGED
         return super().is_available()
 
     def start_tool_session(

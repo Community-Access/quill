@@ -284,6 +284,13 @@ kokoro = [
     # than a belt beside a brace. Keep in sync with [dev].
     "Babel>=2.18.0",
 ]
+# libsndfile alone, for reading recordings: Transcribe a Recording (both
+# editors) reads WAV, FLAC, Ogg Vorbis, Opus and MP3 with it before trying
+# Windows Media Foundation, which cannot read Ogg or Opus
+# (quill/core/windows_dictation/audio_file.py). [kokoro] carries it too, with
+# onnxruntime and a voice stack QUILL Lite has no use for, so QUILL Lite's
+# portable takes this instead (quill/core/lite/portable_needs.py, 2026-11-23).
+audio-files = ["soundfile>=0.14.0"]
 pages = ["keynote-parser>=1.14.5.0"]
 # Free-first PDF/Office text extraction (quill/io/docconvert.py Tier 1 +
 # quill/io/pdf.py): MarkItDown for Office + PDF, pdfplumber/pypdf as the PDF
@@ -489,6 +496,7 @@ runtime = [
   "quill[fasterwhisper]",
   "quill[vosk]",
   "quill[kokoro]",
+  "quill[audio-files]",
 ]
 # Build tools the release scripts invoke, NOT dependencies of the shipped app.
 #

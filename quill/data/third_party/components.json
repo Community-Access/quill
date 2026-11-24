@@ -1441,6 +1441,43 @@
       "obligations": "Ship the LGPL text and keep the library a separate, replaceable file. The pruned Enchant payload also ships GLib, libiconv and libintl (LGPL-2.1-or-later), Hunspell (MPL-1.1, GPL-2.0 or LGPL-2.1, at our choice) and PCRE2 (BSD-3-Clause), plus the English Hunspell dictionaries (see Hunspell dictionaries: SCOWL licence). The exact source of each copyleft part is published with each release, in the copyleft source manifest and the archives it names."
     },
     {
+      "id": "pygithub",
+      "name": "PyGithub",
+      "group": "runtime",
+      "version": "2.10.0",
+      "licenses": [
+        "LGPL-3.0"
+      ],
+      "license_label": "LGPL-3.0-or-later",
+      "copyright": "Copyright (c) Vincent Jacques and PyGithub contributors",
+      "homepage": "https://github.com/pygithub/pygithub",
+      "what": "Talks to GitHub for the GitHub Workbench, Open from GitHub and GitHub accounts.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "PyGithub",
+      "obligations": "Ship the LGPL text and keep the library a separate, replaceable package (it is plain Python in the bundle)."
+    },
+    {
+      "id": "pyjwt",
+      "name": "PyJWT",
+      "group": "runtime",
+      "version": "2.15.1",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2015-2022 Jose Padilla",
+      "homepage": "https://github.com/jpadilla/pyjwt",
+      "what": "Reads and signs JSON Web Tokens, a dependency of PyGithub.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "PyJWT"
+    },
+    {
       "id": "pymupdf",
       "name": "PyMuPDF (with MuPDF)",
       "group": "runtime",

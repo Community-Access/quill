@@ -67,6 +67,7 @@ from quill.core.ai.harness import (
     TurnUsage,
 )
 from quill.core.error_codes import CodedError
+from quill.core.missing_parts import CODEX_MISSING
 from quill.stability.safe_mode import should_enable_safe_mode
 
 if TYPE_CHECKING:
@@ -508,7 +509,7 @@ class CodexHarness:
 
     def is_available(self) -> tuple[bool, str | None]:
         if self._binary_resolver() is None:
-            return False, "This build does not include the Codex engine."
+            return False, CODEX_MISSING
         return True, None
 
     def capabilities(self) -> HarnessCapabilities:

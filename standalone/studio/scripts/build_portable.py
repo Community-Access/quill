@@ -14,6 +14,8 @@ One builder, many products (studio / radio / weather). Layout (mirrors the old
         data/                    (studio) offline speech/TTS engines
         tools/ffmpeg, tools/mpv  (studio/radio) recording + playback binaries
         tools/deno               (radio) yt-dlp's JS runtime for YouTube
+        tools/copilot, codex,    (quilllite) the shared runtime's tools that
+          nodejs, ...            the app uses, from the pinned build/deps cache
         docs/
 
 Why this shape, and why NOT a PyInstaller onedir or a stamped pythonw:
@@ -108,6 +110,51 @@ ENGINE_PRUNE = (
 )
 
 
+#: The shared runtime's tools a portable can carry, and the files each must have:
+#: the same table scripts/StageMediaTools.ps1 stages the runtime from (a test
+#: holds the two equal). Every tool comes from the pinned, verified build/deps
+#: cache that scripts/fetch_build_deps.py fills, never from PATH or a download
+#: of this script's own. "tree" copies the folder whole (node_modules);
+#: "files" copies exactly the named files, licences included.
+RUNTIME_TOOLS: dict[str, tuple[str, tuple[str, ...]]] = {
+    "copilot": ("files", ("runtime.node", "COPILOT-CLI-LICENSE.txt")),
+    "codex": ("files", ("codex-app-server.exe", "CODEX-LICENSE.txt", "CODEX-NOTICE.txt")),
+    "nodejs": ("files", ("node.exe", "NODE-LICENSE.txt")),
+    "language-servers": (
+        "tree",
+        ("package.json", "package-lock.json", "LANGUAGE-SERVERS-LICENSES.txt"),
+    ),
+    "ripgrep": ("files", ("rg.exe", "COPYING", "LICENSE-MIT", "UNLICENSE")),
+    "wp-playground-cli": (
+        "tree",
+        (
+            "package.json",
+            "package-lock.json",
+            "PLAYGROUND-LICENSES.txt",
+            ".quill-playground-pruned-v1",
+            "node_modules/@wp-playground/cli/wp-playground.js",
+            "node_modules/@wp-playground/cli/sqlite-database-integration.zip",
+            "node_modules/@php-wasm/node-8-3/package.json",
+            "wordpress-7.1.4.zip",
+        ),
+    ),
+}
+
+#: How the bundle proves the app can find each staged tool: QUILL's own finder,
+#: run in the bundle's Python, so a tool copied to the wrong place fails the
+#: build rather than the first person who needs it.
+RUNTIME_TOOL_PROBES: dict[str, str] = {
+    "copilot": "from quill.core.ai.copilot_runtime import find_copilot_runtime as f; assert f()",
+    "codex": "from quill.core.ai.codex_binary import find_codex_app_server as f; assert f()",
+    "nodejs": "from quill.core.lsp.servers import bundled_node as f; assert f()",
+    "language-servers": "from quill.core.lsp.servers import language_servers_dir as f; assert f()",
+    "ripgrep": "import os, sys; assert os.path.isfile(os.path.join("
+    "os.path.dirname(sys.executable), 'tools', 'ripgrep', 'rg.exe'))",
+    "wp-playground-cli": "from quill.core.wordpress.workbench_practice import find_cli as f; "
+    "assert f().ready",
+}
+
+
 @dataclass(frozen=True)
 class Product:
     key: str  # build_native_launcher.py product key
@@ -128,6 +175,10 @@ class Product:
     # challenges with. Required (the build fails without --deno-dir) for the
     # apps that play YouTube.
     stage_deno: bool = False
+    # The shared runtime's tools this app uses (RUNTIME_TOOLS keys), copied from
+    # build/deps into tools/<name>. Required: a missing folder or file fails the
+    # build. The installer gets the same tools from the shared runtime.
+    runtime_tools: tuple[str, ...] = ()
     # Owner's rule (2026-09-27): nothing downloads at install or first use. So
     # this product's PORTABLE launcher is compiled with no runtime URL (a damaged
     # portable says what is missing instead of offering a download), and the
@@ -252,11 +303,15 @@ PRODUCTS: dict[str, Product] = {
         exe="QuillLite",
         display="QUILL Lite",
         zip_name="QuillLite-Portable-{ver}.zip",
-        # An editor and nothing else: one native control, six small windows and
-        # a settings file. No media stack, no spell checker, nothing to
-        # download. The one engine it carries is dictation's (live-dictation:
-        # sherpa-onnx, numpy, sounddevice); the models are staged beside the
-        # launcher by build_release.ps1, not in here.
+        # Everything QUILL Lite offers, the same as its installer (2026-11-23).
+        # This said "an editor and nothing else: no spell checker", and the
+        # editor had grown past it: the portable offered the GitHub Workbench,
+        # spell check, AI help, the Developer profile and the Practice Site and
+        # could run none of them. The groups and tools are now exactly those
+        # quill/core/lite/portable_needs.py derives from QUILL Lite's menus,
+        # with the reason for each, and tests/unit/scripts/
+        # test_lite_portable_needs.py holds this list equal to it. The
+        # dictation models are staged beside the launcher by build_release.ps1.
         # "office-text" and "ocr" (2026-10-17): QUILL Lite opens PDFs (Ctrl+O)
         # and converts documents and scanned pages (File > Import / Convert
         # Document). The INSTALLED copy has always had the reader -- the shared
@@ -270,11 +325,34 @@ PRODUCTS: dict[str, Product] = {
         # "docx" (2026-10-17): python-docx is already a base dependency, named
         # again so the Word stack QUILL Lite edits with is declared where the
         # product is, not inherited by accident. lxml arrives with it.
-        dep_groups=("ui", "live-dictation", "office-text", "ocr", "docx"),
+        # "spellcheck" (pyenchant + Hunspell), "audio" (sound_lib: mixed sounds
+        # with a volume), "windows-media" (the sound card list and Play Media
+        # Here), "math" (equations as MathML), "github" (PyGithub),
+        # "ai-copilot" (the Copilot SDK) and "audio-files" (soundfile, for Ogg
+        # and Opus recordings) joined on 2026-11-23.
+        dep_groups=(
+            "ui",
+            "docx",
+            "ai-copilot",
+            "audio",
+            "audio-files",
+            "github",
+            "live-dictation",
+            "math",
+            "ocr",
+            "office-text",
+            "spellcheck",
+            "windows-media",
+        ),
         stage_engines=False,
         stage_ffmpeg=False,
         stage_mpv=False,
         offline_portable_launcher=True,
+        # Copilot and Codex for AI help and project tasks, Node.js and the
+        # language servers for Navigate > Code, and WordPress Playground for
+        # the Practice Site. ripgrep is the one runtime tool left out: nothing
+        # calls it yet (portable_needs.EXCLUDED_TOOLS).
+        runtime_tools=("codex", "copilot", "language-servers", "nodejs", "wp-playground-cli"),
         must_import=(
             "pdfplumber",
             "pypdf",
@@ -284,6 +362,20 @@ PRODUCTS: dict[str, Product] = {
             "quill.io.pdf",
             "quill.io.docconvert",
             "openpyxl",
+            # One per group added on 2026-11-23, a native piece where there is
+            # one, so a missing DLL fails here (portable_needs.GROUP_IMPORTS).
+            "sherpa_onnx",
+            "enchant",
+            "sound_lib.output",
+            "soundfile",
+            "winrt.windows.media.playback",
+            "winrt.windows.devices.enumeration",
+            "latex2mathml.converter",
+            "github",
+            "copilot",
+            "quill.core.spellcheck",
+            "quill.core.github.items_provider",
+            "quill.ai_packs.copilot",
         ),
         check_word=True,
     ),
@@ -579,6 +671,88 @@ def _stage_deno(out_dir: Path, deno_dir: Path | None) -> None:
     shutil.copy2(license_file, dest / "DENO-LICENSE.txt")
 
 
+def _long_path(path: Path) -> str:
+    r"""*path* in the ``\\?\`` form on Windows, so a deep node_modules file copies.
+
+    The language servers' pyright stubs sit 157 characters below tools/, and a
+    build folder only 100 deep passes Windows' 260-character limit with them;
+    the copy then failed with "The system cannot find the path specified"
+    (2026-11-23) on a machine without long paths switched on.
+    """
+    full = str(path.resolve())
+    if os.name != "nt" or full.startswith("\\\\?\\"):
+        return full
+    return "\\\\?\\" + full
+
+
+def stage_runtime_tools(out_dir: Path, names: tuple[str, ...], deps_dir: Path) -> list[str]:
+    """Copy each runtime tool in *names* from *deps_dir* into ``tools/<name>``.
+
+    Raises before copying anything when a tool's folder or one of its required
+    files is missing, naming the fetch that fills it: a portable without the
+    tool its menus offer is exactly what this exists to stop shipping.
+    """
+    problems: list[str] = []
+    for name in names:
+        if name not in RUNTIME_TOOLS:
+            raise RuntimeError(f"{name!r} is not a runtime tool this builder knows.")
+        _mode, files = RUNTIME_TOOLS[name]
+        source = deps_dir / name
+        if not source.is_dir():
+            problems.append(f"{source} is missing")
+            continue
+        problems += [f"{source / f} is missing" for f in files if not (source / f).is_file()]
+    if problems:
+        fetch = " ".join(f"--only {name}" for name in names)
+        raise RuntimeError(
+            "This product carries the shared runtime's tools, and the pinned cache is "
+            "incomplete:\n  " + "\n  ".join(problems) + "\nFill it with: python "
+            f"scripts/fetch_build_deps.py {fetch}"
+        )
+    staged: list[str] = []
+    for name in names:
+        mode, files = RUNTIME_TOOLS[name]
+        source = deps_dir / name
+        dest = out_dir / "tools" / name
+        if dest.exists():
+            shutil.rmtree(_long_path(dest))
+        print(f"  staging tools/{name}")
+        if mode == "tree":
+            shutil.copytree(_long_path(source), _long_path(dest))
+        else:
+            dest.mkdir(parents=True)
+            for file in files:
+                shutil.copy2(source / file, dest / file)
+        staged.append(name)
+    return staged
+
+
+def runtime_tool_probe_source(names: tuple[str, ...]) -> str:
+    """One probe for the bundle's Python: QUILL's own finder sees every staged tool."""
+    return "; ".join(RUNTIME_TOOL_PROBES[name] for name in names) + "; print('tools OK')"
+
+
+def _tool_probe_env() -> dict[str, str]:
+    """The build's environment minus every override a finder would prefer.
+
+    Each finder consults QUILL_APP_ROOT and its own override variable before
+    the folder beside python.exe, and the Practice Site's also the checkout's
+    build/deps. A builder that set any of them would prove nothing about the
+    bundle.
+    """
+    env = dict(os.environ)
+    for name in (
+        "QUILL_APP_ROOT",
+        "QUILL_BUILD_DEPS_DIR",
+        "QUILL_PLAYGROUND_CLI_DIR",
+        "QUILL_LANGUAGE_SERVERS_DIR",
+        "QUILL_LANGUAGE_SERVERS_NODE",
+        "COPILOT_CLI_PATH",
+    ):
+        env.pop(name, None)
+    return env
+
+
 def _stage_tools(
     out_dir: Path, product: Product, ffmpeg_dir: Path | None, mpv_dir: Path | None
 ) -> None:
@@ -673,6 +847,13 @@ def main() -> int:
         help="Staged deno (fetch_build_deps.py --only deno); required for radio.",
     )
     parser.add_argument(
+        "--build-deps",
+        type=Path,
+        default=None,
+        help="The pinned tool cache (scripts/fetch_build_deps.py); default "
+        "<source-root>/build/deps. Read for products with runtime_tools.",
+    )
+    parser.add_argument(
         "--engines-dir",
         type=Path,
         default=Path(os.environ.get("APPDATA", "")) / "Quill",
@@ -718,10 +899,13 @@ def main() -> int:
         print("      (product ships no bundled engines)")
     _write_portable_marker(out_dir, product.display)
 
-    print("[6/8] tools/ (ffmpeg, mpv, deno)")
+    print("[6/8] tools/ (ffmpeg, mpv, deno, the runtime's tools)")
     _stage_tools(out_dir, product, args.ffmpeg_dir, args.mpv_dir)
     if product.stage_deno:
         _stage_deno(out_dir, args.deno_dir)
+    if product.runtime_tools:
+        deps_dir = (args.build_deps or (source_root / "build" / "deps")).resolve()
+        stage_runtime_tools(out_dir, product.runtime_tools, deps_dir)
 
     print("[7/8] docs/")
     _stage_docs(out_dir, product, source_root)
@@ -743,6 +927,24 @@ def main() -> int:
             "its must_import modules, or -- where check_word is set -- the Word "
             "open-and-save round trip):\n" + (check.stderr or "")
         )
+    if product.runtime_tools:
+        probe = subprocess.run(
+            [
+                str(out_dir / "python.exe"),
+                "-B",
+                "-c",
+                runtime_tool_probe_source(product.runtime_tools),
+            ],
+            capture_output=True,
+            text=True,
+            env=_tool_probe_env(),
+            cwd=str(out_dir),
+        )
+        print("      runtime tools:", (probe.stdout or probe.stderr).strip().splitlines()[-1:])
+        if probe.returncode != 0:
+            raise RuntimeError(
+                "The bundled app cannot find a tool it was given:\n" + (probe.stderr or "")
+            )
     # Inventory drift gate (P1.2): the source tree-copy sweeps whatever sits in
     # quill/data on the build machine, exactly the class that put 82 MB of
     # undeclared payload in the 2026-08-15 runtime installers. A product with a
