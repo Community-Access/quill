@@ -4,6 +4,16 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+### Sound Enhancements: hear a change before you keep it (2026-11-24)
+
+In the Sound Enhancements window (Ctrl+E), each change to a preset, a slider,
+Even Out Volume or Smart Speed is now heard on the playing episode a moment
+after you make it, the way Quill Radio's Sound Enhancements works. Nothing is
+saved until Apply. Close, Escape or Ctrl+W puts back a change you heard but
+did not apply, and says so. Before, a change was heard only after Apply, which
+also saved it. Stepping a slider a press at a time while the episode reloads
+waits for the reload, so the episode keeps playing from where it was.
+
 ### F1 says what is unavailable for the row you are on (2026-11-23)
 
 F1 on the episode list now also says which menu items are unavailable for the

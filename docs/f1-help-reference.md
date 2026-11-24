@@ -1012,7 +1012,7 @@ Control coverage: 343 audited sites (247 helped, 96 named-help).
 #### _PeerEditor (`quill/ui/podcasts/sound_enhance_window.py`)
 
 - `apply_btn`: Puts these settings into effect for the podcast named above and keeps the window open, so you can listen and adjust again.
-- `close_btn`: Closes this window and returns to where you were. Anything not applied is left as it was.
+- `close_btn`: Closes this window and returns to where you were. A change you heard but did not apply is put back as it was.
 #### PodcastStatsWindow (`quill/ui/podcasts/stats_dialog.py`)
 
 - `self._period_choice`: Which stretch of time the report covers. The report below changes as soon as you choose.

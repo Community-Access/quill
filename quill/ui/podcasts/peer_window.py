@@ -117,6 +117,9 @@ def open_peer(
 
 def close_peer(host: Any, window: Any) -> None:
     """Hide *window*, say so, and give focus back to whoever opened it."""
+    before_hide = getattr(window, "before_hide", None)
+    if callable(before_hide):
+        before_hide()  # Sound Enhancements puts back what was heard but not applied
     window.frame.Hide()
     from quill.ui.dialog_contract import announce_surface_exit
 
