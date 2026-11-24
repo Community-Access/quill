@@ -25,6 +25,7 @@ from typing import Any
 
 from quill.core.ai.voice_reply import mode_label
 from quill.core.settings import VOICE_REPLY_MODES
+from quill.ui.accessible_group import GroupedRadioBox
 
 #: (value, label) for the reply-mode radio box, in the dialog's order. Ordered
 #: offline-first so the cheapest, most private options read first.
@@ -76,7 +77,7 @@ class VoiceReplyDialog:
         self.dialog = dlg
         outer = wx.BoxSizer(wx.VERTICAL)
 
-        self._mode = wx.RadioBox(
+        self._mode = GroupedRadioBox(
             dlg,
             label="When I ask by voice, answer me with",
             choices=[label for _value, label in _MODE_CHOICES],

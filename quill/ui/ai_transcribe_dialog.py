@@ -6,6 +6,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.ai.transcription import SUPPORTED_AUDIO_EXTENSIONS, SUPPORTED_LANGUAGES
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
 from quill.ui.dpi import dip_size
 from quill.ui.spin_value import spin_value
@@ -89,6 +90,7 @@ class AITranscribeDialog:
         )
         self._diarize_cb.SetName("Identify different speakers in the audio")
         diar_sizer.Add(self._diarize_cb, 0, wx.ALL, 4)
+        describe_group(diar_sizer, self._diarize_cb)
 
         speaker_row = wx.BoxSizer(wx.HORIZONTAL)
         speaker_label = wx.StaticText(self.dialog, label="Maximum speakers:")

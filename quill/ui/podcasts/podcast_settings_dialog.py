@@ -12,6 +12,7 @@ from collections.abc import Callable
 from quill.core.podcasts import settings_help, volume_boost
 from quill.core.podcasts.models import SPEED_MAX, SPEED_MIN, PodcastSettings
 from quill.core.podcasts.speed_scale import SPEED_STEP
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.podcasts.podcast_settings_choices import (
@@ -366,6 +367,12 @@ class PodcastSettingsDialog:
         self._continue_group_check.SetHelpText(settings_help.HELP["continue_group"])
         self._continue_group_check.SetValue(settings.continue_after_group)
         session_box.Add(self._continue_group_check, 0, wx.LEFT | wx.BOTTOM, 6)
+        describe_group(
+            session_box,
+            self._continue_queue_check,
+            self._prebuffer_check,
+            self._continue_group_check,
+        )
         root.Add(session_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self._name_first_check = wx.CheckBox(
@@ -412,6 +419,7 @@ class PodcastSettingsDialog:
         self._reconnect_check.SetHelpText(settings_help.HELP["reconnect"])
         self._reconnect_check.SetValue(settings.reconnect_enabled)
         reconnect_box.Add(self._reconnect_check, 0, wx.ALL, 6)
+        describe_group(reconnect_box, self._reconnect_check)
         reconnect_grid = wx.FlexGridSizer(cols=2, gap=(6, 8))
         reconnect_grid.Add(
             wx.StaticText(self.dialog, label="Reconnect attempts:"), 0, wx.ALIGN_CENTER_VERTICAL

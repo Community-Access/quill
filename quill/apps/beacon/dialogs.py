@@ -11,6 +11,7 @@ from __future__ import annotations
 import wx
 
 from quill.apps.beacon.model import ALL_TYPES
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 from quill.ui.dpi import dip_size
 from quill.ui.preferences_search import install_preferences_context_help as _context_help
@@ -1013,22 +1014,6 @@ class RadioProgramDialog(wx.Dialog):
 
     def result(self) -> dict | None:
         return self._result
-
-
-def parse_hhmm(value: str) -> int | None:
-    """Parse HH:MM (24h) to epoch-ms-of-day. Returns None if blank/invalid."""
-    if not value:
-        return None
-    parts = value.split(":")
-    if len(parts) != 2:
-        return None
-    try:
-        h, m = int(parts[0]), int(parts[1])
-    except ValueError:
-        return None
-    if not (0 <= h < 24 and 0 <= m < 60):
-        return None
-    return (h * 3600 + m * 60) * 1000
 
 
 class StatusCenterDialog(wx.Dialog):
@@ -2477,6 +2462,7 @@ class SyncSettingsDialog(wx.Dialog):
             tbox.GetStaticBox(), label="&Folder (iCloud, OneDrive, Dropbox...)"
         )
         self.t_server = wx.RadioButton(tbox.GetStaticBox(), label="&Hosted server")
+        describe_group(tbox, self.t_off, self.t_folder, self.t_server)
         for r in (self.t_off, self.t_folder, self.t_server):
             _name(r, r.GetLabel().replace("&", ""))
             tbox.Add(r, 0, wx.ALL, 4)

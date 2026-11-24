@@ -13,6 +13,7 @@ from typing import Any
 
 import wx
 
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.wordpress_dialogs import ShowModal, _buttons, labelled_row
@@ -119,7 +120,7 @@ class NewItemDialog(wx.Dialog):
         )
         self.slug.Bind(wx.EVT_TEXT, self._on_slug)
         labelled_row(sizer, self, "S&lug:", self.slug)
-        self.text_format = wx.RadioBox(
+        self.text_format = GroupedRadioBox(
             self,
             label="Write in",
             choices=["Markdown", "HTML"],

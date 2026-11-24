@@ -19,8 +19,7 @@ reason, and the reason is the review.
 
 Usage::
 
-    python -m quill.tools.group_caption_audit            # the gated scope
-    python -m quill.tools.group_caption_audit --all      # every UI module
+    python -m quill.tools.group_caption_audit
 """
 
 from __future__ import annotations
@@ -33,15 +32,17 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-#: The modules the gate holds to the rule (repo-relative globs).
-SCOPE: tuple[str, ...] = ("quill/ui/scribe_*.py",)
-
-#: Every module with UI code in the family, for ``--all`` (the later pass).
+#: Every module with UI code in the family: QUILL and QUILL Lite, and the
+#: apps (quill/apps), and the standalone shells (Social keeps its UI there).
 FAMILY: tuple[str, ...] = (
     "quill/ui/**/*.py",
     "quill/apps/**/*.py",
     "standalone/*/**/*.py",
 )
+
+#: The modules the gate holds to the rule. It began with Scribe (2026-11-23)
+#: and covers the family since the next pass the same day.
+SCOPE: tuple[str, ...] = FAMILY
 
 #: The helper itself builds the radio buttons it describes.
 _HELPER_MODULE = "quill/ui/accessible_group.py"
@@ -217,9 +218,9 @@ def audit(globs: Sequence[str] = SCOPE) -> list[Finding]:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--all", action="store_true", help="scan every family UI module")
-    args = parser.parse_args(argv)
-    findings = audit(FAMILY if args.all else SCOPE)
+    parser.add_argument("--all", action="store_true", help="the same as no option (kept)")
+    parser.parse_args(argv)
+    findings = audit(SCOPE)
     for finding in findings:
         print(f"{finding.path}:{finding.line}: {finding.problem}")
     files = len({finding.path for finding in findings})

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 from quill.ui.github_items_view import render_pull_file_diff
@@ -211,7 +212,7 @@ class MergeConflictDialog:
         root.Add(wx.StaticText(panel, label="Their version:"), 0, wx.LEFT, 10)
         root.Add(self._theirs_box, 0, wx.EXPAND | wx.ALL, 10)
 
-        self._choice = wx.RadioBox(
+        self._choice = GroupedRadioBox(
             panel,
             label="Keep",
             choices=["Your version", "Their version", "Both", "Edit manually"],

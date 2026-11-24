@@ -297,3 +297,16 @@ def test_the_access_key_focuses_the_chosen_button(dialog: Any) -> None:
     mine = _Key("W")
     box._on_char_hook(mine)
     assert not mine.skipped and focused == [1]
+
+
+def test_f1_reaches_the_box_from_any_of_its_choices(dialog: Any) -> None:
+    """F1 topics are keyed on the focused window's name, which was the box's."""
+    from quill.ui.app_context_help import _accessible_name
+
+    box = _radio(dialog, name="batch_wizard.output_layout")
+    button = box.buttons()[1]
+    assert ag.radio_box_of(button) is box
+    assert ag.radio_box_of(dialog) is None
+    assert _accessible_name(button) == "batch_wizard.output_layout"
+    box.SetName("Search direction")  # a name set later is followed too
+    assert _accessible_name(button) == "Search direction"

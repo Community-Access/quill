@@ -33,6 +33,7 @@ from quill.core.audio_enhance import (
     OPTILAB_INPUT_MIN_DB,
     OPTILAB_MODE_LABELS,
 )
+from quill.ui.accessible_group import GroupedRadioBox, describe_group
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.slider_keys import bind_up_means_more
 from quill.ui.spin_value import spin_value
@@ -212,7 +213,7 @@ class SoundEnhanceDialog:
             # Left/Right send just that channel to both ears, so the radio can
             # play in one ear while a screen reader uses the other. Self-labeling
             # and arrow-selectable, so no SetName inference workaround is needed.
-            self._channel_radio = wx.RadioBox(
+            self._channel_radio = GroupedRadioBox(
                 self.dialog,
                 label="C&hannel mode",
                 choices=["Stereo", "Mono", "Left only", "Right only"],
@@ -246,6 +247,7 @@ class SoundEnhanceDialog:
             )
             self._optilab_check.SetValue(optilab_enabled)
             optilab_box.Add(self._optilab_check, 0, wx.ALL, 6)
+            describe_group(optilab_box, self._optilab_check)
 
             mode_row = wx.BoxSizer(wx.HORIZONTAL)
             mode_row.Add(

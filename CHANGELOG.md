@@ -121,6 +121,16 @@ The access keys are the ones you had (Alt+M and Alt+C in the submenu, Alt+U in
 QUILL's File menu, Alt+W, V in QUILL Lite's Window menu), and the Command
 Palette still finds both windows by their old names.
 
+### Every group of options says which group it is (2026-11-23)
+
+What Scribe Options got today now holds across QUILL, QUILL Lite and the other
+apps. Every check box or radio button inside a framed group says the group's
+name after its own name and state, so you know what it belongs to. Every set of
+radio-button choices with a title (Find's Direction, the Batch wizard, Go To,
+Release Channel, Speech Setup, Quill Social's search and the rest) now says its
+title on each choice. Before, you heard the choices and not the question.
+
+Go To's choices are now titled "Go to", not "Go to a:".
 ### Scribe for Documents is quiet while you work, and its sounds say how it went (2026-11-23)
 
 A conversion no longer talks over your document. To start with, nothing is

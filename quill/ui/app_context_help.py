@@ -174,6 +174,10 @@ def _clean_label(control: Any) -> str:
 
 
 def _accessible_name(control: Any) -> str:
+    from quill.ui.accessible_group import radio_box_of
+
+    # A GroupedRadioBox's choices are named by the box, as a wx.RadioBox was.
+    control = radio_box_of(control) or control
     get_name = getattr(control, "GetName", None)
     name = get_name() if callable(get_name) else ""
     if not isinstance(name, str) or name in _DEFAULT_WX_NAMES:

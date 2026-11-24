@@ -29,11 +29,13 @@ from quill.core.keymap import (
     save_keymap,
 )
 from quill.core.settings import save_settings
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.dialog_contract import (
     apply_modal_ids,
     set_accessible_name,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.keymap_migration_notice import migration_message
 
 
 class KeymapIoMixin:
@@ -106,7 +108,7 @@ class KeymapIoMixin:
             wx.ALL | wx.EXPAND,
             8,
         )
-        kind_choice = wx.RadioBox(
+        kind_choice = GroupedRadioBox(
             dialog,
             label="What to create",
             choices=["Share a profile (privacy-clean)", "Back up everything"],
@@ -492,16 +494,7 @@ class KeymapIoMixin:
         mode = getattr(self.settings, "migration_notice", "announce")
         if mode == "silent":
             return
-        parts: list[str] = []
-        if migrated_stores:
-            parts.append("QUILL updated your saved settings for this version. A backup was saved.")
-        if retired_keys:
-            parts.append(
-                "Your editor settings were simplified; the braille fix is now on "
-                "by default under Preferences > Braille."
-            )
-        parts.extend(shortcut_summaries)
-        message = " ".join(parts)
+        message = migration_message(migrated_stores, retired_keys, shortcut_summaries)
         can_undo = bool(getattr(self, "_recommended_update_undo", None))
         if mode == "prompt":
             self._prompt_migration_summary(message, can_undo=can_undo)

@@ -293,6 +293,7 @@ from quill.stability.task_manager import TaskManager
 from quill.stability.ui_responsiveness import mark_wx_main_thread
 from quill.stability.wx_heartbeat import HeartbeatState, WxHeartbeatTimer, WxHeartbeatWatchdog
 from quill.ui import modal_stack
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.accessible_names import pin_macos_text_area_role
 from quill.ui.announce_commands import AnnounceCommandsMixin
 from quill.ui.announce_shim import build_announcement
@@ -3863,7 +3864,7 @@ class MainFrame(
         elif content_type == "image":
             choices.insert(0, ("Insert image reference", "image_ref"))
 
-        choice_box = wx.RadioBox(
+        choice_box = GroupedRadioBox(
             dialog,
             label="Paste mode",
             choices=[c[0] for c in choices],
@@ -13067,9 +13068,9 @@ class MainFrame(
             8,
         )
 
-        # RadioBox filter — wx.RadioBox announces selection and group label to
-        # all major screen readers without any extra ARIA plumbing.
-        filter_box = wx.RadioBox(
+        # Filter choices: a GroupedRadioBox, because a wx.RadioBox's choices
+        # did not say their group's name to NVDA or JAWS (GATE-GROUP).
+        filter_box = GroupedRadioBox(
             dialog,
             label="Show",
             choices=["All features", "Disabled features only"],

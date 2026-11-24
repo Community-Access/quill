@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from quill.core.quillins.loader import extensions_root, set_enabled
 from quill.core.quillins.model import MENU_PARENTS
 from quill.core.quillins.validation import validate_manifest
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 
@@ -254,6 +255,7 @@ def open_quillin_wizard(
 
     ctx_cb = wx.CheckBox(scrolled, label="Add to &context menu (right-click)")
     detail_box.Add(ctx_cb, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+    describe_group(detail_box, ctx_cb)
 
     detail_box.Add(
         wx.StaticText(scrolled, label="&Hotkey (optional, e.g. Ctrl+Shift+D):"),

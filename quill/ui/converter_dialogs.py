@@ -27,6 +27,7 @@ from typing import Any
 import wx
 
 from quill.core.audio.dsp import DspOptions, loudness_choices
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 from quill.ui.dpi import dip_size
@@ -350,7 +351,7 @@ class ConverterLinkDialog(wx.Dialog):
 
         self._scope: wx.RadioBox | None = None
         if not channel and info.video_title:
-            self._scope = wx.RadioBox(
+            self._scope = GroupedRadioBox(
                 self,
                 label="What to &download",
                 choices=[f"Only this video: {info.video_title}", "The whole playlist"],

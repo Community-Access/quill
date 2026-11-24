@@ -27,6 +27,7 @@ import wx
 from quill.core.verbosity.parser import render_template, validate
 from quill.core.verbosity.preview import BUILTIN_SCENARIOS
 from quill.core.verbosity.verbs import VerbSpec
+from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 
@@ -56,7 +57,7 @@ class VerbosityTokenEditorDialog:
         self.dialog.SetMinSize(dip_size(self.dialog, 560, 420))
         root = wx.BoxSizer(wx.VERTICAL)
 
-        self._view = wx.RadioBox(
+        self._view = GroupedRadioBox(
             self.dialog,
             label="&View",
             choices=["Simple", "Advanced"],
