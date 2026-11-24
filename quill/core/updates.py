@@ -850,31 +850,43 @@ def download_release_asset(
     request = Request(url, headers={"User-Agent": "Quill-Updater"})
     chunk_size = 64 * 1024
     hasher = hashlib.sha256() if expected_sha256 else None
-    with urlopen(request, timeout=timeout, context=_ssl_context()) as response:
-        total = int(response.headers.get("Content-Length") or 0)
-        done = 0
-        if progress is not None:
-            progress(0, total)
-        with open(destination, "wb") as handle:
-            while True:
-                chunk = response.read(chunk_size)
-                if not chunk:
-                    break
-                handle.write(chunk)
-                if hasher is not None:
-                    hasher.update(chunk)
-                done += len(chunk)
-                if progress is not None:
-                    progress(done, total)
-    if hasher is not None:
-        actual = hasher.hexdigest()
-        if not hmac.compare_digest(actual, expected_sha256.strip().lower()):
-            Path(destination).unlink(missing_ok=True)
-            raise ValueError(
-                "The downloaded update did not match its published checksum and "
-                "was deleted. Try again; if this repeats, download the release "
-                "from the QUILL website instead."
-            )
+    # Streamed to a ".partial" beside it and moved into place only when whole
+    # and verified (FUX-15): a dropped connection or a bad checksum leaves no
+    # half-written installer under the real name, and never replaces a good
+    # copy already there.
+    final = Path(destination)
+    partial = final.with_name(final.name + ".partial")
+    try:
+        with urlopen(request, timeout=timeout, context=_ssl_context()) as response:
+            total = int(response.headers.get("Content-Length") or 0)
+            done = 0
+            if progress is not None:
+                progress(0, total)
+            with open(partial, "wb") as handle:
+                while True:
+                    chunk = response.read(chunk_size)
+                    if not chunk:
+                        break
+                    handle.write(chunk)
+                    if hasher is not None:
+                        hasher.update(chunk)
+                    done += len(chunk)
+                    if progress is not None:
+                        progress(done, total)
+        if total and done < total:
+            raise OSError(f"The update download stopped after {done} of {total} bytes. Try again.")
+        if hasher is not None:
+            actual = hasher.hexdigest()
+            if not hmac.compare_digest(actual, expected_sha256.strip().lower()):
+                raise ValueError(
+                    "The downloaded update did not match its published checksum and "
+                    "was deleted. Try again; if this repeats, download the release "
+                    "from the QUILL website instead."
+                )
+        os.replace(partial, final)
+    except BaseException:
+        partial.unlink(missing_ok=True)
+        raise
 
 
 #: Uncompressed-size ceiling for a portable *update* extraction. A full app

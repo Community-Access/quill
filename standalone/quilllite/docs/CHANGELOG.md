@@ -2,6 +2,14 @@
 
 ## 2.0.0
 
+### Updates wait for a quiet moment (2026-11-23)
+
+The daily update check no longer opens its window a few seconds after QUILL
+Lite starts. It waits until the first minute has passed, until you stop
+dictating, and until QUILL Lite is the window you are using. While it waits,
+the status bar's message cell says once what is waiting, and Update History
+keeps the line. **Ctrl+Alt+U** opens the waiting update at once.
+
 ### Scribe for Documents, off until you turn it on (2026-11-21)
 
 QUILL Lite can now send a document you choose to Pneuma Solutions' Scribe

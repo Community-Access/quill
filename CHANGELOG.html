@@ -245,6 +245,26 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="updates-wait-for-a-quiet-moment-in-quill-and-quill-lite-2026-11-23">Updates
+wait for a quiet moment in QUILL and QUILL Lite (2026-11-23)</h3>
+<p>The once-a-day update check no longer interrupts you. In QUILL it
+used to download with spoken progress and then open the “Update
+downloaded” window whenever the download finished, even in the middle of
+dictation or Read Aloud. In QUILL Lite the offer opened a few seconds
+after launch, while the screen reader was still reading the window.</p>
+<p>Now an automatic offer waits. It never opens in the first minute
+after the app starts, while you are dictating or typing, while QUILL is
+reading aloud, or while the app is not the window you are using, and it
+waits a few seconds more after dictation or reading stops. While it
+waits, the status bar says once what is waiting, and so do QUILL’s
+notifications and QUILL Lite’s Update History. Nothing is spoken over
+your work. <strong>Help &gt; Check for Updates</strong> opens the
+waiting update at once. QUILL’s one-time questions after an upgrade,
+about the Braille Pack and the Kokoro voices, wait the same way.</p>
+<p>An update download that breaks off part way no longer leaves a
+half-written installer behind, and never replaces a good copy that was
+already there.</p>
+<h3
 id="scribe-for-documents-the-voices-are-there-and-play-sample-answers-2026-11-23">Scribe
 for Documents: the voices are there, and Play Sample answers
 (2026-11-23)</h3>

@@ -454,6 +454,7 @@ from quill.ui.main_frame_wordpress import WordPressMenuMixin
 from quill.ui.main_frame_work_persona import WorkPersonaMixin
 from quill.ui.main_frame_worktrees import WorktreesMixin
 from quill.ui.main_frame_write_safety import WriteSafetyMixin
+from quill.ui.maintenance_moment_ui import note_launch
 from quill.ui.markdown_tag_row import MARKDOWN_TAG_REFUSAL, sync_menu_row
 from quill.ui.navigator_node import _NavigatorNode
 from quill.ui.notebook_panel import NotebookEntriesPanel
@@ -1353,6 +1354,7 @@ class MainFrame(
         if editor_starts_hidden(self, start_minimized):  # --tray: a login launch
             return
         self.frame.Show(True)
+        note_launch("quill")  # FUX-15: the first minute starts now
         # The longest silence in the product is a launch: a window appears, the
         # reader announces a title, and nothing before that says the
         # double-click worked.
@@ -1489,8 +1491,10 @@ class MainFrame(
             ("crash recovery", self._offer_crash_recovery),
             ("first-run onboarding", self._maybe_run_first_run_onboarding),
             ("migration notice", self._surface_migration_notice),
-            ("braille pack prompt", self._maybe_prompt_braille_pack_install),
-            ("kokoro package prompt", self._maybe_prompt_kokoro_package_install),
+            # One-time component questions wait for a quiet moment, never the
+            # first minute after launch (FUX-15, main_frame_updates.py).
+            ("braille pack prompt", self._braille_pack_prompt_when_quiet),
+            ("kokoro package prompt", self._kokoro_package_prompt_when_quiet),
             ("startup profile prompt", self.run_startup_profile_prompt),
             ("watch-folder startup", self._maybe_start_watch_folder),
             ("live settings (wake word, right-click menu)", lambda: start_live_settings(self)),

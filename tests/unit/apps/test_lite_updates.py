@@ -182,11 +182,101 @@ def test_the_launch_check_says_nothing_when_the_network_is_down(updates):
     assert window.said == []
 
 
-def test_the_launch_check_still_offers_a_real_update(updates):
-    """QUILL Lite has no notification centre to defer it to."""
+class _Moment:
+    """The launch check's quiet-moment rule (FUX-15) on a hand-turned clock."""
+
+    def __init__(self, monkeypatch) -> None:
+        from quill.core import maintenance_moment
+        from quill.core.updater import history
+        from quill.ui import maintenance_moment_ui, maintenance_probes
+
+        self.now = 0.0
+        self.later: list = []
+        self.dictating = False
+        self.recorded: list[str] = []
+        maintenance_moment_ui.reset_for_tests()
+        maintenance_moment_ui._MOMENTS["quilllite"] = maintenance_moment.MaintenanceMoment(
+            clock=lambda: self.now
+        )
+        monkeypatch.setattr(
+            maintenance_moment_ui, "_wx_later", lambda _ms, run: self.later.append(run)
+        )
+        monkeypatch.setattr(maintenance_moment_ui, "window_in_front", lambda _w: True)
+        monkeypatch.setattr(maintenance_moment_ui, "input_idle_seconds", lambda: None)
+        monkeypatch.setattr(
+            maintenance_probes,
+            "_windows_dictation",
+            lambda: "dictation ends" if self.dictating else "",
+        )
+        monkeypatch.setattr(
+            history, "record", lambda *_a, detail="", **_k: self.recorded.append(detail)
+        )
+        self._reset = maintenance_moment_ui.reset_for_tests
+
+    def poll(self) -> None:
+        self.later.pop(0)()
+
+
+@pytest.fixture
+def moment(monkeypatch):
+    clock = _Moment(monkeypatch)
+    yield clock
+    clock._reset()
+
+
+class _StatusWindow(_Window):
+    def __init__(self) -> None:
+        super().__init__()
+        self.messages: list[str] = []
+
+    def _set_status_message(self, message: str) -> None:
+        self.messages.append(message)
+
+
+def test_the_launch_check_offers_a_real_update_after_the_first_minute(updates, moment):
+    """Not on top of the window the screen reader is still reading (FUX-15)."""
     updates.releases = [_Release("99.0.0")]
-    lite_updates.check_for_updates(_Window(), silent_no_update=True)
+    window = _StatusWindow()
+    lite_updates.check_for_updates(window, silent_no_update=True)
+    assert updates.offered == []
+    assert window.said == []  # written, never spoken
+    assert window.messages == [
+        "Update 99.0.0 is ready and waits for a quiet moment. "
+        "Help, Check for Updates (Ctrl+Alt+U) offers it now."
+    ]
+    assert moment.recorded == window.messages
+    moment.now = 61.0
+    moment.poll()
     assert updates.offered == ["99.0.0"]
+
+
+def test_the_launch_check_never_opens_its_offer_while_dictating(updates, moment):
+    updates.releases = [_Release("99.0.0")]
+    moment.now = 120.0
+    moment.dictating = True
+    window = _StatusWindow()
+    lite_updates.check_for_updates(window, silent_no_update=True)
+    assert updates.offered == []
+    assert window.messages[0].startswith("Update 99.0.0 waits until dictation ends.")
+    moment.now = 400.0
+    moment.poll()
+    assert updates.offered == []
+    moment.dictating = False
+    moment.poll()  # just stopped: waits a little longer
+    assert updates.offered == []
+    moment.now = 430.0
+    moment.poll()
+    assert updates.offered == ["99.0.0"]
+
+
+def test_check_for_updates_opens_a_waiting_offer_at_once(updates, moment):
+    updates.releases = [_Release("99.0.0")]
+    lite_updates.check_for_updates(_StatusWindow(), silent_no_update=True)
+    assert updates.offered == []
+    updates.releases = []  # asking again must not need the network
+    lite_updates.check_for_updates(_StatusWindow())
+    assert updates.offered == ["99.0.0"]
+    assert updates.boxes == []
 
 
 # -- the menu item --------------------------------------------------------
@@ -226,3 +316,24 @@ def test_the_help_menu_command_runs_the_check_and_stamps_the_clock(lite_window, 
     assert win.app.settings.last_update_check != ""
     assert win.app.queued_settings == 1
     assert "up to date" in updates.boxes[0]
+
+
+def test_a_waiting_offer_opens_over_the_document_in_use_now(updates, moment, monkeypatch):
+    """The document the check began in may be closed by the time it opens."""
+    import quill.ui.update_notice as update_notice
+
+    parents: list = []
+    monkeypatch.setattr(
+        update_notice,
+        "show_update_available",
+        lambda parent, **kw: (parents.append(parent), "close")[1],
+    )
+    updates.releases = [_Release("99.0.0")]
+    later_doc = _StatusWindow()
+    shell = SimpleNamespace(GetActiveChild=lambda: later_doc)
+    first = _StatusWindow()
+    first.GetTopLevelParent = lambda: shell
+    lite_updates.check_for_updates(first, silent_no_update=True)
+    moment.now = 61.0
+    moment.poll()
+    assert parents == [later_doc]
