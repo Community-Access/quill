@@ -20,6 +20,8 @@ import os
 import sys
 from pathlib import Path
 
+from quill.core.release_catalog import PRODUCTS
+
 #: app key -> (module for ``-m`` from source, candidate frozen exe basenames).
 _APPS: dict[str, tuple[str, tuple[str, ...]]] = {
     "quill": ("quill", ("QUILL.exe", "Quill.exe", "quill.exe")),
@@ -66,17 +68,7 @@ def portable_sibling_dirname(app_key: str) -> str | None:
 
 
 #: Friendly names, for menu labels and announcements.
-APP_NAMES: dict[str, str] = {
-    "quill": "QUILL",
-    "radio": "Quill Radio",
-    "weather": "Quill Weather",
-    "cast": "Quill Cast",
-    "studio": "QUILL Studio",
-    "converter": "Quill Converter",
-    "player": "Quill Media Player",
-    "inkwell": "Quill Inkwell",
-    "transcribe": "QUILL Transcribe",
-}
+APP_NAMES: dict[str, str] = {item.key: item.name for item in PRODUCTS if item.key in _APPS}
 
 
 def app_name(app_key: str) -> str:
@@ -98,14 +90,9 @@ def app_name(app_key: str) -> str:
 #: answers it, so ``dictate_here_ui`` hid it until now), and lists it on every
 #: QuillVille menu, the tray menus and the companion-install offer. It goes last
 #: in ``QUILLVILLE_APP_ORDER``, so no row anybody has learned changes key.
-RELEASED_APPS: frozenset[str] = frozenset({
-    "quill",
-    "radio",
-    "weather",
-    "inkwell",
-    "converter",
-    "transcribe",
-})
+RELEASED_APPS: frozenset[str] = frozenset(
+    item.key for item in PRODUCTS if item.released and item.key in _APPS
+)
 
 
 def is_dev_build() -> bool:

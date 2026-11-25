@@ -50,6 +50,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 MAIN_REPO = "Community-Access/quill"
 DEV_REPO = "Community-Access/quillville-dev-builds"
 KEY_FILE_ENV = "QUILL_FEED_KEY_FILE"
+SIGNING_KEY_ENV = "QUILL_FEED_SIGNING_KEY"
 DEFAULT_KEY_FILE = Path.home() / ".config" / "quill" / "quill-feed-priv.key"
 
 
@@ -229,14 +230,26 @@ def all_feeds(root: Path = REPO_ROOT) -> list[ReleaseFeed]:
 
 
 def read_seed(path: Path | None = None) -> bytes:
-    """The owner's feed-signing seed. Read only when signing; never printed."""
+    """The feed-signing seed, from a protected Actions secret or local file.
+
+    Ordinary jobs never receive ``QUILL_FEED_SIGNING_KEY``. The only workflows
+    that name it are release/signing workflows, which are restricted to this
+    repository and run in an owner-approved GitHub Environment. The value is
+    consumed in process memory and never printed or written to disk here.
+    """
     from quill.core.updater.feed_publish import load_seed
 
-    target = path or Path(os.environ.get(KEY_FILE_ENV, "") or DEFAULT_KEY_FILE)
+    if path is not None:
+        target = path
+    else:
+        protected_secret = os.environ.get(SIGNING_KEY_ENV, "").strip()
+        if protected_secret:
+            return load_seed(protected_secret)
+        target = Path(os.environ.get(KEY_FILE_ENV, "") or DEFAULT_KEY_FILE)
     if not target.is_file():
         raise SystemExit(
-            f"No feed signing key at {target}. Sign on the computer that holds it, or "
-            f"set {KEY_FILE_ENV}. CI never holds this key: use --no-sign there."
+            f"No feed signing key at {target}. Use a protected signing workflow, "
+            f"or set {KEY_FILE_ENV} on the owner's computer."
         )
     return load_seed(target.read_text(encoding="utf-8"))
 
@@ -382,6 +395,11 @@ def feed_signature_ok(path: Path, keys: Sequence[bytes] | None = None) -> bool:
     if not sig.is_file():
         return False
     return verify_feed_bytes(path.read_bytes(), sig.read_text(encoding="utf-8"), keys)
+
+
+def index_signature_ok(path: Path, keys: Sequence[bytes] | None = None) -> bool:
+    """Whether the release-index bytes and sidecar verify as one signed unit."""
+    return path.is_file() and feed_signature_ok(path, keys)
 
 
 def warnings_now(root: Path = REPO_ROOT, now: datetime | None = None) -> list[str]:

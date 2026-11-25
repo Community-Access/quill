@@ -111,6 +111,95 @@ def problems(root: Path = REPO_ROOT) -> list[str]:
         if actual_values != expected_values:
             found.append(f"{product.key}: release-feed identity differs from the catalogue")
 
+    active = {product.key for product in PRODUCTS if product.channels_enabled}
+    from quill.core.companion_install import ASSET_PREFIX
+    from quill.core.data_formats import formats_for
+    from quill.core.runtime_apps import RUNTIME_APPS
+    from quill.core.updater import snapshots
+    from quill.core.updater.profiles import PROFILES
+
+    if set(PROFILES) != active:
+        found.append("updater profiles disagree with channel-enabled catalogue products")
+    if set(ASSET_PREFIX) != active:
+        found.append("release-asset lookup table disagrees with channel-enabled products")
+    if set(snapshots._ADAPTERS) != active:
+        found.append("channel snapshots disagree with channel-enabled products")
+    runtime_keys = {app.ref_id for app in RUNTIME_APPS}
+    expected_runtime_keys = {
+        product.key for product in PRODUCTS if product.channels_enabled and product.shared_runtime
+    }
+    if runtime_keys != expected_runtime_keys:
+        found.append("shared-runtime app registry disagrees with channel-enabled products")
+    for product in PRODUCTS:
+        if not product.channels_enabled:
+            continue
+        owned = {name for fmt in formats_for(product.key) for name in fmt.files}
+        missing = set(product.snapshot_files) - owned
+        if missing:
+            found.append(
+                f"{product.key}: snapshot files missing data-format declarations: "
+                + ", ".join(sorted(missing))
+            )
+
+    dev_workflow = (root / ".github/workflows/dev-builds.yml").read_text(encoding="utf-8")
+    if "fromJSON(needs.decide.outputs.apps)" not in dev_workflow:
+        found.append("Dev workflow matrix is not generated from the release catalogue")
+    promotion = (root / ".github/workflows/promote-release.yml").read_text(encoding="utf-8")
+    if 'description: "Catalogue app key' not in promotion:
+        found.append("promotion workflow does not accept a catalogue app key")
+    if "BY_KEY[app].channels_enabled" not in promotion:
+        found.append("promotion workflow does not validate the catalogue app key")
+    feed_workflow = (root / ".github/workflows/release-feeds.yml").read_text(encoding="utf-8")
+    for required in (
+        "bootstrap_release_feeds.py",
+        "QUILL_FEED_SIGNING_KEY",
+        "environment: release-feed-signing",
+        "python scripts/feed_tool.py verify",
+    ):
+        if required not in feed_workflow:
+            found.append(f"release-feed signing workflow is missing {required}")
+    if not active.issubset(released_or_candidate):
+        found.append("a channel-enabled product is absent from the signed-feed registry")
+
+    for item in PRODUCTS:
+        if not item.channels_enabled:
+            continue
+        if not item.release_menu_file:
+            found.append(f"{item.key}: no Release Channel menu owner is catalogued")
+            continue
+        menu_file = root / item.release_menu_file
+        if not menu_file.is_file():
+            found.append(f"{item.key}: missing menu source {item.release_menu_file}")
+            continue
+        menu_source = menu_file.read_text(encoding="utf-8")
+        if item.key == "quill":
+            wired = "_install_release_channel_item" in menu_source
+        elif item.key == "quilllite":
+            wired = "cmd_release_channel" in menu_source
+        else:
+            patterns = (
+                re.search(
+                    rf"append_release_channel_item\([^)]*['\"]{re.escape(item.key)}['\"]",
+                    menu_source,
+                    re.S,
+                ),
+                re.search(
+                    rf"release_channel_menu\.append\([^)]*['\"]{re.escape(item.key)}['\"]",
+                    menu_source,
+                    re.S,
+                ),
+            )
+            wired = any(patterns)
+        if not wired:
+            found.append(f"{item.key}: no Release Channel menu wiring in {item.release_menu_file}")
+
+    for product in PRODUCTS:
+        if not product.build_entry.endswith(".ps1") or not product.channels_enabled:
+            continue
+        build_source = (root / product.build_entry).read_text(encoding="utf-8")
+        if "[string]$DevVersion" not in build_source:
+            found.append(f"{product.key}: Dev build script has no DevVersion input")
+
     build_script = (root / "build-quill-apps.ps1").read_text(encoding="utf-8")
     app_block = build_script.split("$apps = @{", 1)[-1].split("$aliases = @{", 1)[0]
     build_keys = set(re.findall(r"^\s*([a-z][a-z0-9]*)\s*=", app_block, re.M))

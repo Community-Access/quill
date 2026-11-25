@@ -541,6 +541,7 @@
   "quill.ui.updates.channel_risk_dialog": "reachable",
   "quill.ui.updates.flow": "reachable",
   "quill.ui.updates.going_back_flow": "reachable",
+  "quill.ui.updates.host": "reachable",
   "quill.ui.updates.release_channel_dialog": "reachable",
   "quill.ui.updates.return_to_stable_dialog": "reachable",
   "quill.ui.updates.shell": "reachable",

@@ -268,8 +268,7 @@ def test_ai_lives_only_in_the_ai_menu(converter) -> None:
     assert found
     # The AI menu, or its Accounts and Usage submenu (quill/core/ai/ai_menu_layout.py).
     assert all(re.search(r" -- AI\b", row) for row in found), found
-    # Not a release-channel app either: Converter offers Stable only.
-    assert not [row.label for row in rows if "Release Channel" in row.label]
+    assert [row.path for row in rows if "Release Channel" in row.label] == ["Help"]
 
 
 def test_the_chapters_choice_reaches_the_spec_and_the_summary(converter) -> None:

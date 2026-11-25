@@ -11,9 +11,10 @@ Pure functions over :class:`~quill.core.updater.feed.ReleaseFeed` that
   written reason, which is recorded in the build's history.
 * :func:`revoke` -- withdraw a build without deleting its files.
 * :func:`refresh` -- every change bumps ``sequence`` and sets a fresh
-  **90-day** ``expires_at``. The signing key stays on the owner's computer, so
-  there is no scheduled re-signing: a feed is refreshed whenever a release is
-  published or promoted, and :func:`expiry_warnings` speaks up 14 days ahead.
+  **90-day** ``expires_at``. The signing seed stays in a protected GitHub
+  Actions environment (or the owner's local file), so a feed is refreshed
+  whenever a release is published or promoted and :func:`expiry_warnings`
+  speaks up 14 days ahead.
 * :func:`page_budget_problems` -- installed Quill Radio 3.0.4 and QUILL Lite
   1.1.2 read only the first 30 GitHub releases, so the main repository may not
   hold more than 20 releases newer than any app's newest Stable one.

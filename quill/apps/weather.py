@@ -18,7 +18,7 @@ import sys
 
 import wx
 
-from quill.apps import weather_first_task
+from quill.apps import release_channel_menu, weather_first_task
 from quill.apps.weather_ai import WeatherAiMixin
 from quill.apps.weather_options import WeatherOptionsMixin
 from quill.core import http_client
@@ -260,6 +260,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, WeatherOptionsMixin, WeatherA
             ),
             id=updates_id,
         )
+        self._keep_menu_ids(release_channel_menu.append(self, help_menu, "weather", updates_id))
         about_id = wx.NewIdRef()
         # Every app in the family answers the same question the same way:
         # one item, one key, one form that reaches a person who can reply.

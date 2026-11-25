@@ -190,13 +190,16 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
 
     append_get_help_item(host, help_menu, wx, source_app=title, app_version=version)
     add(help_menu, "Get &FFmpeg...\tCtrl+Alt+F", host.download_ffmpeg_component)
-    add(
+    updates_id = add(
         help_menu,
         "Check for Up&dates...\tCtrl+Alt+U",
         lambda: host.check_for_app_updates(
             repo_slug=repo, current_version=version, app_key="converter", match_edition=False
         ),
     )
+    from quill.ui.updates.shell import append_release_channel_item
+
+    ids.append(append_release_channel_item(host, help_menu, "converter", updates_id))
     help_menu.AppendSeparator()
     add(help_menu, f"&About {title}\tAlt+F1", host._show_about)
     bar.Append(help_menu, "&Help")

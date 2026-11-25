@@ -1088,6 +1088,9 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         result_items = append_result_items(self, help_menu)  # Activity, F9
         help_menu.AppendSeparator()
         help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
+        from quill.ui.updates.shell import append_release_channel_item
+
+        channel_id = append_release_channel_item(self, help_menu, "studio", updates_id)
         help_menu.Append(bug_id, "Get Help from &Support...\tCtrl+Alt+F2")
         help_menu.Append(log_id, "View &Log...\tCtrl+Alt+L")
         help_menu.Append(diag_id, "Save &Diagnostics...\tCtrl+Alt+D")
@@ -1141,7 +1144,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin, St
         ]
         for item_id, handler in bindings:
             self.frame.Bind(wx.EVT_MENU, lambda _e, h=handler: h(), id=item_id)
-        self._keep_menu_ids(*(item_id for item_id, _ in bindings))
+        self._keep_menu_ids(*(item_id for item_id, _ in bindings), channel_id)
 
     def _rebuild_recent_submenu(self, submenu: wx.Menu) -> None:
         """Populate *submenu* from the recently-played history (newest first)."""

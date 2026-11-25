@@ -278,7 +278,8 @@ In scope for 1.0.0:
   help for the window and control, User Guide, Release Notes, What's New (the
   changelog),
   Product Requirements, Keyboard Shortcuts (a read-only list of every key), Get
-  Help from Support, Get FFmpeg (repair), Check for Updates, and About. Find a
+  Help from Support, Get FFmpeg (repair), Check for Updates, Release Channel,
+  and About. Find a
   Setting or Command (Ctrl+Alt+Shift+S) searches every menu row and runs the
   one chosen (`quill/ui/menu_palette.py`).
 - **Version and build.** About shows `1.0.0 (build 1)` (`_VERSION` and `_BUILD`
@@ -286,8 +287,9 @@ In scope for 1.0.0:
   writes `quill-app-version.ini` (`version`, `version_build`) beside the
   launcher, and the portable build writes the same file, so About and Check for
   Updates read the installed Converter rather than the shared runtime's code.
-  Converter is not a release-channel app: it has no Release Channel window and
-  its update check always offers Stable (`quill/core/updater/check.py`).
+  Converter follows its own signed feed through Help > Release Channel. Stable,
+  Beta and Dev are distinct, and the update check never offers another app's
+  assets (`quill/core/updater/check.py`).
 - **Support.** Email only, to support@community-access.org, through Get Help
   from Support (Ctrl+Alt+F2), which composes the message in the user's own mail
   program. No GitHub path and no token.

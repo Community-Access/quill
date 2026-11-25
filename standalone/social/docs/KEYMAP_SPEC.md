@@ -81,7 +81,8 @@ Example: in Unified Home, press Ctrl+Shift+F, type `release`, press Enter. Focus
 | **Ctrl+Shift+Delete** | Delete smart folder | Feeds | Asks first, then deletes the selected smart folder. The articles it matched are not touched. |
 | **Ctrl+I** | Import OPML | Feeds | Subscribes to every feed in an OPML file, keeping its folders. |
 | **Ctrl+E** | Export OPML | Feeds | Saves your subscriptions and folders to an OPML file. |
-| **Ctrl+Alt+U** | Unsubscribe from feed | Feeds | Asks first, then unsubscribes from the feed selected in the navigation tree and removes its cached items. |
+| **Ctrl+Alt+U** | Check for Updates | Help | Checks only QUILL Social's signed feed and verifies the offered download. |
+| **Ctrl+Alt+Shift+U** | Unsubscribe from feed | Feeds | Asks first, then unsubscribes from the feed selected in the navigation tree and removes its cached items. |
 
 The two keys that remove something both ask before they act, and answering No changes nothing.
 

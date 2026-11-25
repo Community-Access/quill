@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL artifact signing</title>
+  <title>Signing keys and release signatures</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -389,25 +389,29 @@ compromising one does not compromise the other.</p>
 feed against it.</td>
 </tr>
 <tr>
-<td><code>~/.config/quill/quill-feed-priv.key</code></td>
-<td>The 32-byte seed, base64. <strong>Never committed</strong> – it
-lives outside the repository entirely.</td>
+<td><code>QUILL_FEED_SIGNING_KEY</code> (GitHub repo secret)</td>
+<td>The durable operational copy of the 32-byte seed. Only protected
+release jobs and owner-approved environments receive it. It is consumed
+in process memory and GitHub never reveals an existing secret
+value.</td>
 </tr>
 <tr>
-<td><code>QUILL_FEED_SIGNING_KEY</code> (GitHub repo secret)</td>
-<td>The same seed. <code>scripts/generate_update_feed.py</code> reads it
-during the release workflow and writes the
-<code>signature_ed25519</code> field.</td>
+<td><code>~/.config/quill/quill-feed-priv.key</code></td>
+<td>The optional local recovery copy, base64. <strong>Never
+committed</strong>.</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Back the seed up somewhere that survives this
-machine.</strong> Losing it does not merely stop new releases from being
-signed: every shipped client verifies against the
-<code>feed-pub.key</code> compiled into it, so recovering means shipping
-a new build with a new public key and leaving already-installed copies
-unable to verify any newer feed.</p>
-<p>Three copies, covering three different ways to lose it:</p>
+<p><strong>Keep an offline recovery copy as well as the GitHub
+secret.</strong> The GitHub copy limits the risk of losing a laptop, but
+an existing Actions secret cannot be read back, even by an
+administrator. Losing every copy of the seed does not merely stop new
+releases from being signed: every shipped client verifies against the
+<code>feed-pub.key</code> compiled into it, so recovery by rotation
+means shipping a new build with a new public key and transitioning
+already-installed copies before they can verify a newer feed.</p>
+<p>Four copies, covering the normal signing path and three recovery
+paths:</p>
 <table>
 <thead>
 <tr>
@@ -418,10 +422,15 @@ unable to verify any newer feed.</p>
 </thead>
 <tbody>
 <tr>
+<td><code>QUILL_FEED_SIGNING_KEY</code> GitHub secret</td>
+<td>normal Actions release path</td>
+<td>available only to protected signing jobs after the required
+environment approval</td>
+</tr>
+<tr>
 <td><code>~/.config/quill/quill-feed-priv.key</code></td>
-<td>day-to-day use</td>
-<td>the working copy; plaintext, user-only ACL, outside the
-repository</td>
+<td>local/manual signing and recovery</td>
+<td>plaintext, user-only ACL, outside the repository</td>
 </tr>
 <tr>
 <td>Encrypted file in cloud sync</td>
@@ -461,8 +470,9 @@ outright.</p>
 <ol type="1">
 <li><code>python -c "import base64; from nacl import signing; k=signing.SigningKey.generate(); print(base64.b64encode(bytes(k._seed)).decode()); print(base64.b64encode(bytes(k.verify_key)).decode())"</code>
 – first line is the seed, second the public key.</li>
-<li>Put the seed in <code>~/.config/quill/quill-feed-priv.key</code> and
-in the <code>QUILL_FEED_SIGNING_KEY</code> repo secret.</li>
+<li>Replace the <code>QUILL_FEED_SIGNING_KEY</code> repo secret with the
+seed and put a recovery copy in the owner’s local file or encrypted
+backup.</li>
 <li>Replace <code>quill/core/feed-pub.key</code> with the public key and
 ship a build containing it <strong>before</strong> publishing a feed
 signed with the new seed – otherwise existing clients reject the feed

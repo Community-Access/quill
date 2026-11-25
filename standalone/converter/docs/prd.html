@@ -565,9 +565,10 @@ released siblings, and the siblings list Quill Converter.</li>
 QUILL Lite’s keys: F1 help for the window and control, User Guide,
 Release Notes, What’s New (the changelog), Product Requirements,
 Keyboard Shortcuts (a read-only list of every key), Get Help from
-Support, Get FFmpeg (repair), Check for Updates, and About. Find a
-Setting or Command (Ctrl+Alt+Shift+S) searches every menu row and runs
-the one chosen (<code>quill/ui/menu_palette.py</code>).</li>
+Support, Get FFmpeg (repair), Check for Updates, Release Channel, and
+About. Find a Setting or Command (Ctrl+Alt+Shift+S) searches every menu
+row and runs the one chosen
+(<code>quill/ui/menu_palette.py</code>).</li>
 <li><strong>Version and build.</strong> About shows
 <code>1.0.0 (build 1)</code> (<code>_VERSION</code> and
 <code>_BUILD</code> in <code>quill/apps/converter.py</code>). The
@@ -575,9 +576,9 @@ installer stamps file version 1.0.0.1 and writes
 <code>quill-app-version.ini</code> (<code>version</code>,
 <code>version_build</code>) beside the launcher, and the portable build
 writes the same file, so About and Check for Updates read the installed
-Converter rather than the shared runtime’s code. Converter is not a
-release-channel app: it has no Release Channel window and its update
-check always offers Stable
+Converter rather than the shared runtime’s code. Converter follows its
+own signed feed through Help &gt; Release Channel. Stable, Beta and Dev
+are distinct, and the update check never offers another app’s assets
 (<code>quill/core/updater/check.py</code>).</li>
 <li><strong>Support.</strong> Email only, to <a
 href="mailto:support@community-access.org">support@community-access.org</a>,

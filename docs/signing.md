@@ -51,20 +51,23 @@ the other.
 | File | Contents |
 | --- | --- |
 | `quill/core/feed-pub.key` | 32-byte Ed25519 public key, base64. Bundled in the app; `quill.core.updates.verify_manifest_ed25519` verifies every feed against it. |
-| `~/.config/quill/quill-feed-priv.key` | The 32-byte seed, base64. **Never committed** -- it lives outside the repository entirely. |
-| `QUILL_FEED_SIGNING_KEY` (GitHub repo secret) | The same seed. `scripts/generate_update_feed.py` reads it during the release workflow and writes the `signature_ed25519` field. |
+| `QUILL_FEED_SIGNING_KEY` (GitHub repo secret) | The durable operational copy of the 32-byte seed. Only protected release jobs and owner-approved environments receive it. It is consumed in process memory and GitHub never reveals an existing secret value. |
+| `~/.config/quill/quill-feed-priv.key` | The optional local recovery copy, base64. **Never committed**. |
 
-**Back the seed up somewhere that survives this machine.** Losing it does
-not merely stop new releases from being signed: every shipped client
-verifies against the `feed-pub.key` compiled into it, so recovering means
-shipping a new build with a new public key and leaving already-installed
-copies unable to verify any newer feed.
+**Keep an offline recovery copy as well as the GitHub secret.** The GitHub copy
+limits the risk of losing a laptop, but an existing Actions secret cannot be
+read back, even by an administrator. Losing every copy of the seed does not
+merely stop new releases from being signed: every shipped client verifies
+against the `feed-pub.key` compiled into it, so recovery by rotation means
+shipping a new build with a new public key and transitioning already-installed
+copies before they can verify a newer feed.
 
-Three copies, covering three different ways to lose it:
+Four copies, covering the normal signing path and three recovery paths:
 
 | Copy | Survives | How |
 | --- | --- | --- |
-| `~/.config/quill/quill-feed-priv.key` | day-to-day use | the working copy; plaintext, user-only ACL, outside the repository |
+| `QUILL_FEED_SIGNING_KEY` GitHub secret | normal Actions release path | available only to protected signing jobs after the required environment approval |
+| `~/.config/quill/quill-feed-priv.key` | local/manual signing and recovery | plaintext, user-only ACL, outside the repository |
 | Encrypted file in cloud sync | machine loss, fire, theft | `python scripts/secret_backup.py encrypt ~/.config/quill/quill-feed-priv.key <cloud-folder>/quill-feed-priv.key.enc` |
 | Printed sheet in a physical safe | total digital loss, forgotten passphrase | see below |
 
@@ -94,8 +97,8 @@ feeds outright.
 ### Rotating the feed key
 
 1. `python -c "import base64; from nacl import signing; k=signing.SigningKey.generate(); print(base64.b64encode(bytes(k._seed)).decode()); print(base64.b64encode(bytes(k.verify_key)).decode())"` -- first line is the seed, second the public key.
-2. Put the seed in `~/.config/quill/quill-feed-priv.key` and in the
-   `QUILL_FEED_SIGNING_KEY` repo secret.
+2. Replace the `QUILL_FEED_SIGNING_KEY` repo secret with the seed and put a
+   recovery copy in the owner's local file or encrypted backup.
 3. Replace `quill/core/feed-pub.key` with the public key and ship a build
    containing it **before** publishing a feed signed with the new seed --
    otherwise existing clients reject the feed they cannot verify.

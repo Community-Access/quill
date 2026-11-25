@@ -2,17 +2,18 @@
 
     python scripts/feed_tool.py verify              # every feed: signature, rules, expiry
     python scripts/feed_tool.py show --app radio    # what each channel lists
-    python scripts/feed_tool.py sign --app radio    # sign a feed left unsigned (CI, --no-sign)
+    python scripts/feed_tool.py sign --app radio    # local recovery/diagnostic signing
     python scripts/feed_tool.py refresh --app radio # re-sign with a fresh 90-day expiry
     python scripts/feed_tool.py revoke --app radio --version 3.4.0-beta.1 \\
         --reason "can lose favorites on first start" [--replacement 3.4.0-beta.2]
         # the same as scripts/revoke_release.py, which is the documented way in
     python scripts/feed_tool.py expiry              # the 14-day warning, on its own
 
-Signing reads the owner's key (``QUILL_FEED_KEY_FILE`` or
-``~/.config/quill/quill-feed-priv.key``) and nothing else. ``sign`` signs the
-bytes as they are; ``refresh`` also bumps the sequence and the expiry, which
-is what to run when a feed is near its date and no release is due.
+Signing reads the protected Actions secret (``QUILL_FEED_SIGNING_KEY``) or the
+owner's local key (``QUILL_FEED_KEY_FILE`` or
+``~/.config/quill/quill-feed-priv.key``). ``sign`` signs the bytes as they are;
+``refresh`` also bumps the sequence and the expiry, which is what to run when a
+feed is near its date and no release is due.
 """
 
 from __future__ import annotations
@@ -65,7 +66,18 @@ def run(
         return 0
     if args.command == "verify":
         failed = 0
-        for feed in rf.all_feeds(root):
+        feeds = rf.all_feeds(root)
+        present = {feed.app for feed in feeds}
+        expected = set(rf.APPS)
+        missing = sorted(expected - present)
+        extra = sorted(present - expected)
+        if missing:
+            out("Missing product feeds: " + ", ".join(missing))
+            failed += 1
+        if extra:
+            out("Feeds without catalogue products: " + ", ".join(extra))
+            failed += 1
+        for feed in feeds:
             path = rf.feed_dir(root) / f"{feed.app}.json"
             problems = validate_feed(feed)
             if not rf.feed_signature_ok(path):
@@ -75,6 +87,12 @@ def run(
             failed += bool(problems)
             if not problems:
                 out(f"{feed.app}: sequence {feed.sequence}, expires {feed.expires_at}, signed")
+        index = rf.feed_dir(root) / "index.json"
+        if not rf.index_signature_ok(index):
+            out("index.json: the signed release index is missing or does not verify")
+            failed += 1
+        else:
+            out("index.json: signed")
         for warning in rf.warnings_now(root, moment):
             out(f"Warning: {warning}")
         return 1 if failed else 0

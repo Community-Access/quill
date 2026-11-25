@@ -336,6 +336,14 @@ state and lists any installed Quillins read-only.
 - [ ] Save Diagnostics: via Help menu
 - [ ] Get Help from Support: via Help menu
 - [ ] QUILL Whisperer About: via Help menu
+- [ ] Release Channel: Help > Release Channel... in QUILL, QUILL Lite, Radio,
+      Cast, Transcribe, Converter, Studio, Inkwell, Weather, Beacon and Social
+  - [ ] The chooser is read-only until Switch; every sibling app starts unchecked
+  - [ ] Beta and Dev show the risk confirmation, use the saved-settings copy,
+        and offer a return to Stable
+  - [ ] Update History opens from the Release Channel window and is reviewable
+- [ ] Check for Updates: `Ctrl+Alt+U` (or the app's displayed Help-menu key);
+      a channel choice changes only which signed feed is used
 
 ## U. Selection and QUILL key
 

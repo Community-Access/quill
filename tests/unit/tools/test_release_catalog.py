@@ -19,8 +19,8 @@ def test_every_product_has_one_maintained_release_identity() -> None:
 
 
 def test_preview_platform_wave_precedes_companions_social_and_beacon() -> None:
-    first = {"quill", "quilllite", "radio", "cast", "transcribe", "converter"}
-    companion = {"studio", "inkwell", "weather"}
+    first = {"quill", "quilllite", "radio", "cast", "transcribe", "converter", "weather"}
+    companion = {"studio", "inkwell"}
     assert {key for key, product in BY_KEY.items() if product.wave == "platform"} == first
     assert {key for key, product in BY_KEY.items() if product.wave == "companion"} == companion
     assert BY_KEY["social"].wave == BY_KEY["beacon"].wave == "later"

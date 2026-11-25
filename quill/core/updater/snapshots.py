@@ -8,9 +8,10 @@ Each app reuses the backup it already has rather than inventing a format:
 
 =========== ===================================================================
 QUILL       a zip of the small settings files in QUILL's data folder
-QUILL Lite  a zip of every settings file in QUILL Lite's own folder
+QUILL Lite  a zip of the catalogue-owned settings files in Lite's own folder
 Quill Radio ``radio.backup.create_backup`` (a ``.qrbackup``), no recordings
 QUILL Cast  ``podcasts.backup.create_backup`` (a ``.qcbackup``), no episodes
+Other apps  a zip of the exact files named in the release catalogue
 =========== ===================================================================
 
 Stored at ``<data folder>/channel-snapshots/<app>-<version>-<reason>-<stamp>``,
@@ -38,6 +39,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from quill.core.error_codes import CodedError
+from quill.core.release_catalog import PRODUCTS, data_dir, product
 
 __all__ = [
     "KEEP_PER_APP",
@@ -53,11 +55,9 @@ KEEP_PER_APP = 3
 #: A settings copy is tens of kilobytes; anything this large is not settings.
 _MAX_FILE_BYTES = 5 * 1024 * 1024
 _EXTENSIONS = {
-    "quill": ".zip",
-    "quilllite": ".zip",
-    "radio": ".qrbackup",
-    "cast": ".qcbackup",
-    "transcribe": ".zip",
+    item.key: ".qrbackup" if item.key == "radio" else ".qcbackup" if item.key == "cast" else ".zip"
+    for item in PRODUCTS
+    if item.channels_enabled
 }
 
 
@@ -73,24 +73,18 @@ class SnapshotError(CodedError):
 
 def data_folder(app_key: str) -> Path:
     """The folder *app_key* keeps its settings in."""
-    if app_key == "quilllite":
-        from quill.core.lite.paths import data_dir
-
-        return data_dir()
-    from quill.core.paths import app_data_dir
-
-    return app_data_dir()
+    return data_dir(app_key)
 
 
 def snapshot_dir(app_key: str, *, data: Path | None = None) -> Path:
     return (data or data_folder(app_key)) / "channel-snapshots"
 
 
-def _zip_json_files(source: Path, dest: Path) -> Path:
+def _zip_product(app_key: str, source: Path, dest: Path) -> Path:
     files = [
-        path
-        for path in sorted(source.glob("*.json"))
-        if path.is_file() and path.stat().st_size <= _MAX_FILE_BYTES
+        source / name
+        for name in product(app_key).snapshot_files
+        if (source / name).is_file() and (source / name).stat().st_size <= _MAX_FILE_BYTES
     ]
     with zipfile.ZipFile(dest, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         for path in files:
@@ -115,12 +109,21 @@ def _cast(source: Path, dest: Path, version: str) -> Path:
 _Adapter = Callable[[Path, Path, str], Path]
 
 _ADAPTERS: dict[str, _Adapter] = {
-    "quill": lambda source, dest, _version: _zip_json_files(source, dest),
-    "quilllite": lambda source, dest, _version: _zip_json_files(source, dest),
     "radio": _radio,
     "cast": _cast,
-    "transcribe": lambda source, dest, _version: _zip_json_files(source, dest),
 }
+
+
+def _product_adapter(app_key: str) -> _Adapter:
+    def write(source: Path, dest: Path, _version: str) -> Path:
+        return _zip_product(app_key, source, dest)
+
+    return write
+
+
+for _product in PRODUCTS:
+    if _product.channels_enabled and _product.key not in _ADAPTERS:
+        _ADAPTERS[_product.key] = _product_adapter(_product.key)
 
 
 def _safe(text: str) -> str:
@@ -278,11 +281,9 @@ def restore_snapshot(
             from quill.core.podcasts.backup import restore_backup as cast_restore
 
             restored = list(cast_restore(copy, target).data_files)
-        elif app_key == "quill":
-            own = {name for fmt in formats_for("quill") for name in fmt.files}
-            restored = _restore_zip(copy, target, own)
         else:
-            restored = _restore_zip(copy, target)
+            own = {name for fmt in formats_for(app_key) for name in fmt.files}
+            restored = _restore_zip(copy, target, own)
     except Exception as error:  # noqa: BLE001 - said plainly; the before copy is safe
         raise SnapshotError(str(error) or error.__class__.__name__) from error
     for name, payload in kept_files.items():

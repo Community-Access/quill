@@ -72,12 +72,13 @@ def test_every_app_offers_get_help_from_support(app_key: str, module: str) -> No
     assert wired, f"{module} has no Get Help from Support item"
 
 
-def test_beacon_and_quilllite_have_it_too() -> None:
+def test_custom_apps_have_it_too() -> None:
     """Neither is in APP_NAMES -- one is a browser companion, the other the
     editor-only sibling -- and both are somebody's whole experience of Quill."""
     assert "Get Help from &Support" in _source("quill/apps/beacon/app.py")
     # QUILL Lite's Help rows live in commands_help.py since 2026-10-25 (GATE-11).
     assert "cmd_get_help_from_support" in _source("quill/core/lite/commands_help.py")
+    assert "append_get_help_item" in _source("standalone/social/quill_social/ui/app.py")
 
 
 def test_every_launchable_app_is_accounted_for() -> None:

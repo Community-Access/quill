@@ -93,6 +93,7 @@ def test_every_menu_command_has_a_default_chord():
         "plugins",
         "outbox",
         "summarize_feed",
+        "check_updates",
         "user_guide",
         "keyboard_reference",
         "product_requirements",

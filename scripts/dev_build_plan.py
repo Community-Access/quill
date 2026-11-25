@@ -58,6 +58,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     print(f"build={'true' if plan.build else 'false'}")
     print(f"reason={plan.reason}")
+    print(f"apps={json.dumps(list(plan.versions), separators=(',', ':'))}")
+    print(f"versions={json.dumps(plan.versions, separators=(',', ':'))}")
     for key, version in plan.versions.items():
         print(f"version_{key}={version}")
     return 0

@@ -497,7 +497,7 @@ Thirty-one rows gained keys: Flag for follow-up Ctrl+Shift+G, Accessibility
 check F7, Send to QUILL Ctrl+Shift+Q, New Folder Ctrl+Alt+F, New smart folder
 Ctrl+Shift+M, Edit smart folder Ctrl+Alt+M, Delete smart folder
 Ctrl+Shift+Delete, Import OPML Ctrl+I, Export OPML Ctrl+E, Unsubscribe
-Ctrl+Alt+U, Play / Pause Ctrl+Shift+Space, Next article Ctrl+Shift+Period,
+Ctrl+Alt+Shift+U, Play / Pause Ctrl+Shift+Space, Next article Ctrl+Shift+Period,
 Previous article Ctrl+Shift+Comma, Stop listening Ctrl+Shift+S, Drafts
 Ctrl+Shift+D, Agenda / Calendar Ctrl+Shift+Y, Queue schedule Ctrl+Shift+U,
 Approvals Ctrl+Shift+W, Catch Up Ctrl+Shift+H, Insights / Analytics

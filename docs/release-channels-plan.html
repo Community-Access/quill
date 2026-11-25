@@ -372,41 +372,43 @@ the shared-file rule and ledger lowering
 kept installer and portable <code>.previous</code> swap
 (<code>apply.py</code>, <code>apply_script.py</code>,
 <code>self_update.py</code>), with every undo in Update History.</p>
-<p><strong>Decisions, 2026-10-03</strong> (the owner’s answers to 10.4):
-per-app channel with “move the others too” (5); Stable takes only
-final-numbered builds that were first on Beta, promoted as the same
-files (4); screen-reader sign-off for Stable only (3); at least 7 days
-on Beta, shorter only with a written reason recorded in the promotion
-(3); Dev builds by CI from <code>main</code>, at most once a day and
-only when <code>main</code> changed, unsigned, published to the separate
-repository <code>Community-Access/quillville-dev-builds</code>, and Dev
-runtimes do not repair themselves (“Reinstall the Dev build”) (1); about
-335 MB extra for a Beta or Dev runtime slot is accepted and the risk
-window says so (2); the v2 feed expires after 90 days and is refreshed
-at every release, and the signing key stays off CI, so there is no
-weekly re-sign workflow – signing happens in the local publish scripts
-with the owner’s existing feed key, and <code>publish_release.py</code>
-and <code>platform_report</code> warn when any feed is within 14 days of
-expiry (6); the previous installer is kept for rollback until 3
-successful starts or 7 days, and Update History records each undo (7);
-macOS later (8); QUILL 1.0.0 is its first Stable, reached through a
-<code>v1.0.0-rc.1</code> tag on Beta and then promotion (9); QUILL Lite
-keeps the <code>quill-lite-v</code> prefix (10); on Beta and Dev every
-app downloads updates in the background and never installs without
-asking, skipping metered connections, Quiet Hours and Quill Radio
-recordings, and Stable is unchanged (11); no gradual rollout (12);
-<code>promote-release.yml</code> requires a GitHub Environment named
-<code>stable-promotion</code> (4.4).</p>
-<p>Where the code departs from the text below because of these
-decisions: no <code>feed-refresh.yml</code> (8.2) – a feed is refreshed
-at each publish or promotion, or by
-<code>scripts/feed_tool.py refresh</code>; the promote workflow cannot
-sign, so it runs <code>promote_release.py --no-sign</code> and opens a
-pull request that GATE-FEED keeps red until the owner signs it locally;
-and, so that a failed update can undo itself at all, the installer of
-the version you are running stays in
-<code>&lt;updates&gt;/rollback/</code> (the <em>previous</em> one is the
-one aged out after 3 starts or 7 days).</p>
+<p><strong>Decisions, 2026-10-03, updated 2026-11-24</strong> (the
+owner’s answers to 10.4): per-app channel with “move the others too”
+(5); Stable takes only final-numbered builds that were first on Beta,
+promoted as the same files (4); screen-reader sign-off for Stable only
+(3); at least 7 days on Beta, shorter only with a written reason
+recorded in the promotion (3); Dev builds by CI from <code>main</code>,
+at most once a day and only when <code>main</code> changed, unsigned,
+published to the separate repository
+<code>Community-Access/quillville-dev-builds</code>, and Dev runtimes do
+not repair themselves (“Reinstall the Dev build”) (1); about 335 MB
+extra for a Beta or Dev runtime slot is accepted and the risk window
+says so (2); the v2 feed expires after 90 days and is refreshed at every
+release, and the existing seed remains a GitHub Actions repository
+secret that is delivered only to owner-approved signing jobs in
+<code>release-feed-signing</code> or <code>stable-promotion</code>; the
+local key file remains the recovery path, and
+<code>publish_release.py</code> and <code>platform_report</code> warn
+when any feed is within 14 days of expiry (6); the previous installer is
+kept for rollback until 3 successful starts or 7 days, and Update
+History records each undo (7); macOS later (8); QUILL 1.0.0 is its first
+Stable, reached through a <code>v1.0.0-rc.1</code> tag on Beta and then
+promotion (9); QUILL Lite keeps the <code>quill-lite-v</code> prefix
+(10); on Beta and Dev every app downloads updates in the background and
+never installs without asking, skipping metered connections, Quiet Hours
+and Quill Radio recordings, and Stable is unchanged (11); no gradual
+rollout (12); <code>promote-release.yml</code> requires the
+owner-approved <code>stable-promotion</code> environment (4.4).</p>
+<p>Where the code departs from the earlier text:
+<code>release-feeds.yml</code> is the manual all-app bootstrap and
+signing entry point, while normal feeds refresh at publish or promotion;
+signing jobs use the existing Actions secret only after owner approval
+and verify against <code>quill/core/feed-pub.key</code> before opening a
+pull request. The local file is recovery/manual fallback, not the only
+copy. So that a failed update can undo itself, the installer of the
+version you are running stays in <code>&lt;updates&gt;/rollback/</code>
+(the <em>previous</em> one is the one aged out after 3 starts or 7
+days).</p>
 <p><strong>Also implemented, 2026-10-04:</strong>
 <code>scripts/revoke_release.py</code> (the documented way to withdraw a
 build; <code>feed_tool.py revoke</code> calls the same
@@ -431,13 +433,10 @@ installer kept so that a failed update can undo itself is kept
 <code>keeps_installer</code>), so a Stable computer gets its roughly 200
 MB back; this narrows decision 7 for the running version’s installer,
 while the <em>previous</em> version’s installer still ages out after 3
-starts or 7 days on every channel. And the old v1 update list stays
-signed in CI by <code>windows-release.yml</code> with the
-<code>QUILL_FEED_SIGNING_KEY</code> secret for now. Remove that secret
-from CI and stop v1 signing once every app’s channel-aware release
-(QUILL 1.0.0, QUILL Lite 1.2.0, Quill Radio 3.2.0, QUILL Cast 2.0.0) has
-been out for one full release cycle; until then, leave it alone
-(<code>docs/release/RELEASE.md</code>).</p>
+starts or 7 days on every channel. The old v1 update list remains
+compatibility output from the protected <code>windows-release.yml</code>
+signing job until every installed pre-v2 copy has moved on; the seed is
+the same protected Actions secret, not an exported local file.</p>
 <p><strong>Decisions, 2026-10-04 (code signing).</strong> “Beta and
 developer builds should not be digitally signed.” Authenticode signing
 is refused for any version with a pre-release part (<code>-dev</code>,
@@ -2119,15 +2118,13 @@ kind “button”</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Keyboard routes</strong> (proposed; must be confirmed free by
-<code>tests/unit/ui/test_menu_accelerators.py</code> and GATE-DOCKEY).
-The family update key stays <strong>Ctrl+Alt+U</strong> for Check for
-Updates. Release Channel is <strong>Ctrl+Alt+Shift+U</strong> in every
-app. Update History has a menu access key only, plus a chord where one
-is free. Each key goes in <code>keymap.APP_KEYMAPS</code> per app so the
-label follows any rebinding. The new keys are added to
-<code>docs/keyboard-reference.md</code> (GATE-KEYREF regenerates
-it).</p>
+<p><strong>Keyboard routes.</strong> The family update key stays
+<strong>Ctrl+Alt+U</strong> for Check for Updates. Release Channel is a
+rare keyless row, with the app’s free Help-menu Alt route printed in the
+label (for example <code>Alt+H, L</code>). Update History is reached
+from Release Channel. Each update key goes in the app’s keymap so the
+label follows any rebinding, and GATE-KEYREF confirms the documented
+routes.</p>
 <p>The <strong>Check for Updates</strong> result dialog gains a line,
 “You are on the Beta channel,” and a “Change release channel…” button.
 When up to date on Stable, today’s <code>_offer_beta_switch</code> nag
@@ -2174,9 +2171,10 @@ every Stable version with JAWS and NVDA. Beta versions are tested
 less.</li>
 <li>Your favorites and settings may be saved in a newer way that the
 Stable version can’t read yet.</li>
-<li>Beta and Dev versions aren’t signed, so Windows may warn that the
-installer comes from an unknown publisher; that’s expected, and you can
-choose More info, then Run anyway.</li>
+<li>A final-numbered Beta candidate is signed. Dev builds and explicitly
+prerelease versions are unsigned, so Windows may warn for one of those
+files. Continue only when this app offered it through its signed
+feed.</li>
 </ul>
 <p><strong>How you’re protected</strong></p>
 <ul>
@@ -2213,9 +2211,9 @@ out.</li>
 <li>Dev versions may change how your data is saved more than once. Going
 back to Stable may mean using the copy saved today and losing changes
 you made since.</li>
-<li>Beta and Dev versions aren’t signed, so Windows may warn that the
-installer comes from an unknown publisher; that’s expected, and you can
-choose More info, then Run anyway.</li>
+<li>Dev builds are unsigned, so Windows may warn that the installer
+comes from an unknown publisher. Continue only when this app offered it
+through its signed feed.</li>
 </ul>
 <p>If a developer didn’t ask you to try Dev, Beta is probably the better
 choice.</p>
@@ -2333,10 +2331,12 @@ started a return to Stable</em>, and the target appears in the
 <li>Anti-replay: a stored <code>sequence</code> high-water mark (an
 older signed feed is refused) and <code>expires_at</code> (a feed frozen
 in time is treated as “couldn’t check” once expired).</li>
-<li>A scheduled workflow (<code>feed-refresh.yml</code>, weekly)
-re-signs each feed with a new <code>generated_at</code>,
-<code>expires_at</code> and <code>sequence</code>. This needs the key in
-CI (open question 6).</li>
+<li><code>release-feeds.yml</code> is the owner-dispatched protected
+workflow. It can bootstrap missing feeds, refresh them, and sign
+<code>index.json</code> with a new <code>generated_at</code>,
+<code>expires_at</code> and <code>sequence</code>. The signing job is
+approved and verifies against the bundled public key before a pull
+request is opened.</li>
 </ul></li>
 <li><strong>Revoked builds:</strong> never offered and never a rollback
 target. If you are running one, you get a high-priority notice that

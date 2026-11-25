@@ -10,15 +10,16 @@ name: dev-builds
 #   never to Community-Access/quill, whose first page of 30 releases is all that
 #   installed Quill Radio 3.0.4 and QUILL Lite 1.1.2 ever read.
 #
-# The signed v2 feed is NOT written here: the feed key never lives in CI. The
-# owner lists a Dev build on the Dev channel from their own computer:
+# The signed v2 feed is NOT written here: Dev artifacts and feed publication
+# are separate approved jobs. A protected promote/listing run adds a Dev build
+# after review:
 #   python scripts/publish_release.py --app radio --version <v> --channel dev --existing
 #
 # Needs the repository secret DEV_BUILDS_TOKEN: a fine-grained token with
 # "Contents: read and write" on Community-Access/quillville-dev-builds only.
 # That repository must exist and have at least one commit on main (a README is
 # enough): a release's tag is created on its main branch. Without the secret
-# the "decide" job stops at once with an error, rather than building four apps
+# the "decide" job stops at once with an error, rather than building any app
 # it cannot publish. Cast's build also reads QUILL_PODCAST_INDEX_KEY and
 # QUILL_PODCAST_INDEX_SECRET; without them Cast builds with no Podcast Index
 # search (docs/release/RELEASE.md, "Dev builds").
@@ -56,10 +57,8 @@ jobs:
       build: ${{ steps.plan.outputs.build }}
       reason: ${{ steps.plan.outputs.reason }}
       sha: ${{ steps.head.outputs.sha }}
-      version_quill: ${{ steps.plan.outputs.version_quill }}
-      version_quilllite: ${{ steps.plan.outputs.version_quilllite }}
-      version_radio: ${{ steps.plan.outputs.version_radio }}
-      version_cast: ${{ steps.plan.outputs.version_cast }}
+      apps: ${{ steps.plan.outputs.apps }}
+      versions: ${{ steps.plan.outputs.versions }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -99,7 +98,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [quill, quilllite, radio, cast]
+        app: ${{ fromJSON(needs.decide.outputs.apps) }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -138,18 +137,10 @@ jobs:
         shell: pwsh
         env:
           APP: ${{ matrix.app }}
-          VERSION_QUILL: ${{ needs.decide.outputs.version_quill }}
-          VERSION_QUILLLITE: ${{ needs.decide.outputs.version_quilllite }}
-          VERSION_RADIO: ${{ needs.decide.outputs.version_radio }}
-          VERSION_CAST: ${{ needs.decide.outputs.version_cast }}
+          VERSIONS_JSON: ${{ needs.decide.outputs.versions }}
         run: |
-          $versions = @{
-            quill = $env:VERSION_QUILL
-            quilllite = $env:VERSION_QUILLLITE
-            radio = $env:VERSION_RADIO
-            cast = $env:VERSION_CAST
-          }
-          $version = $versions[$env:APP]
+          $versions = $env:VERSIONS_JSON | ConvertFrom-Json -AsHashtable
+          $version = [string]$versions[$env:APP]
           if ($version -notmatch '^\d+\.\d+\.\d+-dev\.\d{8}\.\d+$') { throw "Not a Dev version: '$version'" }
           "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
       - name: Build QUILL (Dev, unsigned)
@@ -208,8 +199,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [quill, quilllite, radio, cast]
+        app: ${{ fromJSON(needs.decide.outputs.apps) }}
     steps:
+      - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
         with:
           name: dev-${{ matrix.app }}
@@ -219,18 +211,11 @@ jobs:
           GH_TOKEN: ${{ secrets.DEV_BUILDS_TOKEN }}
           APP: ${{ matrix.app }}
           SHA: ${{ needs.decide.outputs.sha }}
-          VERSION_QUILL: ${{ needs.decide.outputs.version_quill }}
-          VERSION_QUILLLITE: ${{ needs.decide.outputs.version_quilllite }}
-          VERSION_RADIO: ${{ needs.decide.outputs.version_radio }}
-          VERSION_CAST: ${{ needs.decide.outputs.version_cast }}
+          VERSIONS_JSON: ${{ needs.decide.outputs.versions }}
         run: |
-          case "$APP" in
-            quill) VERSION="$VERSION_QUILL"; TAG="v$VERSION"; NAME="QUILL" ;;
-            quilllite) VERSION="$VERSION_QUILLLITE"; TAG="quill-lite-v$VERSION"; NAME="QUILL Lite" ;;
-            radio) VERSION="$VERSION_RADIO"; TAG="quill-radio-v$VERSION"; NAME="Quill Radio" ;;
-            cast) VERSION="$VERSION_CAST"; TAG="quill-cast-v$VERSION"; NAME="QUILL Cast" ;;
-            *) echo "::error::Unknown app $APP"; exit 1 ;;
-          esac
+          IFS=$'\t' read -r VERSION TAG NAME < <(
+            python -c "import json,os; from quill.core.release_catalog import product; p=product(os.environ['APP']); v=json.loads(os.environ['VERSIONS_JSON'])[p.key]; print(v, p.tag_prefix+v, p.name, sep='\\t')"
+          )
           # The commit every job built from (decide's), so the next run's
           # "has main changed?" compares against what was really built.
           (cd dist/dev && sha256sum -- * > SHA256SUMS.txt)

@@ -101,6 +101,52 @@ PROBES: dict[str, tuple[str, ...]] = {
         "function:quill.core.transcribe.settings:save_settings",
         "constant:quill.core.transcribe.settings:SCHEMA_VERSION",
     ),
+    "converter.settings": (
+        "dataclass:quill.core.converter_settings:ConverterSettings",
+        "function:quill.core.converter_settings:save",
+        "constant:quill.core.converter_settings:SCHEMA",
+    ),
+    "studio.settings": (
+        "dataclass:quill.core.audio_studio.ai_settings:StudioAiSettings",
+        "function:quill.core.audio_studio.ai_settings:save_ai_settings",
+    ),
+    "studio.library": (
+        "dataclass:quill.core.audio_studio.book_prefs:BookPrefsStore",
+        "function:quill.core.audio_studio.book_prefs:save_prefs",
+        "dataclass:quill.core.audio_studio.history:AudioStudioHistory",
+        "function:quill.core.audio_studio.history:save_history",
+        "dataclass:quill.core.audio_studio.library:LibraryState",
+        "function:quill.core.audio_studio.library:save_library",
+        "dataclass:quill.core.audio_studio.play_queue:PlayQueue",
+        "function:quill.core.audio_studio.play_queue:save_queue",
+        "dataclass:quill.core.audio_studio.sleep_timer:SleepTimerSetting",
+        "function:quill.core.audio_studio.sleep_timer:save_sleep_setting",
+    ),
+    "inkwell.settings": (
+        "dataclass:quill.core.expansion.settings:InkwellSettings",
+        "function:quill.core.expansion.settings:save_settings",
+        "constant:quill.core.expansion.settings:SCHEMA_VERSION",
+    ),
+    "weather.settings": (
+        "dataclass:quill.core.weather.settings:WeatherSettings",
+        "function:quill.core.weather.settings:save_settings",
+    ),
+    "beacon.settings": (
+        "dataclass:quill.apps.beacon.a11y:A11ySettings",
+        "function:quill.apps.beacon.a11y:save",
+        "dataclass:quill.apps.beacon.external_player:PlayerSettings",
+        "function:quill.apps.beacon.external_player:save_settings",
+        "dataclass:quill.apps.beacon.routing:Rule",
+        "function:quill.apps.beacon.routing:save_rules",
+        "function:quill.apps.beacon.sync_ui:SyncController.save_config",
+        "function:quill.apps.beacon.sync_ui:SyncController._persist_conflicts",
+    ),
+    "social.settings": (
+        "source:standalone/social/quill_social/a11y.py:A11ySettings",
+        "source:standalone/social/quill_social/a11y.py:save",
+        "source:standalone/social/quill_social/keymap.py:save",
+        "source:standalone/social/quill_social/adapters/oauth.py:_save_all",
+    ),
 }
 
 Shape = dict[str, Any]
@@ -153,6 +199,34 @@ def _function_hash(func: Callable[..., object]) -> str:
     return source_hash(inspect.getsource(func))
 
 
+def _source_hash(path: str, qualname: str) -> str:
+    source = (_REPO_ROOT / path).read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    pending: list[ast.stmt] = list(tree.body)
+    target: ast.stmt | None = None
+    names = qualname.split(".")
+    for index, name in enumerate(names):
+        found = next(
+            (
+                node
+                for node in pending
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+                and node.name == name
+            ),
+            None,
+        )
+        if found is None:
+            raise KeyError(f"{path} has no {qualname}")
+        target = found
+        if index != len(names) - 1:
+            pending = list(found.body)
+    assert target is not None
+    text = ast.get_source_segment(source, target)
+    if text is None:
+        raise ValueError(f"{path}:{qualname} has no source")
+    return source_hash(text)
+
+
 def source_hash(source: str) -> str:
     """The syntax tree's hash: comments, docstrings and layout do not count."""
     tree = ast.parse(textwrap.dedent(source))
@@ -183,6 +257,9 @@ def probe(spec: str) -> Any:
         return repr(_resolve(dotted))
     if kind == "function":
         return _function_hash(_resolve(dotted))
+    if kind == "source":
+        path, _, qualname = dotted.partition(":")
+        return _source_hash(path, qualname)
     raise ValueError(f"unknown probe kind in {spec!r}")
 
 

@@ -102,13 +102,13 @@ def test_quill_and_lite_copies_hold_their_settings_files(tmp_path: Path) -> None
     data = tmp_path / "data"
     data.mkdir()
     (data / "settings.json").write_text('{"a": 1}', encoding="utf-8")
-    (data / "keymap.json").write_text("{}", encoding="utf-8")
+    (data / "lite_keymap.json").write_text("{}", encoding="utf-8")
     (data / "notes.txt").write_text("not settings", encoding="utf-8")
     copy = snapshots.take_snapshot("quilllite", "1.2.0", "joined-beta", data=data)
     assert copy.parent == data / "channel-snapshots"
     assert copy.name.startswith("quilllite-1.2.0-joined-beta-") and copy.suffix == ".zip"
     with zipfile.ZipFile(copy) as archive:
-        assert sorted(archive.namelist()) == ["keymap.json", "settings.json"]
+        assert sorted(archive.namelist()) == ["lite_keymap.json", "settings.json"]
 
 
 def test_radio_and_cast_reuse_their_own_backups(tmp_path: Path) -> None:
@@ -146,7 +146,7 @@ def test_the_newest_joined_copy_and_three_others_are_kept(tmp_path: Path) -> Non
 
 def test_a_copy_that_cannot_be_made_raises_a_plain_reason(tmp_path: Path) -> None:
     with pytest.raises(snapshots.SnapshotError) as caught:
-        snapshots.take_snapshot("weather", "2.2.0", "joined-beta", data=tmp_path)
+        snapshots.take_snapshot("player", "1.0.0", "joined-beta", data=tmp_path)
     assert "no way to copy settings" in caught.value.reason
 
 
