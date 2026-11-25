@@ -12,7 +12,6 @@ wx-free, no I/O.
 from __future__ import annotations
 
 import json
-import math
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
@@ -351,20 +350,18 @@ class Output:
     def from_mapping(cls, data: Any) -> Output | None:
         if not isinstance(data, dict) or not data.get("format"):
             return None
+        format_id = str(data.get("format"))
+        stage = str(data.get("stage") or "")
         eta = data.get("estimated_time_remaining")
         eta_seconds: int | None = None
-        if (
-            isinstance(eta, (int, float))
-            and not isinstance(eta, bool)
-            and math.isfinite(float(eta))
-            and eta >= 0
-        ):
-            # Scribe's output field is in milliseconds, although the API
-            # client's model does not state the unit.
-            eta_seconds = round(float(eta) / 1000)
+        if format_id == "mp3" and stage != "complete" and type(eta) is int and eta >= 0:
+            # Pneuma contract, 2026-11-25: REST MP3 speech output only, a whole
+            # number of milliseconds. Unknown is always null; zero can mean
+            # "almost done" while the row still runs.
+            eta_seconds = (eta + 500) // 1000
         return cls(
-            format=str(data.get("format")),
-            stage=str(data.get("stage") or ""),
+            format=format_id,
+            stage=stage,
             progress=_clamp_float(data.get("progress"), 0.0, 0.0, 1.0),
             estimated_time_remaining=eta_seconds,
             is_preview=bool(data.get("is_preview", False)),

@@ -24,8 +24,7 @@ implementation and release-engineering work.
 - [ ] WordPress live-site, payment, OAuth, and packaged Practice Site scenarios.
 - [ ] Screen-reader verification of Cast list stability and Lite handoffs.
 
-## External blockers
+## External blocker
 
 - The original Lite `0xc0000374` component remains unidentified. Diagnostics
   are improved, but the native root cause is not claimed fixed.
-- Pneuma ETA milliseconds still need provider confirmation.

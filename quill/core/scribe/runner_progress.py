@@ -26,6 +26,10 @@ def conversion_message(format_id: str, stage: str, progress: float) -> str:
     return f"{format_label(format_id)}: {stage_words(stage)}, {int(progress * 100)} percent."
 
 
+def estimating_message(format_id: str) -> str:
+    return f"{format_label(format_id)}: estimating time remaining."
+
+
 def chunk_job(job: q.Job, event: ChannelEvent) -> q.Job:
     """A throwaway job carrying one streamed chunk in ``message`` (never stored)."""
     return q.Job(id=job.id, document_id=job.document_id, message=event.content, app=job.app)
@@ -58,13 +62,20 @@ def poll_complete(
                 state=q.CONVERTING,
                 format=format_id,
                 stage=output.stage,
-                progress=max(job.progress, progress),
+                progress=progress,
                 eta_seconds=output.estimated_time_remaining,
                 message=conversion_message(format_id, output.stage, output.progress),
             )
             if stage_changed:
                 runner._listener("changed", job)
             return output.is_complete
+    if job.eta_seconds is not None:
+        runner._set(
+            job,
+            eta_seconds=None,
+            message=estimating_message(format_id),
+        )
+        runner._listener("changed", job)
     return False
 
 
@@ -101,13 +112,21 @@ def handle_event(
             return False
         stage_changed = event.stage != job.stage
         progress = (position + (event.progress if event.format == format_id else 0.0) * 0.9) / total
+        is_current_output = event.format == format_id
+        restarted = is_current_output and (
+            progress < job.progress or event.stage in {"queue", "start", "complete"}
+        )
+        # WebSocket status frames have no ETA. Keep the last REST value for a
+        # forward-moving frame, but discard it when the current output resets,
+        # finishes, or moves backward.
         runner._set(
             job,
             force=stage_changed,
             state=q.CONVERTING,
             format=format_id,
             stage=event.stage,
-            progress=max(job.progress, progress),
+            progress=progress if is_current_output else job.progress,
+            eta_seconds=None if restarted else job.eta_seconds,
             message=conversion_message(event.format, event.stage, event.progress),
         )
         runner._listener("changed", job)

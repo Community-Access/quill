@@ -80,6 +80,7 @@ logger = logging.getLogger(__name__)
 Listener = Callable[[str, "q.Job | None"], None]
 
 _QUIET_POLL_S = 15.0
+_ETA_POLL_S = 1.0
 _OFFLINE_SAY_AFTER_S = 5.0
 _IN_PROGRESS_WAIT_S = 120.0
 _HEARTBEAT_S = 5.0
@@ -444,7 +445,7 @@ class QueueService:
         total: int,
     ) -> DocumentChannel:
         started = False
-        quiet_since = self._clock()
+        last_rest_poll = self._clock()
         down_since = 0.0
         while True:
             self._check_cancel(job)
@@ -470,7 +471,7 @@ class QueueService:
                     self._listener("changed", job)
                     if self._poll_complete(job, client, format_id, position, total):
                         return channel
-                    quiet_since = self._clock()
+                    last_rest_poll = self._clock()
                 event = channel.next_event(1.0)
             except ScribeInProgressError:
                 self._wait_for_any_complete(job, channel)
@@ -485,15 +486,23 @@ class QueueService:
                 down_since = down_since or self._clock()
                 self._offline(job, down_since)
                 continue
+            now = self._clock()
             if event is None:
-                if self._clock() - quiet_since >= _QUIET_POLL_S:
-                    quiet_since = self._clock()
+                interval = _ETA_POLL_S if format_id == "mp3" else _QUIET_POLL_S
+                if now - last_rest_poll >= interval:
+                    last_rest_poll = now
                     if self._poll_complete(job, client, format_id, position, total):
                         return channel
                 continue
-            quiet_since = self._clock()
             if self._handle(job, event, format_id, position, total):
                 return channel
+            # Pneuma's WebSocket status frames have no ETA. Keep refreshing the
+            # REST outputs row while live MP3 events keep arriving instead of
+            # waiting for 15 seconds of channel silence.
+            if format_id == "mp3" and now - last_rest_poll >= _ETA_POLL_S:
+                last_rest_poll = now
+                if self._poll_complete(job, client, format_id, position, total):
+                    return channel
 
     def _wait_for_any_complete(self, job: q.Job, channel: DocumentChannel) -> None:
         """``conversion_in_progress``: wait for the running format (often the free

@@ -334,7 +334,7 @@ class FakeScribe:
                 "format": fmt,
                 "stage": stage,
                 "progress": 1.0 if stage == "complete" else 0.5,
-                "estimated_time_remaining": 30_000,
+                "estimated_time_remaining": 30_000 if fmt == "mp3" and stage == "convert" else None,
                 "is_preview": False,
                 "downloadable": True,
             }
