@@ -1426,6 +1426,8 @@
   "quill/ui/train_style_dialog.py::TrainStyleDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/train_style_dialog.py::TrainStyleDialog.__init__::wx.TextCtrl#2": "named",
   "quill/ui/transcript_reader.py::TranscriptReader.__init__::wx.TextCtrl": "named",
+  "quill/ui/transcription_queue_window.py::TranscriptionsWindow.__init__::wx.ListCtrl": "named",
+  "quill/ui/transcription_queue_window.py::TranscriptionsWindow.__init__::wx.TextCtrl": "named",
   "quill/ui/translated_speech_export_dialog.py::TranslatedSpeechExportDialog.__init__::wx.Choice": "named",
   "quill/ui/translated_speech_export_dialog.py::TranslatedSpeechExportDialog.__init__::wx.Choice#2": "named",
   "quill/ui/translated_speech_export_dialog.py::TranslatedSpeechExportDialog.__init__::wx.Choice#3": "named",
