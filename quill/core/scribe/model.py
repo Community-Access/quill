@@ -12,6 +12,7 @@ wx-free, no I/O.
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
@@ -351,11 +352,21 @@ class Output:
         if not isinstance(data, dict) or not data.get("format"):
             return None
         eta = data.get("estimated_time_remaining")
+        eta_seconds: int | None = None
+        if (
+            isinstance(eta, (int, float))
+            and not isinstance(eta, bool)
+            and math.isfinite(float(eta))
+            and eta >= 0
+        ):
+            # Scribe's output field is in milliseconds, although the API
+            # client's model does not state the unit.
+            eta_seconds = round(float(eta) / 1000)
         return cls(
             format=str(data.get("format")),
             stage=str(data.get("stage") or ""),
             progress=_clamp_float(data.get("progress"), 0.0, 0.0, 1.0),
-            estimated_time_remaining=int(eta) if isinstance(eta, (int, float)) else None,
+            estimated_time_remaining=eta_seconds,
             is_preview=bool(data.get("is_preview", False)),
             downloadable=bool(data.get("downloadable", True)),
         )

@@ -56,14 +56,24 @@ from quill.core.scribe.errors import (
     ScribePasswordError,
     ScribeSaveError,
     ScribeSignInError,
-    error_from_server,
 )
 from quill.core.scribe.inputs import check as check_input
 from quill.core.scribe.inputs import not_a_document_sentence
 from quill.core.scribe.library import Library, document_folder, unique_path
-from quill.core.scribe.model import HTML_SHAPING_FIELDS, ScribeSettings, ordered_for_conversion
+from quill.core.scribe.model import (
+    HTML_SHAPING_FIELDS,
+    ScribeSettings,
+    format_label,
+    ordered_for_conversion,
+)
 from quill.core.scribe.options import quill_base
 from quill.core.scribe.results import daisy_entry
+from quill.core.scribe.runner_progress import (
+    conversion_message,
+    handle_event,
+    poll_complete,
+    wait_for_any_complete,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -206,6 +216,9 @@ class QueueService:
     # ------------------------------------------------------------------ a job
 
     def _set(self, job: q.Job, *, force: bool = True, **changes: Any) -> q.Job:
+        state = changes.get("state")
+        if state is not None and state != q.CONVERTING:
+            changes.setdefault("eta_seconds", None)
         for key, value in changes.items():
             setattr(job, key, value)
         now = self._clock()
@@ -353,7 +366,14 @@ class QueueService:
         finally:
             if channel is not None:
                 channel.close()
-        self._set(job, state=q.DONE, progress=1.0, stage="complete", message="Done")
+        self._set(
+            job,
+            state=q.DONE,
+            progress=1.0,
+            stage="complete",
+            eta_seconds=None,
+            message="Done",
+        )
         if job.id in self._resumed:
             self._resumed_done.append(job.title or job.display_name)
         self._listener("done", job)
@@ -404,17 +424,15 @@ class QueueService:
                 down_since = down_since or self._clock()
                 self._offline(job, down_since)
 
-    def _poll_complete(self, job: q.Job, client: ScribeClient, format_id: str) -> bool:
-        try:
-            outputs, _needs = client.list_outputs(job.document_id)
-        except ScribeOfflineError:
-            return False
-        for output in outputs:
-            if output.format == format_id:
-                if output.estimated_time_remaining is not None:
-                    self._set(job, force=False, eta_seconds=output.estimated_time_remaining)
-                return output.is_complete
-        return False
+    def _poll_complete(
+        self,
+        job: q.Job,
+        client: ScribeClient,
+        format_id: str,
+        position: int,
+        total: int,
+    ) -> bool:
+        return poll_complete(self, job, client, format_id, position, total)
 
     def _convert(
         self,
@@ -441,9 +459,16 @@ class QueueService:
                     self._take_turn(job)
                     channel.start_conversion(format_id, self._passwords.get(job.id, ""))
                     started = True
-                    self._set(job, state=q.CONVERTING, format=format_id, stage="queue")
+                    self._set(
+                        job,
+                        state=q.CONVERTING,
+                        format=format_id,
+                        stage="queue",
+                        eta_seconds=None,
+                        message=conversion_message(format_id, "queue", 0.0),
+                    )
                     self._listener("changed", job)
-                    if self._poll_complete(job, client, format_id):
+                    if self._poll_complete(job, client, format_id, position, total):
                         return channel
                     quiet_since = self._clock()
                 event = channel.next_event(1.0)
@@ -463,7 +488,7 @@ class QueueService:
             if event is None:
                 if self._clock() - quiet_since >= _QUIET_POLL_S:
                     quiet_since = self._clock()
-                    if self._poll_complete(job, client, format_id):
+                    if self._poll_complete(job, client, format_id, position, total):
                         return channel
                 continue
             quiet_since = self._clock()
@@ -473,64 +498,28 @@ class QueueService:
     def _wait_for_any_complete(self, job: q.Job, channel: DocumentChannel) -> None:
         """``conversion_in_progress``: wait for the running format (often the free
         preview) to finish, then start again. Never shown as an error."""
-        end = self._clock() + _IN_PROGRESS_WAIT_S
-        while self._clock() < end:
-            self._check_cancel(job)
-            event = channel.next_event(1.0)
-            if event is not None and event.kind == "conversion_complete":
-                if event.format == "html_stream":
-                    self._listener("stream_done", _chunk_job(job, event))
-                return
-            if event is not None and event.kind == "chunk":
-                self._listener("chunk", _chunk_job(job, event))
+        wait_for_any_complete(self, job, channel, _IN_PROGRESS_WAIT_S)
 
     def _handle(
         self, job: q.Job, event: ChannelEvent, format_id: str, position: int, total: int
     ) -> bool:
         """Apply one event; True when *format_id* is complete."""
-        if event.kind == "status":
-            if event.format == "html_stream":
-                return False
-            stage_changed = event.stage != job.stage
-            progress = (
-                position + (event.progress if event.format == format_id else 0.0) * 0.9
-            ) / total
-            self._set(
-                job,
-                force=stage_changed,
-                state=q.CONVERTING,
-                format=format_id,
-                stage=event.stage,
-                progress=max(job.progress, progress),
-                message=f"{event.format}: {event.stage} {int(event.progress * 100)}%",
-            )
-            self._listener("changed", job)
-            return event.format == format_id and event.stage == "complete"
-        if event.kind == "conversion_complete":
-            if event.format == "html_stream":  # the free preview: the stream tab ends
-                self._listener("stream_done", _chunk_job(job, event))
-            return event.format == format_id
-        if event.kind == "chunk":
-            self._listener("chunk", _chunk_job(job, event))
-            return False
-        if event.kind == "password_required":
-            if self._passwords.get(job.id):
-                return False  # pushed on join; the answer to our password follows
-            raise ScribePasswordError(
-                f"{job.display_name} needs its password.", reason="password_required"
-            )
-        if event.kind == "error":
-            if event.reason == "invalid_password":
-                raise ScribePasswordError("Password not accepted.", reason="invalid_password")
-            raise error_from_server(event.reason, event.message, purchase_url=event.purchase_url)
-        return False
+        return handle_event(self, job, event, format_id, position, total)
 
     def _download(
         self, job: q.Job, client: ScribeClient, format_id: str, position: int, total: int
     ) -> None:
         title = job.title or Path(job.file_name).stem or job.document_id
         folder = Path(job.folder) if job.folder else document_folder(title, self._download_root())
-        self._set(job, state=q.DOWNLOADING, format=format_id, folder=str(folder))
+        self._set(
+            job,
+            state=q.DOWNLOADING,
+            format=format_id,
+            stage="",
+            eta_seconds=None,
+            message=f"Downloading {format_label(format_id)}.",
+            folder=str(folder),
+        )
         self._listener("changed", job)
 
         def progress(done: int, size: int | None) -> None:
@@ -555,7 +544,13 @@ class QueueService:
                 logger.info("Scribe DAISY unpack failed id=%s", job.document_id)
         outputs = dict(job.outputs)
         outputs[format_id] = str(saved)
-        self._set(job, outputs=outputs, progress=(position + 1) / total)
+        self._set(
+            job,
+            outputs=outputs,
+            progress=(position + 1) / total,
+            eta_seconds=None,
+            message=f"Downloaded {format_label(format_id)}.",
+        )
         try:
             self._library.record(job.document_id, title, format_id, saved)
         except OSError:
@@ -589,11 +584,6 @@ _RUN_FIELDS = (
 def _persisted(job: q.Job) -> dict[str, Any]:
     """The fields the runner changes, as they are now."""
     return {name: getattr(job, name) for name in _RUN_FIELDS}
-
-
-def _chunk_job(job: q.Job, event: ChannelEvent) -> q.Job:
-    """A throwaway job carrying one streamed chunk in ``message`` (never stored)."""
-    return q.Job(id=job.id, document_id=job.document_id, message=event.content, app=job.app)
 
 
 __all__ = ["Listener", "QueueService", "default_channel_opener"]

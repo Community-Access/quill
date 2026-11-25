@@ -779,6 +779,13 @@ purchase link), <code>rate_limited</code> or
 <code>conversion_in_progress</code>.</li>
 <li><code>password_required</code> arrives when the PDF is locked.</li>
 </ul></li>
+<li><strong>Poll if the channel is quiet.</strong>
+<code>GET .../outputs</code> supplies the stage, progress,
+<code>estimated_time_remaining</code>, preview/download flags and
+password state. The official client types the estimate as an integer but
+does not state its unit. The live service returns milliseconds; QUILL
+converts that field to seconds and never treats an old estimate as a
+live download time.</li>
 <li><strong>Download.</strong>
 <code>GET .../outputs/{format}/download</code>.</li>
 </ol>

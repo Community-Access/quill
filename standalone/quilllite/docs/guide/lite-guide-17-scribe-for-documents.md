@@ -300,6 +300,14 @@ carry on when you close it or close QUILL Lite.
 In the list, Enter opens the result, Delete removes the row, and the
 Applications key lists every command. Escape closes the window.
 
+The time left is Scribe's latest estimate, not a guess made from the file
+size. QUILL Lite shows it only while Scribe is converting. If the live
+connection has been quiet for 15 seconds, it reads the output again for the
+latest stage, percent and estimate, without uploading the document again.
+The latest line uses plain words, such as "MP3 audio: converting, 26
+percent." Downloads and finished jobs do not show an old conversion
+estimate.
+
 ### What you hear
 
 To start with, QUILL Lite says nothing about a conversion while you write.

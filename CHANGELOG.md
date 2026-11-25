@@ -26,6 +26,22 @@ The failure dialog says when no diagnostic message was captured rather than
 claiming that an otherwise empty log contains the cause. A memory fault is
 described as a native component fault while QUILL Lite was running, without
 claiming that app code could not have triggered it.
+### Scribe for Documents: useful time left, never a stale estimate (2026-11-24)
+
+The time left in **Conversions on This Computer** and **Scribe Status** now
+uses Scribe's estimate in the right unit. A value such as 551,460 from Scribe
+means about 551 seconds, not 9,191 minutes. QUILL speaks and writes a friendly
+duration ("about 9 minutes left"), uses seconds, minutes, hours or days as the
+length requires, and never carries an old estimate into a download or a
+finished, failed or waiting job.
+
+Progress is now richer when the live channel is quiet. The existing
+15-second fallback reads Scribe's output stage, percent and time remaining,
+updates the same details in place, and still reconnects the conversion without
+uploading the document again. The latest line uses plain words such as
+"MP3 audio: converting, 50 percent" instead of API identifiers. The window
+continues to receive every Scribe channel event: stage, progress, streamed
+HTML, completion, password requests and errors.
 
 ### Back to where you were, in QUILL Cast and Quill Media Player (2026-11-24)
 

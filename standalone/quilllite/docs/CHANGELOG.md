@@ -20,6 +20,13 @@
   phase names and elapsed milliseconds, which helps a future start hang be
   matched to its log.
 
+### Scribe for Documents: accurate time left (2026-11-24)
+
+Scribe's time-remaining value is now read in the correct unit. Conversions on
+This Computer and Scribe Status show a useful duration, refresh from Scribe's
+stage and percent when the live channel is quiet, and clear the estimate once a
+job stops converting. The latest progress line is written in plain words.
+
 ### Back to the sentence you left (2026-11-24)
 
 - **The cursor follows its sentence.** Reopening a document puts the cursor
