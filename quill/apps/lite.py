@@ -50,7 +50,7 @@ from quill.apps.lite_session import LiteSessionMixin
 from quill.apps.lite_settings_persistence import LiteSettingsPersistenceMixin
 from quill.apps.lite_shell import QuillLiteShell
 from quill.apps.lite_sr_watchdog import LiteSrWatchdogMixin
-from quill.apps.lite_updates import check_at_launch
+from quill.apps.lite_startup import LiteStartupMixin
 from quill.apps.lite_voice import ScreenReaderVoice
 from quill.apps.lite_window import DocumentFrame
 from quill.apps.lite_windows import LiteWindowsMixin
@@ -61,7 +61,6 @@ from quill.core.lite import keymap as keymap_mod
 from quill.core.lite import recovery as recovery_mod
 from quill.core.lite.open_prepare import prepare_in_background
 from quill.core.lite.paths import data_dir
-from quill.core.net import configure_ssl_trust
 from quill.core.windows_editor import translate_notepad_argv
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import PLAIN, RICH
@@ -92,11 +91,15 @@ class QuillLiteApp(
     LiteServicesMixin,
     LiteSettingsPersistenceMixin,
     LiteSrWatchdogMixin,
+    LiteStartupMixin,
     wx.App,
 ):
     """The window registry, the settings owner, and the single-instance inbox."""
 
+    app_name = APP_NAME
+
     def __init__(self, paths: list[Path], mode: str | None) -> None:
+        self._init_startup_timing()
         self._initial_paths = paths
         self._initial_mode = mode
         self.frames: list[DocumentFrame] = []
@@ -139,7 +142,7 @@ class QuillLiteApp(
         # than the wx.App, and the one thing that does construct it is the live
         # probe, which is run by hand.
         self.voice.throttle_ms = int(getattr(self.settings, "announcement_throttle_ms", 0) or 0)
-        inbox_mod.claim_instance_marker()
+        self._startup_phase("settings loaded")
         # F1 help for the whole app, with QUILL Lite's own purpose catalogue.
         # Without activate() every SetHelpText in the app stores nothing, because
         # wx needs a HelpProvider before it will keep help text at all.
@@ -164,19 +167,6 @@ class QuillLiteApp(
         set_transition_announcement_policy(lambda: False)
 
         self.print_settings = PrintSettings(self.settings)
-        # The earcon player, so the as-you-type spelling alert has something to
-        # reach. QUILL Lite had no sound stack at all: the alert was a status-bar
-        # line and nothing else, which on an unwatched bar is not an alert. Never
-        # fatal -- a machine with no audio, or no pack, simply stays quiet, and
-        # the status bar carries the words either way.
-        from quill.core.sound_events import SoundEvent
-        from quill.ui.companion_cues import init_app_sound, post_cue
-
-        init_app_sound(app_id="quilllite", app_name=APP_NAME)  # and where they play
-        # The one cue that says the app is *up*. A launch is the longest silence
-        # in the whole product -- a window appears, the reader announces a title,
-        # and nothing before that says the double-click worked.
-        post_cue(SoundEvent.APP_STARTED)
         #: Suppresses the document cue for the windows that open *as part of*
         #: starting. Reported: the launch sound and the new-document sound
         #: arrived on top of each other and read as one muddled noise.
@@ -193,13 +183,14 @@ class QuillLiteApp(
         # answer, so the menu label, the accelerator and the Ctrl+F1 list
         # cannot disagree about what a command's key is.
         self.keymap = keymap_mod.load_keymap(self.data_dir)
-        self._load_optional_stores()
+        self._load_document_memory()
         self.shell = QuillLiteShell(self, (self.settings.window_width, self.settings.window_height))
         if self.settings.window_maximized:
             self.shell.Maximize(True)
         self.shell.Bind(wx.EVT_SIZE, self._remember_shell_size)
         self.SetTopWindow(self.shell)
         self.shell.Show()
+        self._startup_phase("top-level window shown")
 
         recovered = self._restore_pending_work()
         opened = recovered
@@ -225,11 +216,14 @@ class QuillLiteApp(
         self._inbox_timer.Start(_INBOX_POLL_MS)
         # Everything that opens from here on is somebody's doing, and says so.
         self.starting_up = False
+        inbox_mod.claim_instance_marker()
+        self._startup_phase("editor ready")
         wx.CallLater(300, self.shell.say_if_empty)  # nothing opened: how to begin (FUX-09)
-        # The quiet once-a-day update check; silent unless there is one.
-        check_at_launch(self)
-        self._start_sr_watchdog()  # a reader dying mid-session saves work first
-        self._start_family_prompt_migration()  # one prompt list for the family
+        call_after = getattr(wx, "CallAfter", None)
+        if callable(call_after):
+            call_after(self._finish_startup)
+        else:
+            self._finish_startup()
         return True
 
     def next_document_number(self) -> int:
@@ -569,7 +563,13 @@ _USAGE = f"""{APP_NAME} {APP_VERSION} -- a notepad-scale editor built for screen
 
 
 def main() -> int:
-    configure_ssl_trust()  # one certificate check, before any network use
+    try:
+        import faulthandler
+
+        if not faulthandler.is_enabled():
+            faulthandler.enable(all_threads=True)
+    except Exception:  # noqa: BLE001 - diagnostics must never block startup
+        pass
     if sys.argv[1:2] in (["--notes"], ["notes"]):  # the same notes CLI as QUILL
         from quill.core.inline_notes_cli import run as run_notes
 

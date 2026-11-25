@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import ast
 import ssl
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -32,30 +34,43 @@ def test_application_truststore_configuration_is_idempotent() -> None:
     assert context.check_hostname is True
 
 
-def test_application_entrypoints_configure_truststore_before_running() -> None:
+def test_application_entrypoints_defer_truststore_until_network_is_possible() -> None:
     main_source = (_QUILL_ROOT / "__main__.py").read_text(encoding="utf-8")
     main_tree = ast.parse(main_source)
     main = next(
         node for node in main_tree.body if isinstance(node, ast.FunctionDef) and node.name == "main"
     )
-    first = main.body[0]
-    second = main.body[1]
-    assert isinstance(first, ast.ImportFrom)
-    assert first.module == "quill.core.net"
-    assert isinstance(second, ast.Expr)
-    assert isinstance(second.value, ast.Call)
-    assert isinstance(second.value.func, ast.Name)
-    assert second.value.func.id == "configure_ssl_trust"
+    assert not any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Name)
+        and node.func.id == "configure_ssl_trust"
+        for node in ast.walk(main)
+    )
 
     apps_source = (_QUILL_ROOT / "apps" / "__init__.py").read_text(encoding="utf-8")
-    apps_tree = ast.parse(apps_source)
-    assert any(
-        isinstance(node, ast.Expr)
-        and isinstance(node.value, ast.Call)
-        and isinstance(node.value.func, ast.Name)
-        and node.value.func.id == "configure_ssl_trust"
-        for node in apps_tree.body
+    assert "quill.core.net" not in apps_source
+    app_shell_source = (_QUILL_ROOT / "ui" / "app_shell.py").read_text(encoding="utf-8")
+    assert "defer_ssl_trust_setup(wx)" in app_shell_source
+
+
+def test_priority_apps_leave_truststore_unloaded_until_the_window_is_ready() -> None:
+    code = (
+        "import importlib, sys; "
+        "modules = ('quill.apps.radio', 'quill.apps.podcasts', 'quill.apps.transcribe', "
+        "'quill.apps.studio', 'quill.apps.converter', 'quill.apps.player', "
+        "'quill.apps.inkwell', 'quill.apps.weather', 'quill.apps.beacon.app'); "
+        "[importlib.import_module(name) for name in modules]; "
+        "print('truststore' in sys.modules)"
     )
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=_QUILL_ROOT.parent,
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=True,
+    )
+    assert result.stdout.strip().endswith("False"), result.stderr
 
 
 def _python_sources() -> list[Path]:

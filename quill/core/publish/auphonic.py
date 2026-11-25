@@ -30,7 +30,6 @@ from typing import BinaryIO
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
-from quill.core.net import verified_ssl_context
 
 API_BASE = "https://auphonic.com/api"
 #: Windows Credential Manager target for the user's Auphonic API token.
@@ -178,6 +177,8 @@ def _request(
         headers["Content-Length"] = str(len(data))
         body = _ProgressReader(data, on_bytes, is_cancelled)
     request = urllib.request.Request(url, data=body, headers=headers)
+    from quill.core.net import verified_ssl_context
+
     context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:

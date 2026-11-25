@@ -27,12 +27,11 @@ from quill.core.a11y_regions import RegionTracker
 from quill.core.commands import CommandRegistry
 from quill.core.features import FeatureManager
 from quill.core.keymap import DEFAULT_KEYMAP, load_keymap
-from quill.core.net import certificate_problem
 from quill.core.safety.feature_lock import load_feature_locks
 from quill.core.settings import load_settings
 from quill.platform.announce_engine import AnnouncementEngine
 from quill.stability.task_manager import TaskManager
-from quill.ui import modal_stack
+from quill.ui import modal_stack, startup_launch
 from quill.ui.activity_window import ActivityMixin
 from quill.ui.announce_commands import AnnounceCommandsMixin
 from quill.ui.announce_shim import build_announcement
@@ -88,6 +87,7 @@ class AppShellFrame(
     ) -> None:
         self._wx = wx
         self._safe_mode = safe_mode
+        startup_launch.defer_ssl_trust_setup(wx)
         if size is None:
             size = dip_size(None, 480, 360)
         self.frame = wx.Frame(None, title=title, size=size)
@@ -985,7 +985,7 @@ class AppShellFrame(
                 return
             wx.CallAfter(
                 self._show_message_box,
-                f"Could not check for updates: {certificate_problem(error) or error}",
+                f"Could not check for updates: {startup_launch.tls_problem(error) or error}",
                 "Check for Updates",
                 wx.ICON_ERROR | wx.OK,
             )

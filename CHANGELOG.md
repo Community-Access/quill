@@ -2,6 +2,31 @@
 
 ## 1.0.0
 
+### The QuillVille family starts sooner, and Lite failures can be diagnosed (2026-11-24)
+
+QUILL Lite now makes the first editor window ready before it starts optional
+sound, settings, update, screen-reader, prompt and Scribe queue services. On a
+clean-profile Windows run, alternating unchanged main and this fix five times,
+the median interval from app import to the ready editor dropped from 6.86
+seconds to 5.11 seconds (about 1.75 seconds, or 25.5 percent). Lite's cold
+module-import path fell from a 3.23-second median to 2.80 seconds (426 ms).
+
+QUILL and every companion app now defer the expensive operating-system TLS
+trust-store setup until a window exists, before its first deferred network
+callback. Headless commands and explicit Beacon verification still configure
+it synchronously, before they can open a connection. The live network refresh
+in QUILL Social no longer blocks its initial window; the local/demo timeline is
+still ready immediately.
+
+The native launcher now carries QUILL Lite's own version: the error header says
+`QUILL Lite 2.0.0`, and the executable reports file version `2.0.0.1`, instead
+of describing it as QUILL 1.0.0. Python fault handling is enabled before the app
+module starts, so a fatal native/Python stack is captured in the launch log.
+The failure dialog says when no diagnostic message was captured rather than
+claiming that an otherwise empty log contains the cause. A memory fault is
+described as a native component fault while QUILL Lite was running, without
+claiming that app code could not have triggered it.
+
 ### Back to where you were, in QUILL Cast and Quill Media Player (2026-11-24)
 
 **Back to Where I Was** (Alt+Left, the key QUILL and QUILL Lite use to go back

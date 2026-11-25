@@ -15,6 +15,7 @@ import pytest
 from quill.ui import startup_launch
 from quill.ui.startup_launch import (
     START_MINIMIZED_LABEL,
+    defer_ssl_trust_setup,
     editor_starts_hidden,
     present_at_launch,
     starts_in_tray,
@@ -39,6 +40,20 @@ def test_the_menu_row_advertises_a_key_and_an_access_letter() -> None:
     label, _tab, key = START_MINIMIZED_LABEL.partition("\t")
     assert key == "Ctrl+Alt+L"
     assert "&" in label and not label.startswith("&M")
+
+
+def test_ssl_setup_is_queued_before_later_startup_network(monkeypatch) -> None:
+    from quill.core import net
+
+    queued: list[object] = []
+    configured: list[bool] = []
+    monkeypatch.setattr(net, "configure_ssl_trust", lambda: configured.append(True))
+    defer_ssl_trust_setup(SimpleNamespace(CallAfter=queued.append))
+    queued.append(lambda: configured.append(configured == [True]))
+
+    assert configured == []
+    queued[0]()
+    assert configured == [True]
 
 
 class _Frame:

@@ -1895,12 +1895,19 @@ def run() -> int:
     app = wx.App()
     frame = BeaconFrame()
     frame.Show()
+    verify_args = [arg for arg in sys.argv[1:] if arg.startswith("quillsync://")]
+    if verify_args:
+        from quill.core.net import configure_ssl_trust
+
+        configure_ssl_trust()
+    else:
+        from quill.ui.startup_launch import defer_ssl_trust_setup
+
+        defer_ssl_trust_setup(wx)
     wx.CallAfter(first_task.focus_initial, frame)  # after Show, so it sticks (FUX-09)
     # OS custom-scheme handoff: a quillsync://verify link may be passed as the
     # first argv when the OS launches us to handle the scheme.
-    for arg in sys.argv[1:]:
-        if arg.startswith("quillsync://"):
-            frame.handle_verify_url(arg)
-            break
+    if verify_args:
+        frame.handle_verify_url(verify_args[0])
     app.MainLoop()
     return 0

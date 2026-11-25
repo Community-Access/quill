@@ -43,7 +43,6 @@ from quill.core.lite import (
     RELEASE_ASSET_PREFIX,
     RELEASE_REPO,
 )
-from quill.core.net import certificate_problem
 from quill.core.versioning import ReleaseVersion
 from quill.ui.dialog_contract import show_message_box, show_modal_dialog
 
@@ -182,6 +181,8 @@ def check_for_updates(window: Any, *, silent_no_update: bool = False) -> None:
     def _failed(_name: str, error: BaseException) -> None:
         if silent_no_update:
             return
+        from quill.core.net import certificate_problem
+
         wx.CallAfter(
             show_message_box,
             f"Could not check for updates: {certificate_problem(error) or error}",

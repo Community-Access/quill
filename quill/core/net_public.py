@@ -60,7 +60,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core.error_codes import CodedError
-from quill.core.net import verified_ssl_context
 
 __all__ = [
     "MAX_REDIRECTS",
@@ -276,6 +275,8 @@ class _PinnedHTTPHandler(urllib.request.HTTPHandler):
 
 class _PinnedHTTPSHandler(urllib.request.HTTPSHandler):
     def __init__(self, pinned: str) -> None:
+        from quill.core.net import verified_ssl_context
+
         super().__init__(context=verified_ssl_context())
         self._pinned = pinned
 
@@ -333,6 +334,8 @@ def _fetch_once(
     proxy = _proxy_for(scheme, host)
     if proxy:
         _refuse_private_answer(host, port)
+        from quill.core.net import verified_ssl_context
+
         opener = _opener(
             urllib.request.ProxyHandler({scheme: proxy}),
             urllib.request.HTTPHandler(),

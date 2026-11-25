@@ -172,7 +172,7 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         self._build_menu()
         self._build_ui()
         a11y_mod.apply_to_frame(self, self.a11y)
-        self._refresh_from_network(announce=False)
+        self._refresh_from_network(announce=False, local_only=True)
         self._populate_nav()
         self._load_scope(self.current_scope, self.current_scope_label)
         self.CreateStatusBar()
@@ -719,7 +719,9 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
 
     # -- data loading ---------------------------------------------------------
 
-    def _refresh_from_network(self, *, announce: bool = True, say_total: bool = True) -> None:
+    def _refresh_from_network(
+        self, *, announce: bool = True, say_total: bool = True, local_only: bool = False
+    ) -> None:
         """Pull each active account's home timeline into the local store.
 
         Failures are per-account and never crash the app or block other
@@ -728,6 +730,8 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         """
         pulled = 0
         for acct in self.store.list_accounts(include_paused=False):
+            if local_only and acct.network != "mock":
+                continue
             adapter = self._resolve_adapter(acct.account_id)
             try:
                 # RSS feeds go through the feed path so a manual refresh applies
@@ -2863,5 +2867,9 @@ def run() -> int:
     app = wx.App()
     frame = SocialFrame()
     frame.Show()
+    from quill.ui.startup_launch import defer_ssl_trust_setup
+
+    defer_ssl_trust_setup(wx)
+    wx.CallAfter(frame._refresh_from_network, announce=False)
     app.MainLoop()
     return 0

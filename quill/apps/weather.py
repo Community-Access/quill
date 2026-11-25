@@ -24,7 +24,6 @@ from quill.apps.weather_options import WeatherOptionsMixin
 from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
 from quill.core.app_version import describe_version, installed_version
-from quill.core.net import configure_ssl_trust
 from quill.core.settings_recovery import announce_later
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
@@ -570,11 +569,13 @@ def _show_alert_toast(title: str, body: str) -> None:
 
 
 def main() -> int:
-    configure_ssl_trust()  # one certificate check, before any network use
     from quill.core.data_location import apply_pending_at_launch
 
     apply_pending_at_launch()  # queued Data Folder move, before any data read
     if "--check-once" in sys.argv:
+        from quill.core.net import configure_ssl_trust
+
+        configure_ssl_trust()
         return _run_headless_check()
     safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
     from quill.core.ipc import (

@@ -28,22 +28,8 @@ inserts as you go and keeps listening.
 
 from __future__ import annotations
 
-from quill.core.windows_dictation.composer import compose
-from quill.core.windows_dictation.controller import (
-    DictationController,
-    DictationPreferences,
-    DictationState,
-    Moment,
-)
-from quill.core.windows_dictation.history import DictatedPhrase, PhraseHistory
-from quill.core.windows_dictation.parser import (
-    ParsedPhrase,
-    RecognizedPhrase,
-    RecognizedWord,
-    parse,
-    words_from_text,
-)
-from quill.core.windows_dictation.vocabulary import Command
+from importlib import import_module
+from typing import Any
 
 __all__ = [
     "Command",
@@ -60,3 +46,32 @@ __all__ = [
     "parse",
     "words_from_text",
 ]
+
+_EXPORTS = {
+    "Command": ("quill.core.windows_dictation.vocabulary", "Command"),
+    "DictatedPhrase": ("quill.core.windows_dictation.history", "DictatedPhrase"),
+    "DictationController": ("quill.core.windows_dictation.controller", "DictationController"),
+    "DictationPreferences": (
+        "quill.core.windows_dictation.controller",
+        "DictationPreferences",
+    ),
+    "DictationState": ("quill.core.windows_dictation.controller", "DictationState"),
+    "Moment": ("quill.core.windows_dictation.controller", "Moment"),
+    "ParsedPhrase": ("quill.core.windows_dictation.parser", "ParsedPhrase"),
+    "PhraseHistory": ("quill.core.windows_dictation.history", "PhraseHistory"),
+    "RecognizedPhrase": ("quill.core.windows_dictation.parser", "RecognizedPhrase"),
+    "RecognizedWord": ("quill.core.windows_dictation.parser", "RecognizedWord"),
+    "compose": ("quill.core.windows_dictation.composer", "compose"),
+    "parse": ("quill.core.windows_dictation.parser", "parse"),
+    "words_from_text": ("quill.core.windows_dictation.parser", "words_from_text"),
+}
+
+
+def __getattr__(name: str) -> Any:
+    try:
+        module_name, attribute = _EXPORTS[name]
+    except KeyError:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}") from None
+    value = getattr(import_module(module_name), attribute)
+    globals()[name] = value
+    return value
