@@ -11,7 +11,7 @@ zero; [report2.md](report2.md) remains the human and operational record.
 
 ## Current implementation summary
 
-- Eleven implementation and release-engineering items remain: two release
+- Twelve implementation and release-engineering items remain: three release
   operations, six startup-speed items, one branch/worktree cleanup item, and
   two SwiftLetter items.
 - GitHub Workbench implementation is complete on `main`.
@@ -29,6 +29,8 @@ zero; [report2.md](report2.md) remains the human and operational record.
 - [ ] Run the first catalogue-driven Dev build and inspect every artifact.
 - [ ] Build and inventory a real staged shared Windows runtime, then run the
       skipped runtime-inventory gate.
+- [ ] Add one protected batch feed workflow for listing the 11 Dev releases and
+      promoting the same files to Beta with the Actions signing secret.
 
 ## Startup speed
 
@@ -63,7 +65,7 @@ zero; [report2.md](report2.md) remains the human and operational record.
 
 ## Fast beta-release plan after the startup fixes
 
-This plan covers the nine tasks that lead to an 11-product beta set. It
+This plan covers the ten tasks that lead to an 11-product beta set. It
 deliberately excludes SwiftLetter and the future Whisper plan.
 
 ### 1. Finish startup once, then freeze `main`
@@ -99,6 +101,8 @@ deliberately excludes SwiftLetter and the future Whisper plan.
 - Supply the Podcast Index key and secret, or make the explicit decision to
   ship the first beta without Podcast Index search. Do not spend build time on
   this question.
+- Keep the feed private key in the protected Actions environment. The batch
+  feed workflow, not a developer workstation, is the signing path.
 - These are release operations in [report2.md](report2.md), not code tasks.
 
 ### 4. Run the parallel 11-app compilation matrix
@@ -154,26 +158,37 @@ app blocks only that app.
 
 ### 6. List and promote the same binaries
 
+Add one owner-approved `release-feed-batch.yml` workflow that:
+
+1. accepts the successful `main` SHA from the all-app Dev build;
+2. finds the 11 matching releases and hashes in the Dev repository;
+3. dry-runs every listing and Beta promotion check;
+4. lists each build on Dev, then promotes that exact version to Beta;
+5. receives `QUILL_FEED_SIGNING_KEY` only after the protected environment is
+   approved;
+6. signs and verifies every feed plus the signed index;
+7. opens one signed-feed pull request and one complete audit table.
+
 For each catalogue app, use the version from the successful Dev release:
 
 ```powershell
-python scripts\publish_release.py --app <app> --version <dev-version> --channel dev --existing --dry-run
-python scripts\promote_release.py --app <app> --version <dev-version> --to beta --dry-run
+gh workflow run release-feed-batch.yml -f sha=<dev-build-sha> -f dry_run=true
+gh workflow run release-feed-batch.yml -f sha=<dev-build-sha> -f dry_run=false
 ```
 
-When both dry runs pass:
+When both batch runs pass:
 
-1. List each Dev build on the Dev channel.
-2. Promote the exact same files to Beta.
-3. Use `--skip-soak` only with a written, specific reason; otherwise keep the
-   normal one-day Dev-to-Beta check.
-4. Open and merge the signed feed PRs.
+1. Confirm all 11 dry-run checks are green.
+2. Approve the protected signing job once, rather than repeating approval for
+   11 individual apps.
+3. Use a skip-soak reason only with a written, specific reason; otherwise keep
+   the normal one-day Dev-to-Beta check.
+4. Merge the one signed feed pull request.
 5. Verify all 11 feeds and the signed index before announcing anything.
 
-Use the Dev planner's `versions` JSON or the release tags to drive a loop;
-do not hand-copy eleven app/version pairs into separate commands. Keep one
-audit row per app with the release tag, SHA-256 file, dry-run result, and final
-feed sequence.
+Do not hand-copy eleven app/version pairs into separate commands. The batch
+workflow reads the releases from the build SHA and writes one audit row per
+app with the release tag, SHA-256 file, dry-run result, and final feed sequence.
 
 Do not rebuild between Dev and Beta promotion. The beta tester gets exactly
 the hash that passed the smoke run.
@@ -256,4 +271,3 @@ dependency.
   transcription, warm transcription, and uninstall behavior.
 - Document the external-resource risk and update the speech privacy/network
   audit before shipping.
-
