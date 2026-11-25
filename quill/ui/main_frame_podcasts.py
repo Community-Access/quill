@@ -31,6 +31,13 @@ if TYPE_CHECKING:  # Dialog classes and heavy types stay off the cold path.
 _SAFE_MODE_MESSAGE = "Podcasts are disabled in Safe Mode. Restart QUILL normally to use them."
 
 
+def post_cue(event: str) -> None:
+    """Post an optional earcon without importing sound support on the cold path."""
+    from quill.ui.companion_cues import post_cue as _post_cue
+
+    _post_cue(event)
+
+
 class PodcastsMixin(
     FolderWatchMixin,  # watched folders, shared with QUILL (qc.md 5d)
     PodcastSessionMixin,
@@ -223,7 +230,6 @@ class PodcastsMixin(
 
     def _on_podcast_episode_finished(self, show_id: str, episode_guid: str) -> None:
         from quill.core.sound_events import SoundEvent
-        from quill.ui.companion_cues import post_cue
         from quill.ui.podcasts.finish_bookkeeping import record_finish
 
         if getattr(self, "_cast_closing", False) or getattr(self, "_cast_closed", False):
