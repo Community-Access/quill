@@ -1,8 +1,9 @@
 # GitHub journeys GX01 to GX08: what each one is, how it fails, and the evidence
 
 This document closes the first eight rows of the GitHub roadmap's journey
-table (`docs/planning/github-roadmap.md`, reproduced in `complete.md` section
-GH-F) the way that section asks: each journey as a person walks it, the
+table (`docs/planning/github-roadmap.md`, summarized in `report.md`; older
+part numbers resolve in git history) the way that section asks: each journey
+as a person walks it, the
 failure it must survive, and the evidence that it does. Evidence is the
 automated test that walks the same path against recorded GitHub answers, and
 the live regression run (`docs/qa/github-live-run.py`, described in

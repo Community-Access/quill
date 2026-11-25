@@ -2,11 +2,12 @@
 
 > **Historical, kept for reference (2026-11-20).** This was the plan of record
 > until July 2026; it was last consolidated on 2026-07-05 and last edited on
-> 2026-09-25. It is no longer where open work is tracked: that is `complete.md`
-> at the repository root, the one list of open work. Rows below may since have
-> shipped, been dropped or moved; check `CHANGELOG.md` and `complete.md` before
+> 2026-09-25. It is no longer where open work is tracked: that is `report.md`
+> at the repository root. Rows below may since have shipped, been dropped or
+> moved; check `CHANGELOG.md` and `report.md` before
 > acting on any of them. Two later decisions in particular: all macOS features
-> are in `complete.md`'s Backlog, not this release (Jeff, 2026-11-20), and the
+> are in the historical `complete.md` backlog or `report.md`, not this release
+> (Jeff, 2026-11-20), and the
 > Audio Studio is now QUILL Studio (`docs/planning/QUILL-Studio-PRD.md`).
 
 > **The single planning document — it tracks only what is still open**, plus the
