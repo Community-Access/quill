@@ -11,11 +11,11 @@ zero; [report2.md](report2.md) remains the human and operational record.
 
 ## Current implementation summary
 
-- Eight implementation and release-engineering items remain: two release
-  operations and six startup-speed items.
+- Ten implementation and release-engineering items remain: two release
+  operations, two SwiftLetter items, and six startup-speed items.
 - GitHub Workbench implementation is complete on `main`.
-- WordPress Workbench and Practice Site implementation is complete on `main`;
-  the remaining staged-runtime inventory is part of release packaging below.
+- The existing WordPress Workbench and Practice Site implementation is complete
+  on `main`; SwiftLetter Phase 1 remains open separately in PR #2003.
 - Scribe implementation is complete, including durable conversion and
   transcription queues. Pneuma confirmed the ETA contract, and QUILL now
   follows it. No Scribe code or provider-contract blocker remains.
@@ -45,4 +45,11 @@ zero; [report2.md](report2.md) remains the human and operational record.
 - [ ] Target at least the already achieved 25.5 percent Lite gain as a floor,
       then optimize the minimal profiles separately without weakening
       accessibility or persistence.
+
+## SwiftLetter integration, last
+
+- [ ] Resolve PR #2003's review and failing documentation-contract shard, sync
+      the shared SwiftLetter fixtures, and merge the approved stack to `main`.
+- [ ] Complete SwiftLetter Phase 1 editor wiring: open an article, Save to
+      SwiftLetter, Compare/Retry, and lossless Markdown/HTML round trips.
 

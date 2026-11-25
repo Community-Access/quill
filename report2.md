@@ -24,7 +24,10 @@ implementation and release-engineering work.
 - [ ] WordPress live-site, payment, OAuth, and packaged Practice Site scenarios.
 - [ ] Screen-reader verification of Cast list stability and Lite handoffs.
 
-## External blocker
+## External blockers
 
 - The original Lite `0xc0000374` component remains unidentified. Diagnostics
   are improved, but the native root cause is not claimed fixed.
+- SwiftLetter PR #11 has not published the updated contract fixtures for its
+  merged #13 and #17 server changes, so QUILL PR #2003 cannot finish the
+  sanitized-save and changed-since-review replay yet.
