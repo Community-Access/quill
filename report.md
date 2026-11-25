@@ -70,8 +70,9 @@ dirty tree.
 
 ### 5. Practice Site and runtime packaging
 
-- [ ] Bundle the missing `tools\wp-playground-cli` payload and make the
-      runtime-inventory gate pass on a real staged runtime.
+- [ ] Run the runtime-inventory gate on a real staged shared runtime. The
+      `tools\wp-playground-cli` payload and restaging path are already
+      implemented and unit-tested.
 - [ ] Add asynchronous stop behavior and lifecycle-safe callbacks.
 - [ ] Prove lesson markers reflect actual PHP seeding.
 - [ ] Complete reset/history/late-completion behavior tests.
