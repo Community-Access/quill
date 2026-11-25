@@ -27,9 +27,7 @@ from quill_social import __title__, __version__, paths
 from quill_social import a11y as a11y_mod
 from quill_social import keymap as keymap_mod
 from quill_social.adapters import oauth
-from quill_social.adapters import rss as rss_adapter
 from quill_social.adapters.base import AdapterError
-from quill_social.adapters.github import MockGitHub
 from quill_social.adapters.registry import adapter_for
 from quill_social.capabilities import MASTODON_COMPATIBLE, CapabilityRegistry
 from quill_social.db import SocialStore
@@ -46,39 +44,12 @@ from quill_social.security.credentials import (
     InMemoryCredentialStore,
     WindowsCredentialManagerStore,
 )
-from quill_social.services import analytics as analytics_svc
-from quill_social.services import catchup as catchup_svc
-from quill_social.services import ecosystem as ecosystem_svc
-from quill_social.services import feed_refresh, opml_io
-from quill_social.services import listen as listen_svc
-from quill_social.services import smartfolder as smartfolder_svc
+from quill_social.services import opml_io
 from quill_social.services import subscriptions as subs_svc
-from quill_social.services.ai import accessibility as ai_a11y
-from quill_social.services.ai import understand as ai_understand
-from quill_social.services.feed_discovery import common_feed_paths, discover_feed_links
-from quill_social.services.scheduler import Scheduler
-from quill_social.services.thread_publisher import publish_thread
-from quill_social.services.thread_splitter import mastodon_counter, split_thread
 from quill_social.ui import timeline_follow
 from quill_social.ui.announce import Announcer
-from quill_social.ui.commands import Command, CommandPalette
-from quill_social.ui.composer import ComposerDialog
-from quill_social.ui.feeds import FeedConfigDialog, SmartFolderDialog
-from quill_social.ui.manage import (
-    NotificationPoliciesDialog,
-    OutboxDialog,
-    PluginManagerDialog,
-    SafetyCenterDialog,
-)
-from quill_social.ui.media_player import MediaPlayerDialog
+from quill_social.ui.commands import Command
 from quill_social.ui.scribe import ITEM_ROW, TOOLS_ROWS, SocialScribeMixin
-from quill_social.ui.studio import (
-    AgendaDialog,
-    ApprovalsDialog,
-    DraftsDialog,
-    QueueScheduleDialog,
-)
-from quill_social.whereami import WhereAmI
 
 # Navigation destinations (PRD 9.2). Each is (label, scope_id).
 NAV_TREE = [
@@ -185,12 +156,10 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         self.announcer.say(ready, "normal")
         wx.CallAfter(self.SetStatusText, f"{ready} Press F1 for help.")  # after the say
 
-        # Local scheduler tier (PRD 18.3): while the app is open, publish plans
-        # whose time has arrived. A wx.Timer keeps the UI thread free.
-        self.scheduler = Scheduler(self.store, self._resolve_adapter)
-        self._sched_timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self._on_sched_tick, self._sched_timer)
-        self._sched_timer.Start(30_000)
+        # Local scheduler tier starts after the first usable window. Timer and
+        # network work are optional services, not prerequisites for reading it.
+        self.scheduler = None
+        self._sched_timer = None
 
         self.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self.Bind(wx.EVT_CLOSE, self._on_close)
@@ -208,8 +177,9 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         """Publish any due local-tier plans (PRD 18.3, 18.12)."""
         if self._closing:
             return
+        scheduler = self._ensure_scheduler()
         try:
-            results = self.scheduler.run_due()
+            results = scheduler.run_due()
         except Exception:
             results = []
         published = [r for r in results if r.published]
@@ -221,6 +191,33 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
             self._auto_refresh_feeds()
         except Exception:
             pass
+
+    def _ensure_scheduler(self):
+        from quill_social.services.scheduler import Scheduler
+
+        scheduler = self.scheduler
+        if scheduler is None:
+            scheduler = Scheduler(self.store, self._resolve_adapter)
+            self.scheduler = scheduler
+        return scheduler
+
+    def _start_scheduler(self) -> None:
+        self._ensure_scheduler()
+        timer = self._sched_timer
+        if timer is None:
+            timer = wx.Timer(self)
+            self._sched_timer = timer
+            self.Bind(wx.EVT_TIMER, self._on_sched_tick, timer)
+        if not timer.IsRunning():
+            timer.Start(30_000)
+
+    @staticmethod
+    def _report_startup_task_failure(label: str) -> None:
+        import logging
+
+        logging.getLogger(__name__).exception(
+            "Optional Social startup task failed after the window was ready: %s", label
+        )
 
     def _bg_store_conn(self):
         """A worker-thread store connection over the same DB (WAL, lazy).
@@ -241,6 +238,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         reader. When it finishes, tree counts update and a single polite
         announcement is marshalled back to the UI -- focus is never stolen.
         """
+        from quill_social.services import feed_refresh
+
         if self._closing or self._refresh_in_flight:
             return
         subs = subs_svc.list_subscriptions(self.store)
@@ -251,6 +250,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
 
     def _auto_refresh_worker(self) -> None:
         """Background body of :meth:`_auto_refresh_feeds` (own store connection)."""
+        from quill_social.services import feed_refresh
+
         new_total = 0
         try:
             store = self._bg_store_conn()
@@ -633,6 +634,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         count of matching *unread* items so a screen reader announces e.g.
         "Unread with images, 3 unread, smart folder" without relying on colour.
         """
+        from quill_social.services import smartfolder as smartfolder_svc
+
         smart = self.store.list_folders(kind="smart")
         if not smart:
             return
@@ -746,6 +749,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         accounts (PRD 32.3). Live adapters that are not wired report a clear
         state instead of an opaque error.
         """
+        from quill_social.services import feed_refresh
+
         pulled = 0
         for acct in self.store.list_accounts(include_paused=False):
             if local_only and acct.network != "mock":
@@ -801,6 +806,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
             thread = self.store.list_items(thread_root=scope.split(":", 1)[1], limit=100)
             return sorted(thread, key=lambda x: x.created_at)
         if scope.startswith("smart:"):
+            from quill_social.services import smartfolder as smartfolder_svc
+
             folder_id = scope.split(":", 1)[1]
             folders = {f.folder_id: f for f in self.store.list_folders(kind="smart")}
             folder = folders.get(folder_id)
@@ -818,6 +825,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         return []
 
     def _catchup_items(self) -> list:
+        from quill_social.services import catchup as catchup_svc
+
         items = self.store.list_items(limit=500)
         items = catchup_svc.collapse_reposts(items)
         items = catchup_svc.collapse_cross_network(items)
@@ -866,6 +875,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         navigable out of the box; the live adapter plugs in behind the same
         interface. GitHub rows are not SocialItems, so item commands stay inert.
         """
+        from quill_social.adapters.github import MockGitHub
+
         self.list.DeleteAllItems()
         self._items = []
         gh = MockGitHub()
@@ -1124,6 +1135,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         self._open_composer(quote_of=item.remote_id)
 
     def _open_composer(self, *, reply_to=None, quote_of: str = "") -> None:
+        from quill_social.ui.composer import ComposerDialog
+
         accounts = self.store.list_accounts(include_paused=False)
         if not accounts:
             self.announcer.error("Add an account first.")
@@ -1172,6 +1185,9 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         self._publish_now(draft)
 
     def _publish_now(self, draft) -> None:
+        from quill_social.services.thread_publisher import publish_thread
+        from quill_social.services.thread_splitter import mastodon_counter, split_thread
+
         results = []
         for account_id in draft.targets:
             acct = self.store.get_account(account_id)
@@ -1459,6 +1475,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
 
     def cmd_new_smart_folder(self) -> None:
         """Create a smart folder / saved search over cached articles."""
+        from quill_social.ui.feeds import SmartFolderDialog
+
         dlg = SmartFolderDialog(self)
         try:
             if dlg.ShowModal() == wx.ID_OK and dlg.result_rule:
@@ -1486,6 +1504,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
 
     def cmd_edit_smart_folder(self) -> None:
         """Edit the selected smart folder's name and conditions."""
+        from quill_social.ui.feeds import SmartFolderDialog
+
         folder = self._selected_smart_folder()
         if folder is None:
             self.announcer.error("Select a smart folder to edit it.")
@@ -1680,6 +1700,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
 
     def cmd_configure_feed(self) -> None:
         """Open per-feed settings (cadence, retention, toggles, keyword rules)."""
+        from quill_social.ui.feeds import FeedConfigDialog
+
         scope = self.current_scope
         if not scope.startswith("feed:"):
             self.announcer.error("Select a feed in the navigation tree to configure it.")
@@ -1736,6 +1758,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         screen reader (plan xxx.md 3.21), and completion is marshalled to the UI
         thread with wx.CallAfter so auto-advance is thread-safe.
         """
+        from quill_social.services import listen as listen_svc
+
         if getattr(self, "_queue_reader", None) is not None:
             return self._queue_reader
         try:
@@ -1754,6 +1778,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
 
     def cmd_listen_start(self) -> None:
         """Build a listen queue from the current view's unread items and play."""
+        from quill_social.services import listen as listen_svc
+
         reader = self._ensure_queue_reader()
         if reader is None:
             self.announcer.error("Read-aloud is not available on this system.")
@@ -1795,6 +1821,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
 
     def cmd_analytics(self) -> None:
         """Show measured metrics as accessible data tables (PRD 33.2)."""
+        from quill_social.services import analytics as analytics_svc
+
         all_items = self.store.list_items(limit=1000)
         own = [it for it in all_items if "you" in it.author_handle.lower()]
         report = analytics_svc.compute_metrics(own, all_items, plans=self.store.list_plans())
@@ -1808,23 +1836,33 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
 
     def cmd_safety_center(self) -> None:
         """Open the unified Safety Center (PRD 27.1)."""
+        from quill_social.ui.manage import SafetyCenterDialog
+
         self._modal(SafetyCenterDialog(self, self.store))
         self.announcer.say("Safety Center closed.", "normal")
 
     def cmd_notification_policies(self) -> None:
         """Open the notification policy editor (PRD 25)."""
+        from quill_social.ui.manage import NotificationPoliciesDialog
+
         self._modal(NotificationPoliciesDialog(self, self.store))
 
     def cmd_plugins(self) -> None:
         """Open the plugin manager (PRD 34)."""
+        from quill_social.ui.manage import PluginManagerDialog
+
         self._modal(PluginManagerDialog(self, self.store))
 
     def cmd_outbox(self) -> None:
         """Open the offline outbox (PRD 32)."""
+        from quill_social.ui.manage import OutboxDialog
+
         self._modal(OutboxDialog(self, self.store))
 
     def cmd_drafts(self) -> None:
         """Manage drafts; open a chosen draft in the composer (PRD 15.2)."""
+        from quill_social.ui.studio import DraftsDialog
+
         dlg = DraftsDialog(self, self.store)
         dlg.ShowModal()
         chosen = getattr(dlg, "chosen_draft_id", None)
@@ -1834,18 +1872,26 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
 
     def cmd_agenda(self) -> None:
         """Open the accessible publishing calendar (PRD 18.5)."""
+        from quill_social.ui.studio import AgendaDialog
+
         self._modal(AgendaDialog(self, self.store))
 
     def cmd_queue_schedule(self) -> None:
         """Edit a posting queue schedule (PRD 18.4)."""
+        from quill_social.ui.studio import QueueScheduleDialog
+
         self._modal(QueueScheduleDialog(self, self.store))
 
     def cmd_approvals(self) -> None:
         """Open the approvals workflow (PRD 18.8)."""
+        from quill_social.ui.studio import ApprovalsDialog
+
         self._modal(ApprovalsDialog(self, self.store))
 
     def cmd_play_media(self) -> None:
         """Play the focused post's media in the accessible player (PRD 19)."""
+        from quill_social.ui.media_player import MediaPlayerDialog
+
         item = self._current_item()
         if item is None or not item.media:
             self.announcer.say("This post has no media to play.", "normal")
@@ -1853,6 +1899,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         self._modal(MediaPlayerDialog(self, item.media))
 
     def _open_composer_for_draft(self, draft_id: str) -> None:
+        from quill_social.ui.composer import ComposerDialog
+
         draft = self.store.get_draft(draft_id)
         if draft is None:
             return
@@ -1884,6 +1932,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
 
     def cmd_summarize_feed(self) -> None:
         """AI summary of the visible feed that always lists its sources (PRD 12.6)."""
+        from quill_social.services.ai import understand as ai_understand
+
         if not self._items:
             self.announcer.error("Nothing to summarize here.")
             return
@@ -1897,6 +1947,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
 
     def cmd_accessibility_check(self) -> None:
         """Run the accessibility assistant on the focused post (PRD 21.5)."""
+        from quill_social.services.ai import accessibility as ai_a11y
+
         item = self._current_item()
         if item is None:
             self.announcer.error("Select a post first.")
@@ -1918,6 +1970,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
 
     def cmd_send_to_quill(self) -> None:
         """Export the focused post or its conversation to QUILL markdown (PRD 20.1)."""
+        from quill_social.services import ecosystem as ecosystem_svc
+
         item = self._current_item()
         if item is None:
             self.announcer.error("Select a post first.")
@@ -1947,6 +2001,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         TextReportDialog(self, title, text).ShowModal()
 
     def cmd_command_center(self) -> None:
+        from quill_social.ui.commands import CommandPalette
+
         commands = self._build_commands()
         dlg = CommandPalette(self, commands)
         if dlg.ShowModal() == wx.ID_OK and dlg.chosen():
@@ -1956,6 +2012,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         dlg.Destroy()
 
     def cmd_where_am_i(self) -> None:
+        from quill_social.whereami import WhereAmI
+
         item = self._current_item()
         idx = self.list.GetFirstSelected()
         acct = None
@@ -2390,6 +2448,9 @@ class AddFeedDialog(wx.Dialog):
             parent.announcer.say(text, "normal", interrupt=True)
 
     def _on_find(self, _e) -> None:
+        from quill_social.adapters import rss as rss_adapter
+        from quill_social.services.feed_discovery import common_feed_paths, discover_feed_links
+
         url = self.url.GetValue().strip()
         if not url:
             self._set_status("Enter a feed or site URL first.")
@@ -2894,6 +2955,15 @@ def run() -> int:
     from quill.ui.startup_launch import defer_ssl_trust_setup
 
     defer_ssl_trust_setup(wx)
-    wx.CallAfter(frame._refresh_from_network, announce=False)
+    from quill.ui.startup_launch import defer_startup_tasks
+
+    defer_startup_tasks(
+        wx,
+        (
+            ("local scheduler", frame._start_scheduler),
+            ("live timeline refresh", lambda: frame._refresh_from_network(announce=False)),
+        ),
+        on_failure=frame._report_startup_task_failure,
+    )
     app.MainLoop()
     return 0

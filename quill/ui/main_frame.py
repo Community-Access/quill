@@ -1422,9 +1422,18 @@ class MainFrame(
         # every launch (a field bug report can include it with no env var).
         _profile = True
         _times: list[tuple[str, float]] = []
-        from quill.core.net import configure_ssl_trust
 
-        configure_ssl_trust()
+        def configure_tls() -> None:
+            from quill.core.net import configure_ssl_trust
+
+            configure_ssl_trust()
+
+        from quill.ui.startup_launch import run_startup_tasks
+
+        run_startup_tasks(
+            (("TLS trust setup", configure_tls),),
+            on_failure=self._report_startup_task_failure,
+        )
 
         try:
             self._start_ipc_poll()

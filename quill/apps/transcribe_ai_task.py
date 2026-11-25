@@ -25,6 +25,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from quill.apps.transcribe_ai_features import TranscribeAiFeaturesMixin
 from quill.core.ai.app_task import AppTaskHost, AppTaskSpec
 from quill.core.ai.family_tools import FamilyTool, _schema
 from quill.core.ai.permissions import PermissionCategory, RiskLevel
@@ -228,19 +229,3 @@ def transcribe_task_tools(host: Any, ctx: AppTaskHost) -> list[FamilyTool]:
             ),
         ),
     ]
-
-
-class TranscribeAiFeaturesMixin:
-    """QUILL Transcribe's AI commands. Mixed in through ``TranscribeAiMixin``."""
-
-    def cmd_ai_task(self) -> None:
-        """Speakers, Sections and Summary (Ctrl+F3, codex.md 6.6): the transcript as
-        text to an agent engine, and its speakers, headings, summary and actions back
-        into Review Dictation after you have read them and chosen Apply."""
-        self._open_app_task(  # type: ignore[attr-defined]
-            SPEAKERS_AND_SECTIONS,
-            lambda ctx: transcribe_task_tools(self, ctx),
-            instruction_help=INSTRUCTION_HELP,
-            starter=STARTER,
-            context=lambda: transcribe_task_facts(self),
-        )

@@ -180,9 +180,6 @@ class RadioAppFrame(
 
         self._app_features = load_app_features(app_data_dir(), "radio")
         self._init_radio()
-        from quill.ui import app_sounds
-
-        app_sounds.apply(self)  # again, now the radio's own card is known
         from quill.ui.dialog_contract import set_transition_announcement_policy
 
         set_transition_announcement_policy(lambda: self._radio_history.announce_dialog_transitions)

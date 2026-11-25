@@ -37,27 +37,60 @@ class LiteStartupMixin:
         """Start optional services after the first editor window can respond."""
         if self.shutting_down:
             return
-        self._load_optional_stores()  # type: ignore[attr-defined]
-        try:
-            from quill.core.sound_events import SoundEvent
-            from quill.ui.companion_cues import init_app_sound, post_cue
+        from quill.ui.startup_launch import run_startup_tasks
 
-            init_app_sound(app_id="quilllite", app_name=self.app_name)
-            post_cue(SoundEvent.APP_STARTED)
-        except Exception:  # noqa: BLE001 - sound is never a startup dependency
-            logger.warning("Could not finish QUILL Lite sound startup", exc_info=True)
-        from quill.apps.lite_updates import check_at_launch
-        from quill.core.net import configure_ssl_trust
-
-        configure_ssl_trust()
-        check_at_launch(self)
-        self._start_sr_watchdog()  # type: ignore[attr-defined]
-        self._start_family_prompt_migration()  # type: ignore[attr-defined]
+        run_startup_tasks(
+            (
+                ("print settings", self._ensure_print_settings),
+                ("optional stores", self._load_optional_stores),  # type: ignore[attr-defined]
+                ("application sounds", self._start_lite_sounds),
+                ("TLS trust setup", self._configure_lite_tls),
+                ("update check", self._check_lite_updates),
+                ("screen-reader watchdog", self._start_sr_watchdog),  # type: ignore[attr-defined]
+                (
+                    "family prompt migration",
+                    self._start_family_prompt_migration,  # type: ignore[attr-defined]
+                ),
+            ),
+            on_failure=self._report_lite_startup_failure,
+        )
         self._startup_phase("optional services ready")
         import wx
 
         wx.CallLater(1000, self._resume_transcription_queue)
         wx.CallLater(5000, self._resume_scribe_queue)
+
+    def _ensure_print_settings(self) -> Any:
+        """Build print state lazily; Print remains available on its first use."""
+        current = getattr(self, "print_settings", None)
+        if current is None:
+            from quill.apps.lite_printing import PrintSettings
+
+            current = PrintSettings(getattr(self, "settings", None))
+            self.print_settings = current
+        return current
+
+    def _start_lite_sounds(self) -> None:
+        from quill.core.sound_events import SoundEvent
+        from quill.ui.companion_cues import init_app_sound, post_cue
+
+        init_app_sound(app_id="quilllite", app_name=self.app_name)
+        post_cue(SoundEvent.APP_STARTED)
+
+    @staticmethod
+    def _configure_lite_tls() -> None:
+        from quill.core.net import configure_ssl_trust
+
+        configure_ssl_trust()
+
+    def _check_lite_updates(self) -> None:
+        from quill.apps.lite_updates import check_at_launch
+
+        check_at_launch(self)
+
+    @staticmethod
+    def _report_lite_startup_failure(label: str) -> None:
+        logger.warning("QUILL Lite startup task failed: %s", label, exc_info=True)
 
     def _resume_transcription_queue(self) -> None:
         """Continue durable local recording work after the editor is ready."""

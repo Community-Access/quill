@@ -43,7 +43,6 @@ from typing import Any
 
 import wx
 
-from quill.apps.lite_printing import PrintSettings
 from quill.apps.lite_recovery import LiteRecoveryMixin
 from quill.apps.lite_services import LiteServicesMixin
 from quill.apps.lite_session import LiteSessionMixin
@@ -105,7 +104,7 @@ class QuillLiteApp(
         self.frames: list[DocumentFrame] = []
         self.active_frame: DocumentFrame | None = None
         self.voice = ScreenReaderVoice()
-        self.print_settings: PrintSettings | None = None
+        self.print_settings: Any = None
         self.shell: QuillLiteShell | None = None
         #: Which areas of the app exist at all. Everything unknown is on;
         #: quill.core.lite.features.DEFAULT_OFF is the small set that starts off
@@ -166,7 +165,6 @@ class QuillLiteApp(
 
         set_transition_announcement_policy(lambda: False)
 
-        self.print_settings = PrintSettings(self.settings)
         #: Suppresses the document cue for the windows that open *as part of*
         #: starting. Reported: the launch sound and the new-document sound
         #: arrived on top of each other and read as one muddled noise.

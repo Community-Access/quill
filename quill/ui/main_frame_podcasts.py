@@ -14,37 +14,21 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quill.core.paths import app_data_dir
-from quill.core.podcasts import history as podcast_history
-from quill.core.podcasts import position_sync
-from quill.core.podcasts.download_queue import DownloadItem
-from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
-from quill.core.podcasts.subscriptions import (
-    PodcastLibrary,
-    load_library,
-)
-from quill.core.sound_events import SoundEvent
-from quill.ui.companion_cues import post_cue
 from quill.ui.main_frame_podcast_acquisition import PodcastAcquisitionMixin
 from quill.ui.main_frame_podcast_dialogs import PodcastDialogsMixin
 from quill.ui.main_frame_podcast_save import PodcastLibrarySaveMixin
 from quill.ui.main_frame_podcast_session import PodcastSessionMixin
 from quill.ui.main_frame_podcast_transfers import PodcastTransfersMixin
-from quill.ui.podcasts import record_writes
-from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
-from quill.ui.podcasts.failure_report import report_failure
-from quill.ui.podcasts.finish_bookkeeping import on_left_finished, record_finish
 from quill.ui.podcasts.folder_watch import FolderWatchMixin
-from quill.ui.podcasts.new_feed_check import check_start_failed, start_new_feed_check
-from quill.ui.podcasts.player_controller import (
-    PodcastPlaybackState,
-    PodcastPlayerController,
-    PodcastPlayerState,
-)
 from quill.ui.podcasts.queue_commands import QueueRunCommandsMixin
 
-if TYPE_CHECKING:  # Dialog classes are imported lazily at open time (they pull
-    # feedparser via feed_reader); keep them out of the cold-start path.
+if TYPE_CHECKING:  # Dialog classes and heavy types stay off the cold path.
+    from quill.core.podcasts import history as podcast_history
+    from quill.core.podcasts.download_queue import DownloadItem
+    from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
+    from quill.core.podcasts.subscriptions import PodcastLibrary
     from quill.ui.podcasts.manager_dialog import PodcastManagerDialog
+    from quill.ui.podcasts.player_controller import PodcastPlaybackState
 
 _SAFE_MODE_MESSAGE = "Podcasts are disabled in Safe Mode. Restart QUILL normally to use them."
 
@@ -68,6 +52,26 @@ class PodcastsMixin(
     # -- setup ----------------------------------------------------------
 
     def _init_podcasts(self, *, defer_library_load: bool = False) -> None:
+        if not self._feature_enabled("core.podcasts"):
+            self._podcast_library = None
+            self._podcast_manager_dialog = None
+            self._podcast_ever_active = False
+            self._podcast_current_chapters = []
+            self._podcast_chapters_key = None
+            self._podcast_history = None
+            self._podcast_history_key = ("", "")
+            self._spotify_session = None
+            self._podcast_controller = None
+            self._podcast_check_monitor = None
+            return
+
+        from quill.core.podcasts import history as podcast_history
+        from quill.core.podcasts.subscriptions import PodcastLibrary, load_library
+        from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
+        from quill.ui.podcasts.finish_bookkeeping import on_left_finished
+        from quill.ui.podcasts.new_feed_check import check_start_failed
+        from quill.ui.podcasts.player_controller import PodcastPlayerController
+
         self._podcast_library: PodcastLibrary = (
             PodcastLibrary() if defer_library_load else load_library(app_data_dir())
         )
@@ -204,10 +208,15 @@ class PodcastsMixin(
         can look up by name on whatever host it was handed, exactly as Quill
         Radio's does. QUILL Cast queues the write instead (record_writes).
         """
+        from quill.core.podcasts import history as podcast_history
+        from quill.ui.podcasts import record_writes
+
         if not record_writes.queue_history_save(self):
             podcast_history.save_history(app_data_dir(), self._podcast_history)
 
     def _maybe_reload_podcast_chapters(self, state: PodcastPlaybackState) -> None:
+        from quill.ui.podcasts.failure_report import report_failure
+
         if not state.show_id or not state.episode_guid:
             self._podcast_current_chapters = []
             self._podcast_chapters_key = None
@@ -265,6 +274,8 @@ class PodcastsMixin(
     def _on_podcast_position_checkpoint(self, show_id: str, episode_guid: str, ms: int) -> None:
         """Persist the outgoing episode's resume position (pause/stop/switch/
         shutdown) -- the write half of the position_ms resume feature."""
+        from quill.core.podcasts import position_sync
+
         show = self._podcast_library.find_show(show_id)
         episode = show.find_episode(episode_guid) if show is not None else None
         if episode is None:
@@ -288,12 +299,17 @@ class PodcastsMixin(
         self, show: object, episode: object, ms: int, *, finished: bool
     ) -> None:
         """Write this episode's place where Quill Radio can read it (11.11)."""
+        from quill.ui.podcasts import record_writes
         from quill.ui.podcasts.shared_place import share_place
 
         if not record_writes.queue_shared_place(self, show, episode, ms, finished=finished):
             share_place(show, episode, ms, finished=finished)
 
     def _on_podcast_episode_finished(self, show_id: str, episode_guid: str) -> None:
+        from quill.core.sound_events import SoundEvent
+        from quill.ui.companion_cues import post_cue
+        from quill.ui.podcasts.finish_bookkeeping import record_finish
+
         if getattr(self, "_cast_closing", False) or getattr(self, "_cast_closed", False):
             return
         show = self._podcast_library.find_show(show_id)
@@ -503,6 +519,7 @@ class PodcastsMixin(
         )
 
     def _build_podcast_status_bar_menu(self, menu: object) -> None:
+        from quill.ui.podcasts.player_controller import PodcastPlayerState
 
         wx = self._wx
         play_id, stop_id = wx.NewIdRef(), wx.NewIdRef()
@@ -745,6 +762,7 @@ class PodcastsMixin(
             return
 
         from quill.core.podcasts import audio_processing
+        from quill.ui.podcasts.failure_report import report_failure
 
         destination = Path(item.destination)
 
@@ -832,6 +850,7 @@ class PodcastsMixin(
         from quill.core.podcasts import acb_media_podcasts
         from quill.core.podcasts.opml import parse_opml
         from quill.core.podcasts.opml_import import apply_plan
+        from quill.ui.podcasts.failure_report import report_failure
 
         def _do_subscribe(**_kwargs: object):
             return acb_media_podcasts.fetch_acb_media_directory(safe_mode=self._safe_mode)
@@ -880,6 +899,8 @@ class PodcastsMixin(
         only_if_automatic_checks_enabled: bool = False,
     ) -> None:
         """Refresh just the feeds a completed import has newly subscribed."""
+        from quill.ui.podcasts.new_feed_check import start_new_feed_check
+
         start_new_feed_check(
             self,
             show_ids,

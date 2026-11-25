@@ -8,6 +8,7 @@ the menu accelerator rule reads.
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -16,8 +17,10 @@ from quill.ui import startup_launch
 from quill.ui.startup_launch import (
     START_MINIMIZED_LABEL,
     defer_ssl_trust_setup,
+    defer_startup_tasks,
     editor_starts_hidden,
     present_at_launch,
+    run_startup_tasks,
     starts_in_tray,
 )
 
@@ -54,6 +57,99 @@ def test_ssl_setup_is_queued_before_later_startup_network(monkeypatch) -> None:
     assert configured == []
     queued[0]()
     assert configured == [True]
+
+
+def test_deferred_startup_failure_does_not_break_readiness_or_later_capability() -> None:
+    ran: list[str] = []
+    failures: list[str] = []
+
+    def fail() -> None:
+        ran.append("failed")
+        raise RuntimeError("optional device missing")
+
+    run_startup_tasks(
+        (
+            ("device startup", fail),
+            ("later capability", lambda: ran.append("available")),
+        ),
+        on_failure=failures.append,
+    )
+
+    assert ran == ["failed", "available"]
+    assert failures == ["device startup"]
+
+
+def test_startup_tasks_wait_for_the_window_event_turn() -> None:
+    queued: list[object] = []
+    ran: list[str] = []
+
+    defer_startup_tasks(
+        SimpleNamespace(CallAfter=queued.append),
+        (("optional store", lambda: ran.append("loaded")),),
+    )
+
+    assert ran == []
+    assert len(queued) == 1
+    queued[0]()
+    assert ran == ["loaded"]
+
+
+@pytest.mark.parametrize(
+    "path,needle",
+    [
+        ("quill/ui/main_frame.py", "run_startup_tasks"),
+        ("quill/apps/lite_startup.py", "run_startup_tasks"),
+        ("quill/apps/beacon/startup.py", "defer_startup_tasks"),
+        ("standalone/social/quill_social/ui/app.py", "defer_startup_tasks"),
+    ],
+)
+def test_direct_window_products_use_the_failure_isolated_startup_guard(
+    path: str, needle: str
+) -> None:
+    root = Path(__file__).resolve().parents[3]
+    assert needle in (root / path).read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "quill/apps/radio.py",
+        "quill/apps/podcasts.py",
+        "quill/apps/transcribe.py",
+        "quill/apps/converter.py",
+        "quill/apps/studio.py",
+        "quill/apps/inkwell.py",
+        "quill/apps/weather.py",
+    ],
+)
+def test_shell_products_inherit_the_shared_deferred_startup_path(path: str) -> None:
+    root = Path(__file__).resolve().parents[3]
+    assert "AppShellFrame" in (root / path).read_text(encoding="utf-8")
+    shell = (root / "quill/ui/app_shell_startup.py").read_text(encoding="utf-8")
+    assert "defer_startup_tasks" in shell
+
+
+def test_all_buildable_products_have_a_startup_deferral_path() -> None:
+    from quill.core.release_catalog import PRODUCTS
+
+    buildable = {entry.key for entry in PRODUCTS if entry.buildable}
+    assert buildable == {
+        "quill",
+        "quilllite",
+        "radio",
+        "cast",
+        "transcribe",
+        "converter",
+        "studio",
+        "inkwell",
+        "weather",
+        "social",
+        "beacon",
+    }
+    root = Path(__file__).resolve().parents[3]
+    assert "defer_services(frame, wx" in (root / "quill/apps/beacon/app.py").read_text(
+        encoding="utf-8"
+    )
 
 
 class _Frame:
