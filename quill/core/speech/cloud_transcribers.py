@@ -26,9 +26,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from quill.core.error_codes import CodedError
-from quill.core.net import verified_ssl_context
 
-_VERIFIED_TLS = verified_ssl_context()
 _TIMEOUT_S = 300.0
 
 
@@ -272,7 +270,9 @@ def transcribe_rest(
 
     request = Request(url, data=body, headers=headers, method="POST")
     try:
-        with urlopen(request, context=_VERIFIED_TLS, timeout=_TIMEOUT_S) as response:  # noqa: S310 - HTTPS enforced above
+        from quill.core.net import verified_ssl_context
+
+        with urlopen(request, context=verified_ssl_context(), timeout=_TIMEOUT_S) as response:  # noqa: S310 - HTTPS enforced above
             raw: str = response.read().decode("utf-8", errors="replace")
     except HTTPError as exc:
         if exc.code == 401:

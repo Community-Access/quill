@@ -14,8 +14,9 @@ the source of ``quill/`` and fails on:
 (c) a urllib call (``urlopen``, ``build_opener``, ``HTTPSHandler``,
     ``HTTPSConnection``) in a module that never imports ``quill.core.net``.
 
-It also checks that every app entry point configures the shared trust before
-it does anything else, and that ``certificate_problem`` says the one sentence.
+It also checks that every app configures the shared trust before its first
+network callback. Windowed apps may defer that setup until their shell exists;
+headless commands must still configure it synchronously.
 """
 
 from __future__ import annotations
@@ -117,6 +118,10 @@ def _name(node: ast.AST) -> str | None:
 
 def _is_false(node: ast.AST) -> bool:
     return isinstance(node, ast.Constant) and node.value is False
+
+
+def _is_true(node: ast.AST) -> bool:
+    return isinstance(node, ast.Constant) and node.value is True
 
 
 def _says_cert_none(node: ast.AST) -> bool:
@@ -243,32 +248,127 @@ def _calls_configure_first(main: ast.FunctionDef) -> bool:
     return False
 
 
+_SHELL_DEFERRED_APPS = {
+    "quill/apps/converter.py",
+    "quill/apps/inkwell.py",
+    "quill/apps/player.py",
+    "quill/apps/podcasts.py",
+    "quill/apps/radio.py",
+    "quill/apps/studio.py",
+    "quill/apps/transcribe.py",
+    "quill/apps/weather.py",
+}
+
+
 def test_there_are_app_entry_points_to_check() -> None:
     names = {p.stem for p in _app_entry_modules()}
     assert {"radio", "podcasts", "lite", "weather", "studio", "player"} <= names
 
 
 @pytest.mark.parametrize("path", _app_entry_modules(), ids=lambda p: _rel(p))
-def test_every_app_main_configures_trust_first(path: Path) -> None:
+def test_every_app_main_configures_trust_before_network(path: Path) -> None:
     main = next(n for n in _tree(path).body if isinstance(n, ast.FunctionDef) and n.name == "main")
+    relative = _rel(path)
+    if relative in _SHELL_DEFERRED_APPS:
+        assert "AppShellFrame" in _text(path), (
+            f"{relative}: deferred trust setup requires the shared AppShellFrame"
+        )
+        return
+    if relative == "quill/apps/beacon/__init__.py":
+        app = _tree(_QUILL / "apps" / "beacon" / "app.py")
+        assert any(
+            _name(n.func) == "defer_ssl_trust_setup"
+            for n in ast.walk(app)
+            if isinstance(n, ast.Call)
+        )
+        return
+    if relative == "quill/apps/lite.py":
+        startup = _tree(_QUILL / "apps" / "lite_startup.py")
+        assert any(
+            _name(n.func) == "configure_ssl_trust"
+            for n in ast.walk(startup)
+            if isinstance(n, ast.Call)
+        )
+        return
     assert _calls_configure_first(main), (
-        f"{_rel(path)}: main() must call quill.core.net.configure_ssl_trust() before anything else"
+        f"{relative}: headless or CLI main() must configure trust before anything else"
     )
 
 
-def test_quill_main_and_the_apps_package_configure_trust() -> None:
+def test_windowed_apps_defer_trust_setup_until_after_their_shell_exists() -> None:
+    app_shell = _tree(_QUILL / "ui" / "app_shell.py")
+    init_shell = next(
+        n
+        for cls in ast.walk(app_shell)
+        if isinstance(cls, ast.ClassDef) and cls.name == "AppShellFrame"
+        for n in cls.body
+        if isinstance(n, ast.FunctionDef) and n.name == "_init_app_shell"
+    )
+    setup_call = next(
+        index
+        for index, line in enumerate(init_shell.body)
+        if any(
+            isinstance(n, ast.Call) and _name(n.func) == "defer_ssl_trust_setup"
+            for n in ast.walk(line)
+        )
+    )
+    frame_assignment = next(
+        index
+        for index, line in enumerate(init_shell.body)
+        if any(
+            isinstance(n, ast.Attribute) and n.attr == "frame"
+            for n in ast.walk(line)
+            if isinstance(n, (ast.Attribute, ast.Assign))
+        )
+    )
+    assert setup_call < frame_assignment
+
+
+def test_quill_and_the_apps_package_do_not_import_trust_before_a_window() -> None:
     main = next(
         n
         for n in _tree(_QUILL / "__main__.py").body
         if isinstance(n, ast.FunctionDef) and n.name == "main"
     )
-    assert _calls_configure_first(main)
-    package = _tree(_QUILL / "apps" / "__init__.py")
+    assert not _calls_configure_first(main)
+    deferred = next(
+        n
+        for n in _tree(_QUILL / "ui" / "main_frame.py").body
+        if isinstance(n, ast.ClassDef) and n.name == "MainFrame"
+        for n in n.body
+        if isinstance(n, ast.FunctionDef) and n.name == "_run_deferred_startup_tasks"
+    )
     assert any(
-        isinstance(n, ast.Expr)
-        and isinstance(n.value, ast.Call)
-        and _name(n.value.func) == "configure_ssl_trust"
-        for n in package.body
+        _name(n.func) == "configure_ssl_trust"
+        for n in ast.walk(deferred)
+        if isinstance(n, ast.Call)
+    )
+    package = _tree(_QUILL / "apps" / "__init__.py")
+    assert not any(
+        (isinstance(n, ast.ImportFrom) and n.module == "quill.core.net")
+        or (isinstance(n, ast.Import) and any(alias.name == "quill.core.net" for alias in n.names))
+        for n in ast.walk(package)
+    )
+
+
+def test_social_defers_live_network_refresh_and_trust_setup_until_show() -> None:
+    app = _tree(_REPO / "standalone" / "social" / "quill_social" / "ui" / "app.py")
+    source = _text(_REPO / "standalone" / "social" / "quill_social" / "ui" / "app.py")
+    frame_show = source.index("frame.Show()")
+    assert source.index("defer_ssl_trust_setup(wx)", frame_show) > frame_show
+    assert source.index("frame._refresh_from_network", frame_show) > frame_show
+    constructor = next(
+        n
+        for n in ast.walk(app)
+        if isinstance(n, ast.ClassDef) and n.name == "SocialFrame"
+        for n in n.body
+        if isinstance(n, ast.FunctionDef) and n.name == "__init__"
+    )
+    assert any(
+        isinstance(n, ast.Call)
+        and _name(n.func) == "_refresh_from_network"
+        and any(keyword.arg == "local_only" and _is_true(keyword.value) for keyword in n.keywords)
+        for n in ast.walk(constructor)
     )
 
 

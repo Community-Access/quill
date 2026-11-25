@@ -185,6 +185,7 @@ PRODUCTS: dict[str, Product] = {
         name="QuillLite",
         display="QUILL Lite",
         module="quill.apps.lite",
+        version_from="quill/core/lite/__init__.py",
         icon_dir="quilllite",
         icon_name="quill-lite",
     ),

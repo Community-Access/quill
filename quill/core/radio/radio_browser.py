@@ -32,7 +32,6 @@ import urllib.request
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
-from quill.core.net import verified_ssl_context
 from quill.core.radio.models import RadioStation, _coerce_int, is_retired_somafm_station
 
 _ALL_HOSTS = "all.api.radio-browser.info"
@@ -117,6 +116,8 @@ def _http_json(url_path: str) -> object:
         request = urllib.request.Request(
             url, headers={"User-Agent": http_client.user_agent(), "Accept": "application/json"}
         )
+        from quill.core.net import verified_ssl_context
+
         context = verified_ssl_context()
         try:
             with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:

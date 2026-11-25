@@ -41,7 +41,6 @@ from typing import Literal
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
-from quill.core.net import verified_ssl_context
 from quill.core.podcasts import feed_auth, transport
 
 _log = logging.getLogger(__name__)
@@ -171,6 +170,8 @@ def _fetch_chunked(
     if resume_from:
         headers["Range"] = f"bytes={resume_from}-"
     request = urllib.request.Request(url, headers=headers)
+    from quill.core.net import verified_ssl_context
+
     context = verified_ssl_context()
     written = resume_from
     total = 0

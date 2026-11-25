@@ -1422,6 +1422,9 @@ class MainFrame(
         # every launch (a field bug report can include it with no env var).
         _profile = True
         _times: list[tuple[str, float]] = []
+        from quill.core.net import configure_ssl_trust
+
+        configure_ssl_trust()
 
         try:
             self._start_ipc_poll()

@@ -21,6 +21,8 @@ __all__ = [
     "START_MINIMIZED_LABEL",
     "append_windows_startup_items",
     "apply_editor_startup",
+    "tls_problem",
+    "defer_ssl_trust_setup",
     "editor_starts_hidden",
     "present_at_launch",
     "starts_in_tray",
@@ -30,6 +32,31 @@ __all__ = [
 #: it (Inkwell, Weather, Transcribe); S&tart because S is App Sounds and M is
 #: the neighbouring "Start minimized to the tray".
 START_MINIMIZED_LABEL = "S&tart minimized when Windows starts\tCtrl+Alt+L"
+
+
+def defer_ssl_trust_setup(wx_module: Any | None = None) -> None:
+    """Configure process-wide TLS trust after the first window is constructed.
+
+    ``AppShellFrame`` queues this first, so every later startup callback has
+    the trusted context without paying the import cost before its window can
+    appear.
+    """
+    if wx_module is None:
+        import wx as wx_module
+
+    def _configure() -> None:
+        from quill.core.net import configure_ssl_trust
+
+        configure_ssl_trust()
+
+    wx_module.CallAfter(_configure)
+
+
+def tls_problem(error: BaseException) -> str | None:
+    """Load and use the shared TLS diagnostic only on an actual failure."""
+    from quill.core.net import certificate_problem as diagnose
+
+    return diagnose(error)
 
 
 def starts_in_tray(saved_preference: bool = False, argv: Sequence[str] | None = None) -> bool:

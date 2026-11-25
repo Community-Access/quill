@@ -24,9 +24,10 @@ Media engines (mpv, ffmpeg, VLC) and yt-dlp's own downloader
     Out of Python's TLS: they do their own certificate checks and are not
     routed through here.
 
-Every app entry point calls :func:`configure_ssl_trust` before it can touch
-the network (``quill/__main__.py`` for QUILL, ``quill/apps/__init__.py`` for
-every family app, which runs before any app module loads).
+Every app entry point arranges :func:`configure_ssl_trust` before its first
+network callback. Windowed apps defer the import and certificate-store setup
+until their first window is constructed; headless commands run it
+synchronously before they can touch the network.
 ``tests/unit/core/test_tls_one_check.py`` fails the build on a context built
 anywhere else, on any switch that turns verification off, and on a urllib
 call in a module that never reaches this one.
@@ -39,8 +40,6 @@ from __future__ import annotations
 
 import ssl
 import urllib.error
-
-import truststore
 
 __all__ = [
     "CERTIFICATE_SENTENCE",
@@ -69,6 +68,8 @@ def configure_ssl_trust() -> None:
     global _SSL_TRUST_CONFIGURED
     if _SSL_TRUST_CONFIGURED:
         return
+    import truststore
+
     truststore.inject_into_ssl()
     _SSL_TRUST_CONFIGURED = True
 
@@ -85,6 +86,8 @@ def verified_ssl_context() -> ssl.SSLContext:
     retrieve missing intermediates. Certificate and hostname verification
     remain enabled.
     """
+    import truststore
+
     context = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     context.check_hostname = True
     context.verify_mode = ssl.CERT_REQUIRED

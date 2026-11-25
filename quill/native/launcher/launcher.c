@@ -181,10 +181,14 @@ static int set_quill_env(
     SetEnvironmentVariableA("QUILL_PRODUCT_NAME", PRODUCT_NAME);
     SetEnvironmentVariableA("QUILL_PRODUCT_DISPLAY", PRODUCT_DISPLAY_NAME);
     SetEnvironmentVariableA("QUILL_PRODUCT_VERSION", PRODUCT_VERSION);
+    /* The Python process must be ready to dump fatal native/Python stacks even
+     * if a top-level import fails before the app reaches its own main(). */
+    SetEnvironmentVariableA("PYTHONFAULTHANDLER", "1");
 #else
     setenv("QUILL_PRODUCT_NAME", PRODUCT_NAME, 1);
     setenv("QUILL_PRODUCT_DISPLAY", PRODUCT_DISPLAY_NAME, 1);
     setenv("QUILL_PRODUCT_VERSION", PRODUCT_VERSION, 1);
+    setenv("PYTHONFAULTHANDLER", "1", 1);
 #endif
     return 0;
 }
