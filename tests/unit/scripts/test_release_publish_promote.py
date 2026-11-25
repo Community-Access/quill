@@ -174,6 +174,15 @@ def test_key_files_in_both_shapes_load() -> None:
     assert load_seed(as_pair) == seed
 
 
+def test_the_actions_secret_loads_without_a_local_file(monkeypatch: pytest.MonkeyPatch) -> None:
+    import base64
+
+    key = SigningKey.generate()
+    monkeypatch.setenv(rf.SIGNING_KEY_ENV, base64.b64encode(bytes(key)).decode())
+    monkeypatch.delenv(rf.KEY_FILE_ENV, raising=False)
+    assert rf.read_seed() == bytes(key)
+
+
 def test_dev_build_plan_runs_once_a_day_and_only_when_main_changed() -> None:
     sources = {"radio": "3.2.0", "quill": "1.0.0"}
     published = {"radio": ["3.0.4", "3.2.0"], "quill": ["0.9.0-beta.3"]}
@@ -210,6 +219,73 @@ def _load(name: str):
     sys.modules[name] = module
     spec.loader.exec_module(module)  # type: ignore[union-attr]
     return module
+
+
+def test_bootstrap_migrates_each_existing_channel_and_makes_empty_app_feeds() -> None:
+    tool = _load("bootstrap_release_feeds")
+    digest = "sha256:" + "a" * 64
+    rows = [
+        {
+            "tag_name": "quill-radio-v3.0.4",
+            "prerelease": False,
+            "published_at": "2026-09-28T00:00:00Z",
+            "body": "Radio Stable",
+            "html_url": "https://example.test/radio",
+            "assets": [
+                {
+                    "name": "Quill-Radio-Portable-3.0.4.zip",
+                    "browser_download_url": "https://example.test/radio.zip",
+                    "size": 10,
+                    "digest": digest,
+                },
+            ],
+        },
+        {
+            "tag_name": "quill-radio-v3.1.0-beta.1",
+            "prerelease": True,
+            "published_at": "2026-10-01T00:00:00Z",
+            "body": "Radio Beta",
+            "html_url": "https://example.test/radio-beta",
+            "assets": [
+                {
+                    "name": "Quill-Radio-Setup-Shared-3.1.0.beta.1.exe",
+                    "browser_download_url": "https://example.test/radio.exe",
+                    "size": 20,
+                    "digest": digest,
+                },
+            ],
+        },
+        {
+            "tag_name": "quill-radio-v3.2.0",
+            "prerelease": False,
+            "published_at": "2026-10-02T00:00:00Z",
+            "assets": [],
+        },
+    ]
+    migrated = tool.plan(rows)
+    assert [(release.version, release.channels) for release in migrated["radio"]] == [
+        ("3.1.0-beta.1", ("beta",)),
+        ("3.0.4", ("stable",)),
+    ]
+    assert migrated["converter"] == ()
+
+
+def test_bootstrap_can_refresh_an_existing_feed_without_rebuilding_it(tmp_path: Path) -> None:
+    tool = _load("bootstrap_release_feeds")
+    feed = _listed(new_feed("radio", "Quill Radio"), "3.3.0-beta.1")
+    rf.write_feed(feed, seed=None, root=tmp_path)
+    lines: list[str] = []
+    assert (
+        tool.run(
+            ["--app", "radio", "--refresh-all", "--dry-run"],
+            root=tmp_path,
+            gh=lambda _args: "[]",
+            out=lines.append,
+            now=T0 + timedelta(days=1),
+        )
+        == 0
+    )
+    assert lines == ["radio: would refresh 1 release(s) and re-sign the feed"]
 
 
 class FakeGh:

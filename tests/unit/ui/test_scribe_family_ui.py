@@ -144,6 +144,7 @@ def test_the_keys_avoid_the_family_f_row_and_altgr() -> None:
 def test_next_steps_elsewhere_name_the_editor_and_the_player(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    monkeypatch.setattr("quill.ui.scribe_entry.player_available", lambda: True)  # released here
     from quill.ui import scribe_app_host
 
     monkeypatch.setattr(scribe_app_host, "editor_name", lambda: "QUILL")

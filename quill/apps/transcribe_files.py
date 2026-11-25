@@ -157,7 +157,27 @@ class TranscribeFilesMixin(DictationTranscribeMixin):
         elif action == "save":
             self._save_transcript_as(text)
         elif action == "quill":
-            self.open_in_quill(str(path))  # type: ignore[attr-defined]
+            self._open_transcript_in_editor(Path(path))
+
+    def _open_transcript_in_editor(self, path: Path) -> None:
+        """Review Transcript's Open in QUILL: said once, and never silent.
+
+        FUX-02: this went through ``AppShell.open_in_quill``, which said
+        nothing on success and never checked that an editor was there. The
+        family's editor launcher is the one Scribe's Next Steps use: QUILL,
+        else QUILL Lite.
+        """
+        from quill.ui import scribe_app_host
+
+        # Launch first (it returns at once), then say the one true sentence.
+        where = scribe_app_host.open_in_editor(path)
+        if where:
+            self._dictation_say(f"Opening the transcript in {where}.")
+            return
+        self._dictation_say(
+            "Neither QUILL nor QUILL Lite could be opened, so the transcript was not "
+            "opened. Save As keeps a copy where you choose."
+        )
 
     def _save_transcript_as(self, text: str) -> None:
         from quill.core.storage import write_text_atomic

@@ -933,6 +933,17 @@ Enter does exactly what choosing that row from its menu would do. For an
 option, it switches it and tells you whether it is now on or off. Escape
 closes the window without doing anything.
 
+## Updates and release channels
+
+**Help > Check for Updates...** (**Ctrl+Alt+U**) checks only Quill Inkwell's
+signed feed, verifies the selected download, and offers the installed or
+portable flavor this copy uses.
+
+**Help > Release Channel...** chooses Stable, Beta or Dev. Opening it changes
+nothing. Moving to Beta or Dev explains the risk and saves a copy of the small
+Inkwell settings file first. Different QuillVille products may use different
+channels on one computer; Inkwell itself has one active channel at a time.
+
 ## What's New
 
 **Help > What's New** (**Ctrl+Shift+F1**) opens Inkwell's changelog in your

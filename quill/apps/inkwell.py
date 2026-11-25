@@ -28,7 +28,7 @@ from typing import Any
 
 import wx
 
-from quill.apps import inkwell_first_task
+from quill.apps import inkwell_first_task, release_channel_menu
 from quill.apps.inkwell_ai import InkwellAiMixin
 from quill.apps.inkwell_dictation import InkwellDictationMixin
 from quill.apps.inkwell_keys import InkwellKeysMixin
@@ -254,6 +254,7 @@ class QuillInkwellFrame(
             ),
             id=updates_id,
         )
+        channel_id = release_channel_menu.append(self, help_menu, "inkwell", updates_id)
         # Every app in the family answers the same question the same way:
         # one item, one key, one form that reaches a person who can reply.
         from quill.ui.support_menu import append_get_help_item
@@ -284,6 +285,7 @@ class QuillInkwellFrame(
             excluded_id,
             prefs_id,
             updates_id,
+            channel_id,
             about_id,
         )
 

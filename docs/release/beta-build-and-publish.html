@@ -4,8 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Beta builds and publishing: QUILL Lite, Quill Radio and QUILL
-Cast</title>
+  <title>Beta build and publish</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -381,11 +380,13 @@ The site’s download links and the apps’ in-app update lists
 (<code>docs/site/updates/v2</code>) point at those GitHub Release files.
 Full reference: <code>docs/release/RELEASE.md</code>, “Publishing to
 Beta”, “Promoting” and “One-time setup (owner)”.</p>
-<p><strong>Once only (owner setup):</strong> the update-list signing key
-stays on your computer (RELEASE.md “The feed key stays on your
-computer”); <code>gh auth login</code> done; Actions allowed to create
-pull requests; <code>stable-promotion</code> environment with you as
-reviewer.</p>
+<p><strong>Once only (owner setup):</strong> the update-list signing
+seed stays as the <code>QUILL_FEED_SIGNING_KEY</code> repository secret;
+<code>release-feed-signing</code> and <code>stable-promotion</code>
+environments have the owner as required reviewer,
+<code>gh auth login</code> is done, and Actions may create pull
+requests. Local signing from a recovery key remains available; the
+normal promotion path never exports the GitHub secret.</p>
 <p><strong>For each beta app (after A3 built the files):</strong></p>
 <ol type="1">
 <li>Use the app’s “What’s new” from
@@ -407,11 +408,10 @@ hashes the files, creates a GitHub <strong>prerelease</strong> (never
 and QUILL Cast
 (<code>--app cast --version 2.0.0 --build 5 --dist standalone/cast/dist</code>),
 each with its own file from <code>docs/release/whats-new/</code>. The
-script accepts <code>cast</code>, <code>quill</code>,
-<code>quilllite</code>, <code>radio</code> and (since 2026-10-24)
-<code>transcribe</code>; leaving out <code>--build</code> uses the next
-build after the newest published tag. QUILL Transcribe publishes the
-same way:
+script accepts every channel-enabled key in
+<code>quill.core.release_catalog</code>; leaving out
+<code>--build</code> uses the next build after the newest published tag.
+QUILL Transcribe publishes the same way:
 <code>--app transcribe --version 1.0.0 --build 2 --dist standalone/transcribe/dist</code>.</li>
 <li><strong>Commit the updated update list</strong>
 (<code>docs/site/updates/v2</code>) through a pull request and merge it.

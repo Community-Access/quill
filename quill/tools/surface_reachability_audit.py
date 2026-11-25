@@ -46,6 +46,7 @@ SNAPSHOT_PATH = REPO_ROOT / "tests" / "unit" / "ui" / "fixtures" / "surface_reac
 ENTRY_GLOBS: tuple[str, ...] = (
     "quill/__main__.py",
     "quill/apps/*.py",
+    "quill/apps/beacon/__init__.py",
     "quill/ui/main_frame*.py",
 )
 

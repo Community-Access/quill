@@ -29,6 +29,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Protocol
 
+from quill.core.release_catalog import PRODUCTS
 from quill.core.updater.feed import (
     FeedAsset,
     FeedRelease,
@@ -49,6 +50,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 MAIN_REPO = "Community-Access/quill"
 DEV_REPO = "Community-Access/quillville-dev-builds"
 KEY_FILE_ENV = "QUILL_FEED_KEY_FILE"
+SIGNING_KEY_ENV = "QUILL_FEED_SIGNING_KEY"
 DEFAULT_KEY_FILE = Path.home() / ".config" / "quill" / "quill-feed-priv.key"
 
 
@@ -64,69 +66,17 @@ class AppRelease:
 
 
 APPS: dict[str, AppRelease] = {
-    a.key: a
-    for a in (
-        AppRelease(
-            "quill", "QUILL", "v", "Quill", "CHANGELOG.md", "quill/__init__.py", "__version__"
-        ),
-        AppRelease(
-            "quilllite",
-            "QUILL Lite",
-            "quill-lite-v",
-            "QuillLite",
-            "standalone/quilllite/docs/CHANGELOG.md",
-            "quill/core/lite/__init__.py",
-            "APP_VERSION",
-        ),
-        AppRelease(
-            "radio",
-            "Quill Radio",
-            "quill-radio-v",
-            "Quill-Radio",
-            "standalone/radio/docs/CHANGELOG.md",
-            "quill/apps/radio.py",
-            "_VERSION",
-        ),
-        AppRelease(
-            "cast",
-            "QUILL Cast",
-            "quill-cast-v",
-            "Quill-Cast",
-            "standalone/cast/docs/CHANGELOG.md",
-            "quill/apps/podcasts_menu.py",
-            "APP_VERSION",
-        ),
-        # QUILL Transcribe joined the channels for its 1.0.0 release
-        # (2026-10-24); its files are QUILL-Transcribe-*.
-        AppRelease(
-            "transcribe",
-            "QUILL Transcribe",
-            "quill-transcribe-v",
-            "QUILL-Transcribe",
-            "standalone/transcribe/docs/CHANGELOG.md",
-            "quill/apps/transcribe.py",
-            "_VERSION",
-        ),
-        # Converter and Weather joined on 2026-11-01 (Quill-Converter-*, Quill-Weather-*).
-        AppRelease(
-            "converter",
-            "Quill Converter",
-            "quill-converter-v",
-            "Quill-Converter",
-            "standalone/converter/docs/CHANGELOG.md",
-            "quill/apps/converter.py",
-            "_VERSION",
-        ),
-        AppRelease(
-            "weather",
-            "Quill Weather",
-            "quill-weather-v",
-            "Quill-Weather",
-            "standalone/weather/docs/CHANGELOG.md",
-            "quill/apps/weather.py",
-            "_VERSION",
-        ),
+    product.key: AppRelease(
+        key=product.key,
+        name=product.name,
+        tag_prefix=product.tag_prefix,
+        asset_prefix=product.asset_prefix,
+        changelog=product.changelog,
+        version_file=product.version_file,
+        version_constant=product.version_constant,
     )
+    for product in PRODUCTS
+    if product.wave != "held"
 }
 
 
@@ -280,14 +230,26 @@ def all_feeds(root: Path = REPO_ROOT) -> list[ReleaseFeed]:
 
 
 def read_seed(path: Path | None = None) -> bytes:
-    """The owner's feed-signing seed. Read only when signing; never printed."""
+    """The feed-signing seed, from a protected Actions secret or local file.
+
+    Ordinary jobs never receive ``QUILL_FEED_SIGNING_KEY``. The only workflows
+    that name it are release/signing workflows, which are restricted to this
+    repository and run in an owner-approved GitHub Environment. The value is
+    consumed in process memory and never printed or written to disk here.
+    """
     from quill.core.updater.feed_publish import load_seed
 
-    target = path or Path(os.environ.get(KEY_FILE_ENV, "") or DEFAULT_KEY_FILE)
+    if path is not None:
+        target = path
+    else:
+        protected_secret = os.environ.get(SIGNING_KEY_ENV, "").strip()
+        if protected_secret:
+            return load_seed(protected_secret)
+        target = Path(os.environ.get(KEY_FILE_ENV, "") or DEFAULT_KEY_FILE)
     if not target.is_file():
         raise SystemExit(
-            f"No feed signing key at {target}. Sign on the computer that holds it, or "
-            f"set {KEY_FILE_ENV}. CI never holds this key: use --no-sign there."
+            f"No feed signing key at {target}. Use a protected signing workflow, "
+            f"or set {KEY_FILE_ENV} on the owner's computer."
         )
     return load_seed(target.read_text(encoding="utf-8"))
 
@@ -433,6 +395,11 @@ def feed_signature_ok(path: Path, keys: Sequence[bytes] | None = None) -> bool:
     if not sig.is_file():
         return False
     return verify_feed_bytes(path.read_bytes(), sig.read_text(encoding="utf-8"), keys)
+
+
+def index_signature_ok(path: Path, keys: Sequence[bytes] | None = None) -> bool:
+    """Whether the release-index bytes and sidecar verify as one signed unit."""
+    return path.is_file() and feed_signature_ok(path, keys)
 
 
 def warnings_now(root: Path = REPO_ROOT, now: datetime | None = None) -> list[str]:

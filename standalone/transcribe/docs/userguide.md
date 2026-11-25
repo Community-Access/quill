@@ -1386,7 +1386,9 @@ Transcript** window shows it read-only, with:
   and its folder, for example "Saved meeting.txt in Documents.", and the same
   sentence stays in **Activity** (Shift+F9), where **Open Folder** shows you
   the file. **Repeat Last Result** (F9) says it again;
-- **Open in QUILL** - opens it in QUILL to edit.
+- **Open in QUILL** - opens it in QUILL to edit, or in QUILL Lite when QUILL
+  is not installed. You hear "Opening the transcript in QUILL." With neither
+  editor installed, Transcribe says so, and Save As keeps a copy.
 
 Nothing is typed, copied or saved unless you choose it.
 
@@ -1537,14 +1539,18 @@ and transcripts are not copied, and updates do not change them. Then it checks
 for updates on the new channel straight away. After that, Check for Updates
 offers the newest version on your channel.
 
-Beta and Dev versions aren't signed, so when you install one, Windows
-SmartScreen may warn that it comes from an unknown publisher; that's expected,
-and choosing **More info**, then **Run anyway**, installs it.
+A final-numbered Beta candidate is Authenticode-signed. Dev builds and
+explicitly prerelease versions are not signed, so Windows SmartScreen can warn.
+Use that bypass only when Transcribe offered the file through its signed feed.
 
 **When other QuillVille apps are installed too.** They run on one shared engine
 on your computer. When an app moves to Beta or Dev, it gets its own copy of that
 engine, about 335 MB, so the apps you leave on Stable are never touched. It goes
 away by itself when your last app comes back to Stable.
+
+Different products can use different channels together. Transcribe itself has
+one active channel at a time; moving it to Beta changes its launcher and runtime
+slot rather than creating a second official Transcribe Beta install.
 
 **If an update doesn't start.** After an update, QUILL Transcribe checks that
 the new version really opens. If it doesn't open within two minutes, the update

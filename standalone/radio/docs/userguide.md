@@ -7540,9 +7540,9 @@ follows. They are called release channels.
    understand** box, and choose **Move to Beta** (or **Move to Dev**). **Stay on
    Stable**, or Escape, changes nothing.
 
-Beta and Dev versions aren't signed, so when you install one, Windows
-SmartScreen may warn that it comes from an unknown publisher; that's expected,
-and choosing **More info**, then **Run anyway**, installs it.
+A final-numbered Beta candidate is Authenticode-signed. Dev builds and
+explicitly prerelease versions are not signed, so Windows SmartScreen can warn.
+Use that bypass only when Radio offered the file through its signed update list.
 
 Before it moves, Quill Radio saves a copy of your favorites, history and
 settings. If it cannot, it stays where it is and tells you why. Your
@@ -7555,6 +7555,10 @@ your computer. When an app moves to Beta or Dev, it gets its own copy of that
 engine, so the apps you leave on Stable are never touched. You can still move
 several at once: check them under "Also move my other QuillVille apps on this
 computer" and choose **Switch**.
+
+Different products can use different channels together. Radio itself has one
+active channel at a time; moving Radio to Beta changes Radio's launcher and
+runtime slot rather than creating a second official Radio Beta install.
 
 **A note about disk space.** That second copy of the engine takes about 335 MB.
 It goes away by itself when your last app comes back to Stable. A portable copy

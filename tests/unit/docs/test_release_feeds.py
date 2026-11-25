@@ -22,6 +22,7 @@ from pathlib import Path
 
 import pytest
 
+from quill.core.release_catalog import PRODUCTS
 from quill.core.updater.feed import parse_feed, trusted_feed_keys, verify_feed_bytes
 from quill.core.updater.feed_publish import validate_feed
 
@@ -58,3 +59,18 @@ def test_feed_folder_holds_only_feeds_signatures_and_the_index() -> None:
         return
     for path in FEEDS.iterdir():
         assert path.suffix in (".json", ".sig"), f"unexpected file {path.name} in updates/v2"
+
+
+def test_a_published_feed_set_has_every_channel_app_and_a_signed_index() -> None:
+    pytest.importorskip("nacl")
+    if not FEEDS.is_dir():
+        return
+    expected = {product.key for product in PRODUCTS if product.channels_enabled}
+    feeds = {path.stem for path in _feeds()}
+    assert feeds == expected, f"feed set drift: expected {sorted(expected)}, found {sorted(feeds)}"
+    index = FEEDS / "index.json"
+    signature = FEEDS / "index.json.sig"
+    assert index.is_file() and signature.is_file()
+    assert verify_feed_bytes(
+        index.read_bytes(), signature.read_text(encoding="utf-8"), trusted_feed_keys()
+    )

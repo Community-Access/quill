@@ -242,6 +242,7 @@ def test_a_daisy_202_book_is_never_handed_to_the_player(tmp_path: Path) -> None:
 def test_quill_sends_audio_to_the_player_after_its_sentence(
     tmp_path: Path, timers: list[tuple[int, Any]], monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    monkeypatch.setattr("quill.ui.scribe_entry.player_available", lambda: True)  # released here
     from quill.ui import main_frame_scribe
     from quill.ui.scribe_after_sentence import wait_for_sentence
 

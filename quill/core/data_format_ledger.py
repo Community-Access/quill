@@ -147,32 +147,22 @@ def lower(
 
 def ledger_folder(app_key: str) -> Path:
     """The data folder whose ledger *app_key*'s formats are recorded in."""
-    if app_key == "quilllite":
-        from quill.core.lite.paths import data_dir
+    from quill.core.release_catalog import data_dir
 
-        return data_dir()
-    from quill.core.paths import app_data_dir
-
-    return app_data_dir()
+    return data_dir(app_key)
 
 
 def record_running_build(app_key: str, version: str) -> None:
     """The one call an app makes at start-up. Never raises.
 
-    QUILL, Quill Radio and QUILL Cast record into the shared data folder;
-    QUILL Lite into its own.
+    The release catalogue resolves the app's actual data root; shared formats
+    remain recorded only in the shared QUILL folder.
     """
     try:
-        if app_key == "quilllite":
-            from quill.core.lite.paths import data_dir
+        from quill.core.release_catalog import product
 
-            folder = data_dir()
-            wanted = "lite_data"
-        else:
-            from quill.core.paths import app_data_dir
-
-            folder = app_data_dir()
-            wanted = "quill_data"
+        folder = ledger_folder(app_key)
+        wanted = product(app_key).data_location
         formats = tuple(f for f in formats_for(app_key) if f.location == wanted)
         if formats:
             record(folder, formats, f"{app_key} {version}".strip())

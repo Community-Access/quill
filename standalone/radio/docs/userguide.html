@@ -8870,10 +8870,10 @@ the <strong>I understand</strong> box, and choose <strong>Move to
 Beta</strong> (or <strong>Move to Dev</strong>). <strong>Stay on
 Stable</strong>, or Escape, changes nothing.</li>
 </ol>
-<p>Beta and Dev versions aren’t signed, so when you install one, Windows
-SmartScreen may warn that it comes from an unknown publisher; that’s
-expected, and choosing <strong>More info</strong>, then <strong>Run
-anyway</strong>, installs it.</p>
+<p>A final-numbered Beta candidate is Authenticode-signed. Dev builds
+and explicitly prerelease versions are not signed, so Windows
+SmartScreen can warn. Use that bypass only when Radio offered the file
+through its signed update list.</p>
 <p>Before it moves, Quill Radio saves a copy of your favorites, history
 and settings. If it cannot, it stays where it is and tells you why. Your
 recordings are not copied, and updates do not change them. Then it
@@ -8886,6 +8886,10 @@ to Beta or Dev, it gets its own copy of that engine, so the apps you
 leave on Stable are never touched. You can still move several at once:
 check them under “Also move my other QuillVille apps on this computer”
 and choose <strong>Switch</strong>.</p>
+<p>Different products can use different channels together. Radio itself
+has one active channel at a time; moving Radio to Beta changes Radio’s
+launcher and runtime slot rather than creating a second official Radio
+Beta install.</p>
 <p><strong>A note about disk space.</strong> That second copy of the
 engine takes about 335 MB. It goes away by itself when your last app
 comes back to Stable. A portable copy carries its own engine, so it

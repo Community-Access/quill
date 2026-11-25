@@ -578,6 +578,12 @@ Help > About shows your version with a build number, such as 2.0.0 (build 2). Th
 
 All the Quill apps are published from one place, and each one recognizes its own download, so an update to Quill Radio is never offered to the Studio and each app updates on its own schedule. The automatic startup check (on by default, throttled to once a day) is silent unless it actually finds something.
 
+**Help > Release Channel...** chooses Stable, Beta or Dev for Studio. Opening the
+window changes nothing. Beta and Dev explain the risk and save a copy of
+Studio's small settings and library metadata before a move. Other QuillVille
+products can use other channels on the same computer; Studio has one active
+channel at a time.
+
 ## The Command Palette
 
 **Help > Command Palette...** (Ctrl+Shift+P) lists every Studio command in one searchable list: the three journeys, Open Job File, Publish, the podcast feed, the ACX check, Sleep Timer, Mute Playback, Play Queue, the Speech Hub, Pronunciation Dictionaries, Generate Captions, Convert Audio, Convert from URL, model and component downloads, AI setup, Preferences, and Check for Updates. Type a few letters, arrow to the command, press Enter.

@@ -234,12 +234,12 @@ def test_an_app_that_cannot_follow_keeps_everyone_on_stable() -> None:
     verdict = runtime_verdict(
         "radio",
         "beta",
-        runtime_apps=["radio", "weather"],
+        runtime_apps=["radio", "player"],
         states={},
-        display_names={"weather": "Quill Weather"},
+        display_names={"player": "Quill Media Player"},
     )
-    assert not verdict.allowed and verdict.cannot_follow == ("weather",)
-    assert "Quill Weather" in verdict.explanation and "stays on Stable" in verdict.explanation
+    assert not verdict.allowed and verdict.cannot_follow == ("player",)
+    assert "Quill Media Player" in verdict.explanation and "stays on Stable" in verdict.explanation
 
 
 def test_coming_back_is_never_blocked_by_the_runtime() -> None:

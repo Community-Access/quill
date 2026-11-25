@@ -175,6 +175,11 @@ def _carry_out(
 
     retarget: list[str] = []
 
+    def _installed_for(key: str) -> str:
+        from quill.ui.updates.shell import installed_app_version
+
+        return installed_app_version(key, current=key == plan.request.app_key)
+
     def _confirm_risk(context: RiskContext) -> bool:
         risk = RiskDialog(parent, context, announce=announce)
         try:
@@ -210,7 +215,7 @@ def _carry_out(
             take_snapshot=lambda key, version, reason: snapshots.take_snapshot(
                 key, version or "unknown", reason
             ),
-            version_of=lambda _key: "",
+            version_of=_installed_for,
         )
 
     def _run(current: SwitchPlan) -> SwitchOutcome:
@@ -221,7 +226,7 @@ def _carry_out(
             take_snapshot=lambda key, version, reason: snapshots.take_snapshot(
                 key, version or "unknown", reason
             ),
-            version_of=lambda _key: "",
+            version_of=_installed_for,
         )
 
     outcome: SwitchOutcome | None = None

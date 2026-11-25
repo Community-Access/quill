@@ -37,7 +37,7 @@ from typing import Any
 
 from quill.core import dimmed_reason
 from quill.core.radio import row_actions_youtube, row_reminders, transport_commands
-from quill.core.radio.cast_handoff import CAST_HANDOFFS
+from quill.core.radio.cast_handoff import CAST_HANDOFFS, cast_offered
 from quill.core.radio.row_state import FolderState as FolderState
 
 # --- action ids ---------------------------------------------------------------
@@ -388,8 +388,9 @@ def station_actions(
             if episode_played
             else RowAction(MARK_EPISODE_PLAYED, "Mark Episode as Pla&yed")
         )
-        # The rest of what Cast can do with this episode (cast_handoff).
-        actions.extend(RowAction(*row) for row in CAST_HANDOFFS)
+        # The rest of what Cast can do with this episode, where Cast is here.
+        if cast_offered():
+            actions.extend(RowAction(*row) for row in CAST_HANDOFFS)
     if can_report and not is_recording:
         # A recording that will not play is not a "bad station"; the report
         # form asks about a stream, and answering it about an episode would

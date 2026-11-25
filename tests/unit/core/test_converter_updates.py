@@ -58,12 +58,10 @@ def test_the_release_tag_reads_back_as_the_version() -> None:
     assert _app_version_from_tag(tag) == "1.0.0"
 
 
-def test_converter_is_not_a_release_channel_app() -> None:
-    # Release channels are for QUILL, QUILL Lite, Quill Radio and QUILL Cast;
-    # Converter has no Release Channel window, and its check always reads Stable.
+def test_converter_has_a_release_channel_profile() -> None:
     from quill.core.updater.profiles import PROFILES
 
-    assert "converter" not in PROFILES
+    assert PROFILES["converter"].display_name == "Quill Converter"
 
 
 def test_converter_is_offered_a_newer_build_and_never_a_beta(tmp_path) -> None:

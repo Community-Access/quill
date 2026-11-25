@@ -1453,7 +1453,15 @@ newer build.
 Converter is out. If one is, it shows you what changed and offers to download
 it, with progress spoken as it goes. It only checks when you ask, and it offers
 the same kind of download you have: the installer if you installed, or the
-portable zip if you unpacked one.
+portable zip if you unpacked one. It reads Quill Converter's signed feed and
+cannot offer QUILL, Radio or Weather by mistake.
+
+**Help > Release Channel...** chooses Stable, Beta or Dev for Converter. Every
+copy starts on Stable. Opening the window changes nothing; Beta and Dev show a
+risk confirmation and save a copy of your small Converter settings before a
+move. Different QuillVille products can use different channels on the same
+computer, while Converter itself has one active channel at a time. Return to
+Stable from the same window.
 
 ### Getting help
 

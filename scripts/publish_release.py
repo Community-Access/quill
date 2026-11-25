@@ -52,11 +52,12 @@ already wrote there (with versions read from the build) is kept, and otherwise
 one is made from the notice catalogue, offline. With ``--existing`` any of them
 the release lacks is uploaded to it. Nothing is downloaded either way.
 
-The feed is signed here with the owner's key (``QUILL_FEED_KEY_FILE`` or
-``~/.config/quill/quill-feed-priv.key``); ``--no-sign`` writes it unsigned for
-signing later with ``scripts/feed_tool.py sign``. Every run ends with a
-warning for any app's feed that expires within 14 days. Nothing is committed:
-review ``docs/site/updates/v2`` and land it through a pull request.
+The feed is signed here with the existing protected Actions secret
+(``QUILL_FEED_SIGNING_KEY``) or the owner's local key (``QUILL_FEED_KEY_FILE``
+or ``~/.config/quill/quill-feed-priv.key``); ``--no-sign`` writes it unsigned
+only for explicit diagnostics. Every run ends with a warning for any app's
+feed that expires within 14 days. Nothing is committed: review
+``docs/site/updates/v2`` and land it through a pull request.
 """
 
 from __future__ import annotations

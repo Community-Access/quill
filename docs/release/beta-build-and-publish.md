@@ -61,10 +61,12 @@ links and the apps' in-app update lists (`docs/site/updates/v2`) point at those
 GitHub Release files. Full reference: `docs/release/RELEASE.md`, "Publishing to
 Beta", "Promoting" and "One-time setup (owner)".
 
-**Once only (owner setup):** the update-list signing key stays on your
-computer (RELEASE.md "The feed key stays on your computer"); `gh auth login`
-done; Actions allowed to create pull requests; `stable-promotion` environment
-with you as reviewer.
+**Once only (owner setup):** the update-list signing seed stays as the
+`QUILL_FEED_SIGNING_KEY` repository secret; `release-feed-signing` and
+`stable-promotion` environments have the owner as required reviewer, `gh auth
+login` is done, and Actions may create pull requests. Local signing from a
+recovery key remains available; the normal promotion path never exports the
+GitHub secret.
 
 **For each beta app (after A3 built the files):**
 1. Use the app's "What's new" from `docs/release/whats-new/`, such as
@@ -81,9 +83,9 @@ with you as reviewer.
 4. Repeat for QUILL Lite (`--app quilllite --version 2.0.0 --build 1 --dist standalone/quilllite/dist`)
    and QUILL Cast (`--app cast --version 2.0.0 --build 5 --dist standalone/cast/dist`),
    each with its own file from `docs/release/whats-new/`.
-   The script accepts `cast`, `quill`, `quilllite`, `radio` and (since
-   2026-10-24) `transcribe`; leaving out `--build` uses the next build after
-   the newest published tag. QUILL Transcribe publishes the same way:
+   The script accepts every channel-enabled key in
+   `quill.core.release_catalog`; leaving out `--build` uses the next build
+   after the newest published tag. QUILL Transcribe publishes the same way:
    `--app transcribe --version 1.0.0 --build 2 --dist standalone/transcribe/dist`.
 5. **Commit the updated update list** (`docs/site/updates/v2`) through a pull
    request and merge it. When main updates, GitHub Pages republishes

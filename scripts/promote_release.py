@@ -37,9 +37,9 @@ feed's ``notes_summary``.
 Then: the GitHub release stops being a prerelease (QUILL's own Stable release
 also becomes "Latest"), its title says when it was promoted, the feed lists it
 on the new channel with a fresh 90-day expiry, and a line goes into
-``docs/release/promotions.log``. The feed is signed with the owner's key, or
-left unsigned with ``--no-sign`` (the promote workflow), to be signed with
-``scripts/feed_tool.py sign`` before it can merge.
+``docs/release/promotions.log``. The feed is signed with the protected
+Actions secret or the owner's local key. ``--no-sign`` exists for explicit
+diagnostics; the protected promotion workflow never uses it.
 """
 
 from __future__ import annotations

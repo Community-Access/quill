@@ -3,8 +3,9 @@
 Fails (exit 1) when a feed in ``docs/site/updates/v2`` is unsigned, does not
 verify, breaks a listing rule, or has expired. Passes with a ``Warning:`` line
 -- which ``platform_report`` shows as a warning, not a failure -- when any
-app's feed expires within 14 days, because the signing key is not in CI and
-nothing re-signs a feed except a release or ``scripts/feed_tool.py refresh``.
+app's feed expires within 14 days. The
+protected `release-feeds.yml` workflow can refresh the whole set without moving
+the seed to a local computer.
 
     python -m quill.tools.release_feed_audit
 """
@@ -23,11 +24,29 @@ _FEEDS = Path(__file__).resolve().parents[2] / "docs" / "site" / "updates" / "v2
 
 def audit(folder: Path = _FEEDS, *, now: datetime | None = None) -> tuple[list[str], list[str]]:
     """``(problems, warnings)`` for every feed in *folder*."""
-    from quill.tools.release_feed import feed_signature_ok
+    from quill.tools.release_feed import APPS, feed_signature_ok, index_signature_ok
 
     moment = now or datetime.now(UTC)
     problems: list[str] = []
     feeds = []
+    authoritative = folder.resolve() == _FEEDS.resolve()
+    if authoritative and folder.is_dir():
+        product_names = {path.stem for path in folder.glob("*.json") if path.name != "index.json"}
+        expected = set(APPS)
+        if product_names != expected:
+            missing = sorted(expected - product_names)
+            extra = sorted(product_names - expected)
+            problems.extend(
+                part
+                for part in (
+                    f"missing product feeds: {', '.join(missing)}" if missing else "",
+                    f"unknown product feeds: {', '.join(extra)}" if extra else "",
+                )
+                if part
+            )
+        index = folder / "index.json"
+        if not index_signature_ok(index):
+            problems.append("index.json: missing or the signature does not verify")
     for path in sorted(folder.glob("*.json")) if folder.is_dir() else []:
         if path.name == "index.json":
             continue

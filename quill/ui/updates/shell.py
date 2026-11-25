@@ -1,4 +1,4 @@
-"""Release channels for the apps built on the shared app shell (Radio, Cast, Transcribe).
+"""Release-channel menu and version wiring for every QuillVille app.
 
 One menu row and one Preferences action, each a line in the app's own module,
 so the apps' menu builders -- already at their size budgets -- grow by the
@@ -7,9 +7,12 @@ least possible.
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 import wx
+
+from quill.core.release_catalog import installed_version, product
 
 __all__ = [
     "append_release_channel_item",
@@ -17,37 +20,14 @@ __all__ = [
     "open_for_shell",
 ]
 
-#: The menu label per app. The access letter differs because each Help menu has
-#: different letters free (GATE-14): C is Product Requirements in Radio, and in
-#: Cast both C (Check for Updates) and N (Redeem Unlock Code) are taken.
-#:
-#: No chord, in any of the four apps (keymap.py's help.release_channel: rules 4
-#: and 9). The route is the Alt path, written in parentheses rather than after a
-#: tab -- wx would parse post-tab text as an accelerator -- the same form QUILL's
-#: menu_routes gives its keyless rows. Both menus are "&Help".
-_LABELS = {
-    "radio": "Release Cha&nnel... (Alt+H, N)",
-    "cast": "Re&lease Channel... (Alt+H, L)",
-    "transcribe": "Re&lease Channel... (Alt+H, L)",
-}
 
-
-def installed_app_version(app_key: str) -> str:
+def installed_app_version(app_key: str, *, current: bool = True) -> str:
     """The version the installer recorded, falling back to the app's constant."""
-    from quill.core.app_version import installed_version
+    return installed_version(app_key, current=current)
 
-    if app_key == "radio":
-        from quill.apps.radio import _BUILD as build
-        from quill.apps.radio import _VERSION as code
-    elif app_key == "cast":
-        from quill.apps.podcasts_menu import APP_BUILD as build
-        from quill.apps.podcasts_menu import APP_VERSION as code
-    elif app_key == "transcribe":
-        from quill.apps.transcribe import _BUILD as build
-        from quill.apps.transcribe import _VERSION as code
-    else:
-        raise KeyError(app_key)
-    return installed_version(code, build=build)
+
+def _frame(shell: Any) -> Any:
+    return getattr(shell, "frame", shell)
 
 
 def open_for_shell(
@@ -60,11 +40,13 @@ def open_for_shell(
     """
     from quill.ui.updates.flow import open_release_channel
 
+    frame = _frame(shell)
+
     def _check_now() -> None:
-        wx.PostEvent(shell.frame, wx.CommandEvent(wx.wxEVT_MENU, int(check_menu_id)))
+        wx.PostEvent(frame, wx.CommandEvent(wx.wxEVT_MENU, int(check_menu_id)))
 
     # Over whatever is in front -- a Preferences window opens this too.
-    owner = parent if parent is not None else (wx.GetActiveWindow() or shell.frame)
+    owner = parent if parent is not None else (wx.GetActiveWindow() or frame)
     open_release_channel(
         owner,
         app_key=app_key,
@@ -78,9 +60,21 @@ def open_for_shell(
 
 def append_release_channel_item(shell: Any, help_menu: Any, app_key: str, check_id: Any) -> Any:
     """Append Help > Release Channel... (no chord; its Alt path) and bind it."""
+    product(app_key)
+    labels = " ".join(str(item.GetItemLabel()) for item in help_menu.GetMenuItems()).lower()
+    used = set(re.findall(r"&([^&])", labels))
+    candidates = "nlreachbdgfijkmopqsuvwxyz"
+    letter = next(candidate for candidate in candidates if candidate not in used)
+    title = "Release Channel"
+    index = title.lower().find(letter)
+    label = (
+        f"{title[:index]}&{title[index:]}... (Alt+H, {letter.upper()})"
+        if index >= 0
+        else f"&Release Channel... (Alt+H, {letter.upper()})"
+    )
     item_id = wx.NewIdRef()
-    help_menu.Append(item_id, _LABELS[app_key])
-    shell.frame.Bind(
+    help_menu.Append(item_id, label)
+    _frame(shell).Bind(
         wx.EVT_MENU,
         lambda _e: open_for_shell(shell, app_key, check_menu_id=check_id),
         id=item_id,
