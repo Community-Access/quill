@@ -166,6 +166,7 @@ def test_a_result_window_waits_for_its_sentence(
     """A new window (Lite's or Media Player's) takes focus and the reader says
     it, which would cut the result sentence off: it opens after the sentence,
     once, or after a second when no sentence follows."""
+    monkeypatch.setattr("quill.ui.scribe_entry.player_available", lambda: True)  # released here
     import wx
 
     from quill.apps import lite_window_scribe

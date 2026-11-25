@@ -288,6 +288,18 @@ def player_target(format_id: str, path: Path) -> Path | None:
     return path if format_id == "mp3" else None
 
 
+def player_available() -> bool:
+    """Whether Send to Media Player may be offered (FUX-02).
+
+    Media Player is not released in public builds yet, and a step that can
+    only answer "Media Player could not be opened" is not one to offer. The
+    same rule as Open in QUILL, which is hidden when no editor is installed.
+    """
+    from quill.core.app_launcher import build_launch_argv, is_app_released
+
+    return is_app_released("player") and build_launch_argv("player") is not None
+
+
 def send_to_player(format_id: str, path: Path) -> bool:
     """Open an MP3 or a DAISY book (its navigation file) in Quill Media Player."""
     from quill.core.app_launcher import launch_app
@@ -327,5 +339,6 @@ __all__ = [
     "browser_steps",
     "open_in_browser",
     "player_target",
+    "player_available",
     "send_to_player",
 ]

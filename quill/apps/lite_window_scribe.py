@@ -186,6 +186,10 @@ class LiteScribeHost:
             self._hold(lambda: self._to_quill(path), phrase)
             return phrase
         if format_id in ("mp3", "daisy") and _player_target(format_id, path) is not None:
+            from quill.ui import scribe_entry
+
+            if not scribe_entry.player_available():  # FUX-02: not offered unreleased
+                return ""
             phrase = opened_phrase(format_id, "Media Player")
             self._hold(lambda: self._to_player(job, format_id, path), phrase)
             return phrase
@@ -259,9 +263,10 @@ class LiteScribeHost:
         """Send to Media Player first, then Open in QUILL Lite (8.1.7, 8.2)."""
         from quill.core.scribe.model import format_label
         from quill.core.scribe.results import open_step
+        from quill.ui import scribe_entry
 
         steps: list[tuple[str, Any]] = []
-        for format_id in ("mp3", "daisy"):
+        for format_id in ("mp3", "daisy") if scribe_entry.player_available() else ():
             if format_id in ready:
                 steps.append((
                     f"Send to Media Player ({format_label(format_id)})",

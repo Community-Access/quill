@@ -20,7 +20,13 @@ wx-free, strict-typed, pure data.
 
 from __future__ import annotations
 
-__all__ = ["CAST_ADD_TO_QUEUE", "CAST_HANDOFFS", "CAST_PLAY_NEXT", "CAST_SEND_TO_INBOX"]
+__all__ = [
+    "CAST_ADD_TO_QUEUE",
+    "CAST_HANDOFFS",
+    "CAST_PLAY_NEXT",
+    "CAST_SEND_TO_INBOX",
+    "cast_offered",
+]
 
 CAST_PLAY_NEXT = "podcast.cast_play_next"
 CAST_ADD_TO_QUEUE = "podcast.cast_add_to_queue"
@@ -36,3 +42,16 @@ CAST_HANDOFFS: tuple[tuple[str, str], ...] = (
     (CAST_ADD_TO_QUEUE, "Add to QUILL Cast &Queue"),
     (CAST_SEND_TO_INBOX, "Send to the QUILL Cast &Inbox"),
 )
+
+
+def cast_offered() -> bool:
+    """Whether an episode row offers the QUILL Cast handoffs (FUX-02).
+
+    Only where QUILL Cast is released in this build and installed beside
+    Radio: a public Quill Radio offered them and confirmed "It will be next in
+    the QUILL Cast queue" for an app the person could not have. The handoff
+    itself is unchanged: an entry Cast applies when it next starts.
+    """
+    from quill.core.app_launcher import build_launch_argv, is_app_released
+
+    return is_app_released("cast") and build_launch_argv("cast") is not None
