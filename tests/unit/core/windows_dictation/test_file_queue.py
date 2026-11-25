@@ -91,7 +91,7 @@ def test_only_finished_jobs_can_be_removed(tmp_path: Path) -> None:
     assert queue.jobs() == []
 
 
-def test_corrupt_and_unknown_queue_rows_do_not_become_jobs(tmp_path: Path) -> None:
+def test_corrupt_rows_are_ignored_and_newer_states_are_preserved(tmp_path: Path) -> None:
     folder = tmp_path / "dictation"
     folder.mkdir()
     (folder / "transcription-queue.json").write_text(
@@ -101,8 +101,40 @@ def test_corrupt_and_unknown_queue_rows_do_not_become_jobs(tmp_path: Path) -> No
     )
     jobs = TranscriptionQueue(tmp_path).jobs()
     assert len(jobs) == 1
-    assert jobs[0].state == QUEUED
+    assert jobs[0].state == "new-shape"
     assert jobs[0].progress == 0.0
+
+
+def test_a_newer_queue_keeps_its_version_and_unknown_fields(tmp_path: Path) -> None:
+    import json
+
+    folder = tmp_path / "dictation"
+    folder.mkdir()
+    path = folder / "transcription-queue.json"
+    path.write_text(
+        json.dumps({
+            "version": 2,
+            "future_top": {"kept": True},
+            "jobs": [
+                {
+                    "id": "future",
+                    "source_path": "later.wav",
+                    "state": "needs_model",
+                    "future_job": 42,
+                }
+            ],
+        }),
+        encoding="utf-8",
+    )
+    queue = TranscriptionQueue(tmp_path)
+
+    assert queue.update("future", message="Waiting for a newer QUILL") is not None
+
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    assert raw["version"] == 2
+    assert raw["future_top"] == {"kept": True}
+    assert raw["jobs"][0]["state"] == "needs_model"
+    assert raw["jobs"][0]["future_job"] == 42
 
 
 def test_runner_lock_prevents_two_apps_from_claiming_work(tmp_path: Path) -> None:

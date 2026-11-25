@@ -69,6 +69,7 @@ class TranscriptionJob:
     created_at: float = field(default_factory=time.time)
     started_at: float = 0.0
     finished_at: float = 0.0
+    _extra: dict[str, Any] = field(default_factory=dict, repr=False, compare=False)
 
     @property
     def name(self) -> str:
@@ -82,11 +83,10 @@ class TranscriptionJob:
     def from_mapping(cls, value: Any) -> TranscriptionJob | None:
         if not isinstance(value, dict) or not value.get("id"):
             return None
-        known = {item.name for item in fields(cls)}
-        values = {key: item for key, item in value.items() if key in known}
+        known_fields = {item.name for item in fields(cls)} - {"_extra"}
+        values = {key: item for key, item in value.items() if key in known_fields}
+        values["_extra"] = {key: item for key, item in value.items() if key not in known_fields}
         state = str(values.get("state", QUEUED))
-        if state not in STATE_WORDS:
-            state = QUEUED
         values["state"] = state
         values["keywords"] = [
             str(word) for word in values.get("keywords", ()) or () if str(word).strip()
@@ -100,6 +100,12 @@ class TranscriptionJob:
             return cls(**values)
         except TypeError:
             return None
+
+    def to_mapping(self) -> dict[str, Any]:
+        data = asdict(self)
+        extra = data.pop("_extra")
+        data.update(extra)
+        return data
 
     def file_job(self) -> Any:
         from quill.core.windows_dictation.file_transcribe import FileJob
@@ -183,10 +189,12 @@ class TranscriptionQueue:
         return [item for item in parsed if item is not None]
 
     def _write(self, jobs: list[TranscriptionJob]) -> None:
-        write_json_atomic(
-            self.path,
-            {"version": SCHEMA_VERSION, "jobs": [asdict(job) for job in jobs]},
-        )
+        data = self._read()
+        body = dict(data)
+        if not isinstance(body.get("version"), int):
+            body["version"] = SCHEMA_VERSION
+        body["jobs"] = [job.to_mapping() for job in jobs]
+        write_json_atomic(self.path, body)
 
     def jobs(self) -> list[TranscriptionJob]:
         with self._local:
