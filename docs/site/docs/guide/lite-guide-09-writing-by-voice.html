@@ -720,6 +720,10 @@ you can find it by walking the menu too.</p>
 <td>Transcribe a Recording…</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Shift+PageUp</strong></td>
+<td>Transcriptions on This Computer…</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Shift+F11</strong></td>
 <td>Switch Dictation Language</td>
 </tr>
@@ -3623,21 +3627,31 @@ transcribed one after another with the same choices, and each one is
 saved with its own completion notice in <strong>Notifications</strong>
 when it finishes. If one is already running when you start another, you
 hear “Added to the queue”.</li>
-<li><strong>How far has it got?</strong> Press <strong>Shift+F5</strong>
-again. At the top of the window, <strong>Transcribing now</strong> says
-which recording it is on, how far it has got, and how many are waiting.
-Press <strong>Escape</strong> to close the window and let it carry
-on.</li>
-<li><strong>Stopping.</strong> In that same window, press <strong>Stop
-Transcribing</strong> (Alt+S). The recording being transcribed stops,
-any waiting ones are forgotten, and nothing is written into a
-document.</li>
+<li><strong>The durable queue.</strong> Press
+<strong>Ctrl+Shift+PageUp</strong>, or choose <strong>Transcriptions on
+This Computer</strong> in Tools &gt; Dictation. The modeless list shows
+queued, running, failed, stopped and finished recordings, with a
+persistent named set for recordings chosen together. It stays on this
+computer across restarts.</li>
+<li><strong>How far has it got?</strong> Arrow through the list for
+state and progress. Open a finished transcript there, stop the selected
+active job, retry a failed or stopped job, or forget a finished row.
+Forgetting a row does not delete its saved transcript. Closing the
+window leaves the work running.</li>
+<li><strong>Stopping everything queued from the command.</strong> Press
+<strong>Shift+F5</strong> again. In Transcribe a Recording, <strong>Stop
+Transcribing</strong> (Alt+S) stops the current recording and cancels
+the recordings waiting in that run.</li>
 <li><strong>If you missed the result sentence.</strong>
 <strong>Shift+F9</strong> opens Activity, which keeps the transcription
 outcome and any failure reason for this session. To open the saved
 transcript, activate its completion notice in
 <strong>Notifications</strong>.</li>
 </ul>
+<p>Only QUILL Lite’s own queue runs in this app’s separate data folder.
+A current job is requeued when QUILL Lite exits, then local work resumes
+after the next start. The queue file contains paths and options, not
+transcript text or an API key. Safe Mode leaves cloud work queued.</p>
 <h3 id="which-files-it-can-read">Which files it can read</h3>
 <p>MP3, M4A, AAC, WAV, Ogg, Opus, FLAC and WMA, and also the sound in an
 MP4 file and AIFF. QUILL Lite reads all of them itself, using parts of
@@ -4021,7 +4035,7 @@ Instructions, which tell it how you like your writing.</p>
 you hear</a></li>
 <li>Next: <a href="lite-guide-10-ai-help.html">Chapter 10: AI
 help</a></li>
-<li><a href="../quilllite-userguide.html">Contents</a></li>
+<li><a href="../userguide.html">Contents</a></li>
 </ul>
 </main>
 </body>

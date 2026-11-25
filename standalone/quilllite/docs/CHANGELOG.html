@@ -244,6 +244,20 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="200">2.0.0</h2>
+<h3 id="recording-transcriptions-survive-a-restart-2026-11-25">Recording
+transcriptions survive a restart (2026-11-25)</h3>
+<ul>
+<li><strong>Ctrl+Shift+PageUp</strong> opens <strong>Transcriptions on
+This Computer</strong>, a modeless list of queued, running, stopped,
+failed and finished recordings.</li>
+<li>Files chosen together retain one named set. QUILL Lite’s local queue
+stays in its own data folder and resumes after restart; closing the app
+requeues the current job.</li>
+<li>Open a finished transcript, stop selected work, retry a failed or
+stopped job, or forget a finished row without deleting the saved
+transcript. The queue contains paths and non-secret choices, never
+transcript text or an API key.</li>
+</ul>
 <h3
 id="quill-lite-starts-sooner-and-reports-native-failures-honestly-2026-11-24">QUILL
 Lite starts sooner and reports native failures honestly
@@ -255,7 +269,7 @@ migration and resuming Scribe jobs now start after the first document
 window can answer. In five alternating clean-profile Windows runs,
 median startup from app import to the ready editor improved from 6.86
 seconds to 5.11 seconds: 1.75 seconds sooner, or 25.5 percent.</li>
-<li><strong>The version is QUILL Lite's version.</strong> Native launch
+<li><strong>The version is QUILL Lite’s version.</strong> Native launch
 and Windows file details now say 2.0.0 build 1, not QUILL 1.0.0.</li>
 <li><strong>A hard failure leaves useful evidence.</strong> Python fault
 tracing starts with the process, so a native/Python stack reaches the

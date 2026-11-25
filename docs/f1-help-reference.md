@@ -1902,7 +1902,9 @@ Control coverage: 44 audited sites (44 helped).
 
 **Start and Stop Key.** Choose the key that starts and stops dictation from any program. It is Alt+Shift+Backslash unless you change it. Type another, press Record Key to press it instead, or leave the box empty for no key; a key another QuillVille app already uses is refused, and you are told whose it is.
 
-**Transcribe a Recording.** Choose a recording and a model; it is transcribed in the background and the transcript waits in Notifications for you to review.
+**Transcribe a Recording.** Choose a recording and model; transcription runs in the background and the finished text stays in Notifications.
+
+**Transcriptions on This Computer.** Queued, running and finished recordings stay here across restarts. Open a transcript, retry or stop work, or forget a finished row.
 
 **Update History: QUILL Transcribe.** A plain record of what the updater did for this app: checks, downloads, channel changes and the copies of your settings it saved. Read-only; nothing here changes anything.
 
@@ -5043,7 +5045,9 @@ Control coverage: 298 audited sites (298 helped).
 
 **Tidied Dictation.** The dictated text with the recogniser's mistakes corrected -- misheard words, punctuation, fillers -- and nothing else changed. Replace My Selection puts it where the dictated text was; Control Z takes it back.
 
-**Transcribe a Recording.** Turns a recording into text in the background: choose the file, the speech model, the language and where the text goes, then keep working. While one is running, this window says how far it has got and can stop it.
+**Transcribe a Recording.** Choose a recording and model; transcription runs in the background and the finished text stays in Notifications.
+
+**Transcriptions on This Computer.** Queued, running and finished recordings stay here across restarts. Open a transcript, retry or stop work, or forget a finished row.
 
 **Translation.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 

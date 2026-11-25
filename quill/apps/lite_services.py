@@ -275,6 +275,32 @@ class LiteServicesMixin:
         except Exception:  # noqa: BLE001 - never worth a failed launch
             logger.warning("Could not schedule the family prompt migration", exc_info=True)
 
+    # -- shutdown --------------------------------------------------------- #
+
+    def stop_background_sources(self) -> None:
+        """Stop app-owned polling; safe on repeated Lite shutdown."""
+        self.shutting_down = True
+        try:
+            from quill.ui import transcription_queue_runtime
+
+            transcription_queue_runtime.suspend(self)
+        except Exception:  # noqa: BLE001 - shutdown must finish even if persistence fails
+            logger.warning(
+                "Could not persist the transcription queue during Lite shutdown",
+                exc_info=True,
+            )
+        if getattr(self, "_settings_notice_pending", False):
+            self._report_settings_failure()
+        timer = getattr(self, "_inbox_timer", None)
+        self._inbox_timer = None
+        if timer is not None:
+            timer.Stop()
+        from quill.apps.lite_sr_watchdog import LiteSrWatchdogMixin
+
+        LiteSrWatchdogMixin._stop_sr_watchdog(self)  # type: ignore[misc]
+        if getattr(self, "task_manager", None) is not None:
+            self.task_manager.shutdown(wait=False, cancel_pending=True)
+
     # -- menus ------------------------------------------------------------ #
 
     def rebuild_all_menus(self) -> None:

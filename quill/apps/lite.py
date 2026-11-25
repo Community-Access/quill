@@ -460,19 +460,6 @@ class QuillLiteApp(
 
     # -- the single-instance inbox --------------------------------------- #
 
-    def stop_background_sources(self) -> None:
-        """Stop app-owned polling before closing children; safe on repeated exit."""
-        self.shutting_down = True
-        if getattr(self, "_settings_notice_pending", False):
-            self._report_settings_failure()
-        timer = getattr(self, "_inbox_timer", None)
-        self._inbox_timer = None
-        if timer is not None:
-            timer.Stop()
-        LiteSrWatchdogMixin._stop_sr_watchdog(self)  # safe on any stand-in
-        if getattr(self, "task_manager", None) is not None:  # F-05's background opens
-            self.task_manager.shutdown(wait=False, cancel_pending=True)
-
     def OnExit(self) -> int:  # noqa: N802 - wx API shape
         self.stop_background_sources()
         return 0

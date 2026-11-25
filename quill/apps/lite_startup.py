@@ -56,7 +56,19 @@ class LiteStartupMixin:
         self._startup_phase("optional services ready")
         import wx
 
+        wx.CallLater(1000, self._resume_transcription_queue)
         wx.CallLater(5000, self._resume_scribe_queue)
+
+    def _resume_transcription_queue(self) -> None:
+        """Continue durable local recording work after the editor is ready."""
+        if self.shutting_down or not self.feature_enabled("dictation"):  # type: ignore[attr-defined]
+            return
+        try:
+            from quill.ui import transcription_queue_runtime
+
+            transcription_queue_runtime.resume(self)
+        except Exception:  # noqa: BLE001 - a queue never gets to take startup down
+            logger.warning("Could not resume the transcription queue at startup", exc_info=True)
 
     def _resume_scribe_queue(self) -> None:
         """Continue saved Scribe work only after the editor has settled."""

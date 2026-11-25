@@ -341,6 +341,7 @@ walking the menu too.
 | **Shift+F11** | Recent Phrases... |
 | **Alt+Shift+F10** | My Words and Phrases... |
 | **Shift+F5** | Transcribe a Recording... |
+| **Ctrl+Shift+PageUp** | Transcriptions on This Computer... |
 | **Ctrl+Shift+F11** | Switch Dictation Language |
 | **Ctrl+Alt+Shift+PageDown** | Start or Stop Live Transcript |
 | **Ctrl+Alt+Shift+PageUp** | Dictation Context for This Document... |
@@ -2363,17 +2364,27 @@ last transcription finishes, which gives its memory back.
   is saved with its own completion notice in **Notifications** when it
   finishes. If one is already running
   when you start another, you hear "Added to the queue".
-- **How far has it got?** Press **Shift+F5** again. At the top of the window,
-  **Transcribing now** says which recording it is on, how far it has got, and
-  how many are waiting. Press **Escape** to close the window and let it carry
-  on.
-- **Stopping.** In that same window, press **Stop Transcribing** (Alt+S). The
-  recording being transcribed stops, any waiting ones are forgotten, and
-  nothing is written into a document.
+- **The durable queue.** Press **Ctrl+Shift+PageUp**, or choose
+  **Transcriptions on This Computer** in Tools > Dictation. The modeless list
+  shows queued, running, failed, stopped and finished recordings, with a
+  persistent named set for recordings chosen together. It stays on this
+  computer across restarts.
+- **How far has it got?** Arrow through the list for state and progress. Open a
+  finished transcript there, stop the selected active job, retry a failed or
+  stopped job, or forget a finished row. Forgetting a row does not delete its
+  saved transcript. Closing the window leaves the work running.
+- **Stopping everything queued from the command.** Press **Shift+F5** again.
+  In Transcribe a Recording, **Stop Transcribing** (Alt+S) stops the current
+  recording and cancels the recordings waiting in that run.
 - **If you missed the result sentence.** **Shift+F9** opens Activity, which
   keeps the transcription outcome and any failure reason for this session.
   To open the saved transcript, activate its completion notice in
   **Notifications**.
+
+Only QUILL Lite's own queue runs in this app's separate data folder. A current
+job is requeued when QUILL Lite exits, then local work resumes after the next
+start. The queue file contains paths and options, not transcript text or an API
+key. Safe Mode leaves cloud work queued.
 
 ### Which files it can read
 

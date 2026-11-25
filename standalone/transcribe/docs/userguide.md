@@ -81,6 +81,7 @@ doing, which model it uses, and which dictation profile is in use. Then:
 - **Resume**, **Resume in This Field** and **Discard Held Words**, when dictation is paused
 - **Choose Model**, **Choose Microphone**, **Dictation Settings**, **Dictation Profile** and **Model Library**
 - **Transcribe a Recording**
+- **Transcriptions on This Computer**
 - **User Guide** and **Check for Updates**
 - **Show QUILL Transcribe** and **Exit QUILL Transcribe**
 
@@ -1309,7 +1310,8 @@ Where QUILL Transcribe has the same dictation command as the editors, it has the
 same key: Ctrl+F11 starts and stops, Alt+Shift+F6 opens Dictation Settings,
 Alt+Shift+F10 opens My Words and Phrases, Ctrl+Shift+F11 switches the language,
 Shift+F11 opens Recent Phrases, Shift+F4 is Review
-Dictation, Alt+F9 is Dictation Status, and Shift+F5 transcribes a recording. The keys
+Dictation, Alt+F9 is Dictation Status, Shift+F5 transcribes a recording, and
+Ctrl+Shift+PageUp opens Transcriptions on This Computer. The keys
 from version 1.0 (Ctrl+D, Ctrl+, and Ctrl+O) still work. These work in the
 QUILL Transcribe window; from other programs, use your start and stop key.
 
@@ -1389,6 +1391,17 @@ Transcript** window shows it read-only, with:
 - **Open in QUILL** - opens it in QUILL to edit, or in QUILL Lite when QUILL
   is not installed. You hear "Opening the transcript in QUILL." With neither
   editor installed, Transcribe says so, and Save As keeps a copy.
+
+Press **Ctrl+Shift+PageUp**, or choose **File > Transcriptions on This
+Computer...**, to see durable queued, running, failed, stopped and finished
+recordings. Open a finished transcript, stop the selected active job, retry a
+failed or stopped job, or forget a finished row without deleting its saved
+transcript. Recordings chosen together keep one persistent set name. Closing
+QUILL Transcribe requeues the current local job for the next app start; QUILL
+can take it over from the same shared QUILL data folder. Only one app runs a
+recording at a time. The queue stores recording paths and choices, never
+transcript text, document content or an API key, and Safe Mode leaves cloud
+work queued.
 
 Nothing is typed, copied or saved unless you choose it.
 
@@ -1698,6 +1711,7 @@ In the QUILL Transcribe window:
 | Model library | Ctrl+L |
 | Dictation settings | Alt+Shift+F6 (or Ctrl+,) |
 | Transcribe a recording | Shift+F5 (or Ctrl+O) |
+| Transcriptions on This Computer | Ctrl+Shift+PageUp |
 | Notifications | Ctrl+Shift+N |
 | Minimize to tray | Ctrl+W |
 | Exit | Ctrl+Q |

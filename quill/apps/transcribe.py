@@ -130,6 +130,22 @@ class QuillTranscribeFrame(
             launch_heal.heal_in_background(
                 self._task_manager, transcribe_startup.heal_launch_at_startup
             )
+        self._transcription_resume_timer = wx.CallLater(500, self._resume_transcription_queue)
+
+    def _resume_transcription_queue(self) -> None:
+        if self._exit_requested or self.frame.IsBeingDeleted():
+            return
+        try:
+            from quill.ui import transcription_queue_runtime
+
+            transcription_queue_runtime.resume(self)
+        except Exception:  # noqa: BLE001 - a queue must not take the app down
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "Could not resume the transcription queue at Transcribe startup",
+                exc_info=True,
+            )
 
     @staticmethod
     def _tray_works() -> bool:
@@ -483,6 +499,20 @@ class QuillTranscribeFrame(
 
     def _shut_down(self) -> None:
         """Microphone closed, keys released, owner lock let go, tray icon gone."""
+        timer = getattr(self, "_transcription_resume_timer", None)
+        if timer is not None:
+            timer.Stop()
+        from quill.ui import transcription_queue_runtime
+
+        try:
+            transcription_queue_runtime.suspend(self)
+        except Exception:  # noqa: BLE001 - shutdown must finish even if persistence fails
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "Could not persist the transcription queue during Transcribe shutdown",
+                exc_info=True,
+            )
         timer = getattr(self, "_ipc_timer", None)
         if timer is not None:
             timer.Stop()

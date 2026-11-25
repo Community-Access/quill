@@ -2,6 +2,17 @@
 
 ## 2.0.0
 
+### Recording transcriptions survive a restart (2026-11-25)
+
+- **Ctrl+Shift+PageUp** opens **Transcriptions on This Computer**, a modeless
+  list of queued, running, stopped, failed and finished recordings.
+- Files chosen together retain one named set. QUILL Lite's local queue stays in
+  its own data folder and resumes after restart; closing the app requeues the
+  current job.
+- Open a finished transcript, stop selected work, retry a failed or stopped job,
+  or forget a finished row without deleting the saved transcript. The queue
+  contains paths and non-secret choices, never transcript text or an API key.
+
 ### QUILL Lite starts sooner and reports native failures honestly (2026-11-24)
 
 - **The first editor is ready sooner.** Audio output, optional stores,

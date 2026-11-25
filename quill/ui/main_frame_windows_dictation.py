@@ -62,6 +62,12 @@ _ROWS: tuple[tuple[str, str, str, str], ...] = (
         "cmd_transcribe_audio_file",
     ),
     (
+        "tools.windows_dictation_transcriptions",
+        "Transcriptions on This Comp&uter...",
+        "Transcriptions on This Computer",
+        "cmd_open_transcriptions",
+    ),
+    (
         _LANGUAGE,
         "Switch Dictation &Language",
         "Switch Dictation Language",
@@ -322,6 +328,43 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
             self.frame.Bind(wx.EVT_MENU, lambda _e, h=handler: getattr(self, h)(), id=item_id)
         # And follow the frame's activation, for the wake phrase.
         self._dictation_install()
+        from quill.ui import transcription_queue_runtime
+
+        def resume_transcriptions() -> None:
+            if not self._dictation_enabled():
+                return
+            try:
+                transcription_queue_runtime.resume(self)
+            except Exception:  # noqa: BLE001 - a queue must not take the editor down
+                import logging
+
+                logging.getLogger(__name__).warning(
+                    "Could not resume the transcription queue at QUILL startup",
+                    exc_info=True,
+                )
+
+        call_after = getattr(wx, "CallAfter", None)
+        if callable(call_after):
+            call_after(resume_transcriptions)
+        else:
+            resume_transcriptions()
+        if not getattr(self, "_transcription_destroy_bound", False):
+            self._transcription_destroy_bound = True
+
+            def suspend_transcriptions(event: Any) -> None:
+                event.Skip()
+                if event.GetEventObject() is self.frame:
+                    try:
+                        transcription_queue_runtime.suspend(self)
+                    except Exception:  # noqa: BLE001 - shutdown must finish on a bad queue
+                        import logging
+
+                        logging.getLogger(__name__).warning(
+                            "Could not persist the transcription queue at QUILL shutdown",
+                            exc_info=True,
+                        )
+
+            self.frame.Bind(wx.EVT_WINDOW_DESTROY, suspend_transcriptions)
 
     def _register_windows_dictation_commands(self) -> None:
         for command_id, _label, title, handler in _ROWS:

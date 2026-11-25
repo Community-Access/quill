@@ -17,6 +17,8 @@ Wording: one to three sentences, to the person, no key-by-key tours.
 
 from __future__ import annotations
 
+from quill.core.windows_dictation.surface_help import TRANSCRIPTION_PURPOSES
+
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
     # -- the window --------------------------------------------------------------
@@ -144,10 +146,7 @@ PURPOSES: dict[str, str] = {
         "The AI has changed these words. Yes throws them away and writes nothing; "
         "No keeps the review open."
     ),
-    "Transcribe a Recording": (
-        "Choose a recording and a model; it is transcribed in the background and "
-        "the transcript waits in Notifications for you to review."
-    ),
+    **TRANSCRIPTION_PURPOSES,
     "My Words and Phrases": (
         "The words, phrases and corrections dictation uses, the same list as QUILL. "
         "Import adds the new entries from a Markdown or CSV file after showing them; "

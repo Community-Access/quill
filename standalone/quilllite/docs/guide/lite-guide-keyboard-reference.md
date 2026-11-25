@@ -416,6 +416,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Shift+F11** | Recent Phrases... |
 | **Alt+Shift+F10** | My Words and Phrases... |
 | **Shift+F5** | Transcribe a Recording... |
+| **Ctrl+Shift+PageUp** | Transcriptions on This Computer... |
 | **Ctrl+Shift+F11** | Switch Dictation Language |
 | **Ctrl+Alt+Shift+PageDown** | Start or Stop Live Transcript |
 | **Ctrl+Alt+Shift+PageUp** | Dictation Context for This Document... |
