@@ -38,6 +38,8 @@ def test_the_defaults_speak_nothing_and_end_with_a_sound() -> None:
     assert _plan(choices, Moment.STAGE, scribe_window_in_front=True).sound == ""
     assert _plan(choices, Moment.FINISHED).sound == SoundEvent.SCRIBE_FINISHED
     assert _plan(choices, Moment.FAILED).sound == SoundEvent.SCRIBE_FAILED
+    assert _plan(choices, Moment.SET_FINISHED).sound == SoundEvent.SCRIBE_FINISHED
+    assert _plan(choices, Moment.SET_FINISHED, failed=True).sound == SoundEvent.SCRIBE_FAILED
 
 
 def test_success_and_failure_are_different_sounds() -> None:
@@ -149,6 +151,7 @@ def test_choices_persist_and_the_old_field_is_still_written(tmp_path: Path) -> N
         "stage": "both",
         "finished": "sound",
         "failed": "sound",
+        "set_finished": "sound",
         "stage_scope": "everywhere",
     }
     assert written["speak_stages"] == "always"  # what an older build reads

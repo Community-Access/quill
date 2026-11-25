@@ -24,6 +24,10 @@ on 2026-11-21). Every upload and ``start_conversion`` first takes a turn from
 the family's pace (:meth:`quill.core.scribe.queue.FamilyQueue.reserve_action`),
 and ``rate_limited`` pauses the whole family a minute.
 
+A named batch is a set (:mod:`quill.core.scribe.sets`): this durable runner
+adds document events to its log and reports ``set_done`` once, after every
+member has reached a final state.
+
 Whatever happens is reported to the app's ``listener(kind, job)`` on this
 thread; the app marshals to its UI thread and decides what to say through
 :class:`quill.core.scribe.sentences.Speaker`.
@@ -42,23 +46,19 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.scribe import queue as q
+from quill.core.scribe import sets
 from quill.core.scribe.channel import ChannelEvent, DocumentChannel, default_channel_opener
 from quill.core.scribe.client import ScribeClient
 from quill.core.scribe.errors import (
     ScribeBusyError,
     ScribeCancelled,
     ScribeError,
-    ScribeGoneError,
     ScribeInProgressError,
-    ScribeNotDocumentError,
     ScribeOfflineError,
-    ScribePagesError,
     ScribePasswordError,
-    ScribeSaveError,
-    ScribeSignInError,
 )
+from quill.core.scribe.failures import failure_changes
 from quill.core.scribe.inputs import check as check_input
-from quill.core.scribe.inputs import not_a_document_sentence
 from quill.core.scribe.library import Library, document_folder, unique_path
 from quill.core.scribe.model import (
     HTML_SHAPING_FIELDS,
@@ -84,7 +84,6 @@ _ETA_POLL_S = 1.0
 _OFFLINE_SAY_AFTER_S = 5.0
 _IN_PROGRESS_WAIT_S = 120.0
 _HEARTBEAT_S = 5.0
-_MAX_PASSWORD_TRIES = 3
 
 
 class QueueService:
@@ -121,6 +120,8 @@ class QueueService:
         self.current_id = ""
         self._resumed: set[str] = set()
         self._resumed_done: list[str] = []
+        self._set_noted: set[str] = set()
+        self._converting_noted: set[str] = set()
         self._threads: list[threading.Thread] = []
         self._last_write = 0.0
         self._last_cancel_check = 0.0
@@ -191,16 +192,26 @@ class QueueService:
             return False
         job = self.queue.next_runnable()
         if job is None:
+            self._finish_sets()
             self._report_resumed()
             return False
         self.current_id = job.id
         try:
+            if job.id in self._resumed and job.id not in self._set_noted:
+                self._set_noted.add(job.id)
+                sets.note(self.queue, job, "resumed")
             self.run_job(job)
         finally:
             self.current_id = ""
             if self._job_finished(job.id):
                 self._passwords.pop(job.id, None)
+            self._finish_sets()
         return True
+
+    def _finish_sets(self) -> None:
+        """Write and report each set whose members have all reached an end."""
+        for batch_set in sets.finish_ready_sets(self.queue):
+            self._listener("set_done", q.Job(id=batch_set.id, batch=batch_set.id))
 
     def _job_finished(self, job_id: str) -> bool:
         job = self.queue.get(job_id)
@@ -253,59 +264,14 @@ class QueueService:
         except ScribeCancelled:
             logger.info("Scribe job stopped id=%s", job.document_id or "-")
             return
-        except ScribeSignInError as error:
-            self._set(job, state=q.NEEDS_SIGNIN, message=error.message, error_code=error.code)
-            self._listener("needs_you", job)
-        except ScribePasswordError as error:
-            tries = job.password_tries + (1 if error.reason == "invalid_password" else 0)
-            self._passwords.pop(job.id, None)
-            if tries >= _MAX_PASSWORD_TRIES:
-                self._set(
-                    job,
-                    state=q.FAILED,
-                    password_tries=tries,
-                    message=f"{job.display_name} was not sent: password not accepted",
-                    error_code=error.code,
-                )
-                self._listener("error", job)
-            else:
-                self._set(
-                    job,
-                    state=q.NEEDS_PASSWORD,
-                    password_tries=tries,
-                    message=error.message,
-                    error_code=error.code,
-                )
-                self._listener("needs_you", job)
-        except ScribePagesError as error:
-            self._set(
-                job,
-                state=q.FAILED,
-                message=error.message,
-                error_code=error.code,
-                purchase_url=error.purchase_url,
-            )
-            self._listener("error", job)
-        except ScribeGoneError as error:
-            self._set(job, state=q.GONE, message=error.message, error_code=error.code)
-            self._listener("error", job)
-        except ScribeNotDocumentError as error:
-            # Scribe's not_a_document gets the sentence that says what it takes.
-            checked = error.reason == "checked_before_upload"
-            message = error.message if checked else not_a_document_sentence(job.display_name)
-            self._set(job, state=q.FAILED, message=message, error_code=error.code)
-            self._listener("error", job)
-        except (ScribeSaveError, ScribeError) as error:
-            self._set(job, state=q.FAILED, message=error.message, error_code=error.code)
-            self._listener("error", job)
-        except OSError as error:
-            self._set(
-                job,
-                state=q.FAILED,
-                message=f"A file could not be read or written: {error}",
-                error_code=ScribeSaveError.code,
-            )
-            self._listener("error", job)
+        except (ScribeError, OSError) as error:
+            if isinstance(error, ScribePasswordError):
+                self._passwords.pop(job.id, None)
+            changes, kind = failure_changes(job, error)
+            self._set(job, **changes)
+            self._listener(kind, job)
+        if job.state in (q.FAILED, q.GONE):
+            sets.note(self.queue, job, "failed")
 
     def _offline(self, job: q.Job, since: float) -> None:
         """Say a drop once, after it has lasted a few seconds; then wait a little."""
@@ -317,6 +283,9 @@ class QueueService:
         client = self._client_factory()
         fresh = not job.document_id or job.state == q.QUEUED
         if fresh:
+            if not job.started_at:
+                self._set(job, started_at=self.queue.now())
+            self._converting_noted.discard(job.id)
             self._listener("started", job)
         settings = ScribeSettings.from_mapping(job.settings) if job.settings else None
         if job.open_as == "watch" and not job.document_id:
@@ -343,6 +312,7 @@ class QueueService:
                 except ScribeBusyError:
                     self._rate_limited(job, q.UPLOADING)
             self._set(job, document_id=document_id)
+            sets.note(self.queue, job, "uploaded")
         if fresh and settings is not None:
             if job.reuse:  # only formats not made yet; the upload fixed the rest
                 client.update_settings(job.document_id, settings, leave_out=HTML_SHAPING_FIELDS)
@@ -375,6 +345,7 @@ class QueueService:
             eta_seconds=None,
             message="Done",
         )
+        sets.note(self.queue, job, "done")
         if job.id in self._resumed:
             self._resumed_done.append(job.title or job.display_name)
         self._listener("done", job)
@@ -468,6 +439,9 @@ class QueueService:
                         eta_seconds=None,
                         message=conversion_message(format_id, "queue", 0.0),
                     )
+                    if job.id not in self._converting_noted:
+                        self._converting_noted.add(job.id)
+                        sets.note(self.queue, job, "converting")
                     self._listener("changed", job)
                     if self._poll_complete(job, client, format_id, position, total):
                         return channel
@@ -587,6 +561,7 @@ _RUN_FIELDS = (
     "password_tries",
     "not_before",
     "document_id",
+    "started_at",
 )
 
 

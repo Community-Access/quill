@@ -14,6 +14,9 @@ one conversion per document at a time. Several files the person chose in one
 Convert dialog are one **batch**, sent strictly one after another under the
 exception Pneuma approved on 2026-11-21: the next upload starts only after
 the previous document's ``conversion_complete`` or error (SCR-POL-3).
+When the person named the batch, it is also a **set**
+(:class:`quill.core.batch_sets.BatchSet`), stored beside the jobs so every app
+shows it as one row and writes to one log (:mod:`quill.core.scribe.sets`).
 
 **The family's pace** (3.5). Scribe allows 10 actions a minute per person in
 fixed 60-second windows -- uploads, ``start_conversion`` and password tries
@@ -40,6 +43,7 @@ from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 from typing import Any
 
+from quill.core.batch_sets import BatchSet
 from quill.core.storage import read_json, write_json_atomic
 
 # Job states. "Waiting for you" states need the person; the runner skips them.
@@ -127,6 +131,8 @@ class Job:
     #: Fields "Also save as my Scribe account defaults" leaves as they are:
     #: Scribe's email, unless the person changed it in the dialog (F8).
     defaults_leave_out: list[str] = field(default_factory=list)
+    #: When this document's run began; a named set's log says how long it took.
+    started_at: float = 0.0
 
     @property
     def state_words(self) -> str:
@@ -224,14 +230,15 @@ class FamilyQueue:
         return [job for job in parsed if job is not None]
 
     def _write(self, jobs: list[Job], **extra: Any) -> None:
-        """Write *jobs*, keeping the family's action count unless *extra* changes it."""
+        """Write *jobs*, preserving sets, action counts and newer fields."""
         data = self._read()
-        body: dict[str, Any] = {
+        body: dict[str, Any] = dict(data)
+        body.update({
             "version": 1,
             "jobs": [asdict(job) for job in jobs],
             "actions": data.get("actions", []),
             "paused_until": data.get("paused_until", 0.0),
-        }
+        })
         body.update(extra)
         write_json_atomic(self._queue, body)
 
@@ -242,18 +249,73 @@ class FamilyQueue:
     def get(self, job_id: str) -> Job | None:
         return next((job for job in self.jobs() if job.id == job_id), None)
 
-    def add(self, new_jobs: list[Job]) -> list[Job]:
+    def add(self, new_jobs: list[Job], *, batch_set: BatchSet | None = None) -> list[Job]:
         """Queue *new_jobs*, in order. Several are one batch, sent one after
-        another without asking again (the approved exception, 7.4)."""
-        if len(new_jobs) > 1:
+        another without asking again (the approved exception, 7.4). A
+        *batch_set* records that named batch in the same durable write."""
+        if batch_set is not None:
+            batch_set.members = [job.id for job in new_jobs]
+            for job in new_jobs:
+                job.batch = batch_set.id
+        elif len(new_jobs) > 1:
             batch = uuid.uuid4().hex
             for job in new_jobs:
                 job.batch = job.batch or batch
         with self._editing():
             jobs = self.jobs()
             jobs.extend(new_jobs)
-            self._write(jobs)
+            if batch_set is None:
+                self._write(jobs)
+            else:
+                kept = [made.to_dict() for made in self.sets() if made.id != batch_set.id]
+                self._write(jobs, sets=[*kept, batch_set.to_dict()])
         return new_jobs
+
+    # ----------------------------------------------------------------- sets
+
+    def sets(self) -> list[BatchSet]:
+        """Every named set, oldest first."""
+        items = self._read().get("sets")
+        parsed = [BatchSet.from_mapping(item) for item in (items or [])]
+        return [made for made in parsed if made is not None]
+
+    def get_set(self, set_id: str) -> BatchSet | None:
+        if not set_id:
+            return None
+        return next((made for made in self.sets() if made.id == set_id), None)
+
+    def update_set(
+        self,
+        set_id: str,
+        *,
+        only_if: Callable[[BatchSet], bool] | None = None,
+        **changes: Any,
+    ) -> BatchSet | None:
+        """Change a set under the edit lock, optionally after an atomic check."""
+        with self._editing():
+            found = None
+            items: list[dict[str, Any]] = []
+            for made in self.sets():
+                if made.id == set_id and (only_if is None or only_if(made)):
+                    for key, value in changes.items():
+                        if hasattr(made, key) and key != "extra":
+                            setattr(made, key, value)
+                    found = made
+                items.append(made.to_dict())
+            if found is not None:
+                self._write(self.jobs(), sets=items)
+            return found
+
+    def remove_set(self, set_id: str) -> bool:
+        """Take a set and all its jobs off the list; its folder and log stay."""
+        with self._editing():
+            named = self.sets()
+            kept = [made for made in named if made.id != set_id]
+            if len(kept) == len(named):
+                return False
+            jobs = [job for job in self.jobs() if job.batch != set_id]
+            self._write(jobs, sets=[made.to_dict() for made in kept])
+            return True
 
     def batch_jobs(self, batch: str) -> list[Job]:
         """Every job of one batch, in the order chosen."""
@@ -281,12 +343,15 @@ class FamilyQueue:
             return found
 
     def remove(self, job_id: str) -> bool:
+        """Take one job off the list; a set left with no jobs goes too."""
         with self._editing():
             jobs = self.jobs()
             kept = [job for job in jobs if job.id != job_id]
             if len(kept) == len(jobs):
                 return False
-            self._write(kept)
+            batches = {job.batch for job in kept}
+            named = [made.to_dict() for made in self.sets() if made.id in batches]
+            self._write(kept, sets=named)
             return True
 
     # ------------------------------------------------------------ the pace
