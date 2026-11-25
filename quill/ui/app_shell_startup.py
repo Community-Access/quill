@@ -4,6 +4,14 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Callable
+from typing import Any
+
+
+def init_app_sound(settings: Any) -> None:
+    """Initialize a companion app's sound pack only after its window is ready."""
+    from quill.ui.companion_cues import init_app_sound as _init_app_sound
+
+    _init_app_sound(settings)
 
 
 class AppShellStartupMixin:
@@ -32,8 +40,7 @@ class AppShellStartupMixin:
         note_launch(self._startup_app_id)  # type: ignore[attr-defined]
 
     def _start_app_sounds(self) -> None:
-        from quill.ui import app_sounds
-        from quill.ui.companion_cues import init_app_sound
+        from quill.ui import app_shell, app_sounds
 
-        init_app_sound(self.settings)  # type: ignore[attr-defined]
+        app_shell.init_app_sound(self.settings)  # type: ignore[attr-defined]
         app_sounds.apply(self)

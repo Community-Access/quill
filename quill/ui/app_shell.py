@@ -38,6 +38,7 @@ from quill.ui.announce_shim import build_announcement
 from quill.ui.app_availability import CommandAvailabilityMixin
 from quill.ui.app_shell_components import ComponentDownloadsMixin
 from quill.ui.app_shell_startup import AppShellStartupMixin
+from quill.ui.app_shell_startup import init_app_sound as init_app_sound
 from quill.ui.dialog_contract import (
     focus_primary_control,
     show_modal_dialog,
