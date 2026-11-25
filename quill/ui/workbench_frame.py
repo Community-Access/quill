@@ -30,6 +30,7 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 
 from quill.core.counted import plural
+from quill.core.list_follow import gone_sentence, hidden_sentence
 from quill.core.workbench.actions import ActionRow, ActionTable
 from quill.core.workbench.filters import Query, describe, matches_words, parse
 from quill.core.workbench.menus import MenuSpec
@@ -42,6 +43,7 @@ from quill.ui.workbench_frame_commands import WorkbenchCommandsMixin
 from quill.ui.workbench_frame_groups import GroupRef, WorkbenchGroupsMixin
 from quill.ui.workbench_frame_help import WorkbenchHelpMixin
 from quill.ui.workbench_frame_layout import hold_panes
+from quill.ui.workbench_list_fill import fill_rows
 from quill.ui.workbench_status_bar import StatusCell, WorkbenchStatusBar
 
 __all__ = ["GroupRef", "NodeRef", "WorkbenchFrame", "WorkbenchProvider"]
@@ -458,10 +460,11 @@ class WorkbenchFrame(
         self.loaded_at = time.strftime("%H:%M")
         self._loaded = list(rows)
         self.remember_count(len(rows))
-        self._fill_list()
+        gone = self._fill_list()
         if self._report_for == generation:
             self._report_for = -1
-            self._say(self.loaded_words())
+            ending = gone_sentence(gone) if gone else ""
+            self._say(f"{self.loaded_words()} {ending}".strip())
         elif self._arrived_for == generation and not self.rows and self.current is not None:
             self._say("No rows here.")  # a list arrived empty while focus was elsewhere
 
@@ -474,7 +477,7 @@ class WorkbenchFrame(
         self.details.ChangeValue(message)
         self._say(message)
 
-    def _fill_list(self) -> None:
+    def _fill_list(self, *, ours: bool = False) -> str:
         remote = self.current is not None and self.provider.remote_words(self.node(self.current))
         words = () if remote else self.query.words
         columns = self._columns or ("name",)
@@ -484,25 +487,14 @@ class WorkbenchFrame(
             if not words or matches_words(" ".join(self.provider.cells(row, columns)), words)
         ]
         cells = [self.provider.cells(row, columns) for row in rows]
-        if self.update_in_place(rows, cells):
-            # The same rows: what changed is set in place, the place left alone (FUX-06).
-            self.rows = rows
-            chosen = self.selected_row()
-            said = self.provider.detail(chosen) if chosen is not None else None
-            if said is not None and said != self.details.GetValue():  # else the caret stays
-                self.details.ChangeValue(said)
-        else:
-            # Keep the place: the same item, selected and focused in ONE change.
-            # Select then Focus was two, and a screen reader read the row twice.
-            landing = self.landing_for(rows)
-            self.rows, self._shown_cells = rows, cells
-            self.list.DeleteAllItems()
-            for index, row_cells in enumerate(cells):
-                self.list.InsertItem(index, row_cells[0] if row_cells else "")
-                for column, text in enumerate(row_cells[1:], start=1):
-                    self.list.SetItem(index, column, text)
-            if landing >= 0:
-                self.focus_row(landing)
+        landing = self.landing_for(rows)
+        gone = fill_rows(
+            self, rows, cells, landing, ours=ours or self._report_for == self._generation
+        )
+        chosen = self.selected_row()
+        said = self.provider.detail(chosen) if chosen is not None else None
+        if said is not None and said != self.details.GetValue():
+            self.details.ChangeValue(said)
         if not self.rows and not self.loading and self.current is not None:
             # An empty list is help too (D4): why it is empty and what fills it.
             empty = self.empty_words()
@@ -513,6 +505,7 @@ class WorkbenchFrame(
         if callable(after):
             after(self)
         self.status.refresh()
+        return gone
 
     def apply_filter(self) -> None:
         """Enter in the filter box: words filter here, qualifiers ask the service."""
@@ -523,8 +516,9 @@ class WorkbenchFrame(
             self._say("Filtering.")  # said first: an answer can come back at once
             self.reload(report=True)
         else:
-            self._fill_list()
-            self._say(f"{plural(len(self.rows), 'row')} shown.")
+            hidden = self._fill_list(ours=True)
+            said = f"{plural(len(self.rows), 'row')} shown."
+            self._say(f"{said} {hidden_sentence(hidden)}" if hidden else said)
 
     def clear_filter(self) -> None:
         self.filter.ChangeValue("")

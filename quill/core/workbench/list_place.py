@@ -18,20 +18,42 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-__all__ = ["changed_cells", "landing_index", "row_identity", "same_cells"]
+__all__ = ["changed_cells", "landing_index", "row_identities", "row_identity", "same_cells"]
 
 #: The attributes that say which item a row is, in order of trust.
 _IDENTITY_FIELDS = ("url", "html_url", "key", "sha", "id", "number", "name", "tag")
 
 
 def row_identity(row: object) -> str:
-    """A string that stays the same for the same item across loads; ``""`` if none."""
+    """A string that stays the same for the same item across loads; ``""`` if none.
+
+    A row that names its site (WordPress across several sites) is that site's
+    item: the same post id on two sites is two rows.
+    """
     kind = type(row).__name__
+    site = getattr(row, "site", "")
+    where = f"{site}|" if isinstance(site, str) and site else ""
     for field in _IDENTITY_FIELDS:
         value = getattr(row, field, None)
         if value not in (None, "", 0):
-            return f"{kind}:{field}:{value}"
+            return f"{where}{kind}:{field}:{value}"
     return ""
+
+
+def row_identities(rows: Sequence[object]) -> list[str]:
+    """Each row's identity, made unique: a repeat is numbered in order.
+
+    Two rows can share an identity -- every Watch on one repository's runs has
+    the same link -- and a list changed row by row needs each row to be one.
+    """
+    seen: dict[str, int] = {}
+    found: list[str] = []
+    for row in rows:
+        key = row_identity(row)
+        count = seen.get(key, 0)
+        seen[key] = count + 1
+        found.append(key if count == 0 else f"{key}#{count}")
+    return found
 
 
 def landing_index(old_rows: Sequence[object], old_index: int, new_rows: Sequence[object]) -> int:
