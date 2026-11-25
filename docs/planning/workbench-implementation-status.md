@@ -3,7 +3,7 @@
 **Updated:** 2026-11-20  
 **Status:** Historical. This is the Workbench delivery log up to
 2026-11-18. It does not list open work. What is still open for both
-Workbenches is in `complete.md` at the repository root (Parts 1 and 2), and
+Workbenches is in `report.md` at the repository root, and
 the status of each GitHub requirement is in the
 [requirement audit](../qa/github-workbench-requirement-audit-2026-11.md).
 The "What is left" and "Remaining" lists below are kept as they were written
