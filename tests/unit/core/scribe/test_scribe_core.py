@@ -491,6 +491,40 @@ def test_websocket_reset_drops_the_last_rest_eta(server: FakeScribe, tmp_path: P
     assert job.eta_seconds is None
 
 
+def test_live_websocket_events_still_refresh_rest_eta(
+    server: FakeScribe, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    service = _service(server, tmp_path)
+    job = service.queue.add([_job(tmp_path, formats=("mp3",))])[0]
+    polls: list[float] = []
+
+    def poll(
+        _job: q.Job, _client: ScribeClient, _format_id: str, _position: int, _total: int
+    ) -> bool:
+        polls.append(service._clock())
+        return False
+
+    class LiveChannel:
+        def __init__(self) -> None:
+            self.events = [
+                ChannelEvent("status", format="mp3", stage="convert", progress=0.1),
+                ChannelEvent("conversion_complete", format="mp3"),
+            ]
+
+        def start_conversion(self, _format_id: str, _password: str) -> str:
+            return "mp3-1"
+
+        def next_event(self, _timeout: float) -> ChannelEvent:
+            service._clock.now += 1.1
+            return self.events.pop(0)
+
+    monkeypatch.setattr(service, "_poll_complete", poll)
+    returned = service._convert(job, _client(server), LiveChannel(), "mp3", 0, 1)  # type: ignore[arg-type]
+
+    assert returned is not None
+    assert len(polls) >= 2
+
+
 def test_rate_limited_is_said_once_and_retried(server: FakeScribe, tmp_path: Path) -> None:
     server.rate_limited_once = True
     events: list = []
