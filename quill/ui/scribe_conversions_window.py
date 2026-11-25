@@ -32,7 +32,7 @@ import wx
 
 from quill.core.scribe import queue as q
 from quill.core.scribe.model import formats_phrase
-from quill.core.scribe.sentences import time_left_words
+from quill.core.scribe.sentences import eta_words
 from quill.ui.dialog_contract import bind_close_button, show_modeless_surface
 
 TITLE = "Conversions on This Computer"
@@ -68,8 +68,9 @@ def job_details(job: q.Job, now: float | None = None) -> str:
     percent = int(round(job.progress * 100))
     if job.state not in q.FINISHED or percent:
         lines.append(f"Progress: {percent} percent.")
-    if job.state == q.CONVERTING and job.eta_seconds:
-        lines.append(time_left_words(job.eta_seconds).capitalize() + ".")
+    eta = eta_words(job)
+    if eta:
+        lines.append(eta.capitalize() + ".")
     if job.message:
         lines.append(f"Latest: {job.message}")
     if job.outputs:

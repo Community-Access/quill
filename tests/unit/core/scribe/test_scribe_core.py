@@ -23,10 +23,11 @@ from quill.core import scribe
 from quill.core.scribe import errors as e
 from quill.core.scribe import queue as q
 from quill.core.scribe.auth import ScribeSession, authorization_url
-from quill.core.scribe.channel import DocumentChannel, channel_url, parse_event
+from quill.core.scribe.channel import ChannelEvent, DocumentChannel, channel_url, parse_event
 from quill.core.scribe.client import ScribeClient, content_disposition_file_name
 from quill.core.scribe.library import Library, safe_file_name, unique_path
 from quill.core.scribe.model import (
+    Output,
     ScribeSettings,
     ordered_for_conversion,
     settings_summary,
@@ -186,6 +187,27 @@ def test_output_time_remaining_is_milliseconds_from_scribe(server: FakeScribe) -
     document_id = next(iter(server.documents))
     (output,) = _client(server).list_outputs(document_id)[0]
     assert output.estimated_time_remaining == 30
+
+
+def test_output_eta_follows_the_pneuma_contract() -> None:
+    def eta(**changes: object) -> int | None:
+        row: dict[str, object] = {
+            "format": "mp3",
+            "stage": "convert",
+            "progress": 0.5,
+            **changes,
+        }
+        output = Output.from_mapping(row)
+        assert output is not None
+        return output.estimated_time_remaining
+
+    assert eta(estimated_time_remaining=91_000) == 91
+    assert eta(estimated_time_remaining=1_900) == 2
+    assert eta(estimated_time_remaining=0) == 0
+    assert eta(estimated_time_remaining=None) is None
+    assert eta(estimated_time_remaining=1.5) is None
+    assert eta(format="daisy", estimated_time_remaining=91_000) is None
+    assert eta(stage="complete", estimated_time_remaining=91_000) is None
 
 
 # --------------------------------------------------------------- channel
@@ -403,6 +425,70 @@ def test_quiet_channel_polling_keeps_stage_progress_and_eta(
     assert service._poll_complete(job, _client(server), "mp3", 0, 1) is False
     assert (job.stage, job.progress, job.eta_seconds) == ("convert", 0.45, 30)
     assert job.message == "MP3 audio: converting, 50 percent."
+
+
+def test_quiet_poll_drops_a_stale_eta_when_the_output_disappears(
+    server: FakeScribe, tmp_path: Path
+) -> None:
+    doc = server.add_document(outputs={"mp3": "convert"})
+    service = _service(server, tmp_path)
+    job = _job(
+        tmp_path,
+        formats=("mp3",),
+        state=q.CONVERTING,
+        document_id=doc.id,
+        format="mp3",
+        eta_seconds=30,
+    )
+    doc.outputs.clear()
+
+    assert service._poll_complete(job, _client(server), "mp3", 0, 1) is False
+    assert job.eta_seconds is None
+    assert job.message == "MP3 audio: estimating time remaining."
+
+
+def test_quiet_poll_accepts_restarted_output_progress(server: FakeScribe, tmp_path: Path) -> None:
+    doc = server.add_document(outputs={"mp3": "convert"})
+    service = _service(server, tmp_path)
+    job = _job(
+        tmp_path,
+        formats=("mp3",),
+        state=q.CONVERTING,
+        document_id=doc.id,
+        format="mp3",
+        progress=0.81,
+        eta_seconds=10,
+    )
+
+    assert service._poll_complete(job, _client(server), "mp3", 0, 1) is False
+    assert job.progress == pytest.approx(0.45)
+    assert job.eta_seconds == 30
+
+
+def test_websocket_reset_drops_the_last_rest_eta(server: FakeScribe, tmp_path: Path) -> None:
+    service = _service(server, tmp_path)
+    job = _job(
+        tmp_path,
+        formats=("mp3",),
+        state=q.CONVERTING,
+        format="mp3",
+        stage="convert",
+        progress=0.81,
+        eta_seconds=10,
+    )
+
+    assert (
+        service._handle(
+            job,
+            ChannelEvent("status", format="mp3", stage="start", progress=0.0),
+            "mp3",
+            0,
+            1,
+        )
+        is False
+    )
+    assert job.progress == 0.0
+    assert job.eta_seconds is None
 
 
 def test_rate_limited_is_said_once_and_retried(server: FakeScribe, tmp_path: Path) -> None:

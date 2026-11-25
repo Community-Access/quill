@@ -189,8 +189,12 @@ def cancel_waiting_sentence(job: Job, *, app_name: str) -> str:
 def time_left_words(seconds: int) -> str:
     """A spoken ETA without inventing precision or showing thousands of minutes."""
     seconds = max(0, seconds)
+    if seconds == 0:
+        return "almost done"
     if seconds < 60:
         return "less than a minute left"
+    if seconds > 7 * 24 * 60 * 60:
+        return "more than a week left"
     minutes = round(seconds / 60)
     if minutes < 60:
         return f"about {minutes} minute{'s' if minutes != 1 else ''} left"
@@ -207,6 +211,17 @@ def time_left_words(seconds: int) -> str:
     return words + " left"
 
 
+def eta_words(job: Job) -> str | None:
+    """The server ETA, or MP3's explicit estimating state."""
+    if job.state != CONVERTING:
+        return None
+    if job.eta_seconds is not None:
+        return time_left_words(job.eta_seconds)
+    if job.format == "mp3" and job.stage != "complete":
+        return "estimating time remaining"
+    return None
+
+
 def status_sentence(job: Job | None) -> str:
     """The current job in one line: Scribe Status's Now converting section."""
     if job is None:
@@ -215,8 +230,9 @@ def status_sentence(job: Job | None) -> str:
     percent = int(round(job.progress * 100))
     if percent:
         parts.append(f"{percent} percent")
-    if job.state == CONVERTING and job.eta_seconds:
-        parts.append(time_left_words(job.eta_seconds))
+    eta = eta_words(job)
+    if eta:
+        parts.append(eta)
     return ", ".join(parts) + "."
 
 

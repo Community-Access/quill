@@ -287,12 +287,14 @@ def test_no_send_next_file_and_the_wait_shows_silently(controller: Any) -> None:
 
 
 def test_time_left_is_units_aware_and_not_shown_after_conversion() -> None:
-    from quill.core.scribe.sentences import time_left_words
+    from quill.core.scribe.sentences import status_sentence, time_left_words
     from quill.ui.scribe_conversions_window import job_details
 
+    assert time_left_words(0) == "almost done"
     assert time_left_words(30) == "less than a minute left"
     assert time_left_words(551) == "about 9 minutes left"
     assert time_left_words(93780) == "about 1 day and 2 hours left"
+    assert time_left_words(8 * 24 * 60 * 60) == "more than a week left"
     active = q.Job(
         file_name="Notes.pdf",
         state=q.CONVERTING,
@@ -307,6 +309,21 @@ def test_time_left_is_units_aware_and_not_shown_after_conversion() -> None:
     )
     assert "About 9 minutes left." in job_details(active)
     assert "minutes left" not in job_details(done)
+    mp3_unknown = q.Job(
+        file_name="Notes.pdf",
+        state=q.CONVERTING,
+        stage="convert",
+        format="mp3",
+    )
+    assert "Estimating time remaining." in job_details(mp3_unknown)
+    assert "estimating time remaining" in status_sentence(mp3_unknown)
+    daisy_unknown = q.Job(
+        file_name="Notes.pdf",
+        state=q.CONVERTING,
+        stage="convert",
+        format="daisy",
+    )
+    assert "Estimating time remaining." not in job_details(daisy_unknown)
 
 
 def test_the_options_have_no_batch_setting(controller: Any) -> None:  # noqa: F811

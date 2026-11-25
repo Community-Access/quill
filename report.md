@@ -13,19 +13,15 @@ zero; [report2.md](report2.md) remains the human and operational record.
 
 - Eight implementation and release-engineering items remain: two release
   operations and six startup-speed items.
-- GitHub Workbench implementation is complete on `main`; remaining live-role,
-  permissions, protected-branch, and Copilot-plan checks are in
-  [report2.md](report2.md).
+- GitHub Workbench implementation is complete on `main`.
 - WordPress Workbench and Practice Site implementation is complete on `main`;
-  the remaining staged-runtime inventory is part of release packaging below,
-  and live payment/OAuth/site checks are in [report2.md](report2.md).
+  the remaining staged-runtime inventory is part of release packaging below.
 - Scribe implementation is complete, including durable conversion and
-  transcription queues. Real-service acceptance and the Pneuma ETA
-  contract remain external checks in [report2.md](report2.md).
+  transcription queues. Pneuma confirmed the ETA contract, and QUILL now
+  follows it. No Scribe code or provider-contract blocker remains.
 - Converter queue persistence is complete in PR #2077 and merged to `main`.
-- [report2.md](report2.md) has nine human/credential items and two external
-  blockers. They are intentionally excluded from the code-work count and are
-  not moved back here when `report.md` is deleted.
+- All human, credential, live-service, and external work is kept in
+  [report2.md](report2.md) and is not part of the code-work count.
 
 ## Release and packaging
 
