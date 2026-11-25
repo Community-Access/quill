@@ -13,6 +13,9 @@ def test_every_product_has_one_maintained_release_identity() -> None:
     assert len(BY_KEY) == len(PRODUCTS)
     assert len({product.tag_prefix for product in PRODUCTS}) == len(PRODUCTS)
     assert len({product.asset_prefix.casefold() for product in PRODUCTS}) == len(PRODUCTS)
+    from quill.tools.release_feed import APPS
+
+    assert set(APPS) == {key for key, product in BY_KEY.items() if product.wave != "held"}
 
 
 def test_preview_platform_wave_precedes_companions_social_and_beacon() -> None:

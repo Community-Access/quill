@@ -75,6 +75,7 @@ APPS: dict[str, AppRelease] = {
         version_constant=product.version_constant,
     )
     for product in PRODUCTS
+    if product.wave != "held"
 }
 
 

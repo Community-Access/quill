@@ -85,7 +85,8 @@ def problems(root: Path = REPO_ROOT) -> list[str]:
 
     from quill.tools import release_feed
 
-    if set(release_feed.APPS) != expected:
+    released_or_candidate = {product.key for product in PRODUCTS if product.wave != "held"}
+    if set(release_feed.APPS) != released_or_candidate:
         found.append("signed-feed registry disagrees with the release catalogue")
     for product in PRODUCTS:
         spec = release_feed.APPS.get(product.key)
