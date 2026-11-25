@@ -95,6 +95,11 @@ GATES: tuple[Gate, ...] = (
         ),
     ),
     Gate(
+        "release-catalog",
+        "one monorepo catalogue owns every app, version, feed and build entry",
+        (sys.executable, "-m", "quill.tools.release_catalog_audit"),
+    ),
+    Gate(
         "quillin-lint",
         "bundled Quillins meet the extension standards",
         (sys.executable, "-m", "quill.tools.quillin_lint", "quill/quillins_bundled", "--strict"),

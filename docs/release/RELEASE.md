@@ -137,6 +137,25 @@ PRs: WinGet accepts one package version per manifest-only pull request.
 
 ## Channels, publishing and promotion
 
+### One monorepo catalogue
+
+Every Windows product is owned by
+`quill.core.release_catalog`: QUILL, QUILL Lite, Radio, Cast, Transcribe,
+Converter, Studio, Player, Inkwell, Weather, Social and Beacon. The catalogue
+is the source of truth for version/build files, tag and asset names,
+changelogs, build entries and rollout waves. `release_catalog_audit` is a
+pre-commit and `platform_report` gate; it refuses a new standalone wrapper,
+feed entry, sibling-version row or `build-quill-apps.ps1` table that is not in
+the catalogue.
+
+This repository remains the only source repository. A separate Dev-builds
+repository is only for unsigned Dev artifacts, while production artifacts,
+signed feeds, release history and source archives stay owned by the
+`Community-Access/quill` monorepo. A product marked `held` may wait for a build
+wrapper or release evidence, but it cannot silently disappear from the
+inventory. Radio-on-macOS and Weather-on-iOS are explicit platform variants,
+not duplicate Windows products.
+
 Every QuillVille app with release channels (QUILL, QUILL Lite, Quill Radio,
 QUILL Cast, and QUILL Transcribe since 2026-10-24) is offered updates from one
 signed list per app,

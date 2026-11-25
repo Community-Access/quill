@@ -29,6 +29,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Protocol
 
+from quill.core.release_catalog import PRODUCTS
 from quill.core.updater.feed import (
     FeedAsset,
     FeedRelease,
@@ -64,69 +65,16 @@ class AppRelease:
 
 
 APPS: dict[str, AppRelease] = {
-    a.key: a
-    for a in (
-        AppRelease(
-            "quill", "QUILL", "v", "Quill", "CHANGELOG.md", "quill/__init__.py", "__version__"
-        ),
-        AppRelease(
-            "quilllite",
-            "QUILL Lite",
-            "quill-lite-v",
-            "QuillLite",
-            "standalone/quilllite/docs/CHANGELOG.md",
-            "quill/core/lite/__init__.py",
-            "APP_VERSION",
-        ),
-        AppRelease(
-            "radio",
-            "Quill Radio",
-            "quill-radio-v",
-            "Quill-Radio",
-            "standalone/radio/docs/CHANGELOG.md",
-            "quill/apps/radio.py",
-            "_VERSION",
-        ),
-        AppRelease(
-            "cast",
-            "QUILL Cast",
-            "quill-cast-v",
-            "Quill-Cast",
-            "standalone/cast/docs/CHANGELOG.md",
-            "quill/apps/podcasts_menu.py",
-            "APP_VERSION",
-        ),
-        # QUILL Transcribe joined the channels for its 1.0.0 release
-        # (2026-10-24); its files are QUILL-Transcribe-*.
-        AppRelease(
-            "transcribe",
-            "QUILL Transcribe",
-            "quill-transcribe-v",
-            "QUILL-Transcribe",
-            "standalone/transcribe/docs/CHANGELOG.md",
-            "quill/apps/transcribe.py",
-            "_VERSION",
-        ),
-        # Converter and Weather joined on 2026-11-01 (Quill-Converter-*, Quill-Weather-*).
-        AppRelease(
-            "converter",
-            "Quill Converter",
-            "quill-converter-v",
-            "Quill-Converter",
-            "standalone/converter/docs/CHANGELOG.md",
-            "quill/apps/converter.py",
-            "_VERSION",
-        ),
-        AppRelease(
-            "weather",
-            "Quill Weather",
-            "quill-weather-v",
-            "Quill-Weather",
-            "standalone/weather/docs/CHANGELOG.md",
-            "quill/apps/weather.py",
-            "_VERSION",
-        ),
+    product.key: AppRelease(
+        key=product.key,
+        name=product.name,
+        tag_prefix=product.tag_prefix,
+        asset_prefix=product.asset_prefix,
+        changelog=product.changelog,
+        version_file=product.version_file,
+        version_constant=product.version_constant,
     )
+    for product in PRODUCTS
 }
 
 
