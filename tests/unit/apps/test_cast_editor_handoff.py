@@ -14,10 +14,6 @@ import pytest
 
 wx = pytest.importorskip("wx")
 
-#: A real QUILL Cast window registers the system-wide hotkeys (see
-#: ``pytest_collection_modifyitems`` in ``tests/conftest.py``).
-pytestmark = pytest.mark.machine_global
-
 
 @pytest.fixture
 def editor(monkeypatch, tmp_path: Path):
@@ -36,7 +32,8 @@ def editor(monkeypatch, tmp_path: Path):
 
 
 @pytest.fixture
-def cast(quill_data_dir: Path, wx_app, quiet_cast_startup, close_cast):
+def cast(quill_data_dir: Path, wx_app, closed_machine_doors, quiet_cast_startup, close_cast):
+    """A real Cast window with system-wide hotkeys and tray safely closed."""
     from quill.core.podcasts.models import PodcastShow
     from quill.core.podcasts.models_episode import PodcastEpisode
     from quill.core.podcasts.subscriptions import PodcastLibrary, save_library
