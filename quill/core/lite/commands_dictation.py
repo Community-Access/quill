@@ -65,7 +65,7 @@ DICTATION_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     ),
     (
         "&Tools|&Dictation",
-        "Transcriptions on This &Computer...",
+        "Transcriptions on This Comp&uter...",
         "Ctrl+Shift+PageUp",
         "cmd_open_transcriptions",
         "",

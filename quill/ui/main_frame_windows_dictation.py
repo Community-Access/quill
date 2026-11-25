@@ -63,7 +63,7 @@ _ROWS: tuple[tuple[str, str, str, str], ...] = (
     ),
     (
         "tools.windows_dictation_transcriptions",
-        "Transcriptions on This &Computer...",
+        "Transcriptions on This Comp&uter...",
         "Transcriptions on This Computer",
         "cmd_open_transcriptions",
     ),

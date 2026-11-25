@@ -69,7 +69,7 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
     _shared(file_menu, "Transcribe a &Recording...", "tools.windows_dictation_transcribe_file")
     _shared(
         file_menu,
-        "Transcriptions on This &Computer...",
+        "Transcriptions on This Comp&uter...",
         "tools.windows_dictation_transcriptions",
     )
     _add(host, file_menu, "&Notifications...\tCtrl+Shift+N", host.open_dictation_notifications)
@@ -281,7 +281,7 @@ def build_tray_menu(host: Any, menu: Any) -> None:
     add("Dictation Pr&ofile...", host.choose_dictation_profile)
     add("Model &Library...", host.open_model_library)
     add("Transcribe a Re&cording...", host.transcribe_a_recording)
-    add("Transcriptions on This &Computer...", host.cmd_open_transcriptions)
+    add("Transcriptions on This Computer: &Queue...", host.cmd_open_transcriptions)
     menu.AppendSeparator()
     add("&User Guide", host.open_user_guide)
     add("Chec&k for Updates...", host.check_for_updates)
