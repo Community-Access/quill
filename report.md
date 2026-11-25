@@ -46,7 +46,7 @@ dirty tree.
 
 ### 2. Durable Converter queue
 
-- [ ] Reuse the queue/set primitives in Converter.
+- [x] Reuse the queue/set primitives in Converter.
 
 ### 3. Merge-ready implementation trains
 

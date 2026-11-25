@@ -3221,7 +3221,12 @@ video, entirely on-device through the bundled FFmpeg.
 - **Batch model.** Mixed file/folder queue with source-tree mirroring, a conflict
   policy (auto-number / skip / overwrite), multi-worker off-thread execution with
   tray-aware progress, and a spoken summary that names failures (never a silent
-  success). Temp-then-move writes; pure argv command building (`build_convert_command`).
+  success). The standalone Converter keeps this editable queue in a separate
+  versioned, lock-guarded `converter-queue.json`: add, remove, reorder and clear
+  survive restart; missing paths stay visible; unknown future fields round-trip;
+  failed writes use Activity's current-state Retry while the in-memory list stays
+  usable. Restoring the queue never starts work or makes a network request.
+  Temp-then-move writes; pure argv command building (`build_convert_command`).
 - **Safety.** Fully offline through bundled FFmpeg, so available in Safe Mode.
   Only URL import touches the network: `yt-dlp` is never bundled, installs on
   demand after an explicit consent + rights notice, is recorded in the

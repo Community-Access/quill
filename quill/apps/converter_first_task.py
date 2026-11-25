@@ -62,12 +62,17 @@ def focus_initial(host: Any) -> None:
 
 def reload(host: Any, *, select: int | None = None) -> None:
     """Redraw the queue from ``host._entries``, keep a row selected, say the count."""
+    from quill.core import converter_queue
+
     queue = host._list
     queue.Clear()
-    for entry, _root in host._entries:
-        queue.Append(entry.name if not entry.is_dir() else f"{entry.name} (folder)")
+    entries = [converter_queue.as_entry(item) for item in host._entries]
+    for entry in entries:
+        queue.Append(entry.label())
     if host._entries:
         index = select if select is not None else len(host._entries) - 1
         queue.SetSelection(max(0, min(index, len(host._entries) - 1)))
-    host._set_status(f"{len(host._entries)} item(s) queued.")
+    missing = sum(not entry.available for entry in entries)
+    honesty = f" {missing} path(s) unavailable." if missing else ""
+    host._set_status(f"{len(host._entries)} item(s) queued.{honesty}")
     refresh(host)

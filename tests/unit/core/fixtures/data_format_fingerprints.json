@@ -385,6 +385,23 @@
       "classification": "version bumped",
       "note": "Added optional podcast folder-copy metadata and Lite startup-folder preference; older readers ignore these fields."
     },
+    "converter.queue": {
+      "current": 1,
+      "shape": {
+        "dataclass:quill.core.converter_queue:ConverterQueueEntry": {
+          "quill.core.converter_queue:ConverterQueueEntry": {
+            "source": "Path",
+            "root": "Path | None",
+            "_extra": "dict[str, Any]"
+          }
+        },
+        "function:quill.core.converter_queue:ConverterQueueStore.save": "sha256:9d5bbdb7e6ea95e8",
+        "function:quill.core.converter_queue:ConverterQueueStore._write": "sha256:08403e34fe75ccf0",
+        "constant:quill.core.converter_queue:SCHEMA": "1"
+      },
+      "classification": "baseline",
+      "note": ""
+    },
     "converter.settings": {
       "current": 1,
       "shape": {

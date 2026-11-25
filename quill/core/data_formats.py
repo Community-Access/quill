@@ -105,6 +105,14 @@ FORMATS: tuple[DataFormat, ...] = (
     # older build reads it without losing anything.
     DataFormat("transcribe.settings", "transcribe", ("transcribe.json",), "quill_data", 1, 1),
     DataFormat("converter.settings", "converter", ("converter.json",), "quill_data", 1, 1),
+    DataFormat(
+        "converter.queue",
+        "converter",
+        ("converter-queue.json",),
+        "quill_data",
+        1,
+        1,
+    ),
     DataFormat("studio.settings", "studio", ("studio-ai.json",), "quill_data", 1, 1),
     DataFormat(
         "studio.library",

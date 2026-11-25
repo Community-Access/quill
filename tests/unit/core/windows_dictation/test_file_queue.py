@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from quill.core.windows_dictation.file_queue import (
     DONE,
     FAILED,
@@ -144,3 +146,19 @@ def test_runner_lock_prevents_two_apps_from_claiming_work(tmp_path: Path) -> Non
     assert not second.try_acquire("QUILL Transcribe")
     first.release()
     assert second.try_acquire("QUILL Transcribe")
+
+
+def test_transcription_queue_uses_the_shared_strict_edit_lock(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core import file_lock
+
+    queue = TranscriptionQueue(tmp_path)
+    queue.folder.mkdir(parents=True)
+    queue._edit_lock.write_text("another app", encoding="utf-8")
+    moments = iter((1.0, 7.0))
+    monkeypatch.setattr(file_lock.time, "monotonic", lambda: next(moments))
+
+    with pytest.raises(TimeoutError):
+        queue.add([_job(tmp_path)])
+    assert queue.jobs() == []

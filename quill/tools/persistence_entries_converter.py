@@ -9,6 +9,8 @@ from __future__ import annotations
 
 CONVERTER_ENTRIES: dict[str, str] = {
     "core/converter_settings.py::save": "versioned",
+    # The editable queue is deliberately separate from remembered choices.
+    "core/converter_queue.py::_write": "versioned",
     # Process with Auphonic: what is waiting to be fetched, and every
     # production sent (Production History).
     "core/publish/auphonic_plan.py::save_pending": "versioned",
