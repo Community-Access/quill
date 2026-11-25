@@ -97,6 +97,11 @@ All of this uses the same preview and one-result-per-repository contract as
 the Across Repositories places already there. The requirement audit now
 counts 99 of 100 requirements met; only GH-R-119's timed find-the-answer
 sessions with people remain.
+### Convert with Quill says when Quill Converter is missing (2026-11-24)
+
+File Explorer's Convert with Quill did nothing at all when Quill Converter was
+not installed beside QUILL. It now shows a message, in front of File
+Explorer, that names the file and says it was not converted (FUX-02).
 
 ### Back to the sentence you left, in QUILL and QUILL Lite (2026-11-24)
 

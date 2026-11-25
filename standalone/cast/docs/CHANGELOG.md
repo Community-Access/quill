@@ -12,6 +12,14 @@ Playing window, and says the time. Press it again to return. Before, a jump
 was one-way, and the place you jumped from was saved over within fifteen
 seconds.
 
+### Lineups: one true sentence when handing to Quill Radio (2026-11-24)
+
+Pressing Enter on a station or video in a Lineup said "Opening Quill Radio."
+and then "Sent to Quill Radio to play.", and when Quill Radio was not
+installed it offered to install it and still said it was sent. Now it says one
+sentence; without Quill Radio it says "Quill Radio is not installed with this
+copy, so nothing was sent." (FUX-02).
+
 ### An empty library says how to fill it, after the welcome (2026-11-24)
 
 The sentence an empty Podcasts place says was spoken while the window was

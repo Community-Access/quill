@@ -1386,7 +1386,9 @@ Transcript** window shows it read-only, with:
   and its folder, for example "Saved meeting.txt in Documents.", and the same
   sentence stays in **Activity** (Shift+F9), where **Open Folder** shows you
   the file. **Repeat Last Result** (F9) says it again;
-- **Open in QUILL** - opens it in QUILL to edit.
+- **Open in QUILL** - opens it in QUILL to edit, or in QUILL Lite when QUILL
+  is not installed. You hear "Opening the transcript in QUILL." With neither
+  editor installed, Transcribe says so, and Save As keeps a copy.
 
 Nothing is typed, copied or saved unless you choose it.
 

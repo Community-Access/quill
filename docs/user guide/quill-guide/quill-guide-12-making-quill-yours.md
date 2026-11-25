@@ -622,7 +622,9 @@ that right-click menu:
 - **Offer “Read aloud in QUILL”** opens a file and starts reading it aloud.
   Off to begin with.
 - **Offer “Convert with QUILL”** opens an audio or video file in Quill
-  Converter so you can change its format. Off to begin with.
+  Converter so you can change its format. Off to begin with. If Quill
+  Converter is not installed, a message says so and the file is not
+  converted.
 - **File types offered to QUILL** chooses which files get QUILL on their
   right-click menu: images only, images and PDFs, or images, PDFs and text
   documents (the default). Audio and video files have their own Convert

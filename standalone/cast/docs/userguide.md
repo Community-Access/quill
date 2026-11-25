@@ -5592,6 +5592,8 @@ Stations, saved places, YouTube items, Local Media files and recordings are
 Quill Radio's to play. When you press Enter on one in Cast, Cast sends it, and
 the Lineup's items after it, to Quill Radio, opening Radio if it is not
 running, and says "Sent to Quill Radio to play." Radio then plays them through.
+If Quill Radio is not installed with this copy, Cast says so and sends
+nothing.
 
 When you play from an episode and the Lineup also holds things only Radio can
 play, Cast plays the episodes through the Play Queue and tells you how many
