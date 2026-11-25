@@ -6,7 +6,7 @@ Each command has a name, its key when it has one, what it does, and some of the 
 
 ## QUILL
 
-63 commands can be asked for in a sentence here.
+64 commands can be asked for in a sentence here.
 
 ### QUILL: Edit
 
@@ -134,6 +134,8 @@ Each command has a name, its key when it has one, what it does, and some of the 
   Say: "check my spelling"; "run the spell checker"; "are there any spelling mistakes".
 - **Stop Reading Aloud (Ctrl+Shift+Grave, Shift+R).** Stop reading the document aloud.
   Say: "stop reading to me"; "stop reading aloud"; "that is enough reading".
+- **Transcriptions on This Computer (Ctrl+Shift+PageUp).** Open the durable queue for recording transcriptions.
+  Say: "show the transcription queue"; "what recordings are being transcribed"; "open transcriptions on this computer".
 - **Word Count (Ctrl+Shift+G).** Say how many words the document has.
   Say: "how many words is this"; "how long is this document"; "count the words".
 - **Word Summary (Ctrl+Alt+Shift+[).** The full statistics: words, sentences, paragraphs and more.
@@ -204,7 +206,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ## QUILL Lite
 
-54 commands can be asked for in a sentence here.
+55 commands can be asked for in a sentence here.
 
 ### QUILL Lite: Edit
 
@@ -318,6 +320,8 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "turn the sounds off"; "stop the beeps"; "sounds back on".
 - **Spelling (F7).** Check the spelling of the document.
   Say: "check my spelling"; "run the spell checker"; "are there any spelling mistakes".
+- **Transcriptions on This Computer (Ctrl+Shift+PageUp).** Open the durable queue for recording transcriptions.
+  Say: "show the transcription queue"; "what recordings are being transcribed"; "open transcriptions on this computer".
 - **Word Count (Ctrl+Shift+G).** Say how many words the document has.
   Say: "how many words is this"; "how long is this document"; "count the words".
 - **Word Summary (Ctrl+Alt+Shift+[).** The full statistics: words, sentences, paragraphs and more.

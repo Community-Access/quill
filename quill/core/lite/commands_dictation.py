@@ -23,6 +23,9 @@ fails on any difference.
   is nothing either editor does in Word (Go Back), Notepad or WordPad; every
   function-key chord past F9 is taken, and Ctrl+Alt+Shift+F11 is a QuillVille
   launcher row.
+* **Ctrl+Shift+PageUp**, Transcriptions on This Computer: the occasional queue
+  monitor. Page navigation is free in the editor, and unlike Ctrl+Alt+PageUp it
+  does not take one of the show/hide examples that the family reserves.
 * **Ctrl+Shift+F11**, Switch Dictation Language (2026-10-05, dict.md question
   5): beside Ctrl+F11 and Shift+F11, so the dictation keys stay one family.
   Free in QUILL Lite; in QUILL it was Forget External Change Answers, a
@@ -58,6 +61,13 @@ DICTATION_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
         "Transcribe a &Recording...",
         "Shift+F5",
         "cmd_transcribe_audio_file",
+        "",
+    ),
+    (
+        "&Tools|&Dictation",
+        "Transcriptions on This &Computer...",
+        "Ctrl+Shift+PageUp",
+        "cmd_open_transcriptions",
         "",
     ),
     (

@@ -295,6 +295,11 @@ state and lists any installed Quillins read-only.
 
 - [ ] Announcement Backend: via Tools menu
 - [ ] Dictation Microphone: Tools > Speech > Dictation Microphone...
+- [ ] Transcriptions on This Computer: `Ctrl+Shift+PageUp`; also Tools > Speech >
+      Live Dictation in QUILL, Tools > Dictation in QUILL Lite, or File in QUILL
+      Transcribe. This is a modeless stock list: queued and running jobs can be
+      stopped, failed and stopped jobs can be retried, and a finished transcript
+      opens without replacing the current editor.
 - [ ] QUILL Whisperer Model Manager: via Tools menu
 - [ ] QUILL Whisperer Model Status: via Tools menu
 - [ ] QUILL Whisperer Provider Center: via Tools menu

@@ -21,6 +21,8 @@ listed separately and are never counted as code-complete.
 - PR #2072: 23 of 23 GitHub checks passed before merge.
 - Protected feed workflow run 45558506768 completed successfully.
 - PR #2073 merged all 11 signed per-app feeds and the signed index to `main`.
+- PR #2074 made this file authoritative, retired `complete.md`, and pinned
+  signed feed files to LF checkout bytes on Windows.
 
 ## Merge rule
 
@@ -42,41 +44,20 @@ dirty tree.
 - [ ] Build and inventory the shared Windows runtime, then run the skipped
       runtime-inventory gate.
 
-### 2. Durable transcription and conversion queue
+### 2. Durable Converter queue
 
-- [ ] Finish `D:\wt\transcribe-queue\quill\ui\transcription_queue_runtime.py`.
-- [ ] Replace the old in-memory runner in
-      `quill\ui\windows_dictation_transcribe.py`; do not leave duplicate
-      implementations.
-- [ ] Add the accessible, stock, modeless Transcriptions on This Computer
-      window.
-- [ ] Resume queued work at launch and safely suspend/requeue it at close.
-- [ ] Wire QUILL, QUILL Lite, and QUILL Transcribe commands.
-- [ ] Add durable named-set persistence and log UI.
 - [ ] Reuse the queue/set primitives in Converter.
 
-### 3. Highest-harm settings and data-loss defects
-
-- [ ] Portable backup rejects the wrong app and keeps its own startup folder.
-- [ ] Converter reports every settings write failure to Activity and offers
-      retry/open-folder behavior.
-- [ ] Malformed Inkwell and Weather settings survive as damaged copies with
-      usable defaults instead of breaking startup.
-- [ ] Radio publishes and adopts shared family settings without stale
-      snapshots.
-- [ ] Re-run settings persistence, malformed-file, and recovery tests across
-      the family.
-
-### 4. Merge-ready implementation trains
+### 3. Merge-ready implementation trains
 
 - [ ] Audit every remaining `D:\wt` worktree and open PR for:
       already merged/patch-equivalent code, actual unique fixes, conflicts,
       missing tests, and generated-doc drift.
 - [ ] Merge the larger coherent trains first:
-      settings, durable queues, GitHub/WordPress parity, then startup.
+      the remaining Converter queue, GitHub/WordPress parity, then startup.
 - [ ] Remove worktrees and branches only after their green commits are on main.
 
-### 5. GitHub and WordPress implementation parity
+### 4. GitHub and WordPress implementation parity
 
 - [ ] Finish the remaining GitHub implementation rows for both editors,
       including workspace/service handoffs and grounded assistance.
@@ -87,7 +68,7 @@ dirty tree.
 - [ ] Regenerate both PRDs, status pages, guides, HTML, and EPUB artifacts when
       implementation lands.
 
-### 6. Practice Site and runtime packaging
+### 5. Practice Site and runtime packaging
 
 - [ ] Bundle the missing `tools\wp-playground-cli` payload and make the
       runtime-inventory gate pass on a real staged runtime.
@@ -95,7 +76,7 @@ dirty tree.
 - [ ] Prove lesson markers reflect actual PHP seeding.
 - [ ] Complete reset/history/late-completion behavior tests.
 
-### 7. Diagnostics, AI clarity, and broad review
+### 6. Diagnostics, AI clarity, and broad review
 
 - [ ] Complete diagnostics follow-ups for regex timeout, reader bounds, fault
       ownership, relocation/shutdown queues, and modal cue callbacks.
@@ -105,7 +86,7 @@ dirty tree.
 - [ ] Continue the confirmed code-review defects; do not widen scope to
       speculative refactors.
 
-### 8. Startup speed, last
+### 7. Startup speed, last
 
 - [ ] Add a profile read before optional modules import.
 - [ ] In Notepad/minimal mode defer Rich Edit/TOM, AI, LSP, Scribe, dictation,

@@ -2428,19 +2428,30 @@ upgrades never lose offline speech. Only components QUILL is licensed to redistr
 are hosted this way (whisper.cpp is MIT, Kokoro Apache-2.0); license-unclear engines
 are not re-hosted, and ffmpeg is never re-hosted (it stays user-installed).
 
-**Audio-file transcription (`Shift+F5`, shared with QUILL Lite).** The
+**Audio-file transcription (`Shift+F5`, shared by QUILL, QUILL Lite and
+QUILL Transcribe).** The
 screen-reader-accessible chooser selects one or more supported recordings,
 language, speech model, timestamps, and spoken-command handling, and reports
-the recording length and estimated processing time before starting. A
-background worker processes queued recordings without changing the document
-in front. Each successful transcript is saved privately under the active
-user-data directory and linked from a completion notice in Notifications;
-activating the notice opens the result in the editor. The transcript is never
-inserted into the document that was open when work began, and there is no
-destination picker. Activity retains the outcome and failure reason. Stopping
-transcription cancels the active job and queued jobs; no document is changed.
-Local models keep audio on the computer, and an OpenAI model requires the
-explicit consent gate before audio is sent.
+the recording length and estimated processing time before starting. Recordings
+chosen together are one persisted named set. A background worker processes
+queued recordings without changing the document in front. Queue state is one
+atomic JSON record containing recording paths and non-secret choices, never
+transcript text or a credential. A short edit lock and a stale-checked runner
+lock let QUILL and QUILL Transcribe share one queue; QUILL Lite keeps its own
+private queue in its separate data root. Closing the owning app requeues its
+current job for the next start; queued local work resumes at launch. Safe Mode
+does not resume cloud work.
+
+Each successful transcript is saved privately under the active user-data
+directory and linked from a completion notice in Notifications; activating
+the notice opens the result in the editor. The transcript is never inserted
+into the document that was open when work began, and there is no destination
+picker. `Ctrl+Shift+PageUp` opens the stock, modeless **Transcriptions on This
+Computer** list, which can stop active or waiting work, retry failed or stopped
+jobs, open a finished transcript and forget a finished row without deleting its
+transcript. Activity retains the outcome and failure reason. Local models keep
+audio on the computer, and an OpenAI model requires the explicit consent gate
+before audio is sent.
 
 **Family-wide non-goals, recorded so they are not relitigated without new
 information.** **Telemetry of any kind** -- no Sentry, no PostHog, no counters.

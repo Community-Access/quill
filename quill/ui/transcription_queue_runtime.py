@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import itertools
-import os
 from pathlib import Path
 from typing import Any
 
@@ -16,19 +15,25 @@ from quill.core.windows_dictation.file_queue import (
     QUEUED,
     STOPPED,
     TRANSCRIBING,
-    TranscriptionJob,
-    TranscriptionQueue,
 )
+from quill.ui.transcription_queue_host import durable_host, safe_mode
 from quill.ui.transcription_queue_notices import (
     cancel_notice,
     queue_notice,
     report_notice_failure,
 )
+from quill.ui.transcription_queue_poll import after_lock
+from quill.ui.transcription_queue_poll import cancel as cancel_poll
+from quill.ui.transcription_queue_record import stored_job
+from quill.ui.transcription_queue_repository import repository_for
 from quill.ui.transcription_queue_state import (
     Entry,
     Result,
     RuntimeQueue,
     TranscriptPersistenceError,
+)
+from quill.ui.transcription_queue_state import (
+    runtime_queue as _runtime_queue,
 )
 
 _ids = itertools.count(1)
@@ -36,25 +41,7 @@ _ACTION = "Transcribe"
 _TASK = "dictation-transcribe-file"
 
 
-QUEUE = RuntimeQueue()
-_REPOSITORIES: dict[Path, TranscriptionQueue] = {}
 _HEARTBEATS: set[Path] = set()
-
-
-def _runtime_queue() -> RuntimeQueue:
-    # Tests replace the historical windows_dictation_transcribe._QUEUE object.
-    from quill.ui import windows_dictation_transcribe as public
-
-    return getattr(public, "_QUEUE", QUEUE)
-
-
-def repository_for(host: Any) -> TranscriptionQueue:
-    root = Path(host._dictation_data_dir()).resolve()  # type: ignore[attr-defined]
-    found = _REPOSITORIES.get(root)
-    if found is None:
-        found = TranscriptionQueue(root)
-        _REPOSITORIES[root] = found
-    return found
 
 
 def queue_text(host: Any | None = None) -> str:
@@ -67,23 +54,6 @@ def queue_text(host: Any | None = None) -> str:
         return ""
 
 
-def _stored_job(job: Any, host: Any, *, batch: str, cloud_approved: bool) -> TranscriptionJob:
-    return TranscriptionJob(
-        app=host._dictation_app_name(),  # type: ignore[attr-defined]
-        source_path=str(Path(job.path).resolve()),
-        model=str(job.model),
-        language=str(job.language),
-        timestamps=bool(job.timestamps),
-        obey_commands=bool(job.obey_commands),
-        remove_fillers=bool(job.remove_fillers),
-        dash=str(job.dash),
-        translate=bool(job.translate),
-        keywords=[str(word) for word in job.keywords],
-        cloud_approved=cloud_approved,
-        batch=batch,
-    )
-
-
 def enqueue_many(
     jobs: list[Any],
     host: Any,
@@ -94,10 +64,11 @@ def enqueue_many(
     """Persist several files once, then start the first and keep the rest queued."""
     if not jobs:
         return []
-    import uuid
-
-    batch = uuid.uuid4().hex if len(jobs) > 1 else ""
-    made = [_stored_job(job, host, batch=batch, cloud_approved=cloud_approved) for job in jobs]
+    host = durable_host(host)
+    batch = ""
+    if len(jobs) > 1:
+        batch = f"{jobs[0].path.name} plus {len(jobs) - 1} more"
+    made = [stored_job(job, host, batch=batch, cloud_approved=cloud_approved) for job in jobs]
     repository_for(host).add(made)
     runtime = _runtime_queue()
     entries = [
@@ -120,14 +91,23 @@ def enqueue_many(
 
 def stop(host: Any) -> tuple[int, bool]:
     """Cancel one host's current job and everything waiting for this process."""
+    requested = host
+    owner = durable_host(host)
     runtime = _runtime_queue()
-    waiting = [entry for entry in runtime.waiting if entry.host is host]
-    runtime.waiting = [entry for entry in runtime.waiting if entry.host is not host]
+    waiting = [entry for entry in runtime.waiting if entry.host is requested or entry.host is owner]
+    runtime.waiting = [
+        entry
+        for entry in runtime.waiting
+        if entry.host is not requested and entry.host is not owner
+    ]
     for entry in waiting:
         _persist_stop(entry, "Stopped waiting.")
         cancel_notice(entry)
     current = (
-        runtime.current if runtime.current is not None and runtime.current.host is host else None
+        runtime.current
+        if runtime.current is not None
+        and (runtime.current.host is requested or runtime.current.host is owner)
+        else None
     )
     if current is not None:
         current.cancel.set()
@@ -138,6 +118,15 @@ def stop(host: Any) -> tuple[int, bool]:
 
 
 def retry(job_id: str, host: Any) -> bool:
+    runtime = _runtime_queue()
+    if any(
+        entry.queue_job is not None and entry.queue_job.id == job_id
+        for entry in [
+            *runtime.waiting,
+            *(([runtime.current]) if runtime.current else []),
+        ]
+    ):
+        return False
     if not repository_for(host).retry(job_id):
         return False
     resume(host)
@@ -164,60 +153,73 @@ def cancel_waiting(job_id: str, host: Any) -> bool:
     return True
 
 
-def _safe_mode(host: Any) -> bool:
-    return bool(
-        os.environ.get("QUILL_SAFE_MODE") or getattr(host, "_safe_mode", False)  # type: ignore[arg-type]
-    )
-
-
 def resume(host: Any) -> int:
     """Recover interrupted jobs and start the next one when this app may own the runner."""
+    host = durable_host(host)
     repository = repository_for(host)
     if not repository.try_acquire(host._dictation_app_name()):  # type: ignore[attr-defined]
+        after_lock(host, repository.path, resume)
         return 0
-    repository.recover_interrupted()
-    jobs = [job for job in repository.jobs() if job.state in ACTIVE]
-    if not jobs:
-        repository.release()
-        return 0
+    cancel_poll(repository.path)
     runtime = _runtime_queue()
     known = {
         entry.queue_job.id
         for entry in [*runtime.waiting, *(([runtime.current]) if runtime.current else [])]
         if entry.queue_job is not None
     }
+    repository.recover_interrupted(excluding=known)
+    jobs = [job for job in repository.jobs() if job.state in ACTIVE]
+    if not jobs:
+        repository.release()
+        return 0
     added = 0
     for stored in jobs:
         if stored.id in known:
             continue
-        if stored.model.startswith("openai:") and (not stored.cloud_approved or _safe_mode(host)):
+        if stored.model.startswith("openai:") and (not stored.cloud_approved or safe_mode(host)):
             repository.update(
                 stored.id,
                 message="Waiting for a cloud transcription consent outside Safe Mode.",
             )
             continue
-        entry = Entry(stored.file_job(), host, queue_job=stored)
+        rewrite = getattr(host, "_dictation_file_rewrite", None)
+        entry = Entry(
+            stored.file_job(),
+            host,
+            rewrite=rewrite() if callable(rewrite) else None,
+            queue_job=stored,
+        )
         runtime.waiting.append(entry)
         added += 1
     if runtime.current is None and runtime.waiting:
         _start_next()
-    _schedule_heartbeat(host)
+    if runtime.current is None and not runtime.waiting:
+        _HEARTBEATS.discard(repository.path)
+        repository.release()
+    if runtime.current is not None:
+        _schedule_heartbeat(host)
     return added
 
 
 def suspend(host: Any) -> None:
     """Requeue current work while an app closes, so the next app can carry on."""
+    requested = host
+    host = durable_host(host)
     runtime = _runtime_queue()
     repository = repository_for(host)
     current = runtime.current
-    if current is not None and current.host is host:
+    if current is not None and (current.host is requested or current.host is host):
         current.suspended = True
         current.cancel.set()
         if current.queue_job is not None:
             repository.requeue(current.queue_job.id, "Will carry on after the next start")
-    runtime.waiting = [entry for entry in runtime.waiting if entry.host is not host]
-    if current is not None and current.host is host:
+    runtime.waiting = [
+        entry for entry in runtime.waiting if entry.host is not requested and entry.host is not host
+    ]
+    if current is not None and (current.host is requested or current.host is host):
         runtime.current = None
+    _HEARTBEATS.discard(repository.path)
+    cancel_poll(repository.path)
     repository.release()
 
 
@@ -231,6 +233,8 @@ def _schedule_heartbeat(host: Any) -> None:
         return
 
     def beat() -> None:
+        if repository.path not in _HEARTBEATS:
+            return
         if repository.try_acquire(host._dictation_app_name()):  # type: ignore[attr-defined]
             try:
                 call_later(10000, beat)
@@ -264,7 +268,7 @@ def _start_next() -> None:
     repository = repository_for(host)
     if entry.queue_job is None:
         [stored] = [
-            _stored_job(entry.job, host, batch="", cloud_approved=False),
+            stored_job(entry.job, host, batch="", cloud_approved=False),
         ]
         repository.add([stored])
         entry.queue_job = stored
@@ -275,6 +279,8 @@ def _start_next() -> None:
             entry.queue_job.id, state=QUEUED, message="Another QUILL app is running it"
         )
         return
+    stored = repository.get(entry.queue_job.id)
+    attempts = (stored.attempts if stored is not None else entry.queue_job.attempts) + 1
     repository.update(
         entry.queue_job.id,
         state=TRANSCRIBING,
@@ -282,6 +288,7 @@ def _start_next() -> None:
         message="Preparing recording",
         started_at=repository._clock(),
         finished_at=0.0,
+        attempts=attempts,
     )
     from quill.core import activity
 
@@ -497,12 +504,13 @@ def _finish(entry: Entry, transcript: Any, error: BaseException | None) -> None:
     result = transcript if has_worker_result else Result(transcript, error)
     transcript = result.transcript
     error = result.error
-    if entry.suspended:
-        if entry.queue_job is not None:
-            repository_for(host).requeue(entry.queue_job.id, "Will carry on after the next start")
+    if entry.suspended and isinstance(error, TranscriptionCancelled):
         _start_next()
         return
     _persist_terminal(entry, result, error)
+    if entry.suspended:
+        _start_next()
+        return
     if isinstance(error, TranscriptionCancelled):
         if not has_worker_result:
             report_notice_failure(
@@ -568,7 +576,9 @@ def _finish(entry: Entry, transcript: Any, error: BaseException | None) -> None:
         _start_next()
         if runtime.current is None:
             try:
-                repository_for(host).release()
+                repository = repository_for(host)
+                _HEARTBEATS.discard(repository.path)
+                repository.release()
             except OSError:
                 pass
 

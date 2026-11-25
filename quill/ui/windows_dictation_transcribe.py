@@ -36,7 +36,6 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
-from uuid import uuid4
 
 import wx
 
@@ -206,6 +205,12 @@ class DictationTranscribeMixin:
             path=self._dictation_notification_path(),
         )
 
+    def cmd_open_transcriptions(self) -> None:
+        """Open the durable queue and saved transcripts for this computer."""
+        from quill.ui.transcription_queue_window import open_transcriptions
+
+        open_transcriptions(self)
+
     def open_notification_target(self, target: str) -> None:
         """Open a saved dictation transcript only after its notice is activated."""
         prefix = "dictation-transcript:"
@@ -226,12 +231,9 @@ class DictationTranscribeMixin:
         self._dictation_open_transcript(path)
 
     def _dictation_save_transcript(self, text: str) -> str:
-        from quill.core.storage import write_text_atomic
+        from quill.ui.transcription_queue_host import save_transcript
 
-        identifier = uuid4().hex
-        path = self._dictation_data_dir() / "dictation" / "transcripts" / f"{identifier}.txt"
         try:
-            write_text_atomic(path, text, encoding="utf-8", newline="")
+            return save_transcript(self._dictation_data_dir(), text)
         except Exception as error:
             raise _TranscriptPersistenceError(str(error)) from error
-        return identifier

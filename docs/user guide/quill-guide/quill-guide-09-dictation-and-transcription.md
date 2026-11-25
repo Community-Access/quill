@@ -2568,7 +2568,8 @@ your phone, an interview, a lecture, a meeting somebody recorded for you.
 the same speech engines as Live Dictation: the two built in, any you
 downloaded, or OpenAI with your own key. It works in the background, so you
 can keep writing while it listens, and it tells you when it is done. It is
-the same command, with the same window and the same key, in QUILL Lite.
+the same command, with the same window and the same key, in QUILL Lite and
+QUILL Transcribe.
 
 How it differs from the other two ways in this section: it needs nothing
 downloaded and no ffmpeg, because it uses the models dictation already has
@@ -2612,6 +2613,28 @@ Transcribe Audio File is the one for Transcript Actions such as meeting minutes.
    stays in Notifications so you can open the result later.
 
 That is all there is to it. The rest of this section explains the choices.
+
+#### The transcription queue
+
+Choose more than one recording and they run one after another. Their queue is
+kept on this computer, not in the document and not in your cloud account.
+Press **Ctrl+Shift+PageUp**, or choose **Transcriptions on This Computer** from
+the same Dictation menu, to open a modeless stock list. It shows the recording,
+state, progress, set and last message. From there you can open a finished
+transcript, stop active work, retry a failed or stopped recording, or forget a
+finished row. Forgetting the row does not delete a transcript that was saved.
+
+Queued work survives a restart. QUILL, QUILL Lite and QUILL Transcribe use the
+queue for their data folder, and only one of the apps sharing it runs a
+recording at a time. If you close the app that is transcribing, the current job
+goes back to the front of the queue for the next start. If another app is
+already doing the work, the list shows it but this app does not start a second
+copy. The queue stores recording paths and transcription choices only; it never
+stores the transcript, an API key or document text.
+
+OpenAI recordings still need the explicit consent given when they were queued.
+Safe Mode does not resume a cloud transcription. Local speech models continue
+only on this computer.
 
 #### What the text looks like
 

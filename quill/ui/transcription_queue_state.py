@@ -57,4 +57,20 @@ class Result:
     output_path: str = ""
 
 
-__all__ = ["Entry", "Result", "RuntimeQueue", "TranscriptPersistenceError"]
+QUEUE = RuntimeQueue()
+
+
+def runtime_queue() -> RuntimeQueue:
+    # Tests replace the historical windows_dictation_transcribe._QUEUE object.
+    from quill.ui import windows_dictation_transcribe as public
+
+    return getattr(public, "_QUEUE", QUEUE)
+
+
+__all__ = [
+    "Entry",
+    "Result",
+    "RuntimeQueue",
+    "TranscriptPersistenceError",
+    "runtime_queue",
+]

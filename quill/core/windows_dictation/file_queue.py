@@ -14,7 +14,7 @@ import os
 import threading
 import time
 import uuid
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Collection, Iterator
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
@@ -238,10 +238,12 @@ class TranscriptionQueue:
             self._write(jobs)
             return found
 
-    def recover_interrupted(self) -> list[TranscriptionJob]:
+    def recover_interrupted(self, *, excluding: Collection[str] = ()) -> list[TranscriptionJob]:
         with self._editing():
             jobs = self._jobs_unlocked()
-            recovered = [job for job in jobs if job.state == TRANSCRIBING]
+            recovered = [
+                job for job in jobs if job.state == TRANSCRIBING and job.id not in excluding
+            ]
             for job in recovered:
                 job.state = QUEUED
                 job.progress = 0.0
@@ -264,22 +266,32 @@ class TranscriptionQueue:
         return job is not None
 
     def retry(self, job_id: str) -> bool:
-        job = self.get(job_id)
-        if job is None or job.state not in {FAILED, STOPPED}:
-            return False
-        return self.requeue(job_id, "Queued to try again")
+        with self._editing():
+            jobs = self._jobs_unlocked()
+            found = next((job for job in jobs if job.id == job_id), None)
+            if found is None or found.state not in {FAILED, STOPPED}:
+                return False
+            found.state = QUEUED
+            found.progress = 0.0
+            found.message = "Queued to try again"
+            found.output_id = ""
+            found.output_path = ""
+            found.started_at = 0.0
+            found.finished_at = 0.0
+            self._write(jobs)
+            return True
 
     def stop(self, job_id: str, message: str = "Stopped") -> bool:
-        job = self.get(job_id)
-        if job is None or job.state in FINISHED:
-            return False
-        changed = self.update(
-            job_id,
-            state=STOPPED,
-            message=message,
-            finished_at=self._clock(),
-        )
-        return changed is not None
+        with self._editing():
+            jobs = self._jobs_unlocked()
+            found = next((job for job in jobs if job.id == job_id), None)
+            if found is None or found.state in FINISHED:
+                return False
+            found.state = STOPPED
+            found.message = message
+            found.finished_at = self._clock()
+            self._write(jobs)
+            return True
 
     def remove(self, job_id: str) -> bool:
         with self._editing():

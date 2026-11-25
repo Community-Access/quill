@@ -1085,6 +1085,7 @@
   "quill/ui/transcript_reader.py::TranscriptReader.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/transcript_reader.py::TranscriptReader._ask_for_query::wx.TextEntryDialog": "native",
   "quill/ui/transcript_reader.py::TranscriptReader.save_as::wx.FileDialog": "native",
+  "quill/ui/transcription_queue_window.py::TranscriptionsWindow::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/translated_speech_export_dialog.py::TranslatedSpeechExportDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/translated_speech_runner.py::_prompt_output_folder::wx.DirDialog": "native",
   "quill/ui/undo_history_dialog.py::show_undo_history::wx.Dialog": "hardened_custom",

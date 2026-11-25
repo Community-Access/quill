@@ -49,6 +49,8 @@ SHARED_COMMANDS: dict[str, str] = {
     "tools.windows_dictation_switch_language": "switch_dictation_language",
     # Shift+F5: a recording into text, with dictation's models.
     "tools.windows_dictation_transcribe_file": "transcribe_a_recording",
+    # Ctrl+Shift+PageUp: durable queued, running, failed and saved recordings.
+    "tools.windows_dictation_transcriptions": "cmd_open_transcriptions",
     # Next Phrase Is a Dictation Command (D-1), with no key since F11 became the
     # Command Key (command-key.md decision 5). The next thing said is a command; twice,
     # command mode. In another program the system-wide Command Key, empty until

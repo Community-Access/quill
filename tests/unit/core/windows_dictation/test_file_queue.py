@@ -63,9 +63,19 @@ def test_progress_failure_retry_and_stop_are_read_back(tmp_path: Path) -> None:
     assert queue.claim_next().id == job.id
     queue.update(job.id, progress=0.42, message="Transcribing: 42 percent")
     assert queue.get(job.id).progress == 0.42
-    assert queue.update(job.id, state=FAILED, message="The model stopped") is not None
+    assert (
+        queue.update(
+            job.id,
+            state=FAILED,
+            message="The model stopped",
+            output_id="partial",
+            output_path="partial.txt",
+        )
+        is not None
+    )
     assert queue.retry(job.id)
     assert queue.get(job.id).state == QUEUED
+    assert queue.get(job.id).output_id == queue.get(job.id).output_path == ""
     assert queue.stop(job.id, "No longer wanted")
     assert queue.get(job.id).state == STOPPED
     assert queue.retry(job.id)
