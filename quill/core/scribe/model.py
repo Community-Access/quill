@@ -358,7 +358,7 @@ class Output:
             # Pneuma contract, 2026-11-25: REST MP3 speech output only, a whole
             # number of milliseconds. Unknown is always null; zero can mean
             # "almost done" while the row still runs.
-            eta_seconds = round(eta / 1000)
+            eta_seconds = (eta + 500) // 1000
         return cls(
             format=format_id,
             stage=stage,

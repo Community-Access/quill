@@ -208,6 +208,7 @@ def test_output_eta_follows_the_pneuma_contract() -> None:
     assert eta(estimated_time_remaining=1.5) is None
     assert eta(format="daisy", estimated_time_remaining=91_000) is None
     assert eta(stage="complete", estimated_time_remaining=91_000) is None
+    assert eta(estimated_time_remaining=10**1000) == (10**1000 + 500) // 1000
 
 
 # --------------------------------------------------------------- channel
