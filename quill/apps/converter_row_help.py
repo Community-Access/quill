@@ -69,11 +69,15 @@ def _split_sentence(items: list[Any]) -> str:
 
 def describe_selected_row(host: Any) -> str:
     """The selected queue row's last result, or "" when it was not in the last run."""
+    from quill.core import converter_queue
+
     results: dict[Path, list[Any]] = getattr(host, "_last_results", {}) or {}
     index = host._list.GetSelection()
-    if not results or not 0 <= index < len(host._entries):
+    if not 0 <= index < len(host._entries):
         return ""
-    entry = Path(host._entries[index][0])
+    raw = host._entries[index]
+    row = converter_queue.as_entry(raw)
+    entry = row.source
     inside = [
         item for source, items in results.items() if entry in source.parents for item in items
     ]
@@ -82,4 +86,13 @@ def describe_selected_row(host: Any) -> str:
     own = results.get(entry, [])
     if len(own) > 1:
         return _split_sentence(own)
-    return _file_sentence(own[0]) if own else ""
+    if own:
+        return _file_sentence(own[0])
+    if isinstance(raw, converter_queue.ConverterQueueEntry) and not row.available:
+        reason = "is missing" if row.missing else "is no longer the same kind of item"
+        kind = "folder" if row.is_folder else "file"
+        return (
+            f"This queued {kind} {reason}. It remains in the queue; remove it or "
+            "make the drive or file available again."
+        )
+    return ""

@@ -176,7 +176,7 @@ PRODUCTS: tuple[ReleaseProduct, ...] = (
         True,
         "standalone/converter",
         True,
-        ("converter.json",),
+        ("converter.json", "converter-queue.json"),
         release_menu_file="quill/apps/converter_menu.py",
     ),
     ReleaseProduct(

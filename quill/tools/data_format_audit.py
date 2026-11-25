@@ -106,6 +106,12 @@ PROBES: dict[str, tuple[str, ...]] = {
         "function:quill.core.converter_settings:save",
         "constant:quill.core.converter_settings:SCHEMA",
     ),
+    "converter.queue": (
+        "dataclass:quill.core.converter_queue:ConverterQueueEntry",
+        "function:quill.core.converter_queue:ConverterQueueStore.save",
+        "function:quill.core.converter_queue:ConverterQueueStore._write",
+        "constant:quill.core.converter_queue:SCHEMA",
+    ),
     "studio.settings": (
         "dataclass:quill.core.audio_studio.ai_settings:StudioAiSettings",
         "function:quill.core.audio_studio.ai_settings:save_ai_settings",

@@ -373,7 +373,9 @@ the list, which reads “Nothing to convert yet. Add Files (Ctrl+O)
 chooses audio or video files, or Add Folder (Ctrl+Shift+O) brings a
 whole folder.” The line goes away as soon as something is in the queue;
 after that, Quill Converter opens on the <strong>Files to
-convert</strong> list.</li>
+convert</strong> list. On later starts, the files and folders you left
+in that list are already there, in the same order; opening the app never
+starts a conversion.</li>
 <li>Press Alt+A (<strong>Add Files…</strong>) and choose one or more
 files. Or press Alt+O (<strong>Add Folder…</strong>) to add a whole
 folder, sub-folders included. You can also paste files you copied in
@@ -422,12 +424,16 @@ href="#advanced-options">Advanced Options</a>.</p>
 <p>Quill Converter remembers your format, presets, effects, custom
 effects, the keep-from and keep-until times, the Chapter marks choice,
 the Advanced Options, and the output folder between runs, so the next
-job starts where the last one ended.</p>
+job starts where the last one ended. The editable queue is kept
+separately, with each file or folder and its original folder root, so
+queue work survives restarting the app without being mixed into
+settings.</p>
 <h3 id="the-main-window">The main window</h3>
 <p>Tab order, top to bottom, with each control’s access key:</p>
 <ul>
 <li><strong>Files to convert</strong> – the queue (focus starts here). A
-folder reads as “name (folder)”.</li>
+folder reads as “name (folder)”. A disconnected or moved item stays in
+the list as “(missing)” and can still be removed.</li>
 <li><strong>Add Files…</strong> (Alt+A), <strong>Add Folder…</strong>
 (Alt+O), <strong>Remove</strong> (Alt+R).</li>
 <li><strong>Convert to</strong> (Alt+T) – the output format. Sound
@@ -949,7 +955,9 @@ queue</h2>
 <p>The queue is the list of files waiting to be converted. This chapter
 covers filling it and ordering it, editing tags, what happens during and
 after a conversion, and the Advanced Options for when a preset is not
-quite right.</p>
+quite right. Closing Quill Converter does not clear it: add, reorder,
+remove and clear changes are written locally, and the same editable list
+returns at the next launch. Nothing in that list starts by itself.</p>
 <h3 id="managing-the-queue">Managing the queue</h3>
 <ul>
 <li><strong>Add files:</strong> Alt+A, or File &gt; Add Files…
@@ -968,6 +976,15 @@ row.</li>
 deleted from disk.</li>
 <li><strong>Clear the queue:</strong> Queue &gt; Clear Queue
 (Ctrl+Shift+Delete).</li>
+<li><strong>Keep working after a missing path:</strong> if a file is
+moved or a drive is disconnected, its row says “missing” instead of
+disappearing. The row can be removed, reordered or cleared; reconnect
+the drive or move the path back and the row is usable again.</li>
+<li><strong>When the queue cannot be saved:</strong> the files remain
+active in the open window. Help &gt; Activity (Shift+F9) records the
+write failure with <strong>Retry</strong> and <strong>Open
+Folder</strong>. Retry saves the queue as it is now, including changes
+made after the first failure.</li>
 <li><strong>File Properties:</strong> Alt+Enter describes the
 highlighted file: its length, size, container, overall bit rate, tags,
 each video, audio and subtitle track, whether it has cover art, and its
@@ -986,7 +1003,9 @@ everything else still shows. The window only reads; nothing on the drive
 changes.</li>
 </ul>
 <p>Adding the same file twice queues it once. A file that is not a media
-file is left out, and the announcement says how many were.</p>
+file is left out, and the announcement says how many were. Queue
+persistence is local only: it makes no network request, and in Safe Mode
+it has the same no-start behaviour as an ordinary launch.</p>
 <h3 id="editing-tags">Editing tags</h3>
 <p><strong>Queue &gt; Edit Tags…</strong> (Ctrl+T) opens the Tag Editor
 on the highlighted file: the same editor Audio Studio uses, built into

@@ -126,9 +126,10 @@ resolve in git history, `ear.md` was never committed and is summarised in the
 Cast PRD (section 23.25), and the open screen-reader checks moved to
 `docs/qa/screen-reader-checks-2026-10.md`. Likewise `wp_missing.md`, `complete2.md`, `how.md`, and the retired root
 `complete.md` resolve in git history (the walkthrough moved to
-`docs/design/wordpress-ux-walkthrough.md`). The root `report.md` is the one
-current list of implementation work and overnight status; completed rows are
-removed as they land on main, while human/live acceptance remains separate.
+`docs/design/wordpress-ux-walkthrough.md`). The root `report.md` is the current
+list of implementation and release-engineering work; completed rows are
+removed as they land on main. Human/live acceptance and external confirmations
+live in the root `report2.md`.
 Unlike those, `codex.md <section>`
 citations (the AI plan of record: Choose Your AI, Ask, the agents) resolve on
 disk, in `docs/design/codex.md`, as do `code.md <section>` citations (agentic

@@ -20,6 +20,7 @@ from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 from typing import Any
 
+from quill.core import file_lock
 from quill.core.storage import read_json, write_json_atomic
 
 QUEUED = "queued"
@@ -157,28 +158,16 @@ class TranscriptionQueue:
 
     @contextmanager
     def _editing(self) -> Iterator[None]:
-        self.folder.mkdir(parents=True, exist_ok=True)
         with self._local:
-            deadline = time.monotonic() + 5.0
-            while True:
-                try:
-                    handle = os.open(self._edit_lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-                    os.close(handle)
-                    break
-                except FileExistsError:
-                    try:
-                        if self._clock() - self._edit_lock.stat().st_mtime > _EDIT_STALE_SECONDS:
-                            self._edit_lock.unlink(missing_ok=True)
-                            continue
-                    except OSError:
-                        pass
-                    if time.monotonic() >= deadline:
-                        raise TimeoutError("the transcription queue is busy") from None
-                    time.sleep(0.01)
-            try:
+            with file_lock.guarded_write(
+                self.path,
+                timeout_s=5.0,
+                lock_path=self._edit_lock,
+                stale_after_s=_EDIT_STALE_SECONDS,
+                clock=self._clock,
+                require_lock=True,
+            ):
                 yield
-            finally:
-                self._edit_lock.unlink(missing_ok=True)
 
     def _read(self) -> dict[str, Any]:
         data = read_json(self.path, {"version": SCHEMA_VERSION, "jobs": []})
@@ -191,7 +180,7 @@ class TranscriptionQueue:
     def _write(self, jobs: list[TranscriptionJob]) -> None:
         data = self._read()
         body = dict(data)
-        if not isinstance(body.get("version"), int):
+        if type(body.get("version")) is not int:
             body["version"] = SCHEMA_VERSION
         body["jobs"] = [job.to_mapping() for job in jobs]
         write_json_atomic(self.path, body)

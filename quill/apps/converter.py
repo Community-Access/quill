@@ -38,7 +38,7 @@ from quill.apps.converter_ai import ConverterAiMixin
 from quill.apps.converter_auphonic import ConverterAuphonicMixin
 from quill.apps.converter_chapters import ConverterChaptersMixin
 from quill.apps.converter_url import ConverterUrlMixin
-from quill.core import converter_settings, http_client
+from quill.core import converter_queue, converter_settings, http_client
 from quill.core.audio.chapter_plan import CHAPTER_SOURCES
 from quill.core.audio.convert import available_output_formats
 from quill.core.audio.effect_recipes import recipe_choices
@@ -98,8 +98,11 @@ class QuillConverterFrame(
         from quill.ui.window_menu import WindowManager
 
         self._windows = WindowManager(wx)
-        self._entries: list[tuple[Path, Path | None]] = []
         self._settings = converter_settings.load()
+        self._queue_store = converter_queue.ConverterQueueStore(
+            converter_settings.settings_path().parent
+        )
+        self._entries = self._queue_store.load()
         self._busy = False
         self._cancel: Any = None
         self._milestone = 0
@@ -405,10 +408,10 @@ class QuillConverterFrame(
         converter_first_task.reload(self, select=select)
 
     def _add_entry(self, path: Path, *, is_folder: bool) -> bool:
-        pair = (path, path if is_folder else None)
-        if pair in self._entries:
+        entry = converter_queue.ConverterQueueEntry(path, path if is_folder else None)
+        if entry in self._entries:
             return False
-        self._entries.append(pair)
+        self._entries.append(entry)
         return True
 
     def add_paths(self, paths: list[Path], *, announce: bool = True) -> None:
@@ -421,7 +424,9 @@ class QuillConverterFrame(
                 added += self._add_entry(path, is_folder=False)
             else:
                 skipped.append(path)
-        if added or paths:
+        if added:
+            self._queue_store.save(lambda: self._entries)
+        if added or paths or self._entries:
             self._reload()
         if announce:
             note = self._scribe_left_out(skipped)  # a document says where documents go (8.4)
@@ -454,9 +459,7 @@ class QuillConverterFrame(
         ) as picker:
             if picker.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
                 return
-            for raw in picker.GetPaths():
-                self._add_entry(Path(raw), is_folder=False)
-        self._reload()
+            self.add_paths([Path(raw) for raw in picker.GetPaths()], announce=False)
 
     def _on_add_folder(self, _event: Any) -> None:
         with wx.DirDialog(
@@ -464,14 +467,14 @@ class QuillConverterFrame(
         ) as picker:
             if picker.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
                 return
-            self._add_entry(Path(picker.GetPath()), is_folder=True)
-        self._reload()
+            self.add_paths([Path(picker.GetPath())], announce=False)
 
     def _on_remove(self, _event: Any) -> None:
         index = self._list.GetSelection()
         if index != wx.NOT_FOUND and 0 <= index < len(self._entries):
-            name = self._entries[index][0].name
+            name = converter_queue.as_entry(self._entries[index]).source.name
             del self._entries[index]
+            self._queue_store.save(lambda: self._entries)
             self._reload(select=index)
             self._announce(f"Removed {name}. {len(self._entries)} left.")
 
@@ -480,6 +483,7 @@ class QuillConverterFrame(
             self._announce("Stop the conversion before clearing the queue.")
             return
         self._entries.clear()
+        self._queue_store.save(lambda: self._entries)
         self._reload()
         self._announce("Queue cleared.")
 
@@ -489,6 +493,7 @@ class QuillConverterFrame(
         if index == wx.NOT_FOUND or not 0 <= target < len(self._entries):
             return
         self._entries[index], self._entries[target] = self._entries[target], self._entries[index]
+        self._queue_store.save(lambda: self._entries)
         self._reload(select=target)
         self._announce(f"Moved to position {target + 1} of {len(self._entries)}.")
 
