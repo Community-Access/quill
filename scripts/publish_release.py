@@ -76,6 +76,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from quill.core.release_tags import next_build  # noqa: E402
+from quill.core.updater.feed import ReleaseFeed  # noqa: E402
 from quill.core.updater.feed_publish import (  # noqa: E402
     formats_for_build,
     list_release,
@@ -88,6 +89,7 @@ from quill.tools import release_feed as rf  # noqa: E402
 
 #: Is this release file Authenticode-signed throughout? (code_signing.asset_is_signed)
 Authenticode = Callable[[Path], bool]
+FeedPreview = Callable[[ReleaseFeed], None]
 
 
 def _asset_is_signed(path: Path) -> bool:
@@ -206,6 +208,7 @@ def run(
     seed_reader: Callable[[Path | None], bytes] = rf.read_seed,
     out: Callable[[str], None] = print,
     authenticode: Authenticode = _asset_is_signed,
+    feed_preview: FeedPreview | None = None,
 ) -> int:
     args = build_parser().parse_args(argv)
     moment = now or datetime.now(UTC)
@@ -323,6 +326,8 @@ def run(
             feed = refresh(replace(feed, releases=keep), moment)
 
     if args.dry_run:
+        if feed_preview is not None:
+            feed_preview(feed)
         out(f"Dry run: {args.app} {version} would be listed on {args.channel}.")
         return 0
     seed = None if args.no_sign else seed_reader(args.key_file)

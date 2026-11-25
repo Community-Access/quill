@@ -169,6 +169,7 @@ secret `QUILL_FEED_SIGNING_KEY`. Only these trusted jobs receive it:
 
 - `release-feeds.yml`, for the initial all-app bootstrap or expiry refresh;
 - `promote-release.yml`, after Beta or Stable promotion approval;
+- `release-feed-batch.yml`, for one owner-approved, all-app Dev-to-Beta batch;
 - the compatibility v1 signing step in `windows-release.yml`.
 
 Each job runs in an owner-approved environment. The script reads the secret in
@@ -441,6 +442,36 @@ python scripts/publish_release.py --app radio --version 3.3.1-dev.20261003.1 --c
 ```
 
 A good Dev build can go to Beta as-is: `promote_release.py --to beta`.
+
+To move one complete catalogue-driven Dev run, identified by the exact
+40-character `main` commit written into all eleven release bodies, first run
+the unprotected dry-run path:
+
+```powershell
+python scripts/promote_release_batch.py --sha 0123456789abcdef0123456789abcdef01234567 --dry-run `
+    --report release-feed-batch-report.md
+```
+
+The tool derives every app from the release catalogue, refuses missing,
+duplicate or mismatched releases, and invokes the existing list and promotion
+checks without writing a feed. The Dev release's publication time is the start
+of its one-day soak. Supply `--skip-soak "reason"` only when that wait is being
+deliberately bypassed; the reason is recorded in every feed history entry.
+
+Run **release-feed-batch** from `main` for the protected write. Its unprotected
+preflight has no signing key. With `dry_run=false`, the
+`release-feed-signing` environment delivers `QUILL_FEED_SIGNING_KEY`, lists and
+promotes the eleven apps sequentially, verifies every signed feed and the
+index, and opens one pull request containing all feed updates plus
+`docs/release/promotions.log`. The real job uses the existing
+`DEV_BUILDS_TOKEN` only for the Dev release's required licence-file upload; the
+main-repository pull request still uses the workflow token. No private key is
+restored to a workstation.
+
+```powershell
+gh workflow run release-feed-batch.yml -f sha=0123456789abcdef0123456789abcdef01234567 -f dry_run=true
+gh workflow run release-feed-batch.yml -f sha=0123456789abcdef0123456789abcdef01234567 -f dry_run=false
+```
 
 ### Withdrawing a build
 

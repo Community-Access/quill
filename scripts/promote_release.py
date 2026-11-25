@@ -69,6 +69,7 @@ from quill.tools import release_feed as rf  # noqa: E402
 DocsGate = Callable[[], bool]
 #: Is this release file Authenticode-signed throughout? (code_signing.asset_is_signed)
 Authenticode = Callable[[Path], bool]
+FeedPreview = Callable[[ReleaseFeed], None]
 
 
 def _asset_is_signed(path: Path) -> bool:
@@ -108,8 +109,9 @@ def gather_checks(
     now: datetime,
     docs_gate: DocsGate,
     authenticode: Authenticode = _asset_is_signed,
+    feed_override: ReleaseFeed | None = None,
 ) -> tuple[ReleaseFeed, list[Check]]:
-    feed = rf.load_feed(args.app, root)
+    feed = feed_override or rf.load_feed(args.app, root)
     siblings = {key: rf.load_feed(key, root) for key in rf.APPS if key != args.app}
     checks = promotion_checks(
         feed,
@@ -211,11 +213,19 @@ def run(
     docs_gate: DocsGate = _docs_gate,
     out: Callable[[str], None] = print,
     authenticode: Authenticode = _asset_is_signed,
+    feed_override: ReleaseFeed | None = None,
+    feed_preview: FeedPreview | None = None,
 ) -> int:
     args = build_parser().parse_args(argv)
     moment = now or datetime.now(UTC)
     feed, checks = gather_checks(
-        args, gh=gh, root=root, now=moment, docs_gate=docs_gate, authenticode=authenticode
+        args,
+        gh=gh,
+        root=root,
+        now=moment,
+        docs_gate=docs_gate,
+        authenticode=authenticode,
+        feed_override=feed_override,
     )
     lines = [check.line() for check in checks]
     for line in lines:
@@ -228,6 +238,17 @@ def run(
         return 1
     rolled = _rolled_up(args, feed, root, out)
     if args.dry_run:
+        if feed_preview is not None:
+            feed_preview(
+                promote(
+                    feed,
+                    args.version,
+                    args.to,
+                    now=moment,
+                    skip_soak_reason=args.skip_soak,
+                    notes_summary=notes_summary(rolled) if rolled else "",
+                )
+            )
         out(f"Dry run: every check passed; {args.app} {args.version} can go to {args.to}.")
         return 0
     if args.notes_file:
