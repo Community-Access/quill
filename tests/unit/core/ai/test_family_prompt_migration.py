@@ -222,7 +222,7 @@ def test_quill_lite_runs_it_at_startup_while_its_ai_area_is_on(
     app.on = False
     app._start_family_prompt_migration()
     assert submitted == [fpm.TASK_NAME]
-    source = (Path(__file__).resolve().parents[4] / "quill/apps/lite.py").read_text(
+    source = (Path(__file__).resolve().parents[4] / "quill/apps/lite_startup.py").read_text(
         encoding="utf-8"
     )
     assert "self._start_family_prompt_migration()" in source
