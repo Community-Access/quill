@@ -1211,8 +1211,7 @@ class MainFrame(
         apply_window_geometry(self.frame, "quill", default_size=dip_size(self.frame, 1000, 700))
         # Radio/podcast player controllers parent themselves on self.frame, so
         # they must be built after the frame exists (AttributeError otherwise).
-        self._init_radio()
-        self._init_podcasts()
+        self._ensure_profile_feature_runtime()
         self._init_media_sleep_timer()
         self._suggest_popup()  # the Word Prediction list (quill/ui/suggestion_list.py)
         self._tab_control_visible = bool(self.settings.show_tab_control)
@@ -1349,6 +1348,11 @@ class MainFrame(
         # had not yet created the default tab) are flushed now so contextual
         # menu items reflect the active document.
         self._ui_ready = True
+        for label in self.__dict__.pop("_deferred_startup_failure_labels", []):
+            self._set_status(
+                f"Startup step '{label}' could not run; Quill is ready. "
+                "See logs/startup-errors.log."
+            )
         self._flush_pending_menu_refresh()
 
     @property
@@ -1423,15 +1427,15 @@ class MainFrame(
         _profile = True
         _times: list[tuple[str, float]] = []
 
-        def configure_tls() -> None:
-            from quill.core.net import configure_ssl_trust
+        from quill.ui.startup_launch import (
+            ensure_ssl_trust,
+            run_product_startup_tasks,
+            ssl_trust_ready,
+        )
 
-            configure_ssl_trust()
-
-        from quill.ui.startup_launch import run_startup_tasks
-
-        run_startup_tasks(
-            (("TLS trust setup", configure_tls),),
+        run_product_startup_tasks(
+            "quill",
+            (("TLS trust setup", ensure_ssl_trust),),
             on_failure=self._report_startup_task_failure,
         )
 
@@ -1562,6 +1566,7 @@ class MainFrame(
             getattr(self.settings, "auto_check_updates", False)
             and not self._safe_mode
             and self._update_check_due()
+            and ssl_trust_ready()
         ):
             try:
                 self.check_for_updates(silent_no_update=True)
@@ -1593,6 +1598,9 @@ class MainFrame(
                 handle.write("\n")
         except Exception:
             pass
+        if getattr(self, "_ui_ready", True) is False:
+            self.__dict__.setdefault("_deferred_startup_failure_labels", []).append(task_label)
+            return
         self._set_status(
             f"Startup step '{task_label}' could not run; Quill is ready. "
             "See logs/startup-errors.log."
@@ -4392,6 +4400,10 @@ class MainFrame(
         # every feature-gated path (menu, palette, keybinding) obeys it uniformly.
         locks = getattr(self, "_feature_locks", None)
         if locks is not None and locks.is_locked(feature_id):
+            return False
+        if feature_id == "core.radio" and getattr(self, "_radio_runtime_failed", False):
+            return False
+        if feature_id == "core.podcasts" and getattr(self, "_podcast_runtime_failed", False):
             return False
         feature_manager = getattr(self, "features", None)
         enabled = True if feature_manager is None else feature_manager.is_enabled(feature_id)

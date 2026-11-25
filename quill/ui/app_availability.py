@@ -51,5 +51,9 @@ class CommandAvailabilityMixin:
         locks = getattr(self, "_feature_locks", None)
         if locks is not None and locks.is_locked(feature_id):
             return False
+        if feature_id == "core.radio" and getattr(self, "_radio_runtime_failed", False):
+            return False
+        if feature_id == "core.podcasts" and getattr(self, "_podcast_runtime_failed", False):
+            return False
         features = getattr(self, "features", None)
         return True if features is None else features.is_enabled(feature_id)

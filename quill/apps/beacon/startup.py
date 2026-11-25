@@ -25,12 +25,10 @@ def prepare_auto_sync(frame: Any, wx: Any) -> None:
 
 def defer_services(frame: Any, wx: Any, *, version: str) -> None:
     """Queue optional Beacon integrations once its named window is visible."""
-    from quill.ui.startup_launch import defer_startup_tasks
+    from quill.core.data_format_ledger import record_running_build
+    from quill.ui.startup_launch import defer_product_startup_tasks
 
-    def record_release_data_format() -> None:
-        from quill.core.data_format_ledger import record_running_build
-
-        record_running_build("beacon", version)
+    record_running_build("beacon", version)
 
     def start_sounds() -> None:
         from quill.apps.beacon.app import init_app_sound
@@ -44,10 +42,10 @@ def defer_services(frame: Any, wx: Any, *, version: str) -> None:
             "Optional Beacon startup task failed after the window was ready: %s", label
         )
 
-    defer_startup_tasks(
+    defer_product_startup_tasks(
+        "beacon",
         wx,
         (
-            ("release data-format ledger", record_release_data_format),
             ("application sounds", start_sounds),
             ("capture bridge", frame._start_capture_bridge),
             ("system tray", frame._start_tray),

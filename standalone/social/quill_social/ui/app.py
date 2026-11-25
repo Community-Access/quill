@@ -2952,13 +2952,18 @@ def run() -> int:
     from quill.ui.startup_launch import defer_ssl_trust_setup
 
     defer_ssl_trust_setup(wx)
-    from quill.ui.startup_launch import defer_startup_tasks
+    from quill.ui.startup_launch import defer_product_startup_tasks, ensure_ssl_trust
 
-    defer_startup_tasks(
+    def refresh_after_tls() -> None:
+        ensure_ssl_trust()
+        frame._refresh_from_network(announce=False)
+
+    defer_product_startup_tasks(
+        "social",
         wx,
         (
             ("local scheduler", frame._start_scheduler),
-            ("live timeline refresh", lambda: frame._refresh_from_network(announce=False)),
+            ("live timeline refresh", refresh_after_tls),
         ),
         on_failure=frame._report_startup_task_failure,
     )

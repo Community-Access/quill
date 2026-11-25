@@ -18,6 +18,13 @@ class LiteStartupMixin:
     shutting_down: bool
     features: Any
 
+    @staticmethod
+    def _record_lite_running_build() -> None:
+        from quill.core.data_format_ledger import record_running_build
+        from quill.core.lite import APP_VERSION
+
+        record_running_build("quilllite", APP_VERSION)
+
     def _init_startup_timing(self) -> None:
         self._startup_started_at = time.perf_counter()
         self._startup_phase_at = self._startup_started_at
@@ -37,9 +44,10 @@ class LiteStartupMixin:
         """Start optional services after the first editor window can respond."""
         if self.shutting_down:
             return
-        from quill.ui.startup_launch import run_startup_tasks
+        from quill.ui.startup_launch import run_product_startup_tasks
 
-        run_startup_tasks(
+        run_product_startup_tasks(
+            "quilllite",
             (
                 ("print settings", self._ensure_print_settings),
                 ("optional stores", self._load_optional_stores),  # type: ignore[attr-defined]
@@ -79,11 +87,14 @@ class LiteStartupMixin:
 
     @staticmethod
     def _configure_lite_tls() -> None:
-        from quill.core.net import configure_ssl_trust
+        from quill.ui.startup_launch import ensure_ssl_trust
 
-        configure_ssl_trust()
+        ensure_ssl_trust()
 
     def _check_lite_updates(self) -> None:
+        from quill.ui.startup_launch import ensure_ssl_trust
+
+        ensure_ssl_trust()
         from quill.apps.lite_updates import check_at_launch
 
         check_at_launch(self)

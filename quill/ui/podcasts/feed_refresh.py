@@ -44,6 +44,7 @@ from quill.ui.podcasts.feed_refresh_snapshot import (
     _same_routing,
     _snapshot_for_refresh,
 )
+from quill.ui.podcasts.feed_request_gate import feed_request_active, prepare_feed_request
 
 logger = logging.getLogger(__name__)
 
@@ -206,11 +207,7 @@ def refresh_feed(host: Any, show_id: str) -> None:
     generation = host.__dict__.get("_podcast_feed_generation", 0)
 
     def active() -> bool:
-        return (
-            generation == host.__dict__.get("_podcast_feed_generation", 0)
-            and not host.__dict__.get("_cast_closing", False)
-            and not host.__dict__.get("_cast_closed", False)
-        )
+        return feed_request_active(host, generation)
 
     # Pause is "leave this show alone" for the *automatic* paths only --
     # the background check already filters paused shows before it gets
@@ -228,6 +225,8 @@ def refresh_feed(host: Any, show_id: str) -> None:
             else "Safe Mode prevents feed checks"
         )
         check_run.step(host, show_id, failed_title=reason)
+        return
+    if not prepare_feed_request(host, show_id):
         return
     username, password = feed_auth.auth_for_url(show, show.feed_url)
     from quill.core.podcasts import feed_read

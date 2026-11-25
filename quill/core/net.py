@@ -39,6 +39,7 @@ turns the error into the one sentence every app says about it.
 from __future__ import annotations
 
 import ssl
+import threading
 import urllib.error
 
 __all__ = [
@@ -52,6 +53,7 @@ __all__ = [
 ]
 
 _SSL_TRUST_CONFIGURED = False
+_SSL_TRUST_LOCK = threading.Lock()
 
 #: The one sentence for a certificate that does not verify, in every app.
 CERTIFICATE_SENTENCE = (
@@ -66,12 +68,13 @@ _CERTIFICATE_MARKERS = ("certificate verify failed", "certificate_verify_failed"
 def configure_ssl_trust() -> None:
     """Use the operating system certificate store for app-wide HTTPS."""
     global _SSL_TRUST_CONFIGURED
-    if _SSL_TRUST_CONFIGURED:
-        return
-    import truststore
+    with _SSL_TRUST_LOCK:
+        if _SSL_TRUST_CONFIGURED:
+            return
+        import truststore
 
-    truststore.inject_into_ssl()
-    _SSL_TRUST_CONFIGURED = True
+        truststore.inject_into_ssl()
+        _SSL_TRUST_CONFIGURED = True
 
 
 def ssl_trust_configured() -> bool:

@@ -12,7 +12,8 @@ class AppShellStartupMixin:
     def _defer_startup_tasks(self, tasks: tuple[tuple[str, Callable[[], object]], ...]) -> None:
         from quill.ui import startup_launch
 
-        startup_launch.defer_startup_tasks(
+        startup_launch.defer_product_startup_tasks(
+            getattr(self, "_startup_app_id", "shell"),
             self._wx,  # type: ignore[attr-defined]
             tasks,
             on_failure=self._report_startup_task_failure,
@@ -24,11 +25,6 @@ class AppShellStartupMixin:
             getattr(self, "_app_sounds_name", "the window"),
             label,
         )
-
-    def _record_release_data_format(self) -> None:
-        from quill.core.data_format_ledger import record_running_build
-
-        record_running_build(self._startup_app_id, "")  # type: ignore[attr-defined]
 
     def _note_launch_for_maintenance(self) -> None:
         from quill.ui.maintenance_moment_ui import note_launch

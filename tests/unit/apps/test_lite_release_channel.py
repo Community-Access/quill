@@ -3,7 +3,7 @@
 The window and its rules are tested in tests/unit/ui/test_release_channel_dialogs.py
 and tests/unit/core/test_release_channels_core.py; this pins QUILL Lite's side:
 the handler opens the shared window for QUILL Lite, with the installed version,
-and the launch check starts the data-format clock.
+and the app records the data-format clock before its first editable window.
 """
 
 from __future__ import annotations
@@ -11,6 +11,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 from quill.apps import lite_updates
+from quill.apps.lite_startup import LiteStartupMixin
 
 
 def test_release_channel_opens_the_shared_window_for_quill_lite(lite_window, monkeypatch):
@@ -40,12 +41,11 @@ def test_preferences_opens_it_without_a_follow_up_check(monkeypatch):
     assert seen[0]["check_now"] is None
 
 
-def test_the_launch_check_records_the_data_formats(monkeypatch):
+def test_lite_records_the_data_formats_before_the_window(monkeypatch):
     recorded: list[tuple[str, str]] = []
     monkeypatch.setattr(
         "quill.core.data_format_ledger.record_running_build",
         lambda app, version: recorded.append((app, version)),
     )
-    app = SimpleNamespace(settings=SimpleNamespace(check_updates_on_launch=False))
-    lite_updates.check_at_launch(app)
+    LiteStartupMixin._record_lite_running_build()
     assert recorded == [("quilllite", lite_updates.APP_VERSION)]

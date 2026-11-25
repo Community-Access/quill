@@ -1193,6 +1193,10 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         self._wx.CallAfter(self._apply_radio_wake_up, station)
 
     def _apply_radio_wake_up(self, station: RadioStation) -> None:
+        from quill.ui.radio.startup_bootstrap import radio_automatic_enabled
+
+        if not radio_automatic_enabled(self):
+            return
         self._radio_controller.play_station(station)
         self._announce(f"Good morning. {station.display_name} is coming on.")
 

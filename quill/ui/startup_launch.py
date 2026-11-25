@@ -22,11 +22,16 @@ __all__ = [
     "START_MINIMIZED_LABEL",
     "append_windows_startup_items",
     "apply_editor_startup",
+    "defer_after_ssl_trust",
+    "defer_product_startup_tasks",
     "defer_startup_tasks",
     "defer_ssl_trust_setup",
     "editor_starts_hidden",
+    "ensure_ssl_trust",
     "present_at_launch",
+    "run_product_startup_tasks",
     "run_startup_tasks",
+    "ssl_trust_ready",
     "starts_in_tray",
     "tls_problem",
 ]
@@ -89,6 +94,68 @@ def defer_startup_tasks(
         run_startup_tasks(work, on_failure=on_failure)
 
 
+def ensure_ssl_trust() -> None:
+    """Configure the process trust store once, before a startup network task."""
+    from quill.core.net import configure_ssl_trust
+
+    configure_ssl_trust()
+
+
+def ssl_trust_ready() -> bool:
+    """Whether the application has installed its process-wide TLS trust."""
+    from quill.core.net import ssl_trust_configured
+
+    return bool(ssl_trust_configured())
+
+
+def _tls_guarded(task: Callable[[], object]) -> Callable[[], object]:
+    def run() -> object:
+        ensure_ssl_trust()
+        return task()
+
+    return run
+
+
+def defer_after_ssl_trust(
+    wx_module: Any | None,
+    tasks: Sequence[_StartupTask],
+    *,
+    on_failure: Callable[[str], object] | None = None,
+) -> None:
+    """Queue startup network work through the one TLS readiness gate."""
+    guarded = tuple((label, _tls_guarded(task)) for label, task in tasks)
+    defer_startup_tasks(wx_module, guarded, on_failure=on_failure)
+
+
+def _product_tasks(product_id: str, tasks: Sequence[_StartupTask]) -> tuple[_StartupTask, ...]:
+    return tuple((f"{product_id}: {label}", task) for label, task in tasks)
+
+
+def run_product_startup_tasks(
+    product_id: str,
+    tasks: Sequence[_StartupTask],
+    *,
+    on_failure: Callable[[str], object] | None = None,
+) -> None:
+    """Run one product's optional startup work through the shared isolator."""
+    run_startup_tasks(_product_tasks(product_id, tasks), on_failure=on_failure)
+
+
+def defer_product_startup_tasks(
+    product_id: str,
+    wx_module: Any | None,
+    tasks: Sequence[_StartupTask],
+    *,
+    on_failure: Callable[[str], object] | None = None,
+) -> None:
+    """Queue one product's optional startup work through the shared scheduler."""
+    defer_startup_tasks(
+        wx_module,
+        _product_tasks(product_id, tasks),
+        on_failure=on_failure,
+    )
+
+
 def defer_ssl_trust_setup(wx_module: Any | None = None) -> None:
     """Configure process-wide TLS trust after the first window is constructed.
 
@@ -99,12 +166,7 @@ def defer_ssl_trust_setup(wx_module: Any | None = None) -> None:
     if wx_module is None:
         import wx as wx_module
 
-    def _configure() -> None:
-        from quill.core.net import configure_ssl_trust
-
-        configure_ssl_trust()
-
-    defer_startup_tasks(wx_module, (("TLS trust setup", _configure),))
+    defer_startup_tasks(wx_module, (("TLS trust setup", ensure_ssl_trust),))
 
 
 def tls_problem(error: BaseException) -> str | None:

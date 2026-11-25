@@ -89,6 +89,7 @@ class PodcastCheckMonitor:
         self._refreshes_in_flight: set[str] = set()
         self._refresh_pump: Any = None
         self._refresh_pump_pending = False
+        self._refresh_generation = 0
 
     @property
     def is_checking(self) -> bool:
@@ -172,13 +173,7 @@ class PodcastCheckMonitor:
     def shutdown(self) -> None:
         """Stop scheduling feeds before the app tears down its worker pool."""
         self.stop()
-        self._refresh_queue.clear()
-        self._refreshes_in_flight.clear()
-        pump = self._refresh_pump
-        self._refresh_pump = None
-        self._refresh_pump_pending = False
-        if pump is not None:
-            pump.Stop()
+        self.cancel_all()
 
     def refresh_completed(self, show_id: str) -> None:
         """Release one slot after the feed's UI-side merge has completed."""
@@ -190,6 +185,7 @@ class PodcastCheckMonitor:
 
     def cancel_queued(self) -> list[str]:
         """Drop feeds not yet started; in-flight requests are allowed to finish."""
+        self._refresh_generation += 1
         cancelled = list(self._refresh_queue)
         self._refresh_queue.clear()
         pump = self._refresh_pump
@@ -212,12 +208,22 @@ class PodcastCheckMonitor:
         if len(self._refreshes_in_flight) >= MAX_REFRESHES_IN_FLIGHT:
             return
         self._refresh_pump_pending = True
+        generation = self._refresh_generation
         if delay_ms:
-            self._refresh_pump = wx.CallLater(delay_ms, self._pump_refresh_queue)
+            self._refresh_pump = wx.CallLater(
+                delay_ms,
+                lambda generation=generation: self._pump_refresh_queue(generation=generation),
+            )
         else:
-            wx.CallAfter(self._pump_refresh_queue)
+            wx.CallAfter(
+                lambda generation=generation: self._pump_refresh_queue(generation=generation)
+            )
 
-    def _pump_refresh_queue(self, *, schedule_next: bool = True) -> None:
+    def _pump_refresh_queue(
+        self, *, schedule_next: bool = True, generation: int | None = None
+    ) -> None:
+        if generation is not None and generation != self._refresh_generation:
+            return
         self._refresh_pump = None
         self._refresh_pump_pending = False
         if not self._refresh_queue or len(self._refreshes_in_flight) >= MAX_REFRESHES_IN_FLIGHT:
@@ -250,7 +256,7 @@ class PodcastCheckMonitor:
             event.Skip()
             return
         if self.check_now(defer_start=True):
-            wx.CallAfter(self.start_queued)
+            wx.CallAfter(self.start_queued, self._refresh_generation)
 
     # -- the check ------------------------------------------------------
 
@@ -310,8 +316,10 @@ class PodcastCheckMonitor:
             self.start_queued()
         return len(self.last_started_ids)
 
-    def start_queued(self) -> None:
+    def start_queued(self, generation: int | None = None) -> None:
         """Start only the first small batch; the remaining feeds are paced."""
+        if generation is not None and generation != self._refresh_generation:
+            return
         self._pump_refresh_queue()
 
     def _show_is_due(self, library: Any, show: Any) -> bool:

@@ -369,25 +369,20 @@ class RecordingScheduler:
         on_fired: Callable[[RecordingScheduleEntry, str], None] | None = None,
         on_busy: Callable[[RecordingScheduleEntry], None] | None = None,
         filter_graph_provider: Callable[[], str] | None = None,
+        can_run: Callable[[], bool] | None = None,
     ) -> None:
         self._data_dir = data_dir
         self._recorder = recorder
         self._recording_settings = recording_settings
         self._on_fired = on_fired or (lambda _entry, _error: None)
-        #: Fired once per entry when a fire is deferred because the recorder is
-        #: busy (R2/11.3) -- the entry is held pending and retried within its
-        #: window rather than burned. ``None`` means "stay silent."
+        #: Once per busy entry; the occurrence stays pending for retry (R2/11.3).
         self._on_busy = on_busy or (lambda _entry: None)
-        #: Called at fire time for the current Sound Enhancements filter
-        #: graph (""  if apply_sound_enhancements is off) -- injected so this
-        #: wx-free module never has to know about audio_enhance.py or the
-        #: live RadioHistory state that owns the current EQ preset/compressor.
+        #: Injected at fire time so this wx-free module never knows the EQ owner.
         self._filter_graph_provider = filter_graph_provider or (lambda: "")
+        self._can_run = can_run or (lambda: True)
         self._lock = threading.RLock()
         self.entries: list[RecordingScheduleEntry] = load_schedule(data_dir)
-        #: Entry ids whose last fire outcome was already announced (R2): a busy
-        #: deferral or a hard failure is spoken once, then retried silently until
-        #: it succeeds (which clears the id).
+        #: Announced busy/failure ids; a success clears the id for later occurrences.
         self._announced: set[str] = set()
         self._stop_event = threading.Event()
         self._thread = threading.Thread(target=self._run, daemon=True, name="quill-radio-scheduler")
@@ -422,9 +417,7 @@ class RecordingScheduler:
         return False
 
     def _run(self) -> None:
-        # R2/11.4: the loop body is wrapped so one failing iteration (or a
-        # concurrent mutation of self.entries) can never kill the thread and
-        # silently drop every future scheduled recording for the session.
+        # R2/11.4: one bad iteration must not kill every later scheduled recording.
         while not self._stop_event.wait(timeout=_POLL_SECONDS):
             try:
                 now = datetime.now()
@@ -432,7 +425,7 @@ class RecordingScheduler:
                     snapshot = list(self.entries)
                     versions = {id(entry): entry.to_dict() for entry in snapshot}
                 for entry in due_entries(snapshot, now):
-                    if self._stop_event.is_set():
+                    if self._stop_event.is_set() or not self._can_run():
                         break
                     self._fire(entry, now, version=versions.get(id(entry)))
             except Exception:  # noqa: BLE001 - scheduler thread must never die
@@ -477,6 +470,8 @@ class RecordingScheduler:
         authoritatively, as the recording registers, so an entry removed from
         the schedule after this worker's snapshot never starts recording.
         """
+        if self._stop_event.is_set() or not self._can_run():
+            return
         if version is None:
             version = entry.to_dict()
         try:
@@ -487,7 +482,11 @@ class RecordingScheduler:
                 duration_minutes=remaining_minutes(entry, now),
                 filter_graph=self._filter_graph_provider(),
                 entry_id=entry.id,
-                admit=lambda: self._still_current(entry, version),
+                admit=lambda: (
+                    self._can_run()
+                    and not self._stop_event.is_set()
+                    and self._still_current(entry, version)
+                ),
             )
         except RecordingCancelledError:
             # Deleted or edited while it was starting: exactly what the

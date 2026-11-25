@@ -98,14 +98,13 @@ class AppShellFrame(
         # app_id keeps the old fixed-size behaviour, so this cannot change a
         # surface nobody has opted in.
         if app_id:
+            from quill.core.data_format_ledger import record_running_build
             from quill.ui.window_state import apply_window_geometry
 
+            record_running_build(app_id, "")
             apply_window_geometry(self.frame, app_id, default_size=size)
             self._startup_app_id = app_id
-            self._defer_startup_tasks((
-                ("release data-format ledger", self._record_release_data_format),
-                ("launch maintenance", self._note_launch_for_maintenance),
-            ))
+            self._defer_startup_tasks((("launch maintenance", self._note_launch_for_maintenance),))
             from quill.ui.updates.started import confirm_for_shell
 
             wx.CallAfter(confirm_for_shell, self, app_id)

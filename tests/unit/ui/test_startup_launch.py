@@ -13,9 +13,12 @@ from types import SimpleNamespace
 
 import pytest
 
+from quill.core.release_catalog import PRODUCTS
 from quill.ui import startup_launch
 from quill.ui.startup_launch import (
     START_MINIMIZED_LABEL,
+    defer_after_ssl_trust,
+    defer_product_startup_tasks,
     defer_ssl_trust_setup,
     defer_startup_tasks,
     editor_starts_hidden,
@@ -79,6 +82,42 @@ def test_deferred_startup_failure_does_not_break_readiness_or_later_capability()
     assert failures == ["device startup"]
 
 
+def test_network_callback_cannot_run_before_tls_is_ready(monkeypatch) -> None:
+    events: list[str] = []
+    queued: list[object] = []
+    monkeypatch.setattr(startup_launch, "ensure_ssl_trust", lambda: events.append("tls"))
+
+    defer_after_ssl_trust(
+        SimpleNamespace(CallAfter=queued.append),
+        (("catalog refresh", lambda: events.append("network")),),
+    )
+
+    assert events == []
+    queued[0]()
+    assert events == ["tls", "network"]
+
+
+def test_failed_tls_setup_blocks_the_guarded_network_callback(monkeypatch) -> None:
+    events: list[str] = []
+    failures: list[str] = []
+    queued: list[object] = []
+
+    def fail_tls() -> None:
+        events.append("tls")
+        raise RuntimeError("trust store unavailable")
+
+    monkeypatch.setattr(startup_launch, "ensure_ssl_trust", fail_tls)
+    defer_after_ssl_trust(
+        SimpleNamespace(CallAfter=queued.append),
+        (("feed refresh", lambda: events.append("network")),),
+        on_failure=failures.append,
+    )
+
+    queued[0]()
+    assert events == ["tls"]
+    assert failures == ["feed refresh"]
+
+
 def test_startup_tasks_wait_for_the_window_event_turn() -> None:
     queued: list[object] = []
     ran: list[str] = []
@@ -97,10 +136,10 @@ def test_startup_tasks_wait_for_the_window_event_turn() -> None:
 @pytest.mark.parametrize(
     "path,needle",
     [
-        ("quill/ui/main_frame.py", "run_startup_tasks"),
-        ("quill/apps/lite_startup.py", "run_startup_tasks"),
-        ("quill/apps/beacon/startup.py", "defer_startup_tasks"),
-        ("standalone/social/quill_social/ui/app.py", "defer_startup_tasks"),
+        ("quill/ui/main_frame.py", "run_product_startup_tasks"),
+        ("quill/apps/lite_startup.py", "run_product_startup_tasks"),
+        ("quill/apps/beacon/startup.py", "defer_product_startup_tasks"),
+        ("standalone/social/quill_social/ui/app.py", "defer_product_startup_tasks"),
     ],
 )
 def test_direct_window_products_use_the_failure_isolated_startup_guard(
@@ -126,7 +165,7 @@ def test_shell_products_inherit_the_shared_deferred_startup_path(path: str) -> N
     root = Path(__file__).resolve().parents[3]
     assert "AppShellFrame" in (root / path).read_text(encoding="utf-8")
     shell = (root / "quill/ui/app_shell_startup.py").read_text(encoding="utf-8")
-    assert "defer_startup_tasks" in shell
+    assert "defer_product_startup_tasks" in shell
 
 
 def test_all_buildable_products_have_a_startup_deferral_path() -> None:
@@ -150,6 +189,47 @@ def test_all_buildable_products_have_a_startup_deferral_path() -> None:
     assert "defer_services(frame, wx" in (root / "quill/apps/beacon/app.py").read_text(
         encoding="utf-8"
     )
+    shared = (root / "quill/ui/app_shell_startup.py").read_text(encoding="utf-8")
+    assert "defer_product_startup_tasks" in shared
+
+
+@pytest.mark.parametrize(
+    "product_id",
+    [entry.key for entry in PRODUCTS if entry.buildable],
+)
+def test_every_buildable_product_has_an_executable_isolated_startup_hook(
+    product_id: str,
+) -> None:
+    queued: list[object] = []
+    ran: list[str] = []
+    failures: list[str] = []
+
+    def fail() -> None:
+        ran.append("failed")
+        raise RuntimeError("optional startup failed")
+
+    defer_product_startup_tasks(
+        product_id,
+        SimpleNamespace(CallAfter=queued.append),
+        (
+            ("optional device", fail),
+            ("later capability", lambda: ran.append("available")),
+        ),
+        on_failure=failures.append,
+    )
+
+    assert ran == []
+    queued[0]()
+    assert ran == ["failed", "available"]
+    assert failures == [f"{product_id}: optional device"]
+
+
+def test_radio_and_podcast_network_bootstraps_use_the_tls_gate() -> None:
+    root = Path(__file__).resolve().parents[3]
+    radio = (root / "quill/ui/radio/startup_bootstrap.py").read_text(encoding="utf-8")
+    podcast = (root / "quill/ui/podcasts/startup_bootstrap.py").read_text(encoding="utf-8")
+    assert "defer_after_ssl_trust" in radio
+    assert "defer_after_ssl_trust" in podcast
 
 
 class _Frame:

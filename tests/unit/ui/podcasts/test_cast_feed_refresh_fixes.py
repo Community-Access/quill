@@ -93,6 +93,10 @@ class _Host:
     def _announce(self, message: str, **_kwargs: object) -> None:
         self.spoken.append(message)
 
+    @staticmethod
+    def _feature_enabled(_feature_id: str) -> bool:
+        return True
+
     def _podcast_filter_new_episodes(self, _show: Any, arrived: list[Any]) -> Any:
         from types import SimpleNamespace
 
@@ -148,6 +152,25 @@ def test_an_imported_shows_first_check_routes_and_announces_nothing(
     assert len(show.episodes) == 3
     assert host.saved == 1
     assert host.maintenance_runs == 1
+
+
+def test_feed_refresh_never_queues_when_tls_setup_fails(monkeypatch: pytest.MonkeyPatch) -> None:
+    from quill.ui import startup_launch
+
+    show = PodcastShow(id="s1", title="The Mayan Crystal", feed_url="https://rss.art19.com/m")
+    host = _Host(show)
+    pending = _Deferred()
+    host._podcast_feed_tasks = pending
+    monkeypatch.setattr(
+        startup_launch,
+        "ensure_ssl_trust",
+        lambda: (_ for _ in ()).throw(RuntimeError("trust store unavailable")),
+    )
+
+    feed_refresh.refresh_feed(host, "s1")
+
+    assert pending.job is None
+    assert host.spoken and "could not be checked" in host.spoken[0]
 
 
 def test_refresh_all_batches_maintenance_save_and_manager_refresh(

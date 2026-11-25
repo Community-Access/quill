@@ -6,6 +6,8 @@ gating and menu labels.
 
 from __future__ import annotations
 
+import pytest
+
 from quill.core.keymap import DEFAULT_KEYMAP
 from quill.ui.app_shell import AppShellFrame
 from tests.wx_session import patch_call_after
@@ -31,6 +33,38 @@ def _bare_shell() -> AppShellFrame:
     shell = AppShellFrame.__new__(AppShellFrame)
     shell.keymap = dict(DEFAULT_KEYMAP)
     return shell
+
+
+def test_running_build_is_recorded_before_shell_startup_can_save(monkeypatch) -> None:
+    from quill.ui import app_shell as app_shell_module
+
+    events: list[str] = []
+
+    class _Stop(Exception):
+        pass
+
+    monkeypatch.setattr(
+        app_shell_module.startup_launch,
+        "defer_ssl_trust_setup",
+        lambda _wx: events.append("tls queued"),
+    )
+    monkeypatch.setattr(app_shell_module.wx, "Frame", lambda *_a, **_kw: object())
+    monkeypatch.setattr(
+        "quill.core.data_format_ledger.record_running_build",
+        lambda app_id, version: events.append(f"ledger {app_id} {version}"),
+    )
+
+    def stop_at_geometry(*_args: object, **_kwargs: object) -> None:
+        events.append("geometry")
+        raise _Stop
+
+    monkeypatch.setattr("quill.ui.window_state.apply_window_geometry", stop_at_geometry)
+    shell = _bare_shell()
+
+    with pytest.raises(_Stop):
+        shell._init_app_shell("Test", size=(480, 360), app_id="radio")
+
+    assert events == ["tls queued", "ledger radio ", "geometry"]
 
 
 def test_feature_enabled_consults_manager():

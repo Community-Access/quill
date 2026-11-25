@@ -40,7 +40,7 @@ def test_optional_services_are_queued_after_readiness(monkeypatch):
 
     defer_services(frame, object(), version="0.1.0")
 
-    assert ran == []
+    assert ran == ["ledger"]
     for _label, task in captured:
         task()
     assert ran == ["ledger", "sounds", "bridge", "tray", "sync"]

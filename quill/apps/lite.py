@@ -132,6 +132,7 @@ class QuillLiteApp(
     def OnInit(self) -> bool:  # noqa: N802 - wx API shape
         self.SetAppName(APP_ID)
         self.data_dir = data_dir()
+        self._record_lite_running_build()
         self.settings = self._load_settings()
         self._settings_baseline = copy.deepcopy(self.settings)  # F-11: merge on save
         # Here and not in __init__, where it was until 2026-09-17 and where it

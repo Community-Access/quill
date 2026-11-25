@@ -127,9 +127,11 @@ class WakeUpWatcher:
         data_dir: Path,
         *,
         on_wake: Callable[[RadioStation], None],
+        can_run: Callable[[], bool] | None = None,
     ) -> None:
         self._data_dir = data_dir
         self._on_wake = on_wake
+        self._can_run = can_run or (lambda: True)
         self._stop = threading.Event()
         self._thread = threading.Thread(
             target=self._run, daemon=True, name="quill-radio-wake-timer"
@@ -141,13 +143,17 @@ class WakeUpWatcher:
 
     def _run(self) -> None:
         while not self._stop.wait(_CHECK_SECONDS):
+            if not self._can_run():
+                continue
             setting = load_wake_setting(self._data_dir)
             now = datetime.now()
             if not should_fire(setting, now):
+                continue
+            if not self._can_run() or self._stop.is_set():
                 continue
             setting.last_fired_date = now.strftime("%Y-%m-%d")
             if setting.recurrence == "once":
                 setting.enabled = False
             save_wake_setting(self._data_dir, setting)
-            if setting.station is not None:
+            if setting.station is not None and self._can_run() and not self._stop.is_set():
                 self._on_wake(setting.station)

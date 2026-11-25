@@ -26,10 +26,28 @@ from quill.ui.profile_picker import ProfileEntry, ProfilePickerDialog, ProfilePi
 class ProfilePickerMixin:
     def _ensure_profile_feature_runtime(self) -> None:
         """Bring profile-gated media runtimes into step with the current profile."""
-        for name in ("_init_radio", "_init_podcasts"):
+        failures: list[str] = []
+        for name, label in (
+            ("_init_radio", "Radio runtime"),
+            ("_init_podcasts", "Podcast runtime"),
+        ):
             initialize = getattr(self, name, None)
             if callable(initialize):
-                initialize()
+                try:
+                    initialize()
+                except Exception:  # noqa: BLE001 - a feature transition cannot break the editor
+                    failures.append(label)
+                    report = getattr(self, "_report_startup_task_failure", None)
+                    if callable(report):
+                        try:
+                            report(label)
+                        except Exception:  # noqa: BLE001 - failure reporting is best-effort
+                            import logging
+
+                            logging.getLogger(__name__).exception(
+                                "Could not report failed profile runtime: %s", label
+                            )
+        self._profile_runtime_failures = failures
 
     def _refresh_profile_feature_runtime(self) -> None:
         """Rebuild feature-dependent UI after a live profile change."""

@@ -232,6 +232,13 @@ class PodcastRefreshMonitor:
 
     def _check_youtube_channels(self) -> None:
         """Followed YouTube channels with the bell on ride the same schedule."""
+        try:
+            from quill.ui.startup_launch import ensure_ssl_trust
+
+            ensure_ssl_trust()
+        except Exception:  # noqa: BLE001 - a later timer tick can retry trust setup
+            logger.exception("Could not configure TLS for subscribed YouTube checks")
+            return
         from quill.ui.radio import youtube_channel_alerts_ui
 
         youtube_channel_alerts_ui.check_in_background(
@@ -349,6 +356,13 @@ class PodcastRefreshMonitor:
             if announce_when_empty:
                 self._announce(f"Subscribed feeds could not be checked. {error}.")
 
+        try:
+            from quill.ui.startup_launch import ensure_ssl_trust
+
+            ensure_ssl_trust()
+        except Exception as error:  # noqa: BLE001 - no feed task without TLS
+            _failed("radio-podcast-refresh", error)
+            return False
         self._task_manager.submit(
             "radio-podcast-refresh", _work, on_success=_ok, on_failure=_failed
         )
@@ -469,6 +483,9 @@ def refresh_subscribed_feeds(
     data_dir = app_data_dir()
     library = load_library(data_dir)
     now = time.time()
+    from quill.ui.startup_launch import ensure_ssl_trust
+
+    ensure_ssl_trust()
     if only_if_due_minutes is not None:
         if not refresh_policy.is_due(library.last_auto_check, only_if_due_minutes, now):
             return None
