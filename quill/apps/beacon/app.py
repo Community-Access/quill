@@ -32,6 +32,7 @@ from quill.apps.beacon import (
     uld,
 )
 from quill.apps.beacon import publish as publish_mod
+from quill.apps.beacon import startup as _startup
 from quill.apps.beacon.ai import BeaconAiMixin
 from quill.apps.beacon.announce import Announcer
 from quill.apps.beacon.commands import Command, CommandPalette
@@ -54,7 +55,6 @@ from quill.apps.beacon.dialogs import (
 )
 from quill.apps.beacon.model import SCHEMA_VERSION
 from quill.apps.beacon.scribe_ui import BeaconScribeMixin
-from quill.apps.beacon.startup import defer_services, prepare_auto_sync
 from quill.apps.beacon.sync_ui import SyncController
 from quill.apps.beacon.time_of_day import parse_hhmm
 from quill.apps.beacon.undo import UndoManager, restore_beacons, snapshot_beacons
@@ -69,6 +69,9 @@ from quill.ui.updates.host import ProductUpdateHost
 _TITLE = "QuillBeacon"
 _VERSION = "0.1.0"
 _BUILD = 2  # this version's build (docs/release/RELEASE.md, "Build numbers")
+defer_services = _startup.defer_services
+init_app_sound = _startup.init_app_sound
+prepare_auto_sync = _startup.prepare_auto_sync
 
 # Destinations in the sidebar (PRD 13.1).
 DESTINATIONS = [

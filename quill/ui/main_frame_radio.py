@@ -89,6 +89,11 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         one failure cannot block the rest -- the same isolation the per-line
         ``_safely`` calls gave. The standalone host keeps its own close path.
         """
+        if (
+            not getattr(self, "_radio_runtime_initialized", False)
+            and getattr(self, "_radio_controller", None) is None
+        ):
+            return
         for attr, _label in (
             ("_radio_controller", "radio player"),
             ("_radio_recorder", "radio recorder"),
@@ -124,6 +129,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         from quill.ui.radio import catalog_ui
 
         catalog_ui.shutdown(self)
+        self._radio_runtime_initialized = False
 
     # -- R3: resume across restart -------------------------------------------
 
@@ -1143,7 +1149,15 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
 
     def _radio_title_announce_command_title(self) -> str:
         """Palette label carrying the toggle's state -- it has no checkmark (#1383)."""
-        state = "On" if self._radio_history.announce_track_titles else "Off"
+        state = (
+            "On"
+            if getattr(
+                getattr(self, "_radio_history", None),
+                "announce_track_titles",
+                False,
+            )
+            else "Off"
+        )
         return f"Internet Radio: Announce Track Titles (currently {state})"
 
     def radio_toggle_title_announcements(self) -> None:

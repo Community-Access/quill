@@ -3399,12 +3399,7 @@ class MainFrame(
         # stamp) is consolidated in RadioMixin so this frozen module does not
         # grow a per-subsystem block each time radio gains a subsystem (GATE-11).
         _safely("radio", self._shutdown_radio)
-        podcast_controller = getattr(self, "_podcast_controller", None)
-        if podcast_controller is not None:
-            _safely("podcast player", podcast_controller.shutdown)
-        podcast_transfers = getattr(self, "_shutdown_podcast_transfers", None)
-        if podcast_transfers is not None:
-            _safely("podcast transfers", podcast_transfers)
+        _safely("podcasts", self._shutdown_podcasts)
         sleep_timer = getattr(self, "_sleep_timer_controller", None)
         if sleep_timer is not None:
             _safely("media sleep timer", sleep_timer.shutdown)
@@ -13128,7 +13123,7 @@ class MainFrame(
                 if cb is None:
                     return
                 enabled = cb.GetValue()  # type: ignore[union-attr]
-                affected = features.set_feature_enabled(feature_id, enabled)
+                affected = self._set_profile_feature_enabled(feature_id, enabled)
                 announcement = features.describe_feature_toggle(feature_id, enabled, affected)
                 for fid, c2 in current_items:
                     c2.SetValue(features.is_enabled(fid))  # type: ignore[union-attr]
@@ -13137,8 +13132,6 @@ class MainFrame(
                     rebuild_list(focus_first=True)
                 else:
                     detail.SetValue(features.describe_feature(feature_id))
-                self._build_menu()
-                self._apply_accelerators()
                 self._set_status(announcement)
 
             return _on_toggle
@@ -13479,6 +13472,7 @@ class MainFrame(
                     return
                 self.features.switch_profile(profile_id)
                 applied = self.apply_profile_settings(profile_id)
+                self._refresh_profile_feature_runtime()
                 extra = f" {applied}" if applied else ""
                 self._set_status(f"Profile changed to {name}. Undo available.{extra}")
                 self.offer_bring_from_quilllite(profile_id)
@@ -13511,6 +13505,7 @@ class MainFrame(
 
         def undo_change() -> None:
             if self.features.undo_last_profile_change():
+                self._refresh_profile_feature_runtime()
                 self._set_status(f"Restored {self.features.active_profile.name}")
                 refresh_summary()
                 self._refresh_title()
@@ -13519,6 +13514,7 @@ class MainFrame(
 
         def reset_essential() -> None:
             self.features.reset_to_essential_profile()
+            self._refresh_profile_feature_runtime()
             refresh_profile_list(PROFILE_ESSENTIAL)
             refresh_summary()
             self._set_status("Reset to Essential profile")
@@ -13729,6 +13725,7 @@ class MainFrame(
             warnings = self.features.import_profile_data(raw)
             for warning in warnings:
                 self._record_notification(warning, "warning")
+            self._refresh_profile_feature_runtime()
             refresh_profile_list(self.features.active_profile_id)
             refresh_summary()
             self._set_status(f"Imported profile data from {source.name}")
@@ -13820,6 +13817,7 @@ class MainFrame(
 
     def undo_last_profile_change(self) -> None:
         if self.features.undo_last_profile_change():
+            self._refresh_profile_feature_runtime()
             self._set_status(f"Profile changed back to {self.features.active_profile.name}")
             self._refresh_title()
             return
@@ -13836,6 +13834,7 @@ class MainFrame(
             if self._show_modal_dialog(dialog, "Reset Feature Profile") != wx.ID_YES:
                 return
         self.features.reset_to_essential_profile()
+        self._refresh_profile_feature_runtime()
         self._set_status("Reset to Essential profile")
         self._refresh_title()
 
@@ -13885,7 +13884,7 @@ class MainFrame(
             )
             save_settings(self.settings)
             feature_manager.save()
-            self._apply_accelerators()
+            self._refresh_profile_feature_runtime()
             self._set_status_quiet("Personalise QUILL completed")
             self._announce(
                 f"Profile set to {get_intent_profile(intent_id).name}. "
@@ -13919,7 +13918,7 @@ class MainFrame(
             feature_manager.save()
             self.settings.setup_wizard_completed = True
             save_settings(self.settings)
-            self._apply_accelerators()
+            self._refresh_profile_feature_runtime()
             self._announce(
                 "Starting with a clean text editor. "
                 "Add features any time from Help > Personalise QUILL."

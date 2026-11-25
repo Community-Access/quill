@@ -6,6 +6,12 @@ import logging
 from typing import Any
 
 
+def init_app_sound(*args, **kwargs):
+    from quill.ui.companion_cues import init_app_sound as initialize
+
+    return initialize(*args, **kwargs)
+
+
 def prepare_auto_sync(frame: Any, wx: Any) -> None:
     """Create Beacon's inert auto-sync timer."""
     if getattr(frame, "_sync_timer", None) is not None:
@@ -27,8 +33,8 @@ def defer_services(frame: Any, wx: Any, *, version: str) -> None:
         record_running_build("beacon", version)
 
     def start_sounds() -> None:
+        from quill.apps.beacon.app import init_app_sound
         from quill.ui import app_sounds
-        from quill.ui.companion_cues import init_app_sound
 
         init_app_sound()
         app_sounds.apply(frame)

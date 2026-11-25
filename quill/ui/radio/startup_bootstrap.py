@@ -8,10 +8,27 @@ from quill.core.paths import app_data_dir
 
 
 def initialize_radio(host: Any) -> None:
-    """Build Radio only when the host's feature profile enables it."""
+    """Build Radio once, or leave a disabled host safely passive."""
+    if getattr(host, "_radio_runtime_initialized", False):
+        return
+    if getattr(host, "_radio_runtime_initializing", False):
+        return
+    if getattr(host, "_radio_controller", None) is not None:
+        host._radio_runtime_initialized = True
+        return
     if not host._feature_enabled("core.radio"):
         _leave_passive(host)
         return
+    host._radio_runtime_initializing = True
+    try:
+        _build_radio(host)
+        host._radio_runtime_initialized = True
+    finally:
+        host._radio_runtime_initializing = False
+
+
+def _build_radio(host: Any) -> None:
+    """Construct Radio's controller, scheduler, persistence and timers once."""
 
     from quill.core.radio import favorites as radio_favorites
     from quill.core.radio import history as radio_history
@@ -137,3 +154,5 @@ def _leave_passive(host: Any) -> None:
     host._radio_track_source = ""
     host._radio_fallback_tried = ""
     host._radio_ever_played = False
+    host._radio_runtime_initialized = False
+    host._radio_runtime_initializing = False

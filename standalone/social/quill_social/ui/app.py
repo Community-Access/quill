@@ -159,7 +159,8 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
         # Local scheduler tier starts after the first usable window. Timer and
         # network work are optional services, not prerequisites for reading it.
         self.scheduler = None
-        self._sched_timer = None
+        self._sched_timer = wx.Timer(self)
+        self.Bind(wx.EVT_TIMER, self._on_sched_tick, self._sched_timer)
 
         self.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self.Bind(wx.EVT_CLOSE, self._on_close)
@@ -204,10 +205,6 @@ class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
     def _start_scheduler(self) -> None:
         self._ensure_scheduler()
         timer = self._sched_timer
-        if timer is None:
-            timer = wx.Timer(self)
-            self._sched_timer = timer
-            self.Bind(wx.EVT_TIMER, self._on_sched_tick, timer)
         if not timer.IsRunning():
             timer.Start(30_000)
 

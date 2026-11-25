@@ -24,6 +24,25 @@ from quill.ui.profile_picker import ProfileEntry, ProfilePickerDialog, ProfilePi
 
 
 class ProfilePickerMixin:
+    def _ensure_profile_feature_runtime(self) -> None:
+        """Bring profile-gated media runtimes into step with the current profile."""
+        for name in ("_init_radio", "_init_podcasts"):
+            initialize = getattr(self, name, None)
+            if callable(initialize):
+                initialize()
+
+    def _refresh_profile_feature_runtime(self) -> None:
+        """Rebuild feature-dependent UI after a live profile change."""
+        self._ensure_profile_feature_runtime()
+        self._build_menu()
+        self._apply_accelerators()
+
+    def _set_profile_feature_enabled(self, feature_id: str, enabled: bool) -> list[str]:
+        """Toggle one feature and realize its runtime/menu effects immediately."""
+        affected = self.features.set_feature_enabled(feature_id, enabled)
+        self._refresh_profile_feature_runtime()
+        return affected
+
     def _profile_picker_entries(self) -> list[ProfileEntry]:
         from quill.core.onboarding_profiles import list_intent_profiles
 
@@ -88,7 +107,7 @@ class ProfilePickerMixin:
             self._set_status(f"Already using {self.features.active_profile.name}")
         else:
             self.features.switch_profile(result.profile_id)
-            self._apply_accelerators()
+            self._refresh_profile_feature_runtime()
         self._set_status_quiet(f"Profile: {result.profile_name}")
         self._announce(f"Profile {result.profile_name}")
         self._persist_profile_startup_choices(result, config)
@@ -125,7 +144,7 @@ class ProfilePickerMixin:
         if not target or target == self.features.active_profile_id:
             return
         self.features.switch_profile(target)
-        self._apply_accelerators()
+        self._refresh_profile_feature_runtime()
         name = PROFILE_DEFINITIONS[target].name
         extension = normalize_extension(Path(str(path)).suffix)
         self._set_status_quiet(f"Switched to {name} for {extension} files")

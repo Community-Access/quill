@@ -35,6 +35,10 @@ class WorkPersonaMixin:
             applied.append("feature profile")
         except KeyError:
             pass
+        if "feature profile" in applied:
+            refresh = getattr(self, "_refresh_profile_feature_runtime", None)
+            if callable(refresh):
+                refresh()
 
         if persona.working_folder and Path(persona.working_folder).is_dir():
             try:
