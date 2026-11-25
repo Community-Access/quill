@@ -423,6 +423,7 @@
   ["QUILL Lite", "core/lite/commands_dictation.py Start or Stop Live Transcript", "Ctrl+Alt+Shift+PageDown"],
   ["QUILL Lite", "core/lite/commands_dictation.py Switch Dictation Language", "Ctrl+Shift+F11"],
   ["QUILL Lite", "core/lite/commands_dictation.py Transcribe a Recording...", "Shift+F5"],
+  ["QUILL Lite", "core/lite/commands_dictation.py Transcriptions on This Computer...", "Ctrl+Shift+PageUp"],
   ["QUILL Lite", "core/lite/commands_help.py About QUILL Lite", "Shift+F1"],
   ["QUILL Lite", "core/lite/commands_help.py Activity...", "Shift+F9"],
   ["QUILL Lite", "core/lite/commands_help.py Check for Updates...", "Ctrl+Alt+U"],
