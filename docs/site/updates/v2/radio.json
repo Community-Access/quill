@@ -1,0 +1,61 @@
+{
+  "format": "quillville-release-feed/2",
+  "app": "radio",
+  "app_name": "Quill Radio",
+  "sequence": 1,
+  "generated_at": "2026-11-25T06:13:37Z",
+  "expires_at": "2027-02-23T06:13:37Z",
+  "security_floor": "",
+  "channels": {
+    "stable": {
+      "current": "3.0.4"
+    }
+  },
+  "releases": [
+    {
+      "version": "3.0.4",
+      "tag": "quill-radio-v3.0.4",
+      "channels": [
+        "stable"
+      ],
+      "history": [
+        {
+          "channel": "stable",
+          "at": "2026-09-28T23:34:40Z",
+          "by": "bootstrap_release_feeds.py"
+        }
+      ],
+      "published_at": "2026-09-28T23:34:40Z",
+      "notes_url": "https://github.com/Community-Access/quill/releases/tag/quill-radio-v3.0.4",
+      "notes_summary": "## Quill Radio 3.0.4 - a launcher that says why, Up is louder, and OPML out\n\n*Released September 28, 2026.*\n\nQuill Radio is a free internet radio player for Windows, built from the ground\nup for people who use a screen reader. No account, nothing to sign up for, and\nnothing you listen to leaves your computer.\n\n3.0.4 fixes the worst thing an app can do, which is nothing at all, answers a\nlistener whose volume slider ran backwards, and adds the one podcast feature\nRadio had the way in for and not the way out. Install it over any earlier copy;\nyour favorites, settings, recordings and keys all stay.\n\n### Downloads\n\n| Download | Take this if |\n|---|---|\n| `Quill-Radio-Setup-Shared-3.0.4.exe` | You want to install it. |\n| `Quill-Radio-Portable-3.0.4.zip` | You want it on a USB stick. |\n\nBoth are digitally signed. Windows 10 or later, 64-bit.\n\nSHA-256:\n\n- `9E76182B7577DD6C0DC44D8CA2C34BB2DA082D8BB36BAAC351BCBC4ACEF1263A` Quill-Radio-Setup-Shared-3.0.4.exe\n- `33F90FA7C22FB50DBD4BB8BE52BD3737ED84284F0820306FD9850BDFE359BF29` Quill-Radio-Portable-3.0.4.zip\n\n### What is new and fixed in 3.0.4\n\n- **When Quill Radio cannot start, it says so.** A listener's portable copy\n  did not open, did not say why, and left nothing behind. `QuillRadio.exe`\n  starts the app's engine and, until now, threw away whatever went wrong. Now\n  it keeps a launch log of everything the engine reports and, if the engine\n  stops with an error, opens one plain message your screen reader reads on\n  its own: \"Quill Radio did not start\", the reason in words, where the log is,\n  and the support address to send it to. A missing file, a damaged or 32-bit\n  copy and \"access denied\" each get their own words.\n- **Opening `QuillRadio.exe` from inside the zip is recognised.** File\n  Explorer, 7-Zip and WinRAR all let you press Enter on a file inside a zip;\n  they copy that one file out and run it alone. Instead of \"this copy is\n  incomplete\", the message now says the zip was never extracted and walks\n  through Extract All.\n- **Up is louder on the volume slider.** A listener wrote that the slider was\n  backwards, and it was: a Windows slider on its own treats Up as \"towards the\n  start\", the left end. Now Up and Page Up raise it and Down and Page Down\n  lower it, on the main window's slider, in Browse Stations and Search\n  Stations, and on every other slider in Quill Radio. Left and Right are\n  unchanged, and Ctrl+Up and Ctrl+Down still work from the slider.\n- **Export Podcasts to OPML.** Radio could import an OPML file and not write\n  one. **Export Podcasts to OPML...** is now beside Import on the menu of the\n  Subscriptions folder and of the Podcasts branch (Shift+F10). It writes every\n  show you follow, folders included, and tells you how many it wrote.\n\nThe user guide's Troubleshooting chapter now opens with \"If Quill Radio does\nnot start\". The launch log lives at `data\\logs\\launch.log` beside a portable\ncopy, and at `%APPDATA%\\Quill\\logs\\QuillRadio-launch.log` for an installed one.\n\n**Portable 3.0.0, 3.0.1 or 3.0.2?** Update once by hand, because those versions\ncannot run the newer updater: close Quill Radio, unzip\n`Quill-Radio-Portable-3.0.4.zip`, and copy everything inside its `QuillRadio`\nfolder over your copy's folder, replacing files when asked. Your `data` folder\nis not in the zip and is left alone. From 3.0.3 on, updates install themselves.\n\n**Coming from 2.x portable?** Unzip 3.0.4 into a new folder and start it; it\noffers to bring your 2.x favorites in on its first launch.\n\n### Read more\n\n- Full release notes: https://www.quillforall.org/docs/radio-release-notes.html\n- Changelog: https://www.quillforall.org/docs/radio-changelog.html\n- User guide: https://www.quillforall.org/docs/radio-userguide.html\n- About Quill Radio: https://www.quillforall.org/radio.html\n\nQuestions or problems: **Help > Get Help from Support** (Ctrl+Alt+F2), or\nsupport@community-access.org. A person reads it.\n",
+      "assets": [
+        {
+          "kind": "installer",
+          "name": "Quill-Radio-Setup-Shared-3.0.4.exe",
+          "url": "https://github.com/Community-Access/quill/releases/download/quill-radio-v3.0.4/Quill-Radio-Setup-Shared-3.0.4.exe",
+          "size": 208402024,
+          "sha256": "9e76182b7577dd6c0dc44d8ca2c34bb2da082d8bb36baac351bcbc4acef1263a"
+        },
+        {
+          "kind": "portable",
+          "name": "Quill-Radio-Portable-3.0.4.zip",
+          "url": "https://github.com/Community-Access/quill/releases/download/quill-radio-v3.0.4/Quill-Radio-Portable-3.0.4.zip",
+          "size": 271903465,
+          "sha256": "33f90fa7c22fb50dbd4bb8be52bd3737ed84284f0820306fd9850bdfe359bf29"
+        }
+      ],
+      "runtime": {},
+      "carries": {},
+      "data_formats": {},
+      "reads_formats": {},
+      "lossy_formats": {},
+      "can_roll_back_to": [],
+      "min_safe_downgrade": "",
+      "min_upgrade_from": "",
+      "revoked": false,
+      "revoked_reason": "",
+      "replacement": "",
+      "advisories": []
+    }
+  ]
+}

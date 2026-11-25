@@ -1,0 +1,11 @@
+{
+  "format": "quillville-release-feed/2",
+  "app": "transcribe",
+  "app_name": "QUILL Transcribe",
+  "sequence": 1,
+  "generated_at": "2026-11-25T06:13:37Z",
+  "expires_at": "2027-02-23T06:13:37Z",
+  "security_floor": "",
+  "channels": {},
+  "releases": []
+}

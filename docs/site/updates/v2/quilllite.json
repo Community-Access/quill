@@ -1,0 +1,61 @@
+{
+  "format": "quillville-release-feed/2",
+  "app": "quilllite",
+  "app_name": "QUILL Lite",
+  "sequence": 1,
+  "generated_at": "2026-11-25T06:13:37Z",
+  "expires_at": "2027-02-23T06:13:37Z",
+  "security_floor": "",
+  "channels": {
+    "stable": {
+      "current": "1.1.2"
+    }
+  },
+  "releases": [
+    {
+      "version": "1.1.2",
+      "tag": "quill-lite-v1.1.2",
+      "channels": [
+        "stable"
+      ],
+      "history": [
+        {
+          "channel": "stable",
+          "at": "2026-09-30T11:09:04Z",
+          "by": "bootstrap_release_feeds.py"
+        }
+      ],
+      "published_at": "2026-09-30T11:09:04Z",
+      "notes_url": "https://github.com/Community-Access/quill/releases/tag/quill-lite-v1.1.2",
+      "notes_summary": "## QUILL Lite 1.1.2 — your ChatGPT plan, pictures described, and dictation\r\n\r\n*Released September 30, 2026.*\r\n\r\n**1.1.2 fixes Install and restart now.** Choosing it closed QUILL Lite and then nothing\r\nhappened: the small helper that waits for the app to close and then runs setup was ended\r\nalong with the app. It now outlives the app, so the button installs and restarts.\r\n\r\n**Coming from 1.1.1 or earlier? Update by hand this once:** choose *Open folder* in the\r\nupdate window and run `QuillLite-Setup-Shared-1.1.2.exe`, or download it below. Your\r\nsettings and documents are kept. From 1.1.2 on, the button works.\r\n\r\n**1.1.1** was 1.1.0 with the version number fixed: a runtime from Quill Radio 3.0.3/3.0.4\r\nmade QUILL Lite 1.0 claim 1.1.0, so it was never offered the update. The installed\r\nversion now comes from the installer, never the shared runtime.\r\n\r\nQUILL Lite is a free text editor for Windows built for people who use a\r\nscreen reader. It talks to you, it needs no account, and nothing you write\r\nleaves your computer unless you ask for AI help.\r\n\r\n**1.1 is the release where AI help runs on the ChatGPT plan you already pay\r\nfor**, and with it QUILL Lite can do two things it never could: describe a\r\npicture, and look something up on the web. Dictation arrives in the same\r\nrelease, with an AI command that corrects what the recogniser misheard. Install\r\nit over 1.0; your settings, recent files and recovered work are all kept.\r\n\r\n---\r\n\r\n## AI help on your ChatGPT subscription\r\n\r\nPress **Alt+F5** (Tools ▸ AI ▸ Use My ChatGPT Subscription), choose\r\n**Continue with ChatGPT**, sign in the way you sign in to ChatGPT on the web,\r\nallow \"QUILL Lite\" to use your plan, and come back. That is the whole setup:\r\nno key, no allowance, no size limit, no per-request bill, and nothing passing\r\nthrough QUILL's servers. The pad, the seventeen writing tools, Ask About This\r\nDocument and conversations all run on your plan from then on.\r\n\r\n- **Pictures, described.** **Ctrl+F5** (Ask About an Image): choose a JPEG,\r\n  PNG, WebP or GIF and either ask a question or ask nothing. You hear what the\r\n  picture is, what matters most in it, and every word of any text in it,\r\n  transcribed exactly. Insert Below puts the description into your document;\r\n  Ctrl+Z takes it back.\r\n- **Web search, one checkbox away.** Press Alt+F5, then **Alt+W** for Allow web\r\n  search, then Space. The model may then look up an event, a price, or what a\r\n  page says today, in Ask a general question, in a question about the\r\n  document, and in conversations. Off until you turn it on.\r\n- **The model is your plan's own list**, read from your account as you sign\r\n  in; the first is chosen for you and another is saved the moment you arrow to\r\n  it. **Open ChatGPT Usage** goes to the plan's own page.\r\n- **Undo it whenever you like.** Sign Out (press twice) asks OpenAI to revoke\r\n  QUILL Lite's sign-in and forgets it here; Forget on This Computer forgets it\r\n  here only. Neither button exists until you are signed in. Only a refresh\r\n  token is kept, in Windows' credential store; your ChatGPT password is never\r\n  seen.\r\n\r\n## Dictation, and dictation corrected\r\n\r\n- **Ctrl+F11**, talk, and pause. What you said is written at the cursor with\r\n  the punctuation put in, a soft tone confirms it, and QUILL Lite reads it back.\r\n  Escape throws a phrase away, the microphone dropping out pauses rather than\r\n  stops, and one Ctrl+Z undoes one phrase. Nothing you say leaves the computer;\r\n  the recogniser ships inside QUILL Lite.\r\n- **Tidy Dictated Text** (**Ctrl+F3**). Leave the cursor in a paragraph you\r\n  dictated, press the key, and the model corrects what the recogniser misheard\r\n  -- sound-alike words, a name it had never met, words run together, the comma\r\n  that should have been a full stop, every \"um\" -- and changes nothing else.\r\n  Replace My Selection puts it back; Ctrl+Z undoes it as one step. On your\r\n  ChatGPT plan or your own OpenAI key.\r\n\r\n## Also in 1.1\r\n\r\n- **Ten writing tools** in the ",
+      "assets": [
+        {
+          "kind": "installer",
+          "name": "QuillLite-Setup-Shared-1.1.2.exe",
+          "url": "https://github.com/Community-Access/quill/releases/download/quill-lite-v1.1.2/QuillLite-Setup-Shared-1.1.2.exe",
+          "size": 229984504,
+          "sha256": "e8c2bb0fd117b6d3fe7455ec9f611225b44f0845ae019d50c0a2c5e2ef05b61b"
+        },
+        {
+          "kind": "portable",
+          "name": "QuillLite-Portable-1.1.2.zip",
+          "url": "https://github.com/Community-Access/quill/releases/download/quill-lite-v1.1.2/QuillLite-Portable-1.1.2.zip",
+          "size": 299961055,
+          "sha256": "e2c61ed91d2acacf213b4f06fa1486e23a40c5e4d380ff19246114514193bda9"
+        }
+      ],
+      "runtime": {},
+      "carries": {},
+      "data_formats": {},
+      "reads_formats": {},
+      "lossy_formats": {},
+      "can_roll_back_to": [],
+      "min_safe_downgrade": "",
+      "min_upgrade_from": "",
+      "revoked": false,
+      "revoked_reason": "",
+      "replacement": "",
+      "advisories": []
+    }
+  ]
+}
