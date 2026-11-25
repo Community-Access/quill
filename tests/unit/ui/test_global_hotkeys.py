@@ -309,7 +309,7 @@ def test_the_scan_reaches_launchers_runtime_menus_and_numbered_rows() -> None:
     where = " | ".join(place for place, _chord in rows)
     chords = {(place.split(" ")[0], chord) for place, chord in rows}
     assert "QuillVille launcher row 1" in where
-    assert "QuillVille launcher: Open Quill Cast" in where
+    assert "QuillVille launcher: Open QUILL Cast" in where
     assert any(place.startswith("ui/radio/local_media_window_menu.py") for place, _ in rows)
     assert any(place.startswith("ui/main_frame_weather.py") for place, _ in rows)
     assert ("core/recent_documents.py", "Alt+Shift+8") in chords

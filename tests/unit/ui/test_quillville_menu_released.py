@@ -45,7 +45,7 @@ def test_unreleased_apps_are_not_offered() -> None:
     assert "studio" not in qv.RELEASED_APPS
     labels = _build(exclude="quill")
     joined = " ".join(labels)
-    assert "Quill Cast" not in joined
+    assert "QUILL Cast" not in joined
     assert "Audio Studio" not in joined
     assert "QUILL Studio" not in joined
 

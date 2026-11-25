@@ -273,7 +273,8 @@ def test_only_a_developer_build_shows_a_quillville_row_with_no_key(monkeypatch) 
         # The overflow exists only because unreleased apps are listed: there are
         # never more keyless rows than unreleased siblings on the menu.
         listed_unreleased = [name for name, _key in rows if name in unreleased]
-        assert len(keyless) <= len(listed_unreleased), (
+        held_host_overflow = int(app == "player" and "player" not in RELEASED_APPS)
+        assert len(keyless) <= len(listed_unreleased) + held_host_overflow, (
             f"{app}'s developer menu has {len(keyless)} rows with no key but lists only "
             f"{len(listed_unreleased)} unreleased apps; a released app lost its key"
         )

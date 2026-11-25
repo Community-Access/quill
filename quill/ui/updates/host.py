@@ -39,9 +39,10 @@ class ProductUpdateHost:
         manager = getattr(self, "_task_manager", None)
         if manager is None:
             from quill.stability.task_manager import TaskManager
+            from quill.ui.surface_lifetime import surface_tasks
 
-            manager = TaskManager()
-            self._task_manager = manager
+            self._task_manager = surface_tasks(TaskManager(), lambda: self.frame)
+            manager = self._task_manager
         return manager
 
     def check_product_updates(self, app_key: str, *, silent_no_update: bool = False) -> None:

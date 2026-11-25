@@ -143,6 +143,9 @@ def ensure_help_provider(wx: Any = None) -> None:
 
 def purpose_for_title(title: str) -> str:
     """The registered app's purpose for *title*, never empty."""
+    shared = shared_release_purpose(title)
+    if shared:
+        return shared
     if _purpose_resolver is not None:
         try:
             purpose = _purpose_resolver(title)
@@ -151,6 +154,18 @@ def purpose_for_title(title: str) -> str:
         except Exception:  # noqa: BLE001 - a resolver bug must not kill F1
             pass
     return control_help.GENERIC_PURPOSE
+
+
+def shared_release_purpose(title: str) -> str:
+    """The release-channel dialog purpose, independent of the host app."""
+    from quill.core.updater.profiles import PROFILES
+    from quill.core.updater.wording import window_titles
+
+    for profile in PROFILES.values():
+        purpose = window_titles(profile.display_name).get(title, "")
+        if purpose:
+            return purpose
+    return ""
 
 
 def _top_level_of(window: Any, wx: Any) -> Any:
