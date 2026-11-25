@@ -7,6 +7,23 @@ Completed rows are removed after they land on `main`. Human acceptance, live
 tests, credentials, external permissions, and provider confirmations are
 tracked in [report2.md](report2.md) and are not counted as code-complete.
 
+## Current implementation summary
+
+- Eight implementation and release-engineering items remain: two release
+  operations and six startup-speed items.
+- GitHub Workbench implementation is complete on `main`; remaining live-role,
+  permissions, protected-branch, and Copilot-plan checks are in
+  [report2.md](report2.md).
+- WordPress Workbench and Practice Site implementation is complete on `main`;
+  the remaining staged-runtime inventory is part of release packaging below,
+  and live payment/OAuth/site checks are in [report2.md](report2.md).
+- Scribe implementation is complete, including durable conversion and
+  transcription queues. Real-service acceptance and the Pneuma ETA
+  contract remain external checks in [report2.md](report2.md).
+- Converter queue persistence is complete in PR #2077 and merged to `main`.
+- [report2.md](report2.md) has nine human/credential items and two external
+  blockers. They are intentionally excluded from the code-work count.
+
 ## Release and packaging
 
 - [ ] Run the first catalogue-driven Dev build and inspect every artifact.
