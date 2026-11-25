@@ -174,12 +174,12 @@ the human sign-off phase is what the acceptance run completes.
 - `README.md` — project front page. `CHANGELOG.md` — release history (read
   by release tooling; stays at root). `CLAUDE.md` — engineering invariants
   for AI-assisted work. `REPO-GUIDE.md` — this guide.
-- `report.md` — the current implementation record and overnight status. It
-  separates code work from human/live acceptance, and completed rows are
-  removed as they reach main. Historical `complete.md`, `complete2.md`,
-  `wp_missing.md`, `how.md`, and `ear.md` work-list citations resolve in git
-  history. `how.md`'s WordPress walkthrough is now
-  `docs/design/wordpress-ux-walkthrough.md`.
+- `report.md` — the current implementation and release-engineering record.
+  `report2.md` — the separate human/live acceptance and external-confirmation
+  record. Completed rows are removed as they reach main. Historical
+  `complete.md`, `complete2.md`, `wp_missing.md`, `how.md`, and `ear.md`
+  work-list citations resolve in git history. `how.md`'s WordPress walkthrough
+  is now `docs/design/wordpress-ux-walkthrough.md`.
 - `LICENSE`, `NOTICE` — licensing.
 - `pyproject.toml`, `requirements.txt`, `uv.lock`, `.quill-reqs.sha256` —
   Python packaging and dependency pinning.

@@ -29,8 +29,10 @@ _SANCTIONED_ROOT_MARKDOWN = frozenset({
     "CLAUDE.md",
     "README.md",
     "REPO-GUIDE.md",
-    # The authoritative remaining-work and overnight status record.
+    # The authoritative code/release remaining-work record.
     "report.md",
+    # Human/live acceptance and external confirmations.
+    "report2.md",
 })
 
 
