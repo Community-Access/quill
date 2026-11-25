@@ -6,6 +6,8 @@ This file lists only open implementation and release-engineering work.
 Completed rows are removed after they land on `main`. Human acceptance, live
 tests, credentials, external permissions, and provider confirmations are
 tracked in [report2.md](report2.md) and are not counted as code-complete.
+Delete this file when its implementation and release-engineering list reaches
+zero; [report2.md](report2.md) remains the human and operational record.
 
 ## Current implementation summary
 
@@ -22,7 +24,8 @@ tracked in [report2.md](report2.md) and are not counted as code-complete.
   contract remain external checks in [report2.md](report2.md).
 - Converter queue persistence is complete in PR #2077 and merged to `main`.
 - [report2.md](report2.md) has nine human/credential items and two external
-  blockers. They are intentionally excluded from the code-work count.
+  blockers. They are intentionally excluded from the code-work count and are
+  not moved back here when `report.md` is deleted.
 
 ## Release and packaging
 
