@@ -160,9 +160,9 @@ Control coverage: 346 audited sites (234 helped, 112 named-help).
 
 **Rename Lineup.** Type the lineup's new name. Names are unique, ignoring capitals, so Go to a Lineup always means one thing.
 
-**Resume Recording.** Quill Radio closed while this recording was still being written -- a crash, a shutdown, a log-off. Resume picks the capture back up on the same station; Skip keeps what was saved and lets it go. Don't ask me again remembers the answer; Preferences can change it.
+**Resume Recording.** Quill Radio closed while this recording was still being written -- a crash, a shutdown, a log-off. The message says which recording, how much it recorded and where that is kept. Resume records the remaining time on the same station as a separate file; Skip records nothing more. Neither deletes what was recorded. Don't ask me again remembers the answer; Preferences can change it.
 
-**Resume Recordings.** Quill Radio closed while these recordings were still being written. Resume All picks the captures back up; Skip All keeps what was saved and lets them go.
+**Resume Recordings.** Quill Radio closed while these recordings were still being written. The list gives each one's station, start, how much it recorded and how much is left. Resume All records the remaining time of each as a separate file; Skip All records nothing more. Neither deletes what was recorded.
 
 **Rules.** The rules of one lineup, each as a sentence: what it brings in, how long its items stay, and what it finds now. Anything any rule finds is in the lineup. Below them, where new items go, a play-through budget, and whether live items are skipped when the lineup plays through.
 
@@ -1272,6 +1272,8 @@ Control coverage: 308 audited sites (11 help-elsewhere, 297 helped).
 
 **Describe a Picture.** Choose a picture, or a video and then the moment in it. Studio takes that one picture on this computer, fits it to the AI in use and reads the description aloud. Asking about the same picture again sends nothing.
 
+**Discard an unfinished recording.** Confirm deleting an unfinished recording's pieces. They do not go to the Recycle Bin and cannot be recovered.
+
 **Discard this recording.** Confirm deleting the recording in progress. It cannot be recovered.
 
 **Documents in My Scribe Account.** Every document in your Scribe account, and the Trash. Download Formats (Enter) downloads a format or makes a new one, which uses no pages for a document already there. Rename, Move to Trash, Recover, Delete Forever, Ask for Human Review and Copy Details are buttons, and the Applications key lists them.
@@ -1312,7 +1314,7 @@ Control coverage: 308 audited sites (11 help-elsewhere, 297 helped).
 
 **Recording status.** The recording in progress: elapsed time, the sounds being recorded, whether your screen reader is in it, dropped frames and disk space. Pause, add a marker, mute the microphone, or stop and save. Closing this window hides it; recording continues.
 
-**Recover unfinished recordings.** Recordings interrupted by a crash or power cut were found. Studio can join, check and save each one beside its folder.
+**Recover unfinished recordings.** A recording interrupted by a crash or power cut, named by what it is, when it started and how much was recorded. Finish joins, checks and saves it; Discard deletes its recorded pieces after asking; Skip leaves it for later.
 
 **Rename.** The document's new title in your Scribe account.
 
@@ -1379,7 +1381,7 @@ Control coverage: 308 audited sites (11 help-elsewhere, 297 helped).
 - `self._save_btn`: Writes the chapter and tag edits into the MP3 in place -- only the tags are rewritten, the audio is untouched. An M4B cannot be rewritten in place, so this button is disabled for one; use Save As instead.
 - `save_as_btn`: Saves the edited book as a new file, losslessly, leaving the original alone. For an M4B this is the only save; the audio is copied without re-encoding.
 - `self._publish_btn`: Opens the Publish window for this book: a local podcast feed file, an SFTP upload, or Auphonic post-production. Unsaved chapter edits must be saved first.
-- `close_btn`: Closes the Workbench, remembering your listening position. Unsaved chapter or tag edits are discarded -- press Save or Save As first to keep them.
+- `close_btn`: Closes the Workbench, remembering your listening position. With chapter or tag edits unsaved, it first asks whether to save or discard them.
 #### SilenceParamsDialog (`quill/ui/audio_studio/chapter_workbench_dialogs.py`)
 
 - `self._noise`: How quiet the audio must be to count as silence, in decibels; -60 to -10 in steps of 1, default -30. Lower the number to make the scan more sensitive (it will find more, quieter pauses); raise it for noisy recordings so room hiss stops counting as silence.

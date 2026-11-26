@@ -223,6 +223,7 @@ def finalize(
     save_reports(final, verification, plan, markers)
     if verification.state == "Failed":
         session.state = "failed"
+        session.saved = str(final)
         session.save(work)
     else:
         session.state = "finished"

@@ -58,6 +58,65 @@ class ChapterEditsMixin:
     _stop_at_ms: int | None = None
     #: True while a run of nudges is at the wall, so it is announced once.
     _wall_announced: bool = False
+    #: Set once closing has been settled, so Close, Escape and the X ask once.
+    _close_confirmed: bool = False
+
+    # -- closing with unsaved edits (FUX-05) -----------------------------------
+
+    def _unsaved_edits(self) -> str:
+        """``chapter edits``, ``tag edits``, both, or "" when nothing is unsaved."""
+        parts = []
+        if self._chapters_dirty:
+            parts.append(str(_("chapter edits")))
+        if self._tags_dirty:
+            parts.append(str(_("tag edits")))
+        return " and ".join(parts)
+
+    def _ask_unsaved(self, unsaved: str) -> str:
+        """``"save"``, ``"discard"`` or ``"cancel"``: what to do with *unsaved*."""
+        name = self._book.path.stem
+        dlg = wx.MessageDialog(
+            self,
+            str(
+                _(
+                    "{name} has unsaved {unsaved}. Save writes them to the book and keeps "
+                    "the Workbench open. Discard closes without them; the book stays as "
+                    "it was last saved. Cancel goes back to editing."
+                )
+            ).format(name=name, unsaved=unsaved),
+            str(_("Chapter Workbench")),
+            wx.YES_NO | wx.CANCEL | wx.NO_DEFAULT | wx.ICON_WARNING,
+        )
+        dlg.SetYesNoCancelLabels(str(_("&Discard")), str(_("&Save")), str(_("Cancel")))
+        try:
+            answer = dlg.ShowModal()  # GATE-42-OK: shown by the Workbench
+        finally:
+            dlg.Destroy()
+        return {wx.ID_YES: "discard", wx.ID_NO: "save"}.get(answer, "cancel")
+
+    def _may_close(self, can_veto: bool = True) -> bool:
+        """Whether the Workbench may close now. Unsaved edits are never lost unasked."""
+        if self._close_confirmed or not can_veto:
+            return True
+        unsaved = self._unsaved_edits()
+        if not unsaved:
+            self._close_confirmed = True
+            return True
+        choice = self._ask_unsaved(unsaved)
+        if choice == "save":
+            self._on_save()  # its own result is said; Close then closes
+            return False
+        if choice == "discard":
+            self._close_confirmed = True
+            self._announce(str(_("Discarded the unsaved {unsaved}.")).format(unsaved=unsaved))
+            return True
+        return False
+
+    def _on_close_button(self, evt: wx.CommandEvent) -> None:
+        """Close and Escape: ask about unsaved edits before the window goes."""
+        if self._may_close():
+            evt.Skip()
+
     #: The pending "say the whole chapter" call, cancelled by the next nudge.
     _settle_timer: object | None = None
 

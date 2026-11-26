@@ -59,6 +59,31 @@ def persist(host: Any, job_id: str = "") -> None:
         pass
 
 
+def clear_marker_of(host: Any, marker: Any) -> None:
+    """Remove exactly *marker*, by its own key -- never every marker.
+
+    A marker from an older build has no job id, and passing its empty id on as
+    ``None`` cleared *every* marker, the new one a resumed recording had just
+    written included; a crash during that resumed recording then had nothing
+    to offer back. Its own key file and the legacy single file are what it can
+    be, so those two are cleared and nothing else.
+    """
+    from quill.core.paths import app_data_dir
+    from quill.core.radio.recording_resume import ActiveRecordingMarker, clear_marker
+
+    del host
+    try:
+        job_id = str(getattr(marker, "job_id", "") or "")
+        if job_id:
+            clear_marker(app_data_dir(), job_id)
+            return
+        if isinstance(marker, ActiveRecordingMarker):
+            clear_marker(app_data_dir(), marker)
+        clear_marker(app_data_dir(), None)
+    except Exception:  # noqa: BLE001 - best-effort
+        pass
+
+
 def clear(host: Any, job_id: str | None = None) -> None:
     """Remove one recording's marker by job id, or every marker when *job_id*
     is ``None`` (the clean-stop and clean-close path)."""

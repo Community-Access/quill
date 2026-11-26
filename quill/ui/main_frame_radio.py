@@ -286,143 +286,22 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
     # -- R3: resume across restart -------------------------------------------
 
     def _reconcile_and_offer_radio_resume(self) -> None:
-        """Move crash-orphaned temp files home, then offer to resume an
-        in-progress recording found via the persisted marker (R3).
+        """Move crash-orphaned temp files home, then offer each interrupted
+        recording by name (R3, FUX-05). See :mod:`quill.ui.radio.resume_offer`."""
+        from quill.ui.radio import resume_offer
 
-        Runs once at launch (deferred). Reconcile is always done and announced;
-        resume honors the remembered choice (ask/always/never) and the grace
-        window. A marker past its grace is cleared and skipped.
-        """
-        from quill.core.paths import app_data_dir
-        from quill.core.radio.recording_resume import (
-            load_markers,
-            reconcile_temp_strays,
-            remaining_minutes,
-            within_resume_grace,
-        )
+        resume_offer.reconcile_and_offer(self)
 
-        # Markers first: they say which folder each orphan was recording for.
-        try:
-            markers = load_markers(app_data_dir())
-        except Exception:  # noqa: BLE001
-            markers = []
-        # 1) Reconcile temp-dir strays from a crash (R3/12, 13.6); never replaces.
-        try:
-            moved = reconcile_temp_strays(self._radio_recording_settings, markers=markers)
-        except Exception:  # noqa: BLE001 - reconcile must never block launch
-            moved = []
-        if moved:
-            self._announce(
-                f"Recovered {len(moved)} recording file(s) left in the temp "
-                f"folder from an earlier crash; moved to your recordings folder."
-            )
+    def _ask_radio_resume(self, resumable: list[tuple[object, int, object]]) -> None:
+        from quill.ui.radio import resume_offer
 
-        # 2) Offer to resume in-progress recordings found via the markers
-        #    (concurrent recording: there may be several). Markers past their
-        #    grace window are cleared and skipped; the rest are resumed per the
-        #    remembered choice, or offered in one batched prompt for "ask".
-        resumable: list[tuple[object, int]] = []
-        for marker in markers:
-            if not getattr(marker, "stream_url", ""):
-                continue
-            if not within_resume_grace(marker):
-                # The show is long over: clear the stale marker and move on.
-                self._clear_radio_recording_marker(getattr(marker, "job_id", "") or None)
-                continue
-            resumable.append((marker, remaining_minutes(marker)))
-        if not resumable:
-            return
-        choice = self._radio_history.recording_resume_choice
-        if choice == "never":
-            for marker, _left in resumable:
-                self._clear_radio_recording_marker(getattr(marker, "job_id", "") or None)
-            return
-        if choice == "always":
-            for marker, left in resumable:
-                self._start_radio_resume(marker, left)
-            return
-        # "ask": one dialog for one recording, a batched prompt for several.
-        self._ask_radio_resume(resumable)
-
-    def _ask_radio_resume(self, resumable: list[tuple[object, int]]) -> None:
-        from quill.ui.radio.resume_recording_dialog import (
-            ResumeRecordingDialog,
-            ResumeRecordingsBatchDialog,
-        )
-
-        if len(resumable) == 1:
-            marker, left = resumable[0]
-            station = getattr(marker, "station_name", "") or "the stream"
-            end = getattr(marker, "scheduled_end", "")
-            result = ResumeRecordingDialog(
-                self.frame,
-                station_name=station,
-                remaining_minutes=left,
-                scheduled_end=end,
-                announce_cb=self._announce,
-            ).show()
-        else:
-            lines = [
-                f"{getattr(m, 'station_name', '') or 'Recording'} -- {left} minute(s) left"
-                for m, left in resumable
-            ]
-            result = ResumeRecordingsBatchDialog(
-                self.frame, lines=lines, announce_cb=self._announce
-            ).show()
-        if result is None:
-            return  # dismissed/cancelled -> skip, leave markers to age out
-        action, remember = result
-        if remember:
-            self._radio_history.recording_resume_choice = (
-                "always" if action == "resume" else "never"
-            )
-            self._save_radio_history()
-        if action == "resume":
-            for marker, left in resumable:
-                self._start_radio_resume(marker, left)
-        else:
-            for marker, _left in resumable:
-                self._clear_radio_recording_marker(getattr(marker, "job_id", "") or None)
+        resume_offer.ask(self, resumable)
 
     def _start_radio_resume(self, marker: object, left: int) -> None:
-        """Resume the marker's recording for the remaining minutes (R3).
+        """Resume the marker's recording for the remaining minutes (R3)."""
+        from quill.ui.radio import resume_offer
 
-        Concurrent recording: no longer refuses when something else is already
-        recording -- a resumed recording simply joins the others.
-        """
-        from quill.core.speech.ffmpeg import ffmpeg_available
-
-        job_id = getattr(marker, "job_id", "") or None
-        if not ffmpeg_available():
-            self._announce("Cannot resume recording: FFmpeg is not installed.")
-            self._clear_radio_recording_marker(job_id)
-            return
-        station_name = getattr(marker, "station_name", "") or "Recording"
-        stream_url = getattr(marker, "stream_url", "") or ""
-        entry_id = getattr(marker, "entry_id", "") or ""
-        if not stream_url:
-            self._clear_radio_recording_marker(job_id)
-            return
-        try:
-            self._radio_recorder.start(
-                station_name=station_name,
-                stream_url=stream_url,
-                settings=self._radio_recording_settings,
-                duration_minutes=max(1, left),
-                filter_graph=self._radio_recording_filter_graph(),
-                exact_optilab=self._radio_recording_exact(),
-                entry_id=entry_id,
-            )
-            self._announce(
-                f"Resuming recording of {station_name} for {max(1, left)} minute(s).",
-                sound=SoundEvent.RADIO_RECORDING_STARTED,
-            )
-            # The old marker (from the previous run) is superseded by the fresh
-            # one the new job wrote under its own id; clear the stale one.
-            self._clear_radio_recording_marker(job_id)
-        except Exception as exc:  # noqa: BLE001 - a failed resume is announced, not fatal
-            self._announce(f"Could not resume the recording: {exc}")
-            self._clear_radio_recording_marker(job_id)
+        resume_offer.start_resume(self, marker, left)
 
     def _stop_podcast_before_radio(self) -> None:
         """Never double-play: starting a radio stream silences a playing

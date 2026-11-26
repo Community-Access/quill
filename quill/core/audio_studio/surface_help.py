@@ -160,8 +160,13 @@ PURPOSES: dict[str, str] = {
         "Confirm deleting the recording in progress. It cannot be recovered."
     ),
     "Recover unfinished recordings": (
-        "Recordings interrupted by a crash or power cut were found. Studio can join, "
-        "check and save each one beside its folder."
+        "A recording interrupted by a crash or power cut, named by what it is, when "
+        "it started and how much was recorded. Finish joins, checks and saves it; "
+        "Discard deletes its recorded pieces after asking; Skip leaves it for later."
+    ),
+    "Discard an unfinished recording": (
+        "Confirm deleting an unfinished recording's pieces. They do not go to the "
+        "Recycle Bin and cannot be recovered."
     ),
     "Screen reader speech": (
         "Confirm putting your screen reader's speech in the recording: everything it "

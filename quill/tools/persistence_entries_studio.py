@@ -28,6 +28,9 @@ STUDIO_ENTRIES: dict[str, str] = {
     # The in-progress recording's session file, read back only to recover an
     # unfinished recording and removed when it is finished: a recovery marker.
     "core/demo_recording_session.py::save": "marker",
+    # Which unfinished recordings were already said at launch, so the same set
+    # is spoken once (FUX-05): a marker, rewritten whenever the set changes.
+    "apps/studio_demo_finish.py::_offer_demo_recovery": "marker",
     # Do Not Disturb as it was before recording, so a crash can put it back;
     # deleted once restored.
     "platform/windows/focus_guard.py::start": "marker",

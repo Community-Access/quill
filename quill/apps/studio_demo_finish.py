@@ -5,6 +5,7 @@ Split from :mod:`quill.apps.studio_demo` (GATE-11).
 
 from __future__ import annotations
 
+import logging
 import os
 import shutil
 from pathlib import Path
@@ -13,7 +14,23 @@ from typing import Any
 import wx
 
 from quill.core.demo_recording_session import find_unfinished
+from quill.core.demo_unfinished import Unfinished, describe_unfinished
 from quill.core.paths import app_data_dir
+from quill.core.storage import read_json, write_json_atomic
+
+_log = logging.getLogger(__name__)
+
+#: The unfinished recordings last *said* at launch, so the same set is spoken
+#: once and then only written to the status bar (FUX-05).
+_RECOVERY_SAID_FILE = "studio_unfinished_said.json"
+
+
+def _not_finished(item: Unfinished) -> str:
+    """A recovery that failed: the recording by name, never a path or exception text."""
+    return (
+        f"{item.name} could not be finished. Its recorded pieces are kept; Capture, "
+        "Recover unfinished recordings tries again or discards them."
+    )
 
 
 class StudioDemoFinishMixin:
@@ -234,7 +251,13 @@ class StudioDemoFinishMixin:
         return folders
 
     def _offer_demo_recovery(self) -> None:
-        """At launch: say once that unfinished recordings exist; never open a modal."""
+        """At launch: name the unfinished recordings once; never open a modal.
+
+        Said aloud the first time a set of unfinished recordings is found, then
+        only written to the status bar on later launches, so a recording left
+        for later is not announced at every start. Capture, Recover unfinished
+        recordings is always the way back to it.
+        """
         try:
             from quill.platform.windows.focus_guard import restore_after_crash
 
@@ -245,36 +268,105 @@ class StudioDemoFinishMixin:
         except Exception:  # noqa: BLE001 - never disturb a launch
             pass
         try:
-            found = find_unfinished(self._demo_folders())
+            found = [describe_unfinished(work) for work in find_unfinished(self._demo_folders())]
         except Exception:  # noqa: BLE001 - recovery must never disturb a launch
+            _log.warning("could not look for unfinished recordings", exc_info=True)
             return
-        if found:
-            count = len(found)
-            self._set_status(
-                f"{count} unfinished recording{'s' if count != 1 else ''} found. Use Capture, "
-                "Recover unfinished recordings."
+        waiting = [item for item in found if item.needs_finishing]
+        if not waiting:
+            return
+        noun = (
+            "an unfinished recording"
+            if len(waiting) == 1
+            else f"{len(waiting)} unfinished recordings"
+        )
+        sentence = (
+            f"Studio found {noun}: {'; '.join(item.label for item in waiting)}. "
+            "Capture, Recover unfinished recordings finishes or discards "
+            f"{'it' if len(waiting) == 1 else 'them'}."
+        )
+        said = app_data_dir() / _RECOVERY_SAID_FILE
+        names = sorted(item.work.name for item in waiting)
+        if read_json(said, None) == names:
+            self._set_status_quiet(sentence)
+            return
+        self._set_status(sentence)
+        try:
+            write_json_atomic(said, names)
+        except OSError:
+            pass  # said again next launch: the harmless direction to fail
+
+    def _ask_unfinished(self, item: Unfinished) -> str:
+        """``"finish"``, ``"discard"`` or ``"skip"`` for one unfinished recording."""
+        if item.needs_finishing:
+            where = f" in {item.output.parent.name}" if item.output is not None else ""
+            message = (
+                f"{item.label}.\n\n"
+                f"Finish joins, checks and saves it as {item.name}{where}. "
+                "Discard deletes what was recorded. Skip leaves it for later."
             )
+            labels = ("&Finish", "&Discard...", "&Skip")
+            style = wx.YES_NO | wx.CANCEL | wx.YES_DEFAULT | wx.ICON_QUESTION
+        else:
+            message = (
+                f"{item.label}.\n\nIts recorded pieces are still kept. Discard deletes "
+                "those pieces; "
+                + ("the saved file stays. " if item.saved is not None else "")
+                + "Skip leaves them for later."
+            )
+            labels = ("", "&Discard...", "&Skip")
+            style = wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION
+        dialog = wx.MessageDialog(self.frame, message, "Recover unfinished recordings", style)
+        if labels[0]:
+            dialog.SetYesNoCancelLabels(labels[0], labels[1], labels[2])
+        else:
+            dialog.SetYesNoLabels(labels[1], labels[2])
+        try:
+            answer = self._show_modal_dialog(dialog, "Recover unfinished recordings")
+        finally:
+            dialog.Destroy()
+        if labels[0]:
+            return {wx.ID_YES: "finish", wx.ID_NO: "discard"}.get(answer, "skip")
+        return "discard" if answer == wx.ID_YES else "skip"
+
+    def _discard_unfinished(self, item: Unfinished) -> None:
+        """Delete one unfinished recording's pieces, after a confirmation that says so."""
+        answer = self._show_message_box(
+            f"Delete the recorded pieces of {item.name}? They do not go to the Recycle Bin "
+            "and cannot be recovered."
+            + (f" The saved file {item.saved.name} is not touched." if item.saved else ""),
+            "Discard an unfinished recording",
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
+        )
+        if answer not in (wx.YES, wx.ID_YES):
+            self._announce(f"{item.name} is kept.")
+            return
+        shutil.rmtree(item.work, ignore_errors=True)
+        if item.work.exists():
+            self._announce(f"{item.name} could not be fully deleted. Try again later.")
+        else:
+            self._announce(f"Discarded {item.name}.")
 
     def recover_demonstrations(self) -> None:
         if getattr(self, "_demo", None) is not None or getattr(self, "_demo_busy", ""):
             self._announce("Finish the current recording first.")
             return
-        found = find_unfinished(self._demo_folders())
-        if not found:
+        items = [describe_unfinished(work) for work in find_unfinished(self._demo_folders())]
+        if not items:
             self._announce("No unfinished recordings were found.")
+            return
+        to_finish: list[Unfinished] = []
+        for item in items:
+            choice = self._ask_unfinished(item)
+            if choice == "discard":
+                self._discard_unfinished(item)
+            elif choice == "finish" and item.needs_finishing:
+                to_finish.append(item)
+        if not to_finish:
             return
         ffmpeg = self._demo_ffmpeg()
         if not ffmpeg:
             self._announce("Recovering a recording needs FFmpeg. Use Voices, Get FFmpeg.")
-            return
-        names = "\n".join(f"- {path.parent / path.name}" for path in found)
-        answer = self._show_message_box(
-            f"Finish {len(found)} unfinished recording{'s' if len(found) != 1 else ''} now?\n"
-            f"{names}\n\nEach is joined, checked and saved beside its folder.",
-            "Recover unfinished recordings",
-            wx.YES_NO | wx.YES_DEFAULT | wx.ICON_QUESTION,
-        )
-        if answer not in (wx.YES, wx.ID_YES):
             return
         caps = self._demo_caps(ffmpeg)
         self._demo_busy = "Unfinished recordings are being recovered"
@@ -283,28 +375,33 @@ class StudioDemoFinishMixin:
             from quill.platform.windows.screen_recorder_finish import finalize
 
             results = []
-            for work_folder in found:
+            for item in to_finish:
                 try:
                     results.append(
                         finalize(
-                            work_folder, ffmpeg=ffmpeg, caps=caps, cancellation=cancellation_token
+                            item.work, ffmpeg=ffmpeg, caps=caps, cancellation=cancellation_token
                         )
                     )
                 except Exception as error:  # noqa: BLE001 - one bad folder never stops the rest
-                    results.append(error)
+                    _log.warning("could not finish %s: %s", item.work, error)
+                    results.append(item)
             return results
 
         def done(_task, results: list[Any]):
             self._demo_busy = ""
             for result in results:
-                if isinstance(result, Exception):
-                    self._announce(f"A recording could not be recovered: {result}")
+                if isinstance(result, Unfinished):
+                    self._announce(_not_finished(result))
                 else:
                     self._show_demo_result(result, title=f"Recovered: {result.state}")
 
         def failed(_task, error):
             self._demo_busy = ""
-            self._announce(f"Recovery failed: {error}")
+            _log.warning("recovering demonstrations failed: %s", error)
+            self._announce(
+                "The unfinished recordings could not be finished. Their recorded pieces are "
+                "kept; Capture, Recover unfinished recordings tries again."
+            )
 
         self._task_manager.submit(
             "Recover demonstrations",
