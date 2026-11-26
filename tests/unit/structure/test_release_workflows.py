@@ -47,7 +47,10 @@ def _steps(workflow: dict):
             yield job_name, step
 
 
-@pytest.mark.parametrize("name", ["dev-builds.yml", "promote-release.yml", "release-feeds.yml"])
+@pytest.mark.parametrize(
+    "name",
+    ["dev-builds.yml", "promote-release.yml", "release-feeds.yml", "release-feed-batch.yml"],
+)
 def test_only_the_expected_secrets_are_named(name: str) -> None:
     text = (WORKFLOWS / name).read_text(encoding="utf-8")
     named = set(re.findall(r"secrets\.([A-Z0-9_]+)", text))
@@ -55,14 +58,20 @@ def test_only_the_expected_secrets_are_named(name: str) -> None:
     assert "AZURE" not in text
 
 
-@pytest.mark.parametrize("name", ["dev-builds.yml", "promote-release.yml", "release-feeds.yml"])
+@pytest.mark.parametrize(
+    "name",
+    ["dev-builds.yml", "promote-release.yml", "release-feeds.yml", "release-feed-batch.yml"],
+)
 def test_no_expression_is_pasted_into_a_script(name: str) -> None:
     for job_name, step in _steps(_load(name)):
         script = step.get("run", "")
         assert "${{" not in script, f"{name} {job_name}: {step.get('name', '')}"
 
 
-@pytest.mark.parametrize("name", ["dev-builds.yml", "promote-release.yml", "release-feeds.yml"])
+@pytest.mark.parametrize(
+    "name",
+    ["dev-builds.yml", "promote-release.yml", "release-feeds.yml", "release-feed-batch.yml"],
+)
 def test_it_never_runs_in_a_fork(name: str) -> None:
     workflow = _load(name)
     first = next(iter(workflow["jobs"].values()))
@@ -76,6 +85,7 @@ def test_every_feed_signing_job_waits_for_owner_approval() -> None:
             ("promote-beta", "release-feed-signing"),
             ("promote-stable", "stable-promotion"),
         },
+        "release-feed-batch.yml": {("promote", "release-feed-signing")},
         "windows-release.yml": {("release", "release-feed-signing")},
     }
     found: dict[str, set[tuple[str, str]]] = {}
@@ -96,6 +106,7 @@ def test_every_feed_signing_job_waits_for_owner_approval() -> None:
 def test_no_other_workflow_can_receive_the_feed_seed() -> None:
     allowed = {
         "release-feeds.yml",
+        "release-feed-batch.yml",
         "promote-release.yml",
         "windows-release.yml",
     }
@@ -175,6 +186,46 @@ def test_feed_bootstrap_is_main_only_and_verifies_before_opening_a_pr() -> None:
         step for step in sign["steps"] if step.get("name") == "Open the signed feed pull request"
     )
     assert "git status --porcelain -- docs/site/updates/v2" in pr_step["run"]
+
+
+def test_batch_promotion_has_one_unprotected_preflight_and_one_signed_pr() -> None:
+    workflow = _load("release-feed-batch.yml")
+    preflight = workflow["jobs"]["preflight"]
+    promote = workflow["jobs"]["promote"]
+    assert "environment" not in preflight
+    assert "QUILL_FEED_SIGNING_KEY" not in str(preflight)
+    assert preflight["env"]["SOURCE_SHA"] == "${{ inputs.sha }}"
+    assert preflight["env"]["SKIP_SOAK"] == "${{ inputs.skip_soak }}"
+    assert "--dry-run" in "\n".join(step.get("run", "") for step in preflight["steps"])
+    assert promote["environment"] == "release-feed-signing"
+    assert promote["needs"] == "preflight"
+    batch_step = next(
+        step
+        for step in promote["steps"]
+        if step.get("name") == "List and promote every Dev app, sequentially"
+    )
+    assert batch_step["env"]["GH_TOKEN"] == "${{ secrets.DEV_BUILDS_TOKEN }}"
+    runs = [step.get("run", "") for step in promote["steps"]]
+    assert all("QUILL_FEED_SIGNING_KEY" not in run for run in runs)
+    assert "--key-file" not in "\n".join(runs)
+    assert "QUILL_FEED_KEY_FILE" not in str(workflow)
+    assert sum("gh pr create" in run for run in runs) == 1
+    names = [step.get("name", "") for step in promote["steps"]]
+    assert names.index("Verify every signed feed and the signed index") < names.index(
+        "Open one signed batch-feed pull request"
+    )
+    pr_run = runs[names.index("Open one signed batch-feed pull request")]
+    assert "docs/site/updates/v2 docs/release/promotions.log" in pr_run
+    assert "git add" in pr_run
+    artifacts = [
+        step
+        for step in workflow["jobs"].values()
+        for step in step["steps"]
+        if "upload-artifact" in step.get("uses", "")
+    ]
+    assert len(artifacts) == 2
+    assert {artifact["with"]["name"] for artifact in artifacts} == {"release-feed-batch-audit"}
+    assert any("inputs.dry_run" in str(step.get("if")) for step in preflight["steps"])
 
 
 def test_the_promotion_log_path_is_the_one_the_script_writes() -> None:
