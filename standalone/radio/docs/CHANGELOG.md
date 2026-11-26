@@ -8,6 +8,19 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased] - 2026-11-07
 
+### Where Is the Sound? (2026-11-24)
+
+- **Audio > Where Is the Sound?** (Alt+Shift+A) says once, when you ask, what
+  is playing and the device it is on by its Windows name, with "System default"
+  followed by the device that is the default today. A chosen device Windows
+  does not list as connected is said to be so. It also names a background
+  station or mirror and its device, says that recordings take the stream
+  itself, and names another QUILL program listening on the microphone (FUX-03).
+- **A device that could not be opened is remembered for the session.** Where
+  Is the Sound? says which one it was and, once it is connected again, that
+  Output Device (Ctrl+Shift+D) sends the radio back to it. Nothing moves by
+  itself.
+
 ### An empty Favorites list says how to fill it (2026-11-24)
 
 - **A line before an empty Favorite stations list** names the two ways to a

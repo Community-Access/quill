@@ -384,17 +384,28 @@ class DemoRecorder:
         self.mark("Microphone muted" if muted else "Microphone unmuted")
         return True
 
-    def status_line(self) -> str:
+    def sound_parts(self) -> list[str]:
+        """What goes into the recording, devices named (FUX-03): a lost source
+        first, then "sound: A and B", microphone muted, the screen reader."""
         state = {"recording": "Recording", "paused": "Paused"}.get(self.state, self.state.title())
-        live = [
-            s.label for s in self.sources if not (s.source.kind == "microphone" and self.mic_muted)
-        ]
+        heard = [s for s in self.sources if not (s.source.kind == "microphone" and self.mic_muted)]
+        lost = [_spoken_source(s) for s in heard if _is_lost(s)]
+        live = [_spoken_source(s) for s in heard if not _is_lost(s)]
         reader = "in" if self.plan.source("screen_reader") is not None else "out"
-        parts = [f"{state}, {format_timestamp(self.elapsed())[:-2]}"]
-        parts.append("sound: " + (", ".join(live) if live else "none"))
+        parts = [f"{name} disconnected, recording silence" for name in lost]
+        parts.append(f"{state}, {format_timestamp(self.elapsed())[:-2]}")
+        parts.append("sound: " + (" and ".join(live) if live else "none"))
         if self.mic_muted:
             parts.append("microphone muted")
         parts.append(f"screen reader {reader}")
+        return parts
+
+    def sound_line(self) -> str:
+        """Only where the sound comes from, for Where Is the Sound?."""
+        return "; ".join(self.sound_parts()) + "."
+
+    def status_line(self) -> str:
+        parts = self.sound_parts()
         dropped = self._dropped + (
             self._screen.last_stats.dropped if self._screen and self._screen.last_stats else 0
         )
@@ -544,6 +555,28 @@ class DemoRecorder:
                 self._faces.stop()
             self.state = "discarded"
         shutil.rmtree(self.work, ignore_errors=True)
+
+
+def _spoken_source(source: Any) -> str:
+    """A source and the device behind it (FUX-03): "Microphone, USB Mic", or the
+    device's name alone when it already starts with the label ("Microphone
+    (Realtek Audio)"), so nothing is said twice."""
+    try:
+        name = str(source.device_name() or "").strip()
+    except Exception:  # noqa: BLE001 - the label alone is still an answer
+        name = ""
+    if not name:
+        return str(source.label)
+    if name.casefold().startswith(str(source.label).casefold()):
+        return name
+    return f"{source.label}, {name}"
+
+
+def _is_lost(source: Any) -> bool:
+    try:
+        return bool(source.is_lost())
+    except Exception:  # noqa: BLE001 - a source that cannot say is not reported lost
+        return False
 
 
 def _hide(folder: Path) -> None:

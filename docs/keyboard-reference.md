@@ -686,6 +686,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Key | Command | Command id |
 | --- | --- | --- |
 | Alt+F5 | Use My ChatGPT Subscription... | `studio.chatgpt_account` |
+| Alt+Shift+A | Where is sound | `studio.where_is_sound` |
 | Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Alt+Shift+F5 | Stop Describing the Folder | `studio.describe_folder_stop` |
 | Ctrl+3 | Recording Pre-flight Check... | `tools.hosted_ai_task` |
@@ -757,6 +758,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+F11 | Command key | `app.command_key` |
 | Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `radio.chatgpt_account` |
+| Alt+Shift+A | Internet Radio: Where Is the Sound? | `radio.where_is_sound` |
 | Alt+Shift+B | Background station | `radio.background_station` |
 | Alt+Shift+D | Mirror output | `radio.mirror_output` |
 | Alt+Shift+F | Play Favorite Station... | `radio.play_favorite` |

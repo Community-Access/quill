@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [2.0.0] - built, not yet released
 
+- **Where Is the Sound?** (FUX-03, 2026-11-24). Capture > Where Is the Sound?
+  (Alt+Shift+A) says once where Studio's players play (the device Windows gives
+  Studio), the recording or broadcast, the microphone a recording takes and
+  whether Windows lists it as connected, and another QUILL program listening on
+  the microphone. **Recording status** now names the microphone and sound card
+  behind each sound, and says when one has been disconnected and silence is
+  going in until it is back.
 - **Review the AI's chapter titles one by one** (FUX-12, 2026-11-24). In the
   Chapter Workbench, Propose AI titles no longer replaces every title at once.
   The proposals open in Review Proposed Titles, one check box for each chapter

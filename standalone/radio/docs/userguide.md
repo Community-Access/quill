@@ -2212,6 +2212,30 @@ mpv engine opens that same page as soon as you press Ctrl+Shift+D. And if a
 device is saved in your settings while the classic player is in use, Quill
 Radio hands the setting back and tells you the same thing.
 
+### Where Is the Sound?
+
+When you hear nothing, or the radio is somewhere you did not expect, press
+**Alt+Shift+A** (**Audio > Where Is the Sound?**). Quill Radio says once, and
+only when you ask:
+
+- what the player is doing and the device it is on, by the name Windows gives
+  it. "The system default" comes after the device that is the default today,
+  for example "Playing Jazz24 on Speakers (Realtek), the system default." A
+  chosen device Windows does not list is said to be "not connected", because a
+  device that is chosen is not proof that the sound reaches it. When the radio
+  is muted, "Muted." comes first.
+- a device that would not open earlier, so the radio switched back to another
+  one. When it is connected again, Quill Radio says so and that Output Device
+  (Ctrl+Shift+D) can choose it. Nothing moves by itself.
+- a background station or a mirror, and its device.
+- recordings, and that volume and mute do not affect them: Quill Radio records
+  the stream itself, not what comes out of the speakers.
+- another QUILL program listening on the microphone, such as QUILL Transcribe.
+
+On the classic Windows Media player it names the device Windows gives Quill
+Radio, "chosen by Windows". The command is also in the Command Palette, and
+QUILL's Internet Radio has it there too.
+
 ### A second device: a background station, or a mirror
 
 Quill Radio can play on a second sound card or headset at the same time as the

@@ -34,6 +34,13 @@ def _station_playlist(host: Any) -> None:
     station_playlist_commands.open_station_playlist(host)
 
 
+def _where_is_sound(host: Any) -> None:
+    """The player, its device, recordings, the microphone -- ui/radio/where_is_sound."""
+    from quill.ui.radio import where_is_sound
+
+    where_is_sound.say(host)
+
+
 def _dial(host: Any, verb: str) -> None:
     """Dial tuning's two commands -- see ui/radio/dial_tuning_commands."""
     from quill.ui.radio import dial_tuning_commands
@@ -172,6 +179,11 @@ def register_radio_commands(host: Any) -> None:
             "radio.whats_playing_details",
             "Internet Radio: What's Playing - Review and Copy...",
             host.radio_whats_playing_details,
+        ),
+        (
+            "radio.where_is_sound",
+            "Internet Radio: Where Is the Sound?",
+            lambda: _where_is_sound(host),
         ),
         (
             "radio.copy_whats_playing",

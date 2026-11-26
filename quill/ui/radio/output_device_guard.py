@@ -128,6 +128,9 @@ def change_device(host: Any, device: str) -> None:
         return
     host._previous_output_device = host._output_device
     host._output_device = device
+    from quill.ui.radio.where_is_sound import forget_lost_device
+
+    forget_lost_device(host)  # a deliberate choice ends the "could not be opened" story
     label = device_label(device)
     _log.info("Output device chosen: %s (%s)", label, device or "auto")
     station = host._state.station
@@ -201,6 +204,9 @@ def rescue_settled(host: Any, *, loaded: bool) -> None:
     label = device_label(device)
     back_to = device_label(previous)
     _log.warning("Output device %s would not open; the setting is back to %s", label, back_to)
+    from quill.ui.radio.where_is_sound import remember_lost_device
+
+    remember_lost_device(host, device, label)  # Where Is the Sound? says it again
     reverted = getattr(host, "on_output_device_reverted", None)
     if reverted is not None:
         try:

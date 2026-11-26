@@ -140,6 +140,12 @@ class MicrophoneSource(_Source):
         if thread is None or not thread.is_alive():
             self._close_stream()
 
+    def device_name(self) -> str:
+        """The microphone that opened, or the saved one until it has."""
+        if self.device is not None:
+            return str(self.device.name)
+        return self.source.device
+
     def input_balance(self) -> str:
         """The input carrying the sound, ``"1"`` or ``"2"``, when the other is silent."""
         if self._inputs < 2 or self.source.channel_mode != "mix":

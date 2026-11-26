@@ -957,11 +957,16 @@ When you start, pause, mark, mute or stop from a menu or the tray icon's menu, S
 | Pause or resume | Ctrl+Alt+Shift+P | A pause is a gap in the file, not a frozen picture |
 | Add a marker | Ctrl+Alt+Shift+B | Saved beside the video as a markers file |
 | Mute or unmute the microphone in the recording | Ctrl+Alt+Shift+U | The microphone stays open; the muted stretch is marked |
-| Recording status | Ctrl+Alt+Shift+T | Elapsed time, sounds in, screen reader in or out, dropped frames, space left |
+| Recording status | Ctrl+Alt+Shift+T | Elapsed time, sounds in and the device behind each, screen reader in or out, dropped frames, space left |
+| Where Is the Sound? | Alt+Shift+A | Where Studio plays, the recording, the microphone and whether it is connected |
 | Show the Recording status window | Ctrl+Alt+Shift+W | |
 | Emergency stop and save | Ctrl+Alt+Shift+End | A second stop key, in case one is swallowed |
 | Discard this recording | Ctrl+Alt+Shift+Delete | Asks before deleting anything |
 | Recover unfinished recordings | Ctrl+Alt+Shift+N | |
+
+Recording status names the microphone and sound card behind each sound, for example "sound: Microphone (USB Audio) and System sound". When one of them is disconnected, that comes first: "Microphone (USB Audio) disconnected, recording silence". Silence goes into the recording until the device is back.
+
+**Capture > Where Is the Sound?** (Alt+Shift+A) answers the wider question, once: a recording first, with where its sound comes from; a live broadcast; the microphone a recording takes and whether Windows lists it as connected; where Studio's players and previews play (the device Windows gives Studio; Studio Mixer's Programs tab can move it); and another QUILL program that is listening on the microphone. A chosen microphone is not proof of what was recorded: **Record a quick test** in Record a demonstration plays back what actually went in.
 
 Those keys work while Studio has focus. While you are demonstrating, focus is somewhere else, so assign system-wide keys: **Assign keys** in the Record a demonstration window, or **Capture > Capture global hotkeys...**. None is assigned for you, because a system-wide key takes that key away from every other program. Until you assign some, use the tray icon's menu, which has Stop and save, Pause, Add a marker, Recording status and the status window, and acts without bringing Studio back into the picture.
 

@@ -17,6 +17,7 @@ nothing else. wx-free, so the rule is testable without a UI.
 
 from __future__ import annotations
 
+from quill.core.app_keymap_overrides import calculate_app_keymap_overrides
 from quill.core.app_keymaps_ai import SMALL_APP_AI_KEYMAPS, with_agent_tasks
 from quill.core.family_chords import SHOW_HIDE_DEFAULTS
 from quill.core.keymap import DEFAULT_KEYMAP
@@ -44,6 +45,8 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         "studio.record_marker": "Ctrl+Alt+Shift+B",
         "studio.record_mute": "Ctrl+Alt+Shift+U",
         "studio.record_status": "Ctrl+Alt+Shift+T",
+        # Where Is the Sound? (FUX-03): the key it has in every media app.
+        "studio.where_is_sound": "Alt+Shift+A",
         "studio.record_window": "Ctrl+Alt+Shift+W",
         # A second Stop and save: a screen reader's keyboard hook can swallow
         # one chord invisibly (TRAY-007).
@@ -206,6 +209,10 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         # Resume Last Station on Launch; B is the one Ctrl+Alt letter left.
         "radio.lyrics": "Ctrl+Alt+B",
         "radio.statistics": "Ctrl+Shift+Q",
+        # Where Is the Sound? (FUX-03): the player, its device, the second
+        # player, recordings and the microphone, said once. Alt+Shift+A in
+        # every media app where it is free (ui/audio/sound_route).
+        "radio.where_is_sound": "Alt+Shift+A",
         "radio.sound_enhancements": "Ctrl+E",
         # A QUILL leader chord Radio cannot dispatch; the Radio entry above is
         # the same window on a real key.
@@ -587,20 +594,7 @@ SIBLING_APP_FIXED_ACCELERATORS: dict[str, str] = {
 
 
 def app_keymap_overrides(app_id: str, keymap: dict[str, str]) -> dict[str, str]:
-    """The :data:`APP_KEYMAPS` entries *app_id* should apply over *keymap*.
-
-    An app default applies when the listener has not chosen anything (no
-    binding at all) or is still on the shipped default. It never overwrites a
-    real customisation.
-
-    The shipped-default case is the one that matters: several radio commands
-    default to a QUILL-key *chord*, which is right in the editor and unusable
-    as a menu accelerator (wx misparses the text after the tab, #612), so
-    without this the command would show no key at all in the app that owns it.
-    """
-    overrides: dict[str, str] = {}
-    for command_id, binding in APP_KEYMAPS.get(app_id, {}).items():
-        current = keymap.get(command_id)
-        if not current or current == DEFAULT_KEYMAP.get(command_id):
-            overrides[command_id] = binding
-    return overrides
+    """Return the app defaults while preserving the listener's custom keys."""
+    return calculate_app_keymap_overrides(
+        app_id, keymap, app_keymaps=APP_KEYMAPS, default_keymap=DEFAULT_KEYMAP
+    )

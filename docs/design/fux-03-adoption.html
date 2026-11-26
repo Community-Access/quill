@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FUX-03: what is playing or recording here, and where the sound
+goes</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="fux-03-what-is-playing-or-recording-here-and-where-the-sound-goes">FUX-03:
+what is playing or recording here, and where the sound goes</h1>
+<p><strong>Date:</strong> 2026-11-24 <strong>Source:</strong> FUX-03 in
+the family UX plan (<code>git show b7c6a1a04^:complete2.md</code>), with
+the audio rule in <a
+href="2026-11-19-family-ux-pilots.md">2026-11-19-family-ux-pilots.md</a>
+(section 4: each app owns its own audio, and “what is playing or
+recording here?” is answered by each app about itself; there is no
+family mixer), held to <a
+href="family-interaction-contracts.md">family-interaction-contracts.md</a>.
+Radio first, then Studio, then the other apps that play or record.
+Earshot and macOS are out of scope.</p>
+<h2 id="what-an-answer-has-to-do">What an answer has to do</h2>
+<p>Every app that plays or records is held to the same four
+questions:</p>
+<ol type="1">
+<li><strong>Can the person ask?</strong> One menu item and key,
+reachable through the Command Palette, that says what is playing or
+recording in this app and on which device. It is said once, only when
+asked, and goes through the announcement service, so it is brailled too.
+Nothing is announced in the main window that the person did not ask
+for.</li>
+<li><strong>Does it name the device, and say when the device has
+gone?</strong> By the name Windows gives it, not “System default” alone:
+the system default is followed by the device that is the default today.
+A chosen device Windows does not list as connected is said to be so,
+because a configured route is not proof that sound reaches it. When a
+device disappears, the app says which route was affected and does not
+silently move a private route (a monitor, a microphone) somewhere new.
+When it comes back, recovery is a deliberate choice.</li>
+<li><strong>Does it say when another family app holds the
+microphone?</strong> The family’s microphone lock
+(<code>quill/core/dictation_owner.py</code>,
+<code>MicrophoneLock</code>) already refuses a second recorder and names
+the holder. The answer to question 1 also names a holder that is not
+this app.</li>
+<li><strong>Are play and record states somewhere the person can
+look?</strong> The status bar, a status readout, or the title, as the
+app already does it. No new panel.</li>
+</ol>
+<h2 id="the-shared-part">The shared part</h2>
+<p><code>quill/ui/audio/sound_route.py</code> keeps the words and the
+device lookup the same in every app, so two apps never describe one
+headset in two ways:</p>
+<ul>
+<li><code>output_device(saved)</code> and
+<code>input_device(saved)</code> look the saved device up in Windows’
+list of active endpoints
+(<code>quill/platform/windows/audio_routing.list_devices</code>), by its
+endpoint GUID for a playback device (the spelling the audio engines
+save, <code>wasapi/{guid}</code>) and by name for a microphone. No audio
+engine is started. When Windows cannot be asked, the app’s own words are
+used and nothing is claimed about the connection.</li>
+<li><code>on_device(device)</code> is “on Headphones (USB)”, “on the
+system default, Speakers (Realtek)” or “on Headphones (USB), which
+Windows does not list as connected right now”.</li>
+<li><code>microphone_note(asker)</code> is one sentence when another
+family app holds the microphone.</li>
+<li><code>COMMAND_LABEL</code> and <code>DEFAULT_KEY</code>:
+<strong>Where Is the Sound?</strong> on <strong>Alt+Shift+A</strong>.
+Alt+Shift+A was checked against every media app’s menus and keymaps
+(<code>family_menu_chords.json</code> and <code>APP_KEYMAPS</code>) on
+2026-11-24 and is free in Radio, Studio, Cast, Media Player, Converter
+and Transcribe. In QUILL and QUILL Lite it is Expand Abbreviations, so
+the editors answer through their existing status commands instead
+(below).</li>
+</ul>
+<h2 id="app-by-app">App by app</h2>
+<table>
+<thead>
+<tr>
+<th>App</th>
+<th>Can the person ask?</th>
+<th>Device named, and its loss</th>
+<th>Another app on the microphone</th>
+<th>Where state shows</th>
+<th>What changed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Radio</td>
+<td>What’s Playing? (Ctrl+T) said the station and track, never the
+device</td>
+<td>Output Device (Ctrl+Shift+D) chose it; a device that would not open
+was given back and said once (<code>output_device_guard</code>), then
+forgotten</td>
+<td>Radio does not record from a microphone; Dictate Here asks QUILL
+Transcribe</td>
+<td>The Now playing field, the status bar’s Now playing cell, the tray
+tooltip</td>
+<td><strong>Audio &gt; Where Is the Sound?</strong> (Alt+Shift+A, this
+pull request): the player and its device by name, a device Windows does
+not list, the classic Windows Media control (Windows decides the
+device), a device that could not be opened earlier and the way back once
+it is connected, the background station or mirror and its device, that
+recordings take the stream, and a family app on the microphone</td>
+</tr>
+<tr>
+<td>Studio</td>
+<td>Recording status (Ctrl+Alt+Shift+T) named the sources as
+“Microphone” and “System sound” only</td>
+<td>The microphone and the sound card reconnect by identity and say so;
+Recording status did not say a source was gone</td>
+<td>The lock refuses and names the holder when a recording or broadcast
+starts</td>
+<td>“Recording” at the front of the title, the Recording status window,
+the tray tooltip</td>
+<td><strong>Recording status</strong> names the device behind each sound
+and says when one is disconnected and silence is going in.
+<strong>Capture &gt; Where Is the Sound?</strong> (Alt+Shift+A): where
+Studio’s players play (the device Windows gives Studio), the recording
+and broadcast, the recording microphone and whether it is connected, and
+another app on the microphone. The quick test in Record a demonstration
+already plays back what went in</td>
+</tr>
+<tr>
+<td>Media Player</td>
+<td>Read Status Bar (Shift+F6) and Where am I? say state and position;
+no device</td>
+<td>Output Device (Ctrl+Shift+K) chooses; nothing is said when the
+device disappears</td>
+<td>Does not record</td>
+<td>Status bar fields State, Position, Chapter, Sleep, Backend</td>
+<td>Planned, second pull request</td>
+</tr>
+<tr>
+<td>Cast</td>
+<td>Say Current Episode (Ctrl+T) and Player Information (Ctrl+I); no
+device</td>
+<td>Output Device (Ctrl+Shift+K) chooses; on the Windows Media engine an
+absent device was reported as chosen (the readback in
+<code>output_routing.set_engine_output_device</code> never ran)</td>
+<td>Does not record; Dictate Here asks QUILL Transcribe</td>
+<td>Status bar cells; the title shows the Inbox count</td>
+<td>Planned, second pull request</td>
+</tr>
+<tr>
+<td>Transcribe</td>
+<td>Dictation Status (Alt+F9) says state, engine and language; never the
+microphone</td>
+<td>Choose Microphone (Ctrl+Shift+M); a microphone lost mid-dictation
+pauses and says so, and resumes when it comes back</td>
+<td>Takes the lock; refuses with the holder’s name</td>
+<td>The state line, the tray tooltip</td>
+<td>Planned, third pull request</td>
+</tr>
+<tr>
+<td>Dictation in QUILL, QUILL Lite and Inkwell</td>
+<td>Dictation Status (Alt+F9) in QUILL and QUILL Lite; no device</td>
+<td>The microphone in Dictation Settings; lost mid-dictation pauses and
+resumes</td>
+<td>Takes the lock</td>
+<td>QUILL Lite’s Dictation status cell; QUILL’s status bar message</td>
+<td>Planned, third pull request</td>
+</tr>
+<tr>
+<td>QUILL read-aloud</td>
+<td>No status command; the status bar’s Read Aloud cell</td>
+<td>Always the system default (<code>winsound</code>), with no choice; a
+device that fails is skipped silently</td>
+<td>Does not record</td>
+<td>The Read Aloud cell, which tests for a state the controller never
+uses</td>
+<td>Planned, third pull request</td>
+</tr>
+<tr>
+<td>QUILL Lite</td>
+<td>Has no read-aloud of its own; dictation as above</td>
+<td>As above</td>
+<td>As above</td>
+<td>As above</td>
+<td>With dictation, third pull request</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-each-app-does-not-do">What each app does not do</h2>
+<ul>
+<li><strong>No app moves another app’s sound.</strong> Nothing here
+pauses, ducks or reroutes anything outside the app that is asked; Studio
+Mixer, which can move a program, is still something the person opens and
+chooses in.</li>
+<li><strong>No new announcement nobody asked for.</strong> Every
+sentence above is the answer to a command. The device rescue Radio
+already had still speaks once when it happens; it is a failure, which is
+always spoken.</li>
+<li><strong>Recovery is chosen, never automatic.</strong> When a device
+comes back, the answer says so and names Output Device; the app does not
+move the sound back by itself.</li>
+</ul>
+<h2 id="the-acceptance-list">The acceptance list</h2>
+<ul>
+<li><strong>Play Radio while rehearsing a Studio recording and tell each
+route without sight:</strong> Alt+Shift+A in Radio names the station and
+its device; Alt+Shift+A in Studio names where Studio plays, the
+recording and the microphone behind it. Needs a live check with two
+devices.</li>
+<li><strong>Listen back to a short test capture:</strong> Record a quick
+test in Studio’s Record a demonstration plays back what went in, and
+Where Is the Sound? says a chosen microphone is not proof of what was
+captured.</li>
+<li><strong>Identify and recover a disconnected device:</strong> Radio
+names the device that could not be opened, and when it is connected
+again, the way back; Studio’s Recording status says which source was
+disconnected. Needs a live check: unplug a USB headset mid-play and
+mid-recording.</li>
+<li><strong>Limits are stated:</strong> the classic Windows Media
+control’s device is Windows’ to choose, and Radio says so; Studio has no
+output device of its own and says the device is the one Windows gives
+it.</li>
+</ul>
+<h2 id="left-and-why">Left, and why</h2>
+<ul>
+<li><strong>Studio’s audiobook player is not reported as playing or
+paused.</strong> It lives in the Chapter Workbench window, which has its
+own Where am I?; Studio’s main window does not hold it.</li>
+<li><strong>QUILL’s voice capture</strong> (wake word, conversation,
+voice commands) does not take the family microphone lock. It is QUILL’s
+speech mixin, and the third pull request looks at it with
+dictation.</li>
+</ul>
+</main>
+</body>
+</html>

@@ -62,4 +62,14 @@ def build_preferences(app: Any, audio_menu: Any, wx: Any) -> Any:
     from quill.ui.radio import second_output_ui
 
     second_output_ui.append_menu_items(app, audio_menu, wx)
+    # Where Is the Sound? (FUX-03): what plays or records here, and on which
+    # device, said once (ui/radio/where_is_sound).
+    from quill.ui.audio.sound_route import COMMAND_LABEL
+    from quill.ui.radio import where_is_sound
+
+    app._where_is_sound_item_id = wx.NewIdRef()
+    audio_menu.Append(
+        app._where_is_sound_item_id, app._menu_label(COMMAND_LABEL, "radio.where_is_sound")
+    )
+    app.frame.Bind(wx.EVT_MENU, lambda _e: where_is_sound.say(app), id=app._where_is_sound_item_id)
     return forget_volumes_id

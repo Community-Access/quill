@@ -2557,8 +2557,14 @@ off, and the status bar shows it at once.</p>
 <tr>
 <td>Recording status</td>
 <td>Ctrl+Alt+Shift+T</td>
-<td>Elapsed time, sounds in, screen reader in or out, dropped frames,
-space left</td>
+<td>Elapsed time, sounds in and the device behind each, screen reader in
+or out, dropped frames, space left</td>
+</tr>
+<tr>
+<td>Where Is the Sound?</td>
+<td>Alt+Shift+A</td>
+<td>Where Studio plays, the recording, the microphone and whether it is
+connected</td>
 </tr>
 <tr>
 <td>Show the Recording status window</td>
@@ -2582,6 +2588,19 @@ space left</td>
 </tr>
 </tbody>
 </table>
+<p>Recording status names the microphone and sound card behind each
+sound, for example “sound: Microphone (USB Audio), System sound”. When
+one of them is disconnected it says so, and that silence goes into the
+recording until the device is back.</p>
+<p><strong>Capture &gt; Where Is the Sound?</strong> (Alt+Shift+A)
+answers the wider question, once: where Studio’s players and previews
+play (the device Windows gives Studio; Studio Mixer’s Programs tab can
+move it), the recording or live broadcast as Recording status says it,
+the microphone a recording takes and whether Windows lists it as
+connected, and another QUILL program that is listening on the
+microphone. A chosen microphone is not proof of what was recorded:
+<strong>Record a quick test</strong> in Record a demonstration plays
+back what actually went in.</p>
 <p>Those keys work while Studio has focus. While you are demonstrating,
 focus is somewhere else, so assign system-wide keys: <strong>Assign
 keys</strong> in the Record a demonstration window, or <strong>Capture
