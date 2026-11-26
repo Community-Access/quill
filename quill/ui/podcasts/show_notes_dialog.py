@@ -47,7 +47,7 @@ class ShowNotesWindow:
         *,
         episode_title: str,
         description_html: str,
-        on_send_to_editor: Callable[[str], None] | None = None,
+        on_send_to_editor: Callable[..., None] | None = None,
         announce_cb: Callable[[str], None] | None = None,
         on_seek: Callable[[int], None] | None = None,
         podcast_title: str = "",
@@ -78,7 +78,7 @@ class ShowNotesWindow:
         *,
         episode_title: str,
         description_html: str,
-        on_send_to_editor: Callable[[str], None] | None = None,
+        on_send_to_editor: Callable[..., None] | None = None,
         on_seek: Callable[[int], None] | None = None,
         podcast_title: str = "",
         copy_format: Callable[[], str] | None = None,
@@ -91,6 +91,7 @@ class ShowNotesWindow:
         self._description_html = description_html
         self._plain_text = html_to_plain_text(description_html)
         self._on_send_to_editor = on_send_to_editor
+        self._episode_title = episode_title
         self.frame.SetTitle(f"Show Notes -- {episode_title}")
         if self._body is not None:
             self._body.Destroy()
@@ -111,7 +112,11 @@ class ShowNotesWindow:
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         send_btn = wx.Button(body, label="&Send to Editor")
-        send_btn.SetHelpText("Opens these show notes as a new document, as plain text.")
+        send_btn.SetHelpText(
+            "Opens these show notes in QUILL as a document that names the episode "
+            "and the show. From QUILL Cast they are first saved in Documents, in "
+            "the QUILL Cast folder."
+        )
         self._save_btn = wx.Button(body, label="Save &As...")
         self._save_btn.SetHelpText(
             "Saves these show notes to a file as plain text, HTML or Markdown; the "
@@ -194,6 +199,7 @@ class ShowNotesWindow:
         )
 
     def _on_send_to_editor_click(self, _event: object) -> None:
+        # The handoff says the one sentence (FUX-02): saying "sent" here as
+        # well was a second, and outside QUILL a false, announcement.
         if self._on_send_to_editor is not None:
-            self._on_send_to_editor(self._plain_text)
-            self._announce("Sent show notes to a new document")
+            self._on_send_to_editor(self._plain_text, title=self._episode_title)

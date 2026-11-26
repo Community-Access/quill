@@ -27,7 +27,7 @@ def test_the_show_notes_window_is_the_notes_reader_with_send_and_save(wx_app) ->
             parent,
             episode_title="Thursday",
             description_html=NOTES,
-            on_send_to_editor=sent.append,
+            on_send_to_editor=lambda text, **_about: sent.append(text),
             announce_cb=said.append,
             on_seek=seeks.append,
             podcast_title="The Daily",

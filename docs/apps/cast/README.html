@@ -512,7 +512,8 @@ through one wrapped line, and links written as
 trigger a network image fetch QUILL didn’t audit). <strong>Send to
 Editor</strong>, in the same dialog, or <strong>Send Show Notes to
 Editor</strong> on the episode’s context menu, opens the plain-text
-version as a new QUILL document.</p>
+version as a new QUILL document that starts with the episode, the show
+and where it came from.</p>
 <h4 id="controlling-playback-without-opening-a-dialog">Controlling
 playback without opening a dialog</h4>
 <ul>
@@ -1019,8 +1020,11 @@ Podcast, Import/Export OPML, Podcast Settings), <strong>Episode</strong>
 (a live now-playing line, Play/Pause, Stop, Next/Previous Chapter),
 <strong>Downloads</strong> (Pause All / Resume All), and
 <strong>Help</strong>. One difference from inside QUILL: “Send Show
-Notes to Editor” copies the notes to the clipboard instead — there is no
-editor buffer standalone — and announces that it did.</li>
+Notes to Editor”, “Open Transcript in Editor” and the Transcript
+window’s “Open in QUILL” first save the document in Documents\QUILL
+Cast, then open it in QUILL (or QUILL Lite), and say where it was saved.
+The transcript names the moment you were reading, lists that episode’s
+bookmarks, and opens with the cursor on that line.</li>
 </ul>
 <p>The app puts an icon in the system tray with the same podcast
 controls QUILL’s own tray icon offers, plus <strong>Show</strong>

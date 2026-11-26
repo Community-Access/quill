@@ -102,6 +102,7 @@ def _open_transcript_reader(dialog: Any, station: Any, cues: object, is_automati
         announce=dialog._announce,
         show_modal_dialog=getattr(dialog, "_show_modal_dialog", None),
         on_send_to_quill=None,
+        source_app="Quill Radio",  # FUX-02: the reader saves it and opens it in QUILL
         is_automatic=is_automatic,
         show_title=str(getattr(station, "source", "") or ""),
         source_url=str(getattr(station, "homepage", "") or ""),

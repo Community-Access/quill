@@ -5878,7 +5878,11 @@ in Chapter 5 walks through each one.
    is, such as "Found at 12 minutes 8 seconds".
 5. The other buttons are **Copy**, **Links...** (Ctrl+Shift+L, every web
    address in the transcript), **Save As...** (plain text, WebVTT or SubRip),
-   and **Open in QUILL**.
+   and **Open in QUILL** (Alt+Q). Open in QUILL saves the transcript in your
+   Documents folder, in a folder called Quill Radio, names the video and the
+   moment your cursor is on, and opens it in QUILL with the cursor on that
+   line. Radio says where it saved it first. Without QUILL it opens in QUILL
+   Lite; with neither, it stays saved and Radio says so.
 6. Press **Escape** to close.
 
 If the captions were made automatically, the heading says so. A live stream

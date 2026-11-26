@@ -159,9 +159,14 @@ class ManagerVerbsMixin:
         if self._on_send_show_notes is None:
             return
         from quill.core.podcasts.show_notes import html_to_plain_text
+        from quill.ui.podcasts.transcript_actions import show_title_of
 
-        self._on_send_show_notes(html_to_plain_text(episode.description))
-        self._announce("Sent show notes to a new document")
+        # One sentence, from the handoff itself (FUX-02).
+        self._on_send_show_notes(
+            html_to_plain_text(episode.description),
+            title=episode.title,
+            show=show_title_of(self._library, episode),
+        )
 
     def _on_toggle_played(self, episode: PodcastEpisode) -> None:
         position_sync.mark_played(episode, not episode.played)

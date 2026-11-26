@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FUX-02: carrying the work between apps, with the reason</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="fux-02-carrying-the-work-between-apps-with-the-reason">FUX-02:
+carrying the work between apps, with the reason</h1>
+<p><strong>Date:</strong> 2026-11-24 <strong>Feature:</strong> FUX-02,
+“Carry the work between apps, including the reason”, from the family UX
+plan (read it with <code>git show b7c6a1a04^:complete2.md</code>). It is
+held to <a
+href="family-interaction-contracts.md">family-interaction-contracts.md</a>.
+<strong>Decisions it follows:</strong> <a
+href="2026-11-19-family-ux-pilots.md">2026-11-19-family-ux-pilots.md</a>,
+section 3. The one cross-app journey is A: from QUILL Cast to a saved
+place to QUILL. It uses the handoff the family already has (the app
+launcher and session restore), and no new kind of handoff is added
+before it works. Beacon takes part only once it is released. <strong>Out
+of scope:</strong> Earshot and the macOS apps.</p>
+<p>The moment: “Open that transcript in QUILL”, or “Transcribe this part
+of my recording”. A handoff should say what it carried, where the new
+thing is, and how to get back. When the other app is not there, it
+should say so in a plain sentence and keep the work.</p>
+<h2 id="1-the-existing-mechanism-reused">1. The existing mechanism,
+reused</h2>
+<ul>
+<li><strong>The launcher:</strong>
+<code>quill/core/app_launcher.py</code> has
+<code>launch_app(key, extra_args=...)</code>. It finds a sibling app in
+the shared runtime, beside the current app, or in an adjacent portable
+folder. It returns False, and never raises, when the sibling is not
+installed. <code>is_app_released</code> is the release gate, and each
+caller checks it.</li>
+<li><strong>Opening a sibling or offering to install it:</strong>
+<code>try_open_or_offer</code> in
+<code>quill/ui/companion_offer.py</code>.</li>
+<li><strong>Opening a file in an editor:</strong>
+<code>open_in_editor</code> in <code>quill/ui/scribe_app_host.py</code>.
+It tries QUILL, then QUILL Lite. It now takes a line and passes it to
+QUILL as <code>--line</code>, which QUILL already accepted and forwards
+to a running copy.</li>
+<li><strong>Forwarding to a running QUILL:</strong>
+<code>quill/core/ipc.py</code>. A request carries the path, line, column
+and action.</li>
+<li><strong>Session restore</strong> brings each app back to where it
+was. Cast’s bookmarks (<code>quill/core/media/bookmarks.py</code>,
+shared with Radio) keep a position to the millisecond, with a note. Go
+There returns to that position.</li>
+</ul>
+<p>No new handoff type, protocol or “from” argument is added. Where a
+handoff makes a copy, the copy itself says where it came from, because a
+document outlives the window that made it.</p>
+<p><strong>Three kinds of handoff</strong> (the first acceptance
+item):</p>
+<ul>
+<li><strong>A reference:</strong> an existing file’s path is handed to
+another app, and nothing is copied. Examples are Scribe’s Next Steps, a
+WordPress draft and Explorer’s Send To.</li>
+<li><strong>A copy:</strong> text is written as a new document. The only
+example is Cast and Radio show notes or transcripts going to QUILL
+(section 3). The copy goes into the app’s own folder in Documents, and
+the original is untouched.</li>
+<li><strong>A transformed output:</strong> a Scribe, Converter or Studio
+result, kept in that app’s output folder.</li>
+</ul>
+<h2 id="2-every-handoff">2. Every handoff</h2>
+<p><strong>Says origin</strong> means the receiving app, or the carried
+document, names where the work came from. <strong>Missing</strong> is
+what happens when the other app is not installed, or not released in
+this build.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>From, command</th>
+<th>Carries</th>
+<th>Receiver</th>
+<th>Says origin, way back</th>
+<th>Missing or unreleased</th>
+<th>Speech</th>
+<th>Gap, and fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Any app: the QuillVille menu and the tray’s Open
+(<code>_launch_sibling</code>)</td>
+<td>Nothing</td>
+<td>A new process, or the running one comes forward</td>
+<td>n/a</td>
+<td>An install offer, or “… could not be opened; it may not be
+installed.” Unreleased apps are hidden</td>
+<td>“Opening {app}.” once</td>
+<td>None</td>
+</tr>
+<tr>
+<td>2</td>
+<td>QUILL Cast: the Transcript window’s Open in QUILL
+(<code>transcript_reader.py</code>)</td>
+<td>Was: plain text, with no timings</td>
+<td>Was: <strong>the clipboard</strong></td>
+<td>Was: no</td>
+<td>n/a</td>
+<td>Was: “Show notes copied to clipboard” for a transcript</td>
+<td><strong>Fixed (journey A):</strong> saved as Markdown in
+Documents\QUILL Cast. It names the episode, the show, the app and the
+moment, lists this episode’s bookmarks and their notes, and says how to
+get back. QUILL opens it with the cursor on the line you were reading.
+Section 3</td>
+</tr>
+<tr>
+<td>3</td>
+<td>QUILL Cast: an episode’s Open Transcript in Editor
+(<code>transcript_actions.open_in_editor</code>)</td>
+<td>Was: plain text</td>
+<td>Was: the clipboard</td>
+<td>Was: no</td>
+<td>n/a</td>
+<td>Was: “Fetching transcript…”, then “Show notes copied to
+clipboard”</td>
+<td><strong>Fixed:</strong> as row 2, without the moment, because
+nothing is being read</td>
+</tr>
+<tr>
+<td>4</td>
+<td>QUILL Cast: the Show Notes window’s Send to Editor, and the episode
+menu’s Send Show Notes to Editor</td>
+<td>Was: plain text</td>
+<td>Was: the clipboard</td>
+<td>Was: no</td>
+<td>n/a</td>
+<td>Was: two sentences, and the second was false (“Show notes copied to
+clipboard”, then “Sent show notes to a new document”)</td>
+<td><strong>Fixed:</strong> saved and opened as row 2, as “Show -
+Episode show notes.md”. One sentence</td>
+</tr>
+<tr>
+<td>5</td>
+<td>QUILL, the same podcast commands
+(<code>main_frame_podcast_dialogs.py</code>)</td>
+<td>Text, into a new unsaved document</td>
+<td>The same process</td>
+<td>Was: no</td>
+<td>n/a</td>
+<td>Was: two (“Opened podcast show notes”, then “Sent show notes…”)</td>
+<td><strong>Fixed:</strong> the new document starts with the episode,
+the show and “Show notes, from QUILL.” One sentence</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Quill Radio: the transcript window’s Open in QUILL
+(<code>radio/transcript_command.py</code>,
+<code>browse_transcript.py</code>)</td>
+<td>Nothing</td>
+<td>Nothing</td>
+<td>n/a</td>
+<td>The button was <strong>always dimmed</strong>, because its host
+method was never written</td>
+<td>None</td>
+<td><strong>Fixed:</strong> as row 2, saved in Documents\Quill
+Radio</td>
+</tr>
+<tr>
+<td>7</td>
+<td>QUILL Transcribe: a file transcript’s Open in QUILL
+(<code>transcribe_files.py</code>, through
+<code>AppShell.open_in_quill</code>)</td>
+<td>The path of an app-data copy named by an ID</td>
+<td>A new QUILL process</td>
+<td>No</td>
+<td>Only an error box if the process cannot start. No check that QUILL
+is there</td>
+<td><strong>None</strong></td>
+<td>Planned (second pull request)</td>
+</tr>
+<tr>
+<td>8</td>
+<td>QUILL Studio: picture descriptions, and AI Narrate a Recording
+(<code>studio_picture_run.py</code>,
+<code>studio_ai_narrative.py</code>)</td>
+<td>A document written beside the source and named first</td>
+<td><code>AppShell.open_in_quill</code></td>
+<td>The document names its source</td>
+<td>As row 7</td>
+<td>One sentence, before QUILL comes forward</td>
+<td>Studio is not released. Left with row 7’s fix to
+<code>open_in_quill</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Scribe’s Next Steps in Converter, Studio, Player, Cast, Beacon and
+Social: Open in QUILL (Word) and the like
+(<code>scribe_app_host.py</code>)</td>
+<td>The result’s path (a reference)</td>
+<td><code>launch_app("quill")</code>, else QUILL Lite</td>
+<td>No</td>
+<td>Hidden when no editor is installed. Otherwise “{editor} could not be
+opened. {file} is saved in its folder.”</td>
+<td>Open Result: “Word is open in QUILL”</td>
+<td>None. The result lives in your Scribe output folder, and its
+sentence says so</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Scribe: Send to Media Player (MP3, DAISY) in Converter, QUILL and
+QUILL Lite (<code>scribe_entry.send_to_player</code>)</td>
+<td>The path</td>
+<td><code>launch_app("player")</code></td>
+<td>No</td>
+<td><strong>Offered in public builds, where Media Player is not
+released</strong>. Choosing it says “Media Player could not be
+opened…”</td>
+<td>As row 9</td>
+<td>Planned (third pull request): offered only where Media Player is
+released</td>
+</tr>
+<tr>
+<td>11</td>
+<td>QUILL Lite: Open QUILL Studio
+(<code>lite_window_tools.py</code>)</td>
+<td>Nothing</td>
+<td><code>launch_app("studio")</code></td>
+<td>n/a</td>
+<td>Hidden when unreleased. Otherwise “QUILL Studio could not be opened;
+it may not be installed.”</td>
+<td>“Opening QUILL Studio.”</td>
+<td>None</td>
+</tr>
+<tr>
+<td>12</td>
+<td>WordPress, from the apps that are not editors: open a local draft
+(<code>wordpress_family.py</code>)</td>
+<td>The draft’s path</td>
+<td><code>launch_app("quill")</code></td>
+<td>No</td>
+<td>“The draft is waiting in QUILL and QUILL Lite, under File,
+WordPress, Open Local Draft.”</td>
+<td>None from the sender</td>
+<td>None. The draft stays in the WordPress drafts folder</td>
+</tr>
+<tr>
+<td>13</td>
+<td>WordPress player: Open in Player
+(<code>wordpress_player_commands.py</code>)</td>
+<td>The stream URL</td>
+<td><code>launch_app("player")</code></td>
+<td>n/a</td>
+<td>“…is not part of this release yet. Use Open in Browser.” or “…not
+installed beside this app. Use Open in Browser instead.”</td>
+<td>“Opening {title} in Quill Media Player.”</td>
+<td>None</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Explorer’s Convert with Quill verb (<code>__main__.py</code>)</td>
+<td>Paths</td>
+<td><code>launch_app("converter")</code></td>
+<td>n/a</td>
+<td><strong>Silent</strong>: the result was ignored, and QUILL
+exited</td>
+<td>None</td>
+<td>Planned (second pull request)</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Explorer’s Send To, and the scribe, ocr and read actions
+(<code>shell_integration.py</code>, IPC)</td>
+<td>Path and action</td>
+<td>A running QUILL, or a new one</td>
+<td>n/a (it is Explorer)</td>
+<td>n/a</td>
+<td>The Convert window, or “…is waiting until you close {title}.”</td>
+<td>None</td>
+</tr>
+<tr>
+<td>16</td>
+<td>QUILL Cast: QUILL Lineups, Send to Radio
+(<code>lineups_host.py</code>)</td>
+<td>A request file and IPC</td>
+<td><code>_launch_sibling("radio")</code></td>
+<td>Radio says what it plays</td>
+<td>The install offer, <strong>and still</strong> “Sent … to Quill Radio
+to play.”</td>
+<td>Two sentences</td>
+<td>Planned (second pull request)</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Quill Radio: an episode’s Play Next in QUILL Cast, Add to QUILL Cast
+Queue and Send to the QUILL Cast Inbox
+(<code>cast_handoff.py</code>)</td>
+<td>An entry in <code>radio-actions.json</code>, applied when Cast next
+starts</td>
+<td>No launch</td>
+<td>Cast applies it quietly</td>
+<td><strong>Offered in public builds, where Cast is not
+released</strong>, with a confirmation such as “It will be next in the
+QUILL Cast queue.”</td>
+<td>That sentence</td>
+<td>Planned (third pull request): offered only where Cast is
+released</td>
+</tr>
+<tr>
+<td>18</td>
+<td>QUILL: Dictate in Other Programs
+(<code>windows_dictation_extras.py</code>)</td>
+<td>A settings file and <code>--dictate-anywhere</code></td>
+<td>Transcribe, else Inkwell</td>
+<td>“…has your dictation settings”</td>
+<td>“Quill Inkwell is not installed with this copy…”</td>
+<td>One sentence</td>
+<td>None</td>
+</tr>
+<tr>
+<td>19</td>
+<td>Cast and Radio: Edit &gt; Dictate Here
+(<code>dictate_here.py</code>)</td>
+<td>The field’s place (window, process and control), with
+<code>--dictate-here-place</code></td>
+<td>Transcribe</td>
+<td>Transcribe starts only in that field</td>
+<td>“Dictate Here needs QUILL Transcribe, which is not installed with
+this copy.”</td>
+<td>“Starting QUILL Transcribe. Dictation starts here when it is
+ready.”</td>
+<td>None. FUX-07 settled the target</td>
+</tr>
+<tr>
+<td>20</td>
+<td>QUILL: Open the Media Player
+(<code>main_frame_media_player.py</code>)</td>
+<td>Nothing</td>
+<td><code>try_open_or_offer</code></td>
+<td>n/a</td>
+<td>Not registered when unreleased</td>
+<td>“Opening Quill Media Player.”</td>
+<td>None</td>
+</tr>
+<tr>
+<td>21</td>
+<td>Beacon: open a place that is a Scribe document, or any other file
+(<code>beacon/scribe_ui.py</code>)</td>
+<td>The path</td>
+<td>An editor, Media Player, the browser, or Windows’ own program for
+the file</td>
+<td>No</td>
+<td>A file with no program to open it raised an exception through
+<code>os.startfile</code></td>
+<td>“Opened {title}”</td>
+<td>Beacon is not released. Left until it is (pilot decision)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Not found:</strong> Radio recordings are not handed to Studio
+or Converter. The Recordings window offers Open in Folder. Converter
+does not hand its own outputs to Media Player, except through Scribe
+(row 10). Both are new handoffs, and the pilot decision rules them out
+until journey A works.</p>
+<h2 id="3-journey-a-as-built">3. Journey A, as built</h2>
+<ol type="1">
+<li><strong>Hear a passage and save the place.</strong> This already
+existed. Add Bookmark in QUILL Cast (and in Quill Radio, into the same
+file) keeps the position to the millisecond. Edit Note adds a short
+note.</li>
+<li><strong>Come back later.</strong> This already existed. Session
+restore reopens Cast where it was, and Bookmarks’ Go There, or Enter,
+starts the episode at the saved moment.</li>
+<li><strong>Open the transcript or notes in QUILL without losing where
+it came from.</strong> This is new:
+<ul>
+<li><strong>Open in QUILL</strong> in the Transcript window, or
+<strong>Open Transcript in Editor</strong> on the episode, writes the
+transcript as Markdown. It uses the same shape as Save As, with your
+Speakers or Timestamps choice. The document starts with the episode, the
+show and this line: “Sent from QUILL Cast at 12:30 in the audio. To hear
+any line again, play it in QUILL Cast, open its transcript and press
+Enter on that line.” Under the heading <strong>Your bookmarks</strong>
+it lists each bookmark in this episode by time, with its note. The
+heading <strong>Transcript</strong> is always there, so heading
+navigation reaches it. A caption that spans two lines is counted as two,
+so the cursor still lands on the right line. QUILL opens it with the
+cursor on the line the Transcript window’s cursor was on.</li>
+<li><strong>Send to Editor</strong> writes the show notes the same way,
+headed “Show notes, from QUILL Cast.”</li>
+<li><strong>Where the file goes:</strong> the copy is written to
+Documents\QUILL Cast (Documents\Quill Radio for Radio). It is named like
+Save As names it, “Show - Episode.md”. Sending the same thing again
+reopens that copy. A different document under the same name, such as an
+edited copy or another show’s “Episode 1”, gets “(2)” and is never
+written over.</li>
+<li><strong>What is said:</strong> one short sentence, before QUILL
+comes forward, that leads with the folder: “Saved in Documents, in the
+QUILL Cast folder. Opening it in QUILL.” QUILL’s window title, read when
+it comes forward, names the file. A longer sentence would be cut off at
+that point. Sending the same document again says “Already saved…”. Cast
+lets the QUILL that answers take the foreground
+(<code>AllowSetForegroundWindow</code>). Without that, a QUILL that is
+already running would only flash on the taskbar. With no QUILL, it opens
+in QUILL Lite, which has no line option, so the sentence adds “It opens
+at the top.” With neither editor, the sentence names the file and the
+folder and ends “QUILL is not installed with this copy, so it was not
+opened.” The document stays where the sentence says. There is no install
+offer and no clipboard.</li>
+<li><strong>Inside QUILL</strong>, where Cast’s commands run in the
+editor’s own process, nothing is saved. A new, unsaved document opens
+with the same heading lines and the cursor on the line that was being
+read, and one sentence names it.</li>
+<li><strong>The way back:</strong> the Transcript window stays open with
+its cursor where it was. The origin line tells you how to hear the line
+again, and the bookmarks list names the moments.</li>
+</ul></li>
+</ol>
+<p><strong>Not built, with the reason:</strong> a link in the QUILL
+document that starts Cast at the moment. That would need Cast to accept
+a position on its command line or over IPC, which is a new kind of
+handoff. The pilot decision rules it out until journey A has been
+observed. The origin line and the bookmarks give the way back in
+words.</p>
+<h2 id="4-acceptance">4. Acceptance</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Where it is met</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Distinguish passing a reference, making a copy and creating a
+transformed output</td>
+<td>Section 1. Only the Cast and Radio text handoff makes a copy, and
+its sentence and file say so</td>
+</tr>
+<tr>
+<td>Preserve the original and explain where the new artifact lives</td>
+<td>The feed and the cached transcript are untouched. The copy’s folder
+and name are in the one sentence. A changed copy is never
+overwritten</td>
+</tr>
+<tr>
+<td>Unavailable or gated destinations offer a useful save or export path
+without an installation detour</td>
+<td>Journey A keeps the saved document and names it. Rows 10, 14, 16 and
+17 are planned</td>
+</tr>
+<tr>
+<td>Do not change the receiving app’s playback, microphone or account
+choice unexpectedly</td>
+<td>QUILL only opens a document. Cast’s playback is not touched, and
+nothing is paused or ducked</td>
+</tr>
+<tr>
+<td>Return to the origin restores its selection</td>
+<td>The Transcript window keeps its cursor. Bookmarks and session
+restore return to the moment</td>
+</tr>
+<tr>
+<td>Exercise portable installs, missing apps, duplicate names, changed
+files and unavailable remote resources</td>
+<td>Tests cover a missing editor, a folder that cannot be written, a
+duplicate name, an edited copy and sending again. Portable sibling
+discovery is <code>build_launch_argv</code>, unchanged and already
+tested. A transcript that cannot be fetched already says so before
+anything is handed over. Live checks are listed in the pull request</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-pull-requests">5. Pull requests</h2>
+<ol type="1">
+<li><strong>Journey A</strong> (this document, rows 2 to 6):
+<code>feat/m4-journey-a</code>.</li>
+<li><strong>Launches that said nothing or said too much</strong> (rows
+7, 14 and 16): <code>feat/m4-launch-outcomes</code>.</li>
+<li><strong>Release gates on offered destinations</strong> (rows 10 and
+17): <code>feat/m4-release-gates</code>.</li>
+</ol>
+</main>
+</body>
+</html>

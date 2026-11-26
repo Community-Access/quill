@@ -2,6 +2,16 @@
 
 ## 1.0.0
 
+
+### Podcast show notes and transcripts say where they came from (2026-11-24)
+
+In QUILL's podcasts, Send to Editor, Send Show Notes to Editor and Open
+Transcript in Editor open a new document that starts with the episode, the
+show and "Show notes, from QUILL." (or the transcript's moment and your
+bookmarks in that episode), and say so once. Before, two sentences were said
+("Opened podcast show notes", then "Sent show notes to a new document")
+(FUX-02).
+
 ### The QuillVille family starts sooner, and Lite failures can be diagnosed (2026-11-24)
 
 QUILL Lite now makes the first editor window ready before it starts optional
@@ -102,6 +112,7 @@ sessions with people remain.
 File Explorer's Convert with Quill did nothing at all when Quill Converter was
 not installed beside QUILL. It now shows a message, in front of File
 Explorer, that names the file and says it was not converted (FUX-02).
+
 
 ### Back to the sentence you left, in QUILL and QUILL Lite (2026-11-24)
 

@@ -123,7 +123,33 @@ def _open_reader(host: Any, show: Any, episode: Any, cues: object) -> None:
         show_title=str(getattr(show, "title", "") or ""),
         source_url=str(getattr(episode, "audio_url", "") or ""),
         transcript_detail=_transcript_detail(host),
+        source_app=str(getattr(host, "_handoff_source_app", "") or ""),
+        bookmarks=_episode_bookmarks(show, episode),
     )
+
+
+def show_title_of(library: Any, episode: Any) -> str:
+    """The title of the show *episode* belongs to, or ``""``."""
+    guid = getattr(episode, "guid", None)
+    for show in getattr(library, "shows", None) or ():
+        if any(item.guid == guid for item in getattr(show, "episodes", ())):
+            return str(getattr(show, "title", "") or "")
+    return ""
+
+
+def _episode_bookmarks(show: Any, episode: Any) -> list[tuple[int, str]]:
+    """This episode's bookmarks as (position, note), for the QUILL document."""
+    from quill.core import bookmark_anchors
+    from quill.core.media.bookmarks import BookmarkStore
+
+    anchor = bookmark_anchors.for_episode(getattr(show, "id", ""), getattr(episode, "guid", ""))
+    if not anchor:
+        return []
+    try:
+        marks = BookmarkStore().list(anchor)
+    except Exception:  # noqa: BLE001 - a transcript opens without its bookmarks
+        return []
+    return [(mark.position_ms, mark.note or mark.label) for mark in marks]
 
 
 def _is_playing(controller: Any, episode: Any) -> bool:
@@ -172,7 +198,14 @@ def open_in_editor(host: Any, show: Any, episode: Any) -> None:
     if send is None:
         host._announce("Opening in the editor is not available here.")
         return
-    fetch_then(host, show, episode, send)
+    title = str(getattr(episode, "title", "") or "")
+    show_title = str(getattr(show, "title", "") or "")
+    fetch_then(
+        host,
+        show,
+        episode,
+        lambda text: send(text, kind="transcript", title=title, show=show_title),
+    )
 
 
 def fetch_then(host: Any, show: Any, episode: Any, consume: object) -> None:
@@ -239,10 +272,15 @@ def view_show_notes(host: Any, episode: Any) -> None:
 
     # A peer (qc.md Phase 4): one Show Notes window, raised with whichever
     # episode was asked about.
+    send = getattr(host, "_on_send_show_notes", None)
+    show_title = show_title_of(getattr(host, "_library", None), episode)
     content: dict[str, Any] = {
         "episode_title": episode.title,
         "description_html": episode.description,
-        "on_send_to_editor": getattr(host, "_on_send_show_notes", None),
+        # FUX-02: the show travels with the notes, so the document names it.
+        "on_send_to_editor": (
+            (lambda text, **about: send(text, show=show_title, **about)) if send else None
+        ),
         "on_seek": seek if controller is not None else None,
     }
     existing = getattr(host, "_show_notes_window", None)

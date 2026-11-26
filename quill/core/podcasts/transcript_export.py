@@ -130,6 +130,11 @@ def safe_filename(show: str, episode: str, *, extension: str = "md") -> str:
     return f"{stem or 'Transcript'}.{extension}"
 
 
+def cue_line(cue: Any, detail: str) -> str:
+    """One cue as it appears in the Markdown document (pure)."""
+    return _line(cue, detail)
+
+
 def _line(cue: Any, detail: str) -> str:
     """One cue as one Markdown line (pure)."""
     text = str(getattr(cue, "text", "") or "").strip()
@@ -156,6 +161,7 @@ def cues_to_markdown(
     episode: str = "",
     source_url: str = "",
     is_automatic: bool = False,
+    preface: Sequence[str] = (),
 ) -> str:
     """*cues* as a Markdown document (pure).
 
@@ -164,6 +170,9 @@ def cues_to_markdown(
     transcript **says so in the file**, not only in the window it was read in:
     the file outlives the window, and a machine transcript passed on as a human
     one is a confident wrong answer arriving somewhere nobody can check it.
+
+    *preface* is written straight after the heading and show: a transcript
+    handed to QUILL (FUX-02) says there where it came from.
     """
     wanted = normalize_detail(detail)
     lines: list[str] = []
@@ -175,6 +184,9 @@ def cues_to_markdown(
     if subtitle:
         lines.append(f"*{subtitle[0]}*")
         lines.append("")
+    # Where it came from goes before the source address: a long audio URL
+    # read first would bury it.
+    lines.extend(preface)
     if is_automatic:
         lines.append(
             "> These are automatic captions, machine-generated from the audio, so expect mistakes."
