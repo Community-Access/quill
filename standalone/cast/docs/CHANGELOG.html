@@ -250,6 +250,21 @@ app) are written as a welcome for new users rather than a list of
 changes; this file keeps the engineering record. The 1.x release notes
 were retired on 2026-10-03.</p>
 <h2 id="unreleased">Unreleased</h2>
+<h3
+id="an-episode-says-when-its-download-failed-or-its-file-has-gone-2026-11-24">An
+episode says when its download failed or its file has gone
+(2026-11-24)</h3>
+<p>In the episode list, a download that failed used to read “Streaming”,
+the same as an episode nobody asked to download, so you never learned it
+had stopped. It now reads “Download failed, will stream:” and the first
+sentence of the reason, such as “The disk is full (2 GB free).” A
+downloaded episode whose file was deleted or moved outside Cast used to
+read “Downloaded”, a promise that it plays without a connection; it now
+reads “File missing, will stream. Download to get it back”, and the
+Downloaded column says “File missing, streams”. These cells are now
+written by column, so they land in Status and Downloaded wherever you
+have moved those columns. Nothing is spoken; the row says it when you
+reach it (FUX-13).</p>
 <h3 id="back-to-where-you-were-before-a-jump-2026-11-24">Back to where
 you were before a jump (2026-11-24)</h3>
 <p><strong>Episode &gt; Back to Where I Was</strong> (Alt+Left) returns

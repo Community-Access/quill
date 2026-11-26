@@ -2,6 +2,25 @@
 
 ## 1.0.0
 
+### Where is the sound? Quill Radio and QUILL Studio (2026-11-24)
+
+Each app now answers for itself what it is playing or recording and where the
+sound goes, once and only when asked (FUX-03; there is no family mixer).
+
+- **Quill Radio, Audio > Where Is the Sound?** (Alt+Shift+A; in QUILL's
+  Internet Radio, the Command Palette): what is playing and on which device,
+  by its Windows name, "System default" followed by the device that is the
+  default today, and "not connected" for a chosen device Windows does not
+  list. Also a background station or mirror, recordings (they take the stream,
+  so the device, volume and mute do not change them), and another QUILL
+  program on the microphone. A device that could not be opened earlier is
+  named, with Output Device as the way back once it is connected again.
+- **QUILL Studio, Capture > Where Is the Sound?** (Alt+Shift+A): where Studio
+  plays, the recording or broadcast, the recording microphone and whether it
+  is connected, and another QUILL program on the microphone. **Recording
+  status** names the device behind each sound and says when one has been
+  disconnected and silence is going in.
+
 ### The QuillVille family starts sooner, and Lite failures can be diagnosed (2026-11-24)
 
 QUILL Lite now makes the first editor window ready before it starts optional

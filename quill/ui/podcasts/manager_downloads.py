@@ -112,7 +112,7 @@ class ManagerDownloadsMixin:
     def _refresh_episode_row_for_item(self, item: DownloadItem) -> None:
         for row, episode in enumerate(self._current_episodes):
             if episode.guid == item.episode_guid:
-                self._episodes.SetItem(row, 3, self._episode_status_text(episode))
+                self._set_episode_state_cells(row, episode)
                 break
 
     def _refresh_selected_episode_row(self) -> None:
@@ -121,5 +121,5 @@ class ManagerDownloadsMixin:
             return
         index = self._episodes.GetFirstSelected()
         if index >= 0:
-            self._episodes.SetItem(index, 3, self._episode_status_text(episode))
+            self._set_episode_state_cells(index, episode)
         self._on_episode_selected(None)

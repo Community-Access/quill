@@ -197,6 +197,22 @@ RADIO_ROWS: tuple[CommandSpec, ...] = (
         apps=_R,
     ),
     CommandSpec(
+        "radio.where_is_sound",
+        "Where Is the Sound?",
+        "Say what is playing or recording, and which sound card it is on",
+        aliases=("where is the sound", "which sound card", "which device", "where is it playing"),
+        examples=(
+            "where is the sound going",
+            "which speakers is it playing on",
+            "why can't I hear the radio",
+        ),
+        risk=_S,
+        kind=Kind.READOUT,
+        group="Playback",
+        announces_itself=True,
+        apps=_R,
+    ),
+    CommandSpec(
         "radio.song_history",
         "Song History",
         "List the songs that played earlier",

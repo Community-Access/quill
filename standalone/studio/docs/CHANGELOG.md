@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [2.0.0] - built, not yet released
 
+- **Where Is the Sound?** (FUX-03, 2026-11-24). Capture > Where Is the Sound?
+  (Alt+Shift+A) says once where Studio's players play (the device Windows gives
+  Studio), the recording or broadcast, the microphone a recording takes and
+  whether Windows lists it as connected, and another QUILL program listening on
+  the microphone. **Recording status** now names the microphone and sound card
+  behind each sound, and says when one has been disconnected and silence is
+  going in until it is back.
 - **Leaving the Chapter Workbench with Close or Escape keeps your place**
   (FUX-01, 2026-11-24). Only closing the window itself saved where you were;
   the Close button and Escape kept no place, did not update In Progress and

@@ -84,7 +84,8 @@ these regions in order:
   player reads its heading structure into the Chapters tree (single- and multi-file
   DAISY audio books).
 - **Book Library** — **File > Book Library…**. Search the free **LibriVox** catalog,
-  pick a book, and press **Play**; its sections appear in the Chapters tree.
+  pick a book, and press **Play**; its sections appear in the Chapters tree. A
+  result with no recording yet ends "no audio to play".
 - **From inside QUILL** — open the player from **Tools > Media > Media Player**; it
   launches this same app and shares your library, bookmarks, and positions. That
   row appears in QUILL once Quill Media Player is released.
@@ -250,7 +251,9 @@ while a flat book shows a single level.
 - Open the **Chapters** tree, arrow through it (in and out of levels), and press
   **Enter** to jump. Each row reads as a full sentence with its title and time.
 - For a book split across several files (LibriVox sections, multi-file DAISY),
-  activating a node loads that file and moves you there.
+  activating a node loads that file and moves you there. If that file has
+  been moved or deleted since you opened the book, the player says its audio
+  file is missing, rather than "Playing".
 - **Continuous play** — when one track (a LibriVox section, or a file of a
   multi-file book) finishes, the player automatically rolls into the next.
 

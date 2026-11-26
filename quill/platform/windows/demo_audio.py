@@ -280,6 +280,15 @@ class _Source:
     def label(self) -> str:
         return self.source.label
 
+    def device_name(self) -> str:
+        """The sound card or microphone behind this source, by name; "" when it
+        is not one device (the system mix, a program)."""
+        return ""
+
+    def is_lost(self) -> bool:
+        """The device went away; silence fills the recording until it is back."""
+        return bool(getattr(self, "_lost", False))
+
     def set_muted(self, muted: bool) -> None:
         self._muted = muted
         if self.stream is not None:
@@ -333,6 +342,14 @@ class LoopbackSource(_Source):
         self.studio_pid = studio_pid
         self._capture: Any = None
         self._device_name = ""
+        self._lost = False
+
+    def device_name(self) -> str:
+        if self.source.kind != "device":
+            return ""
+        if not self._device_name:
+            self._device_name = _render_device_name(self.source.device)
+        return self._device_name
 
     def _target(self) -> tuple[int, bool]:
         if self.source.kind == "device":
@@ -431,9 +448,11 @@ class LoopbackSource(_Source):
         if not self._device_name:
             self._device_name = _render_device_name(self.source.device) or self.label
         name = self._device_name
+        self._lost = True
         self._fail(f"{self.label} stopped: the sound card {name} was lost or changed.")
         while not self._stop.wait(RESCAN_S):
             if self.open() == "":
+                self._lost = False
                 self.on_event(f"{self.label}: {name} is back and recording.", False)
                 return
 

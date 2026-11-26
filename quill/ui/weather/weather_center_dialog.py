@@ -15,7 +15,7 @@ Speech is a later phase -- but every string shown here comes from
 from __future__ import annotations
 
 from collections.abc import Callable
-from datetime import UTC
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -35,6 +35,8 @@ from quill.ui.weather.center_text import (
     _alert_list_label,
     _period_detail_text,
     _temp_words,
+    failed_status,
+    local_time_line,
 )
 
 
@@ -63,6 +65,7 @@ class WeatherCenterDialog:
         self._store = loc_store.load_locations(data_dir)
         self._settings = settings_mod.load_settings(data_dir)
         self._report: WeatherReport | None = None
+        self._checked_at: datetime | None = None  # when self._report was fetched
         self._shown_alerts: list[Any] = []
 
         # Modeless wx.Frame (menu bar + &Window menu, controls on an inner panel)
@@ -431,13 +434,17 @@ class WeatherCenterDialog:
     ) -> None:
         """Show *result*. *fetched* is False for a redraw of the same report
         (after Settings), which says the summary only if what it says changed."""
-        if isinstance(result, nws.WeatherError):
-            self._status.SetValue(f"Could not load weather: {result}")
-            self._announce(f"Could not load weather. {result}")
+        place = location.label
+        if isinstance(result, nws.WeatherError):  # the old reading is not called current
+            shown = getattr(self, "_shown_location", ("", ""))[1] if self._report else ""
+            said = failed_status(result, checked=self._checked_at, shown_place=shown, place=place)
+            self._status.SetValue(said)
+            self._announce(said)
             return
         if not isinstance(result, WeatherReport):
             return
         self._report = result
+        self._checked_at = datetime.now(UTC) if fetched else self._checked_at  # FUX-13
         self._reload_location_choice()  # a resolved name may have filled in
 
         alerts = render.filtered_alerts(result, self._settings)
@@ -457,15 +464,8 @@ class WeatherCenterDialog:
         # Skip an empty read-only field in the tab order (no alert -> no box).
         self._show_field(self._alert_detail_label, self._alert_detail, bool(alerts))
 
-        place = location.label
         today = result.daily[0] if result.daily else None
-        local_time = ""
-        if self._settings.show_local_time and result.time_zone:
-            from datetime import datetime
-
-            now = datetime.now(UTC)
-            # "Right now it is <there>, and <here> where you are. Checked just now."
-            local_time = render.time_summary(now, result.time_zone, place=place)
+        local_time = local_time_line(self._settings, result, place, self._checked_at)
         lead = f"{local_time} " if local_time else ""
         if result.current is not None:
             block = render.current_conditions_block(

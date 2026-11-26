@@ -98,9 +98,14 @@ class GitHubExploreNotificationsMixin:
         if wait <= 0:
             self._notification_note = ""
             return False
+        from quill.core.workbench.freshness import local_clock
+
+        # The kept list says when it was checked, never as if current (FUX-13).
+        at = local_clock(getattr(self._client, "notifications_loaded_at", "") or "")
         self._notification_note = (
             f" GitHub asks apps to check notifications no more often than it says; "
-            f"this is the list from the last check. Try again in {wait} seconds."
+            f"this is the list from the last check{f', at {at}' if at else ''}. "
+            f"Try again in {wait} seconds."
         )
         rows = self._client.cached_notification_rows(include_read)
         self._loaded(token, GitHubFetchResult(tuple(rows)), "", None, "notifications", selected_key)

@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from quill.core.radio import wxindex
+from quill.core.radio import station_confidence, wxindex
 from quill.core.radio.browse_nodes import BrowseNode
 from quill.core.radio.models import RadioStation
 from quill.core.radio.natural_order import natural_key
@@ -100,4 +100,11 @@ def row_label(child: BrowseNode) -> str:
         parts.append(f"{child.child_count}")
     if child.note:
         parts.append(child.note)
+    # FUX-13: a station whose directory could not play it last time says so
+    # here too, as it already does in Find Stations' results. Only the failed
+    # check: "resolved when you play it" is not about whether it will play.
+    if child.station is not None:
+        verdict = station_confidence.assess(child.station)
+        if verdict.verdict == station_confidence.FAILED:
+            parts.append(verdict.badge)
     return f"{parts[0]}  ({', '.join(parts[1:])})" if len(parts) > 1 else parts[0]

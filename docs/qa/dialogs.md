@@ -350,6 +350,17 @@ state and lists any installed Quillins read-only.
 - [ ] Check for Updates: `Ctrl+Alt+U` (or the app's displayed Help-menu key);
       a channel choice changes only which signed feed is used
 
+## T2. Media recovery
+
+- [ ] Resume Recording: Quill Radio startup, when one interrupted recording
+      remains inside its resume window
+- [ ] Resume Recordings: Quill Radio startup, when several interrupted
+      recordings remain inside their resume windows
+- [ ] Recover unfinished recordings: QUILL Studio `Ctrl+Alt+Shift+N` (`Capture`
+      menu); one named Finish/Discard/Skip choice for each recording
+- [ ] Discard an unfinished recording: nested confirmation from Recover
+      unfinished recordings after choosing Discard
+
 ## U. Selection and QUILL key
 
 - [ ] Selection Actions: QUILL key, then `A` (with text selected)

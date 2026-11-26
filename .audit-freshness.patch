@@ -1,0 +1,414 @@
+diff --git a/quill/apps/beacon/app.py b/quill/apps/beacon/app.py
+index 473f78400..ae58124d0 100644
+--- a/quill/apps/beacon/app.py
++++ b/quill/apps/beacon/app.py
+@@ -19,16 +19,17 @@ from quill.apps.beacon import a11y as a11y_mod
+ from quill.apps.beacon import (
+     assist,
+     capture,
+     capture_bridge,
+     db,
+     exporters,
+     external_player,
+     first_task,
++    health_words,
+     importers,
+     results_follow,
+     routing,
+     search,
+     uld,
+ )
+ from quill.apps.beacon import feeds as feeds_mod
+ from quill.apps.beacon import publish as publish_mod
+@@ -944,17 +945,17 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
+             return b.locations[0].display_summary if b.locations else ""
+         if column == 3:
+             return ", ".join(b.collections)
+         if column == 4:
+             return ", ".join(b.tags)
+         if column == 5:
+             return time.strftime("%Y-%m-%d", time.localtime(b.date_added / 1000))
+         if column == 6:
+-            return b.health
++            return health_words.column(b.health)  # words, not the stored code (FUX-13)
+         return ""
+ 
+     def _on_select(self, _e) -> None:
+         if getattr(self, "_following", False):
+             return  # a refill putting the reader back: results_follow shows the details
+         sel = self.results.GetFirstSelected()
+         if 0 <= sel < len(self._results_cache):
+             self._show_details(self._results_cache[sel])
+@@ -964,17 +965,20 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
+             )
+ 
+     def _show_details(self, b) -> None:
+         res = self.store.get_resource(b.resource_id) if b.resource_id else None
+         lines = [f"Title: {b.title}"]
+         if res:
+             lines.append(f"Type: {res.type}")
+             lines.append(f"URL/Path: {res.primary_uri}")
+-        lines.append(f"Health: {b.health}")
++        lines.append(health_words.detail(b.health))
++        synced = health_words.sync_detail(bool(b.dirty), self.sync.config.is_configured())
++        if synced:
++            lines.append(synced)
+         lines.append(f"Favorite: {'yes' if b.favorite else 'no'}")
+         lines.append(f"Tags: {', '.join(b.tags) or '(none)'}")
+         lines.append(f"Collections: {', '.join(b.collections) or '(none)'}")
+         lines.append(
+             f"Added: {time.strftime('%Y-%m-%d %H:%M', time.localtime(b.date_added / 1000))}"
+         )
+         lines.append(f"Opened: {b.open_count} times")
+         if b.note:
+diff --git a/quill/ui/github_explore_notifications.py b/quill/ui/github_explore_notifications.py
+index 89624625f..b5527bfa3 100644
+--- a/quill/ui/github_explore_notifications.py
++++ b/quill/ui/github_explore_notifications.py
+@@ -93,19 +93,24 @@ class GitHubExploreNotificationsMixin:
+ 
+     def _notification_poll_blocks(self, token: int, selected_key: str) -> bool:
+         """True when GitHub's poll interval says not yet; shows the last list instead."""
+         include_read = self._include_read_value()
+         wait = self._client.notification_wait_seconds(include_read)
+         if wait <= 0:
+             self._notification_note = ""
+             return False
++        from quill.core.workbench.freshness import local_clock
++
++        # The kept list says when it was checked, never as if current (FUX-13).
++        at = local_clock(getattr(self._client, "notifications_loaded_at", "") or "")
+         self._notification_note = (
+             f" GitHub asks apps to check notifications no more often than it says; "
+-            f"this is the list from the last check. Try again in {wait} seconds."
++            f"this is the list from the last check{f', at {at}' if at else ''}. "
++            f"Try again in {wait} seconds."
+         )
+         rows = self._client.cached_notification_rows(include_read)
+         self._loaded(token, GitHubFetchResult(tuple(rows)), "", None, "notifications", selected_key)
+         return True
+ 
+     def _notifications_loaded_message(self) -> str:
+         message = self._client.notification_summary(self._include_read_value())
+         note, self._notification_note = self._notification_note, ""
+diff --git a/quill/ui/github_workbench_status.py b/quill/ui/github_workbench_status.py
+index f2243572b..9d0266727 100644
+--- a/quill/ui/github_workbench_status.py
++++ b/quill/ui/github_workbench_status.py
+@@ -35,19 +35,20 @@ def github_status_cells(provider: Any, frame: Any) -> Sequence[StatusCell]:
+         if frame.current is None or not frame.node(frame.current).loader:
+             return ""
+         chosen = len(frame.selected_indices())
+         shown = f"{len(frame.rows)} shown"
+         said = f"{shown}, {chosen} selected" if chosen > 1 else shown
+         return f"{said}. {provider.local_note}" if provider.local_note else said
+ 
+     def loading() -> str:
+-        if frame.loading:
+-            return "Loading"
+-        return f"Up to date, {frame.loaded_at}" if frame.loaded_at else ""
++        from quill.core.workbench.freshness import loading_cell
++
++        failed = bool(getattr(frame, "load_failed", False))
++        return loading_cell(loading=frame.loading, loaded_at=frame.loaded_at, failed=failed)
+ 
+     return (
+         StatusCell(
+             "account",
+             "Account",
+             lambda: ("Signed in" if provider.signed_in else "Not signed in") + _dry_run_words(),
+             "Whether GitHub knows who you are. The editor's GitHub menu manages accounts.",
+         ),
+diff --git a/quill/ui/weather/center_text.py b/quill/ui/weather/center_text.py
+index b95f13ffb..d943e6a08 100644
+--- a/quill/ui/weather/center_text.py
++++ b/quill/ui/weather/center_text.py
+@@ -85,8 +85,44 @@ NO_LOCATIONS = first_task_line(
+     (
+         NextAction(
+             "Add Location",
+             does="finds a US place by ZIP code, city or address, over the internet",
+             key="Alt+A",
+         ),
+     ),
+ )
++
++
++# -- FUX-13: when this reading was checked, and what a failed refresh leaves ----
++
++
++def local_time_line(settings: Any, report: Any, place: str, checked: object) -> str:
++    """The "Right now it is ..." line, saying when the reading on screen was checked.
++
++    *checked* is when the report was fetched. It used to be left out, so the line
++    said "checked just now" also when the same report was drawn again later.
++    """
++    if not (settings.show_local_time and report.time_zone):
++        return ""
++    from datetime import UTC, datetime
++
++    from quill.core.weather import render
++
++    return render.time_summary(datetime.now(UTC), report.time_zone, place=place, checked=checked)
++
++
++def failed_status(error: object, *, checked: object, shown_place: str, place: str) -> str:
++    """A refresh that failed: why, what the window still shows and from when, and Refresh.
++
++    The lists keep the last report; this says it is not current, and, when it is
++    for another place than the one chosen, which place it is for.
++    """
++    said = f"Could not load weather for {place}: {str(error).rstrip('.')}."
++    if shown_place:
++        from datetime import datetime
++
++        when = ""
++        if isinstance(checked, datetime):
++            when = f", checked at {checked.astimezone().strftime('%I:%M %p').lstrip('0')}"
++        whose = "" if shown_place == place else f" for {shown_place}"
++        said += f" Still showing the earlier reading{whose}{when}."
++    return f"{said} Refresh (Alt+R) tries again."
+diff --git a/quill/ui/weather/weather_center_dialog.py b/quill/ui/weather/weather_center_dialog.py
+index dbcec9d09..1d1086c9e 100644
+--- a/quill/ui/weather/weather_center_dialog.py
++++ b/quill/ui/weather/weather_center_dialog.py
+@@ -10,17 +10,17 @@ places; Refresh re-pulls; Add Location and Settings open their own dialogs.
+ 
+ Speech is a later phase -- but every string shown here comes from
+ ``core/weather/render.py``, so when speech lands it speaks exactly this text.
+ """
+ 
+ from __future__ import annotations
+ 
+ from collections.abc import Callable
+-from datetime import UTC
++from datetime import UTC, datetime
+ from pathlib import Path
+ from typing import Any
+ 
+ from quill.core.list_follow import gone_sentence
+ from quill.core.weather import locations as loc_store
+ from quill.core.weather import nws, render
+ from quill.core.weather import settings as settings_mod
+ from quill.core.weather.models import WeatherLocation, WeatherReport
+@@ -30,16 +30,18 @@ from quill.ui.spoken_name import set_spoken_name
+ from quill.ui.surface_lifetime import surface_tasks
+ from quill.ui.weather import center_follow as follow
+ from quill.ui.weather.center_text import (
+     NO_LOCATIONS,
+     _alert_detail_text,
+     _alert_list_label,
+     _period_detail_text,
+     _temp_words,
++    failed_status,
++    local_time_line,
+ )
+ 
+ 
+ class WeatherCenterDialog:
+     """Accessible text weather for one location at a time."""
+ 
+     def __init__(
+         self,
+@@ -58,16 +60,17 @@ class WeatherCenterDialog:
+         self._data_dir = data_dir
+         # Every task this window starts is tied to its lifetime (qc.md F-02).
+         self._task_manager = surface_tasks(task_manager, lambda: getattr(self, "_surface", None))
+         self._safe_mode = safe_mode
+         self._announce = announce_cb or (lambda _m: None)
+         self._store = loc_store.load_locations(data_dir)
+         self._settings = settings_mod.load_settings(data_dir)
+         self._report: WeatherReport | None = None
++        self._checked_at: datetime | None = None  # when self._report was fetched
+         self._shown_alerts: list[Any] = []
+ 
+         # Modeless wx.Frame (menu bar + &Window menu, controls on an inner panel)
+         # when standalone Radio supplies a WindowManager; modal wx.Dialog for
+         # embedded QUILL. self._win is the top-level window, so the child
+         # Add Location / Settings dialogs parent to it correctly.
+         self._windows = windows
+         self._modeless = windows is not None
+@@ -426,23 +429,27 @@ class WeatherCenterDialog:
+ 
+         self._task_manager.submit("weather-fetch", _work, on_success=_ok, on_failure=None)
+ 
+     def _render_report(
+         self, location: WeatherLocation, result: object, *, fetched: bool = True
+     ) -> None:
+         """Show *result*. *fetched* is False for a redraw of the same report
+         (after Settings), which says the summary only if what it says changed."""
+-        if isinstance(result, nws.WeatherError):
+-            self._status.SetValue(f"Could not load weather: {result}")
+-            self._announce(f"Could not load weather. {result}")
++        place = location.label
++        if isinstance(result, nws.WeatherError):  # the old reading is not called current
++            shown = getattr(self, "_shown_location", ("", ""))[1] if self._report else ""
++            said = failed_status(result, checked=self._checked_at, shown_place=shown, place=place)
++            self._status.SetValue(said)
++            self._announce(said)
+             return
+         if not isinstance(result, WeatherReport):
+             return
+         self._report = result
++        self._checked_at = datetime.now(UTC) if fetched else self._checked_at  # FUX-13
+         self._reload_location_choice()  # a resolved name may have filled in
+ 
+         alerts = render.filtered_alerts(result, self._settings)
+         before = {alert.id: alert for alert in getattr(self, "_shown_alerts", [])}
+         place_key = (location.id, location.label)
+         if place_key != getattr(self, "_shown_location", place_key):
+             before = {}  # another place: its alerts did not expire, they are elsewhere
+             self._follow_keys_alerts: list[str] = []
+@@ -452,25 +459,18 @@ class WeatherCenterDialog:
+         at, gone = follow.fill_list(self, "alerts", self._alerts_list, rows, "No active alerts.")
+         self._alerts_label.SetLabel(
+             f"Active &Alerts ({len(alerts)}):" if alerts else "Active &Alerts (none):"
+         )
+         follow.set_text(self._alert_detail, _alert_detail_text(alerts[at]) if alerts else "")
+         # Skip an empty read-only field in the tab order (no alert -> no box).
+         self._show_field(self._alert_detail_label, self._alert_detail, bool(alerts))
+ 
+-        place = location.label
+         today = result.daily[0] if result.daily else None
+-        local_time = ""
+-        if self._settings.show_local_time and result.time_zone:
+-            from datetime import datetime
+-
+-            now = datetime.now(UTC)
+-            # "Right now it is <there>, and <here> where you are. Checked just now."
+-            local_time = render.time_summary(now, result.time_zone, place=place)
++        local_time = local_time_line(self._settings, result, place, self._checked_at)
+         lead = f"{local_time} " if local_time else ""
+         if result.current is not None:
+             block = render.current_conditions_block(
+                 result.current, today, self._settings, result.air_quality
+             )
+             when = ""
+             if result.current.observed_at:
+                 observed = render.friendly_datetime(result.current.observed_at, result.time_zone)
+diff --git a/quill/ui/wordpress_workbench_window_status.py b/quill/ui/wordpress_workbench_window_status.py
+index f5c649e16..b29a63541 100644
+--- a/quill/ui/wordpress_workbench_window_status.py
++++ b/quill/ui/wordpress_workbench_window_status.py
+@@ -48,19 +48,20 @@ class WorkbenchStatusCells:
+                 return ""
+             chosen = len(frame.selected_indices())
+             shown = f"{len(frame.rows)} shown"
+             if self.cut_for(frame.current):
+                 shown += ", more on the site"
+             return f"{shown}, {chosen} selected" if chosen > 1 else shown
+ 
+         def loading() -> str:
+-            if frame.loading:
+-                return "Loading"
+-            return f"Up to date, {frame.loaded_at}" if frame.loaded_at else ""
++            from quill.core.workbench.freshness import loading_cell
++
++            failed = bool(getattr(frame, "load_failed", False))
++            return loading_cell(loading=frame.loading, loaded_at=frame.loaded_at, failed=failed)
+ 
+         def role() -> str:
+             site = self.site_of(frame.current)
+             ctx = self._contexts.get(site)
+             if not site or ctx is None or ctx.account is None:
+                 return ""
+             viewing = self.view_as.get(site)
+             if viewing:
+diff --git a/quill/ui/workbench_frame.py b/quill/ui/workbench_frame.py
+index fb0a49bf2..3eadf10e6 100644
+--- a/quill/ui/workbench_frame.py
++++ b/quill/ui/workbench_frame.py
+@@ -112,17 +112,17 @@ class WorkbenchFrame(
+         self._editor = editor
+         self._announce = announce or (lambda _text: None)
+         self._run_background = run_background or self._task_manager_runner()
+         self._on_closed = on_closed
+         self.rows: list[object] = []
+         self._loaded: list[object] = []
+         self._shown_cells: list[list[str]] = []  # what the list shows, to skip a no-op refill
+         self.query = Query()
+-        self.loading = False
++        self.loading = self.load_failed = False  # load_failed: the last load did not land
+         self.loaded_at = ""
+         self.history: list[NodeRef] = []
+         self.forward: list[NodeRef] = []
+         self.current: NodeRef | None = None
+         self._generation = 0
+         self._report_for = -1  # the load whose end is said (reload report=True)
+         self._arrived_for = -1  # a node just opened: its emptiness is said
+         self._items: dict[NodeRef, Any] = {}
+@@ -449,33 +449,35 @@ class WorkbenchFrame(
+         """The load that opened the node shown now, or -1 once a refresh replaced it."""
+         return self._arrived_for
+ 
+     def _loaded_rows(self, generation: int, rows: list[object]) -> None:
+         if generation != self._generation:
+             return  # a stale answer for a node somebody already left
+         import time
+ 
+-        self.loading = False
++        self.loading = self.load_failed = False
+         self.loaded_at = time.strftime("%H:%M")
+         self._loaded = list(rows)
+         self.remember_count(len(rows))
+         self._fill_list()
+         if self._report_for == generation:
+             self._report_for = -1
+             self._say(self.loaded_words())
+         elif self._arrived_for == generation and not self.rows and self.current is not None:
+             self._say("No rows here.")  # a list arrived empty while focus was elsewhere
+ 
+     def _load_failed(self, generation: int, node: NodeSpec, error: BaseException) -> None:
+         if generation != self._generation:
+             return
+-        self.loading = False
++        # The rows still shown keep their time and are not called current (FUX-13).
++        self.loading, self.load_failed = False, True
++        self.loaded_at = self.loaded_at if self.rows else ""
+         self.status.refresh()
+-        message = f"Could not load {node.label}: {error}"
++        message = self.failure_words(node.label, error)
+         self.details.ChangeValue(message)
+         self._say(message)
+ 
+     def _fill_list(self) -> None:
+         remote = self.current is not None and self.provider.remote_words(self.node(self.current))
+         words = () if remote else self.query.words
+         columns = self._columns or ("name",)
+         rows = [
+diff --git a/quill/ui/workbench_frame_commands.py b/quill/ui/workbench_frame_commands.py
+index af0f0bbb4..d6b93ef90 100644
+--- a/quill/ui/workbench_frame_commands.py
++++ b/quill/ui/workbench_frame_commands.py
+@@ -354,19 +354,28 @@ class WorkbenchCommandsMixin:
+     # -- readouts and results ------------------------------------------------
+ 
+     def filter_words(self) -> str:
+         from quill.core.workbench.filters import describe
+ 
+         return describe(self.query) if not self.query.is_empty else "No filter"
+ 
+     def loading_words(self) -> str:
+-        if self.loading:
+-            return "Loading"
+-        return f"Up to date, loaded at {self.loaded_at}" if self.loaded_at else "Nothing loaded"
++        from quill.core.workbench.freshness import loading_readout
++
++        failed = bool(getattr(self, "load_failed", False))
++        return loading_readout(loading=self.loading, loaded_at=self.loaded_at, failed=failed)
++
++    def failure_words(self, label: str, error: object) -> str:
++        """A failed load: why, the time of the rows still shown, and Refresh's key."""
++        from quill.core.workbench.freshness import failure_sentence
++
++        keys = getattr(self, "_keys", {})
++        key = next((k for c, k in keys.items() if c.rsplit(".", 1)[-1] == "refresh" and k), "")
++        return failure_sentence(label, error, loaded_at=self.loaded_at, refresh_key=key)
+ 
+     def readout(self, name: str) -> None:
+         """Alt+3 to Alt+9: a fact, said, nothing moved (Part C, C4)."""
+         hook = getattr(self.provider, "readout", None)
+         said = hook(name) if callable(hook) else ""
+         if said is None:
+             return  # the provider answers later, with the result itself
+         self._say(str(said or "Nothing to say here."))

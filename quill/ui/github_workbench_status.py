@@ -40,9 +40,10 @@ def github_status_cells(provider: Any, frame: Any) -> Sequence[StatusCell]:
         return f"{said}. {provider.local_note}" if provider.local_note else said
 
     def loading() -> str:
-        if frame.loading:
-            return "Loading"
-        return f"Up to date, {frame.loaded_at}" if frame.loaded_at else ""
+        from quill.core.workbench.freshness import loading_cell
+
+        failed = bool(getattr(frame, "load_failed", False))
+        return loading_cell(loading=frame.loading, loaded_at=frame.loaded_at, failed=failed)
 
     return (
         StatusCell(

@@ -14,6 +14,7 @@ view.
 from __future__ import annotations
 
 from quill.core.media.list_columns import ColumnDef
+from quill.core.podcasts.episode_availability import downloaded_words, status_words
 from quill.core.podcasts.list_columns import EPISODES as _EPISODE_COLUMNS
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.ui.media.list_columns_view import build_columns, columns_for
@@ -83,7 +84,9 @@ class ManagerRowViewMixin:
             + self._played_elsewhere(episode),
             "podcast": show.title if show is not None else "",
             "remaining": remaining,
-            "downloaded": "Downloaded" if episode.downloaded_path else "Streams",
+            # FUX-13: a file deleted outside Cast plays only by streaming, so it
+            # is not called "Downloaded" (episode_availability.py).
+            "downloaded": downloaded_words(str(episode.downloaded_path or "")),
             # R25: the Row Description setting, finally read by something. It
             # decides how much of the show notes a row carries -- nothing, the
             # first sentence, or all of it -- and the column decides whether the
@@ -146,12 +149,32 @@ class ManagerRowViewMixin:
         return display_title(self._library, show, episode)
 
     def _episode_status_text(self, episode: PodcastEpisode) -> str:
-        if episode.downloaded_path:
-            return "Downloaded" + (", played" if episode.played else "")
-        item = self._download_queue.get(self._download_item_id(episode))
-        if item is not None and item.status in ("queued", "downloading", "paused"):
-            return item.status.capitalize()
-        return "Streaming"
+        """Where the audio is, in words: a failed download and a missing file
+        say so and what still works, rather than "Streaming" and "Downloaded"
+        (FUX-13, ``episode_availability``)."""
+        item = None
+        if not episode.downloaded_path:
+            item = self._download_queue.get(self._download_item_id(episode))
+        return status_words(
+            downloaded_path=str(episode.downloaded_path or ""),
+            played=bool(episode.played),
+            item_status=item.status if item is not None else "",
+            item_error=item.error_message if item is not None else "",
+        )
+
+    def _set_episode_state_cells(self, row: int, episode: PodcastEpisode) -> None:
+        """Rewrite one row's Status and Downloaded cells where those columns are.
+
+        By column id, not position: the columns can be reordered and hidden, so
+        "column 3" could be Time Left (FUX-13).
+        """
+        values = {
+            "status": self._episode_status_text(episode),
+            "downloaded": downloaded_words(str(episode.downloaded_path or "")),
+        }
+        for index, column in enumerate(self._episode_columns):
+            if column.id in values:
+                self._episodes.SetItem(row, index, values[column.id])
 
     def reapply_columns(self) -> None:
         """Rebuild the episode list after the column layout changed.

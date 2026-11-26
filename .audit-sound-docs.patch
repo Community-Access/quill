@@ -1,0 +1,190 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index edb882f2f..4aefeb74e 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -1,8 +1,27 @@
+ # Changelog
+ 
+ ## 1.0.0
+ 
++### Where is the sound? Quill Radio and QUILL Studio (2026-11-24)
++
++Each app now answers for itself what it is playing or recording and where the
++sound goes, once and only when asked (FUX-03; there is no family mixer).
++
++- **Quill Radio, Audio > Where Is the Sound?** (Alt+Shift+A; in QUILL's
++  Internet Radio, the Command Palette): what is playing and on which device,
++  by its Windows name, "System default" followed by the device that is the
++  default today, and "not connected" for a chosen device Windows does not
++  list. Also a background station or mirror, recordings (they take the stream,
++  so the device, volume and mute do not change them), and another QUILL
++  program on the microphone. A device that could not be opened earlier is
++  named, with Output Device as the way back once it is connected again.
++- **QUILL Studio, Capture > Where Is the Sound?** (Alt+Shift+A): where Studio
++  plays, the recording or broadcast, the recording microphone and whether it
++  is connected, and another QUILL program on the microphone. **Recording
++  status** names the device behind each sound and says when one has been
++  disconnected and silence is going in.
++
+ ### Review the AI's chapter titles one by one (2026-11-24)
+ 
+ In the Chapter Workbench, **Propose AI titles...** no longer replaces every
+ title at once. The proposals open in **Review Proposed Titles**, one check box
+diff --git a/docs/command-catalogue.md b/docs/command-catalogue.md
+index 978936f80..8fe873d44 100644
+--- a/docs/command-catalogue.md
++++ b/docs/command-catalogue.md
+@@ -367,9 +367,9 @@ These are never done from a sentence, because they send, delete, sign in, change
+ - Sign Out of Scribe: Tools, Scribe for Documents.
+ 
+ ## Quill Radio
+ 
+-30 commands can be asked for in a sentence here.
++31 commands can be asked for in a sentence here.
+ 
+ ### Quill Radio: Edit
+ 
+ - **Undo (Ctrl+Z).** Undo the last thing you did.
+@@ -401,8 +401,10 @@ These are never done from a sentence, because they send, delete, sign in, change
+ - **Slower (Ctrl+Shift+Down).** Play slower.
+   Say: "play it slower"; "slow it down a bit"; "a lot slower".
+ - **Stop (Ctrl+.).** Stop the radio.
+   Say: "stop the radio"; "turn the radio off"; "stop playing".
++- **Where Is the Sound? (Alt+Shift+A).** Say what is playing or recording, and which sound card it is on.
++  Say: "where is the sound going"; "which speakers is it playing on"; "why can't I hear the radio".
+ 
+ ### Quill Radio: Recording
+ 
+ - **Record a Station (Ctrl+Alt+R).** Set up a recording of a station you pick from a list. It asks before it does it.
+diff --git a/docs/keyboard-reference.md b/docs/keyboard-reference.md
+index e9834b8b9..23b888bc9 100644
+--- a/docs/keyboard-reference.md
++++ b/docs/keyboard-reference.md
+@@ -685,8 +685,9 @@ App keys, not editor keys: these apply inside the app named above and never insi
+ 
+ | Key | Command | Command id |
+ | --- | --- | --- |
+ | Alt+F5 | Use My ChatGPT Subscription... | `studio.chatgpt_account` |
++| Alt+Shift+A | Where is sound | `studio.where_is_sound` |
+ | Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
+ | Alt+Shift+F5 | Stop Describing the Folder | `studio.describe_folder_stop` |
+ | Ctrl+3 | Recording Pre-flight Check... | `tools.hosted_ai_task` |
+ | Ctrl+Alt+F5 | Describe Again... | `studio.describe_again` |
+@@ -756,8 +757,9 @@ App keys, not editor keys: these apply inside the app named above and never insi
+ | Alt+9 | Play favorite 9 | `radio.play_favorite_9` |
+ | Alt+F11 | Command key | `app.command_key` |
+ | Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+ | Alt+F5 | Use My ChatGPT Subscription... | `radio.chatgpt_account` |
++| Alt+Shift+A | Internet Radio: Where Is the Sound? | `radio.where_is_sound` |
+ | Alt+Shift+B | Background station | `radio.background_station` |
+ | Alt+Shift+D | Mirror output | `radio.mirror_output` |
+ | Alt+Shift+F | Play Favorite Station... | `radio.play_favorite` |
+ | Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
+diff --git a/standalone/radio/docs/CHANGELOG.md b/standalone/radio/docs/CHANGELOG.md
+index 3aebd5955..8975a4c2b 100644
+--- a/standalone/radio/docs/CHANGELOG.md
++++ b/standalone/radio/docs/CHANGELOG.md
+@@ -7,8 +7,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+ Quill Radio runs the same radio code as QUILL from the shared `quill` package, so features and fixes land in both at once; this repository carries only the wrapper, installer, icon, and docs.
+ 
+ ## [Unreleased] - 2026-11-07
+ 
++### Where Is the Sound? (2026-11-24)
++
++- **Audio > Where Is the Sound?** (Alt+Shift+A) says once, when you ask, what
++  is playing and the device it is on by its Windows name, with "System default"
++  followed by the device that is the default today. A chosen device Windows
++  does not list as connected is said to be so. It also names a background
++  station or mirror and its device, says that recordings take the stream
++  itself, and names another QUILL program listening on the microphone (FUX-03).
++- **A device that could not be opened is remembered for the session.** Where
++  Is the Sound? says which one it was and, once it is connected again, that
++  Output Device (Ctrl+Shift+D) sends the radio back to it. Nothing moves by
++  itself.
++
+ ### An empty Favorites list says how to fill it (2026-11-24)
+ 
+ - **A line before an empty Favorite stations list** names the two ways to a
+   first station, with your keys: "No favorite stations yet. Browse Stations
+diff --git a/standalone/radio/docs/userguide.md b/standalone/radio/docs/userguide.md
+index 44f9df0cf..0f3f44a10 100644
+--- a/standalone/radio/docs/userguide.md
++++ b/standalone/radio/docs/userguide.md
+@@ -2211,8 +2211,32 @@ choose the device, and Windows remembers it from then on. A copy without the
+ mpv engine opens that same page as soon as you press Ctrl+Shift+D. And if a
+ device is saved in your settings while the classic player is in use, Quill
+ Radio hands the setting back and tells you the same thing.
+ 
++### Where Is the Sound?
++
++When you hear nothing, or the radio is somewhere you did not expect, press
++**Alt+Shift+A** (**Audio > Where Is the Sound?**). Quill Radio says once, and
++only when you ask:
++
++- what the player is doing and the device it is on, by the name Windows gives
++  it. "The system default" comes after the device that is the default today,
++  for example "Playing Jazz24 on Speakers (Realtek), the system default." A
++  chosen device Windows does not list is said to be "not connected", because a
++  device that is chosen is not proof that the sound reaches it. When the radio
++  is muted, "Muted." comes first.
++- a device that would not open earlier, so the radio switched back to another
++  one. When it is connected again, Quill Radio says so and that Output Device
++  (Ctrl+Shift+D) can choose it. Nothing moves by itself.
++- a background station or a mirror, and its device.
++- recordings, and that volume and mute do not affect them: Quill Radio records
++  the stream itself, not what comes out of the speakers.
++- another QUILL program listening on the microphone, such as QUILL Transcribe.
++
++On the classic Windows Media player it names the device Windows gives Quill
++Radio, "chosen by Windows". The command is also in the Command Palette, and
++QUILL's Internet Radio has it there too.
++
+ ### A second device: a background station, or a mirror
+ 
+ Quill Radio can play on a second sound card or headset at the same time as the
+ main one, in one of two ways. Both are on the **Audio** menu, and both are off
+diff --git a/standalone/studio/docs/CHANGELOG.md b/standalone/studio/docs/CHANGELOG.md
+index f64094ac0..3678b6a05 100644
+--- a/standalone/studio/docs/CHANGELOG.md
++++ b/standalone/studio/docs/CHANGELOG.md
+@@ -5,8 +5,15 @@ All notable changes to QUILL Studio are documented in this file.
+ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+ 
+ ## [2.0.0] - built, not yet released
+ 
++- **Where Is the Sound?** (FUX-03, 2026-11-24). Capture > Where Is the Sound?
++  (Alt+Shift+A) says once where Studio's players play (the device Windows gives
++  Studio), the recording or broadcast, the microphone a recording takes and
++  whether Windows lists it as connected, and another QUILL program listening on
++  the microphone. **Recording status** now names the microphone and sound card
++  behind each sound, and says when one has been disconnected and silence is
++  going in until it is back.
+ - **Review the AI's chapter titles one by one** (FUX-12, 2026-11-24). In the
+   Chapter Workbench, Propose AI titles no longer replaces every title at once.
+   The proposals open in Review Proposed Titles, one check box for each chapter
+   whose title would change, with its title now and the proposed one. Only the
+diff --git a/standalone/studio/docs/userguide.md b/standalone/studio/docs/userguide.md
+index 56ee4b75a..b3300277b 100644
+--- a/standalone/studio/docs/userguide.md
++++ b/standalone/studio/docs/userguide.md
+@@ -956,14 +956,19 @@ When you start, pause, mark, mute or stop from a menu or the tray icon's menu, S
+ | Record a demonstration, or stop and save | Ctrl+Alt+Shift+V | |
+ | Pause or resume | Ctrl+Alt+Shift+P | A pause is a gap in the file, not a frozen picture |
+ | Add a marker | Ctrl+Alt+Shift+B | Saved beside the video as a markers file |
+ | Mute or unmute the microphone in the recording | Ctrl+Alt+Shift+U | The microphone stays open; the muted stretch is marked |
+-| Recording status | Ctrl+Alt+Shift+T | Elapsed time, sounds in, screen reader in or out, dropped frames, space left |
++| Recording status | Ctrl+Alt+Shift+T | Elapsed time, sounds in and the device behind each, screen reader in or out, dropped frames, space left |
++| Where Is the Sound? | Alt+Shift+A | Where Studio plays, the recording, the microphone and whether it is connected |
+ | Show the Recording status window | Ctrl+Alt+Shift+W | |
+ | Emergency stop and save | Ctrl+Alt+Shift+End | A second stop key, in case one is swallowed |
+ | Discard this recording | Ctrl+Alt+Shift+Delete | Asks before deleting anything |
+ | Recover unfinished recordings | Ctrl+Alt+Shift+N | |
+ 
++Recording status names the microphone and sound card behind each sound, for example "sound: Microphone (USB Audio) and System sound". When one of them is disconnected, that comes first: "Microphone (USB Audio) disconnected, recording silence". Silence goes into the recording until the device is back.
++
++**Capture > Where Is the Sound?** (Alt+Shift+A) answers the wider question, once: a recording first, with where its sound comes from; a live broadcast; the microphone a recording takes and whether Windows lists it as connected; where Studio's players and previews play (the device Windows gives Studio; Studio Mixer's Programs tab can move it); and another QUILL program that is listening on the microphone. A chosen microphone is not proof of what was recorded: **Record a quick test** in Record a demonstration plays back what actually went in.
++
+ Those keys work while Studio has focus. While you are demonstrating, focus is somewhere else, so assign system-wide keys: **Assign keys** in the Record a demonstration window, or **Capture > Capture global hotkeys...**. None is assigned for you, because a system-wide key takes that key away from every other program. Until you assign some, use the tray icon's menu, which has Stop and save, Pause, Add a marker, Recording status and the status window, and acts without bringing Studio back into the picture.
+ 
+ If something goes wrong while you record, you hear it once and it is marked at that moment:
+ 

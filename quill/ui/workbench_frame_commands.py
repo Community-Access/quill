@@ -359,9 +359,18 @@ class WorkbenchCommandsMixin:
         return describe(self.query) if not self.query.is_empty else "No filter"
 
     def loading_words(self) -> str:
-        if self.loading:
-            return "Loading"
-        return f"Up to date, loaded at {self.loaded_at}" if self.loaded_at else "Nothing loaded"
+        from quill.core.workbench.freshness import loading_readout
+
+        failed = bool(getattr(self, "load_failed", False))
+        return loading_readout(loading=self.loading, loaded_at=self.loaded_at, failed=failed)
+
+    def failure_words(self, label: str, error: object) -> str:
+        """A failed load: why, the time of the rows still shown, and Refresh's key."""
+        from quill.core.workbench.freshness import failure_sentence
+
+        keys = getattr(self, "_keys", {})
+        key = next((k for c, k in keys.items() if c.rsplit(".", 1)[-1] == "refresh" and k), "")
+        return failure_sentence(label, error, loaded_at=self.loaded_at, refresh_key=key)
 
     def readout(self, name: str) -> None:
         """Alt+3 to Alt+9: a fact, said, nothing moved (Part C, C4)."""

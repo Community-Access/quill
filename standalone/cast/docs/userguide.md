@@ -2943,6 +2943,12 @@ On an episode's menu (Shift+F10):
 - **Remove Downloaded Copy** deletes the file and keeps the episode. You can
   download it again later.
 
+The episode's Status says where its audio is: "Downloaded", "Downloading",
+"Queued", "Paused" or "Streaming". A download that stopped says "Download
+failed, will stream:" and why, such as a full disk. A downloaded file that was
+deleted or moved outside Cast says "File missing, will stream"; Download
+Episode gets it again.
+
 On a podcast's menu, **Download All Episodes** downloads everything it has
 not got yet, and **Remove All Downloads...** deletes its files and keeps its
 episodes and your place in them.

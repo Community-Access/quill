@@ -53,9 +53,10 @@ class WorkbenchStatusCells:
             return f"{shown}, {chosen} selected" if chosen > 1 else shown
 
         def loading() -> str:
-            if frame.loading:
-                return "Loading"
-            return f"Up to date, {frame.loaded_at}" if frame.loaded_at else ""
+            from quill.core.workbench.freshness import loading_cell
+
+            failed = bool(getattr(frame, "load_failed", False))
+            return loading_cell(loading=frame.loading, loaded_at=frame.loaded_at, failed=failed)
 
         def role() -> str:
             site = self.site_of(frame.current)

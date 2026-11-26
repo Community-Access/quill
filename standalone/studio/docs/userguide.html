@@ -2563,8 +2563,14 @@ off, and the status bar shows it at once.</p>
 <tr>
 <td>Recording status</td>
 <td>Ctrl+Alt+Shift+T</td>
-<td>Elapsed time, sounds in, screen reader in or out, dropped frames,
-space left</td>
+<td>Elapsed time, sounds in and the device behind each, screen reader in
+or out, dropped frames, space left</td>
+</tr>
+<tr>
+<td>Where Is the Sound?</td>
+<td>Alt+Shift+A</td>
+<td>Where Studio plays, the recording, the microphone and whether it is
+connected</td>
 </tr>
 <tr>
 <td>Show the Recording status window</td>
@@ -2588,6 +2594,20 @@ space left</td>
 </tr>
 </tbody>
 </table>
+<p>Recording status names the microphone and sound card behind each
+sound, for example “sound: Microphone (USB Audio) and System sound”.
+When one of them is disconnected, that comes first: “Microphone (USB
+Audio) disconnected, recording silence”. Silence goes into the recording
+until the device is back.</p>
+<p><strong>Capture &gt; Where Is the Sound?</strong> (Alt+Shift+A)
+answers the wider question, once: a recording first, with where its
+sound comes from; a live broadcast; the microphone a recording takes and
+whether Windows lists it as connected; where Studio’s players and
+previews play (the device Windows gives Studio; Studio Mixer’s Programs
+tab can move it); and another QUILL program that is listening on the
+microphone. A chosen microphone is not proof of what was recorded:
+<strong>Record a quick test</strong> in Record a demonstration plays
+back what actually went in.</p>
 <p>Those keys work while Studio has focus. While you are demonstrating,
 focus is somewhere else, so assign system-wide keys: <strong>Assign
 keys</strong> in the Record a demonstration window, or <strong>Capture
@@ -2683,10 +2703,16 @@ recording (see “Make a YouTube video from a picture and sound”).</li>
 recording</h3>
 <p>If Studio or the computer stops in the middle of a recording, nothing
 is lost up to that point: Studio records in short pieces as it goes. The
-next time Studio starts it says so on the status line. Choose
-<strong>Capture &gt; Recover unfinished recordings</strong>
-(Ctrl+Alt+Shift+N) to finish and check them; each becomes an ordinary
-recording with the same checks.</p>
+next time Studio starts, its status line names the recording, when it
+started and how much was captured. The same set is spoken once, rather
+than announced again at every launch.</p>
+<p>Choose <strong>Capture &gt; Recover unfinished recordings</strong>
+(Ctrl+Alt+Shift+N). Each offer is named by the recording you chose:
+<strong>Finish</strong> joins, checks and saves it;
+<strong>Discard</strong> asks before permanently deleting its recorded
+pieces; <strong>Skip</strong> leaves it for later. A recording that was
+already saved but failed its check is not saved as a duplicate. If
+finishing fails, the pieces stay and the command can try again.</p>
 <h3
 id="worked-example-a-screen-reader-demonstration-for-a-blog-post">Worked
 example: a screen reader demonstration for a blog post</h3>

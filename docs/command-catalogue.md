@@ -372,7 +372,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ## Quill Radio
 
-30 commands can be asked for in a sentence here.
+31 commands can be asked for in a sentence here.
 
 ### Quill Radio: Edit
 
@@ -406,6 +406,8 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "play it slower"; "slow it down a bit"; "a lot slower".
 - **Stop (Ctrl+.).** Stop the radio.
   Say: "stop the radio"; "turn the radio off"; "stop playing".
+- **Where Is the Sound? (Alt+Shift+A).** Say what is playing or recording, and which sound card it is on.
+  Say: "where is the sound going"; "which speakers is it playing on"; "why can't I hear the radio".
 
 ### Quill Radio: Recording
 

@@ -94,9 +94,11 @@ class LibraryDialog(wx.Dialog):
             self._status.SetLabel(f"Search failed: {error}")
             return
         self._results.Clear()
+        from quill.core.media.playlist_availability import librivox_row
+
         for book in self._books:
-            label = f"{book.title} - {book.authors}" if book.authors else book.title
-            self._results.Append(label)
+            # A result with no recording yet says so before Play (FUX-13).
+            self._results.Append(librivox_row(book))
         if self._books:
             self._results.SetSelection(0)
             self._status.SetLabel(f"{len(self._books)} result(s). Choose one and press Play.")

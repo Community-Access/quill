@@ -1,0 +1,476 @@
+diff --git a/quill/apps/radio_audio_menu.py b/quill/apps/radio_audio_menu.py
+index 84c456635..1444edb2c 100644
+--- a/quill/apps/radio_audio_menu.py
++++ b/quill/apps/radio_audio_menu.py
+@@ -57,9 +57,19 @@ def build_preferences(app: Any, audio_menu: Any, wx: Any) -> Any:
+     # item and key in every QUILL app.
+     from quill.ui import app_sounds
+ 
+     app_sounds.append_menu_item(app, audio_menu)
+     # A second device: a background station, or a mirror (xradio2 4.6, 4.7).
+     from quill.ui.radio import second_output_ui
+ 
+     second_output_ui.append_menu_items(app, audio_menu, wx)
++    # Where Is the Sound? (FUX-03): what plays or records here, and on which
++    # device, said once (ui/radio/where_is_sound).
++    from quill.ui.audio.sound_route import COMMAND_LABEL
++    from quill.ui.radio import where_is_sound
++
++    app._where_is_sound_item_id = wx.NewIdRef()
++    audio_menu.Append(
++        app._where_is_sound_item_id, app._menu_label(COMMAND_LABEL, "radio.where_is_sound")
++    )
++    app.frame.Bind(wx.EVT_MENU, lambda _e: where_is_sound.say(app), id=app._where_is_sound_item_id)
+     return forget_volumes_id
+diff --git a/quill/apps/studio_demo.py b/quill/apps/studio_demo.py
+index cac647ef3..b11ca408c 100644
+--- a/quill/apps/studio_demo.py
++++ b/quill/apps/studio_demo.py
+@@ -21,16 +21,17 @@ import shutil
+ from pathlib import Path
+ 
+ import wx
+ 
+ from quill.apps.studio_demo_finish import StudioDemoFinishMixin
+ from quill.apps.studio_demo_setup import StudioDemoSetupMixin
+ from quill.apps.studio_picture_maker import StudioPictureMakerMixin
+ from quill.apps.studio_picture_video import StudioPictureVideoMixin
++from quill.apps.studio_sound_route import StudioSoundRouteMixin
+ from quill.apps.studio_streaming import StudioStreamingMixin
+ from quill.core.demo_recording import (
+     MICROPHONE_KEY,
+     DemoPlan,
+     default_folder,
+     spoken_duration,
+ )
+ from quill.core.demo_recording_session import preferences_from_plan
+@@ -46,26 +47,29 @@ _SUPPRESSED = "Recording a demonstration"
+ 
+ class StudioDemoMixin(
+     SettledSpeechMixin,
+     StudioDemoSetupMixin,
+     StudioDemoFinishMixin,
+     StudioPictureVideoMixin,
+     StudioPictureMakerMixin,
+     StudioStreamingMixin,
++    StudioSoundRouteMixin,
+ ):
+     # -- commands, menu, tray -----------------------------------------------------
+ 
+     def _demo_command_specs(self):
+         return (
+             ("studio.record_demo", "R&ecord a demonstration...", self.record_demonstration),
+             ("studio.record_pause", "Pa&use or resume recording", self.pause_demonstration),
+             ("studio.record_marker", "Add a recording mar&ker", self.mark_demonstration),
+             ("studio.record_mute", "&Mute microphone in recording", self.mute_demonstration),
+             ("studio.record_status", "Recording s&tatus", self.speak_demonstration_status),
++            # No access letter: this menu has spent every letter in its name.
++            ("studio.where_is_sound", "Where Is the Sound?", self.where_is_sound),
+             ("studio.record_window", "Show recording &window", self.show_demonstration_window),
+             (
+                 "studio.record_emergency_stop",
+                 "Emer&gency stop and save",
+                 self.emergency_stop_demonstration,
+             ),
+             ("studio.record_discard", "Di&scard this recording...", self.discard_demonstration),
+             (
+@@ -569,32 +573,14 @@ class StudioDemoMixin(
+             self._announce("The microphone is not part of this recording.")
+             return
+         status = getattr(self, "_demo_status", None)
+         if status:
+             status.set_muted(muted)
+             status.refresh()
+         self._demo_say("Microphone muted in the recording." if muted else "Microphone unmuted.")
+ 
+-    def speak_demonstration_status(self) -> None:
+-        recorder = getattr(self, "_demo", None)
+-        if recorder is None:
+-            busy = getattr(self, "_demo_busy", "")
+-            self._announce(busy + "." if busy else "No demonstration is recording.")
+-            return
+-        # Asked for: spoken even while the reader is recorded, as the user chose to.
+-        self._announce(recorder.status_line())
+-
+-    def show_demonstration_window(self) -> None:
+-        status = getattr(self, "_demo_status", None)
+-        if not status:
+-            self._announce("No demonstration is recording.")
+-            return
+-        status.Show()
+-        status.Raise()
+-        status.text.SetFocus()
+-
+     def emergency_stop_demonstration(self) -> None:
+         self.stop_demonstration()
+ 
+     # -- stopping -----------------------------------------------------------------
+ 
+     # -- recovery -------------------------------------------------------------------
+diff --git a/quill/core/app_keymaps.py b/quill/core/app_keymaps.py
+index ca1754f2d..7540b328e 100644
+--- a/quill/core/app_keymaps.py
++++ b/quill/core/app_keymaps.py
+@@ -39,16 +39,18 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
+         # first proposal: that is Quill Radio's system-wide show/hide
+         # (family_chords.SHOW_HIDE_DEFAULTS), which wins while Radio runs.
+         # V for video. The rest are the PRD's proposals, free on this bar.
+         "studio.record_demo": "Ctrl+Alt+Shift+V",
+         "studio.record_pause": "Ctrl+Alt+Shift+P",
+         "studio.record_marker": "Ctrl+Alt+Shift+B",
+         "studio.record_mute": "Ctrl+Alt+Shift+U",
+         "studio.record_status": "Ctrl+Alt+Shift+T",
++        # Where Is the Sound? (FUX-03): the key it has in every media app.
++        "studio.where_is_sound": "Alt+Shift+A",
+         "studio.record_window": "Ctrl+Alt+Shift+W",
+         # A second Stop and save: a screen reader's keyboard hook can swallow
+         # one chord invisibly (TRAY-007).
+         "studio.record_emergency_stop": "Ctrl+Alt+Shift+End",
+         # Rare and destructive (family rule 9): a key, not a short one, and it
+         # asks before deleting anything.
+         # Not F7 to F11: those are the QuillVille launcher keys, and a launcher
+         # always wins, so a command there would never fire.
+@@ -201,16 +203,20 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
+         "radio.whats_playing_details": "Ctrl+T",
+         "radio.song_history": "Ctrl+Shift+H",
+         "radio.station_playlist": "Alt+Shift+H",  # the station's own list, same H
+         **DIAL_KEYS,  # dial tuning on and off, and Go to Playing Station: dial_tuning.py
+         # Lyrics (LRCLIB, on request only). Not the planned Ctrl+Alt+L, which is
+         # Resume Last Station on Launch; B is the one Ctrl+Alt letter left.
+         "radio.lyrics": "Ctrl+Alt+B",
+         "radio.statistics": "Ctrl+Shift+Q",
++        # Where Is the Sound? (FUX-03): the player, its device, the second
++        # player, recordings and the microphone, said once. Alt+Shift+A in
++        # every media app where it is free (ui/audio/sound_route).
++        "radio.where_is_sound": "Alt+Shift+A",
+         "radio.sound_enhancements": "Ctrl+E",
+         # A QUILL leader chord Radio cannot dispatch; the Radio entry above is
+         # the same window on a real key.
+         "media.sound_enhancements": "",
+         "media.sleep_timer": "Ctrl+Shift+Z",
+         "radio.update_catalog": "Ctrl+Alt+Shift+G",
+         "radio.catalog_status": "Ctrl+Alt+Shift+S",
+         "radio.browse_sources": "Ctrl+Alt+Shift+O",
+diff --git a/quill/core/command_catalogue/radio.py b/quill/core/command_catalogue/radio.py
+index 57de49724..2c742ecad 100644
+--- a/quill/core/command_catalogue/radio.py
++++ b/quill/core/command_catalogue/radio.py
+@@ -191,16 +191,32 @@ RADIO_ROWS: tuple[CommandSpec, ...] = (
+         aliases=("whats playing", "what is playing", "now playing", "what's this"),
+         examples=("what's playing", "what station is this", "tell me what is on"),
+         risk=_S,
+         kind=Kind.READOUT,
+         group="Song",
+         announces_itself=True,
+         apps=_R,
+     ),
++    CommandSpec(
++        "radio.where_is_sound",
++        "Where Is the Sound?",
++        "Say what is playing or recording, and which sound card it is on",
++        aliases=("where is the sound", "which sound card", "which device", "where is it playing"),
++        examples=(
++            "where is the sound going",
++            "which speakers is it playing on",
++            "why can't I hear the radio",
++        ),
++        risk=_S,
++        kind=Kind.READOUT,
++        group="Playback",
++        announces_itself=True,
++        apps=_R,
++    ),
+     CommandSpec(
+         "radio.song_history",
+         "Song History",
+         "List the songs that played earlier",
+         aliases=("song history", "what played earlier", "recent songs"),
+         examples=("what played earlier", "show the song history", "what was the last song"),
+         risk=_S,
+         kind=Kind.OPENS_DIALOG,
+diff --git a/quill/platform/windows/demo_audio.py b/quill/platform/windows/demo_audio.py
+index 51c52b38a..02a046005 100644
+--- a/quill/platform/windows/demo_audio.py
++++ b/quill/platform/windows/demo_audio.py
+@@ -275,16 +275,25 @@ class _Source:
+         # Capture times are monotonic; one reading per segment maps them onto
+         # the clock the picture is stamped with. Swapped whole, never in part.
+         self._anchor = (time.time(), time.monotonic())
+ 
+     @property
+     def label(self) -> str:
+         return self.source.label
+ 
++    def device_name(self) -> str:
++        """The sound card or microphone behind this source, by name; "" when it
++        is not one device (the system mix, a program)."""
++        return ""
++
++    def is_lost(self) -> bool:
++        """The device went away; silence fills the recording until it is back."""
++        return bool(getattr(self, "_lost", False))
++
+     def set_muted(self, muted: bool) -> None:
+         self._muted = muted
+         if self.stream is not None:
+             self.stream.muted = muted
+ 
+     def _to_wall(self, captured_monotonic: float) -> float:
+         wall, mono = self._anchor
+         return wall + (captured_monotonic - mono)
+@@ -328,16 +337,24 @@ def _render_device_name(device_id: str) -> str:
+ class LoopbackSource(_Source):
+     """One process tree, the system mix less one tree, or one sound card."""
+ 
+     def __init__(self, source: SoundSource, on_event: Event, *, studio_pid: int) -> None:
+         super().__init__(source, on_event)
+         self.studio_pid = studio_pid
+         self._capture: Any = None
+         self._device_name = ""
++        self._lost = False
++
++    def device_name(self) -> str:
++        if self.source.kind != "device":
++            return ""
++        if not self._device_name:
++            self._device_name = _render_device_name(self.source.device)
++        return self._device_name
+ 
+     def _target(self) -> tuple[int, bool]:
+         if self.source.kind == "device":
+             return (0, False)
+         if self.source.kind == "system":
+             # Exclude mode needs a live pid; Studio's own excludes Studio's sounds.
+             return (self.source.exclude_process_id or self.studio_pid, True)
+         return (self.source.process_id, False)
+@@ -426,19 +443,21 @@ class LoopbackSource(_Source):
+                 self.on_event(back, False)
+                 return
+ 
+     def _reopen_device(self) -> None:
+         """A lost or changed sound card, reopened by its endpoint ID (REC-020)."""
+         if not self._device_name:
+             self._device_name = _render_device_name(self.source.device) or self.label
+         name = self._device_name
++        self._lost = True
+         self._fail(f"{self.label} stopped: the sound card {name} was lost or changed.")
+         while not self._stop.wait(RESCAN_S):
+             if self.open() == "":
++                self._lost = False
+                 self.on_event(f"{self.label}: {name} is back and recording.", False)
+                 return
+ 
+     def close(self) -> None:
+         self._stop.set()
+         if self._capture is not None:
+             self._capture.stop()
+ 
+diff --git a/quill/platform/windows/demo_microphone.py b/quill/platform/windows/demo_microphone.py
+index d6f84672b..777a2dd44 100644
+--- a/quill/platform/windows/demo_microphone.py
++++ b/quill/platform/windows/demo_microphone.py
+@@ -135,16 +135,22 @@ class MicrophoneSource(_Source):
+     def close(self) -> None:
+         self._stop.set()
+         thread = self._thread
+         if thread is not None and thread is not threading.current_thread():
+             thread.join(timeout=3.0)
+         if thread is None or not thread.is_alive():
+             self._close_stream()
+ 
++    def device_name(self) -> str:
++        """The microphone that opened, or the saved one until it has."""
++        if self.device is not None:
++            return str(self.device.name)
++        return self.source.device
++
+     def input_balance(self) -> str:
+         """The input carrying the sound, ``"1"`` or ``"2"``, when the other is silent."""
+         if self._inputs < 2 or self.source.channel_mode != "mix":
+             return ""
+         side = one_sided(self._squares[0], self._squares[1], self._balance_samples)
+         return {"left": "1", "right": "2"}.get(side, "")
+ 
+     # -- the device thread ----------------------------------------------------------
+diff --git a/quill/platform/windows/screen_recorder.py b/quill/platform/windows/screen_recorder.py
+index dd951a8f0..94ca952d4 100644
+--- a/quill/platform/windows/screen_recorder.py
++++ b/quill/platform/windows/screen_recorder.py
+@@ -379,27 +379,38 @@ class DemoRecorder:
+         mic = next((s for s in self.sources if s.source.kind == "microphone"), None)
+         if mic is None:
+             return False
+         mic.set_muted(muted)
+         self.mic_muted = muted
+         self.mark("Microphone muted" if muted else "Microphone unmuted")
+         return True
+ 
+-    def status_line(self) -> str:
++    def sound_parts(self) -> list[str]:
++        """What goes into the recording, devices named (FUX-03): a lost source
++        first, then "sound: A and B", microphone muted, the screen reader."""
+         state = {"recording": "Recording", "paused": "Paused"}.get(self.state, self.state.title())
+-        live = [
+-            s.label for s in self.sources if not (s.source.kind == "microphone" and self.mic_muted)
+-        ]
++        heard = [s for s in self.sources if not (s.source.kind == "microphone" and self.mic_muted)]
++        lost = [_spoken_source(s) for s in heard if _is_lost(s)]
++        live = [_spoken_source(s) for s in heard if not _is_lost(s)]
+         reader = "in" if self.plan.source("screen_reader") is not None else "out"
+-        parts = [f"{state}, {format_timestamp(self.elapsed())[:-2]}"]
+-        parts.append("sound: " + (", ".join(live) if live else "none"))
++        parts = [f"{name} disconnected, recording silence" for name in lost]
++        parts.append(f"{state}, {format_timestamp(self.elapsed())[:-2]}")
++        parts.append("sound: " + (" and ".join(live) if live else "none"))
+         if self.mic_muted:
+             parts.append("microphone muted")
+         parts.append(f"screen reader {reader}")
++        return parts
++
++    def sound_line(self) -> str:
++        """Only where the sound comes from, for Where Is the Sound?."""
++        return "; ".join(self.sound_parts()) + "."
++
++    def status_line(self) -> str:
++        parts = self.sound_parts()
+         dropped = self._dropped + (
+             self._screen.last_stats.dropped if self._screen and self._screen.last_stats else 0
+         )
+         parts.append(f"{dropped} dropped frames")
+         free = free_bytes(self.output.parent)
+         if free >= 0:
+             parts.append(f"about {int(minutes_left(free, self.plan))} minutes of space left")
+         return "; ".join(parts) + "."
+@@ -541,16 +552,38 @@ class DemoRecorder:
+                 source.end_segment(time.time())
+                 source.close()
+             if self._faces is not None:
+                 self._faces.stop()
+             self.state = "discarded"
+         shutil.rmtree(self.work, ignore_errors=True)
+ 
+ 
++def _spoken_source(source: Any) -> str:
++    """A source and the device behind it (FUX-03): "Microphone, USB Mic", or the
++    device's name alone when it already starts with the label ("Microphone
++    (Realtek Audio)"), so nothing is said twice."""
++    try:
++        name = str(source.device_name() or "").strip()
++    except Exception:  # noqa: BLE001 - the label alone is still an answer
++        name = ""
++    if not name:
++        return str(source.label)
++    if name.casefold().startswith(str(source.label).casefold()):
++        return name
++    return f"{source.label}, {name}"
++
++
++def _is_lost(source: Any) -> bool:
++    try:
++        return bool(source.is_lost())
++    except Exception:  # noqa: BLE001 - a source that cannot say is not reported lost
++        return False
++
++
+ def _hide(folder: Path) -> None:
+     try:
+         ctypes.windll.kernel32.SetFileAttributesW(str(folder), 0x2)  # FILE_ATTRIBUTE_HIDDEN
+     except (AttributeError, OSError):
+         pass
+ 
+ 
+ # -- finishing (also used to recover after a crash) --------------------------------
+diff --git a/quill/ui/radio/output_device_guard.py b/quill/ui/radio/output_device_guard.py
+index e1b8a47a6..b0c6ec915 100644
+--- a/quill/ui/radio/output_device_guard.py
++++ b/quill/ui/radio/output_device_guard.py
+@@ -123,16 +123,19 @@ def _routing_engine(host: Any) -> Any | None:
+ 
+ def change_device(host: Any, device: str) -> None:
+     """The listener chose *device* ("" = system default): apply it now."""
+     device = device.strip()
+     if device == host._output_device:
+         return
+     host._previous_output_device = host._output_device
+     host._output_device = device
++    from quill.ui.radio.where_is_sound import forget_lost_device
++
++    forget_lost_device(host)  # a deliberate choice ends the "could not be opened" story
+     label = device_label(device)
+     _log.info("Output device chosen: %s (%s)", label, device or "auto")
+     station = host._state.station
+     if station is None or host._state.state not in RESTARTABLE_STATES:
+         return
+     engine = _routing_engine(host)
+     if engine is not None:
+         # Live: mpv re-opens its audio output on the property change, and the
+@@ -196,16 +199,19 @@ def rescue_settled(host: Any, *, loaded: bool) -> None:
+             device,
+         )
+         host._output_device = device
+         return
+     previous = host._output_device
+     label = device_label(device)
+     back_to = device_label(previous)
+     _log.warning("Output device %s would not open; the setting is back to %s", label, back_to)
++    from quill.ui.radio.where_is_sound import remember_lost_device
++
++    remember_lost_device(host, device, label)  # Where Is the Sound? says it again
+     reverted = getattr(host, "on_output_device_reverted", None)
+     if reverted is not None:
+         try:
+             reverted(previous)  # the host persists the setting
+         except Exception:  # noqa: BLE001 - a save that fails must not stop playback
+             _log.exception("output device revert could not be saved")
+     _say(host, f"{label} could not be opened, so the output device is back to {back_to}.")
+ 
+diff --git a/quill/ui/radio/palette_commands.py b/quill/ui/radio/palette_commands.py
+index ebe7c8f4e..d162945c6 100644
+--- a/quill/ui/radio/palette_commands.py
++++ b/quill/ui/radio/palette_commands.py
+@@ -29,16 +29,23 @@ def _lyrics(host: Any) -> None:
+ 
+ def _station_playlist(host: Any) -> None:
+     """What the station says it played -- see ui/radio/station_playlist_commands."""
+     from quill.ui.radio import station_playlist_commands
+ 
+     station_playlist_commands.open_station_playlist(host)
+ 
+ 
++def _where_is_sound(host: Any) -> None:
++    """The player, its device, recordings, the microphone -- ui/radio/where_is_sound."""
++    from quill.ui.radio import where_is_sound
++
++    where_is_sound.say(host)
++
++
+ def _dial(host: Any, verb: str) -> None:
+     """Dial tuning's two commands -- see ui/radio/dial_tuning_commands."""
+     from quill.ui.radio import dial_tuning_commands
+ 
+     if verb == "toggle":
+         dial_tuning_commands.toggle_dial_tuning(host)
+     else:
+         dial_tuning_commands.go_to_playing_station(host)
+@@ -168,16 +175,21 @@ def register_radio_commands(host: Any) -> None:
+             "Internet Radio: What's Playing?",
+             host.radio_whats_playing,
+         ),
+         (
+             "radio.whats_playing_details",
+             "Internet Radio: What's Playing - Review and Copy...",
+             host.radio_whats_playing_details,
+         ),
++        (
++            "radio.where_is_sound",
++            "Internet Radio: Where Is the Sound?",
++            lambda: _where_is_sound(host),
++        ),
+         (
+             "radio.copy_whats_playing",
+             "Internet Radio: Copy What's Playing",
+             host.radio_copy_whats_playing,
+         ),
+         (
+             "radio.add_youtube_link",
+             "Internet Radio: Add YouTube Link...",

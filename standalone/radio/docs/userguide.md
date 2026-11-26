@@ -2212,6 +2212,30 @@ mpv engine opens that same page as soon as you press Ctrl+Shift+D. And if a
 device is saved in your settings while the classic player is in use, Quill
 Radio hands the setting back and tells you the same thing.
 
+### Where Is the Sound?
+
+When you hear nothing, or the radio is somewhere you did not expect, press
+**Alt+Shift+A** (**Audio > Where Is the Sound?**). Quill Radio says once, and
+only when you ask:
+
+- what the player is doing and the device it is on, by the name Windows gives
+  it. "The system default" comes after the device that is the default today,
+  for example "Playing Jazz24 on Speakers (Realtek), the system default." A
+  chosen device Windows does not list is said to be "not connected", because a
+  device that is chosen is not proof that the sound reaches it. When the radio
+  is muted, "Muted." comes first.
+- a device that would not open earlier, so the radio switched back to another
+  one. When it is connected again, Quill Radio says so and that Output Device
+  (Ctrl+Shift+D) can choose it. Nothing moves by itself.
+- a background station or a mirror, and its device.
+- recordings, and that volume and mute do not affect them: Quill Radio records
+  the stream itself, not what comes out of the speakers.
+- another QUILL program listening on the microphone, such as QUILL Transcribe.
+
+On the classic Windows Media player it names the device Windows gives Quill
+Radio, "chosen by Windows". The command is also in the Command Palette, and
+QUILL's Internet Radio has it there too.
+
 ### A second device: a background station, or a mirror
 
 Quill Radio can play on a second sound card or headset at the same time as the
@@ -3250,7 +3274,8 @@ real difference:
   every stream it lists, and rows it could not play are marked "may not be
   playable". Rows that have to be looked up before they start, such as TuneIn
   and YouTube, say "resolved when you play it". Other rows have no mark,
-  because only Radio Browser publishes a check.
+  because only Radio Browser publishes a check. A station in the Browse
+  Stations tree carries the same "may not be playable" mark.
 - **If you are offline, Quill Radio tells you once**, for example "You are
   offline. Browsing from your catalog, updated this morning.", and carries on
   working.
@@ -4400,21 +4425,29 @@ record the rest.
 
 The next time it starts, Quill Radio tidies its temporary folder, moving any
 finished file to your recordings folder. Then, if a recording was in progress
-and its planned end was no more than ten minutes ago, a window titled
-**Resume Recording** asks, for example:
+and its planned end has not passed its resume window, a window titled
+**Resume Recording** names the station, when it started, how much was recorded,
+and where that part is kept. For example:
 
-> A recording of WQXR was in progress until 2026-09-26 09:00:00. Resume it for the remaining 12 minute(s)?
+> Your recording of WQXR, started Friday 8:00 PM and due to end at 9:00 PM,
+> stopped unexpectedly. What it recorded, 23 minutes, is kept in your
+> recordings folder. Resume records the remaining 37 minutes as a separate
+> file. Skip records nothing more. Either way, nothing already recorded is
+> deleted.
 
 1. If the whole question was not read, use your screen reader's command to
    read the window.
 2. If you want Quill Radio to remember your answer from now on, press **Alt+D**
    to check **Don't ask me again** first.
-3. Choose **Resume** (Enter) to record the minutes that are left, or **Skip**
-   (Escape) to leave it. Resume records from the same station.
+3. Choose **Resume** (Enter) to record the minutes that are left as a separate
+   file, or **Skip** (Escape) to record nothing more. Neither choice deletes
+   what was already recorded.
 
 If several recordings were interrupted, one window, **Resume Recordings**,
-covers them all. It lists them, asks "Resume all of them for their remaining time?", and offers **Resume
-All** and **Skip All**.
+covers them all. It lists each station, its start, how much it recorded and how
+much is left, and offers **Resume All** and **Skip All**. Resume All makes a
+separate file for each; Skip All records nothing more. Neither deletes the
+recordings already on disk.
 
 To change your mind later:
 

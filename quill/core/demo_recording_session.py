@@ -116,6 +116,9 @@ class SessionRecord:
     #: REC-024: stream name ("Screen", "Camera", a sound source's label) -> the
     #: first failure it reported. The others kept recording; the check names it.
     stream_failures: dict[str, str] = field(default_factory=dict)
+    #: The file a finish already wrote when its check failed and the pieces were
+    #: kept, so a later recovery says so instead of saving a " (2)" copy (FUX-05).
+    saved: str = ""
 
     def save(self, work: Path) -> None:
         data = asdict(self)
@@ -148,6 +151,7 @@ class SessionRecord:
             }
             if isinstance(raw.get("stream_failures"), dict)
             else {},
+            saved=str(raw.get("saved", "") or ""),
         )
 
 

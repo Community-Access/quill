@@ -1,0 +1,1049 @@
+diff --git a/quill/apps/studio_demo_finish.py b/quill/apps/studio_demo_finish.py
+index 7a1eeef0c..be6da151e 100644
+--- a/quill/apps/studio_demo_finish.py
++++ b/quill/apps/studio_demo_finish.py
+@@ -1,24 +1,41 @@
+ """Record a Demonstration: stopping, discarding, the result, recovery and shutdown.
+ 
+ Split from :mod:`quill.apps.studio_demo` (GATE-11).
+ """
+ 
+ from __future__ import annotations
+ 
++import logging
+ import os
+ import shutil
+ from pathlib import Path
+ from typing import Any
+ 
+ import wx
+ 
+ from quill.core.demo_recording_session import find_unfinished
++from quill.core.demo_unfinished import Unfinished, describe_unfinished
+ from quill.core.paths import app_data_dir
++from quill.core.storage import read_json, write_json_atomic
++
++_log = logging.getLogger(__name__)
++
++#: The unfinished recordings last *said* at launch, so the same set is spoken
++#: once and then only written to the status bar (FUX-05).
++_RECOVERY_SAID_FILE = "studio_unfinished_said.json"
++
++
++def _not_finished(item: Unfinished) -> str:
++    """A recovery that failed: the recording by name, never a path or exception text."""
++    return (
++        f"{item.name} could not be finished. Its recorded pieces are kept; Capture, "
++        "Recover unfinished recordings tries again or discards them."
++    )
+ 
+ 
+ class StudioDemoFinishMixin:
+     def _demo_cleanup(self, recorder) -> None:
+         self._demo_quiet_stop()
+         status = getattr(self, "_demo_status", None)
+         self._demo_status = None
+         if status:
+@@ -229,87 +246,167 @@ class StudioDemoFinishMixin:
+     def _demo_folders(self) -> list[Path]:
+         folders = [self._demo_default_folder()]
+         saved = str(self._demo_preferences().get("folder") or "")
+         if saved and Path(saved) not in folders:
+             folders.append(Path(saved))
+         return folders
+ 
+     def _offer_demo_recovery(self) -> None:
+-        """At launch: say once that unfinished recordings exist; never open a modal."""
++        """At launch: name the unfinished recordings once; never open a modal.
++
++        Said aloud the first time a set of unfinished recordings is found, then
++        only written to the status bar on later launches, so a recording left
++        for later is not announced at every start. Capture, Recover unfinished
++        recordings is always the way back to it.
++        """
+         try:
+             from quill.platform.windows.focus_guard import restore_after_crash
+ 
+             if restore_after_crash(app_data_dir()):
+                 self._set_status_quiet(
+                     "Do Not Disturb was put back after an interrupted recording."
+                 )
+         except Exception:  # noqa: BLE001 - never disturb a launch
+             pass
+         try:
+-            found = find_unfinished(self._demo_folders())
++            found = [describe_unfinished(work) for work in find_unfinished(self._demo_folders())]
+         except Exception:  # noqa: BLE001 - recovery must never disturb a launch
++            _log.warning("could not look for unfinished recordings", exc_info=True)
++            return
++        waiting = [item for item in found if item.needs_finishing]
++        if not waiting:
+             return
+-        if found:
+-            count = len(found)
+-            self._set_status(
+-                f"{count} unfinished recording{'s' if count != 1 else ''} found. Use Capture, "
+-                "Recover unfinished recordings."
++        noun = (
++            "an unfinished recording"
++            if len(waiting) == 1
++            else f"{len(waiting)} unfinished recordings"
++        )
++        sentence = (
++            f"Studio found {noun}: {'; '.join(item.label for item in waiting)}. "
++            "Capture, Recover unfinished recordings finishes or discards "
++            f"{'it' if len(waiting) == 1 else 'them'}."
++        )
++        said = app_data_dir() / _RECOVERY_SAID_FILE
++        names = sorted(item.work.name for item in waiting)
++        if read_json(said, None) == names:
++            self._set_status_quiet(sentence)
++            return
++        self._set_status(sentence)
++        try:
++            write_json_atomic(said, names)
++        except OSError:
++            pass  # said again next launch: the harmless direction to fail
++
++    def _ask_unfinished(self, item: Unfinished) -> str:
++        """``"finish"``, ``"discard"`` or ``"skip"`` for one unfinished recording."""
++        if item.needs_finishing:
++            where = f" in {item.output.parent.name}" if item.output is not None else ""
++            message = (
++                f"{item.label}.\n\n"
++                f"Finish joins, checks and saves it as {item.name}{where}. "
++                "Discard deletes what was recorded. Skip leaves it for later."
+             )
++            labels = ("&Finish", "&Discard...", "&Skip")
++            style = wx.YES_NO | wx.CANCEL | wx.YES_DEFAULT | wx.ICON_QUESTION
++        else:
++            message = (
++                f"{item.label}.\n\nIts recorded pieces are still kept. Discard deletes "
++                "those pieces; "
++                + ("the saved file stays. " if item.saved is not None else "")
++                + "Skip leaves them for later."
++            )
++            labels = ("", "&Discard...", "&Skip")
++            style = wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION
++        dialog = wx.MessageDialog(self.frame, message, "Recover unfinished recordings", style)
++        if labels[0]:
++            dialog.SetYesNoCancelLabels(labels[0], labels[1], labels[2])
++        else:
++            dialog.SetYesNoLabels(labels[1], labels[2])
++        try:
++            answer = self._show_modal_dialog(dialog, "Recover unfinished recordings")
++        finally:
++            dialog.Destroy()
++        if labels[0]:
++            return {wx.ID_YES: "finish", wx.ID_NO: "discard"}.get(answer, "skip")
++        return "discard" if answer == wx.ID_YES else "skip"
++
++    def _discard_unfinished(self, item: Unfinished) -> None:
++        """Delete one unfinished recording's pieces, after a confirmation that says so."""
++        answer = self._show_message_box(
++            f"Delete the recorded pieces of {item.name}? They do not go to the Recycle Bin "
++            "and cannot be recovered."
++            + (f" The saved file {item.saved.name} is not touched." if item.saved else ""),
++            "Discard an unfinished recording",
++            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
++        )
++        if answer not in (wx.YES, wx.ID_YES):
++            self._announce(f"{item.name} is kept.")
++            return
++        shutil.rmtree(item.work, ignore_errors=True)
++        if item.work.exists():
++            self._announce(f"{item.name} could not be fully deleted. Try again later.")
++        else:
++            self._announce(f"Discarded {item.name}.")
+ 
+     def recover_demonstrations(self) -> None:
+         if getattr(self, "_demo", None) is not None or getattr(self, "_demo_busy", ""):
+             self._announce("Finish the current recording first.")
+             return
+-        found = find_unfinished(self._demo_folders())
+-        if not found:
++        items = [describe_unfinished(work) for work in find_unfinished(self._demo_folders())]
++        if not items:
+             self._announce("No unfinished recordings were found.")
+             return
++        to_finish: list[Unfinished] = []
++        for item in items:
++            choice = self._ask_unfinished(item)
++            if choice == "discard":
++                self._discard_unfinished(item)
++            elif choice == "finish" and item.needs_finishing:
++                to_finish.append(item)
++        if not to_finish:
++            return
+         ffmpeg = self._demo_ffmpeg()
+         if not ffmpeg:
+             self._announce("Recovering a recording needs FFmpeg. Use Voices, Get FFmpeg.")
+             return
+-        names = "\n".join(f"- {path.parent / path.name}" for path in found)
+-        answer = self._show_message_box(
+-            f"Finish {len(found)} unfinished recording{'s' if len(found) != 1 else ''} now?\n"
+-            f"{names}\n\nEach is joined, checked and saved beside its folder.",
+-            "Recover unfinished recordings",
+-            wx.YES_NO | wx.YES_DEFAULT | wx.ICON_QUESTION,
+-        )
+-        if answer not in (wx.YES, wx.ID_YES):
+-            return
+         caps = self._demo_caps(ffmpeg)
+         self._demo_busy = "Unfinished recordings are being recovered"
+ 
+         def work(*, cancellation_token, **_kwargs):
+             from quill.platform.windows.screen_recorder_finish import finalize
+ 
+             results = []
+-            for work_folder in found:
++            for item in to_finish:
+                 try:
+                     results.append(
+                         finalize(
+-                            work_folder, ffmpeg=ffmpeg, caps=caps, cancellation=cancellation_token
++                            item.work, ffmpeg=ffmpeg, caps=caps, cancellation=cancellation_token
+                         )
+                     )
+                 except Exception as error:  # noqa: BLE001 - one bad folder never stops the rest
+-                    results.append(error)
++                    _log.warning("could not finish %s: %s", item.work, error)
++                    results.append(item)
+             return results
+ 
+         def done(_task, results: list[Any]):
+             self._demo_busy = ""
+             for result in results:
+-                if isinstance(result, Exception):
+-                    self._announce(f"A recording could not be recovered: {result}")
++                if isinstance(result, Unfinished):
++                    self._announce(_not_finished(result))
+                 else:
+                     self._show_demo_result(result, title=f"Recovered: {result.state}")
+ 
+         def failed(_task, error):
+             self._demo_busy = ""
+-            self._announce(f"Recovery failed: {error}")
++            _log.warning("recovering demonstrations failed: %s", error)
++            self._announce(
++                "The unfinished recordings could not be finished. Their recorded pieces are "
++                "kept; Capture, Recover unfinished recordings tries again."
++            )
+ 
+         self._task_manager.submit(
+             "Recover demonstrations",
+             work,
+             on_success=done,
+             on_failure=failed,
+             ui_lifetime=self._demo_lifetime(),
+         )
+diff --git a/quill/core/audio_studio/surface_help.py b/quill/core/audio_studio/surface_help.py
+index 16e8c03fb..c1860e56f 100644
+--- a/quill/core/audio_studio/surface_help.py
++++ b/quill/core/audio_studio/surface_help.py
+@@ -155,18 +155,23 @@ PURPOSES: dict[str, str] = {
+         "Choose a program that is playing sound to add as a sound source of its own."
+     ),
+     "Add marker": ("Type an optional label for this moment in the recording, then press Enter."),
+     "Choose the save folder": "Choose the folder where demonstrations are saved.",
+     "Discard this recording": (
+         "Confirm deleting the recording in progress. It cannot be recovered."
+     ),
+     "Recover unfinished recordings": (
+-        "Recordings interrupted by a crash or power cut were found. Studio can join, "
+-        "check and save each one beside its folder."
++        "A recording interrupted by a crash or power cut, named by what it is, when "
++        "it started and how much was recorded. Finish joins, checks and saves it; "
++        "Discard deletes its recorded pieces after asking; Skip leaves it for later."
++    ),
++    "Discard an unfinished recording": (
++        "Confirm deleting an unfinished recording's pieces. They do not go to the "
++        "Recycle Bin and cannot be recovered."
+     ),
+     "Screen reader speech": (
+         "Confirm putting your screen reader's speech in the recording: everything it "
+         "says while you record will be in the file."
+     ),
+     "Choose screenshot control": (
+         "Choose a specific part of the selected window by its name or role. "
+         "Search filters real accessible controls without AI. Password and offscreen "
+diff --git a/quill/core/demo_recording_session.py b/quill/core/demo_recording_session.py
+index 9de40bc6c..97fd16ff4 100644
+--- a/quill/core/demo_recording_session.py
++++ b/quill/core/demo_recording_session.py
+@@ -111,16 +111,19 @@ class SessionRecord:
+     output: str
+     started: str
+     segments: list[SegmentRecord] = field(default_factory=list)
+     markers: list[dict[str, Any]] = field(default_factory=list)
+     state: Literal["recording", "paused", "finalizing", "finished", "failed"] = "recording"
+     #: REC-024: stream name ("Screen", "Camera", a sound source's label) -> the
+     #: first failure it reported. The others kept recording; the check names it.
+     stream_failures: dict[str, str] = field(default_factory=dict)
++    #: The file a finish already wrote when its check failed and the pieces were
++    #: kept, so a later recovery says so instead of saving a " (2)" copy (FUX-05).
++    saved: str = ""
+ 
+     def save(self, work: Path) -> None:
+         data = asdict(self)
+         # Defence in depth for MX-179: the plan snapshot never says the mic was on.
+         for source in data["plan"].get("sources", []):
+             if source.get("kind") == "microphone":
+                 source.pop("enabled", None)
+         write_json_atomic(work / SESSION_FILE, data)
+@@ -143,16 +146,17 @@ class SessionRecord:
+             markers=list(raw.get("markers", [])),
+             state=raw.get("state", "recording"),
+             stream_failures={
+                 str(name): str(reason)
+                 for name, reason in (raw.get("stream_failures") or {}).items()
+             }
+             if isinstance(raw.get("stream_failures"), dict)
+             else {},
++            saved=str(raw.get("saved", "") or ""),
+         )
+ 
+ 
+ def source_timing_summary(
+     segments: list[SegmentRecord], labels: dict[str, str]
+ ) -> list[dict[str, Any]]:
+     """Each source's timing over the whole recording, for the report (REC-022, REC-023).
+ 
+diff --git a/quill/core/radio/surface_help.py b/quill/core/radio/surface_help.py
+index 9d8e4287d..c09bce1bd 100644
+--- a/quill/core/radio/surface_help.py
++++ b/quill/core/radio/surface_help.py
+@@ -365,24 +365,28 @@ PURPOSES: dict[str, str] = {
+     ),
+     "Recording Settings": (
+         "How recordings are made: where the files go, how they are named, "
+         "the format they are kept in, and the safety limits that stop an "
+         "open-ended capture from filling the disk."
+     ),
+     "Resume Recording": (
+         "Quill Radio closed while this recording was still being written -- "
+-        "a crash, a shutdown, a log-off. Resume picks the capture back up on "
+-        "the same station; Skip keeps what was saved and lets it go. Don't ask "
+-        "me again remembers the answer; Preferences can change it."
++        "a crash, a shutdown, a log-off. The message says which recording, how "
++        "much it recorded and where that is kept. Resume records the remaining "
++        "time on the same station as a separate file; Skip records nothing more. "
++        "Neither deletes what was recorded. Don't ask me again remembers the "
++        "answer; Preferences can change it."
+     ),
+     "Resume Recordings": (
+         "Quill Radio closed while these recordings were still being written. "
+-        "Resume All picks the captures back up; Skip All keeps what was saved and "
+-        "lets them go."
++        "The list gives each one's station, start, how much it recorded and how "
++        "much is left. Resume All records the remaining time of each as a "
++        "separate file; Skip All records nothing more. Neither deletes what was "
++        "recorded."
+     ),
+     "Search Sources": (
+         "Choose which directories Find Stations asks. Fewer sources answer "
+         "faster; a source that is off is never contacted."
+     ),
+     "Sleep Timer": (
+         "Stop playback by itself after a time you choose, so the radio does "
+         "not play to an empty room all night. The status bar's Sleep timer "
+diff --git a/quill/platform/windows/screen_recorder_finish.py b/quill/platform/windows/screen_recorder_finish.py
+index 30ebb2e58..154373da6 100644
+--- a/quill/platform/windows/screen_recorder_finish.py
++++ b/quill/platform/windows/screen_recorder_finish.py
+@@ -218,16 +218,17 @@ def finalize(
+     verification.source_timing = source_timing_summary(
+         session.segments, {key: source.label for key, source in labels.items()}
+     )
+     if plan.keep_stems:
+         _write_stems(ffmpeg, final, stems, labels)
+     save_reports(final, verification, plan, markers)
+     if verification.state == "Failed":
+         session.state = "failed"
++        session.saved = str(final)
+         session.save(work)
+     else:
+         session.state = "finished"
+         shutil.rmtree(work, ignore_errors=True)
+     return verification
+ 
+ 
+ def _levels(stems: dict[str, list[Path]], labels: dict[str, Any]) -> list[SourceLevel]:
+diff --git a/quill/tools/persistence_entries_studio.py b/quill/tools/persistence_entries_studio.py
+index 90400e488..2df69d6aa 100644
+--- a/quill/tools/persistence_entries_studio.py
++++ b/quill/tools/persistence_entries_studio.py
+@@ -23,16 +23,19 @@ STUDIO_ENTRIES: dict[str, str] = {
+     "core/screenshot_workspaces.py::remove_workspace": "needs-versioning",
+     "core/studio_capture_ai.py::save_capture_ai_preferences": "needs-versioning",
+     # Record a demonstration (2026-10-29). The check report beside a finished
+     # recording is written for the user, like the screenshot report above.
+     "core/demo_recording_verify.py::save_reports": "export",
+     # The in-progress recording's session file, read back only to recover an
+     # unfinished recording and removed when it is finished: a recovery marker.
+     "core/demo_recording_session.py::save": "marker",
++    # Which unfinished recordings were already said at launch, so the same set
++    # is spoken once (FUX-05): a marker, rewritten whenever the set changes.
++    "apps/studio_demo_finish.py::_offer_demo_recovery": "marker",
+     # Do Not Disturb as it was before recording, so a crash can put it back;
+     # deleted once restored.
+     "platform/windows/focus_guard.py::start": "marker",
+     # The recording window's last choices and the broadcast settings (never the
+     # password, which is in Windows Credential Manager): real config with no
+     # version stamp yet.
+     "apps/studio_demo.py::record_demonstration": "needs-versioning",
+     "apps/studio_streaming.py::_start_stream": "needs-versioning",
+diff --git a/quill/ui/audio_studio/chapter_workbench.py b/quill/ui/audio_studio/chapter_workbench.py
+index 9f5d605cd..bf3dcc143 100644
+--- a/quill/ui/audio_studio/chapter_workbench.py
++++ b/quill/ui/audio_studio/chapter_workbench.py
+@@ -383,19 +383,20 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
+             "file, an SFTP upload, or Auphonic post-production. Unsaved "
+             "chapter edits must be saved first."
+         )
+         self._publish_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_publish())
+         self._publish_btn.Show(on_publish is not None)  # Quill Converter has no publishing
+         close_btn = wx.Button(self, wx.ID_CANCEL, label=_("Close"))
+         close_btn.SetHelpText(
+             "Closes the Workbench, remembering your listening position. "
+-            "Unsaved chapter or tag edits are discarded -- press Save or Save "
+-            "As first to keep them."
++            "With chapter or tag edits unsaved, it first asks whether to save "
++            "or discard them."
+         )
++        close_btn.Bind(wx.EVT_BUTTON, self._on_close_button)
+         btn_row.AddStretchSpacer()
+         btn_row.Add(self._save_btn, 0, wx.RIGHT, 6)
+         btn_row.Add(save_as_btn, 0, wx.RIGHT, 6)
+         btn_row.Add(self._publish_btn, 0, wx.RIGHT, 6)
+         btn_row.Add(close_btn, 0)
+         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
+         self._sync_save_button()
+ 
+@@ -888,16 +889,19 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
+         try:
+             on_success(work())
+         except Exception as exc:  # noqa: BLE001 - surfaced, not raised through wx
+             self._error(str(exc))
+ 
+     # -- lifecycle --------------------------------------------------------------------
+ 
+     def _on_close(self, evt: wx.CloseEvent) -> None:
++        if not self._may_close(evt.CanVeto()):  # unsaved edits: asked first (FUX-05)
++            evt.Veto()
++            return
+         from quill.core.paths import app_data_dir
+         from quill.core.speech.listening_positions import save_position_ms
+ 
+         position = self.player.playhead_ms()
+         if position > 0:
+             save_position_ms(app_data_dir(), self._book.path, position)
+         if self._on_closed_cb is not None:
+             self._on_closed_cb(str(self._book.path), position, self.player.current_chapter_index())
+diff --git a/quill/ui/audio_studio/chapter_workbench_edits.py b/quill/ui/audio_studio/chapter_workbench_edits.py
+index b470d6372..71bbeafff 100644
+--- a/quill/ui/audio_studio/chapter_workbench_edits.py
++++ b/quill/ui/audio_studio/chapter_workbench_edits.py
+@@ -53,16 +53,75 @@ _BOUNDARY_TAIL_MS = 2_000
+ 
+ class ChapterEditsMixin:
+     """Add, delete, edit, preview and nudge handlers for the Chapter Workbench."""
+ 
+     #: When set, playback stops as soon as the playhead passes this point.
+     _stop_at_ms: int | None = None
+     #: True while a run of nudges is at the wall, so it is announced once.
+     _wall_announced: bool = False
++    #: Set once closing has been settled, so Close, Escape and the X ask once.
++    _close_confirmed: bool = False
++
++    # -- closing with unsaved edits (FUX-05) -----------------------------------
++
++    def _unsaved_edits(self) -> str:
++        """``chapter edits``, ``tag edits``, both, or "" when nothing is unsaved."""
++        parts = []
++        if self._chapters_dirty:
++            parts.append(str(_("chapter edits")))
++        if self._tags_dirty:
++            parts.append(str(_("tag edits")))
++        return " and ".join(parts)
++
++    def _ask_unsaved(self, unsaved: str) -> str:
++        """``"save"``, ``"discard"`` or ``"cancel"``: what to do with *unsaved*."""
++        name = self._book.path.stem
++        dlg = wx.MessageDialog(
++            self,
++            str(
++                _(
++                    "{name} has unsaved {unsaved}. Save writes them to the book and keeps "
++                    "the Workbench open. Discard closes without them; the book stays as "
++                    "it was last saved. Cancel goes back to editing."
++                )
++            ).format(name=name, unsaved=unsaved),
++            str(_("Chapter Workbench")),
++            wx.YES_NO | wx.CANCEL | wx.YES_DEFAULT | wx.ICON_WARNING,
++        )
++        dlg.SetYesNoCancelLabels(str(_("&Save")), str(_("&Discard")), str(_("Cancel")))
++        try:
++            answer = dlg.ShowModal()  # GATE-42-OK: shown by the Workbench
++        finally:
++            dlg.Destroy()
++        return {wx.ID_YES: "save", wx.ID_NO: "discard"}.get(answer, "cancel")
++
++    def _may_close(self, can_veto: bool = True) -> bool:
++        """Whether the Workbench may close now. Unsaved edits are never lost unasked."""
++        if self._close_confirmed or not can_veto:
++            return True
++        unsaved = self._unsaved_edits()
++        if not unsaved:
++            self._close_confirmed = True
++            return True
++        choice = self._ask_unsaved(unsaved)
++        if choice == "save":
++            self._on_save()  # its own result is said; Close then closes
++            return False
++        if choice == "discard":
++            self._close_confirmed = True
++            self._announce(str(_("Discarded the unsaved {unsaved}.")).format(unsaved=unsaved))
++            return True
++        return False
++
++    def _on_close_button(self, evt: wx.CommandEvent) -> None:
++        """Close and Escape: ask about unsaved edits before the window goes."""
++        if self._may_close():
++            evt.Skip()
++
+     #: The pending "say the whole chapter" call, cancelled by the next nudge.
+     _settle_timer: object | None = None
+ 
+     # -- add / delete / edit ---------------------------------------------------
+ 
+     def _on_add_chapter(self) -> None:
+         """Insert a marker at the playhead (or a typed time) and name it."""
+         default = format_time_precise(self.player.playhead_ms())
+diff --git a/quill/ui/main_frame_radio.py b/quill/ui/main_frame_radio.py
+index 2f4573274..ec0053ebb 100644
+--- a/quill/ui/main_frame_radio.py
++++ b/quill/ui/main_frame_radio.py
+@@ -281,153 +281,32 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
+         # a rebuild) can collect this generation's file.
+         from quill.ui.radio import catalog_ui
+ 
+         catalog_ui.shutdown(self)
+ 
+     # -- R3: resume across restart -------------------------------------------
+ 
+     def _reconcile_and_offer_radio_resume(self) -> None:
+-        """Move crash-orphaned temp files home, then offer to resume an
+-        in-progress recording found via the persisted marker (R3).
++        """Move crash-orphaned temp files home, then offer each interrupted
++        recording by name (R3, FUX-05). See :mod:`quill.ui.radio.resume_offer`."""
++        from quill.ui.radio import resume_offer
+ 
+-        Runs once at launch (deferred). Reconcile is always done and announced;
+-        resume honors the remembered choice (ask/always/never) and the grace
+-        window. A marker past its grace is cleared and skipped.
+-        """
+-        from quill.core.paths import app_data_dir
+-        from quill.core.radio.recording_resume import (
+-            load_markers,
+-            reconcile_temp_strays,
+-            remaining_minutes,
+-            within_resume_grace,
+-        )
+-
+-        # Markers first: they say which folder each orphan was recording for.
+-        try:
+-            markers = load_markers(app_data_dir())
+-        except Exception:  # noqa: BLE001
+-            markers = []
+-        # 1) Reconcile temp-dir strays from a crash (R3/12, 13.6); never replaces.
+-        try:
+-            moved = reconcile_temp_strays(self._radio_recording_settings, markers=markers)
+-        except Exception:  # noqa: BLE001 - reconcile must never block launch
+-            moved = []
+-        if moved:
+-            self._announce(
+-                f"Recovered {len(moved)} recording file(s) left in the temp "
+-                f"folder from an earlier crash; moved to your recordings folder."
+-            )
+-
+-        # 2) Offer to resume in-progress recordings found via the markers
+-        #    (concurrent recording: there may be several). Markers past their
+-        #    grace window are cleared and skipped; the rest are resumed per the
+-        #    remembered choice, or offered in one batched prompt for "ask".
+-        resumable: list[tuple[object, int]] = []
+-        for marker in markers:
+-            if not getattr(marker, "stream_url", ""):
+-                continue
+-            if not within_resume_grace(marker):
+-                # The show is long over: clear the stale marker and move on.
+-                self._clear_radio_recording_marker(getattr(marker, "job_id", "") or None)
+-                continue
+-            resumable.append((marker, remaining_minutes(marker)))
+-        if not resumable:
+-            return
+-        choice = self._radio_history.recording_resume_choice
+-        if choice == "never":
+-            for marker, _left in resumable:
+-                self._clear_radio_recording_marker(getattr(marker, "job_id", "") or None)
+-            return
+-        if choice == "always":
+-            for marker, left in resumable:
+-                self._start_radio_resume(marker, left)
+-            return
+-        # "ask": one dialog for one recording, a batched prompt for several.
+-        self._ask_radio_resume(resumable)
++        resume_offer.reconcile_and_offer(self)
+ 
+-    def _ask_radio_resume(self, resumable: list[tuple[object, int]]) -> None:
+-        from quill.ui.radio.resume_recording_dialog import (
+-            ResumeRecordingDialog,
+-            ResumeRecordingsBatchDialog,
+-        )
++    def _ask_radio_resume(self, resumable: list[tuple[object, int, object]]) -> None:
++        from quill.ui.radio import resume_offer
+ 
+-        if len(resumable) == 1:
+-            marker, left = resumable[0]
+-            station = getattr(marker, "station_name", "") or "the stream"
+-            end = getattr(marker, "scheduled_end", "")
+-            result = ResumeRecordingDialog(
+-                self.frame,
+-                station_name=station,
+-                remaining_minutes=left,
+-                scheduled_end=end,
+-                announce_cb=self._announce,
+-            ).show()
+-        else:
+-            lines = [
+-                f"{getattr(m, 'station_name', '') or 'Recording'} -- {left} minute(s) left"
+-                for m, left in resumable
+-            ]
+-            result = ResumeRecordingsBatchDialog(
+-                self.frame, lines=lines, announce_cb=self._announce
+-            ).show()
+-        if result is None:
+-            return  # dismissed/cancelled -> skip, leave markers to age out
+-        action, remember = result
+-        if remember:
+-            self._radio_history.recording_resume_choice = (
+-                "always" if action == "resume" else "never"
+-            )
+-            self._save_radio_history()
+-        if action == "resume":
+-            for marker, left in resumable:
+-                self._start_radio_resume(marker, left)
+-        else:
+-            for marker, _left in resumable:
+-                self._clear_radio_recording_marker(getattr(marker, "job_id", "") or None)
++        resume_offer.ask(self, resumable)
+ 
+     def _start_radio_resume(self, marker: object, left: int) -> None:
+-        """Resume the marker's recording for the remaining minutes (R3).
++        """Resume the marker's recording for the remaining minutes (R3)."""
++        from quill.ui.radio import resume_offer
+ 
+-        Concurrent recording: no longer refuses when something else is already
+-        recording -- a resumed recording simply joins the others.
+-        """
+-        from quill.core.speech.ffmpeg import ffmpeg_available
+-
+-        job_id = getattr(marker, "job_id", "") or None
+-        if not ffmpeg_available():
+-            self._announce("Cannot resume recording: FFmpeg is not installed.")
+-            self._clear_radio_recording_marker(job_id)
+-            return
+-        station_name = getattr(marker, "station_name", "") or "Recording"
+-        stream_url = getattr(marker, "stream_url", "") or ""
+-        entry_id = getattr(marker, "entry_id", "") or ""
+-        if not stream_url:
+-            self._clear_radio_recording_marker(job_id)
+-            return
+-        try:
+-            self._radio_recorder.start(
+-                station_name=station_name,
+-                stream_url=stream_url,
+-                settings=self._radio_recording_settings,
+-                duration_minutes=max(1, left),
+-                filter_graph=self._radio_recording_filter_graph(),
+-                exact_optilab=self._radio_recording_exact(),
+-                entry_id=entry_id,
+-            )
+-            self._announce(
+-                f"Resuming recording of {station_name} for {max(1, left)} minute(s).",
+-                sound=SoundEvent.RADIO_RECORDING_STARTED,
+-            )
+-            # The old marker (from the previous run) is superseded by the fresh
+-            # one the new job wrote under its own id; clear the stale one.
+-            self._clear_radio_recording_marker(job_id)
+-        except Exception as exc:  # noqa: BLE001 - a failed resume is announced, not fatal
+-            self._announce(f"Could not resume the recording: {exc}")
+-            self._clear_radio_recording_marker(job_id)
++        resume_offer.start_resume(self, marker, left)
+ 
+     def _stop_podcast_before_radio(self) -> None:
+         """Never double-play: starting a radio stream silences a playing
+         podcast episode first (position is checkpointed by its stop path).
+         Works in MainFrame (both players live) and is a no-op in standalone
+         Quill Radio, which has no podcast controller."""
+         podcast = getattr(self, "_podcast_controller", None)
+         if podcast is not None:
+diff --git a/quill/ui/radio/recording_markers.py b/quill/ui/radio/recording_markers.py
+index 4f68b5559..ef20d487e 100644
+--- a/quill/ui/radio/recording_markers.py
++++ b/quill/ui/radio/recording_markers.py
+@@ -54,16 +54,41 @@ def persist(host: Any, job_id: str = "") -> None:
+         job_id=snap.job_id,
+     )
+     try:
+         save_marker(app_data_dir(), marker)
+     except Exception:  # noqa: BLE001 - a marker we cannot persist just means no resume offer
+         pass
+ 
+ 
++def clear_marker_of(host: Any, marker: Any) -> None:
++    """Remove exactly *marker*, by its own key -- never every marker.
++
++    A marker from an older build has no job id, and passing its empty id on as
++    ``None`` cleared *every* marker, the new one a resumed recording had just
++    written included; a crash during that resumed recording then had nothing
++    to offer back. Its own key file and the legacy single file are what it can
++    be, so those two are cleared and nothing else.
++    """
++    from quill.core.paths import app_data_dir
++    from quill.core.radio.recording_resume import ActiveRecordingMarker, clear_marker
++
++    del host
++    try:
++        job_id = str(getattr(marker, "job_id", "") or "")
++        if job_id:
++            clear_marker(app_data_dir(), job_id)
++            return
++        if isinstance(marker, ActiveRecordingMarker):
++            clear_marker(app_data_dir(), marker)
++        clear_marker(app_data_dir(), None)
++    except Exception:  # noqa: BLE001 - best-effort
++        pass
++
++
+ def clear(host: Any, job_id: str | None = None) -> None:
+     """Remove one recording's marker by job id, or every marker when *job_id*
+     is ``None`` (the clean-stop and clean-close path)."""
+     from quill.core.paths import app_data_dir
+     from quill.core.radio.recording_resume import clear_all_markers, clear_marker
+ 
+     del host  # signature parity with persist(); nothing on the frame is needed
+     try:
+diff --git a/quill/ui/radio/resume_recording_dialog.py b/quill/ui/radio/resume_recording_dialog.py
+index 1d6abc5f5..e7ab81007 100644
+--- a/quill/ui/radio/resume_recording_dialog.py
++++ b/quill/ui/radio/resume_recording_dialog.py
+@@ -26,38 +26,44 @@ class ResumeRecordingDialog:
+ 
+     def __init__(
+         self,
+         parent: object,
+         *,
+         station_name: str,
+         remaining_minutes: int,
+         scheduled_end: str,
++        message: str = "",
+         announce_cb: Callable[[str], None] | None = None,
+     ) -> None:
+         import wx
+ 
+         self._wx = wx
+         self._announce = announce_cb or (lambda _m: None)
+         self._result: tuple[str, bool] | None = None
+         # Hold the IdRef: int(wx.NewIdRef()) frees the id at once, and the Resume
+         # button then asserts "id count already 0" -- the dialog could not be
+         # built at all, so no resume offer was ever shown (found 2026-09-25).
+         self._resume_ref = wx.NewIdRef()
+         self._resume_id = int(self._resume_ref)
+ 
+         self.dialog = wx.Dialog(parent, title="Resume Recording")
+         root = wx.BoxSizer(wx.VERTICAL)
+ 
+-        end_label = scheduled_end.replace("T", " ") if scheduled_end else ""
+-        when_part = f" until {end_label}." if end_label else "."
+-        message = (
+-            f"A recording of {station_name} was in progress{when_part}\n\n"
+-            f"Resume it for the remaining {remaining_minutes} minute(s)?"
+-        )
++        if not message:
++            # Callers pass the full sentence (quill.core.radio.resume_words):
++            # what was recorded, where it is kept, what each button does.
++            # This fallback still never shows a raw ISO timestamp.
++            from quill.core.radio.recording_resume import ActiveRecordingMarker
++            from quill.core.radio.resume_words import offer_sentence
++
++            marker = ActiveRecordingMarker(
++                station_name, "-", "", "", "", scheduled_end, remaining_minutes
++            )
++            message = offer_sentence(marker, left=remaining_minutes, seconds=None, where="")
+         intro = wx.StaticText(self.dialog, label=message)
+         intro.SetName("Resume recording prompt")
+         intro.Wrap(380)
+         root.Add(intro, 0, wx.EXPAND | wx.ALL, 10)
+ 
+         self._remember_check = wx.CheckBox(self.dialog, label="&Don't ask me again")
+         self._remember_check.SetName(
+             "Don't ask me again -- remembers this choice; Preferences can change it"
+@@ -65,17 +71,17 @@ class ResumeRecordingDialog:
+         self._remember_check.SetValue(False)
+         root.Add(self._remember_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+ 
+         buttons = wx.BoxSizer(wx.HORIZONTAL)
+         buttons.AddStretchSpacer()
+         resume_btn = wx.Button(self.dialog, self._resume_id, "&Resume")
+         resume_btn.SetName("Resume the recording for the remaining time")
+         skip_btn = wx.Button(self.dialog, wx.ID_CANCEL, "&Skip")
+-        skip_btn.SetName("Skip resuming; leave the recording as it is")
++        skip_btn.SetName("Skip resuming; record nothing more and delete nothing")
+         buttons.Add(resume_btn, 0, wx.RIGHT, 6)
+         buttons.Add(skip_btn)
+         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
+         self.dialog.SetSizerAndFit(root)
+ 
+         resume_btn.Bind(wx.EVT_BUTTON, lambda _e: self._choose("resume"))
+         skip_btn.Bind(wx.EVT_BUTTON, lambda _e: self._choose("skip"))
+         # Escape (via SetEscapeId) and the system X both synthesize an
+@@ -104,22 +110,24 @@ class ResumeRecordingDialog:
+         # without a choice (Escape/X) -- the caller treats None as skip.
+         return self._result
+ 
+ 
+ class ResumeRecordingsBatchDialog:
+     """Resume *several* interrupted recordings at once (concurrent recording).
+ 
+     When more than one recording was in progress at a crash, this offers a
+-    single "Resume all / Skip all" choice listing each station -- friendlier for
+-    a screen-reader user than N sequential prompts. Returns ``(action,
+-    remember)`` where ``action`` is ``"resume"`` (resume every one) or ``"skip"``
+-    (discard every one), or ``None`` if dismissed (treated as skip). The station
+-    list is a read-only, arrow-reviewable field so the names can be checked
+-    before choosing.
++    single "Resume all / Skip all" choice listing each recording -- its station,
++    start, how much was recorded and how much is left -- friendlier for a
++    screen-reader user than N sequential prompts. Returns ``(action, remember)``
++    where ``action`` is ``"resume"`` (resume every one) or ``"skip"`` (resume
++    none; what each recorded is kept, nothing is deleted), or ``None`` if
++    dismissed (offered again while inside the grace window). The list is a
++    read-only, arrow-reviewable field so the recordings can be checked before
++    choosing.
+     """
+ 
+     def __init__(
+         self,
+         parent: object,
+         *,
+         lines: list[str],
+         announce_cb: Callable[[str], None] | None = None,
+@@ -151,33 +159,40 @@ class ResumeRecordingsBatchDialog:
+             self.dialog,
+             value="\n".join(lines),
+             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
+         )
+         listing.SetName("Interrupted recordings; review with the arrow keys")
+         listing.SetMinSize((dip(listing, 420), min(200, 24 * max(1, count) + 16)))
+         root.Add(listing, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+ 
+-        prompt = wx.StaticText(self.dialog, label="Resume all of them for their remaining time?")
++        prompt = wx.StaticText(
++            self.dialog,
++            label=(
++                "Resume All records the remaining time of each as a separate file. "
++                "Skip All records nothing more. Either way, nothing already recorded "
++                "is deleted."
++            ),
++        )
+         prompt.SetName("Resume prompt")
+         root.Add(prompt, 0, wx.EXPAND | wx.ALL, 10)
+ 
+         self._remember_check = wx.CheckBox(self.dialog, label="&Don't ask me again")
+         self._remember_check.SetName(
+             "Don't ask me again -- remembers this choice; Preferences can change it"
+         )
+         self._remember_check.SetValue(False)
+         root.Add(self._remember_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+ 
+         buttons = wx.BoxSizer(wx.HORIZONTAL)
+         buttons.AddStretchSpacer()
+         resume_btn = wx.Button(self.dialog, self._resume_id, "&Resume All")
+         resume_btn.SetName("Resume every interrupted recording for its remaining time")
+         skip_btn = wx.Button(self.dialog, wx.ID_CANCEL, "&Skip All")
+-        skip_btn.SetName("Skip resuming; leave the recordings as they are")
++        skip_btn.SetName("Skip resuming; record nothing more and delete nothing")
+         buttons.Add(resume_btn, 0, wx.RIGHT, 6)
+         buttons.Add(skip_btn)
+         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
+         self.dialog.SetSizerAndFit(root)
+ 
+         resume_btn.Bind(wx.EVT_BUTTON, lambda _e: self._choose("resume"))
+         skip_btn.Bind(wx.EVT_BUTTON, lambda _e: self._choose("skip"))
+ 
+diff --git a/tests/unit/ui/fixtures/dialog_inventory.json b/tests/unit/ui/fixtures/dialog_inventory.json
+index 088697c2a..e506db167 100644
+--- a/tests/unit/ui/fixtures/dialog_inventory.json
++++ b/tests/unit/ui/fixtures/dialog_inventory.json
+@@ -81,16 +81,17 @@
+   "quill/apps/studio.py::StudioAppFrame.open_job_file::wx.FileDialog": "native",
+   "quill/apps/studio.py::StudioAppFrame.open_tag_editor_picker::wx.FileDialog": "native",
+   "quill/apps/studio.py::StudioAppFrame.publish_book::wx.FileDialog": "native",
+   "quill/apps/studio.py::StudioAppFrame.run_acx_check::wx.FileDialog": "native",
+   "quill/apps/studio.py::StudioAppFrame.save_diagnostics_bundle::wx.FileDialog": "native",
+   "quill/apps/studio.py::main::wx.MessageBox": "native",
+   "quill/apps/studio_capture.py::StudioCaptureMixin.open_capture_image::wx.FileDialog": "native",
+   "quill/apps/studio_demo.py::StudioDemoMixin.mark_demonstration::wx.TextEntryDialog": "native",
++  "quill/apps/studio_demo_finish.py::StudioDemoFinishMixin._ask_unfinished::wx.MessageDialog": "native",
+   "quill/apps/studio_demo_setup.py::StudioDemoSetupMixin._choose_demo_folder::wx.DirDialog": "native",
+   "quill/apps/studio_demo_setup.py::StudioDemoSetupMixin._choose_program::wx.SingleChoiceDialog": "native",
+   "quill/apps/studio_picture_video.py::StudioPictureVideoMixin._choose_media_file::wx.FileDialog": "native",
+   "quill/apps/transcribe_coach.py::ProfileDialog::subclass:wx.Dialog": "hardened_custom",
+   "quill/apps/transcribe_dialogs.py::ChooseModelDialog::subclass:wx.Dialog": "hardened_custom",
+   "quill/apps/transcribe_dialogs.py::SetupDialog::subclass:wx.Dialog": "hardened_custom",
+   "quill/apps/transcribe_dialogs.py::choose_microphone::wx.SingleChoiceDialog": "native",
+   "quill/apps/transcribe_files.py::TranscribeFilesMixin._save_transcript_as::wx.FileDialog": "native",
+@@ -165,16 +166,17 @@
+   "quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog._on_export::wx.SingleChoiceDialog": "native",
+   "quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog._on_import::wx.FileDialog": "native",
+   "quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog._on_save_as::wx.FileDialog": "native",
+   "quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog._on_split_into_files::wx.DirDialog": "native",
+   "quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog::subclass:wx.Dialog": "hardened_custom",
+   "quill/ui/audio_studio/chapter_workbench_dialogs.py::AcxResultDialog::subclass:wx.Dialog": "hardened_custom",
+   "quill/ui/audio_studio/chapter_workbench_dialogs.py::ChapterDetailsDialog::subclass:wx.Dialog": "hardened_custom",
+   "quill/ui/audio_studio/chapter_workbench_dialogs.py::SilenceParamsDialog::subclass:wx.Dialog": "hardened_custom",
++  "quill/ui/audio_studio/chapter_workbench_edits.py::ChapterEditsMixin._ask_unsaved::wx.MessageDialog": "native",
+   "quill/ui/audio_studio/chapter_workbench_edits.py::ChapterEditsMixin._on_add_chapter::wx.TextEntryDialog": "native",
+   "quill/ui/audio_studio/chapter_workbench_edits.py::ChapterEditsMixin._on_add_chapter::wx.TextEntryDialog#2": "native",
+   "quill/ui/audio_studio/chapter_workbench_silence.py::SilenceProposalMixin._ask_keep_or_replace::wx.MessageDialog": "native",
+   "quill/ui/audio_studio/chapter_workbench_silence.py::pick_recording::wx.FileDialog": "native",
+   "quill/ui/audio_studio/convert_audio_dialog.py::ConvertAudioDialog._on_add_files::wx.FileDialog": "native",
+   "quill/ui/audio_studio/convert_audio_dialog.py::ConvertAudioDialog._on_add_folder::wx.DirDialog": "native",
+   "quill/ui/audio_studio/convert_audio_dialog.py::ConvertAudioDialog._on_browse::wx.DirDialog": "native",
+   "quill/ui/audio_studio/convert_audio_dialog.py::ConvertAudioDialog::subclass:wx.Dialog": "hardened_custom",
+diff --git a/tests/unit/ui/test_chapter_workbench.py b/tests/unit/ui/test_chapter_workbench.py
+index e71f3386c..ea55c6b89 100644
+--- a/tests/unit/ui/test_chapter_workbench.py
++++ b/tests/unit/ui/test_chapter_workbench.py
+@@ -425,8 +425,92 @@ def test_ai_titles_go_in_only_as_reviewed(wx_app, tmp_path, monkeypatch):
+         monkeypatch.setattr(cwb, "review_titles", fake_review)
+         dlg._on_propose_ai_titles()
+         assert reviewed and reviewed[0][0] == "Opening"
+         assert [c.title for c in dlg._book.chapters] == ["Opening"] + before[1:]
+         assert announces[-1] == "Took 1 proposed title(s); Restore original undoes them."
+     finally:
+         dlg.Destroy()
+         frame.Destroy()
++
++
++# -- closing with unsaved edits (FUX-05) ------------------------------------
++
++
++def _close_button(dlg):
++    return next(
++        child
++        for child in dlg.GetChildren()
++        if isinstance(child, wx.Button) and child.GetId() == wx.ID_CANCEL
++    )
++
++
++def _press_close(dlg):
++    event = wx.CommandEvent(wx.wxEVT_BUTTON, wx.ID_CANCEL)
++    event.SetEventObject(_close_button(dlg))
++    dlg._on_close_button(event)
++    return event.GetSkipped()
++
++
++def test_close_with_nothing_unsaved_asks_nothing(wx_app, tmp_path):
++    frame, dlg = _make(wx_app, tmp_path)
++    try:
++        dlg._ask_unsaved = lambda _unsaved: pytest.fail("asked with nothing unsaved")
++        assert _press_close(dlg) is True
++    finally:
++        dlg.Destroy()
++        frame.Destroy()
++
++
++def test_close_with_unsaved_edits_names_them_and_cancel_stays_open(wx_app, tmp_path):
++    frame, dlg = _make(wx_app, tmp_path)
++    try:
++        dlg._chapters_dirty = True
++        dlg._tags_dirty = True
++        asked = []
++        dlg._ask_unsaved = lambda unsaved: asked.append(unsaved) or "cancel"
++        assert _press_close(dlg) is False
++        assert asked == ["chapter edits and tag edits"]
++    finally:
++        dlg.Destroy()
++        frame.Destroy()
++
++
++def test_discard_closes_and_says_what_was_discarded_once(wx_app, tmp_path):
++    announces: list[str] = []
++    frame, dlg = _make(wx_app, tmp_path, announces)
++    try:
++        dlg._chapters_dirty = True
++        asked = []
++        dlg._ask_unsaved = lambda unsaved: asked.append(unsaved) or "discard"
++        assert _press_close(dlg) is True
++        assert announces[-1] == "Discarded the unsaved chapter edits."
++        # The X that follows the button does not ask a second time.
++        assert dlg._may_close() is True
++        assert len(asked) == 1
++    finally:
++        dlg.Destroy()
++        frame.Destroy()
++
++
++def test_save_saves_and_keeps_the_workbench_open(wx_app, tmp_path):
++    frame, dlg = _make(wx_app, tmp_path)
++    try:
++        dlg._tags_dirty = True
++        saves = []
++        dlg._on_save = lambda: saves.append(True)
++        dlg._ask_unsaved = lambda _unsaved: "save"
++        assert _press_close(dlg) is False
++        assert saves == [True]
++    finally:
++        dlg.Destroy()
++        frame.Destroy()
++
++
++def test_a_close_that_cannot_be_refused_never_asks(wx_app, tmp_path):
++    frame, dlg = _make(wx_app, tmp_path)
++    try:
++        dlg._chapters_dirty = True
++        dlg._ask_unsaved = lambda _unsaved: pytest.fail("asked on a forced close")
++        assert dlg._may_close(False) is True
++    finally:
++        dlg.Destroy()
++        frame.Destroy()
+diff --git a/tests/unit/ui/test_studio_demo_ui.py b/tests/unit/ui/test_studio_demo_ui.py
+index 19dea5196..95ce98ed2 100644
+--- a/tests/unit/ui/test_studio_demo_ui.py
++++ b/tests/unit/ui/test_studio_demo_ui.py
+@@ -455,21 +455,23 @@ def test_tray_offers_recording_controls_without_restoring(parent):
+     labels = [i.GetItemLabelText() for i in menu.GetMenuItems() if not i.IsSeparator()]
+     assert labels[:2] == ["Stop and save the recording", "Pause recording"]
+ 
+ 
+ def test_recovery_notice_is_spoken_not_modal(parent, tmp_path, monkeypatch):
+     import quill.apps.studio_demo_finish as studio_demo
+ 
+     host = Host(parent)
++    monkeypatch.setattr(studio_demo, "app_data_dir", lambda: tmp_path)
+     monkeypatch.setattr(host, "_demo_folders", lambda: [tmp_path])
+     monkeypatch.setattr(studio_demo, "find_unfinished", lambda folders: [tmp_path / "x"])
+     host._offer_demo_recovery()
+     assert host.status == [
+-        "1 unfinished recording found. Use Capture, Recover unfinished recordings."
++        f"Studio found an unfinished recording: An unfinished recording in {tmp_path.name}. "
++        "Capture, Recover unfinished recordings finishes or discards it."
+     ]
+ 
+ 
+ def test_microphone_lock_refusal_stops_the_start(parent, monkeypatch):
+     from quill.core import dictation_owner
+ 
+     class Lock:
+         def __init__(self, *_a, **_k):

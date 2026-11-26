@@ -460,11 +460,13 @@ def test_recovery_notice_is_spoken_not_modal(parent, tmp_path, monkeypatch):
     import quill.apps.studio_demo_finish as studio_demo
 
     host = Host(parent)
+    monkeypatch.setattr(studio_demo, "app_data_dir", lambda: tmp_path)
     monkeypatch.setattr(host, "_demo_folders", lambda: [tmp_path])
     monkeypatch.setattr(studio_demo, "find_unfinished", lambda folders: [tmp_path / "x"])
     host._offer_demo_recovery()
     assert host.status == [
-        "1 unfinished recording found. Use Capture, Recover unfinished recordings."
+        f"Studio found an unfinished recording: An unfinished recording in {tmp_path.name}. "
+        "Capture, Recover unfinished recordings finishes or discards it."
     ]
 
 

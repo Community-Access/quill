@@ -8,6 +8,17 @@ Quill Media Player runs the same player code as QUILL from the shared `quill` pa
 
 ## Unreleased
 
+### A missing file says so, never "Playing" (2026-11-24)
+
+- In a book of several files, a track whose file was moved or deleted after
+  the book was opened used to show "Playing" on the status bar, and moving
+  to it on its own said "Next", while nothing played. It now says, on the
+  status bar and aloud, "Chapter 2: audio file missing. If you moved the book,
+  open it again from its new folder." A file the player refuses says "Could
+  not play" rather than "Playing".
+- **LibriVox results** with no recording yet now end "no audio to play", so
+  you know before you press Play (FUX-13).
+
 ### Back to where you were, and the right place to resume (2026-11-24)
 
 - **File > Back to Where I Was** (Alt+Left) returns to where you were before

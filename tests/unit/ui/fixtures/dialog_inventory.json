@@ -86,6 +86,7 @@
   "quill/apps/studio.py::main::wx.MessageBox": "native",
   "quill/apps/studio_capture.py::StudioCaptureMixin.open_capture_image::wx.FileDialog": "native",
   "quill/apps/studio_demo.py::StudioDemoMixin.mark_demonstration::wx.TextEntryDialog": "native",
+  "quill/apps/studio_demo_finish.py::StudioDemoFinishMixin._ask_unfinished::wx.MessageDialog": "native",
   "quill/apps/studio_demo_setup.py::StudioDemoSetupMixin._choose_demo_folder::wx.DirDialog": "native",
   "quill/apps/studio_demo_setup.py::StudioDemoSetupMixin._choose_program::wx.SingleChoiceDialog": "native",
   "quill/apps/studio_picture_video.py::StudioPictureVideoMixin._choose_media_file::wx.FileDialog": "native",

@@ -24,6 +24,7 @@ from quill.apps.beacon import (
     exporters,
     external_player,
     first_task,
+    health_words,
     importers,
     paths,
     results_follow,
@@ -957,9 +958,7 @@ class BeaconFrame(ProductUpdateHost, wx.Frame, BeaconAiMixin, BeaconScribeMixin)
             return ", ".join(b.tags)
         if column == 5:
             return time.strftime("%Y-%m-%d", time.localtime(b.date_added / 1000))
-        if column == 6:
-            return b.health
-        return ""
+        return health_words.column(b.health) if column == 6 else ""
 
     def _on_select(self, _e) -> None:
         if getattr(self, "_following", False):
@@ -978,7 +977,8 @@ class BeaconFrame(ProductUpdateHost, wx.Frame, BeaconAiMixin, BeaconScribeMixin)
         if res:
             lines.append(f"Type: {res.type}")
             lines.append(f"URL/Path: {res.primary_uri}")
-        lines.append(f"Health: {b.health}")
+        sync_configured = self.sync.config.is_configured()
+        lines.extend(health_words.detail_lines(b.health, bool(b.dirty), sync_configured))
         lines.append(f"Favorite: {'yes' if b.favorite else 'no'}")
         lines.append(f"Tags: {', '.join(b.tags) or '(none)'}")
         lines.append(f"Collections: {', '.join(b.collections) or '(none)'}")

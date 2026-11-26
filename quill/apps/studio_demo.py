@@ -26,6 +26,7 @@ from quill.apps.studio_demo_finish import StudioDemoFinishMixin
 from quill.apps.studio_demo_setup import StudioDemoSetupMixin
 from quill.apps.studio_picture_maker import StudioPictureMakerMixin
 from quill.apps.studio_picture_video import StudioPictureVideoMixin
+from quill.apps.studio_sound_route import StudioSoundRouteMixin
 from quill.apps.studio_streaming import StudioStreamingMixin
 from quill.core.demo_recording import (
     MICROPHONE_KEY,
@@ -51,6 +52,7 @@ class StudioDemoMixin(
     StudioPictureVideoMixin,
     StudioPictureMakerMixin,
     StudioStreamingMixin,
+    StudioSoundRouteMixin,
 ):
     # -- commands, menu, tray -----------------------------------------------------
 
@@ -61,6 +63,8 @@ class StudioDemoMixin(
             ("studio.record_marker", "Add a recording mar&ker", self.mark_demonstration),
             ("studio.record_mute", "&Mute microphone in recording", self.mute_demonstration),
             ("studio.record_status", "Recording s&tatus", self.speak_demonstration_status),
+            # No access letter: this menu has spent every letter in its name.
+            ("studio.where_is_sound", "Where Is the Sound?", self.where_is_sound),
             ("studio.record_window", "Show recording &window", self.show_demonstration_window),
             (
                 "studio.record_emergency_stop",
@@ -573,24 +577,6 @@ class StudioDemoMixin(
             status.set_muted(muted)
             status.refresh()
         self._demo_say("Microphone muted in the recording." if muted else "Microphone unmuted.")
-
-    def speak_demonstration_status(self) -> None:
-        recorder = getattr(self, "_demo", None)
-        if recorder is None:
-            busy = getattr(self, "_demo_busy", "")
-            self._announce(busy + "." if busy else "No demonstration is recording.")
-            return
-        # Asked for: spoken even while the reader is recorded, as the user chose to.
-        self._announce(recorder.status_line())
-
-    def show_demonstration_window(self) -> None:
-        status = getattr(self, "_demo_status", None)
-        if not status:
-            self._announce("No demonstration is recording.")
-            return
-        status.Show()
-        status.Raise()
-        status.text.SetFocus()
 
     def emergency_stop_demonstration(self) -> None:
         self.stop_demonstration()

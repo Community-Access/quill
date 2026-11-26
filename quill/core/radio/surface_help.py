@@ -370,14 +370,18 @@ PURPOSES: dict[str, str] = {
     ),
     "Resume Recording": (
         "Quill Radio closed while this recording was still being written -- "
-        "a crash, a shutdown, a log-off. Resume picks the capture back up on "
-        "the same station; Skip keeps what was saved and lets it go. Don't ask "
-        "me again remembers the answer; Preferences can change it."
+        "a crash, a shutdown, a log-off. The message says which recording, how "
+        "much it recorded and where that is kept. Resume records the remaining "
+        "time on the same station as a separate file; Skip records nothing more. "
+        "Neither deletes what was recorded. Don't ask me again remembers the "
+        "answer; Preferences can change it."
     ),
     "Resume Recordings": (
         "Quill Radio closed while these recordings were still being written. "
-        "Resume All picks the captures back up; Skip All keeps what was saved and "
-        "lets them go."
+        "The list gives each one's station, start, how much it recorded and how "
+        "much is left. Resume All records the remaining time of each as a "
+        "separate file; Skip All records nothing more. Neither deletes what was "
+        "recorded."
     ),
     "Search Sources": (
         "Choose which directories Find Stations asks. Fewer sources answer "

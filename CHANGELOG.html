@@ -245,30 +245,54 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="where-is-the-sound-quill-radio-and-quill-studio-2026-11-24">Where is
+the sound? Quill Radio and QUILL Studio (2026-11-24)</h3>
+<p>Each app now answers for itself what it is playing or recording and
+where the sound goes, once and only when asked (FUX-03; there is no
+family mixer).</p>
+<ul>
+<li><strong>Quill Radio, Audio &gt; Where Is the Sound?</strong>
+(Alt+Shift+A; in QUILL’s Internet Radio, the Command Palette): what is
+playing and on which device, by its Windows name, “System default”
+followed by the device that is the default today, and “not connected”
+for a chosen device Windows does not list. Also a background station or
+mirror, recordings (they take the stream, so the device, volume and mute
+do not change them), and another QUILL program on the microphone. A
+device that could not be opened earlier is named, with Output Device as
+the way back once it is connected again.</li>
+<li><strong>QUILL Studio, Capture &gt; Where Is the Sound?</strong>
+(Alt+Shift+A): where Studio plays, the recording or broadcast, the
+recording microphone and whether it is connected, and another QUILL
+program on the microphone. <strong>Recording status</strong> names the
+device behind each sound and says when one has been disconnected and
+silence is going in.</li>
+</ul>
+<h3
 id="the-quillville-family-starts-sooner-and-lite-failures-can-be-diagnosed-2026-11-24">The
 QuillVille family starts sooner, and Lite failures can be diagnosed
 (2026-11-24)</h3>
 <p>QUILL Lite now makes the first editor window ready before it starts
 optional sound, settings, update, screen-reader, prompt and Scribe queue
-services. In five alternating clean-profile Windows runs, the median
-interval from app import to the ready editor dropped from 6.86 seconds
-to 5.11 seconds (about 1.75 seconds, or 25.5 percent). Lite's cold
-module-import path fell from a 3.23-second median to 2.80 seconds (426
-ms).</p>
-<p>QUILL and every companion app now defer the expensive operating-system
-TLS trust-store setup until a window exists, before its first deferred
-network callback. Headless commands and explicit Beacon verification
-still configure it synchronously, before they can open a connection. The
-live network refresh in QUILL Social no longer blocks its initial window;
-the local/demo timeline is still ready immediately.</p>
-<p>The native launcher now carries QUILL Lite's own version: the error
+services. On a clean-profile Windows run, alternating unchanged main and
+this fix five times, the median interval from app import to the ready
+editor dropped from 6.86 seconds to 5.11 seconds (about 1.75 seconds, or
+25.5 percent). Lite’s cold module-import path fell from a 3.23-second
+median to 2.80 seconds (426 ms).</p>
+<p>QUILL and every companion app now defer the expensive
+operating-system TLS trust-store setup until a window exists, before its
+first deferred network callback. Headless commands and explicit Beacon
+verification still configure it synchronously, before they can open a
+connection. The live network refresh in QUILL Social no longer blocks
+its initial window; the local/demo timeline is still ready
+immediately.</p>
+<p>The native launcher now carries QUILL Lite’s own version: the error
 header says <code>QUILL Lite 2.0.0</code>, and the executable reports
 file version <code>2.0.0.1</code>, instead of describing it as QUILL
-1.0.0. Python fault handling is enabled before the app module starts,
-so a fatal native/Python stack is captured in the launch log. The
-failure dialog says when no diagnostic message was captured rather than
-claiming that an otherwise empty log contains the cause. A memory fault
-is described as a native component fault while QUILL Lite was running,
+1.0.0. Python fault handling is enabled before the app module starts, so
+a fatal native/Python stack is captured in the launch log. The failure
+dialog says when no diagnostic message was captured rather than claiming
+that an otherwise empty log contains the cause. A memory fault is
+described as a native component fault while QUILL Lite was running,
 without claiming that app code could not have triggered it.</p>
 <h3
 id="scribe-for-documents-useful-time-left-never-a-stale-estimate-2026-11-24">Scribe

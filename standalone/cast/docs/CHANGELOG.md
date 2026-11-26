@@ -4,6 +4,19 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+### An episode says when its download failed or its file has gone (2026-11-24)
+
+In the episode list, a download that failed used to read "Streaming", the same
+as an episode nobody asked to download, so you never learned it had stopped.
+It now reads "Download failed, will stream:" and the first sentence of the
+reason, such as "The disk is full (2 GB free)." A downloaded episode whose file
+was deleted or moved outside Cast used to read "Downloaded", a promise that it
+plays without a connection; it now reads "File missing, will stream. Download
+to get it back", and the Downloaded column says "File missing, streams". These
+cells are now written by column, so they land in Status and Downloaded wherever
+you have moved those columns. Nothing is spoken; the row says it when you reach
+it (FUX-13).
+
 ### Back to where you were before a jump (2026-11-24)
 
 **Episode > Back to Where I Was** (Alt+Left) returns to where you were before

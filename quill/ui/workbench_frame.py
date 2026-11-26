@@ -117,7 +117,7 @@ class WorkbenchFrame(
         self._loaded: list[object] = []
         self._shown_cells: list[list[str]] = []  # what the list shows, to skip a no-op refill
         self.query = Query()
-        self.loading = False
+        self.loading = self.load_failed = False  # load_failed: the last load did not land
         self.loaded_at = ""
         self.history: list[NodeRef] = []
         self.forward: list[NodeRef] = []
@@ -454,7 +454,7 @@ class WorkbenchFrame(
             return  # a stale answer for a node somebody already left
         import time
 
-        self.loading = False
+        self.loading = self.load_failed = False
         self.loaded_at = time.strftime("%H:%M")
         self._loaded = list(rows)
         self.remember_count(len(rows))
@@ -468,9 +468,11 @@ class WorkbenchFrame(
     def _load_failed(self, generation: int, node: NodeSpec, error: BaseException) -> None:
         if generation != self._generation:
             return
-        self.loading = False
+        # The rows still shown keep their time and are not called current (FUX-13).
+        self.loading, self.load_failed = False, True
+        self.loaded_at = self.loaded_at if self.rows else ""
         self.status.refresh()
-        message = f"Could not load {node.label}: {error}"
+        message = self.failure_words(node.label, error)
         self.details.ChangeValue(message)
         self._say(message)
 

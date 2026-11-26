@@ -90,3 +90,39 @@ NO_LOCATIONS = first_task_line(
         ),
     ),
 )
+
+
+# -- FUX-13: when this reading was checked, and what a failed refresh leaves ----
+
+
+def local_time_line(settings: Any, report: Any, place: str, checked: object) -> str:
+    """The "Right now it is ..." line, saying when the reading on screen was checked.
+
+    *checked* is when the report was fetched. It used to be left out, so the line
+    said "checked just now" also when the same report was drawn again later.
+    """
+    if not (settings.show_local_time and report.time_zone):
+        return ""
+    from datetime import UTC, datetime
+
+    from quill.core.weather import render
+
+    return render.time_summary(datetime.now(UTC), report.time_zone, place=place, checked=checked)
+
+
+def failed_status(error: object, *, checked: object, shown_place: str, place: str) -> str:
+    """A refresh that failed: why, what the window still shows and from when, and Refresh.
+
+    The lists keep the last report; this says it is not current, and, when it is
+    for another place than the one chosen, which place it is for.
+    """
+    said = f"Could not load weather for {place}: {str(error).rstrip('.')}."
+    if shown_place:
+        from datetime import datetime
+
+        when = ""
+        if isinstance(checked, datetime):
+            when = f", checked at {checked.astimezone().strftime('%I:%M %p').lstrip('0')}"
+        whose = "" if shown_place == place else f" for {shown_place}"
+        said += f" Still showing the earlier reading{whose}{when}."
+    return f"{said} Refresh (Alt+R) tries again."

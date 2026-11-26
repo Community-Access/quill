@@ -1,0 +1,134 @@
+diff --git a/standalone/cast/docs/CHANGELOG.md b/standalone/cast/docs/CHANGELOG.md
+index 55fa9362e..ae44265a7 100644
+--- a/standalone/cast/docs/CHANGELOG.md
++++ b/standalone/cast/docs/CHANGELOG.md
+@@ -3,8 +3,21 @@
+ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the first release most people will meet, so its release notes (`docs/release-notes-2.0.md`, Help > Release Notes in the app) are written as a welcome for new users rather than a list of changes; this file keeps the engineering record. The 1.x release notes were retired on 2026-10-03.
+ 
+ ## Unreleased
+ 
++### An episode says when its download failed or its file has gone (2026-11-24)
++
++In the episode list, a download that failed used to read "Streaming", the same
++as an episode nobody asked to download, so you never learned it had stopped.
++It now reads "Download failed, will stream:" and the first sentence of the
++reason, such as "The disk is full (2 GB free)." A downloaded episode whose file
++was deleted or moved outside Cast used to read "Downloaded", a promise that it
++plays without a connection; it now reads "File missing, will stream. Download
++to get it back", and the Downloaded column says "File missing, streams". These
++cells are now written by column, so they land in Status and Downloaded wherever
++you have moved those columns. Nothing is spoken; the row says it when you reach
++it (FUX-13).
++
+ ### An empty library says how to fill it, after the welcome (2026-11-24)
+ 
+ The sentence an empty Podcasts place says was spoken while the window was
+ still being built, before it was on screen and before the welcome opened
+diff --git a/standalone/cast/docs/userguide.md b/standalone/cast/docs/userguide.md
+index 6d33a99ba..be79df5d0 100644
+--- a/standalone/cast/docs/userguide.md
++++ b/standalone/cast/docs/userguide.md
+@@ -2934,8 +2934,14 @@ On an episode's menu (Shift+F10):
+ - **Pause Download** and **Resume Download** appear while it is downloading.
+ - **Remove Downloaded Copy** deletes the file and keeps the episode. You can
+   download it again later.
+ 
++The episode's Status says where its audio is: "Downloaded", "Downloading",
++"Queued", "Paused" or "Streaming". A download that stopped says "Download
++failed, will stream:" and why, such as a full disk. A downloaded file that was
++deleted or moved outside Cast says "File missing, will stream"; Download
++Episode gets it again.
++
+ On a podcast's menu, **Download All Episodes** downloads everything it has
+ not got yet, and **Remove All Downloads...** deletes its files and keeps its
+ episodes and your place in them.
+ 
+diff --git a/standalone/player/docs/CHANGELOG.md b/standalone/player/docs/CHANGELOG.md
+index 37804e41d..5b1d56f27 100644
+--- a/standalone/player/docs/CHANGELOG.md
++++ b/standalone/player/docs/CHANGELOG.md
+@@ -7,8 +7,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+ Quill Media Player runs the same player code as QUILL from the shared `quill` package, so a fix lands in both at once; `standalone/player` carries only the wrapper, launcher and docs.
+ 
+ ## Unreleased
+ 
++### A missing file says so, never "Playing" (2026-11-24)
++
++- In a book of several files, a track whose file was moved or deleted after
++  the book was opened used to show "Playing" on the status bar, and moving
++  to it on its own said "Next", while nothing played. It now says, on the
++  status bar and aloud, "Chapter 2: audio file missing. If you moved the book,
++  open it again from its new folder." A file the player refuses says "Could
++  not play" rather than "Playing".
++- **LibriVox results** with no recording yet now end "no audio to play", so
++  you know before you press Play (FUX-13).
++
+ ### With nothing open, the player opens on what begins (2026-11-24)
+ 
+ - With nothing open, every playback button is greyed, so focus fell to the
+   Volume slider. Now the player opens with focus on a **Getting started**
+diff --git a/standalone/player/docs/userguide.md b/standalone/player/docs/userguide.md
+index e5f40b113..a86c1013e 100644
+--- a/standalone/player/docs/userguide.md
++++ b/standalone/player/docs/userguide.md
+@@ -83,9 +83,10 @@ these regions in order:
+ - **Open DAISY Book** — **File > Open DAISY Book…**. Choose the book's `.ncx`; the
+   player reads its heading structure into the Chapters tree (single- and multi-file
+   DAISY audio books).
+ - **Book Library** — **File > Book Library…**. Search the free **LibriVox** catalog,
+-  pick a book, and press **Play**; its sections appear in the Chapters tree.
++  pick a book, and press **Play**; its sections appear in the Chapters tree. A
++  result with no recording yet ends "no audio to play".
+ - **From inside QUILL** — open the player from **Tools > Media > Media Player**; it
+   launches this same app and shares your library, bookmarks, and positions. That
+   row appears in QUILL once Quill Media Player is released.
+ - **BARD** — arriving once the NLS BARD contract lands.
+@@ -248,9 +249,11 @@ while a flat book shows a single level.
+   same thing.
+ - Open the **Chapters** tree, arrow through it (in and out of levels), and press
+   **Enter** to jump. Each row reads as a full sentence with its title and time.
+ - For a book split across several files (LibriVox sections, multi-file DAISY),
+-  activating a node loads that file and moves you there.
++  activating a node loads that file and moves you there. If that file has
++  been moved or deleted since you opened the book, the player says its
++  audio file is missing, rather than "Playing".
+ - **Continuous play** — when one track (a LibriVox section, or a file of a
+   multi-file book) finishes, the player automatically rolls into the next.
+ 
+ **DAISY talking books** add navigation by heading — open one via **File > Open DAISY
+diff --git a/standalone/radio/docs/CHANGELOG.md b/standalone/radio/docs/CHANGELOG.md
+index 3aebd5955..414f45e7a 100644
+--- a/standalone/radio/docs/CHANGELOG.md
++++ b/standalone/radio/docs/CHANGELOG.md
+@@ -7,8 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+ Quill Radio runs the same radio code as QUILL from the shared `quill` package, so features and fixes land in both at once; this repository carries only the wrapper, installer, icon, and docs.
+ 
+ ## [Unreleased] - 2026-11-07
+ 
++### Browse Stations says when a station may not play (2026-11-24)
++
++- **A station in the Browse Stations tree** whose directory could not play it
++  the last time it checked now ends "may not be playable", as the same station
++  already did in Find Stations' results. Healthy stations say nothing extra
++  (FUX-13).
++
+ ### An empty Favorites list says how to fill it (2026-11-24)
+ 
+ - **A line before an empty Favorite stations list** names the two ways to a
+   first station, with your keys: "No favorite stations yet. Browse Stations
+diff --git a/standalone/radio/docs/userguide.md b/standalone/radio/docs/userguide.md
+index 44f9df0cf..e8176c14d 100644
+--- a/standalone/radio/docs/userguide.md
++++ b/standalone/radio/docs/userguide.md
+@@ -3249,9 +3249,10 @@ real difference:
+ - **A row that probably will not play tells you so.** Radio Browser checks
+   every stream it lists, and rows it could not play are marked "may not be
+   playable". Rows that have to be looked up before they start, such as TuneIn
+   and YouTube, say "resolved when you play it". Other rows have no mark,
+-  because only Radio Browser publishes a check.
++  because only Radio Browser publishes a check. A station in the Browse
++  Stations tree carries the same "may not be playable" mark.
+ - **If you are offline, Quill Radio tells you once**, for example "You are
+   offline. Browsing from your catalog, updated this morning.", and carries on
+   working.
+ 

@@ -31,6 +31,7 @@ class ResumeRecordingDialog:
         station_name: str,
         remaining_minutes: int,
         scheduled_end: str,
+        message: str = "",
         announce_cb: Callable[[str], None] | None = None,
     ) -> None:
         import wx
@@ -47,12 +48,17 @@ class ResumeRecordingDialog:
         self.dialog = wx.Dialog(parent, title="Resume Recording")
         root = wx.BoxSizer(wx.VERTICAL)
 
-        end_label = scheduled_end.replace("T", " ") if scheduled_end else ""
-        when_part = f" until {end_label}." if end_label else "."
-        message = (
-            f"A recording of {station_name} was in progress{when_part}\n\n"
-            f"Resume it for the remaining {remaining_minutes} minute(s)?"
-        )
+        if not message:
+            # Callers pass the full sentence (quill.core.radio.resume_words):
+            # what was recorded, where it is kept, what each button does.
+            # This fallback still never shows a raw ISO timestamp.
+            from quill.core.radio.recording_resume import ActiveRecordingMarker
+            from quill.core.radio.resume_words import offer_sentence
+
+            marker = ActiveRecordingMarker(
+                station_name, "-", "", "", "", scheduled_end, remaining_minutes
+            )
+            message = offer_sentence(marker, left=remaining_minutes, seconds=None, where="")
         intro = wx.StaticText(self.dialog, label=message)
         intro.SetName("Resume recording prompt")
         intro.Wrap(380)
@@ -70,7 +76,7 @@ class ResumeRecordingDialog:
         resume_btn = wx.Button(self.dialog, self._resume_id, "&Resume")
         resume_btn.SetName("Resume the recording for the remaining time")
         skip_btn = wx.Button(self.dialog, wx.ID_CANCEL, "&Skip")
-        skip_btn.SetName("Skip resuming; leave the recording as it is")
+        skip_btn.SetName("Skip resuming; record nothing more and delete nothing")
         buttons.Add(resume_btn, 0, wx.RIGHT, 6)
         buttons.Add(skip_btn)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
@@ -109,12 +115,14 @@ class ResumeRecordingsBatchDialog:
     """Resume *several* interrupted recordings at once (concurrent recording).
 
     When more than one recording was in progress at a crash, this offers a
-    single "Resume all / Skip all" choice listing each station -- friendlier for
-    a screen-reader user than N sequential prompts. Returns ``(action,
-    remember)`` where ``action`` is ``"resume"`` (resume every one) or ``"skip"``
-    (discard every one), or ``None`` if dismissed (treated as skip). The station
-    list is a read-only, arrow-reviewable field so the names can be checked
-    before choosing.
+    single "Resume all / Skip all" choice listing each recording -- its station,
+    start, how much was recorded and how much is left -- friendlier for a
+    screen-reader user than N sequential prompts. Returns ``(action, remember)``
+    where ``action`` is ``"resume"`` (resume every one) or ``"skip"`` (resume
+    none; what each recorded is kept, nothing is deleted), or ``None`` if
+    dismissed (offered again while inside the grace window). The list is a
+    read-only, arrow-reviewable field so the recordings can be checked before
+    choosing.
     """
 
     def __init__(
@@ -156,7 +164,14 @@ class ResumeRecordingsBatchDialog:
         listing.SetMinSize((dip(listing, 420), min(200, 24 * max(1, count) + 16)))
         root.Add(listing, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
-        prompt = wx.StaticText(self.dialog, label="Resume all of them for their remaining time?")
+        prompt = wx.StaticText(
+            self.dialog,
+            label=(
+                "Resume All records the remaining time of each as a separate file. "
+                "Skip All records nothing more. Either way, nothing already recorded "
+                "is deleted."
+            ),
+        )
         prompt.SetName("Resume prompt")
         root.Add(prompt, 0, wx.EXPAND | wx.ALL, 10)
 
@@ -172,7 +187,7 @@ class ResumeRecordingsBatchDialog:
         resume_btn = wx.Button(self.dialog, self._resume_id, "&Resume All")
         resume_btn.SetName("Resume every interrupted recording for its remaining time")
         skip_btn = wx.Button(self.dialog, wx.ID_CANCEL, "&Skip All")
-        skip_btn.SetName("Skip resuming; leave the recordings as they are")
+        skip_btn.SetName("Skip resuming; record nothing more and delete nothing")
         buttons.Add(resume_btn, 0, wx.RIGHT, 6)
         buttons.Add(skip_btn)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)

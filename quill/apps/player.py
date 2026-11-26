@@ -32,6 +32,7 @@ from quill.apps.player_jumps import PlayerJumpsMixin
 from quill.apps.player_menus import MediaPlayerMenuMixin
 from quill.core.media import DspSettings, build_audio_filters, format_spoken
 from quill.core.media.bookmarks import BookmarkStore
+from quill.core.media.playlist_availability import payload_path, play_payload
 from quill.core.speech.chapter_io import format_timestamp
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.app_shell import AppShellFrame
@@ -549,23 +550,23 @@ class QuillMediaPlayerFrame(
         if self._playlist and self._playlist_index + 1 < len(self._playlist):
             self._playlist_index += 1
             title, payload = self._playlist[self._playlist_index]
-            self._play_payload(payload, title, autoplay=True)
-            self._announce(f"Next: {title}.")
+            if self._play_payload(payload, title, autoplay=True):
+                self._announce(f"Next: {title}.")
         elif self._playlist:  # the panel has already said the file ended
             self._announce("End of book.")
 
-    def _play_payload(self, payload: tuple, title: str, *, autoplay: bool) -> None:
-        kind = payload[0]
+    def _play_payload(self, payload: tuple, title: str, *, autoplay: bool) -> bool:
         self._save_resume()  # the file being left keeps its own place (FUX-01)
-        if kind == "load":
-            self._player.load(str(payload[1]), [], resume_ms=0, autoplay=autoplay)
-            if "://" not in str(payload[1]):  # a LibriVox address is not a file
-                self._book_path = Path(payload[1])
-        elif kind == "track":
-            path, offset = payload[1]
-            self._player.load(str(path), [], resume_ms=int(offset), autoplay=autoplay)
+        ok, said = play_payload(self._player, payload, title, autoplay=autoplay)
+        self._set_status(said)
+        if not ok:
+            self._announce(said)
+            return False
+
+        path = payload_path(payload)
+        if path and "://" not in path:  # a LibriVox address is not a file
             self._book_path = Path(path)
-        self._set_status(("Playing " if autoplay else "Loaded ") + title)
+        return True
 
     def _play_track_node(self, payload: tuple, title: str) -> None:
         for index, (_title, node_payload) in enumerate(self._playlist):
@@ -717,8 +718,8 @@ class QuillMediaPlayerFrame(
         self._refresh_bookmarks()
         first = book.sections[0]
         self._playlist_index = 0
-        self._play_payload(("load", first.url), first.title, autoplay=False)
-        self._announce(f"{book.title}. {len(book.sections)} sections. Press Play.")
+        if self._play_payload(("load", first.url), first.title, autoplay=False):
+            self._announce(f"{book.title}. {len(book.sections)} sections. Press Play.")
 
     def _set_playlist_from_nodes(self) -> None:
         """Derive the continuous-play track list from the chapter nodes."""

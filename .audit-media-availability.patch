@@ -1,0 +1,247 @@
+diff --git a/quill/apps/player.py b/quill/apps/player.py
+index a40489e99..c9b85dab9 100644
+--- a/quill/apps/player.py
++++ b/quill/apps/player.py
+@@ -26,16 +26,17 @@ import wx
+ 
+ from quill.apps import player_close, player_first_task
+ from quill.apps.player_address import PlayerAddressMixin, hand_over, launch_arguments
+ from quill.apps.player_ai import PlayerAiMixin
+ from quill.apps.player_bookmarks import PlayerBookmarksMixin
+ from quill.apps.player_menus import MediaPlayerMenuMixin
+ from quill.core.media import DspSettings, build_audio_filters, format_spoken
+ from quill.core.media.bookmarks import BookmarkStore
++from quill.core.media.playlist_availability import play_payload
+ from quill.core.net import configure_ssl_trust
+ from quill.core.speech.chapter_io import format_timestamp
+ from quill.ui.accessible_names import set_accessible_name
+ from quill.ui.app_shell import AppShellFrame
+ from quill.ui.dialog_contract import apply_listbox_activation
+ from quill.ui.dpi import dip_size
+ from quill.ui.media.go_to_position_dialog import GoToPositionDialog
+ from quill.ui.media.listen_mixin import MediaListenMixin
+@@ -564,29 +565,28 @@ class QuillMediaPlayerFrame(
+         except Exception:  # noqa: BLE001 - resume is best-effort, never fatal
+             pass
+ 
+     def _on_finished(self) -> None:
+         # Continuous play: auto-advance to the next track of a multi-file book.
+         if self._playlist and self._playlist_index + 1 < len(self._playlist):
+             self._playlist_index += 1
+             title, payload = self._playlist[self._playlist_index]
+-            self._play_payload(payload, title, autoplay=True)
+-            self._announce(f"Next: {title}.")
++            if self._play_payload(payload, title, autoplay=True):
++                self._announce(f"Next: {title}.")
+         elif self._playlist:  # the panel has already said the file ended
+             self._announce("End of book.")
+ 
+-    def _play_payload(self, payload: tuple, title: str, *, autoplay: bool) -> None:
+-        kind = payload[0]
+-        if kind == "load":
+-            self._player.load(str(payload[1]), [], resume_ms=0, autoplay=autoplay)
+-        elif kind == "track":
+-            path, offset = payload[1]
+-            self._player.load(str(path), [], resume_ms=int(offset), autoplay=autoplay)
+-        self._set_status(("Playing " if autoplay else "Loaded ") + title)
++    def _play_payload(self, payload: tuple, title: str, *, autoplay: bool) -> bool:
++        # A moved or deleted file says so, never "Playing", and is said (FUX-13).
++        ok, said = play_payload(self._player, payload, title, autoplay=autoplay)
++        self._set_status(said)
++        if not ok:
++            self._announce(said)
++        return ok
+ 
+     def _play_track_node(self, payload: tuple, title: str) -> None:
+         for index, (_title, node_payload) in enumerate(self._playlist):
+             if node_payload == payload:
+                 self._playlist_index = index
+                 break
+         self._play_payload(payload, title, autoplay=True)
+ 
+diff --git a/quill/core/radio/browse_helpers.py b/quill/core/radio/browse_helpers.py
+index 1713379f0..513fef55f 100644
+--- a/quill/core/radio/browse_helpers.py
++++ b/quill/core/radio/browse_helpers.py
+@@ -8,17 +8,17 @@ It was always wx-free and imported nothing but core, so when
+ here rather than have core reach up into the UI layer. No wx, no dialog state
+ -- just data.
+ """
+ 
+ from __future__ import annotations
+ 
+ from collections.abc import Callable
+ 
+-from quill.core.radio import wxindex
++from quill.core.radio import station_confidence, wxindex
+ from quill.core.radio.browse_nodes import BrowseNode
+ from quill.core.radio.models import RadioStation
+ from quill.core.radio.natural_order import natural_key
+ from quill.core.radio.wxindex_models import WxState, to_radio_station
+ 
+ 
+ def iheart_letter_groups(
+     stations: list[RadioStation],
+@@ -95,9 +95,16 @@ def row_label(child: BrowseNode) -> str:
+     licence on a Creative Commons track. One string, because a screen reader
+     reads a row, not a set of columns.
+     """
+     parts = [child.label]
+     if child.is_folder and child.child_count is not None:
+         parts.append(f"{child.child_count}")
+     if child.note:
+         parts.append(child.note)
++    # FUX-13: a station whose directory could not play it last time says so
++    # here too, as it already does in Find Stations' results. Only the failed
++    # check: "resolved when you play it" is not about whether it will play.
++    if child.station is not None:
++        verdict = station_confidence.assess(child.station)
++        if verdict.verdict == station_confidence.FAILED:
++            parts.append(verdict.badge)
+     return f"{parts[0]}  ({', '.join(parts[1:])})" if len(parts) > 1 else parts[0]
+diff --git a/quill/ui/media/library_dialog.py b/quill/ui/media/library_dialog.py
+index 4502a7206..079961f04 100644
+--- a/quill/ui/media/library_dialog.py
++++ b/quill/ui/media/library_dialog.py
+@@ -89,19 +89,21 @@ class LibraryDialog(wx.Dialog):
+         wx.SafeYield()
+         try:
+             self._books = self._search_fn(query)
+         except Exception as error:  # noqa: BLE001 - surfaced in the status line
+             self._books = []
+             self._status.SetLabel(f"Search failed: {error}")
+             return
+         self._results.Clear()
++        from quill.core.media.playlist_availability import librivox_row
++
+         for book in self._books:
+-            label = f"{book.title} - {book.authors}" if book.authors else book.title
+-            self._results.Append(label)
++            # A result with no recording yet says so before Play (FUX-13).
++            self._results.Append(librivox_row(book))
+         if self._books:
+             self._results.SetSelection(0)
+             self._status.SetLabel(f"{len(self._books)} result(s). Choose one and press Play.")
+             self._results.SetFocus()
+         else:
+             self._status.SetLabel("No results. Try a different title.")
+ 
+     def selected_book(self) -> LibriVoxBook | None:
+diff --git a/quill/ui/podcasts/manager_downloads.py b/quill/ui/podcasts/manager_downloads.py
+index 535aebad2..3d042a73e 100644
+--- a/quill/ui/podcasts/manager_downloads.py
++++ b/quill/ui/podcasts/manager_downloads.py
+@@ -107,19 +107,19 @@ class ManagerDownloadsMixin:
+             self._on_library_changed()
+             self._refresh_episode_row_for_item(item)
+ 
+         self._wx.CallAfter(apply)
+ 
+     def _refresh_episode_row_for_item(self, item: DownloadItem) -> None:
+         for row, episode in enumerate(self._current_episodes):
+             if episode.guid == item.episode_guid:
+-                self._episodes.SetItem(row, 3, self._episode_status_text(episode))
++                self._set_episode_state_cells(row, episode)
+                 break
+ 
+     def _refresh_selected_episode_row(self) -> None:
+         episode = self._verb_selected_episode()
+         if episode is None:
+             return
+         index = self._episodes.GetFirstSelected()
+         if index >= 0:
+-            self._episodes.SetItem(index, 3, self._episode_status_text(episode))
++            self._set_episode_state_cells(index, episode)
+         self._on_episode_selected(None)
+diff --git a/quill/ui/podcasts/manager_row_view.py b/quill/ui/podcasts/manager_row_view.py
+index 097a65885..9319dc566 100644
+--- a/quill/ui/podcasts/manager_row_view.py
++++ b/quill/ui/podcasts/manager_row_view.py
+@@ -9,16 +9,17 @@ That seam is where the configurable columns landed. Once a listener can reorder
+ and hide columns, ``SetItem(row, 2, ...)`` is a promise about a position nobody
+ can keep, so every cell is produced by id and written through the shared column
+ view.
+ """
+ 
+ from __future__ import annotations
+ 
+ from quill.core.media.list_columns import ColumnDef
++from quill.core.podcasts.episode_availability import downloaded_words, status_words
+ from quill.core.podcasts.list_columns import EPISODES as _EPISODE_COLUMNS
+ from quill.core.podcasts.models import PodcastEpisode, PodcastShow
+ from quill.ui.media.list_columns_view import build_columns, columns_for
+ 
+ #: This list's id in Cast's column catalogue -- taken from the catalogue itself
+ #: rather than retyped, so the fill site and the preference cannot end up naming
+ #: two different lists.
+ SURFACE = _EPISODE_COLUMNS.id
+@@ -78,17 +79,19 @@ class ManagerRowViewMixin:
+             "title": self._display_title(episode, show),
+             "published": episode.published[:16],
+             "duration": duration_text,
+             "status": self._episode_status_text(episode)
+             + self._queue_reason(episode, show)
+             + self._played_elsewhere(episode),
+             "podcast": show.title if show is not None else "",
+             "remaining": remaining,
+-            "downloaded": "Downloaded" if episode.downloaded_path else "Streams",
++            # FUX-13: a file deleted outside Cast plays only by streaming, so it
++            # is not called "Downloaded" (episode_availability.py).
++            "downloaded": downloaded_words(str(episode.downloaded_path or "")),
+             # R25: the Row Description setting, finally read by something. It
+             # decides how much of the show notes a row carries -- nothing, the
+             # first sentence, or all of it -- and the column decides whether the
+             # row carries them at all.
+             "description": self._episode_description(episode),
+         }
+ 
+     def _episode_description(self, episode: PodcastEpisode) -> str:
+@@ -141,22 +144,42 @@ class ManagerRowViewMixin:
+         """
+         if show is None:
+             return episode.title
+         from quill.core.podcasts.show_policy import display_title
+ 
+         return display_title(self._library, show, episode)
+ 
+     def _episode_status_text(self, episode: PodcastEpisode) -> str:
+-        if episode.downloaded_path:
+-            return "Downloaded" + (", played" if episode.played else "")
+-        item = self._download_queue.get(self._download_item_id(episode))
+-        if item is not None and item.status in ("queued", "downloading", "paused"):
+-            return item.status.capitalize()
+-        return "Streaming"
++        """Where the audio is, in words: a failed download and a missing file
++        say so and what still works, rather than "Streaming" and "Downloaded"
++        (FUX-13, ``episode_availability``)."""
++        item = None
++        if not episode.downloaded_path:
++            item = self._download_queue.get(self._download_item_id(episode))
++        return status_words(
++            downloaded_path=str(episode.downloaded_path or ""),
++            played=bool(episode.played),
++            item_status=item.status if item is not None else "",
++            item_error=item.error_message if item is not None else "",
++        )
++
++    def _set_episode_state_cells(self, row: int, episode: PodcastEpisode) -> None:
++        """Rewrite one row's Status and Downloaded cells where those columns are.
++
++        By column id, not position: the columns can be reordered and hidden, so
++        "column 3" could be Time Left (FUX-13).
++        """
++        values = {
++            "status": self._episode_status_text(episode),
++            "downloaded": downloaded_words(str(episode.downloaded_path or "")),
++        }
++        for index, column in enumerate(self._episode_columns):
++            if column.id in values:
++                self._episodes.SetItem(row, index, values[column.id])
+ 
+     def reapply_columns(self) -> None:
+         """Rebuild the episode list after the column layout changed.
+ 
+         Cast holds this window open across a settings change, so a layout saved
+         while it is up takes effect here rather than next time -- a preference
+         somebody has to reopen a window to hear is friction this feature exists
+         to remove.
