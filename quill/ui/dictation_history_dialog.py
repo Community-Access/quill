@@ -22,6 +22,25 @@ from typing import Any
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_message_box
 from quill.ui.dpi import dip, dip_size
 
+#: Said once a session when a recording could not be put in recovery storage.
+NOT_KEPT_SENTENCE = (
+    "QUILL could not keep a copy of this dictation's recording, so if it is not "
+    "inserted it cannot be brought back from Dictation History."
+)
+
+
+def say_not_kept(frame: Any) -> None:
+    """Say once that a dictation was not kept for recovery (FUX-05: never silent).
+
+    Called from the dictation worker, so the sentence goes through ``CallAfter``.
+    """
+    if getattr(frame, "_dictation_not_kept_said", False):
+        return
+    frame._dictation_not_kept_said = True
+    import wx
+
+    wx.CallAfter(frame._announce, NOT_KEPT_SENTENCE, force=True)
+
 
 class DictationHistoryDialog:
     """Builds the recovery list and wires Insert / Copy / Discard actions."""
@@ -91,10 +110,12 @@ class DictationHistoryDialog:
         except Exception:  # noqa: BLE001 - a broken recovery store must not crash the UI
             self._items = []
         self._list.DeleteAllItems()
+        from quill.core.speech.dictation.recovery import state_words
+
         for row, rec in enumerate(self._items):
             session = rec.session
             when = time.strftime("%Y-%m-%d %H:%M", time.localtime(session.started_at))
-            state = f"{session.transcription_state} / {session.insertion_state}"
+            state = state_words(session)  # words, not the stored codes (FUX-05)
             preview = " ".join((self._transcript(rec) or "").split())[:80]
             self._list.InsertItem(row, when)
             self._list.SetItem(row, 1, state)
@@ -141,6 +162,20 @@ class DictationHistoryDialog:
     def _on_discard_clicked(self) -> None:
         rec = self._selected()
         if rec is None:
+            return
+        # Asked first, and the consequence named: nothing else keeps this speech.
+        from quill.core.speech.dictation.recovery import when_words
+
+        wx = self._wx
+        answer = show_message_box(
+            f"Discard the dictation recording from {when_words(rec.session.started_at)} "
+            "and its transcript? Both are deleted from this computer and cannot be "
+            "brought back.",
+            "Discard Dictation Recording",
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
+            self.dialog,
+        )
+        if answer not in (wx.YES, wx.ID_YES):
             return
         self._repo.delete(rec.session.session_id)
         self._reload()

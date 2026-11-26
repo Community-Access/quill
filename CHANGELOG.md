@@ -2,6 +2,23 @@
 
 ## 1.0.0
 
+### Recovery says what your work is (2026-11-24)
+
+- When Locked Dictation recordings wait for review, QUILL says once at startup
+  when the newest was made and how it begins, and names the menu as it is:
+  Tools, Speech, Locked Dictation, Dictation History and Review. It used to say
+  "2 dictation recording(s) await review" and a menu path that did not match.
+- **Dictation History & Review** says what happened to each recording in words
+  ("Transcribed, not inserted yet") rather than codes ("done / deferred"), and
+  **Discard** asks first, because the recording and its transcript are deleted
+  and cannot be brought back. If a recording cannot be kept for recovery, QUILL
+  now says so once instead of nothing.
+- Scribe for Documents jobs that were under way when QUILL closed are named
+  when QUILL picks them up ("Scribe for Documents is finishing 2 conversions
+  from last time: Notes and Chapter 2."). Before, they carried on silently, and
+  jobs that could not run (in Safe Mode) were not mentioned at all; now they
+  are named as waiting, and kept (FUX-05).
+
 ### Review the AI's chapter titles one by one (2026-11-24)
 
 In the Chapter Workbench, **Propose AI titles...** no longer replaces every

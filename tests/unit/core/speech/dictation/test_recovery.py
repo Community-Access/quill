@@ -100,3 +100,60 @@ def test_session_roundtrips_through_sidecar(tmp_path: Path) -> None:
     assert recovered.session.context.document_id == "doc-1"
     assert recovered.session.context.caret == 42
     assert recovered.session.context.document_revision == 7
+
+
+# -- what a waiting recording is called (FUX-05) ------------------------------
+
+
+def test_states_are_said_in_words_not_codes() -> None:
+    from quill.core.speech.dictation.recovery import state_words
+
+    def words(transcription: str, insertion: str = "not_started") -> str:
+        session = DictationSession()
+        session.transcription_state = transcription
+        session.insertion_state = insertion
+        return state_words(session)
+
+    assert words("done", "deferred") == "Transcribed, not inserted yet"
+    assert words("done", "failed") == "Transcribed, could not be inserted"
+    assert words("pending") == words("running") == "Not transcribed yet"
+    assert words("failed") == "Transcription failed"
+    assert words("empty") == "No speech heard"
+
+
+def test_the_launch_sentence_names_the_recording_and_the_real_menu(tmp_path: Path) -> None:
+    import time
+
+    from quill.core.speech.dictation.recovery import HISTORY_MENU_PATH, startup_sentence
+
+    repo = DictationRecoveryRepository(tmp_path / "rec")
+    now = time.mktime((2026, 11, 24, 15, 0, 0, 0, 0, -1))
+    older = DictationSession()
+    older.started_at = now - 86400 * 3
+    newest = DictationSession()
+    newest.started_at = time.mktime((2026, 11, 24, 14, 5, 0, 0, 0, -1))
+    for session in (older, newest):
+        repo.save_metadata(session)
+    repo.save_transcript(newest, "Dear Sam, thank you for the notes you sent on Friday")
+    pending = repo.list_incomplete()
+
+    one = startup_sentence(pending[:1], now=now)
+    assert one == (
+        'A dictation recording from today at 14:05, beginning "Dear Sam, thank you for '
+        'the notes you" was never inserted. '
+        f"{HISTORY_MENU_PATH} has it."
+    )
+    both = startup_sentence(pending, now=now)
+    assert both.startswith("2 dictation recordings were never inserted; the newest is from today")
+    assert "(s)" not in both and both.endswith("lists them.")
+    assert startup_sentence([], now=now) == ""
+
+
+def test_the_menu_path_is_the_menus_own() -> None:
+    """The sentence used to send people to "Dictation History", which no menu says."""
+    from quill.core.speech.dictation.recovery import HISTORY_MENU_PATH
+
+    menu = Path("quill/ui/main_frame_menu.py").read_text(encoding="utf-8")
+    assert '_("Dictation &History && Review...")' in menu
+    assert '_("&Locked Dictation")' in menu and '_("Speec&h")' in menu
+    assert HISTORY_MENU_PATH.endswith("Locked Dictation, Dictation History and Review")

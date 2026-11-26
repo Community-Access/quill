@@ -39,6 +39,73 @@ class RecoveredSession:
     metadata_path: Path
 
 
+#: Where the review window is, by the menu's own labels (FUX-05).
+HISTORY_MENU_PATH = "Tools, Speech, Locked Dictation, Dictation History and Review"
+
+
+def state_words(session: DictationSession) -> str:
+    """What happened to this recording, in words rather than the stored codes.
+
+    The window listed ``done / deferred``; nobody should have to know what
+    the repository calls a state to decide what to do with their own speech.
+    """
+    transcribed = session.transcription_state
+    if transcribed in ("pending", "running"):
+        return "Not transcribed yet"
+    if transcribed == "failed":
+        return "Transcription failed"
+    if transcribed == "empty":
+        return "No speech heard"
+    if session.insertion_state == "failed":
+        return "Transcribed, could not be inserted"
+    return "Transcribed, not inserted yet"
+
+
+def when_words(started_at: float, now: float | None = None) -> str:
+    """``today at 14:05`` or ``on 13 November at 14:05``: when it was said."""
+    moment = time.localtime(started_at)
+    today = time.localtime(time.time() if now is None else now)
+    clock = time.strftime("%H:%M", moment)
+    if moment[:3] == today[:3]:
+        return f"today at {clock}"
+    return f"on {moment.tm_mday} {time.strftime('%B', moment)} at {clock}"
+
+
+def _transcript_of(item: RecoveredSession) -> str:
+    """The words of a waiting recording, from its transcript file when there is one."""
+    if item.transcript_path is not None:
+        try:
+            with item.transcript_path.open(encoding="utf-8", errors="replace") as handle:
+                return handle.read(2000)
+        except OSError:
+            pass
+    return item.session.transcript or ""
+
+
+def startup_sentence(pending: list[RecoveredSession], now: float | None = None) -> str:
+    """Said once at launch when recordings wait (FUX-05): what, when, and where.
+
+    Names the newest recording by when it was made and how it begins, so the
+    person can tell which dictation this is without opening anything; the menu
+    path is the menu's own, so following it arrives.
+    """
+    if not pending:
+        return ""
+    newest = pending[0]  # list_incomplete is newest first
+    when = when_words(newest.session.started_at, now)
+    words = " ".join(_transcript_of(newest).split()[:8])
+    begins = f', beginning "{words}"' if words else ""
+    if len(pending) == 1:
+        return (
+            f"A dictation recording from {when}{begins} was never inserted. "
+            f"{HISTORY_MENU_PATH} has it."
+        )
+    return (
+        f"{len(pending)} dictation recordings were never inserted; the newest is from "
+        f"{when}{begins}. {HISTORY_MENU_PATH} lists them."
+    )
+
+
 def recovery_root() -> Path:
     """The ``recovery/dictation`` directory under the QUILL data dir."""
     return app_data_dir() / "recovery" / "dictation"

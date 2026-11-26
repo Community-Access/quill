@@ -226,8 +226,8 @@ class QuillLiteApp(
         # Everything that opens from here on is somebody's doing, and says so.
         self.starting_up = False
         wx.CallLater(300, self.shell.say_if_empty)  # nothing opened: how to begin (FUX-09)
-        # The quiet once-a-day update check; silent unless there is one.
-        check_at_launch(self)
+        check_at_launch(self)  # the quiet once-a-day update check; silent unless there is one
+        self._resume_scribe_jobs()  # Scribe jobs left in flight carry on (FUX-05)
         self._start_sr_watchdog()  # a reader dying mid-session saves work first
         self._start_family_prompt_migration()  # one prompt list for the family
         return True

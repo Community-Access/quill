@@ -326,8 +326,9 @@ class ConverterLifecycleMixin:
         if not self._busy:
             return "exit"
         what = getattr(self, "_background_label", "") or "A conversion"
+        counts = getattr(self, "_batch_counts", None) if self._cancel is not None else None
         answer = self._show_message_box(
-            f"{what} is still running. Stop it and exit?",
+            close_question(what, counts),
             "Exit Quill Converter",
             wx.ICON_WARNING | wx.YES_NO | wx.NO_DEFAULT,
         )
@@ -367,6 +368,25 @@ class ConverterLifecycleMixin:
         frame.Iconize(False)
         frame.Raise()
         self._list.SetFocus()
+
+
+def close_question(what: str, counts: tuple[int, int] | None) -> str:
+    """Asked before closing stops work (FUX-05): how far it got and what Stop does.
+
+    *counts* is ``(finished, total)`` for a conversion batch, or ``None`` for a
+    side job (a download, a link being read), which says only what is running.
+    """
+    if counts is None:
+        return f"{what} is still running. Stop it and exit?"
+    done, total = counts
+    left = total - done
+    files = "file" if total == 1 else "files"
+    kept = f"The {done} finished {'file is' if done == 1 else 'files are'} kept. " if done else ""
+    return (
+        f"Converting {total} {files}: {done} finished, {left} left. Stop and exit?\n\n"
+        f"{kept}The file being converted now is removed, and the rest are not "
+        "converted. Your original files are not changed."
+    )
 
 
 def _remove_file(path: Path) -> None:

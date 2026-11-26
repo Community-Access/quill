@@ -113,6 +113,14 @@ hide key if you chose one. The window shows:
 Closing the window keeps QUILL Transcribe running in the tray. To quit, choose
 **Exit** in the File menu (Ctrl+Q) or **Exit QUILL Transcribe** in the tray menu.
 
+If a recording is being transcribed when you exit, QUILL Transcribe asks first
+and names it, for example "Transcribing meeting.mp3, 40 percent done. 2 more
+recordings waiting." Transcripts that already finished stay in Notifications.
+The one in progress and any waiting are not finished, and you transcribe them
+again next time; the recordings themselves are not changed. No is the default.
+When Windows signs you out, nothing can be asked, so a transcription in
+progress ends the same way.
+
 ## Practice and lessons
 
 New to dictation, or to a new microphone or model? Practise in QUILL

@@ -443,6 +443,14 @@ class QuillTranscribeFrame(
         controller = getattr(self, "_dictation", None)
         return int(controller.held_count) if controller is not None else 0
 
+    @staticmethod
+    def _transcribing() -> str:
+        """What Transcribe a Recording is doing now ("" when nothing): the queue
+        lives in memory, so exiting ends it (FUX-05)."""
+        from quill.ui.windows_dictation_transcribe import queue_text
+
+        return queue_text()
+
     def _on_close(self, event: wx.CloseEvent) -> None:
         if not event.CanVeto():  # Windows is signing out: no questions
             self._shut_down()
@@ -457,9 +465,9 @@ class QuillTranscribeFrame(
                 self.frame.Iconize(True)
                 self._announce(f"{_TITLE} is still running, on the taskbar.")
             return
-        if not self._exit_requested and self._held_count():
+        if not self._exit_requested and (self._held_count() or self._transcribing()):
             event.Veto()
-            wx.CallAfter(self._exit_application)  # asks about the held words first
+            wx.CallAfter(self._exit_application)  # asks about unfinished work first
             return
         self._exit_requested = False
         self._shut_down()
@@ -480,6 +488,17 @@ class QuillTranscribeFrame(
             )
             if answer != wx.YES:
                 return
+        running = self._transcribing()
+        if (
+            running
+            and self._show_message_box(
+                exit_transcribing_question(running),
+                f"Exit {_TITLE}",
+                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
+            )
+            != wx.YES
+        ):
+            return
         super()._exit_application()
 
     def _shut_down(self) -> None:
@@ -497,6 +516,17 @@ class QuillTranscribeFrame(
     def first_run(self) -> None:
         if not self._settings.setup_done and not self._safe_mode:
             self.open_setup()
+
+
+def exit_transcribing_question(running: str) -> str:
+    """The question before exit ends a transcription (FUX-05): what is running,
+    what is kept, and what has to be started again. *running* is the queue's own
+    description ("talk.mp3, 40 percent done. 2 more recordings waiting.")."""
+    return (
+        f"Transcribing {running}\n\nExit and stop transcribing? Transcripts already "
+        "finished stay in Notifications. This one and any waiting are not finished "
+        "and would have to be started again. The recordings themselves are not changed."
+    )
 
 
 def main() -> int:

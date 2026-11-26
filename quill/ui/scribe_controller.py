@@ -145,14 +145,35 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
         atexit.register(self.shutdown)  # hand the queue to the next app at once
 
     def start_if_jobs_waiting(self) -> None:
-        """At app start: pick up jobs another app left (7.4, closing an app)."""
-        if self.unavailable():
-            return
+        """At app start: pick up jobs left in flight (7.4), and say once what they
+        are (FUX-05). Before, a resumed job carried on silently, and jobs that
+        could not run were not mentioned at all.
+
+        Only jobs that were already under way are named as resuming: a queued
+        job says its own start. When another app already runs the queue, that
+        app speaks for it, so nothing is said here.
+        """
+        from quill.core.scribe.feedback import Moment
+
         try:
-            if any(job.state not in q.FINISHED for job in self.queue.jobs()):
-                self.ensure_service()
+            left = [job for job in self.queue.jobs() if job.state not in q.FINISHED]
+            holder = self.queue.holder() if left else None
         except OSError:
-            pass
+            return
+        if not left:
+            return
+        reason = self.unavailable()
+        if reason:
+            names = [job.title or job.display_name for job in left]
+            self._tell(Moment.STAGE, say.left_waiting_sentence(names, reason=reason), stall=True)
+            return
+        self.ensure_service()
+        if holder and holder.get("token") != self.queue.token:
+            return
+        moving = (q.UPLOADING, q.CONVERTING, q.DOWNLOADING)
+        under_way = [job.title or job.display_name for job in left if job.state in moving]
+        if under_way:
+            self._tell(Moment.STAGE, say.resuming_sentence(under_way), stall=True)
 
     def shutdown(self) -> None:
         if self._tasks is not None:

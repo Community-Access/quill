@@ -13,6 +13,15 @@ new in 1.0.0, including what the first test builds (builds 1 and 2) already
 did. Build 3 adds Help > What's New and keeps everything else. The changes are
 grouped by area; most say where in the user guide to read more.
 
+### Exit asks before it ends a transcription (2026-11-24)
+
+- Exiting while **Transcribe a Recording** is working used to end it, and every
+  recording waiting after it, without a word. QUILL Transcribe now asks first
+  and names the work, for example "Transcribing meeting.mp3, 40 percent done.
+  2 more recordings waiting.", and says what is kept (finished transcripts, in
+  Notifications) and what is not (this one and the waiting ones; the recordings
+  are not changed). No is the default (FUX-05).
+
 ### Setup names the place to try dictation first (2026-11-24)
 
 - Finish and Skip in **Set Up QUILL Transcribe** now end with "Practice Dictation (Ctrl+Shift+P) types only into its own box, a safe place to begin.", and

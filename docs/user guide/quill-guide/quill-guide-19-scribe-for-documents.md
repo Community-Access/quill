@@ -694,8 +694,13 @@ The Details box shows the time it will try again.
 ### Closing QUILL while a job runs
 
 Closing QUILL does not lose a job. Scribe carries on, and the job stays on
-the list. The next time a QUILL app starts, it picks the job up and
-downloads what was made. Then it tells you once, as you chose for a
+the list. The next time a QUILL app starts, QUILL Lite included, it picks the
+job up and downloads what was made. About five seconds after it starts, it
+names the jobs that were under way, for example "Scribe for Documents is
+finishing 2 conversions from last time: Notes and Chapter 2." If it cannot run
+them, in Safe Mode for example, it says which ones wait and why, and that they
+are kept. Both sentences go to the status bar, and are spoken if you chose
+words for each stage. Then it tells you once, as you chose for a
 finished conversion (to start with, the success sound), and puts the
 sentence in the status bar and Notifications, for example "Scribe for
 Documents finished 2 documents while QUILL was closed: Notes and Chapter 2,

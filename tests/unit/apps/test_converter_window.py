@@ -536,6 +536,70 @@ def test_closing_during_a_conversion_asks_first(converter, monkeypatch) -> None:
     converter._busy = False
 
 
+def test_the_close_question_says_how_far_the_batch_got_and_what_stop_does(
+    converter, monkeypatch
+) -> None:
+    """It said only "Converting 5 file(s) is still running" (FUX-05): not how many
+    were done, nor that Stop removes the file being made and keeps the rest."""
+    from quill.core.audio.convert_batch import CancelToken
+
+    asked: list[str] = []
+    monkeypatch.setattr(converter, "_show_message_box", lambda m, *_a, **_k: asked.append(m) or 0)
+    converter._busy, converter._cancel = True, CancelToken()
+    converter._background_label = ""
+    converter._batch_counts = (3, 5)
+    assert converter._converter_close_confirm() is None
+    question = asked[-1]
+    assert question.startswith("Converting 5 files: 3 finished, 2 left. Stop and exit?")
+    assert "The 3 finished files are kept." in question
+    assert "file being converted now is removed" in question
+    assert "original files are not changed" in question
+    converter._busy, converter._cancel, converter._batch_counts = False, None, None
+
+
+def test_a_running_batch_keeps_count_of_finished_files(
+    converter, monkeypatch, tmp_path, wx_call_after
+) -> None:
+    """What the close question reads: kept up to date as files finish, cleared after."""
+    from quill.apps import converter_actions
+    from quill.core.audio.convert import BatchResult, ConversionJob
+
+    seen: list[object] = []
+
+    def batch(_ffmpeg, jobs, *, on_progress, **_kw):
+        seen.append(converter._batch_counts)
+        on_progress(1, len(jobs), jobs[0])
+        seen.append(converter._batch_counts)
+        return BatchResult(results=[])
+
+    class Inline:
+        def __init__(self, target, **_kw):
+            self._target = target
+
+        def start(self):
+            self._target()
+
+    monkeypatch.setattr(converter_actions, "run_conversion_batch", batch)
+    monkeypatch.setattr(converter_actions.threading, "Thread", Inline)
+    wx_call_after(lambda *_a, **_k: None)  # the result is not delivered here
+    spec = converter.current_spec()
+    jobs = [ConversionJob(tmp_path / f"{n}.wav", tmp_path / f"{n}.mp3", spec) for n in "ab"]
+    converter._run_jobs("ffmpeg", jobs, "Converting 2 files", tmp_path, quiet=True)
+    assert seen == [(0, 2), (1, 2)]
+    converter._end_work()
+    assert converter._batch_counts is None
+
+
+def test_a_side_job_still_says_what_runs() -> None:
+    from quill.apps.converter_lifecycle import close_question
+
+    assert close_question("Reading the link", None) == (
+        "Reading the link is still running. Stop it and exit?"
+    )
+    assert "kept" not in close_question("x", (0, 1))
+    assert close_question("x", (0, 1)).startswith("Converting 1 file: 0 finished, 1 left.")
+
+
 # -- A choice that could not be saved is said, with a Retry (plan.md settings review) --
 # converter_settings.save caught OSError and did nothing, so a locked or read-only
 # converter.json produced no persistence outcome: the choice was gone after a

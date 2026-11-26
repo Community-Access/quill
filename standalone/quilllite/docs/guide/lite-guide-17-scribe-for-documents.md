@@ -287,7 +287,11 @@ My Scribe Documents; the Command Palette still finds them by those names.
 
 **Window > Conversions on This Computer** lists every Scribe job on this computer,
 from QUILL Lite and QUILL. It stays open beside your document, and jobs
-carry on when you close it or close QUILL Lite.
+carry on when you close it or close QUILL Lite. About five seconds after QUILL
+Lite starts, it picks up jobs left from last time and names the ones that were
+under way, for example "Scribe for Documents is finishing 2 conversions from
+last time: Notes and Chapter 2." If Scribe cannot run them, in Safe Mode for
+example, it says which ones wait and why; they are kept.
 
 - **Conversions** has three columns: File, Formats and Stage.
 - **Details** has the percent, time left, Scribe's latest message, the files

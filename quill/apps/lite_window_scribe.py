@@ -289,20 +289,34 @@ class LiteScribeHost:
             )
 
 
+def lite_controller(app: Any) -> Any:
+    """QUILL Lite's one Scribe controller, for the app rather than a window."""
+    from quill.ui.scribe_controller import controller_for
+
+    host = getattr(app, "_scribe_host", None)
+    if host is None:
+        host = LiteScribeHost(app)
+        app._scribe_host = host
+    return controller_for(host)
+
+
+def start_scribe_at_launch(app: Any) -> None:
+    """Pick up Scribe jobs left in flight, as QUILL does (FUX-05). QUILL Lite
+    never did, so a Lite-only user's conversions waited, unsaid, until some
+    Scribe command happened to start the queue."""
+    try:
+        lite_controller(app).start_if_jobs_waiting()
+    except RuntimeError:  # the app closed before the five seconds were up
+        pass
+
+
 class DocumentScribeMixin(ScribeEntryPoints):
     """File > Scribe for Documents in a QUILL Lite window."""
 
     # -- the shared commands' hooks --------------------------------------
 
     def _scribe(self) -> Any:
-        from quill.ui.scribe_controller import controller_for
-
-        app = self.app  # type: ignore[attr-defined]
-        host = getattr(app, "_scribe_host", None)
-        if host is None:
-            host = LiteScribeHost(app)
-            app._scribe_host = host
-        return controller_for(host)
+        return lite_controller(self.app)  # type: ignore[attr-defined]
 
     def _scribe_frame(self) -> Any:
         return self

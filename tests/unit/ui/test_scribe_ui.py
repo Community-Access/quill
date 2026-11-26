@@ -503,3 +503,83 @@ def test_the_rows_land_in_their_menus(isolated: Path) -> None:
         assert submenu.GetSubMenu().GetMenuItemCount() == 13
     finally:
         made.frame.Destroy()
+
+
+# ------------------------------------------- jobs left in flight (FUX-05)
+
+
+def test_jobs_under_way_last_time_are_named_once_as_they_carry_on(
+    controller: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A resumed job carried on silently: now the launch says which ones."""
+    speak_everything(controller)
+    started: list[bool] = []
+    monkeypatch.setattr(controller, "ensure_service", lambda: started.append(True))
+    controller.queue.add([
+        _job(title="Chapter 3", state=q.CONVERTING, document_id="d1"),
+        _job(title="Minutes", state=q.DOWNLOADING, document_id="d2"),
+        _job(title="Queued only", state=q.QUEUED),
+        _job(title="Old", state=q.DONE),
+    ])
+    controller.start_if_jobs_waiting()
+    assert started == [True]
+    assert controller.host.said == [
+        "Scribe for Documents is finishing 2 conversions from last time: Chapter 3 and Minutes."
+    ]
+
+
+def test_jobs_that_cannot_run_are_said_to_wait_not_dropped(
+    controller: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Safe Mode used to leave waiting jobs unmentioned; now they are named."""
+    speak_everything(controller)
+    started: list[bool] = []
+    monkeypatch.setattr(controller, "ensure_service", lambda: started.append(True))
+    controller.queue.add([_job(title="Chapter 3", state=q.UPLOADING)])
+    monkeypatch.setenv("QUILL_SAFE_MODE", "1")
+    controller.start_if_jobs_waiting()
+    assert started == []
+    said = controller.host.said[-1]
+    assert said.startswith(
+        "1 Scribe for Documents conversion from last time is waiting: Chapter 3."
+    )
+    assert "disabled in Safe Mode" in said and "They are kept" in said
+
+
+def test_nothing_is_said_when_another_app_runs_the_queue(
+    controller: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    speak_everything(controller)
+    monkeypatch.setattr(controller, "ensure_service", lambda: None)
+    controller.queue.add([_job(title="Chapter 3", state=q.CONVERTING)])
+    other = q.FamilyQueue(controller.queue.folder)
+    assert other.try_acquire("QUILL Lite")
+    controller.start_if_jobs_waiting()
+    assert controller.host.said == []
+
+
+def test_quill_lite_picks_up_jobs_left_in_flight_at_launch(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """QUILL Lite never started the queue at launch, unlike QUILL."""
+    from quill.apps import lite_window_scribe
+
+    asked: list[object] = []
+
+    class Controller:
+        def start_if_jobs_waiting(self) -> None:
+            asked.append(True)
+
+    monkeypatch.setattr(lite_window_scribe, "lite_controller", lambda app: Controller())
+    lite_window_scribe.start_scribe_at_launch(object())
+    assert asked == [True]
+
+    later: list[tuple] = []
+    import wx
+
+    from quill.apps.lite_recovery import LiteRecoveryMixin
+
+    monkeypatch.setattr(wx, "CallLater", lambda ms, fn, *a: later.append((ms, fn, a)))
+    app = LiteRecoveryMixin()
+    app._resume_scribe_jobs()
+    assert later == [(5000, lite_window_scribe.start_scribe_at_launch, (app,))]

@@ -2447,9 +2447,16 @@ for you to review.
 **Dictation History & Review.** **Tools > Speech > Locked Dictation >
 Dictation History & Review...** lists every recording whose transcript was
 never inserted: ones left behind by a crash, and ones that could not be placed
-safely. For each you can **insert** it at the cursor, **copy** it, or
-**discard** it. `Enter` inserts the selected row. If anything is waiting for
-review when QUILL starts, QUILL tells you and points you here, so dictated
+safely. The State column says what happened to each one in words, such as
+"Transcribed, not inserted yet" or "Not transcribed yet". For each you can
+**insert** it at the cursor, **copy** it, or **discard** it. `Enter` inserts
+the selected row. **Discard** asks first, because the recording and its
+transcript are deleted from this computer and cannot be brought back. If
+anything is waiting for review when QUILL starts, QUILL says so once and names
+the newest, for example "A dictation recording from today at 14:05, beginning
+"Dear Sam, thank you" was never inserted. Tools, Speech, Locked Dictation,
+Dictation History and Review has it." If QUILL cannot keep a copy of a
+recording, for example because the disk is full, it says so once, so dictated
 speech is never silently lost.
 
 #### Locked Dictation settings

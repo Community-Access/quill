@@ -209,7 +209,11 @@ class ConverterActionsMixin(ConverterLifecycleMixin, ConverterScribeMixin):
                 text, overall = update
                 wx.CallAfter(self._note_progress, text, int(overall * 1000), 1000)
 
+        # How far the batch is, for the question asked if the window closes.
+        self._batch_counts = (0, total)
+
         def on_progress(done: int, total_jobs: int, job: ConversionJob) -> None:
+            self._batch_counts = (done, total_jobs)
             post(tracker.file_done(job.source))
 
         def on_file_progress(job: ConversionJob, fraction: float) -> None:
@@ -325,6 +329,7 @@ class ConverterActionsMixin(ConverterLifecycleMixin, ConverterScribeMixin):
     def _end_work(self) -> None:
         self._busy = False
         self._cancel = None
+        self._batch_counts = None
         self._convert_btn.SetLabel("Convert")
         self._set_progress(0, 1)
         self._refresh_statusbar()

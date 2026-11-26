@@ -111,7 +111,9 @@ class _LiveDictationServices:
         try:
             self._repository().save_audio(session, wav_path)
         except Exception:  # noqa: BLE001 - recovery write must not wedge the machine
-            pass
+            from quill.ui.dictation_history_dialog import say_not_kept
+
+            say_not_kept(self._frame)  # once a session, never silent (FUX-05)
 
     def transcribe(self, session: Any) -> None:
         # The whole worker — silence pre-pass, engine call, profile
@@ -371,18 +373,14 @@ class DictationHotkeysMixin(WindowsDictationCommandsMixin):
 
     def check_dictation_recovery_on_startup(self) -> None:
         """Point the user at the review window when dictations are pending (§22.4)."""
-        from quill.core.speech.dictation.recovery import DictationRecoveryRepository
+        from quill.core.speech.dictation import recovery
 
         try:
-            pending = DictationRecoveryRepository().list_incomplete()
+            pending = recovery.DictationRecoveryRepository().list_incomplete()
         except Exception:  # noqa: BLE001 - a broken store must not affect startup
             return
-        if pending:
-            self._announce(
-                f"{len(pending)} dictation recording(s) await review. Open Tools, "
-                "Speech, Locked Dictation, Dictation History.",
-                force=True,
-            )
+        if pending:  # what, when and where, once (FUX-05)
+            self._announce(recovery.startup_sentence(pending), force=True)
 
     # -- preflight + context ---------------------------------------------- #
 

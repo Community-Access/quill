@@ -2,6 +2,15 @@
 
 ## 2.0.0
 
+### Scribe jobs left from last time carry on, and are named (2026-11-24)
+
+QUILL Lite now picks up Scribe for Documents jobs that were under way or
+waiting when it closed, about five seconds after it starts, as QUILL does.
+Before, they waited unmentioned until you used a Scribe command. It names
+them ("Scribe for Documents is finishing 2 conversions from last time: Notes
+and Chapter 2."), or, when Scribe cannot run, says which wait and why
+(FUX-05).
+
 ### F8 moves from one change to the next in every read-only diff (2026-11-24)
 
 The differences of a file in a pull request, Compare Branches' Changed Files,

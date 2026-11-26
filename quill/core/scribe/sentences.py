@@ -209,6 +209,32 @@ def closed_while_sentence(titles: list[str], *, app_name: str, folder: str) -> s
     )
 
 
+def _some_names(names: list[str], most: int = 4) -> str:
+    """At most *most* names, then "and N more": a launch sentence stays one breath."""
+    if len(names) <= most:
+        return _join_names(names)
+    return f"{', '.join(names[:most])} and {len(names) - most} more"
+
+
+def resuming_sentence(titles: list[str]) -> str:
+    """Said once at launch (FUX-05): the conversions under way when the app closed,
+    which carry on without being uploaded again."""
+    count = len(titles)
+    noun = "conversion" if count == 1 else "conversions"
+    return f"{PRODUCT_NAME} is finishing {count} {noun} from last time: {_some_names(titles)}."
+
+
+def left_waiting_sentence(titles: list[str], *, reason: str) -> str:
+    """Said once at launch when jobs are left and Scribe cannot run them now:
+    which ones, why they wait, and that nothing was thrown away (FUX-05)."""
+    count = len(titles)
+    noun = "conversion from last time is" if count == 1 else "conversions from last time are"
+    return (
+        f"{count} {PRODUCT_NAME} {noun} waiting: {_some_names(titles)}. {reason} "
+        "They are kept, and carry on when it can run."
+    )
+
+
 def sign_out_question(waiting: int, *, app_name: str = "QUILL") -> str:
     if waiting <= 0:
         return ""

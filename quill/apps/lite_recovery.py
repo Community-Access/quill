@@ -65,6 +65,15 @@ class LiteRecoveryMixin:
             return False
         return self._offer_recovery(result)
 
+    def _resume_scribe_jobs(self) -> None:
+        """Scribe jobs left in flight carry on, five seconds after launch, the
+        way QUILL picks them up (FUX-05), after startup's own sentences."""
+        import wx
+
+        from quill.apps.lite_window_scribe import start_scribe_at_launch
+
+        wx.CallLater(5000, start_scribe_at_launch, self)
+
     def _offer_recovery(self, result: Triage) -> bool:
         """Put the triaged list up, act on the answer. ``True`` when any opened."""
         from quill.core.action_feedback import recovered_result

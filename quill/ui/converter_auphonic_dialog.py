@@ -513,7 +513,9 @@ class AuphonicWaitingDialog(wx.Dialog):
         )
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         row = wx.BoxSizer(wx.HORIZONTAL)
-        resume = wx.Button(self, wx.ID_OK, label="Resume")
+        # "All": it resumes every row, not the highlighted one (FUX-05). No access
+        # key: it is the default button, and Enter presses it (GATE-14).
+        resume = wx.Button(self, wx.ID_OK, label="Resume All")
         resume.SetHelpText(
             "Contacts Auphonic for every production listed, waits for any still "
             "processing, and saves the results where each one was going."
@@ -533,7 +535,7 @@ class AuphonicWaitingDialog(wx.Dialog):
         apply_modal_ids(
             self,
             affirmative_id=wx.ID_OK,
-            affirmative_label="Resume",
+            affirmative_label="Resume All",
             cancel_id=wx.ID_CANCEL,
             cancel_label="Close",
         )

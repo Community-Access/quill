@@ -14,6 +14,16 @@ the launcher, installer, icon and these documents.
 
 ## Unreleased
 
+### Exit says how far a conversion got and what Stop does (2026-11-24)
+
+Exiting while a batch converts used to ask only "Converting 5 file(s) is still
+running. Stop it and exit?". It now says "Converting 5 files: 3 finished, 2
+left. Stop and exit?", that the finished files are kept, the one being
+converted is removed and the rest are not converted, and that your original
+files are not changed. In Auphonic Work Waiting, **Resume** is now **Resume
+All**, because it resumes every production in the list, not only the
+highlighted one (FUX-05).
+
 ### F1 on the queue says what happened to that file (2026-11-23)
 
 After a conversion, F1 on a row of the queue says what that file converted

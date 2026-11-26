@@ -1109,8 +1109,8 @@ started, you are told to check your Auphonic account before sending it again.
 
 **Convert > Auphonic Work Waiting...** (Ctrl+Alt+A) lists the productions
 waiting to be fetched -- the list is kept on this computer and opening it
-contacts nobody. **Resume** waits for each one and saves its results where it
-was going; **Dismiss** (Alt+D) forgets the highlighted one on this computer,
+contacts nobody. **Resume All** waits for every one in the list, not only the highlighted
+one, and saves its results where it was going; **Dismiss** (Alt+D) forgets the highlighted one on this computer,
 and it stays in your Auphonic account. When Quill Converter starts with work
 waiting, it says so once, without contacting Auphonic.
 
@@ -1330,6 +1330,11 @@ is in.
   commands, so it is off now, and Quill Converter tells you so once.
 - The tray icon's menu has Show and Exit.
 - **Exit** (File > Exit, Ctrl+Q) really exits. Alt+F4 closes the window.
+- If you exit while a batch is converting, Quill Converter asks first and says
+  how far it got, for example "Converting 5 files: 3 finished, 2 left. Stop and
+  exit?" Stopping keeps the files that finished, removes the one being
+  converted, and does not convert the rest. Your original files are not
+  changed. No is the default.
 
 ### Finding a setting or a command
 
