@@ -30,28 +30,12 @@ from urllib.request import Request, urlopen
 from quill.core import updates
 from quill.core.app_launcher import app_name, portable_sibling_dirname
 from quill.core.net import verified_ssl_context
+from quill.core.release_catalog import PRODUCTS
 
 #: app key -> the release-asset basename prefix each app publishes. Kept beside
 #: the launcher's app table on purpose: a new app is added in both places.
 ASSET_PREFIX: dict[str, str] = {
-    "quill": "QUILL",
-    "radio": "Quill-Radio",
-    "weather": "Quill-Weather",
-    "cast": "Quill-Cast",
-    # Quill Converter 1.0.0 (2026-09-27). Without an entry here its Check for
-    # Updates had no asset prefix, fell back to the repository's newest release
-    # of ANY app -- QUILL's own -- and would have offered that installer.
-    "converter": "Quill-Converter",
-    # Quill Inkwell had the same gap since 1.0.0; found while adding the above.
-    "inkwell": "Quill-Inkwell",
-    # QUILL Transcribe 1.0.0 (2026-10-11): its own installer and portable zip.
-    "transcribe": "QUILL-Transcribe",
-    # Audio Studio's two artifacts are named inconsistently by its own build
-    # scripts -- "QUILL-Audio-Studio-Portable-Lean-*.zip" but
-    # "Quill-AudioStudio-Setup-*.exe" (no hyphen inside "AudioStudio") -- so the
-    # prefix stops at the last segment they share. "Quill-Studio" matched
-    # NEITHER, which would have made Studio unresolvable the moment it ships.
-    "studio": "Quill-Audio",
+    item.key: item.lookup_asset_prefix for item in PRODUCTS if item.channels_enabled
 }
 
 

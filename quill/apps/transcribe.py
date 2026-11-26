@@ -43,7 +43,6 @@ from quill.apps.transcribe_menus import build_menu_bar, build_tray_menu, start_s
 from quill.apps.transcribe_recent import TranscribeRecentMixin
 from quill.apps.transcribe_review import TranscribeReviewMixin
 from quill.core.app_version import describe_version
-from quill.core.net import configure_ssl_trust
 from quill.core.support_message import SUPPORT_EMAIL
 from quill.core.transcribe.settings import TranscribeSettings, load_settings, take_from_inkwell
 from quill.ui.app_shell import AppShellFrame
@@ -130,6 +129,22 @@ class QuillTranscribeFrame(
 
             launch_heal.heal_in_background(
                 self._task_manager, transcribe_startup.heal_launch_at_startup
+            )
+        self._transcription_resume_timer = wx.CallLater(500, self._resume_transcription_queue)
+
+    def _resume_transcription_queue(self) -> None:
+        if self._exit_requested or self.frame.IsBeingDeleted():
+            return
+        try:
+            from quill.ui import transcription_queue_runtime
+
+            transcription_queue_runtime.resume(self)
+        except Exception:  # noqa: BLE001 - a queue must not take the app down
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "Could not resume the transcription queue at Transcribe startup",
+                exc_info=True,
             )
 
     @staticmethod
@@ -484,6 +499,20 @@ class QuillTranscribeFrame(
 
     def _shut_down(self) -> None:
         """Microphone closed, keys released, owner lock let go, tray icon gone."""
+        timer = getattr(self, "_transcription_resume_timer", None)
+        if timer is not None:
+            timer.Stop()
+        from quill.ui import transcription_queue_runtime
+
+        try:
+            transcription_queue_runtime.suspend(self)
+        except Exception:  # noqa: BLE001 - shutdown must finish even if persistence fails
+            import logging
+
+            logging.getLogger(__name__).warning(
+                "Could not persist the transcription queue during Transcribe shutdown",
+                exc_info=True,
+            )
         timer = getattr(self, "_ipc_timer", None)
         if timer is not None:
             timer.Stop()
@@ -500,7 +529,6 @@ class QuillTranscribeFrame(
 
 
 def main() -> int:
-    configure_ssl_trust()  # one certificate check, before any network use
     from quill.core.data_location import apply_pending_at_launch
 
     apply_pending_at_launch()  # queued Data Folder move, before any data read

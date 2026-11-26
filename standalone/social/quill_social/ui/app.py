@@ -21,6 +21,7 @@ from pathlib import Path
 import wx
 from quill.ui.accessible_group import GroupedRadioBox
 from quill.ui.dpi import dip, dip_size
+from quill.ui.updates.host import ProductUpdateHost
 
 from quill_social import __title__, __version__, paths
 from quill_social import a11y as a11y_mod
@@ -140,10 +141,14 @@ NAV_TREE = [
 ]
 
 
-class SocialFrame(SocialScribeMixin, wx.Frame):
+class SocialFrame(ProductUpdateHost, SocialScribeMixin, wx.Frame):
     def __init__(self) -> None:
         super().__init__(None, title=__title__, size=dip_size(None, 1180, 760))
         self.data_dir = paths.data_dir()
+        self._release_app_key = "social"
+        from quill.core.data_format_ledger import record_running_build
+
+        record_running_build("social", __version__)
         self.store = SocialStore(paths.db_path())
         self.a11y = a11y_mod.load(self.data_dir)
         self.keymap = keymap_mod.load(self.data_dir)
@@ -172,7 +177,7 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         self._build_menu()
         self._build_ui()
         a11y_mod.apply_to_frame(self, self.a11y)
-        self._refresh_from_network(announce=False)
+        self._refresh_from_network(announce=False, local_only=True)
         self._populate_nav()
         self._load_scope(self.current_scope, self.current_scope_label)
         self.CreateStatusBar()
@@ -412,6 +417,7 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
                 ("&Product Requirements", "product_requirements"),
                 ("&What's New", "whats_new"),
                 None,
+                ("Check for Upda&tes...", "check_updates"),
                 ("Keyboard &Guide (shortcuts)", "help"),
                 ("&About", "about"),
             )),
@@ -425,7 +431,17 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
                     menu.AppendSeparator()
                     continue
                 label, command_id = row
-                self._menu_item(menu, self._menu_label(label, command_id), handlers[command_id])
+                item_id = self._menu_item(
+                    menu, self._menu_label(label, command_id), handlers[command_id]
+                )
+                if command_id == "check_updates":
+                    self._release_check_menu_id = item_id
+            if title == "&Help":
+                from quill.ui.support_menu import append_get_help_item
+                from quill.ui.updates.shell import append_release_channel_item
+
+                append_get_help_item(self, menu, wx, source_app=__title__, app_version=__version__)
+                append_release_channel_item(self, menu, "social", self._release_check_menu_id)
             bar.Append(menu, title)
 
         self.SetMenuBar(bar)
@@ -437,9 +453,10 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         chord = self.keymap.chord_for(command_id)
         return f"{title}\t{chord}" if chord else title
 
-    def _menu_item(self, menu, label, handler) -> None:
+    def _menu_item(self, menu, label, handler) -> int:
         item = menu.Append(wx.ID_ANY, label)
         self.Bind(wx.EVT_MENU, lambda _e: handler(), item)
+        return int(item.GetId())
 
     def _command_handlers(self) -> dict:
         """Command id -> what it runs: the menu and the key hook share this."""
@@ -499,6 +516,7 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
             "keyboard_reference": lambda: self.cmd_open_doc("KEYMAP_SPEC"),
             "product_requirements": lambda: self.cmd_open_doc("QUILL_Social_PRD_Working_Draft"),
             "whats_new": lambda: self.cmd_open_doc("CHANGELOG"),
+            "check_updates": lambda: self.check_product_updates("social"),
             "help": self.cmd_help,
             "about": lambda: self._on_about(None),
             **self._scribe_handlers(),
@@ -719,7 +737,9 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
 
     # -- data loading ---------------------------------------------------------
 
-    def _refresh_from_network(self, *, announce: bool = True, say_total: bool = True) -> None:
+    def _refresh_from_network(
+        self, *, announce: bool = True, say_total: bool = True, local_only: bool = False
+    ) -> None:
         """Pull each active account's home timeline into the local store.
 
         Failures are per-account and never crash the app or block other
@@ -728,6 +748,8 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
         """
         pulled = 0
         for acct in self.store.list_accounts(include_paused=False):
+            if local_only and acct.network != "mock":
+                continue
             adapter = self._resolve_adapter(acct.account_id)
             try:
                 # RSS feeds go through the feed path so a manual refresh applies
@@ -2119,6 +2141,11 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
             ),
             Command("add_account", "Add account", lambda: self._on_add_account(None)),
             Command("preferences", "Preferences", lambda: self._on_preferences(None)),
+            Command(
+                "check_updates",
+                "Check for Updates...",
+                lambda: self.check_product_updates("social"),
+            ),
             Command("help", "Help", self.cmd_help, shortcut=km.chord_for("help")),
         ]
         commands += self._scribe_commands(km, Command)
@@ -2177,6 +2204,7 @@ class SocialFrame(SocialScribeMixin, wx.Frame):
             self.store.close()
         except Exception:
             pass
+        self._shutdown_release_tasks()
         self.Destroy()
 
 
@@ -2863,5 +2891,9 @@ def run() -> int:
     app = wx.App()
     frame = SocialFrame()
     frame.Show()
+    from quill.ui.startup_launch import defer_ssl_trust_setup
+
+    defer_ssl_trust_setup(wx)
+    wx.CallAfter(frame._refresh_from_network, announce=False)
     app.MainLoop()
     return 0

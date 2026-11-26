@@ -55,6 +55,12 @@ class MediaPlayerMenuMixin(PlayerScribeMixin):
             listen_id, *append_scribe_submenu(self, file_menu, wx, title="Scri&be for Documents")
         )
         file_menu.Append(goto_id, "&Go to Position...\tCtrl+G")
+        # The place before Go to Position or a chapter jump, on the family's Go
+        # Back key (FUX-01; player_jumps.py). Pressed again, it comes back.
+        back_id = wx.NewIdRef()
+        file_menu.Append(back_id, "Bac&k to Where I Was\tAlt+Left")
+        self.frame.Bind(wx.EVT_MENU, self._on_back_to_where_i_was, id=back_id)
+        self._keep_menu_ids(back_id)
         bookmarks_menu = wx.Menu()
         export_bm_id, export_sync_id, import_sync_id = (wx.NewIdRef() for _ in range(3))
         bookmarks_menu.Append(export_bm_id, "Export &Bookmarks...\tCtrl+Alt+E")

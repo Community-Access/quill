@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 614.
+Editor commands with default bindings: 615.
 
 ## The QUILL editor
 
@@ -391,6 +391,7 @@ Editor commands with default bindings: 614.
 | Ctrl+Shift+F7 | Previous Misspelling | `tools.previous_misspelling` |
 | Ctrl+Shift+F9 | Pause or Resume Dictation | `tools.dictation_pause` |
 | Ctrl+Shift+G | Document Statistics... | `tools.word_count` |
+| Ctrl+Shift+PageUp | Transcriptions on This Computer... | `tools.windows_dictation_transcriptions` |
 | Ctrl+Shift+R | Replace Across Files... | `tools.replace_in_files` |
 | Ctrl+Shift+] | List Folds... | `tools.list_folds` |
 | Escape | Stop Dictation (keep speech) | `tools.dictation_emergency_stop` |

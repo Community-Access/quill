@@ -3677,6 +3677,17 @@ Turns a recording into text in the background while you keep working: MP3, M4A, 
 |---|---|
 | Shift+F5 |  |
 
+### Transcriptions on This Computer
+
+Shows queued, running, stopped, failed and finished recording transcriptions. The
+list survives restart; open a finished transcript, stop active work, retry a
+failed or stopped job, or forget a finished row. Forgetting a row does not delete
+the saved transcript. Only one QUILL app sharing the queue runs a job at a time.
+
+| Key | Action |
+|---|---|
+| Ctrl+Shift+PageUp |  |
+
 ### My Words and Phrases
 
 Teach dictation your words: names and jargon spelled your way, your own spoken phrases, and corrections for what the engine keeps hearing wrong. With OpenAI dictation your words are also sent as words to expect.

@@ -1,6 +1,39 @@
 {
   "_doc": "GATE-DATAFMT fingerprints (quill/tools/data_format_audit.py). Regenerate with python -m quill.tools.data_format_audit --write [--accept <id> --note ...]. A changed shape needs a bumped `current` or the classification 'additive, compatible'; the classification is the review.",
   "formats": {
+    "beacon.settings": {
+      "current": 1,
+      "shape": {
+        "dataclass:quill.apps.beacon.a11y:A11ySettings": {
+          "quill.apps.beacon.a11y:A11ySettings": {
+            "verbosity": "Verbosity",
+            "high_contrast": "bool",
+            "scale_index": "int",
+            "reduced_motion": "bool"
+          }
+        },
+        "function:quill.apps.beacon.a11y:save": "sha256:5392252b3940163e",
+        "dataclass:quill.apps.beacon.external_player:PlayerSettings": {
+          "quill.apps.beacon.external_player:PlayerSettings": {
+            "default_player": "str",
+            "custom_path": "dict[str, str]",
+            "per_type": "dict[str, str]"
+          }
+        },
+        "function:quill.apps.beacon.external_player:save_settings": "sha256:d6cc6bd71b3f0635",
+        "dataclass:quill.apps.beacon.routing:Rule": {
+          "quill.apps.beacon.routing:Rule": {
+            "keyword": "str",
+            "collection": "str"
+          }
+        },
+        "function:quill.apps.beacon.routing:save_rules": "sha256:8d7d0783e16885f4",
+        "function:quill.apps.beacon.sync_ui:SyncController.save_config": "sha256:81e3b70c3706334e",
+        "function:quill.apps.beacon.sync_ui:SyncController._persist_conflicts": "sha256:528338ab9e825840"
+      },
+      "classification": "additive, compatible",
+      "note": "Registered real serializer fingerprints when these products joined release channels."
+    },
     "cast.history": {
       "current": 1,
       "shape": {
@@ -351,6 +384,106 @@
       },
       "classification": "version bumped",
       "note": "Added optional podcast folder-copy metadata and Lite startup-folder preference; older readers ignore these fields."
+    },
+    "converter.queue": {
+      "current": 1,
+      "shape": {
+        "dataclass:quill.core.converter_queue:ConverterQueueEntry": {
+          "quill.core.converter_queue:ConverterQueueEntry": {
+            "source": "Path",
+            "root": "Path | None",
+            "_extra": "dict[str, Any]"
+          }
+        },
+        "function:quill.core.converter_queue:ConverterQueueStore.save": "sha256:9d5bbdb7e6ea95e8",
+        "function:quill.core.converter_queue:ConverterQueueStore._write": "sha256:08403e34fe75ccf0",
+        "constant:quill.core.converter_queue:SCHEMA": "1"
+      },
+      "classification": "baseline",
+      "note": ""
+    },
+    "converter.settings": {
+      "current": 1,
+      "shape": {
+        "dataclass:quill.core.converter_settings:ConverterSettings": {
+          "quill.core.audio.dsp:DspOptions": {
+            "loudness": "str",
+            "gain_db": "float",
+            "high_pass": "bool",
+            "trim_silence": "bool",
+            "tempo": "float",
+            "compressor": "bool",
+            "leveler": "bool",
+            "fade_in_s": "float",
+            "fade_out_s": "float",
+            "limiter": "bool",
+            "noise_reduction": "bool",
+            "remove_hum": "bool",
+            "deesser": "bool",
+            "voice_clarity": "bool",
+            "bass_boost": "bool",
+            "treble_boost": "bool",
+            "dialogue_boost": "bool",
+            "speech_normalize": "bool"
+          },
+          "quill.core.converter_settings:ConverterSettings": {
+            "fmt": "str",
+            "audio_preset": "str",
+            "video_preset": "str",
+            "effect": "str",
+            "chapters": "str",
+            "custom_effects": "DspOptions",
+            "dest_dir": "str",
+            "start_s": "float",
+            "end_s": "float",
+            "on_existing": "str",
+            "open_folder_when_done": "bool",
+            "show_advanced": "bool",
+            "adv_bitrate": "str",
+            "adv_rate": "str",
+            "adv_channels": "str",
+            "adv_depth": "str",
+            "adv_polish": "str",
+            "recurse": "bool",
+            "auphonic_mode": "str",
+            "auphonic_preset": "str",
+            "auphonic_preset_name": "str",
+            "auphonic_processing": "str",
+            "auphonic_denoise": "bool",
+            "auphonic_format": "str"
+          }
+        },
+        "function:quill.core.converter_settings:save": "sha256:b3bac32b755d2a62",
+        "constant:quill.core.converter_settings:SCHEMA": "1"
+      },
+      "classification": "additive, compatible",
+      "note": "Registered real serializer fingerprints when these products joined release channels."
+    },
+    "inkwell.settings": {
+      "current": 1,
+      "shape": {
+        "dataclass:quill.core.expansion.settings:InkwellSettings": {
+          "quill.core.expansion.settings:InkwellSettings": {
+            "expansion_enabled": "bool",
+            "injection_mode": "str",
+            "excluded_processes": "list[str]",
+            "paste_processes": "list[str]",
+            "announce_expansions": "bool",
+            "start_in_tray": "bool",
+            "close_to_tray": "bool",
+            "tray_hotkey": "str",
+            "quick_insert_hotkey": "str",
+            "expand_now_hotkey": "str",
+            "dictate_anywhere_hotkey": "str",
+            "dictation": "dict[str, object]",
+            "read_only": "bool"
+          }
+        },
+        "function:quill.core.expansion.settings:save_settings": "sha256:fbb39c1031ddd9f9",
+        "constant:quill.core.expansion.settings:SCHEMA_VERSION": "1"
+      },
+      "classification": "additive, compatible",
+      "note": "Registered real serializer fingerprints when these products joined release channels."
     },
     "lite.keymap": {
       "current": 1,
@@ -1574,6 +1707,102 @@
       "classification": "additive, compatible",
       "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
     },
+    "social.settings": {
+      "current": 1,
+      "shape": {
+        "source:standalone/social/quill_social/a11y.py:A11ySettings": "sha256:4919bbebc3eff06c",
+        "source:standalone/social/quill_social/a11y.py:save": "sha256:a30d2907077f544b",
+        "source:standalone/social/quill_social/keymap.py:save": "sha256:fa5b54ced1d13c80",
+        "source:standalone/social/quill_social/adapters/oauth.py:_save_all": "sha256:f8526b85dfd59bbf"
+      },
+      "classification": "additive, compatible",
+      "note": "Fingerprint Social source serializers without requiring the optional installed package."
+    },
+    "studio.library": {
+      "current": 1,
+      "shape": {
+        "dataclass:quill.core.audio_studio.book_prefs:BookPrefsStore": {
+          "quill.core.audio_studio.book_prefs:BookPrefs": {
+            "volume_percent": "int",
+            "muted": "bool"
+          },
+          "quill.core.audio_studio.book_prefs:BookPrefsStore": {
+            "entries": "dict[str, BookPrefs]"
+          }
+        },
+        "function:quill.core.audio_studio.book_prefs:save_prefs": "sha256:cc039c0166dfdc16",
+        "dataclass:quill.core.audio_studio.history:AudioStudioHistory": {
+          "quill.core.audio_studio.history:AudioStudioHistory": {
+            "books": "list[PlayedBook]",
+            "resume_on_launch": "bool"
+          },
+          "quill.core.audio_studio.history:PlayedBook": {
+            "path": "str",
+            "title": "str",
+            "position_ms": "int",
+            "chapter": "int"
+          }
+        },
+        "function:quill.core.audio_studio.history:save_history": "sha256:37a4ca31c69bb7a6",
+        "dataclass:quill.core.audio_studio.library:LibraryState": {
+          "quill.core.audio_studio.library:BookEntry": {
+            "path": "str",
+            "title": "str",
+            "folder": "str",
+            "favorite": "bool",
+            "last_played_at": "float",
+            "added_at": "float"
+          },
+          "quill.core.audio_studio.library:LibraryState": {
+            "books": "list[BookEntry]",
+            "folders": "list[str]"
+          }
+        },
+        "function:quill.core.audio_studio.library:save_library": "sha256:b1c887bc97f749e7",
+        "dataclass:quill.core.audio_studio.play_queue:PlayQueue": {
+          "quill.core.audio_studio.play_queue:PlayQueue": {
+            "entries": "list[QueueEntry]",
+            "current_index": "int"
+          },
+          "quill.core.audio_studio.play_queue:QueueEntry": {
+            "path": "str",
+            "title": "str",
+            "chapter": "int"
+          }
+        },
+        "function:quill.core.audio_studio.play_queue:save_queue": "sha256:67ed7454c5f26dc8",
+        "dataclass:quill.core.audio_studio.sleep_timer:SleepTimerSetting": {
+          "quill.core.audio_studio.sleep_timer:SleepTimerSetting": {
+            "enabled": "bool",
+            "delay_minutes": "float",
+            "end_of_chapter": "bool",
+            "last_started_at": "float"
+          }
+        },
+        "function:quill.core.audio_studio.sleep_timer:save_sleep_setting": "sha256:d66157e6697094d2"
+      },
+      "classification": "additive, compatible",
+      "note": "Registered real serializer fingerprints when these products joined release channels."
+    },
+    "studio.settings": {
+      "current": 1,
+      "shape": {
+        "dataclass:quill.core.audio_studio.ai_settings:StudioAiSettings": {
+          "quill.core.audio_studio.ai_settings:StudioAiSettings": {
+            "ai_privacy_accepted_version": "int",
+            "ai_own_key_model": "str",
+            "ai_own_key_provider": "str",
+            "ai_connection": "str",
+            "ai_copilot_model": "str",
+            "ai_codex_model": "str",
+            "ai_picture_consent": "list[str]"
+          }
+        },
+        "function:quill.core.audio_studio.ai_settings:save_ai_settings": "sha256:6c7a09eac976a5b2"
+      },
+      "classification": "additive, compatible",
+      "note": "Registered real serializer fingerprints when these products joined release channels."
+    },
     "transcribe.settings": {
       "current": 1,
       "shape": {
@@ -1605,6 +1834,53 @@
       },
       "classification": "additive, compatible",
       "note": ""
+    },
+    "weather.settings": {
+      "current": 1,
+      "shape": {
+        "dataclass:quill.core.weather.settings:WeatherSettings": {
+          "quill.core.weather.settings:WeatherSettings": {
+            "temperature_unit": "str",
+            "wind_unit": "str",
+            "section_order": "list[str]",
+            "forecast_period_count": "int",
+            "show_detailed_forecast": "bool",
+            "daily_outlook_days": "int",
+            "hourly_hours": "int",
+            "show_feels_like": "bool",
+            "show_humidity": "bool",
+            "show_dew_point": "bool",
+            "show_wind": "bool",
+            "show_pressure": "bool",
+            "show_visibility": "bool",
+            "show_cloud_cover": "bool",
+            "show_precip_chance": "bool",
+            "show_sunrise_sunset": "bool",
+            "show_moon": "bool",
+            "show_uv_index": "bool",
+            "show_air_quality": "bool",
+            "show_local_time": "bool",
+            "alert_severity_floor": "str",
+            "muted_events": "list[str]",
+            "announce_alert_count_on_open": "bool",
+            "alert_sound_enabled": "bool",
+            "alert_sound_path": "str",
+            "alert_sound_repeat": "int",
+            "refresh_minutes": "int",
+            "refresh_on_open": "bool",
+            "app_close_to_tray": "bool",
+            "app_start_in_tray": "bool",
+            "quick_include_feels_like": "bool",
+            "quick_include_wind": "bool",
+            "quick_include_humidity": "bool",
+            "quick_include_alert_count": "bool",
+            "quick_include_data_age": "bool"
+          }
+        },
+        "function:quill.core.weather.settings:save_settings": "sha256:64ea6eb4e3b01372"
+      },
+      "classification": "additive, compatible",
+      "note": "Registered real serializer fingerprints when these products joined release channels."
     }
   }
 }

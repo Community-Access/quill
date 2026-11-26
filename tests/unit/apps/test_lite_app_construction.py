@@ -16,12 +16,18 @@ constructor reaching for state a later phase sets.
 from __future__ import annotations
 
 import ast
+import subprocess
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
 LITE = Path(__file__).resolve().parents[3] / "quill" / "apps" / "lite.py"
+LITE_STARTUP = Path(__file__).resolve().parents[3] / "quill" / "apps" / "lite_startup.py"
+LITE_WRAPPER = (
+    Path(__file__).resolve().parents[3] / "standalone" / "quilllite" / "quill_lite" / "__init__.py"
+)
 
 
 def _assigned_and_read(method: str) -> tuple[set[str], set[str]]:
@@ -67,6 +73,79 @@ def test_settings_is_one_of_the_attributes_oninit_owns() -> None:
     would pass for the wrong reason, having nothing left to compare."""
     oninit_assigned, _ = _assigned_and_read("OnInit")
     assert "settings" in oninit_assigned
+
+
+def test_optional_startup_work_waits_for_the_editor() -> None:
+    """Audio and service startup must not hold the first window hostage."""
+    lite_source = LITE.read_text(encoding="utf-8")
+    startup_source = LITE_STARTUP.read_text(encoding="utf-8")
+    tree = ast.parse(lite_source)
+    methods = {
+        n.name: ast.get_source_segment(lite_source, n) or ""
+        for cls in ast.walk(tree)
+        if isinstance(cls, ast.ClassDef) and cls.name == "QuillLiteApp"
+        for n in cls.body
+        if isinstance(n, ast.FunctionDef)
+    }
+    oninit = methods["OnInit"]
+    startup_tree = ast.parse(startup_source)
+    finish = next(
+        ast.get_source_segment(startup_source, node) or ""
+        for cls in ast.walk(startup_tree)
+        if isinstance(cls, ast.ClassDef) and cls.name == "LiteStartupMixin"
+        for node in cls.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_finish_startup"
+    )
+    assert "init_app_sound" not in oninit
+    assert "_load_optional_stores" not in oninit
+    assert "claim_instance_marker" not in oninit.split("starting_up = False", 1)[0]
+    assert "init_app_sound" in finish
+    assert "_start_family_prompt_migration" in finish
+    assert "_resume_scribe_queue" in finish
+
+
+def test_portable_wrapper_enables_fatal_stack_capture_before_importing_lite() -> None:
+    source = LITE_WRAPPER.read_text(encoding="utf-8")
+    assert source.index("_enable_launch_fault_handler()") < source.index(
+        "from quill.apps.lite import main as run"
+    )
+
+
+def test_lite_import_defers_the_network_stack() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "import quill.apps.lite, sys; print('quill.core.net' in sys.modules)",
+        ],
+        cwd=Path(__file__).resolve().parents[3],
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=True,
+    )
+    assert result.stdout.strip().endswith("False"), result.stderr
+
+
+def test_saved_scribe_work_resumes_only_after_feature_check(monkeypatch) -> None:
+    from quill.apps import lite_window_scribe
+    from quill.apps.lite import QuillLiteApp
+    from quill.ui import scribe_controller
+
+    started = []
+    host = object()
+    monkeypatch.setattr(lite_window_scribe, "LiteScribeHost", lambda _app: host)
+    monkeypatch.setattr(
+        scribe_controller,
+        "controller_for",
+        lambda found: SimpleNamespace(start_if_jobs_waiting=lambda: started.append(found is host)),
+    )
+    app = SimpleNamespace(shutting_down=False, feature_enabled=lambda _area: True)
+    QuillLiteApp._resume_scribe_queue(app)
+    assert started == [True]
+    app.feature_enabled = lambda _area: False
+    QuillLiteApp._resume_scribe_queue(app)
+    assert started == [True]
 
 
 def test_stop_background_sources_is_idempotent() -> None:

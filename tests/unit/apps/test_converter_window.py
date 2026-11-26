@@ -76,6 +76,68 @@ def test_move_remove_and_clear(converter, tmp_path: Path) -> None:
     assert converter._entries == [] and converter.said[-1] == "Queue cleared."
 
 
+def test_add_reorder_remove_and_clear_are_durable(converter, tmp_path: Path) -> None:
+    from quill.core.converter_queue import ConverterQueueStore
+
+    a, b = _files(tmp_path, "a.mp3", "b.mp3")
+    folder = tmp_path / "album"
+    folder.mkdir()
+    converter.add_paths([a, folder, b], announce=False)
+    converter._list.SetSelection(2)
+    converter.move_entry(-2)
+    converter._list.SetSelection(2)
+    converter._on_remove(None)
+
+    restored = ConverterQueueStore(tmp_path).load()
+    assert [(entry.source, entry.root) for entry in restored] == [
+        (b, None),
+        (folder, folder),
+    ]
+
+    converter.clear_queue()
+    assert ConverterQueueStore(tmp_path).load() == []
+
+
+def test_launch_restores_missing_rows_without_starting_work(
+    wx_app, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.apps import converter as app
+    from quill.core import converter_settings
+    from quill.core.converter_queue import ConverterQueueEntry, ConverterQueueStore
+
+    monkeypatch.setattr(
+        converter_settings, "settings_path", lambda _d=None: tmp_path / "converter.json"
+    )
+    monkeypatch.setattr(app, "_find_ffmpeg", lambda: None)
+    song = tmp_path / "gone.mp3"
+    folder = tmp_path / "unplugged"
+    song.write_bytes(b"audio")
+    folder.mkdir()
+    assert ConverterQueueStore(tmp_path).save(
+        lambda: [ConverterQueueEntry(song), ConverterQueueEntry(folder, folder)]
+    )
+    song.unlink()
+    folder.rmdir()
+
+    frame = app.QuillConverterFrame(safe_mode=True)
+    try:
+        assert not frame._busy
+        assert frame._list.GetCount() == 2
+        assert frame._list.GetString(0) == "gone.mp3 (missing)"
+        assert frame._list.GetString(1) == "unplugged (folder, missing)"
+        from quill.apps.converter_row_help import describe_selected_row
+
+        frame._list.SetSelection(0)
+        assert describe_selected_row(frame).startswith("This queued file is missing.")
+        frame._on_remove(None)
+        assert len(ConverterQueueStore(tmp_path).load()) == 1
+    finally:
+        frame._ipc_timer.Stop()
+        frame._remove_tray_icon()
+        frame.frame.Destroy()
+        wx_app.Yield()
+
+
 def test_convert_with_an_empty_queue_explains(converter) -> None:
     converter.convert_or_stop()
     assert converter.boxes == ["Add some files or a folder first."]
@@ -268,8 +330,7 @@ def test_ai_lives_only_in_the_ai_menu(converter) -> None:
     assert found
     # The AI menu, or its Accounts and Usage submenu (quill/core/ai/ai_menu_layout.py).
     assert all(re.search(r" -- AI\b", row) for row in found), found
-    # Not a release-channel app either: Converter offers Stable only.
-    assert not [row.label for row in rows if "Release Channel" in row.label]
+    assert [row.path for row in rows if "Release Channel" in row.label] == ["Help"]
 
 
 def test_the_chapters_choice_reaches_the_spec_and_the_summary(converter) -> None:
@@ -596,6 +657,42 @@ def test_save_says_whether_it_worked(tmp_path: Path, monkeypatch: pytest.MonkeyP
         storage, "write_json_atomic", lambda *_a, **_k: (_ for _ in ()).throw(OSError(28, "full"))
     )
     assert converter_settings.save(settings, tmp_path) is False
+
+
+def test_a_queue_write_failure_keeps_rows_and_retries_current_order(
+    converter, wx_app, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, outcomes
+) -> None:
+    from quill.core import activity, storage
+    from quill.core.converter_queue import ConverterQueueStore
+    from quill.ui.activity_window import run_action
+
+    real_write = storage.write_json_atomic
+    monkeypatch.setattr(
+        storage,
+        "write_json_atomic",
+        lambda *_a, **_k: (_ for _ in ()).throw(PermissionError(13, "locked")),
+    )
+    a, b = _files(tmp_path, "a.mp3", "b.mp3")
+    converter.add_paths([a, b], announce=False)
+    failed = [outcome for outcome in outcomes if not outcome.ok]
+    assert failed and failed[0].what == "Quill Converter queue"
+    assert converter._list.GetCount() == 2
+    assert not any(message.startswith("Saved Quill Converter queue") for message in converter.said)
+    wx_app.Yield()
+    kept = next(
+        result
+        for result in reversed(activity.LOG.recent())
+        if result.object_name == "Quill Converter queue"
+    )
+    assert kept.has("retry") and kept.has("open_folder")
+
+    converter._list.SetSelection(1)
+    converter.move_entry(-1)
+    monkeypatch.setattr(storage, "write_json_atomic", real_write)
+    assert run_action(kept, "retry") == "Saved Quill Converter queue."
+
+    restored = ConverterQueueStore(tmp_path).load()
+    assert [entry.source.name for entry in restored] == ["b.mp3", "a.mp3"]
 
 
 # -- the actual result, said once and kept (FUX-04) -----------------------------------

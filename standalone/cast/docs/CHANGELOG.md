@@ -4,6 +4,7 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+
 ### Show notes and transcripts open in QUILL, saying where they came from (2026-11-24)
 
 Send to Editor, Send Show Notes to Editor, Open Transcript in Editor and the
@@ -19,6 +20,23 @@ opens in QUILL with the cursor on that line. Sending the same thing again
 reopens the copy you have; a copy you edited is never written over. Without
 QUILL or QUILL Lite, the document stays saved and Cast says so (FUX-02,
 journey A).
+
+### Back to where you were before a jump (2026-11-24)
+
+**Episode > Back to Where I Was** (Alt+Left) returns to where you were before
+Go to Position, Next or Previous Chapter, or a chapter chosen in the Now
+Playing window, and says the time. Press it again to return. Before, a jump
+was one-way, and the place you jumped from was saved over within fifteen
+seconds.
+
+### Lineups: one true sentence when handing to Quill Radio (2026-11-24)
+
+Pressing Enter on a station or video in a Lineup said "Opening Quill Radio."
+and then "Sent to Quill Radio to play.", and when Quill Radio was not
+installed it offered to install it and still said it was sent. Now it says one
+sentence; without Quill Radio it says "Quill Radio is not installed with this
+copy, so nothing was sent." (FUX-02).
+
 
 ### An empty library says how to fill it, after the welcome (2026-11-24)
 

@@ -51,17 +51,30 @@ def _reset():
 
 
 def _resolvers() -> dict[str, Any]:
+    from quill.apps.beacon import surface_help as beacon
+    from quill.core import converter_surface_help, inkwell_surface_help
+    from quill.core.audio_studio import surface_help as studio
     from quill.core.podcasts import surface_help as cast
     from quill.core.radio import surface_help as radio
     from quill.core.transcribe import surface_help as transcribe
+    from quill.core.weather import surface_help as weather
     from quill.ui.context_help import quill_window_purpose
 
+    def combined(own):
+        return lambda title: app_context_help.shared_release_purpose(title) or own(title)
+
     return {
-        "quill": quill_window_purpose,
-        "quilllite": lite_surface_help.purpose_for_title,
-        "radio": radio.purpose_for_title,
-        "cast": cast.purpose_for_title,
-        "transcribe": transcribe.purpose_for_title,
+        "quill": combined(quill_window_purpose),
+        "quilllite": combined(lite_surface_help.purpose_for_title),
+        "radio": combined(radio.purpose_for_title),
+        "cast": combined(cast.purpose_for_title),
+        "transcribe": combined(transcribe.purpose_for_title),
+        "converter": combined(converter_surface_help.purpose_for_title),
+        "studio": combined(studio.purpose_for_title),
+        "inkwell": combined(inkwell_surface_help.purpose_for_title),
+        "weather": combined(weather.purpose_for_title),
+        "beacon": combined(beacon.purpose_for_title),
+        "social": combined(lambda _title: ""),
     }
 
 

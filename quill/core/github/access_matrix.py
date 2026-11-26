@@ -44,6 +44,7 @@ __all__ = [
     "people_rows",
     "property_rows",
     "read_access",
+    "role_of",
     "team_rows",
 ]
 
@@ -121,6 +122,11 @@ def _role_of(row: Mapping[str, Any]) -> tuple[str, int]:
     role = str(row.get("role_name") or repo_role(permissions) or "read")
     role = {"pull": "read", "push": "write"}.get(role, role)
     return role, _rank(role, permissions)
+
+
+def role_of(row: Mapping[str, Any]) -> tuple[str, int]:
+    """A collaborator row's role and its rank, as the access matrix reads it."""
+    return _role_of(row)
 
 
 def read_access(api: GitHubApi, org: str, *, teams_too: bool = True) -> OrgAccess:

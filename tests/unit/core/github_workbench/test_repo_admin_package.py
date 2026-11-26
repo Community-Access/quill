@@ -301,4 +301,6 @@ def test_repository_packages_node_and_the_across_cell_say_where_it_lives() -> No
     assert node.loader == "explore:repo_packages" and node.row_type == "package"
     assert Need.SIGN_IN in node.needs
     cell = classify("by_name", "packages_pages", "repository_set", "list")
-    assert not cell.supported and "one repository at a time" in cell.reason
+    assert cell.supported and "Pages is one site per repository" in cell.reason
+    write = classify("by_name", "packages_pages", "repository_set", "make_same")
+    assert not write.supported and "change a package's visibility" in write.reason

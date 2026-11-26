@@ -313,6 +313,16 @@ def test_cancel_in_the_window_queues_nothing(transcribe):
     assert win.app.task_manager.submitted == []
 
 
+def test_transcriptions_command_opens_the_durable_queue(transcribe, monkeypatch):
+    win, _recording, _opened = transcribe
+    from quill.ui import transcription_queue_window
+
+    opened: list[Any] = []
+    monkeypatch.setattr(transcription_queue_window, "open_transcriptions", opened.append)
+    win.cmd_open_transcriptions()
+    assert opened == [win]
+
+
 def test_a_failure_is_said_with_its_reason_and_kept_in_activity(transcribe):
     win, recording, opened = transcribe
     _FakeTranscriber.outcome = FileTranscribeError("meeting.mp3 could not be read as a recording.")
@@ -396,6 +406,9 @@ def test_several_recordings_run_one_after_another(transcribe, tmp_path):
         "Transcription complete: meeting.mp3",
         "Transcription complete: lecture.m4a",
     ]
+    stored = runner.queue_runtime.repository_for(win).jobs()
+    assert {job.batch for job in stored} == {"meeting.mp3 plus 1 more"}
+    assert {job.attempts for job in stored} == {1}
 
 
 def test_openai_asks_first_and_no_sends_nothing(transcribe, monkeypatch):

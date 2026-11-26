@@ -74,7 +74,8 @@ comes first, grouped by subject; the 0.3.0 build of 2026-07-19 follows it.
   (Ctrl+Shift+M), **Feeds > Edit smart folder...** (Ctrl+Alt+M),
   **Feeds > Delete smart folder** (Ctrl+Shift+Delete), **Feeds > Import OPML...**
   (Ctrl+I), **Feeds > Export OPML...** (Ctrl+E) and
-  **Feeds > Unsubscribe from feed** (Ctrl+Alt+U), the last two asking first as
+  **Feeds > Unsubscribe from feed** (Ctrl+Alt+Shift+U; moved on 2026-11-24 to
+  reserve Ctrl+Alt+U for the family Check for Updates command), the last two asking first as
   before; in the Listen menu **Listen > Play / Pause** (Ctrl+Shift+Space),
   **Listen > Next article** (Ctrl+Shift+Period), **Listen > Previous article**
   (Ctrl+Shift+Comma) and **Listen > Stop listening** (Ctrl+Shift+S); in the

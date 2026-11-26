@@ -251,13 +251,14 @@ Command Key in the Workbench windows (GH-R-086); and on 2026-11-20 for
 GH-R-069 (#1965), and for GH-R-036, 109, 114, 115, 116 and 118 (#1975);
 and on 2026-11-21 for GH-R-088, 105, 153, 154 and 157 (the Protect a
 branch lesson), when the tallies were recounted from the rows below; and
-on 2026-11-23 for GH-R-151, recounted again. This is the record of the
-complete.md 1.3 requirement audit: every id in Part E of <a
+on 2026-11-23 for GH-R-151, recounted again; and on 2026-11-24 for
+GH-R-150, recounted again. This is the record of the complete.md 1.3
+requirement audit: every id in Part E of <a
 href="../Product Requirement Documents and Specifications/github-workbench-prd.md">the
 GitHub Workbench PRD</a>, with the code and the test behind each
 verdict.</p>
 <h2 id="summary">Summary</h2>
-<p>Of the 100 live requirements, 98 are met and 2 are partly met.
+<p>Of the 100 live requirements, 99 are met and 1 is partly met.
 GH-R-042 is withdrawn.</p>
 <table>
 <thead>
@@ -272,8 +273,8 @@ GH-R-042 is withdrawn.</p>
 <tbody>
 <tr>
 <td>Must</td>
-<td>73</td>
-<td>2</td>
+<td>74</td>
+<td>1</td>
 <td>0</td>
 <td>75</td>
 </tr>
@@ -319,20 +320,6 @@ generated reference (GATE-GITHUB-HELP,
 <code>build_help_reference</code>); D20’s measures (timed
 find-the-answer sessions) not done; the session kit is <a
 href="github-help-sessions.md">github-help-sessions.md</a>.</td>
-</tr>
-<tr>
-<td>GH-R-150</td>
-<td>Must</td>
-<td>Across Repositories has a place for every kind in the 22.11 table, a
-row per name with its variants and…</td>
-<td>Labels, Milestones, Topics, Tags, Branches, Rules and Branch
-Protection, Environments, Secrets, Variables, Webhooks, Deploy Keys and
-Autolinks by name, grouped category first, and the Fleet
-(<code>test_tags_by_name_say_which_commit_each_is_on</code>,
-<code>test_the_by_name_places_are_grouped_category_first</code>);
-workflows, templates, Dependabot and CODEOWNERS, people, settings and
-packages remain decided “not yet” cells in
-<code>across_scope_matrix.py</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -1622,17 +1609,29 @@ it.</td>
 <tr>
 <td>GH-R-150</td>
 <td>Must</td>
-<td>Partly</td>
+<td>Met</td>
 <td>Across Repositories has a place for every kind in the 22.11 table, a
 row per name with its variants and…</td>
 <td>Labels, Milestones, Topics, Tags, Branches, Rules and Branch
-Protection, Environments, Secrets, Variables, Webhooks, Deploy Keys and
-Autolinks by name, grouped category first, and the Fleet
-(<code>test_tags_by_name_say_which_commit_each_is_on</code>,
-<code>test_the_by_name_places_are_grouped_category_first</code>);
-workflows, templates, Dependabot and CODEOWNERS, people, settings and
-packages remain decided “not yet” cells in
-<code>across_scope_matrix.py</code>.</td>
+Protection, Packages, Environments, Secrets, Variables, Workflows,
+Templates, Dependabot, CODEOWNERS, Webhooks, Deploy Keys, Autolinks,
+Repository Settings and People by name, grouped category first, and the
+Fleet (<code>test_tags_by_name_say_which_commit_each_is_on</code>,
+<code>test_the_by_name_places_are_grouped_category_first</code>,
+<code>test_the_seven_places_are_grouped_category_first</code>). Files
+are compared through Compare Configuration and changed only by a pull
+request per repository
+(<code>test_a_file_is_made_the_same_by_one_pull_request_each_never_pushed</code>,
+<code>test_a_workflow_row_compares_through_compare_configuration</code>);
+People reuse the access matrix’s roles and are read only
+(<code>test_people_by_name_is_the_access_matrix_from_a_person_s_side</code>);
+settings reuse the Repository sheet’s fields
+(<code>test_a_setting_is_made_the_same_with_admin_access_and_can_be_put_back</code>);
+packages are read only because GitHub’s REST API cannot change their
+visibility or access
+(<code>test_packages_by_name_are_read_once_per_owner</code>). Issue
+types, teams and personal lists are already organization-wide or yours,
+and <code>across_scope_matrix.py</code> says where each lives.</td>
 </tr>
 <tr>
 <td>GH-R-151</td>
@@ -1735,6 +1734,34 @@ backlog.</td>
 </tr>
 </tbody>
 </table>
+<h4 id="gh-r-150-delivery-evidence">GH-R-150 delivery evidence</h4>
+<p>The implementation covers the collection, review, safety and result
+paths as separate cases:</p>
+<ol type="1">
+<li><strong>Complete discovery.</strong> Collaborators and packages are
+paginated past 100; the owner of several selected repositories is read
+once for packages. A repository that cannot be read is kept in
+<code>unread</code> rather than counted as missing.</li>
+<li><strong>Exact file identity.</strong> File variants use GitHub’s
+full blob id, not a shortened display id. The source and each target are
+fetched again before a proposed update, and their blob ids and UTF-8
+contents must still be readable. A changed or malformed response blocks
+that repository’s proposal.</li>
+<li><strong>One pull request per repository.</strong> Make Them the Same
+and Add to Missing create reviewable pull requests; neither operation
+writes to a default branch. The tests prove that a stale target creates
+no pull request and that a changed source is refused for every
+target.</li>
+<li><strong>Read-only and permission boundaries.</strong> People and
+Packages do not expose write operations. Repository Settings require
+admin access, “not shown” stays separate from off, and a setting is read
+again before it is changed.</li>
+<li><strong>Screen-reader result.</strong> The Workbench keeps
+category-first rows in place, names blocked and missing repositories,
+and returns one result per repository. The focused UI tests drive the
+real Workbench frame over recorded answers; the dialog inventory and
+contract gate stay green.</li>
+</ol>
 </main>
 </body>
 </html>

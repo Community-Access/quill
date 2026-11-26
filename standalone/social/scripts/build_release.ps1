@@ -24,6 +24,7 @@ param(
     # A Dev build, or one app of a joint release whose sibling check
     # build-quill-apps.ps1 already ran once for every app (GATE-SIBVER).
     [switch]$SkipPublishedCheck,
+    [string]$DevVersion = "",
     [int]$Build = 0,
     [switch]$Sign
 )
@@ -31,6 +32,7 @@ param(
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $version = "0.3.0"
+if ($DevVersion) { $version = $DevVersion }
 
 # -- resolve the toolchain ----------------------------------------------------
 # standalone\social -> standalone -> the QUILL checkout root.
@@ -45,14 +47,14 @@ $Iscc = Resolve-QuillIscc -Preferred $Iscc
 # The build number: -Build, else the next one after the newest tag published
 # for $version. It must equal the app's build constant in source, which the
 # runtime carries; the installer records it and Windows shows X.Y.Z.B.
-$build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $Python -App "social" -Version $version -Build $Build
+$build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $Python -App "social" -Version $version -Build $Build -Dev:([bool]$DevVersion) -OfflineOk:$SkipPublishedCheck
 
 # Beta and Dev builds are never code-signed (owner decision 2026-10-04). For a
 # -dev, -alpha, -beta or -rc version, or a Dev build, this says so in one line
 # and switches -Sign off for the whole build, Inno's /DSign included; a
 # final-numbered build (a Stable candidate) signs as before. The rule is
 # scripts\code_signing.py build-decision; see docs\code-signing.md.
-$null = Resolve-QuillSigning -QuillRepo $QuillRepo -Python $Python -Version $version
+$null = Resolve-QuillSigning -QuillRepo $QuillRepo -Python $Python -Version $version -Dev:([bool]$DevVersion)
 Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("social") -Skip:$SkipPublishedCheck
 Assert-QuillBuildEnv -Python $Python -QuillRepo $QuillRepo
 

@@ -38,7 +38,7 @@ from typing import Literal
 
 __all__ = ["FORMATS", "DataFormat", "formats_for"]
 
-Location = Literal["quill_data", "lite_data"]
+Location = Literal["quill_data", "lite_data", "beacon_data", "social_data"]
 
 
 @dataclass(frozen=True)
@@ -104,6 +104,54 @@ FORMATS: tuple[DataFormat, ...] = (
     # but never written back (core/transcribe/settings.py read_only), so an
     # older build reads it without losing anything.
     DataFormat("transcribe.settings", "transcribe", ("transcribe.json",), "quill_data", 1, 1),
+    DataFormat("converter.settings", "converter", ("converter.json",), "quill_data", 1, 1),
+    DataFormat(
+        "converter.queue",
+        "converter",
+        ("converter-queue.json",),
+        "quill_data",
+        1,
+        1,
+    ),
+    DataFormat("studio.settings", "studio", ("studio-ai.json",), "quill_data", 1, 1),
+    DataFormat(
+        "studio.library",
+        "studio",
+        (
+            "audio_studio_book_prefs.json",
+            "audio_studio_history.json",
+            "audio_studio_library.json",
+            "audio_studio_play_queue.json",
+            "audio_studio_sleep_timer.json",
+        ),
+        "quill_data",
+        1,
+        1,
+    ),
+    DataFormat("inkwell.settings", "inkwell", ("inkwell.json",), "quill_data", 1, 1),
+    DataFormat("weather.settings", "weather", ("weather_settings.json",), "quill_data", 1, 1),
+    DataFormat(
+        "beacon.settings",
+        "beacon",
+        (
+            "a11y.json",
+            "player_settings.json",
+            "routing.json",
+            "sync_config.json",
+            "sync_conflicts.json",
+        ),
+        "beacon_data",
+        1,
+        1,
+    ),
+    DataFormat(
+        "social.settings",
+        "social",
+        ("a11y.json", "keymap.json", "mastodon_apps.json"),
+        "social_data",
+        1,
+        1,
+    ),
     DataFormat(
         "shared.media_bookmarks",
         "shared",

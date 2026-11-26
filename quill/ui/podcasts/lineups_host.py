@@ -85,17 +85,28 @@ class CastLineupsHost(LineupsHost):
             save()
 
     def _hand_to_radio(self, lineup: Lineup, refs: list[ItemRef]) -> str:
+        """Hand stations and videos to Quill Radio: one sentence, and a true one.
+
+        FUX-02: this used to queue the request and open Radio through the
+        companion offer, which said "Opening Quill Radio." and then, with
+        Radio missing, still said "Sent to Quill Radio to play."
+        """
+        from quill.core.app_launcher import build_launch_argv, is_app_released, launch_app
         from quill.core.ipc import enqueue_open_request
         from quill.core.lineups.handoff import ACTION, write_request
 
+        if not is_app_released("radio") or build_launch_argv("radio") is None:
+            return (
+                "Quill Radio is not installed with this copy, so nothing was sent. "
+                "Stations and videos in a lineup play in Quill Radio."
+            )
         try:
             path = write_request(self.data_dir, lineup.id, [ref.token for ref in refs])
             enqueue_open_request(path, action=ACTION, slot="radio")
         except OSError as exc:
-            return f"Quill Radio could not be asked to play it: {exc}."
-        launch = getattr(self.app, "_launch_sibling", None)
-        if callable(launch):
-            launch("radio")
+            return f"Quill Radio could not be asked to play it: {exc.strerror or exc}."
+        if not launch_app("radio"):
+            return "Quill Radio could not be started. It plays this when you next open Quill Radio."
         from quill.core.lineups.describe import count_text
 
         if len(refs) == 1:

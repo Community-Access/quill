@@ -55,7 +55,7 @@ One held offer is kept for each kind, and a newer one replaces an older one. Whe
 
 | Item | When it fires | Steals focus | Speaks | Before | After |
 | --- | --- | --- | --- | --- | --- |
-| Silent update check, Stable | Radio: right after launch, after the last station resumes. Cast: after the library loads and the last episode resumes. Studio: right after launch | Yes: the update offer modal, even from the tray | No | **Gap**: opened over the station or episode that had just resumed, during a recording, over a Studio live broadcast or demo recording, and over a hidden tray window | Waits for a quiet moment. Probes: Radio recording and playback (connecting, buffering, playing, reconnecting); Cast playback and loading; Studio live broadcast, demo recording, capture, protected background jobs and book playback. Update History, or the status bar where an app has no release channel, says once what waits. Check for Updates opens it at once. |
+| Silent update check, Stable | Radio: right after launch, after the last station resumes. Cast: after the library loads and the last episode resumes. Studio: right after launch | Yes: the update offer modal, even from the tray | No | **Gap**: opened over the station or episode that had just resumed, during a recording, over a Studio live broadcast or demo recording, and over a hidden tray window | Waits for a quiet moment. Probes: Radio recording and playback (connecting, buffering, playing, reconnecting); Cast playback and loading; Studio live broadcast, demo recording, capture, protected background jobs and book playback. Update History says once what waits; Check for Updates opens it at once. |
 | Silent update check, Beta/Dev | Same | Modal after the download | "Update X downloaded" | **Gap**: only a Radio *recording marker* and Quiet Hours held it. Live playback, Cast and Studio were not considered | The download keeps the existing gate (metered, Quiet Hours, recording). The offer waits for a quiet moment, and "downloaded" is written rather than spoken. |
 | Radio launch tasks (catalogue refresh, reminders, feed monitor, missed-recordings report, resume prompt) | Startup and timers | The resume prompt only | Yes | Content and recovery of the person's own recordings, not maintenance; Quiet Hours already respected | Unchanged. |
 | Radio portable favourites offer | `main()`, before the window, portable only | Modal | No | Before anything plays | Unchanged. |
@@ -89,7 +89,9 @@ The post-update "I started" sentence (`quill/ui/updates/started.py`) in every ap
 ## 4. Left for later
 
 - The Vosk and Sherpa retirement notices in QUILL could use the shared rule instead of their own "wait while a modal is open" retry. They are one-time and already deferred, so they were left alone to keep the change small.
-- QUILL's notification list gets the held line. QUILL Lite and the shell apps write it to Update History, which is reachable from Help > Release Channel. Studio has no release channel, so its line goes to the status bar only, and Help > Check for Updates is its route.
+- QUILL's notification list gets the held line. QUILL Lite and the shell apps
+  write it to Update History, which is reachable from Help > Release Channel.
+  Studio uses the same shared Release Channel path.
 - The offer window itself does not yet say why it appeared later than the check. A line such as "held while you dictated" could be added to the shared update notice.
 - A modeless QUILL tool window in front holds the offer until QUILL's main window is in front again. That is intended.
 - To be checked by hand with a screen reader in a frozen build: an offer arriving 20 seconds after Stop in Radio, an offer arriving when an app comes back from the tray, and a held Beta download offer.

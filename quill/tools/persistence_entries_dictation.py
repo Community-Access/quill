@@ -25,6 +25,11 @@ DICTATION_ENTRIES: dict[str, str] = {
     "core/windows_dictation/family_store.py::publish_fields": "versioned",
     "core/windows_dictation/family_store.py::_back_up_once": "content",
     "core/windows_dictation/family_words.py::bring_over": "marker",
+    # 2026-11-25: recording-transcription jobs survive restart. The versioned
+    # queue keeps unknown fields for newer siblings; the companion runner token
+    # is a stale-checked process marker, not user data.
+    "core/windows_dictation/file_queue.py::_write": "content",
+    "core/windows_dictation/file_queue.py::try_acquire": "marker",
     # 2026-10-22: which removed models' one-time notice is due or said; an
     # unreadable file reads as none, which costs at most one missed sentence.
     "core/windows_dictation/removed_models.py::_write": "marker",

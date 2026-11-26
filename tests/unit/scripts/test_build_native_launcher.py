@@ -17,6 +17,7 @@ from scripts.build_native_launcher import (
     LauncherToolchainMissing,
     build_launcher,
     main,
+    product_file_version,
     product_icon,
     product_version,
 )
@@ -43,6 +44,11 @@ def test_radio_identity_matches_what_the_installer_expects() -> None:
 def test_main_quill_launcher_is_named_for_portable_detection() -> None:
     """storage_mode's portable detection looks for quill.exe at the bundle root."""
     assert PRODUCTS["quill"].name == "quill"
+
+
+def test_quill_lite_launcher_uses_lites_own_version() -> None:
+    assert product_version(PRODUCTS["quilllite"]) == "2.0.0"
+    assert product_file_version(PRODUCTS["quilllite"]) == "2.0.0.1"
 
 
 @pytest.mark.parametrize("key", sorted(PRODUCTS))

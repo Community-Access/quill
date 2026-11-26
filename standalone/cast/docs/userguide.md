@@ -952,6 +952,14 @@ in.
 2. Type 1:02:00. Typing 62:00 works too, and so does a number of seconds.
 3. Press Enter. You are there.
 
+**Going back.** Press **Alt+Left** (Episode > Back to Where I Was) to return to
+where you were before the jump. Cast says the time, for example "Back to 25
+minutes 10 seconds." Press it again to return to where you jumped to. Next
+Chapter, Previous Chapter and choosing a chapter in the Now Playing window keep
+the same place, and Alt+Left works in the Now Playing window too. Alt+Left is
+the key QUILL and QUILL Lite use to go back after a jump. Starting another
+episode forgets it.
+
 **How much is left?** You are about to set off on a twenty-minute drive and
 want to know whether this episode will fit. Press **Ctrl+Shift+T** (Episode >
 Time Remaining). Cast says something like "12:04 of 31:50, 20 minutes left".
@@ -4918,9 +4926,9 @@ They are called release channels.
    understand** box, and choose **Move to Beta** (or **Move to Dev**). **Stay
    on Stable**, or Escape, changes nothing.
 
-Beta and Dev versions aren't signed, so when you install one, Windows
-SmartScreen may warn that it comes from an unknown publisher; that's expected,
-and choosing **More info**, then **Run anyway**, installs it.
+A final-numbered Beta candidate is Authenticode-signed. Dev builds and
+explicitly prerelease versions are not signed, so Windows SmartScreen can warn.
+Use that bypass only when Cast offered the file through its signed update list.
 
 Before it moves, Cast saves a copy of your subscriptions, playlists, listening
 places and settings. If it cannot, it stays where it is and tells you why.
@@ -4933,6 +4941,10 @@ your computer. When an app moves to Beta or Dev, it gets its own copy of that
 engine, so the apps you leave on Stable are never touched. You can still move
 several at once: check them under "Also move my other QuillVille apps on this
 computer" and choose **Switch**.
+
+Different products can use different channels together. Cast itself has one
+active channel at a time; moving Cast to Beta changes Cast's launcher and
+runtime slot rather than creating a second official Cast Beta install.
 
 **A note about disk space.** That second copy of the engine takes about 335 MB.
 It goes away by itself when your last app comes back to Stable. A portable copy
@@ -5602,6 +5614,8 @@ Stations, saved places, YouTube items, Local Media files and recordings are
 Quill Radio's to play. When you press Enter on one in Cast, Cast sends it, and
 the Lineup's items after it, to Quill Radio, opening Radio if it is not
 running, and says "Sent to Quill Radio to play." Radio then plays them through.
+If Quill Radio is not installed with this copy, Cast says so and sends
+nothing.
 
 When you play from an episode and the Lineup also holds things only Radio can
 play, Cast plays the episodes through the Play Queue and tells you how many
@@ -5898,6 +5912,7 @@ Playlists, Enter opens a playlist.
 | Skip forward, skip back | Ctrl+Right, Ctrl+Left |
 | Next chapter, previous chapter | Ctrl+Alt+Right, Ctrl+Alt+Left |
 | Go to Position | Ctrl+Alt+J |
+| Back to where you were before a jump | Alt+Left |
 | Speed up, speed down | Ctrl+Shift+Up, Ctrl+Shift+Down |
 | Normal speed | Ctrl+Shift+0 |
 | Volume up, volume down | Ctrl+Up, Ctrl+Down |

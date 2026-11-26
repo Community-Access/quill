@@ -199,6 +199,20 @@ _REVIEWED: tuple[CommandSpec, ...] = (
         group="Help",
     ),
     CommandSpec(
+        "tools.windows_dictation_transcriptions",
+        "Transcriptions on This Computer",
+        "Open the durable queue for recording transcriptions",
+        aliases=("transcriptions", "transcription queue", "recording queue"),
+        examples=(
+            "show the transcription queue",
+            "what recordings are being transcribed",
+            "open transcriptions on this computer",
+        ),
+        risk=_S,
+        kind=Kind.OPENS_DIALOG,
+        group="Tools",
+    ),
+    CommandSpec(
         "file.open",
         "Open",
         "Open a document from a folder",

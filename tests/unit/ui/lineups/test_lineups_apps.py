@@ -180,16 +180,39 @@ def test_cast_hands_what_it_cannot_play_to_radio(quill_data_dir, monkeypatch) ->
         "quill.core.ipc.enqueue_open_request",
         lambda path, *, action, slot, **_k: queued.append((path, action, slot)),
     )
+    launched: list[str] = []
+    monkeypatch.setattr("quill.core.app_launcher.build_launch_argv", lambda key: ["radio"])
+    monkeypatch.setattr(
+        "quill.core.app_launcher.launch_app", lambda key, **_k: launched.append(key) or True
+    )
     app = _CastApp(_cast_library())
     refs = [ItemRef(KIND_STATION, "bbc")]
     said = CastLineupsHost(app).play(_lineup(_facts("bbc")), refs, 0, [None])
     assert said == "Sent to Quill Radio to play."
-    assert app.launched == ["radio"]
+    # One sentence: the companion offer's "Opening Quill Radio." is not said too.
+    assert launched == ["radio"] and app.launched == []
     path, action, slot = queued[0]
     assert (action, slot) == (ACTION, "radio")
     request = read_request(path)
     assert request is not None and request.tokens == ("station:bbc",)
     assert not Path(path).exists()  # consumed
+
+
+def test_cast_says_plainly_when_radio_is_not_there_and_sends_nothing(
+    quill_data_dir, monkeypatch
+) -> None:
+    """FUX-02: it used to offer an install and still say "Sent to Quill Radio"."""
+    from quill.ui.podcasts.lineups_host import CastLineupsHost
+
+    queued: list[object] = []
+    monkeypatch.setattr("quill.core.ipc.enqueue_open_request", lambda *a, **k: queued.append(a))
+    monkeypatch.setattr("quill.core.app_launcher.build_launch_argv", lambda key: None)
+    app = _CastApp(_cast_library())
+    said = CastLineupsHost(app).play(
+        _lineup(_facts("bbc")), [ItemRef(KIND_STATION, "bbc")], 0, [None]
+    )
+    assert said.startswith("Quill Radio is not installed with this copy, so nothing was sent.")
+    assert queued == [] and app.launched == []
 
 
 def test_radio_plays_the_rows_cast_handed_over(quill_data_dir, monkeypatch) -> None:

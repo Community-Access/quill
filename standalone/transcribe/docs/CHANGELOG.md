@@ -6,6 +6,26 @@ file is the itemized list.
 
 ## 1.0.0 - 2026-11-01
 
+### Recording transcriptions survive a restart (2026-11-25)
+
+- **Ctrl+Shift+PageUp** opens **Transcriptions on This Computer**. The stock,
+  modeless list opens a finished transcript and can stop selected active work,
+  retry a failed or stopped job, or forget a finished row.
+- Recordings chosen together retain a named set. Closing QUILL Transcribe
+  requeues the current job; local work resumes at the next start, and QUILL
+  can carry it on from the shared QUILL data folder. A runner lock prevents
+  both apps from transcribing the same recording.
+- The durable queue contains paths and non-secret choices only. It does not
+  contain transcript text, document content or an API key; Safe Mode leaves
+  cloud work queued.
+
+### Open in QUILL says so (2026-11-24)
+
+Review Transcript's Open in QUILL said nothing when QUILL opened, and nothing
+when it could not. It now says "Opening the transcript in QUILL." once, opens
+in QUILL Lite when QUILL is not installed, and with neither editor says so and
+points to Save As (FUX-02).
+
 Testing rebuild: **1.0.0 (build 3)**. The packages have not been published
 yet. QUILL Transcribe 1.0.0 is the first public release, planned for
 1 November 2026; there was no earlier public version, so everything below is

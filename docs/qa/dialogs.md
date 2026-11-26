@@ -295,6 +295,11 @@ state and lists any installed Quillins read-only.
 
 - [ ] Announcement Backend: via Tools menu
 - [ ] Dictation Microphone: Tools > Speech > Dictation Microphone...
+- [ ] Transcriptions on This Computer: `Ctrl+Shift+PageUp`; also Tools > Speech >
+      Live Dictation in QUILL, Tools > Dictation in QUILL Lite, or File in QUILL
+      Transcribe. This is a modeless stock list: queued and running jobs can be
+      stopped, failed and stopped jobs can be retried, and a finished transcript
+      opens without replacing the current editor.
 - [ ] QUILL Whisperer Model Manager: via Tools menu
 - [ ] QUILL Whisperer Model Status: via Tools menu
 - [ ] QUILL Whisperer Provider Center: via Tools menu
@@ -336,6 +341,14 @@ state and lists any installed Quillins read-only.
 - [ ] Save Diagnostics: via Help menu
 - [ ] Get Help from Support: via Help menu
 - [ ] QUILL Whisperer About: via Help menu
+- [ ] Release Channel: Help > Release Channel... in QUILL, QUILL Lite, Radio,
+      Cast, Transcribe, Converter, Studio, Inkwell, Weather, Beacon and Social
+  - [ ] The chooser is read-only until Switch; every sibling app starts unchecked
+  - [ ] Beta and Dev show the risk confirmation, use the saved-settings copy,
+        and offer a return to Stable
+  - [ ] Update History opens from the Release Channel window and is reviewable
+- [ ] Check for Updates: `Ctrl+Alt+U` (or the app's displayed Help-menu key);
+      a channel choice changes only which signed feed is used
 
 ## U. Selection and QUILL key
 

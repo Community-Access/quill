@@ -15,7 +15,10 @@ topics, rulesets and branch protection through
 :mod:`quill.core.github.across_admin_changes`; tags, branches, environments,
 secrets, variables, webhooks, deploy keys and autolinks are read by
 :mod:`quill.core.github.across_more_kinds` and changed by
-:mod:`quill.core.github.across_more_changes`. Every request goes through the Workbench's one
+:mod:`quill.core.github.across_more_changes`; workflows, templates,
+Dependabot and CODEOWNERS files by :mod:`quill.core.github.across_files`;
+people, repository settings and packages by
+:mod:`quill.core.github.across_people_settings`. Every request goes through the Workbench's one
 :class:`~quill.core.github.workbench_api.GitHubApi`; tests pass a fake.
 
 wx-free and strict-typed.
@@ -63,8 +66,19 @@ KINDS: dict[str, tuple[str, tuple[str, ...]]] = {
     # Never surveyed by name: the Security Alerts list finds them, and
     # quill.core.github.across_alerts dismisses them.
     "alerts": ("security alert", ()),
+    # Files, read by quill.core.github.across_files and proposed as pull requests.
+    "workflows": ("workflow file", ("version",)),
+    "templates": ("template", ("version",)),
+    "dependabot": ("Dependabot file", ("version",)),
+    "codeowners": ("CODEOWNERS file", ("version",)),
+    # Read by quill.core.github.across_people_settings.
+    "people": ("person", ("role", "source")),
+    "settings": ("setting", ("value",)),
+    "packages": ("package", ("type", "visibility")),
 }
-WRITABLE_KINDS = frozenset(KINDS)
+WRITABLE_KINDS = frozenset(KINDS) - {"people", "packages"}
+_FILE_KINDS = frozenset({"workflows", "templates", "dependabot", "codeowners"})
+_PLACE_KINDS = frozenset({"people", "settings", "packages"})
 _WORKERS = 6
 
 
@@ -110,6 +124,10 @@ class ByNameRow:
         return [n for n in names if len({c.prop(n) for c in self.copies}) > 1]
 
     def sentence(self) -> str:
+        if self.kind in ("people", "settings"):
+            from quill.core.github.across_people_settings import place_sentence
+
+            return place_sentence(self)
         total = len(self.copies) + len(self.missing)
         parts = [f"{self.name}: in {len(self.copies)} of {total} repositories"]
         for prop in self.differs():
@@ -135,7 +153,11 @@ class ByNameRow:
     def detail(self) -> str:
         noun = KINDS[self.kind][0]
         lines = [self.sentence() + ".", ""]
-        if KINDS[self.kind][1]:
+        if KINDS[self.kind][1] == ("version",):  # a file: a sha means nothing read aloud
+            lines.append("Versions:")
+            for number, (_props, repos) in enumerate(self.variants(), start=1):
+                lines.append(f"Version {number}: {', '.join(repos)}")
+        elif KINDS[self.kind][1]:
             lines.append("Variants:")
             for number, (props, repos) in enumerate(self.variants(), start=1):
                 lines.append(f"Variant {number}, {describe_props(props)}: {', '.join(repos)}")
@@ -146,8 +168,10 @@ class ByNameRow:
         if extras and self.kind != "milestones":
             lines += ["", "Also:", *extras]
         lines.append("")
+        heading = {"people": "No Access In", "settings": "Not Shown to You In"}
         lines.append(
-            "Missing From: " + (", ".join(self.missing) if self.missing else "none of them")
+            f"{heading.get(self.kind, 'Missing From')}: "
+            + (", ".join(self.missing) if self.missing else "none of them")
         )
         for repo, reason in self.unread:
             lines.append(f"Could not be read, so not counted: {repo}, {reason}")
@@ -179,6 +203,11 @@ _PROP_WORDS = {
     "access": "access levels",
     "url_template": "addresses",
     "alphanumeric": "reference kinds",
+    "version": "versions of the file",
+    "role": "roles",
+    "source": "sources",
+    "type": "types",
+    "visibility": "visibilities",
 }
 
 #: Copy.extra entries that are for the program, not for reading.
@@ -186,7 +215,7 @@ _HIDDEN_EXTRA = frozenset({"reviewer_ids", "custom", "sha", "public_key"})
 
 
 def _extra_words(extra: Sequence[tuple[str, str]]) -> str:
-    words = {"open_prs": "open pull requests into it", "updated": "changed"}
+    words = {"open_prs": "open pull requests into it", "updated": "changed", "at": "in"}
     shown = [f"{words.get(k, k)} {v}" for k, v in extra if k not in _HIDDEN_EXTRA]
     return ", ".join(shown)
 
@@ -361,6 +390,7 @@ def survey(
     chosen = list(dict.fromkeys(r for r in (s.strip() for s in repositories) if r))
 
     admins: dict[str, bool | None] = {}
+    memo: dict[str, Any] = {}  # what one owner answers for all its repositories (packages)
 
     def one(repo: str) -> tuple[str, list[Copy], bool | None, str]:
         try:
@@ -373,6 +403,14 @@ def survey(
                 copies = _topic_copies(api, repo)
             elif kind == "rules":
                 copies = _rule_copies(api, repo, default_branch)
+            elif kind in _FILE_KINDS:
+                from quill.core.github.across_files import read_file_copies
+
+                copies = read_file_copies(api, kind, repo)
+            elif kind in _PLACE_KINDS:
+                from quill.core.github.across_people_settings import read_place_copies
+
+                copies = read_place_copies(api, kind, repo, memo)
             else:
                 from quill.core.github.across_more_kinds import read_copies
 

@@ -63,6 +63,8 @@ if str(REPO_ROOT) not in sys.path:  # run as a script from a build: find quill/
     sys.path.insert(0, str(REPO_ROOT))
 RELEASE_REPO = "Community-Access/quill"
 
+from quill.core.release_catalog import PRODUCTS  # noqa: E402
+
 
 @dataclass(frozen=True)
 class AppVersionSite:
@@ -89,35 +91,16 @@ class AppVersionSite:
 #: running at all until 2026-10-15. ``test_check_sibling_versions.py`` holds
 #: the table against ``release_build_number.BUILD_CONSTANTS``, the
 #: ``build-quill-apps.ps1`` catalogue and the installers in ``standalone/``.
-SITES: tuple[AppVersionSite, ...] = (
-    AppVersionSite("radio", "quill/apps/radio.py", "_VERSION", "quill-radio-v", "_BUILD"),
+SITES: tuple[AppVersionSite, ...] = tuple(
     AppVersionSite(
-        "quilllite", "quill/core/lite/__init__.py", "APP_VERSION", "quill-lite-v", "APP_BUILD"
-    ),
-    AppVersionSite(
-        "converter", "quill/apps/converter.py", "_VERSION", "quill-converter-v", "_BUILD"
-    ),
-    AppVersionSite("weather", "quill/apps/weather.py", "_VERSION", "quill-weather-v", "_BUILD"),
-    AppVersionSite("inkwell", "quill/apps/inkwell.py", "_VERSION", "quill-inkwell-v", "_BUILD"),
-    AppVersionSite(
-        "transcribe", "quill/apps/transcribe.py", "_VERSION", "quill-transcribe-v", "_BUILD"
-    ),
-    AppVersionSite("player", "quill/apps/player.py", "_VERSION", "quill-player-v", "_BUILD"),
-    AppVersionSite(
-        "cast", "quill/apps/podcasts_menu.py", "APP_VERSION", "quill-cast-v", "APP_BUILD"
-    ),
-    AppVersionSite("studio", "quill/apps/studio.py", "_VERSION", "quill-studio-v", "_BUILD"),
-    AppVersionSite("beacon", "quill/apps/beacon/app.py", "_VERSION", "quill-beacon-v", "_BUILD"),
-    # Quill Social's code is still its own package under standalone/ (it predates
-    # the rule that feature code lives in quill/apps); its runtime wheel carries
-    # this constant all the same.
-    AppVersionSite(
-        "social",
-        "standalone/social/quill_social/__init__.py",
-        "__version__",
-        "quill-social-v",
-        "__build__",
-    ),
+        product.key,
+        product.version_file,
+        product.version_constant,
+        product.tag_prefix,
+        product.build_constant,
+    )
+    for product in PRODUCTS
+    if product.key != "quill"
 )
 
 

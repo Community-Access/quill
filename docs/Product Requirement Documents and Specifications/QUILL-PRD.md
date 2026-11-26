@@ -2428,19 +2428,30 @@ upgrades never lose offline speech. Only components QUILL is licensed to redistr
 are hosted this way (whisper.cpp is MIT, Kokoro Apache-2.0); license-unclear engines
 are not re-hosted, and ffmpeg is never re-hosted (it stays user-installed).
 
-**Audio-file transcription (`Shift+F5`, shared with QUILL Lite).** The
+**Audio-file transcription (`Shift+F5`, shared by QUILL, QUILL Lite and
+QUILL Transcribe).** The
 screen-reader-accessible chooser selects one or more supported recordings,
 language, speech model, timestamps, and spoken-command handling, and reports
-the recording length and estimated processing time before starting. A
-background worker processes queued recordings without changing the document
-in front. Each successful transcript is saved privately under the active
-user-data directory and linked from a completion notice in Notifications;
-activating the notice opens the result in the editor. The transcript is never
-inserted into the document that was open when work began, and there is no
-destination picker. Activity retains the outcome and failure reason. Stopping
-transcription cancels the active job and queued jobs; no document is changed.
-Local models keep audio on the computer, and an OpenAI model requires the
-explicit consent gate before audio is sent.
+the recording length and estimated processing time before starting. Recordings
+chosen together are one persisted named set. A background worker processes
+queued recordings without changing the document in front. Queue state is one
+atomic JSON record containing recording paths and non-secret choices, never
+transcript text or a credential. A short edit lock and a stale-checked runner
+lock let QUILL and QUILL Transcribe share one queue; QUILL Lite keeps its own
+private queue in its separate data root. Closing the owning app requeues its
+current job for the next start; queued local work resumes at launch. Safe Mode
+does not resume cloud work.
+
+Each successful transcript is saved privately under the active user-data
+directory and linked from a completion notice in Notifications; activating
+the notice opens the result in the editor. The transcript is never inserted
+into the document that was open when work began, and there is no destination
+picker. `Ctrl+Shift+PageUp` opens the stock, modeless **Transcriptions on This
+Computer** list, which can stop active or waiting work, retry failed or stopped
+jobs, open a finished transcript and forget a finished row without deleting its
+transcript. Activity retains the outcome and failure reason. Local models keep
+audio on the computer, and an OpenAI model requires the explicit consent gate
+before audio is sent.
 
 **Family-wide non-goals, recorded so they are not relitigated without new
 information.** **Telemetry of any kind** -- no Sentry, no PostHog, no counters.
@@ -3210,7 +3221,12 @@ video, entirely on-device through the bundled FFmpeg.
 - **Batch model.** Mixed file/folder queue with source-tree mirroring, a conflict
   policy (auto-number / skip / overwrite), multi-worker off-thread execution with
   tray-aware progress, and a spoken summary that names failures (never a silent
-  success). Temp-then-move writes; pure argv command building (`build_convert_command`).
+  success). The standalone Converter keeps this editable queue in a separate
+  versioned, lock-guarded `converter-queue.json`: add, remove, reorder and clear
+  survive restart; missing paths stay visible; unknown future fields round-trip;
+  failed writes use Activity's current-state Retry while the in-memory list stays
+  usable. Restoring the queue never starts work or makes a network request.
+  Temp-then-move writes; pure argv command building (`build_convert_command`).
 - **Safety.** Fully offline through bundled FFmpeg, so available in Safe Mode.
   Only URL import touches the network: `yt-dlp` is never bundled, installs on
   demand after an explicit consent + rights notice, is recorded in the
@@ -10051,7 +10067,7 @@ Right-to-left UI; additional languages; optional split view (still standard cont
 
 ## 17. Backlog and deferred items
 
-> **Open work.** The one list of open work is `complete.md` at the repository root (since 2026-11-18). [`docs/planning/roadmap.md`](../../planning/roadmap.md) was the plan of record until July 2026 and is kept for history: its workstreams, phase outcomes, release gap list and open-issue ledger are not kept up to date. (Shipped workstreams' specs — offline speech-to-text #617, the braille suite, batch document-to-speech, Structured List Studio, the verbosity system, the ElevenLabs integration, and Table Studio (now PRD §5.4.14) — were retired to git history once delivered; their status lives in the roadmap and user guide, and the verbosity 2.0 backlog is consolidated in roadmap §6.) The current direction is that these items **ship** (the older 2.0-deferral framing is dropped); the tables below are retained as the format-support reference.
+> **Open work.** The current list is `report.md` at the repository root; human/live acceptance is recorded separately from implementation status. [`docs/planning/roadmap.md`](../../planning/roadmap.md) was the plan of record until July 2026 and is kept for history: its workstreams, phase outcomes, release gap list and open-issue ledger are not kept up to date. (Shipped workstreams' specs — offline speech-to-text #617, the braille suite, batch document-to-speech, Structured List Studio, the verbosity system, the ElevenLabs integration, and Table Studio (now PRD §5.4.14) — were retired to git history once delivered; their status lives in the roadmap and user guide, and the verbosity 2.0 backlog is consolidated in roadmap §6.) The current direction is that these items **ship** (the older 2.0-deferral framing is dropped); the tables below are retained as the format-support reference.
 
 Everything below is intentionally out of v1.0. Each item is either yellow (achievable but requires more engineering than the v1.0 quality bar permits in time) or red (depends on unstable third-party formats, large native dependencies, or research-flavoured uplift we will not promise without measurement).
 

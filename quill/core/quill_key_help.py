@@ -287,6 +287,7 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
     "tools.read_aloud_start_pause": "Read Aloud Start / Pause",
     "tools.read_aloud_stop": "Read Aloud Stop",
     "tools.dictation_toggle": "Dictation Toggle",
+    "tools.windows_dictation_transcriptions": "Transcriptions on This Computer",
     "tools.describe_image": "Describe Image",
     "edit.copy_selection_for_email": "Copy Selection For Email",
     "app.preferences_hub": "More Preferences",

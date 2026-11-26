@@ -254,6 +254,124 @@ moment and your bookmarks in that episode), and say so once. Before, two
 sentences were said (“Opened podcast show notes”, then “Sent show notes
 to a new document”) (FUX-02).</p>
 <h3
+id="the-quillville-family-starts-sooner-and-lite-failures-can-be-diagnosed-2026-11-24">The
+QuillVille family starts sooner, and Lite failures can be diagnosed
+(2026-11-24)</h3>
+<p>QUILL Lite now makes the first editor window ready before it starts
+optional sound, settings, update, screen-reader, prompt and Scribe queue
+services. On a clean-profile Windows run, alternating unchanged main and
+this fix five times, the median interval from app import to the ready
+editor dropped from 6.86 seconds to 5.11 seconds (about 1.75 seconds, or
+25.5 percent). Lite’s cold module-import path fell from a 3.23-second
+median to 2.80 seconds (426 ms).</p>
+<p>QUILL and every companion app now defer the expensive
+operating-system TLS trust-store setup until a window exists, before its
+first deferred network callback. Headless commands and explicit Beacon
+verification still configure it synchronously, before they can open a
+connection. The live network refresh in QUILL Social no longer blocks
+its initial window; the local/demo timeline is still ready
+immediately.</p>
+<p>The native launcher now carries QUILL Lite’s own version: the error
+header says <code>QUILL Lite 2.0.0</code>, and the executable reports
+file version <code>2.0.0.1</code>, instead of describing it as QUILL
+1.0.0. Python fault handling is enabled before the app module starts, so
+a fatal native/Python stack is captured in the launch log. The failure
+dialog says when no diagnostic message was captured rather than claiming
+that an otherwise empty log contains the cause. A memory fault is
+described as a native component fault while QUILL Lite was running,
+without claiming that app code could not have triggered it.</p>
+<h3
+id="scribe-for-documents-useful-time-left-never-a-stale-estimate-2026-11-24">Scribe
+for Documents: useful time left, never a stale estimate
+(2026-11-24)</h3>
+<p>The time left in <strong>Conversions on This Computer</strong> and
+<strong>Scribe Status</strong> now uses Scribe’s estimate in the right
+unit. A value such as 551,460 from Scribe means about 551 seconds, not
+9,191 minutes. QUILL speaks and writes a friendly duration (“about 9
+minutes left”), uses seconds, minutes, hours or days as the length
+requires, and never carries an old estimate into a download or a
+finished, failed or waiting job.</p>
+<p>Progress is now richer when the live channel is quiet. The existing
+15-second fallback reads Scribe’s output stage, percent and time
+remaining, updates the same details in place, and still reconnects the
+conversion without uploading the document again. The latest line uses
+plain words such as “MP3 audio: converting, 50 percent” instead of API
+identifiers. The window continues to receive every Scribe channel event:
+stage, progress, streamed HTML, completion, password requests and
+errors.</p>
+<h3
+id="back-to-where-you-were-in-quill-cast-and-quill-media-player-2026-11-24">Back
+to where you were, in QUILL Cast and Quill Media Player
+(2026-11-24)</h3>
+<p><strong>Back to Where I Was</strong> (Alt+Left, the key QUILL and
+QUILL Lite use to go back after a jump) returns to where you were before
+Go to Position or a chapter jump, says the time, and returns again if
+pressed twice. In Cast it is on the Episode menu; in Media Player, on
+the File menu. Media Player also keeps a separate place in each file of
+a book of several files (it used to save track four’s time as the place
+in track one), picks up a DAISY book where you left off, and starts a
+finished book from the beginning instead of the closing credits. In
+QUILL Studio, leaving the Chapter Workbench with its Close button or
+Escape now keeps your place, as closing the window always did.</p>
+<h3
+id="github-workbench-workflows-templates-dependabot-codeowners-people-settings-and-packages-across-repositories-2026-11-24">GitHub
+Workbench: workflows, templates, Dependabot, CODEOWNERS, people,
+settings and packages across repositories (2026-11-24)</h3>
+<p>Across Repositories now has a place for every kind in its table
+(GH-R-150): Planning by Name, Code by Name, Actions by Name, Files by
+Name and Settings by Name. Rows are grouped by what the person is doing,
+and each one names its variants, the repositories that have each
+variant, what is missing and what GitHub did not let the signed-in
+account read.</p>
+<ul>
+<li><strong>Workflows by Name</strong> (under Actions by Name) lists
+each workflow file and how many versions of it the set has: “ci.yml: in
+12 of 12 repositories, 3 versions of the file”.</li>
+<li><strong>Files by Name</strong> is a new group: <strong>Templates by
+Name</strong> (issue and pull request templates, discussion forms, and
+community files such as CONTRIBUTING, wherever each repository keeps
+them), <strong>Dependabot by Name</strong> (with each file’s update
+entries) and <strong>CODEOWNERS by Name</strong> (the file GitHub uses,
+with its rules and owners).</li>
+<li><strong>Compare Configuration…</strong> on any of those rows
+compares two repositories’ copies in the Compare Configuration window.
+<strong>Make Them the Same</strong> and <strong>Add to Missing</strong>
+open one pull request in each repository with the winning version.
+Nothing is pushed, and nothing changes until each pull request is
+merged. Every proposal re-reads the full source and target blob IDs
+first: if either file changed, became unreadable, or is no longer valid
+UTF-8 text, QUILL says which repository and leaves its default branch
+alone.</li>
+<li><strong>Repository Settings by Name</strong> (under Settings by
+Name) lists each switch on the Repository sheet’s Features and Merging
+pages: “Allow auto-merge: on in 20, off in 8”. “Not shown to you” is
+kept separate from off. <strong>Make Them the Same</strong> sets the
+winning value in each repository after the preview. It needs Full in the
+Workbench and admin access in each repository, and Change History can
+put each one back.</li>
+<li><strong>People by Name</strong> (under Settings by Name) shows each
+person’s role in each repository and where it comes from. It is read
+only; Bulk Access Changes changes access in many repositories.
+Collaborator lists are read through every page, so a person on page two
+is not missing from the comparison.</li>
+<li><strong>Packages by Name</strong> (under Code by Name) lists each
+package published from the set, with its type and visibility. It is read
+only, because GitHub’s API cannot change a package’s visibility or
+access. Each owner is read once, and every package page is
+included.</li>
+</ul>
+<p>All of this uses the same preview and one-result-per-repository
+contract as the Across Repositories places already there. The
+requirement audit now counts 99 of 100 requirements met; only GH-R-119’s
+timed find-the-answer sessions with people remain.</p>
+<h3
+id="convert-with-quill-says-when-quill-converter-is-missing-2026-11-24">Convert
+with Quill says when Quill Converter is missing (2026-11-24)</h3>
+<p>File Explorer’s Convert with Quill did nothing at all when Quill
+Converter was not installed beside QUILL. It now shows a message, in
+front of File Explorer, that names the file and says it was not
+converted (FUX-02).</p>
+<h3
 id="back-to-the-sentence-you-left-in-quill-and-quill-lite-2026-11-24">Back
 to the sentence you left, in QUILL and QUILL Lite (2026-11-24)</h3>
 <p>Reopening a saved document puts the cursor back in the sentence you

@@ -29,6 +29,7 @@ import wx
 from quill.apps import converter_row_help
 from quill.apps.converter_lifecycle import ConverterLifecycleMixin
 from quill.apps.converter_scribe import ConverterScribeMixin
+from quill.core import converter_queue
 from quill.core.audio.batch_progress import BatchProgress
 from quill.core.audio.convert import (
     BatchResult,
@@ -128,7 +129,7 @@ class ConverterActionsMixin(ConverterLifecycleMixin, ConverterScribeMixin):
         dest = self._dest.GetValue().strip()
         if dest:
             return Path(dest)
-        first = self._entries[0][0]
+        first = converter_queue.as_pair(self._entries[0])[0]
         # A file from Convert from URL sits in a temp folder that Windows may
         # empty; its conversion goes where downloads go instead.
         if _is_under(first, Path(tempfile.gettempdir())):
@@ -160,13 +161,20 @@ class ConverterActionsMixin(ConverterLifecycleMixin, ConverterScribeMixin):
             spec = replace(spec, filters=())
         dest = self._destination()
         jobs, skipped = plan_jobs(
-            self._entries,
+            [converter_queue.as_pair(item) for item in self._entries],
             dest,
             spec,
             recurse=self._recurse.GetValue(),
             on_existing=OnExisting(self._settings.on_existing or "rename"),
         )
-        notes = self._skip_notes(spec, skipped)
+        notes = " ".join(
+            part
+            for part in (
+                self._skip_notes(spec, skipped),
+                converter_queue.unavailable_note(self._entries),
+            )
+            if part
+        )
         if not jobs:
             message = "Nothing to convert." + (f" {notes}" if notes else "")
             self._last_results = {}  # F1 must not report an older run as the last

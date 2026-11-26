@@ -25,6 +25,17 @@ import sys
 from pathlib import Path
 
 
+def _enable_launch_fault_handler() -> None:
+    """Put fatal Python stacks in the launcher's redirected stderr log."""
+    try:
+        import faulthandler
+
+        if not faulthandler.is_enabled():
+            faulthandler.enable(all_threads=True)
+    except Exception:  # noqa: BLE001 - diagnostics must never block startup
+        pass
+
+
 def _export_app_root() -> None:
     """Anchor the frozen build's environment before any quill import runs.
 
@@ -50,6 +61,7 @@ def _export_app_root() -> None:
 
 def main() -> int:
     _export_app_root()
+    _enable_launch_fault_handler()
     from quill.apps.lite import main as run
 
     return run()

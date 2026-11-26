@@ -2,6 +2,42 @@
 
 ## 2.0.0
 
+### Recording transcriptions survive a restart (2026-11-25)
+
+- **Ctrl+Shift+PageUp** opens **Transcriptions on This Computer**, a modeless
+  list of queued, running, stopped, failed and finished recordings.
+- Files chosen together retain one named set. QUILL Lite's local queue stays in
+  its own data folder and resumes after restart; closing the app requeues the
+  current job.
+- Open a finished transcript, stop selected work, retry a failed or stopped job,
+  or forget a finished row without deleting the saved transcript. The queue
+  contains paths and non-secret choices, never transcript text or an API key.
+
+### QUILL Lite starts sooner and reports native failures honestly (2026-11-24)
+
+- **The first editor is ready sooner.** Audio output, optional stores,
+  update checking, the screen-reader watchdog, prompt migration and resuming
+  Scribe jobs now start after the first document window can answer. In five
+  alternating clean-profile Windows runs, median startup from app import to
+  the ready editor improved from 6.86 seconds to 5.11 seconds: 1.75 seconds
+  sooner, or 25.5 percent.
+- **The version is QUILL Lite's version.** Native launch and Windows file
+  details now say 2.0.0 build 1, not QUILL 1.0.0.
+- **A hard failure leaves useful evidence.** Python fault tracing starts with
+  the process, so a native/Python stack reaches the launch log even if a
+  top-level import fails. When a crash leaves no diagnostic message, the
+  failure box says so instead of pretending an empty log has details.
+- **Startup is timed without document content.** `quill.log` records only
+  phase names and elapsed milliseconds, which helps a future start hang be
+  matched to its log.
+
+### Scribe for Documents: accurate time left (2026-11-24)
+
+Scribe's time-remaining value is now read in the correct unit. Conversions on
+This Computer and Scribe Status show a useful duration, refresh from Scribe's
+stage and percent when the live channel is quiet, and clear the estimate once a
+job stops converting. The latest progress line is written in plain words.
+
 ### Back to the sentence you left (2026-11-24)
 
 - **The cursor follows its sentence.** Reopening a document puts the cursor

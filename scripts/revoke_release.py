@@ -16,10 +16,10 @@ What it does:
 * deletes nothing. People who already have the build can still move forward
   or back from it, and its files stay downloadable.
 
-The feed is signed with the owner's key, as ``promote_release.py`` does, or
-left unsigned with ``--no-sign`` and signed later with
-``python scripts/feed_tool.py sign --app <app>``. ``feed_tool.py revoke`` runs
-the same function; this script is the documented way in.
+The feed is signed with the protected Actions secret or the owner's local key,
+as ``promote_release.py`` does. ``--no-sign`` is a diagnostic-only escape.
+``feed_tool.py revoke`` runs the same function; this script is the documented
+way in.
 """
 
 from __future__ import annotations

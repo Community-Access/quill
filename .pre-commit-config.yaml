@@ -80,6 +80,14 @@ repos:
         files: ^quill/core/publishing.*\.py$
         require_serial: true
 
+      - id: release-catalog
+        name: monorepo release catalog
+        entry: python -m quill.tools.release_catalog_audit
+        language: system
+        pass_filenames: false
+        files: ^(quill/core/release_catalog\.py|quill/tools/release_feed\.py|scripts/(check_sibling_versions|release_build_number)\.py|build-quill-apps\.ps1|standalone/[^/]+/(pyproject\.toml|scripts/build_release\.ps1))$
+        require_serial: true
+
       - id: announce-gap
         name: announce-gap gate (GATE-12)
         # GATE-12: every dialog with a status StaticText updated via SetLabel

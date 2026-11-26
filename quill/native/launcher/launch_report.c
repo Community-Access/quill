@@ -253,7 +253,8 @@ void ql_describe_exit(unsigned long code, const char *last_line,
     case QL_STATUS_HEAP_CORRUPTION:
     case QL_STATUS_STACK_BUFFER_OVERRUN:
         snprintf(out, out_size,
-            "It crashed inside a component (a memory fault), not in its own code.");
+            "A native component hit a memory fault while %s was running.",
+            display_name);
         return;
     default:
         break;
@@ -348,10 +349,15 @@ void ql_report_failed_exit(const char *display_name, unsigned long code,
     ql_describe_exit(code, last_line, display_name, reason, sizeof(reason));
 
     char message[4096];
-    if (log_path && *log_path) {
+    if (log_path && *log_path && last_line[0]) {
         snprintf(message, sizeof(message),
-            "%s\n\n%s\n\nWhat happened was written to:\n%s\n\n"
+            "%s\n\n%s\n\nA diagnostic trace was written to:\n%s\n\n"
             "If it keeps happening, send that file to " QL_SUPPORT_EMAIL ".",
+            head, reason, log_path);
+    } else if (log_path && *log_path) {
+        snprintf(message, sizeof(message),
+            "%s\n\n%s\n\nNo diagnostic message was captured. The launch log is at:\n"
+            "%s\n\nIf it keeps happening, send that file to " QL_SUPPORT_EMAIL ".",
             head, reason, log_path);
     } else {
         snprintf(message, sizeof(message),

@@ -121,7 +121,9 @@ opens Quill Converter. You do not need both.
    "Nothing to convert yet. Add Files (Ctrl+O) chooses audio or video files,
    or Add Folder (Ctrl+Shift+O) brings a whole folder." The line goes away as
    soon as something is in the queue; after that, Quill Converter opens on
-   the **Files to convert** list.
+   the **Files to convert** list. On later starts, the files and folders you
+   left in that list are already there, in the same order; opening the app
+   never starts a conversion.
 2. Press Alt+A (**Add Files...**) and choose one or more files. Or press Alt+O
    (**Add Folder...**) to add a whole folder, sub-folders included. You can
    also paste files you copied in File Explorer with Ctrl+V, or drop them on
@@ -166,13 +168,17 @@ otherwise in [Advanced Options](#advanced-options).
 Quill Converter remembers your format, presets, effects, custom effects, the
 keep-from and keep-until times, the Chapter marks choice, the Advanced Options, and
 the output folder between runs, so the next job starts where the last one
-ended.
+ended. The editable queue is kept separately, with each file or folder and its
+original folder root, so queue work survives restarting the app without being
+mixed into settings.
 
 ### The main window
 
 Tab order, top to bottom, with each control's access key:
 
-- **Files to convert** -- the queue (focus starts here). A folder reads as "name (folder)".
+- **Files to convert** -- the queue (focus starts here). A folder reads as
+  "name (folder)". A disconnected or moved item stays in the list as
+  "(missing)" and can still be removed.
 - **Add Files...** (Alt+A), **Add Folder...** (Alt+O), **Remove** (Alt+R).
 - **Convert to** (Alt+T) -- the output format. Sound formats come first, then
   video.
@@ -663,6 +669,9 @@ the queue.
 The queue is the list of files waiting to be converted. This chapter covers
 filling it and ordering it, editing tags, what happens during and after a
 conversion, and the Advanced Options for when a preset is not quite right.
+Closing Quill Converter does not clear it: add, reorder, remove and clear
+changes are written locally, and the same editable list returns at the next
+launch. Nothing in that list starts by itself.
 
 ### Managing the queue
 
@@ -678,6 +687,14 @@ conversion, and the Advanced Options for when a preset is not quite right.
 - **Remove:** Delete in the list, the Remove button (Alt+R), or Queue > Remove
   from Queue (Ctrl+Delete). Nothing is deleted from disk.
 - **Clear the queue:** Queue > Clear Queue (Ctrl+Shift+Delete).
+- **Keep working after a missing path:** if a file is moved or a drive is
+  disconnected, its row says "missing" instead of disappearing. The row can
+  be removed, reordered or cleared; reconnect the drive or move the path back
+  and the row is usable again.
+- **When the queue cannot be saved:** the files remain active in the open
+  window. Help > Activity (Shift+F9) records the write failure with **Retry**
+  and **Open Folder**. Retry saves the queue as it is now, including changes
+  made after the first failure.
 - **File Properties:** Alt+Enter describes the highlighted file: its length,
   size, container, overall bit rate, tags, each video, audio and subtitle track,
   whether it has cover art, and its chapters. The last lines describe **the
@@ -693,7 +710,9 @@ conversion, and the Advanced Options for when a preset is not quite right.
   still shows. The window only reads; nothing on the drive changes.
 
 Adding the same file twice queues it once. A file that is not a media file is
-left out, and the announcement says how many were.
+left out, and the announcement says how many were. Queue persistence is local
+only: it makes no network request, and in Safe Mode it has the same no-start
+behaviour as an ordinary launch.
 
 ### Editing tags
 
@@ -1453,7 +1472,15 @@ newer build.
 Converter is out. If one is, it shows you what changed and offers to download
 it, with progress spoken as it goes. It only checks when you ask, and it offers
 the same kind of download you have: the installer if you installed, or the
-portable zip if you unpacked one.
+portable zip if you unpacked one. It reads Quill Converter's signed feed and
+cannot offer QUILL, Radio or Weather by mistake.
+
+**Help > Release Channel...** chooses Stable, Beta or Dev for Converter. Every
+copy starts on Stable. Opening the window changes nothing; Beta and Dev show a
+risk confirmation and save a copy of your small Converter settings before a
+move. Different QuillVille products can use different channels on the same
+computer, while Converter itself has one active channel at a time. Return to
+Stable from the same window.
 
 ### Getting help
 

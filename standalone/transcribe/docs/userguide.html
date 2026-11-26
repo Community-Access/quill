@@ -329,6 +329,7 @@ Dictation</strong></li>
 <strong>Dictation Settings</strong>, <strong>Dictation Profile</strong>
 and <strong>Model Library</strong></li>
 <li><strong>Transcribe a Recording</strong></li>
+<li><strong>Transcriptions on This Computer</strong></li>
 <li><strong>User Guide</strong> and <strong>Check for
 Updates</strong></li>
 <li><strong>Show QUILL Transcribe</strong> and <strong>Exit QUILL
@@ -2048,10 +2049,11 @@ and QUILL Lite</h3>
 it has the same key: Ctrl+F11 starts and stops, Alt+Shift+F6 opens
 Dictation Settings, Alt+Shift+F10 opens My Words and Phrases,
 Ctrl+Shift+F11 switches the language, Shift+F11 opens Recent Phrases,
-Shift+F4 is Review Dictation, Alt+F9 is Dictation Status, and Shift+F5
-transcribes a recording. The keys from version 1.0 (Ctrl+D, Ctrl+, and
-Ctrl+O) still work. These work in the QUILL Transcribe window; from
-other programs, use your start and stop key.</p>
+Shift+F4 is Review Dictation, Alt+F9 is Dictation Status, Shift+F5
+transcribes a recording, and Ctrl+Shift+PageUp opens Transcriptions on
+This Computer. The keys from version 1.0 (Ctrl+D, Ctrl+, and Ctrl+O)
+still work. These work in the QUILL Transcribe window; from other
+programs, use your start and stop key.</p>
 <p>Three of the editors’ dictation commands are not in QUILL Transcribe,
 because they work on a document and QUILL Transcribe has none: Live
 Transcript, Dictation Context and Tidy Dictated Text.</p>
@@ -2128,8 +2130,22 @@ You hear the file and its folder, for example “Saved meeting.txt in
 Documents.”, and the same sentence stays in <strong>Activity</strong>
 (Shift+F9), where <strong>Open Folder</strong> shows you the file.
 <strong>Repeat Last Result</strong> (F9) says it again;</li>
-<li><strong>Open in QUILL</strong> - opens it in QUILL to edit.</li>
+<li><strong>Open in QUILL</strong> - opens it in QUILL to edit, or in
+QUILL Lite when QUILL is not installed. You hear “Opening the transcript
+in QUILL.” With neither editor installed, Transcribe says so, and Save
+As keeps a copy.</li>
 </ul>
+<p>Press <strong>Ctrl+Shift+PageUp</strong>, or choose <strong>File &gt;
+Transcriptions on This Computer…</strong>, to see durable queued,
+running, failed, stopped and finished recordings. Open a finished
+transcript, stop the selected active job, retry a failed or stopped job,
+or forget a finished row without deleting its saved transcript.
+Recordings chosen together keep one persistent set name. Closing QUILL
+Transcribe requeues the current local job for the next app start; QUILL
+can take it over from the same shared QUILL data folder. Only one app
+runs a recording at a time. The queue stores recording paths and
+choices, never transcript text, document content or an API key, and Safe
+Mode leaves cloud work queued.</p>
 <p>Nothing is typed, copied or saved unless you choose it.</p>
 <h2 id="quill-inkwell-and-quill-transcribe">Quill Inkwell and QUILL
 Transcribe</h2>
@@ -2309,15 +2325,19 @@ Your recordings and transcripts are not copied, and updates do not
 change them. Then it checks for updates on the new channel straight
 away. After that, Check for Updates offers the newest version on your
 channel.</p>
-<p>Beta and Dev versions aren’t signed, so when you install one, Windows
-SmartScreen may warn that it comes from an unknown publisher; that’s
-expected, and choosing <strong>More info</strong>, then <strong>Run
-anyway</strong>, installs it.</p>
+<p>A final-numbered Beta candidate is Authenticode-signed. Dev builds
+and explicitly prerelease versions are not signed, so Windows
+SmartScreen can warn. Use that bypass only when Transcribe offered the
+file through its signed feed.</p>
 <p><strong>When other QuillVille apps are installed too.</strong> They
 run on one shared engine on your computer. When an app moves to Beta or
 Dev, it gets its own copy of that engine, about 335 MB, so the apps you
 leave on Stable are never touched. It goes away by itself when your last
 app comes back to Stable.</p>
+<p>Different products can use different channels together. Transcribe
+itself has one active channel at a time; moving it to Beta changes its
+launcher and runtime slot rather than creating a second official
+Transcribe Beta install.</p>
 <p><strong>If an update doesn’t start.</strong> After an update, QUILL
 Transcribe checks that the new version really opens. If it doesn’t open
 within two minutes, the update undoes itself and puts back the version
@@ -2529,6 +2549,10 @@ app.</p>
 <tr>
 <td>Transcribe a recording</td>
 <td>Shift+F5 (or Ctrl+O)</td>
+</tr>
+<tr>
+<td>Transcriptions on This Computer</td>
+<td>Ctrl+Shift+PageUp</td>
 </tr>
 <tr>
 <td>Notifications</td>

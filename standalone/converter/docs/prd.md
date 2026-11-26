@@ -50,8 +50,11 @@ deliberately focused on conversion.
   everywhere; no surface reimplements a feature.
 - R-3. Data is shared where it should be: settings, keymap and logs live in the
   family's data folder. The Converter's own remembered choices are one file,
-  `converter.json`, written atomically and read forgivingly (a damaged value
-  falls back to its default rather than stopping the app from opening).
+  `converter.json`. Its editable queue is a separate versioned
+  `converter-queue.json`: source and root paths are ordered, preserved under a
+  process lock, and atomically written. Both files tolerate damaged values;
+  queue writes report failure through Activity with Retry and Open Folder and
+  never replace the live in-memory list.
 - R-4. The app frame is hosted on the shared `AppShellFrame`, which supplies
   announcements, the status bar, the accessible modal-dialog path, the tray,
   the QuillVille menu, F1 help, and the per-app update check.
@@ -76,14 +79,20 @@ deliberately focused on conversion.
 
 In scope for 1.0.0:
 
-- **Queue.** A mixed file and folder queue. Folders are scanned for known audio
-  and video extensions, sub-folders included, and the output mirrors the source
-  tree. Duplicates are ignored. Delete, Remove, Remove from Queue and Clear
-  Queue take rows out; Alt+Up and Alt+Down reorder; File Properties describes
-  the highlighted file in plain words (length, size, container, bit rate, tags,
-  each track, cover art, chapters), then the drive the file is on (identity,
-  kind, file system, capacity, used, free; `quill/core/volume_info.py`, todo
-  item 46), where a drive that cannot be read is one sentence, never an error.
+- **Queue.** A mixed file and folder queue, restored in the same order on the
+  next launch but never started automatically. Folders are scanned for known
+  audio and video extensions, sub-folders included, and the persisted root
+  reproduces the source tree in the output. Duplicates are ignored. Add,
+  reorder, remove and clear each atomically update `converter-queue.json`;
+  unknown top-level and row fields and a newer integer version survive. A
+  missing path remains as a visible, removable row. A failed write leaves the
+  current list usable and reaches Activity with a current-state Retry and Open
+  Folder. Delete, Remove, Remove from Queue and Clear Queue take rows out;
+  Alt+Up and Alt+Down reorder; File Properties describes the highlighted file
+  in plain words (length, size, container, bit rate, tags, each track, cover
+  art, chapters), then the drive the file is on (identity, kind, file system,
+  capacity, used, free; `quill/core/volume_info.py`, todo item 46), where a
+  drive that cannot be read is one sentence, never an error.
 - **Getting files in.** Add Files, Add Folder, Paste Files (files copied in
   File Explorer; a text box keeps its own paste), drag and drop, positional
   command-line paths, the installer's **Convert with Quill Converter** Explorer
@@ -278,7 +287,8 @@ In scope for 1.0.0:
   help for the window and control, User Guide, Release Notes, What's New (the
   changelog),
   Product Requirements, Keyboard Shortcuts (a read-only list of every key), Get
-  Help from Support, Get FFmpeg (repair), Check for Updates, and About. Find a
+  Help from Support, Get FFmpeg (repair), Check for Updates, Release Channel,
+  and About. Find a
   Setting or Command (Ctrl+Alt+Shift+S) searches every menu row and runs the
   one chosen (`quill/ui/menu_palette.py`).
 - **Version and build.** About shows `1.0.0 (build 1)` (`_VERSION` and `_BUILD`
@@ -286,8 +296,9 @@ In scope for 1.0.0:
   writes `quill-app-version.ini` (`version`, `version_build`) beside the
   launcher, and the portable build writes the same file, so About and Check for
   Updates read the installed Converter rather than the shared runtime's code.
-  Converter is not a release-channel app: it has no Release Channel window and
-  its update check always offers Stable (`quill/core/updater/check.py`).
+  Converter follows its own signed feed through Help > Release Channel. Stable,
+  Beta and Dev are distinct, and the update check never offers another app's
+  assets (`quill/core/updater/check.py`).
 - **Support.** Email only, to support@community-access.org, through Get Help
   from Support (Ctrl+Alt+F2), which composes the message in the user's own mail
   program. No GitHub path and no token.

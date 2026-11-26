@@ -1,0 +1,61 @@
+{
+  "format": "quillville-release-feed/2",
+  "app": "quill",
+  "app_name": "QUILL",
+  "sequence": 1,
+  "generated_at": "2026-11-25T06:13:37Z",
+  "expires_at": "2027-02-23T06:13:37Z",
+  "security_floor": "",
+  "channels": {
+    "beta": {
+      "current": "0.9.0-beta.2"
+    }
+  },
+  "releases": [
+    {
+      "version": "0.9.0-beta.2",
+      "tag": "v0.9.0-beta.2",
+      "channels": [
+        "beta"
+      ],
+      "history": [
+        {
+          "channel": "beta",
+          "at": "2026-07-11T06:11:31Z",
+          "by": "bootstrap_release_feeds.py"
+        }
+      ],
+      "published_at": "2026-07-11T06:11:31Z",
+      "notes_url": "https://github.com/Community-Access/quill/releases/tag/v0.9.0-beta.2",
+      "notes_summary": "Bug-fix and polish release, driven by beta 1 user reports. Rolls up on top of 0.9.0 Beta 1 (below).\n\n- **QuillRichEdit: a native Rich Edit wrapper, real RTF, and a candidate braille fix (experimental) — feedback wanted from braille display owners.** A new experimental editor surface wraps the same native Rich Edit control QUILL already ships as its default editor, adding native RTF load/save, in-place bold/italic/underline/font/alignment formatting, and — the part we most need your help with — a candidate fix for two long-standing braille reports: the \"cell-two\" line-start offset and missing selection dots (7-8) on some displays. Turn it on from **Preferences > Experimental**: tick **Enable experimental features**, tick **Enable experimental editor surfaces**, set **Editor surface** to **QuillRichEdit**, tick **QuillRichEdit: emulate a system edit control (braille test)**, then **restart QUILL**. If you use a braille display, please try it and tell us what you see (cell 1 or 2, selection dots or not, still reads correctly) via Help > Report a Bug — we genuinely don't yet know if this fixes it on real hardware. See the user guide's \"QuillRichEdit (experimental)\" section for the full walkthrough.\n- **Wikipedia added to the non-AI Look Up dictionary/thesaurus (#897).** Look Up now includes a short encyclopedia summary alongside definitions and synonyms when you're online, with a link back to the source article. Same consent gate and offline fallback as the existing Free Dictionary/Datamuse lookups — nothing changes if you keep Look Up offline-only.\n- **Clip Library: a rolling clip history beneath Copy Tray's curated 12 slots (#895).** Edit > Keep Selection in Clip Library remembers a selection (up to 200, de-duplicated, favorites protected from eviction); Edit > Open Clip Library... lets you search, favorite, remove, copy to the clipboard, or promote an entry into a specific Copy Tray slot. Copy Tray itself is unchanged — this is a second, complementary tier, not a replacement. An optional **Preferences > Editing > \"Automatically keep everything you copy in the Clip Library\"** setting (off by default) captures every copy made inside QUILL automatically, no separate Keep action needed.\n- **Work Personas: named, launchable bundles of a feature profile, working folder, favorite files, and keymap (#896).** Tools > Work Personas... creates named bundles (\"School,\" \"Novel,\" \"Freelance Client X\") that switch your feature profile, change your working folder, reopen your favorite files, and apply a keymap profile in one action — Apply Now in the dialog, or `quill --persona NAME` from the command line, or a generated launch shortcut so a persona is reachable without QUILL already running.\n- **Send as Email / Copy as Email Body (#900).** File > Send as Email opens your mail client with the current selection (or the whole document) as the body; File > Copy as Email Body puts the same rendered content on the clipboard instead, for mail clients that truncate or reject a long mailto: body. A new setting, Preferences > Editing > \"Kept and sent content format\" (plain text/Markdown/HTML), controls how both this and the Clip Library render content.\n- **Accessible AutoOutline: heading auto-numbering (#894).** Format > Update Outline Numbering numbers every heading by nesting level — numeric (1, 1.1, 1.1.1) or legal (I, A, 1), set in Preferences > Editing > \"AutoOutline numbering style\" — as literal text in the heading itself, so it reads aloud, survives copy/paste, and exports cleanly with no extra machinery. Format > Remove Outline Numbering reverts it; re-running after adding, removing, or reordering headings replaces the numbers instead of stacking them.\n- **Mandatory alt text at insertion, and inline \"alt text MISSING\" announcements (#899).** Insert > Image... is QUILL's first dedicated image-insertion flow: it requires real alt text or an explicit \"this image is decorative\" choice before it lets you insert, so a document can no longer accrue an",
+      "assets": [
+        {
+          "kind": "installer",
+          "name": "Quill-for-All-Setup-0.9.0.Beta.2.exe",
+          "url": "https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill-for-All-Setup-0.9.0.Beta.2.exe",
+          "size": 78313248,
+          "sha256": "ba7e0a7d8b2cd399fdaa830dfd0f608533180162e6b8f80bd05d3c173dbe1598"
+        },
+        {
+          "kind": "portable",
+          "name": "Quill-Portable-v0.9.0-beta.2.zip",
+          "url": "https://github.com/Community-Access/quill/releases/download/v0.9.0-beta.2/Quill-Portable-v0.9.0-beta.2.zip",
+          "size": 127645302,
+          "sha256": "bba1c4a63cddd974f96ad9132ad9ff762d6bb482ece3994a9e8588f613842b9c"
+        }
+      ],
+      "runtime": {},
+      "carries": {},
+      "data_formats": {},
+      "reads_formats": {},
+      "lossy_formats": {},
+      "can_roll_back_to": [],
+      "min_safe_downgrade": "",
+      "min_upgrade_from": "",
+      "revoked": false,
+      "revoked_reason": "",
+      "replacement": "",
+      "advisories": []
+    }
+  ]
+}

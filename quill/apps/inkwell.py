@@ -28,7 +28,7 @@ from typing import Any
 
 import wx
 
-from quill.apps import inkwell_first_task
+from quill.apps import inkwell_first_task, release_channel_menu
 from quill.apps.inkwell_ai import InkwellAiMixin
 from quill.apps.inkwell_dictation import InkwellDictationMixin
 from quill.apps.inkwell_keys import InkwellKeysMixin
@@ -45,7 +45,6 @@ from quill.core.expansion.settings import (
     load_settings,
     save_settings,
 )
-from quill.core.net import configure_ssl_trust
 from quill.ui import app_sounds
 from quill.ui.activity_menu_rows import append_activity_rows
 from quill.ui.app_shell import AppShellFrame
@@ -255,6 +254,7 @@ class QuillInkwellFrame(
             ),
             id=updates_id,
         )
+        channel_id = release_channel_menu.append(self, help_menu, "inkwell", updates_id)
         # Every app in the family answers the same question the same way:
         # one item, one key, one form that reaches a person who can reply.
         from quill.ui.support_menu import append_get_help_item
@@ -285,6 +285,7 @@ class QuillInkwellFrame(
             excluded_id,
             prefs_id,
             updates_id,
+            channel_id,
             about_id,
         )
 
@@ -517,7 +518,6 @@ class QuillInkwellFrame(
 
 
 def main() -> int:
-    configure_ssl_trust()  # one certificate check, before any network use
     from quill.core.data_location import apply_pending_at_launch
 
     apply_pending_at_launch()  # queued Data Folder move, before any data read

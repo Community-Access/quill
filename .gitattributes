@@ -26,6 +26,10 @@ quill/core/speech/audio_tags_core.sha256 -text
 # writes LF. A Windows runner's autocrlf checkout made it CRLF and stale.
 quill/core/data/family_menu_chords.json text eol=lf
 
+# Release feeds are signed as exact LF bytes. A Windows checkout must not
+# convert the JSON or detached signature to CRLF, which invalidates the sign.
+docs/site/updates/v2/** text eol=lf
+
 # The VS Code Signals sound pack ships Microsoft's LICENSE.txt and its SOURCES.json
 # exactly as recorded (a SHA-256 test checks them), so no checkout may convert
 # their line endings.

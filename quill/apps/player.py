@@ -28,16 +28,15 @@ from quill.apps import player_close, player_first_task
 from quill.apps.player_address import PlayerAddressMixin, hand_over, launch_arguments
 from quill.apps.player_ai import PlayerAiMixin
 from quill.apps.player_bookmarks import PlayerBookmarksMixin
+from quill.apps.player_jumps import PlayerJumpsMixin
 from quill.apps.player_menus import MediaPlayerMenuMixin
 from quill.core.media import DspSettings, build_audio_filters, format_spoken
 from quill.core.media.bookmarks import BookmarkStore
-from quill.core.net import configure_ssl_trust
 from quill.core.speech.chapter_io import format_timestamp
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import apply_listbox_activation
 from quill.ui.dpi import dip_size
-from quill.ui.media.go_to_position_dialog import GoToPositionDialog
 from quill.ui.media.listen_mixin import MediaListenMixin
 from quill.ui.media.note_cue_actions import NoteCuesMixin
 from quill.ui.media.now_playing_apps import refresh_player_card
@@ -64,6 +63,7 @@ class QuillMediaPlayerFrame(
     MediaPlayerMenuMixin,
     PlayerAddressMixin,
     PlayerBookmarksMixin,
+    PlayerJumpsMixin,
     MediaListenMixin,
     NoteCuesMixin,
     MediaWinampKeysMixin,
@@ -282,19 +282,6 @@ class QuillMediaPlayerFrame(
     def _focus_initial_control(self) -> None:
         player_first_task.focus_initial(self)  # what begins, or the transport (FUX-09)
 
-    def _on_chapter_activate(self, event: Any) -> None:
-        item = event.GetItem()
-        if not (item and item.IsOk()):
-            return
-        payload = self._chapter_tree.GetItemData(item)
-        if not payload:
-            return
-        kind = payload[0]
-        if kind == "seek":
-            self._player.seek_to(int(payload[1]))
-        elif kind in ("load", "track"):
-            self._play_track_node(payload, self._chapter_tree.GetItemText(item))
-
     def _on_page_changed(self, event: Any) -> None:
         page = event.GetSelection()
         name = self._notebook.GetPageText(page) if page != wx.NOT_FOUND else ""
@@ -443,7 +430,11 @@ class QuillMediaPlayerFrame(
         if audio_path is None or not audio_path.is_file():
             self._show_message_box("No playable audio was found for this DAISY book.", _TITLE)
             return
-        if not self._player.load(str(audio_path), chapters):
+        from quill.core.paths import app_data_dir
+        from quill.core.speech.listening_positions import load_position_ms
+
+        resume = load_position_ms(app_data_dir(), audio_path)  # it never resumed (FUX-01)
+        if not self._player.load(str(audio_path), chapters, resume_ms=resume):
             self._show_message_box(f"Could not play {audio_path.name}.", _TITLE)
             return
         self._book_path = audio_path
@@ -553,17 +544,6 @@ class QuillMediaPlayerFrame(
         except Exception:  # noqa: BLE001 - a book without readable chapters still plays
             return []
 
-    def _save_resume(self) -> None:
-        if self._book_path is None:
-            return
-        try:
-            from quill.core.paths import app_data_dir
-            from quill.core.speech.listening_positions import save_position_ms
-
-            save_position_ms(app_data_dir(), self._book_path, self._player.playhead_ms())
-        except Exception:  # noqa: BLE001 - resume is best-effort, never fatal
-            pass
-
     def _on_finished(self) -> None:
         # Continuous play: auto-advance to the next track of a multi-file book.
         if self._playlist and self._playlist_index + 1 < len(self._playlist):
@@ -576,11 +556,15 @@ class QuillMediaPlayerFrame(
 
     def _play_payload(self, payload: tuple, title: str, *, autoplay: bool) -> None:
         kind = payload[0]
+        self._save_resume()  # the file being left keeps its own place (FUX-01)
         if kind == "load":
             self._player.load(str(payload[1]), [], resume_ms=0, autoplay=autoplay)
+            if "://" not in str(payload[1]):  # a LibriVox address is not a file
+                self._book_path = Path(payload[1])
         elif kind == "track":
             path, offset = payload[1]
             self._player.load(str(path), [], resume_ms=int(offset), autoplay=autoplay)
+            self._book_path = Path(path)
         self._set_status(("Playing " if autoplay else "Loaded ") + title)
 
     def _play_track_node(self, payload: tuple, title: str) -> None:
@@ -759,30 +743,6 @@ class QuillMediaPlayerFrame(
         self._mini_player = None
         event.Skip()
 
-    # -- go to position --------------------------------------------------------
-
-    def _on_go_to_position(self, _event: Any) -> None:
-        if not self._book_key:  # a streamed address has a length too
-            self._show_message_box("Open a file first.", _TITLE)
-            return
-        dialog = GoToPositionDialog(
-            self.frame,
-            duration_ms=self._player.length_ms(),
-            current_ms=self._player.playhead_ms(),
-            announce=self._announce,
-        )
-        try:
-            if self._show_modal_dialog(dialog, "Go to Position") == wx.ID_OK:
-                target = dialog.get_target_ms()
-                self._player.seek_to(target)
-                clamped = dialog.clamped_message()
-                if clamped:
-                    self._announce(clamped)
-                else:
-                    self._announce(f"Jumped to {format_spoken(target)}.")
-        finally:
-            dialog.Destroy()
-
     def _prompt_text(self, title: str, prompt: str, default: str) -> str | None:
         with wx.TextEntryDialog(self.frame, prompt, title, default) as dialog:
             if dialog.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
@@ -793,7 +753,6 @@ class QuillMediaPlayerFrame(
 
 
 def main() -> int:
-    configure_ssl_trust()  # one certificate check, before any network use
     from quill.core.data_location import apply_pending_at_launch
 
     apply_pending_at_launch()  # queued Data Folder move, before any data read

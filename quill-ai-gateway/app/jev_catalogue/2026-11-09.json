@@ -105,6 +105,10 @@
         "criterion": "Open a document from a folder. For example: \"open a document\".",
         "stepped": false
       },
+      "lite.cmd_open_transcriptions": {
+        "criterion": "Open the durable queue for recording transcriptions. For example: \"show the transcription queue\".",
+        "stepped": false
+      },
       "lite.cmd_parameter_hints": {
         "criterion": "Say which argument of the call at the cursor you are on, and its signature. For example: \"which parameter am I on\".",
         "stepped": false
@@ -421,6 +425,10 @@
       },
       "tools.spell_check_dialog": {
         "criterion": "Check the spelling of the document. For example: \"check my spelling\".",
+        "stepped": false
+      },
+      "tools.windows_dictation_transcriptions": {
+        "criterion": "Open the durable queue for recording transcriptions. For example: \"show the transcription queue\".",
         "stepped": false
       },
       "tools.word_count": {

@@ -84,6 +84,13 @@ ROWS: tuple[tuple[str, str, str, str], ...] = (
 )
 
 
+def _player_here() -> bool:
+    """Send to Media Player is offered only where it can work (FUX-02)."""
+    from quill.ui import scribe_entry
+
+    return scribe_entry.player_available()
+
+
 def _submenu_named(menu: Any, name: str) -> Any:
     for item in menu.GetMenuItems():
         sub = item.GetSubMenu()
@@ -169,7 +176,7 @@ class QuillScribeHost:
         if action in {"editor", "braille"}:
             self._mf.open_file(path)
             return opened_phrase(format_id, "QUILL")
-        if action == "player" and player_target(format_id, path) is not None:
+        if action == "player" and player_target(format_id, path) is not None and _player_here():
             # Media Player comes to the front: after the sentence, not under it.
             phrase = opened_phrase(format_id, "Media Player")
             self._after.hold(lambda: self._to_player(job, format_id, path), phrase)
@@ -215,7 +222,7 @@ class QuillScribeHost:
             steps.append(("Open in the Braille View", self._then(ready["brf"], "")))
         if "mobi" in ready:
             steps.append(("Open the Kindle Book (MOBI)", self._then(ready["mobi"], "")))
-        for format_id in ("mp3", "daisy"):
+        for format_id in ("mp3", "daisy") if _player_here() else ():
             if format_id in ready:
                 label = f"Send to Media Player ({format_label(format_id)})"
                 steps.append((label, lambda f=format_id: self._to_player(job, f, ready[f])))

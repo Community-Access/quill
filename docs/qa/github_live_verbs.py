@@ -1340,6 +1340,25 @@ def across_release_train(run: Any) -> str:
     return "made where missing, the existing one skipped, then deleted from both"
 
 
+def across_compare_config(run: Any) -> str:
+    """Workflows by Name: compare a file of the second with the first, propose it, close it."""
+    from quill.core.github.across_files import file_diff
+    from quill.core.github.config_compare import propose_update
+
+    found = _survey(run, "workflows")
+    for row in found.rows:
+        source = found.has(run.second, row.name)
+        if source is None:
+            continue
+        diff = file_diff(run.api, "workflows", source, run.repo, found.has(run.repo, row.name))
+        if diff.can_update:
+            repo = run.items.template_repository(run.repo)
+            made = propose_update(repo, run.repo, run.second, [diff])
+            _close_pull(run, run.repo, made.pull_request_number, made.branch)
+            return f"{row.name} compared and proposed as #{made.pull_request_number}, then closed"
+    return f"every workflow of {run.second} is the same in {run.repo}; nothing to propose"
+
+
 def across_set_secret(run: Any) -> str:
     """One value typed once, set in both test repositories, then the secret deleted."""
     from quill.core.github.across_more_changes import apply_more, plan_more_delete, plan_set_secret
@@ -1685,6 +1704,7 @@ VERBS: dict[str, Scenario | str] = {
     "across_delete_merged": across_delete_merged,
     "across_draft_releases": across_draft_releases,
     "across_dismiss_alerts": "not here: the test repositories have no security alert",
+    "across_compare_config": across_compare_config,
 }
 
 

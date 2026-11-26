@@ -32,6 +32,7 @@ Wording rules, unchanged from Radio's, so the entries stay worth hearing:
 from __future__ import annotations
 
 from quill.core.editor_tools_surface_help import SHARED_TOOL_PURPOSES
+from quill.core.windows_dictation.surface_help import TRANSCRIPTION_PURPOSES
 
 __all__ = [
     "CONTAINS_PURPOSES",
@@ -484,12 +485,7 @@ PURPOSES.update({
         "The AI has changed these words. Yes throws them away and writes nothing; "
         "No keeps the review open."
     ),
-    "Transcribe a Recording": (
-        "Turns a recording into text in the background: choose the file, the "
-        "speech model, the language and where the text goes, then keep working. "
-        "While one is running, this window says how far it has got and can stop "
-        "it."
-    ),
+    **TRANSCRIPTION_PURPOSES,
 })
 
 #: Titles of the windows QUILL opens from the same shared modules. QUILL's F1
@@ -525,7 +521,7 @@ SHARED_WITH_QUILL: frozenset[str] = frozenset({
     "More Dictation Settings",
     "Speech Models",
     "Speech Providers",
-    "Transcribe a Recording",
+    *TRANSCRIPTION_PURPOSES,
     "Review Dictation",
     "Review with AI",
     "Discard These Words",

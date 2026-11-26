@@ -371,10 +371,6 @@ class LaunchRequest:
 
 
 def main() -> int:
-    from quill.core.net import configure_ssl_trust
-
-    configure_ssl_trust()
-
     # Headless `quill convert ...` subcommand: route to the wx-free converter CLI
     # before the GUI argument parse (which treats leading tokens as files to open).
     if sys.argv[1:2] == ["convert"]:
@@ -402,9 +398,9 @@ def main() -> int:
     # editor. Done before the single-instance/UI bootstrap so a running QUILL is
     # never disturbed -- the converter is its own single-instance app.
     if str(getattr(parsed, "action", "") or "").strip().lower() == "convert" and parsed.paths:
-        from quill.core.app_launcher import launch_app
+        from quill.core.convert_verb import hand_to_converter
 
-        launch_app("converter", extra_args=tuple(parsed.paths))
+        hand_to_converter(parsed.paths)  # FUX-02: says so when Converter is missing
         return 0
 
     # #615: apply a pending data-location move (Preferences > General >

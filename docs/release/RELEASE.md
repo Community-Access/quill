@@ -137,22 +137,59 @@ PRs: WinGet accepts one package version per manifest-only pull request.
 
 ## Channels, publishing and promotion
 
-Every QuillVille app with release channels (QUILL, QUILL Lite, Quill Radio,
-QUILL Cast, and QUILL Transcribe since 2026-10-24) is offered updates from one
-signed list per app,
+### One monorepo catalogue
+
+Every Windows product is owned by
+`quill.core.release_catalog`: QUILL, QUILL Lite, Radio, Cast, Transcribe,
+Converter, Studio, Player, Inkwell, Weather, Social and Beacon. The catalogue
+is the source of truth for version/build files, tag and asset names,
+changelogs, build entries and rollout waves. `release_catalog_audit` is a
+pre-commit and `platform_report` gate; it refuses a new standalone wrapper,
+feed entry, sibling-version row or `build-quill-apps.ps1` table that is not in
+the catalogue.
+
+This repository remains the only source repository. A separate Dev-builds
+repository is only for unsigned Dev artifacts, while production artifacts,
+signed feeds, release history and source archives stay owned by the
+`Community-Access/quill` monorepo. A product marked `held` may wait for a build
+wrapper or release evidence, but it cannot silently disappear from the
+inventory. Radio-on-macOS and Weather-on-iOS are explicit platform variants,
+not duplicate Windows products.
+
+Every buildable, non-held product in the release catalogue is offered updates
+from one signed list per app,
 `docs/site/updates/v2/<app>.json` plus `<app>.json.sig`, served from the Pages
 site. A build is made and signed once; after that only the list changes. The
 design is `docs/release-channels-plan.md`.
 
-### The feed key stays on your computer
+### The feed key stays in protected signing
 
-The lists are signed with the feed key you already use for the v1 feed
-(`~/.config/quill/quill-feed-priv.key`, or the file named by
-`QUILL_FEED_KEY_FILE`). No workflow signs a v2 list (the old v1 list is the one
-exception; see below). Every script that changes a list
-signs it as it writes, unless you pass `--no-sign`; then the `.sig` is removed,
-GATE-FEED (`tests/unit/docs/test_release_feeds.py`) fails, and the change
-cannot merge until you run `python scripts/feed_tool.py sign --app <app>`.
+The lists use the existing Ed25519 seed stored as the GitHub Actions repository
+secret `QUILL_FEED_SIGNING_KEY`. Only these trusted jobs receive it:
+
+- `release-feeds.yml`, for the initial all-app bootstrap or expiry refresh;
+- `promote-release.yml`, after Beta or Stable promotion approval;
+- the compatibility v1 signing step in `windows-release.yml`.
+
+Each job runs in an owner-approved environment. The script reads the secret in
+process memory, writes only the signed JSON and `.sig` result, and verifies every
+signature against `quill/core/feed-pub.key` before opening a pull request.
+Neither a pull request job nor an ordinary build job receives the seed.
+
+Run `release-feeds.yml` from `main` for the first rollout. It
+creates one valid feed for every channel-enabled catalogue product, migrates
+the newest existing Stable/Beta/Dev GitHub releases when present, creates an
+empty signed feed for a product that has not published yet, and signs
+`index.json`. Later runs may set `refresh_all=true` to renew all expiry dates
+and signatures without changing their release entries.
+
+Local signing remains available for recovery or owner-maintained releases with
+`~/.config/quill/quill-feed-priv.key` or `QUILL_FEED_KEY_FILE`. Passing
+`--no-sign` is an explicit emergency or diagnostic operation: it removes the
+signature and GATE-FEED refuses the result. GitHub never reveals an existing
+secret value, so keep the encrypted and physical backups in
+`docs/signing.md`; the Actions copy limits machine loss but is not a substitute
+for recovery backups.
 
 ### Build numbers
 
@@ -370,12 +407,13 @@ list moves it to Stable with a fresh 90-day expiry, and a line goes into
 **From GitHub instead.** Actions > promote-release runs the same script. The
 checks job always runs as a dry run and uploads its report. The Stable job
 runs in the GitHub Environment **stable-promotion**, so nothing reaches Stable
-until you press Approve. Because the workflow has no key, it promotes with
-`--no-sign` and opens a pull request on `promote/<app>-<version>-stable`; sign
-it locally and push before merging. A pull request opened with the workflow's
-own token starts no checks, so CI first runs on it when you push the signing
-commit. The workflow passes every input to its scripts through `env:`, never
-pasted into a command, and runs only in `Community-Access/quill`.
+until you press Approve. Beta signing waits in **release-feed-signing**. Both
+promotion jobs receive the existing repository seed only after their
+environment review, sign the feed in process memory, verify it against the
+bundled public key, and open a signed pull request on
+`promote/<app>-<version>-<channel>`. The workflow passes every input to its
+scripts through `env:`, never pastes it into a command, and runs only in
+`Community-Access/quill`.
 
 ### Dev builds
 
@@ -387,7 +425,7 @@ with a version like `3.3.1-dev.20261003.1`, and publishes them to
 
 - The first job stops at once, with an error naming the secret, when
   `DEV_BUILDS_TOKEN` is missing or cannot read the dev-builds repository, so a
-  missing secret never costs four Windows builds.
+  missing secret never costs a family-wide Windows build matrix.
 - Every job builds from the one commit the first job chose, and that commit is
   the one written into the release notes, so "has `main` changed since the
   last Dev build?" compares against what was really built.
@@ -417,9 +455,9 @@ The build is marked withdrawn in the list, so it is never offered again and is
 never a way back. Each channel that offered it falls back to the build before
 it, and the script says which. Its GitHub release title gains "(withdrawn)".
 Nothing is deleted: people who have it can still move forward or back, and the
-files stay downloadable. The list is signed as it is written, or left unsigned
-with `--no-sign` for `python scripts/feed_tool.py sign --app radio` later.
-`feed_tool.py revoke` does exactly the same; this script is the one to use.
+files stay downloadable. A protected signing workflow or the local owner key
+signs the list as it is written. `feed_tool.py revoke` does exactly the same;
+this script is the one to use.
 
 ### Data formats (GATE-DATAFMT)
 
@@ -571,40 +609,43 @@ What happens after "Install and restart now" (`quill/core/self_update.py`,
 
 ### One-time setup (owner)
 
-Nothing below can be done from the repository, and none of it has been done
-yet. In order:
+The durable GitHub pieces and the exact remaining owner secrets are:
 
-1. Create the repository **Community-Access/quillville-dev-builds** with a
-   README, so it has a `main` branch; a Dev release's tag is created there.
-2. Add the repository secret **DEV_BUILDS_TOKEN** to `Community-Access/quill`:
+1. **Done.** `Community-Access/quillville-dev-builds` exists with a `main`
+   branch.
+2. **Still needed.** Add the repository secret **DEV_BUILDS_TOKEN** to
+   `Community-Access/quill`:
    a fine-grained token with Contents read and write on the dev-builds
    repository only.
-3. Add the repository secrets **QUILL_PODCAST_INDEX_KEY** and
+3. **Still needed for Cast index search.** Add the repository secrets
+   **QUILL_PODCAST_INDEX_KEY** and
    **QUILL_PODCAST_INDEX_SECRET** (QUILL Cast's Dev builds read them; without
    them Cast builds with no Podcast Index search).
-4. Create the GitHub Environment **stable-promotion** in
-   `Community-Access/quill` with yourself as the required reviewer.
-5. In Settings > Actions > General, allow GitHub Actions to create and approve
-   pull requests, so promote-release can open the pull request you sign.
-6. Publish and sign the first v2 list for each app (`publish_release.py`,
-   signing with your feed key on your own computer) before the first
-   channel-aware release ships; until a list exists, apps keep using the
-   GitHub path.
+4. **Done.** **stable-promotion** and **release-feed-signing** both exist with
+   the owner as required reviewer. The feed-signing environment is limited to
+   `main` and trusted `v*` release tags.
+5. **Done.** Actions can create and approve pull requests, and the repository
+   retains `QUILL_FEED_SIGNING_KEY`.
+6. **Next, after this branch reaches `main`.** Run **release-feeds**, approve
+   `release-feed-signing`, then review and merge the
+   generated signed-feed pull request. Until then, apps keep the legacy GitHub
+   path when their v2 list is missing.
 7. Watch the first runs: run **dev-builds** once by hand with **force** and
-   read each job; check the four releases in the dev-builds repository and
+   read each job; check the catalogue-driven releases in the dev-builds repository and
    that the next scheduled run says "main has not changed"; run
    **promote-release** with **dry_run** on before any real promotion; and
    update one portable copy and one installed copy by hand, reading
    `apply-update.log` in the app's `updates` folder.
 
-### The old v1 list and its CI key (decided 2026-10-04)
+### The old v1 list and the protected Actions key
 
 The old v1 update list (`.quill-update-feed-v1.json`) is still signed in CI by
 `windows-release.yml` with the `QUILL_FEED_SIGNING_KEY` secret, because copies
 from before release channels read it. Leave that alone for now. Once every
 app's channel-aware release (QUILL 1.0.0, QUILL Lite 2.0.0, Quill Radio 3.2.0,
-QUILL Cast 2.0.0) has been out for one full release cycle, remove the secret
-from CI and stop signing the v1 list. Until then, do not touch it.
+QUILL Cast 2.0.0) has been out for one full release cycle, stop the v1 signing
+step. **Do not remove the secret:** v2 feed signing continues to use the same
+key in protected Actions jobs.
 
 ## macOS signed/notarized DMG runbook (start to finish)
 

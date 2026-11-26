@@ -108,3 +108,27 @@ The run is compared with the newest earlier run in the runs folder, or with Pneu
 - new files.
 
 Write anything that looks like a Scribe quality problem down for Pneuma (`scribe-test-plan.md` section 6) rather than working around it.
+
+### Live protocol observation: time remaining is in milliseconds
+
+On 2026-11-24, a real MP3 conversion produced `estimated_time_remaining`
+values in the tens and hundreds of thousands while Scribe was converting.
+QUILL interpreted those numbers as seconds, so it could display
+"9,191 minutes left" for a normal conversion. Pneuma's official Rust and
+Python client accepts the field as an integer but does not document its unit;
+the live values and the resulting durations match milliseconds.
+
+QUILL now divides that field by 1,000, uses the output's stage and progress
+when the channel's 15-second fallback runs, and clears the estimate at
+download or completion. The focused regression tests cover the conversion of
+`30,000` milliseconds to 30 seconds, a quiet-channel refresh, and completed
+jobs that must not retain an estimate.
+
+Tell Pneuma this, without sending a document, token or document text:
+
+> `/api/documents/{id}/outputs` returns an integer
+> `estimated_time_remaining` field. The official Scribe client types it as an
+> integer but does not say whether it is seconds or milliseconds. Live
+> responses in the 2026-11-24 Windows run behaved as milliseconds and became
+> implausibly large when interpreted as seconds. Please confirm the unit and
+> document it in the API client and changelog.

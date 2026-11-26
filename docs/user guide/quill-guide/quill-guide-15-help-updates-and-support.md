@@ -404,7 +404,15 @@ too, and Check for Updates now only ever offers a newer version.
 
 ## Checking for Updates
 
-QUILL can check for updates and install them while you carry on working.
+QUILL can check for updates and install them while you carry on working. Each
+QuillVille product has its own signed update feed. A QUILL check can only offer
+QUILL, a Weather check can only offer Weather, and so on. The app does not pick
+whichever download happened to appear first on a shared downloads page.
+
+The normal user interface does not change when release channels are enabled:
+you still use **Help > Check for Updates...** to check now. **Help > Release
+Channel...** is the separate, deliberate place where you decide whether this
+copy follows Stable, Beta or Dev. Merely opening that window changes nothing.
 
 ### Manual update check
 
@@ -412,10 +420,13 @@ To check for updates now:
 
 1. Press `Alt+H` to open the **Help** menu.
 2. Press `U` for **Check for Updates**.
-3. If a newer version is out, QUILL tells you and asks whether to download it.
-4. If you say yes, QUILL downloads it in the background and tells you when it
+3. QUILL reads its signed feed for the channel this copy follows. It checks
+   the version, build, download name and hash before offering anything.
+4. If a newer eligible version is out, QUILL tells you and asks whether to
+   download it.
+5. If you say yes, QUILL downloads it in the background and tells you when it
    is ready.
-5. The next time you close and reopen QUILL, the update is applied for you.
+6. The next time you close and reopen QUILL, the update is applied for you.
 
 ### Automatic update checks
 
@@ -475,11 +486,20 @@ below.
 
 ## Release Channels
 
-QUILL comes in three flavours, and you choose which one this copy follows. They're called release channels.
+QUILL comes in three flavours, and you choose which one this copy follows.
+They are called release channels.
 
-- **Stable** is the version we recommend. It has been checked with JAWS and NVDA, and it's what most people use. Every copy starts here.
-- **Beta** gets new features a few weeks early. It's mostly finished, but some things may not work right yet.
-- **Dev** is the work in progress, sometimes several builds a week. Things will break. Only choose it if a developer asked you to, or you enjoy testing.
+The following table describes the three channels and how a build moves.
+
+| Channel | What you receive | How it reaches the channel |
+| --- | --- | --- |
+| **Stable** | The recommended, fully promoted version for everyday use. Every copy starts here. | Stable receives the exact files that passed their Beta soak and every promotion gate. Those files are not rebuilt or replaced during promotion. |
+| **Beta** | A final-numbered release candidate, available before it is promoted to Stable. It is intended to be mostly finished, but it can still have a problem. | A candidate is built once, signed, uploaded once, and listed in the signed Beta feed. After the seven-day soak and all gates pass, those same files move to Stable. |
+| **Dev** | Unsigned work-in-progress builds for testing and diagnosis. Things can break. | Changed code may produce at most one Dev build per day in the separate `quillville-dev-builds` artifact repository. Dev is never an automatic route to Stable. A Dev build must become a new signed candidate before it can enter Beta and Stable. |
+
+The menu does not turn a Dev build into a Beta candidate or silently promote a
+candidate to Stable. Checking a channel only changes which signed feed entry
+the app is allowed to offer.
 
 ### Choosing a channel
 
@@ -489,13 +509,21 @@ QUILL comes in three flavours, and you choose which one this copy follows. They'
 
 If you choose Beta or Dev, QUILL shows a short warning first: what could go wrong, how your settings are protected, and how to come back. Read it, check the **I understand** box, then choose **Move to Beta** (or **Move to Dev**). **Stay on Stable** changes nothing, and so does Escape.
 
-Beta and Dev versions aren't signed, so when you install one, Windows SmartScreen may warn that it comes from an unknown publisher; that's expected, and choosing **More info**, then **Run anyway**, installs it.
+A final-numbered Beta candidate is Authenticode-signed. Dev builds are not
+signed. Some explicitly prerelease version numbers are not signed either.
+Windows SmartScreen may therefore warn for Dev or another prerelease build. If
+QUILL itself did not offer that file through its signed feed, do not bypass the
+warning.
 
 ### What happens when you move to Beta or Dev
 
 - QUILL saves a copy of your settings, keys and preferences first. If it can't, it stays where it is and tells you why. Your documents aren't copied, and updates don't change them.
-- QUILL then checks for updates on the new channel straight away, and offers you the newest Beta or Dev version if there is one. Nothing is installed unless you say so.
-- From then on, Check for Updates offers you versions from your channel. On Stable, you're never offered a test version.
+- QUILL then checks for updates on the new channel straight away, and offers
+  you the newest eligible version if there is one. Nothing is installed unless
+  you say so.
+- From then on, Check for Updates offers only versions allowed by your
+  channel. Stable never sees Beta or Dev. Beta never sees Dev. Dev may compare
+  Dev, Beta and Stable and choose the newest eligible version.
 
 If you installed a Beta version yourself, QUILL notices the first time it checks for updates. It puts itself on the Beta channel and tells you so, and you can change it in the Release Channel window whenever you like.
 
@@ -548,11 +576,39 @@ Open **Release Channel** again and choose **Stable**.
   right now is saved first, so nothing is thrown away.
 - If there's no saved copy, waiting is the only choice, and the window says so.
 
+### Different apps can use different channels on one computer
+
+Yes, Stable, Beta and Dev can coexist on the same Windows computer. QUILL
+Lite, Radio, Cast, Transcribe, Converter, Studio, Inkwell, Weather, Social and
+Beacon can each follow its own channel. The shared QuillVille Runtime keeps a
+separate folder for each channel:
+
+- Stable uses `3.14`.
+- Beta uses `3.14-beta`.
+- Dev uses `3.14-dev`.
+
+Moving Radio to Beta therefore does not put Beta code under a Stable QUILL
+Lite. A slot takes about 335 MB and is reclaimed when the last installed app
+using that slot leaves it. QUILL itself does not use this shared runtime.
+
+There are two different kinds of coexistence:
+
+- **Different products can be on different channels.** Stable Lite, Beta
+  Radio and Dev Weather can all be installed and running on one computer.
+- **One product follows one active channel.** There is one official installed
+  Radio channel at a time, for example. Moving Radio from Stable to Beta
+  changes Radio's active channel, launcher marker and shortcut target; it does
+  not create a second official `Radio Beta` installation. A person can make a
+  separate portable copy by hand, but that copy is not part of channel
+  switching or rollback.
+
 ### Moving your other apps together
 
-If QUILL Lite, Quill Radio or QUILL Cast is on this computer too, the Release Channel window lists it under **Also move my other QuillVille apps on this computer**. Check any you'd like to move in the same step. Every box starts unchecked.
-
-Those apps run on one shared engine. When one of them moves to Beta or Dev, it gets its own copy of that engine, so the apps you leave on Stable are never touched. That copy takes about 335 MB of disk space, and it goes away by itself when the last of them comes back to Stable. QUILL itself doesn't use the shared engine, so moving QUILL on its own needs no extra space.
+If other channel-enabled QuillVille apps are on the computer, the Release
+Channel window lists them under **Also move my other QuillVille apps on this
+computer**. Every box starts unchecked. Check the ones you deliberately want
+to move in the same step. The app does not move a sibling merely because it
+shares a runtime.
 
 ### Update History
 

@@ -228,7 +228,7 @@ def test_the_inventory_holds_the_show_hide_keys_and_transcribes_key_by_default()
     [
         ("Ctrl+Alt+Shift+R", "Quill Radio"),
         ("Ctrl+Alt+Shift+Q", "QUILL"),
-        ("Ctrl+Shift+Alt+F12", "Quill Cast"),
+        ("Ctrl+Shift+Alt+F12", "QUILL Cast"),
     ],
 )
 def test_another_apps_show_hide_key_is_refused_by_name(chord: str, owner: str) -> None:

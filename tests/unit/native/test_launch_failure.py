@@ -115,7 +115,7 @@ def describe_exit(code: int, last_line: str, display_name: str) -> str:
             "own, such as Documents, and check the antivirus quarantine."
         )
     if code in (STATUS_ACCESS_VIOLATION, STATUS_HEAP_CORRUPTION, STATUS_STACK_BUFFER_OVERRUN):
-        return "It crashed inside a component (a memory fault), not in its own code."
+        return f"A native component hit a memory fault while {display_name} was running."
     if last_line:
         hint = ""
         if "No module named" in last_line:
@@ -254,6 +254,12 @@ def test_missing_dll_names_the_two_likely_causes() -> None:
     assert "antivirus" in text
 
 
+def test_memory_fault_names_the_app_without_blame() -> None:
+    text = describe_exit(STATUS_HEAP_CORRUPTION, "", "QUILL Lite")
+    assert text == "A native component hit a memory fault while QUILL Lite was running."
+    assert "not in its own code" not in text
+
+
 def test_wrong_image_names_the_product_and_64_bit() -> None:
     text = describe_exit(STATUS_INVALID_IMAGE_FORMAT, "", "Quill Converter")
     assert "Quill Converter needs 64-bit Windows" in text
@@ -328,9 +334,16 @@ def test_c_source_exists_and_is_built() -> None:
         "needs 64-bit Windows",
         "extract the whole zip",
         "support@community-access.org",
+        "A diagnostic trace was written to:",
+        "No diagnostic message was captured.",
+        "PYTHONFAULTHANDLER",
         "Extract All",
     ],
 )
 def test_c_source_carries_every_constant_and_phrase(token: str) -> None:
-    source = _REPORT_H.read_text(encoding="utf-8") + _REPORT_C.read_text(encoding="utf-8")
+    source = (
+        _REPORT_H.read_text(encoding="utf-8")
+        + _REPORT_C.read_text(encoding="utf-8")
+        + _LAUNCHER_C.read_text(encoding="utf-8")
+    )
     assert token in source, f"launch_report.c/.h lost {token!r}; the Python mirror still has it"

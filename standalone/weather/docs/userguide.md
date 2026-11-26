@@ -309,12 +309,18 @@ build number tells you which build of a version you have: when a fix comes out
 without a new version number, it is a newer build, and Check for Updates offers it.
 
 **Help > Check for Updates** knows whether you run the installer or the portable
-build and downloads the matching one. All the Quill apps publish to one release
-feed, and each looks only at its own downloads there, so a Quill Radio release is
-never offered to you as a Quill Weather update. Quill Weather updates on its own
-schedule, separate from Quill Radio. Because the QuillVille Runtime is shared, an app
-update is usually just the small app itself; the large runtime is downloaded
-only when a new one is required, and again with a fully accessible progress bar.
+build and downloads the matching one. Each QuillVille product has its own signed
+release feed, and Weather looks only at Weather's download, so a Radio release
+can never be offered as a Weather update. Weather updates on its own schedule,
+separate from Radio. Because the QuillVille Runtime is shared, an app update is
+usually just the small app itself; the large runtime is downloaded only when a
+new one is required, and again with a fully accessible progress bar.
+
+**Help > Release Channel...** chooses Stable, Beta or Dev for Weather. Opening
+it changes nothing. A move to Beta or Dev explains the risk and saves a copy
+of Weather's settings before anything changes. Weather is in the first release
+wave: different products can follow different channels together, and this one
+Weather installation has one active channel at a time.
 
 ## Asking the AI about the weather
 

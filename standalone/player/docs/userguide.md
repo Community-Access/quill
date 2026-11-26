@@ -161,6 +161,7 @@ so typing a chapter's first letter does not jump to it there.
 | Ctrl+Up / Ctrl+Down | Volume up / down | T | Time elapsed or remaining |
 | Ctrl+B | Add bookmark | Ctrl+Shift+B | Add bookmark with a note |
 | Ctrl+G | Go to Position (H:M:S) | Ctrl+O | Open file |
+| Alt+Left | Back to where you were before a jump | | |
 | F6 | Review the status bar | Ctrl+W | Minimize to tray |
 
 **Slider Keys: which way the arrows move a slider.** On the position and
@@ -272,6 +273,14 @@ Press **Ctrl+G** to jump to an exact time.
 - If you ask for a time past the end, it says so and moves you to the end instead
   ("Beyond the end — moved to 11:14:00").
 
+**Going back.** Press **Alt+Left** (File > Back to Where I Was) to return to
+where you were before the jump. It says the time it went back to, for example
+"Back to 12 minutes 30 seconds." Press it again to return to where you jumped
+to, so you can check something and come straight back. Choosing a chapter in
+the Chapters tree keeps the same place, even when that chapter is in another
+file of the book. Alt+Left is the key QUILL and QUILL Lite use to go back after
+a jump. Opening another book forgets the place.
+
 ---
 
 ## 6a. Picking up where you left off
@@ -292,7 +301,14 @@ reading says nothing about another's.
 
 A position right at the start is not remembered. "Three seconds in" is the
 beginning, and being asked whether to resume there is a question with no useful
-answer.
+answer. A position in the last twenty seconds is not remembered either: you
+finished the book, so the next time it starts at the beginning, not on the
+closing credits.
+
+A book made of several files, such as a folder of tracks or a DAISY book,
+keeps a place in each file, so going back to a part you were in picks up where
+you were in that part. A DAISY book now picks up where you left off too. One
+made of several files opens in its first file, at your place in that file.
 
 ## 7. Bookmarks
 

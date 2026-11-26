@@ -155,6 +155,7 @@ class _Frame:
 def test_quill_next_steps_are_named_by_format_when_there_are_several(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    monkeypatch.setattr("quill.ui.scribe_entry.player_available", lambda: True)
     from quill.ui.main_frame_scribe import QuillScribeHost
 
     frame = _Frame()
@@ -171,7 +172,10 @@ def test_quill_next_steps_are_named_by_format_when_there_are_several(
     assert "Summarize with Your AI..." in single  # one output: no format in the name
 
 
-def test_lite_next_steps_put_the_media_player_first(tmp_path: Path) -> None:
+def test_lite_next_steps_put_the_media_player_first(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("quill.ui.scribe_entry.player_available", lambda: True)
     from quill.apps.lite_window_scribe import LiteScribeHost
 
     opened: list[Path] = []

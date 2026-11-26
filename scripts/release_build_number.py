@@ -40,20 +40,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from quill.core.release_catalog import PRODUCTS  # noqa: E402
+
 #: Where each app keeps its build constant: ``(file, constant)``.
 BUILD_CONSTANTS: dict[str, tuple[str, str]] = {
-    "quill": ("quill/__init__.py", "__build__"),
-    "radio": ("quill/apps/radio.py", "_BUILD"),
-    "quilllite": ("quill/core/lite/__init__.py", "APP_BUILD"),
-    "cast": ("quill/apps/podcasts_menu.py", "APP_BUILD"),
-    "converter": ("quill/apps/converter.py", "_BUILD"),
-    "weather": ("quill/apps/weather.py", "_BUILD"),
-    "inkwell": ("quill/apps/inkwell.py", "_BUILD"),
-    "transcribe": ("quill/apps/transcribe.py", "_BUILD"),
-    "player": ("quill/apps/player.py", "_BUILD"),
-    "studio": ("quill/apps/studio.py", "_BUILD"),
-    "beacon": ("quill/apps/beacon/app.py", "_BUILD"),
-    "social": ("standalone/social/quill_social/__init__.py", "__build__"),
+    product.key: (product.build_file, product.build_constant) for product in PRODUCTS
 }
 
 
@@ -66,9 +57,9 @@ def source_build(app: str, root: Path = REPO_ROOT) -> int:
 
 
 def _published_tags() -> list[str]:
-    from check_sibling_versions import _published_tags as published
+    from check_sibling_versions import _published_tags as published  # type: ignore[import-not-found]
 
-    return published()
+    return list(published())
 
 
 def resolve(

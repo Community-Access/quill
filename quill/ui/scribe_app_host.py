@@ -193,7 +193,9 @@ def elsewhere_steps(
                 announce(f"Your browser could not be opened. {path.name} is saved in its folder.")
 
         steps.append((f"Open in Your Browser ({format_label('html')})", html_page))
-    if player:
+    from quill.ui import scribe_entry
+
+    if player and scribe_entry.player_available():
         for format_id in ("mp3", "daisy"):
             if format_id in ready:
 

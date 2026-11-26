@@ -1902,7 +1902,9 @@ Control coverage: 44 audited sites (44 helped).
 
 **Start and Stop Key.** Choose the key that starts and stops dictation from any program. It is Alt+Shift+Backslash unless you change it. Type another, press Record Key to press it instead, or leave the box empty for no key; a key another QuillVille app already uses is refused, and you are told whose it is.
 
-**Transcribe a Recording.** Choose a recording and a model; it is transcribed in the background and the transcript waits in Notifications for you to review.
+**Transcribe a Recording.** Choose a recording and model; transcription runs in the background and the finished text stays in Notifications.
+
+**Transcriptions on This Computer.** Queued, running and finished recordings stay here across restarts. Open a transcript, retry or stop work, or forget a finished row.
 
 **Update History: QUILL Transcribe.** A plain record of what the updater did for this app: checks, downloads, channel changes and the copies of your settings it saved. Read-only; nothing here changes anything.
 
@@ -2741,7 +2743,7 @@ Control coverage: 408 audited sites (408 helped).
 
 **Watches.** Watches: tell me when something happens. Each row is a rule: a run finishes on a repository or branch, a review arrives on a pull request, a new release, a new comment. They are checked on the notification check's interval in Workbench Options while this window is open, and each row says when it was last checked. Ctrl+N adds one, Enter edits, Delete removes. Watches never mark notifications read.
 
-**Across Repositories.** Across Repositories: the Repository Set in use, and under it its named sets, one kind of thing from every repository in the set, each name across the set grouped as Planning, Code, Actions and Settings, and the Fleet. Ctrl+N here edits the set's repositories.
+**Across Repositories.** Across Repositories: the Repository Set in use, and under it its named sets, one kind of thing from every repository in the set, each name across the set grouped as Planning, Code, Actions, Files and Settings, and the Fleet. Ctrl+N here edits the set's repositories.
 
 **Repository Sets.** Repository Sets: your named lists of repositories, each chosen from a checklist, made by a filter such as org:name topic:x, or every repository you can reach. Enter uses one; Ctrl+N makes one; Delete forgets one after asking. They stay on this computer.
 
@@ -2787,7 +2789,7 @@ Control coverage: 408 audited sites (408 helped).
 
 **Topics by Name.** Topics by Name: each topic across the set and the repositories that lack it. Add it to the missing or remove it everywhere, with a preview and a result per repository; each repository's other topics are kept.
 
-**Code by Name.** Code by Name: tags, branches, and rules and branch protection, each by name across the set.
+**Code by Name.** Code by Name: tags, branches, rules and branch protection, and packages, each by name across the set.
 
 **Tags by Name.** Tags by Name: each tag across the set and the commit it is on in each repository. Release Train makes it, or it and a release, where it is missing, and never moves an existing tag; Draft Releases Together makes one draft release of it in each repository from notes written once; Delete Everywhere keeps a tag a release is built on.
 
@@ -2795,7 +2797,9 @@ Control coverage: 408 audited sites (408 helped).
 
 **Rules and Branch Protection.** Rules and Branch Protection: each ruleset by name, and each default branch's protection, compared across the set. Make them the same as the winner, add a ruleset where it is missing, or promote one to an organization ruleset; each needs admin access and shows a preview first.
 
-**Actions by Name.** Actions by Name: environments, secrets and variables, each by name across the set. Reading them needs admin access in each repository.
+**Packages by Name.** Packages by Name: each package published from the set, its type, visibility and repository. Read only, because GitHub does not let apps change a package's visibility or access. Each owner is read once and every package page is included.
+
+**Actions by Name.** Actions by Name: environments, secrets, variables and workflows, each by name across the set. Reading environments, secrets and variables needs admin access in each repository.
 
 **Environments by Name.** Environments by Name: wait timer, reviewers, self-review and which branches may deploy, compared across the set. Make them the same as the winner, add it where missing, or delete one everywhere. GitHub has no organization environments.
 
@@ -2803,13 +2807,27 @@ Control coverage: 408 audited sites (408 helped).
 
 **Variables by Name.** Variables by Name: each Actions variable and its values across the set. Make them the same, add the missing, delete everywhere, or promote to one organization variable for those repositories.
 
-**Settings by Name.** Settings by Name: webhooks, deploy keys and autolinks, each by name across the set. Reading them needs admin access in each repository.
+**Workflows by Name.** Workflows by Name: each workflow file across the set and its versions. Compare Configuration shows two copies' differences; Make Them the Same and Add to Missing propose the winning version as one pull request in each repository. Nothing is pushed. The full source and target blob ids are checked again before a proposal; a changed or unreadable file is named and left alone.
+
+**Files by Name.** Files by Name: templates and community files, Dependabot and CODEOWNERS, each by file name across the set; workflows are under Actions by Name. A file is changed only by a pull request in each repository, never pushed.
+
+**Templates by Name.** Templates by Name: issue and pull request templates, discussion forms and community files such as CONTRIBUTING, each by file name with its versions. Compare, make them the same or add the missing ones, each as a pull request to review. The selected source and each target are checked again before the proposal is made.
+
+**Dependabot by Name.** Dependabot by Name: each repository's dependabot.yml, its versions and its update entries. Compare, make them the same or add it where missing, each as a pull request to review. A changed source or target is left alone rather than proposed with unexpected contents.
+
+**CODEOWNERS by Name.** CODEOWNERS by Name: the CODEOWNERS file GitHub uses in each repository, its versions, rules and owners. Compare, make them the same or add it where missing, each as a pull request to review. The source and target are checked again by their full blob ids before the proposal is made.
+
+**Settings by Name.** Settings by Name: webhooks, deploy keys, autolinks, repository settings and people, each by name across the set. Webhooks, deploy keys and autolinks need admin access to read.
 
 **Webhooks by Name.** Webhooks by Name: each webhook by its address, with its events, on or off and content type. Make them the same, add the missing, turn them on or off, delete, or promote to one organization webhook, which GitHub sends for every repository in the organization. A webhook's secret is never readable.
 
 **Deploy Keys by Name.** Deploy Keys by Name: each deploy key by title, with its fingerprint and access. Delete Everywhere removes it; GitHub accepts a deploy key in one repository only, so one cannot be added to more.
 
 **Autolinks by Name.** Autolinks by Name: each autolink by its prefix, with its address. Add the missing or delete everywhere; GitHub cannot change an autolink in place.
+
+**Repository Settings by Name.** Repository Settings by Name: each switch on the Repository sheet's Features and Merging pages, on in how many repositories and off in how many. Make Them the Same sets the winning value everywhere after the preview; it needs admin access in each repository. A setting GitHub did not show is not counted as off, and Change History can put a changed setting back.
+
+**People by Name.** People by Name: each person with access across the set, their role in each repository and where it comes from, and where they have none. Read only; Bulk Access Changes changes access in many repositories. Every collaborator page is read; no access is kept separate from a repository that could not be read.
 
 **Fleet.** Fleet: one line per repository in the set: the exact revision of its default branch, checks, open pull requests, latest release and alerts, and when it was read. A repository that could not be read keeps its line, with the reason.
 
@@ -4049,6 +4067,8 @@ Control coverage: 408 audited sites (408 helped).
 
 **Add to Missing.** Create it in the repositories you choose that lack it, after the preview.
 
+**Compare Configuration.** Choose a version and another repository, then read the differences in the Compare Configuration window; its Propose Update opens one pull request there.
+
 **Find Uses.** Search every issue and pull request with it, across the set.
 
 **Rename Everywhere.** Rename the label, milestone or branch in every repository; a clash is shown, not merged, and a branch's preview says what follows from GitHub's rename. Undo puts a label's or milestone's name back.
@@ -5025,7 +5045,9 @@ Control coverage: 298 audited sites (298 helped).
 
 **Tidied Dictation.** The dictated text with the recogniser's mistakes corrected -- misheard words, punctuation, fillers -- and nothing else changed. Replace My Selection puts it where the dictated text was; Control Z takes it back.
 
-**Transcribe a Recording.** Turns a recording into text in the background: choose the file, the speech model, the language and where the text goes, then keep working. While one is running, this window says how far it has got and can stop it.
+**Transcribe a Recording.** Choose a recording and model; transcription runs in the background and the finished text stays in Notifications.
+
+**Transcriptions on This Computer.** Queued, running and finished recordings stay here across restarts. Open a transcript, retry or stop work, or forget a finished row.
 
 **Translation.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 

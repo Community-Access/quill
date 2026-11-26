@@ -1,0 +1,71 @@
+{
+  "format": "quillville-release-index/1",
+  "apps": [
+    {
+      "app": "beacon",
+      "app_name": "Quill Beacon",
+      "path": "beacon.json",
+      "sequence": 1
+    },
+    {
+      "app": "cast",
+      "app_name": "QUILL Cast",
+      "path": "cast.json",
+      "sequence": 1
+    },
+    {
+      "app": "converter",
+      "app_name": "Quill Converter",
+      "path": "converter.json",
+      "sequence": 1
+    },
+    {
+      "app": "inkwell",
+      "app_name": "Quill Inkwell",
+      "path": "inkwell.json",
+      "sequence": 1
+    },
+    {
+      "app": "quill",
+      "app_name": "QUILL",
+      "path": "quill.json",
+      "sequence": 1
+    },
+    {
+      "app": "quilllite",
+      "app_name": "QUILL Lite",
+      "path": "quilllite.json",
+      "sequence": 1
+    },
+    {
+      "app": "radio",
+      "app_name": "Quill Radio",
+      "path": "radio.json",
+      "sequence": 1
+    },
+    {
+      "app": "social",
+      "app_name": "QUILL Social",
+      "path": "social.json",
+      "sequence": 1
+    },
+    {
+      "app": "studio",
+      "app_name": "QUILL Studio",
+      "path": "studio.json",
+      "sequence": 1
+    },
+    {
+      "app": "transcribe",
+      "app_name": "QUILL Transcribe",
+      "path": "transcribe.json",
+      "sequence": 1
+    },
+    {
+      "app": "weather",
+      "app_name": "Quill Weather",
+      "path": "weather.json",
+      "sequence": 1
+    }
+  ]
+}

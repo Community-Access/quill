@@ -61,7 +61,7 @@ Accepted as they are: `wx.ListBox.SetString` on Windows deletes and re-inserts t
 | Transcribe queue | `quill/ui/windows_dictation_transcribe.py` | No list: status bar, queue sentence, Activity, Notifications | Progress said in quarters | None for FUX-06 (no list moves) | None |
 | Model Library | `quill/ui/dictation_models_dialog.py` | Rows rewritten in place with `SetString` | Yes | None | None |
 
-## GitHub and WordPress Workbench (PR: feat/m2-workbench, after GH-R-150/151)
+## GitHub and WordPress Workbench (PR: feat/m2-workbench, on top of completed GH-R-150/151)
 
 | List | File | How it refills | Already met FUX-06 | Gap | Fix |
 | --- | --- | --- | --- | --- | --- |

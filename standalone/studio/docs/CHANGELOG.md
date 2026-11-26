@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [2.0.0] - built, not yet released
 
+- **Leaving the Chapter Workbench with Close or Escape keeps your place**
+  (FUX-01, 2026-11-24). Only closing the window itself saved where you were;
+  the Close button and Escape kept no place, did not update In Progress and
+  Resume Last Book, and could leave the book playing after the window had
+  gone.
 - **Review the AI's chapter titles one by one** (FUX-12, 2026-11-24). In the
   Chapter Workbench, Propose AI titles no longer replaces every title at once.
   The proposals open in Review Proposed Titles, one check box for each chapter

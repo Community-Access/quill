@@ -25,6 +25,7 @@ from quill.apps.beacon import (
     external_player,
     first_task,
     importers,
+    paths,
     results_follow,
     routing,
     search,
@@ -65,6 +66,7 @@ from quill.ui.dialog_contract import show_message_box
 from quill.ui.dpi import dip, dip_size
 from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import stop_timer_on_destroy
+from quill.ui.updates.host import ProductUpdateHost
 
 _TITLE = "QuillBeacon"
 _VERSION = "0.1.0"
@@ -93,14 +95,7 @@ def _name(ctrl: wx.Control, name: str) -> None:
     ctrl.SetName(name)
 
 
-def _data_dir() -> Path:
-    """Local-first store location. Mirrors quill.core.paths.app_data_dir."""
-    from quill.apps.beacon import paths
-
-    return paths.data_dir()
-
-
-class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
+class BeaconFrame(ProductUpdateHost, wx.Frame, BeaconAiMixin, BeaconScribeMixin):
     def __init__(self) -> None:
         super().__init__(None, title=_TITLE, size=dip_size(None, 1100, 720))
         # Maximized by default, and remembered after that, like every other app
@@ -109,7 +104,11 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
 
         apply_window_geometry(self, "beacon", default_size=dip_size(self, 1100, 720))
         self.SetTitle(_TITLE)
-        self.data_dir = _data_dir()
+        self.data_dir = paths.data_dir()
+        self._release_app_key = "beacon"
+        from quill.core.data_format_ledger import record_running_build
+
+        record_running_build("beacon", _VERSION)
         self.store = db.BeaconStore(self.data_dir / "beacons.db")
         self.a11y = a11y_mod.load(self.data_dir)
         init_app_sound()  # a SoundSink needs a loaded pack behind it (#1302)
@@ -645,14 +644,24 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
             self._on_whats_new,
             "Open QuillBeacon's changelog in your browser",
         )
+        check_id = self._add(
+            m_help,
+            "Check for &Updates...\tCtrl+Alt+U",
+            lambda _e: self.check_product_updates("beacon"),
+            "Check QuillBeacon's release channel for an update",
+        )
+        from quill.ui.updates.shell import append_release_channel_item
+
+        append_release_channel_item(self, m_help, "beacon", check_id)
         self._add(m_help, "&About\tAlt+F1", self._on_about, "About QuillBeacon")
         mb.Append(m_help, "&Help")
 
         self.SetMenuBar(mb)
 
-    def _add(self, menu, label, handler, hint: str = "") -> None:
+    def _add(self, menu, label, handler, hint: str = "") -> int:
         item = menu.Append(wx.ID_ANY, label, helpString=hint)
         self.Bind(wx.EVT_MENU, handler, item)
+        return int(item.GetId())
 
     # -- UI -------------------------------------------------------------------
 
@@ -1883,6 +1892,7 @@ class BeaconFrame(wx.Frame, BeaconAiMixin, BeaconScribeMixin):
                 pass
         if getattr(self, "bridge", None):
             self.bridge.stop()
+        self._shutdown_release_tasks()
         self.store.close()
         self.Destroy()
 
@@ -1895,12 +1905,19 @@ def run() -> int:
     app = wx.App()
     frame = BeaconFrame()
     frame.Show()
+    verify_args = [arg for arg in sys.argv[1:] if arg.startswith("quillsync://")]
+    if verify_args:
+        from quill.core.net import configure_ssl_trust
+
+        configure_ssl_trust()
+    else:
+        from quill.ui.startup_launch import defer_ssl_trust_setup
+
+        defer_ssl_trust_setup(wx)
     wx.CallAfter(first_task.focus_initial, frame)  # after Show, so it sticks (FUX-09)
     # OS custom-scheme handoff: a quillsync://verify link may be passed as the
     # first argv when the OS launches us to handle the scheme.
-    for arg in sys.argv[1:]:
-        if arg.startswith("quillsync://"):
-            frame.handle_verify_url(arg)
-            break
+    if verify_args:
+        frame.handle_verify_url(verify_args[0])
     app.MainLoop()
     return 0
