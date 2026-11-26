@@ -32,6 +32,7 @@ from quill.core.scribe.errors import ScribeError
 from quill.core.scribe.options import ScribeOptions, load_options, save_options
 from quill.ui.scribe_controller_events import ScribeEventsMixin
 from quill.ui.scribe_job_commands import ScribeJobCommands
+from quill.ui.scribe_set_commands import ScribeSetCommands
 
 logger = logging.getLogger(__name__)
 
@@ -63,7 +64,7 @@ def controller_for(host: Any) -> ScribeController:
     return found
 
 
-class ScribeController(ScribeJobCommands, ScribeEventsMixin):
+class ScribeController(ScribeJobCommands, ScribeSetCommands, ScribeEventsMixin):
     def __init__(self, host: ScribeHost) -> None:
         self.host = host
         self.app_name = host.app_name
@@ -304,6 +305,8 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
             formats=options.formats_for(app_formats),
             options=options,
             refused=refused,  # said in the consent text: a dialog opening cuts speech off
+            # Several files are a named set, in a folder of its own (2026-11-24).
+            set_root=self.set_root(folder) if len(paths) > 1 else None,
         )
         try:
             from quill.ui.dialog_contract import show_modal_dialog
@@ -460,7 +463,9 @@ class ScribeController(ScribeJobCommands, ScribeEventsMixin):
         stream = stream and "html" in jobs[0].formats
         if stream:
             jobs[0].open_as = "stream"
-        self.queue.add(jobs)  # several files: one after another (the approved exception)
+        # Several files: one after another (the approved exception), as a set
+        # when the person named one in the dialog.
+        self.queue.add(jobs, batch_set=self.start_set(choice, jobs))
         if choice.password and jobs:
             self.ensure_service()
             if self._service is not None:

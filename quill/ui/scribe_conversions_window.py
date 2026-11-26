@@ -5,13 +5,19 @@ on the runner's events and every two seconds, for jobs another app runs).
 Several files chosen together run one after another on their own (the
 exception Pneuma approved on 2026-11-21), so there is no Send Next File.
 
-* A report-view ``wx.ListCtrl`` (File, Formats, Stage), one row per job. A
-  row's text changes only when its stage changes; rows update in place and
-  are never rebuilt, sorted or scrolled, so focus stays where the person left
-  it (FUX-06). Percent, estimated time and the full latest message are in the
-  Details field below, which is not rewritten while it has focus.
-* Enter opens the result, Delete removes the row, the Applications key or
-  Shift+F10 opens every job command; the same commands are buttons.
+* A native tree (``wx.TreeCtrl``, 2026-11-24). A job is a row, "Notes.pdf,
+  Word: Converting: Word", and a **named set** (:mod:`quill.core.scribe.sets`)
+  is one row, "Board packet: 12 of 34 done, 35 percent", with its documents
+  under it: Right arrow opens it, Left closes it. Rows update in place and
+  are never rebuilt, sorted or scrolled, so focus, the reader and what is
+  open stay where the person left them (FUX-06). The row the person is on
+  is not rewritten while the tree has focus -- a screen reader would read
+  the new text out -- and catches up when they move; Details is current.
+* Enter on a document opens the result; Enter on a set opens Set Details
+  (:mod:`quill.ui.scribe_set_details`) with the conversion log. Delete
+  removes the row, the Applications key or Shift+F10 opens every command;
+  the same commands are buttons, and on a set Open Folder, Cancel Waiting,
+  Retry, Copy Details and Remove from List act on the whole set.
 * The modeless-window contract: a title, Escape closes it and returns focus
   to where it was opened from, F1 answers, and an update never steals focus.
 
@@ -31,6 +37,7 @@ from typing import Any
 import wx
 
 from quill.core.scribe import queue as q
+from quill.core.scribe import sets
 from quill.core.scribe.model import formats_phrase
 from quill.ui.dialog_contract import bind_close_button, show_modeless_surface
 
@@ -80,6 +87,18 @@ def job_details(job: q.Job, now: float | None = None) -> str:
     return "\n".join(lines)
 
 
+def job_row(job: q.Job) -> str:
+    """A job's row: its name, formats and stage."""
+    words = job.state_words
+    if job.state == q.CONVERTING and job.stage:
+        from quill.core.scribe.model import format_label, stage_words
+
+        stage = stage_words(job.stage)
+        stage = stage[:1].upper() + stage[1:]  # not capitalize(): it lowers "Scribe's"
+        words = f"{stage}: {format_label(job.format)}"
+    return f"{job.display_name}, {formats_phrase(job.formats)}: {words}"
+
+
 class ScribeConversionsWindow(wx.Frame):
     #: Stage feedback, when chosen, plays while this window is in front
     #: (quill.core.scribe.feedback.SCRIBE_WINDOW_ATTR).
@@ -90,21 +109,25 @@ class ScribeConversionsWindow(wx.Frame):
         self.SetName("scribe_conversions_window")  # F1 finds its topic by this name (topics.json)
         self._controller = controller
         self._opener: Any = None
-        self._ids: list[str] = []
-        self._stages: dict[str, str] = {}
+        #: Each row's key ("job:<id>" or "set:<id>"), its item and its text.
+        self._items: dict[str, Any] = {}
+        self._texts: dict[str, str] = {}
 
         panel = wx.Panel(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(wx.StaticText(panel, label="Conv&ersions:"), 0, wx.LEFT | wx.TOP, 6)
-        self.list = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
-        self.list.InsertColumn(0, "File", width=self.FromDIP(220))
-        self.list.InsertColumn(1, "Formats", width=self.FromDIP(200))
-        self.list.InsertColumn(2, "Stage", width=self.FromDIP(220))
-        self.list.SetHelpText(
-            "Every Scribe for Documents job on this computer, from every QUILL app. Enter opens "
-            "the result, Delete removes the row, the Applications key lists every command."
+        self.tree = wx.TreeCtrl(
+            panel,
+            style=wx.TR_HAS_BUTTONS | wx.TR_HIDE_ROOT | wx.TR_LINES_AT_ROOT | wx.TR_SINGLE,
         )
-        sizer.Add(self.list, 1, wx.EXPAND | wx.ALL, 6)
+        self._root = self.tree.AddRoot(TITLE)
+        self.tree.SetHelpText(
+            "Every Scribe for Documents job on this computer, from every QUILL app. A set of "
+            "documents is one row: Right arrow shows its documents, Left hides them, and Enter "
+            "opens Set Details with its conversion log. On a document, Enter opens the result. "
+            "Delete removes the row, the Applications key lists every command."
+        )
+        sizer.Add(self.tree, 1, wx.EXPAND | wx.ALL, 6)
         self.empty_label = wx.StaticText(panel, label="Status:")
         sizer.Add(self.empty_label, 0, wx.LEFT, 6)
         self.empty = wx.TextCtrl(panel, style=wx.TE_READONLY, value=EMPTY)
@@ -114,7 +137,8 @@ class ScribeConversionsWindow(wx.Frame):
         self.details = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
         self.details.SetMinSize(self.FromDIP(wx.Size(-1, 110)))
         self.details.SetHelpText(
-            "The chosen job's progress, estimated time, Scribe's latest message and any error."
+            "The chosen job's progress, estimated time, Scribe's latest message and any "
+            "error; for a set, how many are done and which were not made."
         )
         sizer.Add(self.details, 0, wx.EXPAND | wx.ALL, 6)
 
@@ -134,13 +158,13 @@ class ScribeConversionsWindow(wx.Frame):
         self.SetSize(self.FromDIP(wx.Size(720, 520)))
 
         bind_close_button(self, close, modeless=True)
-        self.list.Bind(wx.EVT_LIST_ITEM_FOCUSED, lambda _e: self._show_details())
-        self.list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, lambda _e: self.run("open_result"))
-        self.list.Bind(wx.EVT_CONTEXT_MENU, self._on_context_menu)
-        self.list.Bind(wx.EVT_KEY_DOWN, self._on_list_key)
+        self.tree.Bind(wx.EVT_TREE_SEL_CHANGED, lambda _e: self._moved())
+        self.tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, lambda _e: self.activate())
+        self.tree.Bind(wx.EVT_CONTEXT_MENU, self._on_context_menu)
+        self.tree.Bind(wx.EVT_TREE_KEY_DOWN, self._on_tree_key)
         self.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self.Bind(wx.EVT_CLOSE, self._on_close)
-        self.list.Hide()  # shown by refresh() once there is a row
+        self.tree.Hide()  # shown by refresh() once there is a row
         self._timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, lambda _e: self.refresh(), self._timer)
         self.refresh()
@@ -152,15 +176,21 @@ class ScribeConversionsWindow(wx.Frame):
         self._opener = opener
         if self.IsShown():
             self.Raise()
-            (self.list if self._ids else self.empty).SetFocus()
+            (self.tree if self._items else self.empty).SetFocus()
             return
         self._timer.Start(2000)
         show_modeless_surface(self, TITLE, focus=True)
-        target = self.list if self._ids else self.empty
-        if self._ids and self.list.GetFocusedItem() < 0:
-            self.list.Focus(0)
-            self.list.Select(0)
-        target.SetFocus()
+        self._focus_rows()
+
+    def _focus_rows(self) -> None:
+        if not self._items:
+            self.empty.SetFocus()
+            return
+        if not self.tree.GetSelection().IsOk():
+            first, _cookie = self.tree.GetFirstChild(self._root)
+            if first.IsOk():
+                self.tree.SelectItem(first)
+        self.tree.SetFocus()
 
     def _on_char_hook(self, event: wx.KeyEvent) -> None:
         if event.GetKeyCode() == wx.WXK_ESCAPE:
@@ -182,90 +212,149 @@ class ScribeConversionsWindow(wx.Frame):
 
     # ------------------------------------------------------------- updates
 
+    def _key_of(self, item: Any) -> str:
+        if item is None or not item.IsOk() or item == self._root:
+            return ""
+        return str(self.tree.GetItemData(item) or "")
+
+    def _reading(self, key: str) -> bool:
+        """The row the person is on, in the focused tree: not rewritten now."""
+        return wx.Window.FindFocus() is self.tree and self._key_of(self.tree.GetSelection()) == key
+
+    def _row(self, key: str, text: str, parent: Any) -> None:
+        """Add the row, or change its text in place (never while it is read)."""
+        item = self._items.get(key)
+        if item is None:
+            item = self.tree.AppendItem(parent, text)
+            self.tree.SetItemData(item, key)
+            self._items[key] = item
+            self._texts[key] = text
+            return
+        self._texts[key] = text
+        if self.tree.GetItemText(item) != text and not self._reading(key):
+            self.tree.SetItemText(item, text)
+
+    def _remove_row(self, key: str) -> None:
+        item = self._items.pop(key, None)
+        self._texts.pop(key, None)
+        if item is None:
+            return
+        for child in [k for k, i in self._items.items() if self.tree.GetItemParent(i) == item]:
+            self._items.pop(child, None)
+            self._texts.pop(child, None)
+        if self.tree.GetSelection() == item:
+            after = self.tree.GetNextSibling(item)
+            if not after.IsOk():
+                after = self.tree.GetPrevSibling(item)
+            if not after.IsOk():
+                parent = self.tree.GetItemParent(item)
+                if parent.IsOk() and parent != self._root:
+                    after = parent
+            if after.IsOk():
+                self.tree.SelectItem(after)
+        self.tree.Delete(item)
+
     def refresh(self, _job_id: str = "") -> None:
-        """Bring the rows up to date in place; never move focus."""
+        """Bring the rows up to date in place; never move focus or announce."""
         try:
             jobs = self._controller.queue.jobs()
+            named = {made.id: made for made in self._controller.queue.sets()}
         except (OSError, TimeoutError):
             return
-        by_id = {job.id: job for job in jobs}
-        # rows that went away (removed in another app)
-        focused_row = self.list.GetFocusedItem()
-        for index in range(len(self._ids) - 1, -1, -1):
-            if self._ids[index] not in by_id:
-                self.list.DeleteItem(index)
-                if index == focused_row and self.list.GetItemCount():
-                    keep = min(index, self.list.GetItemCount() - 1)
-                    self.list.Focus(keep)
-                    self.list.Select(keep)
-                self._stages.pop(self._ids[index], None)
-                del self._ids[index]
+        keys = {f"job:{job.id}" for job in jobs}
+        keys |= {f"set:{set_id}" for set_id in named if any(j.batch == set_id for j in jobs)}
+        for key in [k for k in self._items if k not in keys]:
+            if key in self._items:
+                self._remove_row(key)
         for job in jobs:
-            words = job.state_words
-            if job.state == q.CONVERTING and job.stage:
-                from quill.core.scribe.model import format_label, stage_words
-
-                stage = stage_words(job.stage)
-                stage = stage[:1].upper() + stage[1:]  # not capitalize(): it lowers "Scribe's"
-                words = f"{stage}: {format_label(job.format)}"
-            if job.id not in self._ids:
-                row = self.list.InsertItem(self.list.GetItemCount(), job.display_name)
-                self.list.SetItem(row, 1, formats_phrase(job.formats))
-                self.list.SetItem(row, 2, words)
-                self._ids.append(job.id)
-                self._stages[job.id] = words
-            elif self._stages.get(job.id) != words:
-                self.list.SetItem(self._ids.index(job.id), 2, words)
-                self._stages[job.id] = words
-        has_rows = bool(self._ids)
+            parent = self._root
+            batch_set = named.get(job.batch)
+            if batch_set is not None:
+                members = [j for j in jobs if j.batch == batch_set.id]
+                self._row(f"set:{batch_set.id}", sets.set_progress(batch_set, members), self._root)
+                parent = self._items[f"set:{batch_set.id}"]
+            self._row(f"job:{job.id}", job_row(job), parent)
+        has_rows = bool(self._items)
         if self.empty.IsShown() == has_rows:
             focused = wx.Window.FindFocus()
-            if has_rows and focused is self.empty:
-                self.list.Focus(0)
-                self.list.Select(0)
-                self.list.SetFocus()
-            elif not has_rows and focused is self.list:
-                self.empty.SetFocus()
             self.empty.Show(not has_rows)
             self.empty_label.Show(not has_rows)
-            self.list.Show(has_rows)
+            self.tree.Show(has_rows)
             self.Layout()
+            if has_rows and focused is self.empty:
+                self._focus_rows()
+            elif not has_rows and focused is self.tree:
+                self.empty.SetFocus()
         self._show_details()
 
-    def selected_job(self) -> q.Job | None:
-        index = self.list.GetFocusedItem()
-        if index < 0 or index >= len(self._ids):
-            return None
+    def _moved(self) -> None:
+        """The person moved: rows held back while read catch up, then Details."""
+        for key, item in self._items.items():
+            text = self._texts.get(key, "")
+            if self.tree.GetItemText(item) != text and not self._reading(key):
+                self.tree.SetItemText(item, text)
+        self._show_details()
+
+    def selected(self) -> tuple[str, Any]:
+        """``("set", BatchSet)``, ``("job", Job)`` or ``("", None)``."""
+        key = self._key_of(self.tree.GetSelection())
+        kind, _sep, ident = key.partition(":")
         try:
-            return self._controller.queue.get(self._ids[index])
+            if kind == "set":
+                return kind, self._controller.queue.get_set(ident)
+            if kind == "job":
+                return kind, self._controller.queue.get(ident)
         except (OSError, TimeoutError):
-            return None
+            pass
+        return "", None
+
+    def selected_job(self) -> q.Job | None:
+        kind, found = self.selected()
+        return found if kind == "job" else None
 
     def _show_details(self) -> None:
         if wx.Window.FindFocus() is self.details:
             return  # never rewrite what is being read
-        job = self.selected_job()
-        text = job_details(job) if job is not None else ""
+        kind, found = self.selected()
+        text = ""
+        if kind == "job" and found is not None:
+            text = job_details(found)
+        elif kind == "set" and found is not None:
+            from quill.ui.scribe_set_details import set_details_text
+
+            text = set_details_text(found, self._controller.set_jobs(found.id))
         if self.details.GetValue() != text:
             self.details.SetValue(text)
             self.details.SetInsertionPoint(0)
-        self._enable_buttons(job)
+        self._enable_buttons(kind, found)
 
-    def _enable_buttons(self, job: q.Job | None) -> None:
+    def _enable_buttons(self, kind: str, found: Any) -> None:
+        job = found if kind == "job" else None
         state = job.state if job is not None else ""
-        rules = {
-            "open_result": bool(job and job.outputs),
-            "next_steps": bool(job and job.outputs),
-            "open_folder": bool(job and job.folder),
-            "cancel_waiting": state in q.ACTIVE or state in q.NEEDS_PERSON,
-            "retry": state in (q.FAILED, q.STOPPED, q.NEEDS_SIGNIN, q.GONE),
-            "buy_pages": True,
-            "enter_password": state == q.NEEDS_PASSWORD,
-            "sign_in": state == q.NEEDS_SIGNIN,
-            "ask_review": bool(job and job.document_id),
-            "copy_details": job is not None,
-            "remove": job is not None,
-        }
+        if kind == "set" and found is not None:
+            states = {j.state for j in self._controller.set_jobs(found.id)}
+            rules = {
+                "open_folder": True,
+                "cancel_waiting": bool(states & (q.ACTIVE | q.NEEDS_PERSON)),
+                "retry": bool(states & {q.FAILED, q.STOPPED, q.NEEDS_SIGNIN, q.GONE}),
+                "buy_pages": True,
+                "copy_details": True,
+                "remove": True,
+            }
+        else:
+            rules = {
+                "open_result": bool(job and job.outputs),
+                "next_steps": bool(job and job.outputs),
+                "open_folder": bool(job and job.folder),
+                "cancel_waiting": state in q.ACTIVE or state in q.NEEDS_PERSON,
+                "retry": state in (q.FAILED, q.STOPPED, q.NEEDS_SIGNIN, q.GONE),
+                "buy_pages": True,
+                "enter_password": state == q.NEEDS_PASSWORD,
+                "sign_in": state == q.NEEDS_SIGNIN,
+                "ask_review": bool(job and job.document_id),
+                "copy_details": job is not None,
+                "remove": job is not None,
+            }
         for method, button in self.buttons.items():
             # Enabled buttons only would hide commands from Tab; they stay
             # enabled and say why when they cannot act (review 2026-11-20).
@@ -274,7 +363,7 @@ class ScribeConversionsWindow(wx.Frame):
 
     # ------------------------------------------------------------ commands
 
-    def _on_list_key(self, event: wx.KeyEvent) -> None:
+    def _on_tree_key(self, event: wx.TreeEvent) -> None:
         if event.GetKeyCode() == wx.WXK_DELETE:
             self.run("remove")
             return
@@ -288,7 +377,21 @@ class ScribeConversionsWindow(wx.Frame):
         self.PopupMenu(menu)
         menu.Destroy()
 
+    def activate(self) -> None:
+        """Enter: Set Details on a set, the result on a document."""
+        kind, found = self.selected()
+        if kind == "set" and found is not None:
+            # After the tree's own key handling, so nothing else acts on the key.
+            wx.CallAfter(self._controller.open_set_details, found.id, self)
+        elif kind == "job":
+            self.run("open_result")
+
     def run(self, method: str) -> None:
+        kind, found = self.selected()
+        if kind == "set" and found is not None:
+            self._run_on_set(method, found)
+            self.refresh()
+            return
         controller = self._controller
         job = self.selected_job()
         if method == "sign_in":
@@ -319,15 +422,38 @@ class ScribeConversionsWindow(wx.Frame):
         elif method == "ask_review":
             controller.ask_for_review(job.document_id, job.display_name)
         elif method == "copy_details":
-            if wx.TheClipboard.Open():
-                try:
-                    wx.TheClipboard.SetData(wx.TextDataObject(job_details(job)))
-                finally:
-                    wx.TheClipboard.Close()
-                controller.host.scribe_announce("Details copied.")
+            _copy(job_details(job))
+            controller.host.scribe_announce("Details copied.")
         elif method == "remove":
-            self._remove(job)
+            self._remove(f"job:{job.id}", job.display_name, lambda: controller.remove(job.id))
         self.refresh()
+
+    def _run_on_set(self, method: str, batch_set: Any) -> None:
+        """A command on a set's row acts on the whole set, where that makes sense."""
+        controller = self._controller
+        if method == "open_folder":
+            _open_folder(Path(batch_set.folder))
+        elif method == "cancel_waiting":
+            controller.stop_waiting_set(batch_set.id)
+        elif method == "retry":
+            controller.retry_failed(batch_set.id)
+        elif method == "buy_pages":
+            controller.buy_pages("")
+        elif method == "copy_details":
+            from quill.ui.scribe_set_details import set_details_text
+
+            _copy(set_details_text(batch_set, controller.set_jobs(batch_set.id)))
+            controller.host.scribe_announce("Details copied.")
+        elif method == "remove":
+            self._remove(
+                f"set:{batch_set.id}", batch_set.name, lambda: controller.remove_set(batch_set.id)
+            )
+        elif method == "sign_in":
+            controller.sign_in()
+        else:
+            controller.host.scribe_announce(
+                f"Choose a document in {batch_set.name} first: Right arrow shows them."
+            )
 
     def _next_steps(self, job: q.Job) -> None:
         """A menu of what this app can do with the finished outputs (8.1.7), at
@@ -345,18 +471,18 @@ class ScribeConversionsWindow(wx.Frame):
         button.PopupMenu(menu, wx.Point(0, button.GetSize().height))
         menu.Destroy()
 
-    def _remove(self, job: q.Job) -> None:
-        index = self._ids.index(job.id) if job.id in self._ids else -1
-        self._controller.remove(job.id)
-        if index >= 0:
-            self.list.DeleteItem(index)
-            del self._ids[index]
-            self._stages.pop(job.id, None)
-            if self._ids:
-                target = min(index, len(self._ids) - 1)
-                self.list.Focus(target)
-                self.list.Select(target)
-        self._controller.host.scribe_announce(f"{job.display_name} removed from the list.")
+    def _remove(self, key: str, name: str, remove: Any) -> None:
+        remove()
+        self._remove_row(key)
+        self._controller.host.scribe_announce(f"{name} removed from the list.")
+
+
+def _copy(text: str) -> None:
+    if wx.TheClipboard.Open():
+        try:
+            wx.TheClipboard.SetData(wx.TextDataObject(text))
+        finally:
+            wx.TheClipboard.Close()
 
 
 def _open_folder(folder: Path) -> None:
@@ -396,4 +522,4 @@ _CANNOT = {
 }
 
 
-__all__ = ["COMMANDS", "EMPTY", "ScribeConversionsWindow", "job_details"]
+__all__ = ["COMMANDS", "EMPTY", "ScribeConversionsWindow", "job_details", "job_row"]

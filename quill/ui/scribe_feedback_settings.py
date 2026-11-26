@@ -1,15 +1,16 @@
 """Scribe for Documents Options: how progress and results are told (2026-11-23).
 
 The section of :class:`~quill.ui.scribe_options_dialog.ScribeOptionsDialog`
-for :mod:`quill.core.scribe.feedback`: for each of a conversion's four
-moments, a sound, words, both or neither, in the family's one wording
+for :mod:`quill.core.scribe.feedback`: for each of a conversion's five
+moments (the fifth, a whole named set finishing, is one cue for the set), a
+sound, words, both or neither, in the family's one wording
 (:data:`~quill.core.action_feedback.ACTION_FEEDBACK_LABELS`); where stage
 feedback is given; and a button to hear the success and the failure sound.
 Every Scribe entry point in every app opens the same dialog, so this is the
 one place, in QUILL and in QUILL Lite alike.
 
 Built in its own module so the dialog stays readable, and kept to the
-dialog's access keys: these labels take S, E, P, H, U, C and L, which nothing
+dialog's access keys: these labels take S, E, P, H, U, Y, C and L, which nothing
 else in that window uses (GATE-14; ``test_options_access_keys_are_unique_in_the_whole_window``
 checks the whole built dialog (``test_scribe_feedback_routing.py``), because
 the gate scopes a helper class per method and cannot see the two together).
@@ -47,6 +48,7 @@ _LABELS: dict[Moment, str] = {
     Moment.STAGE: "At &each stage, milestone or delay:",
     Moment.FINISHED: "When a conversion finis&hes:",
     Moment.FAILED: "When a conversion fails or needs yo&u:",
+    Moment.SET_FINISHED: "When ever&y document of a set has finished:",
 }
 
 _HELP: dict[Moment, str] = {
@@ -72,6 +74,13 @@ _HELP: dict[Moment, str] = {
         "file Scribe refused. The default is the failure sound, different from the "
         "success sound. With the app's sounds turned off it is spoken instead. The "
         "reason is always in the status bar and Notifications."
+    ),
+    Moment.SET_FINISHED: (
+        "When you convert several files as a named set: one cue when the whole set is "
+        "done, instead of one for each document. The default is a sound: the success "
+        "sound when every document was made, the failure sound when any was not. The "
+        "sentence, with how many were made, is in the status bar and Notifications, and "
+        "the set's folder has its conversion log."
     ),
 }
 

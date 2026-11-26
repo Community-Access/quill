@@ -6,7 +6,7 @@ ongoing status", and "give rich settings to allow the user to control
 interaction type, sound, speech, both, none, etc. use different sounds for
 success and failure."
 
-So a conversion has four **moments**, and each has its own choice in Scribe
+So a conversion has five **moments**, and each has its own choice in Scribe
 for Documents Options, from the family's one feedback vocabulary
 (:mod:`quill.core.action_feedback`: a sound, words, both, or neither -- the
 same enum and the same chooser wording, never a second set):
@@ -25,7 +25,17 @@ Moment                 What it covers                Default
 ``failed``             it failed, or it needs the     sound
                        person (sign-in expired, out
                        of pages, a refused file)
+``set_finished``       every document of a named set  sound
+                       has finished: one cue for the
+                       whole set, the failure sound
+                       if any of it failed
 =====================  ============================  =========
+
+**A set gets one cue** (2026-11-24). The documents of a named set
+(:mod:`quill.core.scribe.sets`) are not told one by one as they finish or
+fail -- 34 sounds would be noise -- and the set's own moment, when the last
+of them is done, is the one cue: the success sound when every document was
+made, the failure sound when any was not (:func:`plan`'s *failed*).
 
 **Nothing is spoken by default.** Progress is in the Conversions window and
 the Scribe Status dialog, where the person goes to read it; the end of a job
@@ -82,12 +92,13 @@ __all__ = [
 
 
 class Moment(StrEnum):
-    """The four things a conversion can tell the person."""
+    """The five things a conversion can tell the person."""
 
     STARTED = "started"
     STAGE = "stage"
     FINISHED = "finished"
     FAILED = "failed"
+    SET_FINISHED = "set_finished"
 
 
 #: The chooser's label for each moment, in the order the Options page shows
@@ -97,6 +108,7 @@ MOMENT_LABELS: tuple[tuple[Moment, str], ...] = (
     (Moment.STAGE, "At each stage, milestone or delay"),
     (Moment.FINISHED, "When a conversion finishes"),
     (Moment.FAILED, "When a conversion fails or needs you"),
+    (Moment.SET_FINISHED, "When a set of documents finishes"),
 )
 
 #: The sound each end of a job plays. Two clearly different cues for success
@@ -107,6 +119,7 @@ MOMENT_SOUNDS: Mapping[Moment, str] = {
     Moment.STARTED: SoundEvent.SCRIBE_STARTED.value,
     Moment.FINISHED: SoundEvent.SCRIBE_FINISHED.value,
     Moment.FAILED: SoundEvent.SCRIBE_FAILED.value,
+    Moment.SET_FINISHED: SoundEvent.SCRIBE_FINISHED.value,
 }
 
 #: Stage feedback only while a Scribe for Documents window is in front.
@@ -128,6 +141,7 @@ _DEFAULTS: Mapping[Moment, ActionFeedback] = {
     Moment.STAGE: ActionFeedback.SILENT,
     Moment.FINISHED: ActionFeedback.SOUND,
     Moment.FAILED: ActionFeedback.SOUND,
+    Moment.SET_FINISHED: ActionFeedback.SOUND,
 }
 
 
@@ -147,6 +161,7 @@ class FeedbackChoices:
     stage: str = ActionFeedback.SILENT.value
     finished: str = ActionFeedback.SOUND.value
     failed: str = ActionFeedback.SOUND.value
+    set_finished: str = ActionFeedback.SOUND.value
     stage_scope: str = DEFAULT_STAGE_SCOPE
 
     def mode(self, moment: Moment) -> ActionFeedback:
@@ -204,11 +219,14 @@ def to_speak_stages(choices: FeedbackChoices) -> str:
     return "always" if choices.stage_scope == EVERYWHERE else "front"
 
 
-def sound_for(moment: Moment, percent: int = 0) -> str:
+def sound_for(moment: Moment, percent: int = 0, *, failed: bool = False) -> str:
     """The sound event for *moment*; a stage is the progress ladder's step at
-    *percent*, or the working tick for a stage with no percent."""
+    *percent*, or the working tick for a stage with no percent; a set that
+    finished with any document *failed* has the failure sound."""
     if moment is Moment.STAGE:
         return progress_sound_event(percent) or SoundEvent.PROGRESS_TICK.value
+    if moment is Moment.SET_FINISHED and failed:
+        return MOMENT_SOUNDS[Moment.FAILED]
     return MOMENT_SOUNDS[moment]
 
 
@@ -231,14 +249,16 @@ def plan(
     has_sound: Callable[[str], bool],
     scribe_window_in_front: bool,
     percent: int = 0,
+    failed: bool = False,
 ) -> Delivery:
-    """The delivery for *moment* under *choices*.
+    """The delivery for *moment* under *choices* (*failed*: a set that ended
+    with a document not made, which has the failure sound).
 
     *has_sound* answers whether the loaded pack can play an event; a ``sound``
     choice for an event it cannot play speaks instead (the family rule).
     """
     if moment is Moment.STAGE and choices.stage_scope != EVERYWHERE and not scribe_window_in_front:
         return NOTHING
-    event = sound_for(moment, percent)
+    event = sound_for(moment, percent, failed=failed)
     play, speak = resolve(choices.mode(moment), has_sound=bool(event) and has_sound(event))
     return Delivery(event if play else "", speak)

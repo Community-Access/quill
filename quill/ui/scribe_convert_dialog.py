@@ -6,6 +6,12 @@ Its parts, in tab order:
    and focused on open, holding the consent (:mod:`quill.core.scribe.consent`):
    what goes where, the sensitive-name caution, the privacy lines on the first
    upload, the copyright notice. There is no "don't ask again".
+1a. **Set name**, only when several files were chosen (2026-11-24): they
+   become a named set, in a folder of that name inside the usual Scribe
+   folder, with a conversion log (:mod:`quill.core.batch_sets`). The field
+   starts with "Set of 34, Nov 24". A name Windows refuses, or one a folder
+   already has, is said in one sentence at Send, shown below the field, and
+   the field is selected to type again: nothing is sent until the name works.
 2. **What you want back** -- a check box per format; one already made says
    ", already made", and any other format of a document already in the
    account says ", no pages used": pages are charged once per document (3.6).
@@ -38,6 +44,7 @@ from typing import Any
 import wx
 import wx.lib.scrolledpanel as scrolled
 
+from quill.core.batch_sets import create_set_folder, default_set_name, name_problem
 from quill.core.scribe.consent import consent_text, pages_text
 from quill.core.scribe.model import FORMATS, ScribeSettings, settings_summary
 from quill.core.scribe.voices import document_language
@@ -63,6 +70,9 @@ class ConvertChoice:
     remembered: ScribeSettings | None = None
     #: The dialect is still only the suggestion: never saved as account defaults.
     suggested_dialect: bool = False
+    #: Several files: the set's name and the folder made for it at Send.
+    set_name: str = ""
+    set_folder: Path | None = None
 
 
 def pdf_needs_password(path: Path) -> bool:
@@ -106,6 +116,7 @@ class ScribeConvertDialog(wx.Dialog):
         formats: list[str],
         options: Any,
         refused: list[str] | None = None,
+        set_root: Path | None = None,
     ) -> None:
         super().__init__(
             parent,
@@ -125,6 +136,8 @@ class ScribeConvertDialog(wx.Dialog):
         ai_off = bool(getattr(controller.host, "scribe_ai_off", lambda: False)())
         self._page_counts = {str(p): c for p in self._paths if (c := pdf_pages(p))}
         self._needs_password = any(pdf_needs_password(p) for p in self._paths[:1])
+        self._set_root = set_root if len(self._paths) > 1 else None
+        self._set_folder: Path | None = None
 
         outer = wx.BoxSizer(wx.VERTICAL)
         panel = scrolled.ScrolledPanel(self, style=wx.TAB_TRAVERSAL)
@@ -152,6 +165,28 @@ class ScribeConvertDialog(wx.Dialog):
             "at any time. Nothing is sent until you press Send and Convert."
         )
         sizer.Add(self.consent, 0, wx.EXPAND | wx.ALL, 6)
+
+        # Several files: a named set, in its own folder (only then shown, so a
+        # single file's tab order is as it always was).
+        self.set_name: Any = None
+        self.set_problem: Any = None
+        if self._set_root is not None:
+            sizer.Add(
+                wx.StaticText(panel, label="Set name, used as its &folder name:"),
+                0,
+                wx.LEFT | wx.TOP,
+                6,
+            )
+            self.set_name = wx.TextCtrl(panel, value=default_set_name(len(self._paths)))
+            self.set_name.SetHelpText(
+                f"These {len(self._paths)} files are converted as one set. The results go "
+                f"in a folder with this name inside {self._set_root}, one folder for each "
+                "document, with a conversion log. Conversions on This Computer shows the "
+                "set as one row."
+            )
+            sizer.Add(self.set_name, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
+            self.set_problem = wx.StaticText(panel, label="")
+            sizer.Add(self.set_problem, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
         made = set(existing.ready_formats) if existing is not None else set()
         free = bool(existing is not None and getattr(existing, "charged", False))
@@ -435,6 +470,11 @@ class ScribeConvertDialog(wx.Dialog):
                 "Choose at least one format to get back.",
             )
             return
+        if self.set_name is not None and self._set_folder is None:
+            problem = name_problem(self.set_name.GetValue(), self._set_root or Path())
+            if problem:
+                self._name_again(problem)
+                return
         if (
             self._needs_password
             and not self.password.IsShown()
@@ -449,8 +489,39 @@ class ScribeConvertDialog(wx.Dialog):
                 f"{name} needs its password. Type it, then press Send and Convert.",
             )
             return
+        if self.set_name is not None and self._set_folder is None and not self._make_set_folder():
+            return
         self.groups.stop_sample()
         self.EndModal(wx.ID_OK)
+
+    def _name_again(self, problem: str) -> None:
+        """Say why the set name cannot be used, show it, and select the name."""
+        self.set_problem.SetLabel(problem)
+        self.set_problem.Wrap(self.FromDIP(500))
+        self._panel.Layout()
+        self.set_name.SetFocus()
+        self.set_name.SelectAll()
+        wx.CallLater(200, self._controller.host.scribe_announce, problem)
+
+    def _make_set_folder(self) -> bool:
+        """The set's folder, made just before anything is sent."""
+        name, root = self.set_name.GetValue(), self._set_root or Path()
+        try:
+            self._set_folder = create_set_folder(name, root)
+        except ValueError as problem:
+            self._name_again(str(problem))
+            return False
+        except FileExistsError:
+            self._name_again(name_problem(name, root) or f"A folder called {name} already exists.")
+            return False
+        except OSError:
+            self._name_again(
+                f"The folder for {name} could not be made in {root}. Choose another name, "
+                "or choose another download folder in Scribe for Documents Options."
+            )
+            return False
+        self.set_problem.SetLabel("")
+        return True
 
     def result(self) -> ConvertChoice:
         return ConvertChoice(
@@ -465,6 +536,8 @@ class ScribeConvertDialog(wx.Dialog):
             email_changed=self.groups.email_changed(),
             remembered=self.groups.remembered(),
             suggested_dialect=self.groups.suggested(),
+            set_name=self.set_name.GetValue() if self._set_folder is not None else "",
+            set_folder=self._set_folder,
         )
 
     def _on_destroy(self, event: wx.WindowDestroyEvent) -> None:

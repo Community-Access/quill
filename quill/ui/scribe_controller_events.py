@@ -21,6 +21,10 @@ queue, host, options, speaker, window and ``_say``.
   Notifications too, so a missed sound never loses the result (FUX-04). Words,
   when chosen, go through the app's announcement service, so braille gets
   them as well.
+* **A named set is told once** (:mod:`quill.core.scribe.sets`): its
+  documents' starts, results and failures are not told one by one -- they
+  are in the set's log and the Conversions window -- and ``set_done``, when
+  the last of them has finished, is the set's one cue and one sentence.
 """
 
 from __future__ import annotations
@@ -75,6 +79,7 @@ class ScribeEventsMixin:
         percent: int = 0,
         cue: bool = True,
         stall: bool = False,
+        failed: bool = False,
     ) -> None:
         """Tell *text* about *moment* the way the person chose (see the notes).
 
@@ -82,7 +87,9 @@ class ScribeEventsMixin:
         ladder); *cue* False for a sentence that follows one that already had
         its sound (the batch summary after the last file's result); *stall*
         for busy and offline, which explain a job that is not moving and so go
-        to the status bar like a result, though they are stage moments.
+        to the status bar like a result, though they are stage moments;
+        *failed* for a set that ended with a document not made (its sound is
+        the failure sound, and its notice an error).
 
         **A result is not overwritten by what follows it.** In a batch the
         next file starts the moment one finishes, so a start or a stage that
@@ -98,14 +105,15 @@ class ScribeEventsMixin:
             has_sound=self._has_sound,
             scribe_window_in_front=self._scribe_window_in_front(),
             percent=percent,
+            failed=failed,
         )
-        ending = moment in (Moment.FINISHED, Moment.FAILED)
+        ending = moment in (Moment.FINISHED, Moment.FAILED, Moment.SET_FINISHED)
         if ending or delivery.speak:
             self._last_sentence = text
         if ending or stall or (delivery.speak and moment is Moment.STARTED):
             self._show_status(text)
         if ending:
-            self._record_notice(text, failed=moment is Moment.FAILED)
+            self._record_notice(text, failed=moment is Moment.FAILED or failed)
         if delivery.sound and cue:
             self._cue(delivery.sound)
         if delivery.speak:
@@ -198,6 +206,11 @@ class ScribeEventsMixin:
             return
         if job.open_as == WATCH and kind != "closed_while":
             return  # the watch folder says its own results (8.1.6)
+        if kind == "set_done":
+            self._set_finished(job.batch)
+            return
+        if kind in ("started", "done", "error") and self._in_set(job):
+            return  # a set is told once, when all of it is done
         if kind == "started":
             self._tell(Moment.STARTED, say.start_sentence(job))
         elif kind == "changed":
@@ -242,9 +255,35 @@ class ScribeEventsMixin:
         sentence = self._speaker.on_change(job, app_in_front=True)
         self._tell(Moment.STAGE, sentence, percent=say.milestone_crossed(before, job.progress) or 0)
 
+    def _in_set(self, job: q.Job) -> bool:
+        try:
+            return bool(job.batch) and self.queue.get_set(job.batch) is not None
+        except (OSError, TimeoutError):
+            return False
+
+    def _set_finished(self, set_id: str) -> None:
+        """The one cue and sentence for a whole set: the failure sound if any
+        document was not made."""
+        from quill.core.scribe import sets
+
+        try:
+            batch_set = self.queue.get_set(set_id)
+            jobs = self.queue.batch_jobs(set_id)
+        except (OSError, TimeoutError):
+            return
+        if batch_set is None or not jobs:
+            return
+        _done, failed, _working = sets.set_counts(jobs)
+        self._tell(
+            Moment.SET_FINISHED,
+            sets.set_finished_sentence(batch_set, jobs),
+            failed=bool(failed),
+        )
+
     def _batch_finished(self, job: q.Job) -> None:
-        """After the last file of a batch: what was made and what was not (7.4)."""
-        if not job.batch:
+        """After the last file of a batch: what was made and what was not (7.4).
+        A named set is told by ``set_done`` instead."""
+        if not job.batch or self._in_set(job):
             return
         try:
             jobs = self.queue.batch_jobs(job.batch)
