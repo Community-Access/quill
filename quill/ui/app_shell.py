@@ -37,7 +37,8 @@ from quill.ui.announce_commands import AnnounceCommandsMixin
 from quill.ui.announce_shim import build_announcement
 from quill.ui.app_availability import CommandAvailabilityMixin
 from quill.ui.app_shell_components import ComponentDownloadsMixin
-from quill.ui.companion_cues import init_app_sound
+from quill.ui.app_shell_startup import AppShellStartupMixin
+from quill.ui.app_shell_startup import init_app_sound as init_app_sound
 from quill.ui.dialog_contract import (
     focus_primary_control,
     show_modal_dialog,
@@ -48,6 +49,7 @@ from quill.ui.show_hide_key_picker import ShowHideKeyMixin
 
 
 class AppShellFrame(
+    AppShellStartupMixin,
     ActivityMixin,
     AnnounceCommandsMixin,
     ComponentDownloadsMixin,
@@ -100,15 +102,11 @@ class AppShellFrame(
             from quill.core.data_format_ledger import record_running_build
             from quill.ui.window_state import apply_window_geometry
 
-            apply_window_geometry(self.frame, app_id, default_size=size)
-            # Release channels, Phase 0: note the data formats this app writes,
-            # before its first save (a no-op for an app without any).
             record_running_build(app_id, "")
-            # Phase 4: once the window is up, tell the update helper so.
-            from quill.ui.maintenance_moment_ui import note_launch
+            apply_window_geometry(self.frame, app_id, default_size=size)
+            self._startup_app_id = app_id
+            self._defer_startup_tasks((("launch maintenance", self._note_launch_for_maintenance),))
             from quill.ui.updates.started import confirm_for_shell
-
-            note_launch(app_id)  # FUX-15: the first minute starts now
 
             wx.CallAfter(confirm_for_shell, self, app_id)
         # F1 context help, on every shell app from day one: install the wx
@@ -159,17 +157,14 @@ class AppShellFrame(
         from quill.ui.persistence_reporting import install as _report_writes
 
         self._stop_write_reports = _report_writes(self)
-        # Earcons need a loaded sound pack; only MainFrame ever started one, so
-        # every companion app's SoundSink was inert until now (#1302). Safe
-        # Mode stays silent here exactly as it does in QUILL.
+        # Earcons need a loaded sound pack, but loading it is optional work.
+        # Queue it behind readiness so a sound-pack or device problem cannot
+        # hold the first named, focusable window hostage. Safe Mode stays silent.
         if not safe_mode:
-            init_app_sound(self.settings)
             # Where this app's own sounds play (ui/app_sounds): its own choice,
             # by its app id, for every companion app at once.
             self._app_sounds_id, self._app_sounds_name = app_id, title
-            from quill.ui import app_sounds
-
-            app_sounds.apply(self)
+            self._defer_startup_tasks((("application sounds", self._start_app_sounds),))
         self._tray_icon: wx.adv.TaskBarIcon | None = None
         self._status_message = ""
         # Set by an explicit menu/tray "Exit" so the app's close handler quits for

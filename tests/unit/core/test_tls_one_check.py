@@ -285,7 +285,7 @@ def test_every_app_main_configures_trust_before_network(path: Path) -> None:
     if relative == "quill/apps/lite.py":
         startup = _tree(_QUILL / "apps" / "lite_startup.py")
         assert any(
-            _name(n.func) == "configure_ssl_trust"
+            _name(n.func) in {"configure_ssl_trust", "ensure_ssl_trust"}
             for n in ast.walk(startup)
             if isinstance(n, ast.Call)
         )
@@ -339,9 +339,9 @@ def test_quill_and_the_apps_package_do_not_import_trust_before_a_window() -> Non
         if isinstance(n, ast.FunctionDef) and n.name == "_run_deferred_startup_tasks"
     )
     assert any(
-        _name(n.func) == "configure_ssl_trust"
+        (isinstance(n, ast.Call) and _name(n.func) in {"configure_ssl_trust", "ensure_ssl_trust"})
+        or (isinstance(n, ast.Name) and n.id == "ensure_ssl_trust")
         for n in ast.walk(deferred)
-        if isinstance(n, ast.Call)
     )
     package = _tree(_QUILL / "apps" / "__init__.py")
     assert not any(

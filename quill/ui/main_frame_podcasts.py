@@ -14,39 +14,28 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quill.core.paths import app_data_dir
-from quill.core.podcasts import history as podcast_history
-from quill.core.podcasts import position_sync
-from quill.core.podcasts.download_queue import DownloadItem
-from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
-from quill.core.podcasts.subscriptions import (
-    PodcastLibrary,
-    load_library,
-)
-from quill.core.sound_events import SoundEvent
-from quill.ui.companion_cues import post_cue
 from quill.ui.main_frame_podcast_acquisition import PodcastAcquisitionMixin
 from quill.ui.main_frame_podcast_dialogs import PodcastDialogsMixin
 from quill.ui.main_frame_podcast_save import PodcastLibrarySaveMixin
 from quill.ui.main_frame_podcast_session import PodcastSessionMixin
 from quill.ui.main_frame_podcast_transfers import PodcastTransfersMixin
-from quill.ui.podcasts import record_writes
-from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
-from quill.ui.podcasts.failure_report import report_failure
-from quill.ui.podcasts.finish_bookkeeping import on_left_finished, record_finish
 from quill.ui.podcasts.folder_watch import FolderWatchMixin
-from quill.ui.podcasts.new_feed_check import check_start_failed, start_new_feed_check
-from quill.ui.podcasts.player_controller import (
-    PodcastPlaybackState,
-    PodcastPlayerController,
-    PodcastPlayerState,
-)
 from quill.ui.podcasts.queue_commands import QueueRunCommandsMixin
 
-if TYPE_CHECKING:  # Dialog classes are imported lazily at open time (they pull
-    # feedparser via feed_reader); keep them out of the cold-start path.
-    from quill.ui.podcasts.manager_dialog import PodcastManagerDialog
+if TYPE_CHECKING:  # Dialog classes and heavy types stay off the cold path.
+    from quill.core.podcasts import history as podcast_history
+    from quill.core.podcasts.download_queue import DownloadItem
+    from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
+    from quill.ui.podcasts.player_controller import PodcastPlaybackState
 
 _SAFE_MODE_MESSAGE = "Podcasts are disabled in Safe Mode. Restart QUILL normally to use them."
+
+
+def post_cue(event: str) -> None:
+    """Post an optional earcon without importing sound support on the cold path."""
+    from quill.ui.companion_cues import post_cue as _post_cue
+
+    _post_cue(event)
 
 
 class PodcastsMixin(
@@ -68,90 +57,28 @@ class PodcastsMixin(
     # -- setup ----------------------------------------------------------
 
     def _init_podcasts(self, *, defer_library_load: bool = False) -> None:
-        self._podcast_library: PodcastLibrary = (
-            PodcastLibrary() if defer_library_load else load_library(app_data_dir())
-        )
-        # Catch up on Quill Radio before anything reads episode state, so the
-        # Inbox and Continue Listening open already knowing.
-        from quill.ui.podcasts.launch_catchup import catch_up_with_radio
+        from quill.ui.podcasts.startup_bootstrap import initialize_podcasts
 
-        if not defer_library_load:
-            try:
-                catch_up_with_radio(self._podcast_library)
-            except Exception:
-                self._wx.CallAfter(
-                    self._announce,
-                    "The Quill Radio listening handoff could not be applied. "
-                    "Your podcast library is still available.",
-                )
-        self._podcast_manager_dialog: PodcastManagerDialog | None = None
-        self._podcast_ever_active = False
-        self._podcast_current_chapters: list = []
-        self._podcast_chapters_key: tuple[str, str] | None = None
-        self._podcast_history: podcast_history.PodcastHistory = podcast_history.load_history(
-            app_data_dir()
-        )
-        self._podcast_history_key: tuple[str, str] = ("", "")
-        from quill.core.spotify.session import SpotifySession
+        initialize_podcasts(self, defer_library_load=defer_library_load)
 
-        #: Hands the podcast player a fresh Spotify access token so a
-        #: spotify:episode: can play on the Web Playback engine; "" until the
-        #: user connects Spotify.
-        self._spotify_session = SpotifySession()
-        self._init_podcast_session()
-        self._podcast_controller = PodcastPlayerController(
-            self.frame,
-            on_state_changed=self._on_podcast_state_changed,
-            on_episode_finished=self._on_podcast_episode_finished,
-            on_position_checkpoint=self._on_podcast_position_checkpoint,
-            on_left_finished=lambda show_id, guid: on_left_finished(self, show_id, guid),
-            before_play=self._stop_radio_before_podcast,
-            on_enhance_error=self._on_podcast_enhance_error,
-            spotify_token_provider=self._spotify_session.access_token,
-            on_second_tick=self._podcast_second_tick,
-            local_fallback=self._podcast_local_fallback,
-            # The sound card this listener chose last time, so the first
-            # episode of the session already plays where the last one did.
-            output_device=self._podcast_library.settings.output_device,
-        )
-        settings = self._podcast_library.settings
-        self._podcast_controller.set_enhancement(
-            bass_db=settings.eq_bass_db,
-            mid_db=settings.eq_mid_db,
-            treble_db=settings.eq_treble_db,
-            compressor_enabled=settings.compressor(),
-            smart_speed_enabled=settings.smart_speed_enabled,
-            channel_mode=settings.channel_mode,
-        )
-        self._init_podcast_transfers()
-        # The background new-episode check, under the shared ambient-monitor
-        # policy (cadence / audible tick / interrupt speech). Off unless the
-        # user turned podcast_check_enabled on, so this costs one object.
-        self._podcast_check_monitor = PodcastCheckMonitor(
-            self.frame,
-            # ``Settings`` inside QUILL; standalone QUILL Cast has none, and
-            # falling back to None meant the check read as permanently off
-            # there -- a whole feature that could not be reached by any route.
-            # PodcastHistory answers with the same field names.
-            settings_provider=lambda: (
-                getattr(self, "settings", None) or getattr(self, "_podcast_history", None)
-            ),
-            library_provider=lambda: self._podcast_library,
-            refresh_show=self.refresh_podcast_feed,
-            safe_mode=self._safe_mode,
-            feature_enabled=lambda: self._feature_enabled("core.podcasts"),
-            on_refresh_error=lambda show_id, _error: check_start_failed(self, show_id),
-            library_changed=self._save_podcast_library,
-        )
-        if not defer_library_load:
-            self._podcast_check_monitor.apply()
-        # Housekeeping runs once at startup: the queue-age migration has to
-        # happen before anything asks how old the queue is, and an expiry that
-        # became due while the app was closed should be applied on the way in,
-        # not on the next refresh. Quiet at launch -- a summary the moment the
-        # window appears would talk over the screen reader announcing it.
-        if not defer_library_load:
-            self.podcast_run_maintenance(announce=False)
+    def _shutdown_podcasts(self) -> None:
+        """Stop optional podcast state without assuming the feature ever started."""
+        if (
+            not getattr(self, "_podcast_runtime_initialized", False)
+            and getattr(self, "_podcast_controller", None) is None
+        ):
+            return
+        monitor = getattr(self, "_podcast_check_monitor", None)
+        controller = getattr(self, "_podcast_controller", None)
+        for target in (monitor, controller):
+            shutdown = getattr(target, "shutdown", None)
+            if callable(shutdown):
+                try:
+                    shutdown()
+                except Exception:  # noqa: BLE001 - shutdown must finish
+                    pass
+        self._shutdown_podcast_transfers()
+        self._podcast_runtime_initialized = False
 
     # -- controller callbacks (fire on the UI thread already, per PlayerPanel's
     # / audio engine's own contract of UI-thread callbacks) -----------------
@@ -204,10 +131,15 @@ class PodcastsMixin(
         can look up by name on whatever host it was handed, exactly as Quill
         Radio's does. QUILL Cast queues the write instead (record_writes).
         """
+        from quill.core.podcasts import history as podcast_history
+        from quill.ui.podcasts import record_writes
+
         if not record_writes.queue_history_save(self):
             podcast_history.save_history(app_data_dir(), self._podcast_history)
 
     def _maybe_reload_podcast_chapters(self, state: PodcastPlaybackState) -> None:
+        from quill.ui.podcasts.failure_report import report_failure
+
         if not state.show_id or not state.episode_guid:
             self._podcast_current_chapters = []
             self._podcast_chapters_key = None
@@ -265,6 +197,8 @@ class PodcastsMixin(
     def _on_podcast_position_checkpoint(self, show_id: str, episode_guid: str, ms: int) -> None:
         """Persist the outgoing episode's resume position (pause/stop/switch/
         shutdown) -- the write half of the position_ms resume feature."""
+        from quill.core.podcasts import position_sync
+
         show = self._podcast_library.find_show(show_id)
         episode = show.find_episode(episode_guid) if show is not None else None
         if episode is None:
@@ -288,12 +222,16 @@ class PodcastsMixin(
         self, show: object, episode: object, ms: int, *, finished: bool
     ) -> None:
         """Write this episode's place where Quill Radio can read it (11.11)."""
+        from quill.ui.podcasts import record_writes
         from quill.ui.podcasts.shared_place import share_place
 
         if not record_writes.queue_shared_place(self, show, episode, ms, finished=finished):
             share_place(show, episode, ms, finished=finished)
 
     def _on_podcast_episode_finished(self, show_id: str, episode_guid: str) -> None:
+        from quill.core.sound_events import SoundEvent
+        from quill.ui.podcasts.finish_bookkeeping import record_finish
+
         if getattr(self, "_cast_closing", False) or getattr(self, "_cast_closed", False):
             return
         show = self._podcast_library.find_show(show_id)
@@ -503,6 +441,7 @@ class PodcastsMixin(
         )
 
     def _build_podcast_status_bar_menu(self, menu: object) -> None:
+        from quill.ui.podcasts.player_controller import PodcastPlayerState
 
         wx = self._wx
         play_id, stop_id = wx.NewIdRef(), wx.NewIdRef()
@@ -745,6 +684,7 @@ class PodcastsMixin(
             return
 
         from quill.core.podcasts import audio_processing
+        from quill.ui.podcasts.failure_report import report_failure
 
         destination = Path(item.destination)
 
@@ -832,6 +772,7 @@ class PodcastsMixin(
         from quill.core.podcasts import acb_media_podcasts
         from quill.core.podcasts.opml import parse_opml
         from quill.core.podcasts.opml_import import apply_plan
+        from quill.ui.podcasts.failure_report import report_failure
 
         def _do_subscribe(**_kwargs: object):
             return acb_media_podcasts.fetch_acb_media_directory(safe_mode=self._safe_mode)
@@ -880,6 +821,8 @@ class PodcastsMixin(
         only_if_automatic_checks_enabled: bool = False,
     ) -> None:
         """Refresh just the feeds a completed import has newly subscribed."""
+        from quill.ui.podcasts.new_feed_check import start_new_feed_check
+
         start_new_feed_check(
             self,
             show_ids,

@@ -225,7 +225,10 @@ def test_quill_lite_runs_it_at_startup_while_its_ai_area_is_on(
     source = (Path(__file__).resolve().parents[4] / "quill/apps/lite_startup.py").read_text(
         encoding="utf-8"
     )
-    assert "self._start_family_prompt_migration()" in source
+    # The migration is now queued with the other optional startup work, then
+    # its own feature check decides whether it runs.
+    assert '"family prompt migration"' in source
+    assert "self._start_family_prompt_migration," in source
 
 
 def test_every_prompt_library_reads_the_family_store(tmp_path: Path) -> None:

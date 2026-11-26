@@ -236,6 +236,12 @@ def _wrap_to_width(dc: wx.DC, lines: list[str], width: int) -> list[str]:
 class DocumentPrintMixin:
     """Page Setup and Print for a QUILL Lite document window."""
 
+    def _shared_print_settings(self) -> Any:
+        ensure = getattr(self.app, "_ensure_print_settings", None)  # type: ignore[attr-defined]
+        if callable(ensure):
+            return ensure()
+        return self.app.print_settings  # type: ignore[attr-defined]
+
     def _printable_lines(self) -> list[str]:
         """The document as lines, with headings marked rather than styled.
 
@@ -264,7 +270,7 @@ class DocumentPrintMixin:
 
     def cmd_page_setup(self) -> None:
         """Paper, orientation and margins, shared by every open document."""
-        settings = self.app.print_settings
+        settings = self._shared_print_settings()
         data = wx.PageSetupDialogData(settings.page_setup)
         data.SetPrintData(settings.print_data)
         # Not a `with` block: wx.PageSetupDialog is one of the few Phoenix
@@ -307,7 +313,7 @@ class DocumentPrintMixin:
         if pages is None:
             self._announce("No printer is available, so there is nothing to preview")
             return
-        settings = self.app.print_settings
+        settings = self._shared_print_settings()
         top_left = settings.page_setup.GetMarginTopLeft()
         bottom_right = settings.page_setup.GetMarginBottomRight()
         preview = PrintPreview(
@@ -347,7 +353,7 @@ class DocumentPrintMixin:
                 rich_hwnd=self._print_rich_hwnd(),
                 margins_twips=self._print_margins_twips(),
             )
-            printer_dc = wx.PrinterDC(self.app.print_settings.print_data)
+            printer_dc = wx.PrinterDC(self._shared_print_settings().print_data)
         except Exception:  # noqa: BLE001 - no printer, or a driver that will not answer
             return None
         try:
@@ -359,7 +365,7 @@ class DocumentPrintMixin:
 
     def cmd_print(self) -> None:
         """Print this document. Cancelling is not a failure and says nothing."""
-        settings = self.app.print_settings
+        settings = self._shared_print_settings()
         print_dialog_data = wx.PrintDialogData(settings.print_data)
         printer = wx.Printer(print_dialog_data)
         printout = _LitePrintout(
@@ -409,7 +415,7 @@ class DocumentPrintMixin:
         millimetres, and getting the conversion wrong does not raise -- it
         silently prints the top-left corner of the page.
         """
-        setup = self.app.print_settings.page_setup
+        setup = self._shared_print_settings().page_setup
         top_left = setup.GetMarginTopLeft()
         bottom_right = setup.GetMarginBottomRight()
         return tuple(  # type: ignore[return-value]

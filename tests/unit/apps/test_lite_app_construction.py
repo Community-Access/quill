@@ -98,10 +98,42 @@ def test_optional_startup_work_waits_for_the_editor() -> None:
     )
     assert "init_app_sound" not in oninit
     assert "_load_optional_stores" not in oninit
+    assert "_ensure_print_settings" not in oninit
     assert "claim_instance_marker" not in oninit.split("starting_up = False", 1)[0]
-    assert "init_app_sound" in finish
+    assert "application sounds" in finish
+    assert "_ensure_print_settings" in finish
     assert "_start_family_prompt_migration" in finish
     assert "_resume_scribe_queue" in finish
+
+
+def test_print_settings_are_built_lazily_and_retry_after_a_failed_first_attempt(
+    monkeypatch,
+) -> None:
+    from quill.apps import lite_printing
+    from quill.apps.lite import QuillLiteApp
+
+    made: list[object] = []
+    settings = object()
+    first = True
+
+    def build(found):
+        nonlocal first
+        if first:
+            first = False
+            raise RuntimeError("printer probe unavailable")
+        marker = object()
+        made.append((found, marker))
+        return marker
+
+    monkeypatch.setattr(lite_printing, "PrintSettings", build)
+    app = SimpleNamespace(print_settings=None, settings=settings)
+
+    with pytest.raises(RuntimeError):
+        QuillLiteApp._ensure_print_settings(app)
+    created = QuillLiteApp._ensure_print_settings(app)
+
+    assert made == [(settings, created)]
+    assert app.print_settings is created
 
 
 def test_portable_wrapper_enables_fatal_stack_capture_before_importing_lite() -> None:

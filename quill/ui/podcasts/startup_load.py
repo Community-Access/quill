@@ -126,8 +126,14 @@ class CastStartupLoadMixin:
                 )
                 self._apply_cast_prepared_view(prepared, (place_id, "", "", ""), None)  # type: ignore[attr-defined]
             self._main_panel.Enable(True)  # type: ignore[attr-defined]
-            self._podcast_check_monitor.apply()  # type: ignore[attr-defined]
-            self.podcast_run_maintenance(announce=False)  # type: ignore[attr-defined]
+            from quill.ui.podcasts.startup_bootstrap import resume_podcast_automatic
+
+            try:
+                resume_podcast_automatic(self)
+            except Exception:  # noqa: BLE001 - a loaded Cast window stays usable
+                report = getattr(self, "_report_startup_task_failure", None)
+                if callable(report):
+                    report("podcast automatic startup")
             self._refresh_statusbar()  # type: ignore[attr-defined]
             if handoff_error:
                 self._announce(handoff_error)  # type: ignore[attr-defined]

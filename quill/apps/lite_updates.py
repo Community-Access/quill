@@ -394,14 +394,12 @@ def check_at_launch(app: Any) -> None:
     between the double-click and the first window, and parented to the active
     document because that is where the user is.
 
-    Every launch also notes the data formats this build writes (release
-    channels, Phase 0) -- before the check, and whether or not it runs.
+    The app records the data formats this build writes before its first
+    editable window can open (release channels, Phase 0).
     """
-    from quill.core.data_format_ledger import record_running_build
     from quill.ui.maintenance_moment_ui import note_launch
 
     note_launch("quilllite")  # FUX-15: the first minute starts as the window opens
-    record_running_build("quilllite", APP_VERSION)
     if wx.GetApp() is not None:
         wx.CallAfter(_confirm_update_started, app)
     if not getattr(app.settings, "check_updates_on_launch", True):

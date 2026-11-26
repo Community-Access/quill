@@ -48,6 +48,36 @@ def test_apps_init_the_host_and_add_the_menu() -> None:
     assert '_build_quillins_menu(), "&Quillins"' in cast
 
 
+def test_companion_quillins_load_after_readiness_and_still_run() -> None:
+    loaded: list[str] = []
+    queued: list[tuple[str, object]] = []
+
+    class Host(QuillinsAppMixin):
+        _safe_mode = False
+
+        def _defer_startup_tasks(self, tasks):
+            queued.extend(tasks)
+
+        def _ensure_app_quillins_host(self):
+            return type(
+                "AppHost",
+                (),
+                {"load": lambda _self: loaded.append("quillins")},
+            )()
+
+        def _reload_quillins_menu(self):
+            loaded.append("menu")
+
+    host = Host()
+    host._init_app_quillins("radio")
+
+    assert loaded == []
+    assert host._quillin_menu_items == []
+    assert [label for label, _task in queued] == ["Quillins"]
+    queued[0][1]()
+    assert loaded == ["quillins", "menu"]
+
+
 def test_apps_shut_down_the_host() -> None:
     # Cast's whole lifecycle block -- the close preference, the confirm and
     # the teardown -- moved to apps/podcasts_close.py under GATE-11 when the
@@ -62,7 +92,7 @@ def test_apps_shut_down_the_host() -> None:
         + _read("quill/ui/podcasts/close_tasks.py")
     )
     radio = _read("quill/apps/radio.py") + _read("quill/apps/radio_shutdown.py")
-    assert "app._app_host.shutdown()" in radio
+    assert "_shutdown_quillins(app)" in radio
     assert "run_radio_shutdown" in _read("quill/apps/radio.py")
     assert 'getattr(getattr(host, "_app_host", None), "shutdown", None)' in cast
 

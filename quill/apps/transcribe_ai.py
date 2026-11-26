@@ -41,7 +41,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from quill.apps.transcribe_ai_task import TranscribeAiFeaturesMixin
+from quill.apps.transcribe_ai_features import TranscribeAiFeaturesMixin
 from quill.ui.hosted_ai_commands import HostedAiMixin
 
 __all__ = [

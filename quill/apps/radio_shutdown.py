@@ -26,7 +26,7 @@ def run_radio_shutdown(app: Any) -> None:
     report = ShutdownReport("radio", "Quill Radio")
     # Lambdas, not bound methods: the attribute lookup itself must happen inside
     # the guard, because a frame torn down half-built may not have it.
-    report.step("quillins", BEST_EFFORT, lambda: app._app_host.shutdown())
+    report.step("quillins", BEST_EFFORT, lambda: _shutdown_quillins(app))
     # The modeless surfaces are parentless peer frames: nothing destroys them
     # with the main window, and any left alive would keep the process running
     # after Exit.
@@ -81,6 +81,13 @@ def _stop_scrobbling(app: Any) -> None:
     from quill.ui.radio import scrobble_commands
 
     scrobble_commands.shutdown(app)
+
+
+def _shutdown_quillins(app: Any) -> None:
+    host = getattr(app, "_app_host", None)
+    shutdown = getattr(host, "shutdown", None)
+    if callable(shutdown):
+        shutdown()
 
 
 def _release_favorite_hotkeys(app: Any) -> None:

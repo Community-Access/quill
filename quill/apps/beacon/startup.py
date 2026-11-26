@@ -1,0 +1,55 @@
+"""Post-window startup services for Quill Beacon."""
+
+from __future__ import annotations
+
+import logging
+from typing import Any
+
+
+def init_app_sound(*args, **kwargs):
+    from quill.ui.companion_cues import init_app_sound as initialize
+
+    return initialize(*args, **kwargs)
+
+
+def prepare_auto_sync(frame: Any, wx: Any) -> None:
+    """Create Beacon's inert auto-sync timer."""
+    if getattr(frame, "_sync_timer", None) is not None:
+        return
+    from quill.ui.surface_lifetime import stop_timer_on_destroy
+
+    frame._sync_timer = wx.Timer(frame)
+    frame.Bind(wx.EVT_TIMER, frame._on_auto_sync_tick, frame._sync_timer)
+    stop_timer_on_destroy(frame, frame._sync_timer)
+
+
+def defer_services(frame: Any, wx: Any, *, version: str) -> None:
+    """Queue optional Beacon integrations once its named window is visible."""
+    from quill.core.data_format_ledger import record_running_build
+    from quill.ui.startup_launch import defer_product_startup_tasks
+
+    record_running_build("beacon", version)
+
+    def start_sounds() -> None:
+        from quill.apps.beacon.app import init_app_sound
+        from quill.ui import app_sounds
+
+        init_app_sound()
+        app_sounds.apply(frame)
+
+    def report_failure(label: str) -> None:
+        logging.getLogger(__name__).exception(
+            "Optional Beacon startup task failed after the window was ready: %s", label
+        )
+
+    defer_product_startup_tasks(
+        "beacon",
+        wx,
+        (
+            ("application sounds", start_sounds),
+            ("capture bridge", frame._start_capture_bridge),
+            ("system tray", frame._start_tray),
+            ("auto sync", frame._setup_auto_sync),
+        ),
+        on_failure=report_failure,
+    )

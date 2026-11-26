@@ -1211,8 +1211,7 @@ class MainFrame(
         apply_window_geometry(self.frame, "quill", default_size=dip_size(self.frame, 1000, 700))
         # Radio/podcast player controllers parent themselves on self.frame, so
         # they must be built after the frame exists (AttributeError otherwise).
-        self._init_radio()
-        self._init_podcasts()
+        self._ensure_profile_feature_runtime()
         self._init_media_sleep_timer()
         self._suggest_popup()  # the Word Prediction list (quill/ui/suggestion_list.py)
         self._tab_control_visible = bool(self.settings.show_tab_control)
@@ -1349,6 +1348,11 @@ class MainFrame(
         # had not yet created the default tab) are flushed now so contextual
         # menu items reflect the active document.
         self._ui_ready = True
+        for label in self.__dict__.pop("_deferred_startup_failure_labels", []):
+            self._set_status(
+                f"Startup step '{label}' could not run; Quill is ready. "
+                "See logs/startup-errors.log."
+            )
         self._flush_pending_menu_refresh()
 
     @property
@@ -1422,9 +1426,18 @@ class MainFrame(
         # every launch (a field bug report can include it with no env var).
         _profile = True
         _times: list[tuple[str, float]] = []
-        from quill.core.net import configure_ssl_trust
 
-        configure_ssl_trust()
+        from quill.ui.startup_launch import (
+            ensure_ssl_trust,
+            run_product_startup_tasks,
+            ssl_trust_ready,
+        )
+
+        run_product_startup_tasks(
+            "quill",
+            (("TLS trust setup", ensure_ssl_trust),),
+            on_failure=self._report_startup_task_failure,
+        )
 
         try:
             self._start_ipc_poll()
@@ -1553,6 +1566,7 @@ class MainFrame(
             getattr(self.settings, "auto_check_updates", False)
             and not self._safe_mode
             and self._update_check_due()
+            and ssl_trust_ready()
         ):
             try:
                 self.check_for_updates(silent_no_update=True)
@@ -1584,6 +1598,9 @@ class MainFrame(
                 handle.write("\n")
         except Exception:
             pass
+        if getattr(self, "_ui_ready", True) is False:
+            self.__dict__.setdefault("_deferred_startup_failure_labels", []).append(task_label)
+            return
         self._set_status(
             f"Startup step '{task_label}' could not run; Quill is ready. "
             "See logs/startup-errors.log."
@@ -3390,12 +3407,7 @@ class MainFrame(
         # stamp) is consolidated in RadioMixin so this frozen module does not
         # grow a per-subsystem block each time radio gains a subsystem (GATE-11).
         _safely("radio", self._shutdown_radio)
-        podcast_controller = getattr(self, "_podcast_controller", None)
-        if podcast_controller is not None:
-            _safely("podcast player", podcast_controller.shutdown)
-        podcast_transfers = getattr(self, "_shutdown_podcast_transfers", None)
-        if podcast_transfers is not None:
-            _safely("podcast transfers", podcast_transfers)
+        _safely("podcasts", self._shutdown_podcasts)
         sleep_timer = getattr(self, "_sleep_timer_controller", None)
         if sleep_timer is not None:
             _safely("media sleep timer", sleep_timer.shutdown)
@@ -4388,6 +4400,10 @@ class MainFrame(
         # every feature-gated path (menu, palette, keybinding) obeys it uniformly.
         locks = getattr(self, "_feature_locks", None)
         if locks is not None and locks.is_locked(feature_id):
+            return False
+        if feature_id == "core.radio" and getattr(self, "_radio_runtime_failed", False):
+            return False
+        if feature_id == "core.podcasts" and getattr(self, "_podcast_runtime_failed", False):
             return False
         feature_manager = getattr(self, "features", None)
         enabled = True if feature_manager is None else feature_manager.is_enabled(feature_id)
@@ -13119,7 +13135,7 @@ class MainFrame(
                 if cb is None:
                     return
                 enabled = cb.GetValue()  # type: ignore[union-attr]
-                affected = features.set_feature_enabled(feature_id, enabled)
+                affected = self._set_profile_feature_enabled(feature_id, enabled)
                 announcement = features.describe_feature_toggle(feature_id, enabled, affected)
                 for fid, c2 in current_items:
                     c2.SetValue(features.is_enabled(fid))  # type: ignore[union-attr]
@@ -13128,8 +13144,6 @@ class MainFrame(
                     rebuild_list(focus_first=True)
                 else:
                     detail.SetValue(features.describe_feature(feature_id))
-                self._build_menu()
-                self._apply_accelerators()
                 self._set_status(announcement)
 
             return _on_toggle
@@ -13470,6 +13484,7 @@ class MainFrame(
                     return
                 self.features.switch_profile(profile_id)
                 applied = self.apply_profile_settings(profile_id)
+                self._refresh_profile_feature_runtime()
                 extra = f" {applied}" if applied else ""
                 self._set_status(f"Profile changed to {name}. Undo available.{extra}")
                 self.offer_bring_from_quilllite(profile_id)
@@ -13502,6 +13517,7 @@ class MainFrame(
 
         def undo_change() -> None:
             if self.features.undo_last_profile_change():
+                self._refresh_profile_feature_runtime()
                 self._set_status(f"Restored {self.features.active_profile.name}")
                 refresh_summary()
                 self._refresh_title()
@@ -13510,6 +13526,7 @@ class MainFrame(
 
         def reset_essential() -> None:
             self.features.reset_to_essential_profile()
+            self._refresh_profile_feature_runtime()
             refresh_profile_list(PROFILE_ESSENTIAL)
             refresh_summary()
             self._set_status("Reset to Essential profile")
@@ -13720,6 +13737,7 @@ class MainFrame(
             warnings = self.features.import_profile_data(raw)
             for warning in warnings:
                 self._record_notification(warning, "warning")
+            self._refresh_profile_feature_runtime()
             refresh_profile_list(self.features.active_profile_id)
             refresh_summary()
             self._set_status(f"Imported profile data from {source.name}")
@@ -13811,6 +13829,7 @@ class MainFrame(
 
     def undo_last_profile_change(self) -> None:
         if self.features.undo_last_profile_change():
+            self._refresh_profile_feature_runtime()
             self._set_status(f"Profile changed back to {self.features.active_profile.name}")
             self._refresh_title()
             return
@@ -13827,6 +13846,7 @@ class MainFrame(
             if self._show_modal_dialog(dialog, "Reset Feature Profile") != wx.ID_YES:
                 return
         self.features.reset_to_essential_profile()
+        self._refresh_profile_feature_runtime()
         self._set_status("Reset to Essential profile")
         self._refresh_title()
 
@@ -13876,7 +13896,7 @@ class MainFrame(
             )
             save_settings(self.settings)
             feature_manager.save()
-            self._apply_accelerators()
+            self._refresh_profile_feature_runtime()
             self._set_status_quiet("Personalise QUILL completed")
             self._announce(
                 f"Profile set to {get_intent_profile(intent_id).name}. "
@@ -13910,7 +13930,7 @@ class MainFrame(
             feature_manager.save()
             self.settings.setup_wizard_completed = True
             save_settings(self.settings)
-            self._apply_accelerators()
+            self._refresh_profile_feature_runtime()
             self._announce(
                 "Starting with a clean text editor. "
                 "Add features any time from Help > Personalise QUILL."

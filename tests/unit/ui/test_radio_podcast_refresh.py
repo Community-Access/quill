@@ -246,6 +246,23 @@ def test_safe_mode_says_so_rather_than_failing_quietly(frame) -> None:
     assert said == ["Subscribed feeds are not checked in Safe Mode."]
 
 
+def test_a_feed_task_never_queues_when_tls_setup_fails(frame, monkeypatch) -> None:
+    from quill.core import problem_log
+    from quill.ui import startup_launch
+
+    def fail_tls() -> None:
+        raise RuntimeError("trust store unavailable")
+
+    monkeypatch.setattr(startup_launch, "ensure_ssl_trust", fail_tls)
+    monkeypatch.setattr(problem_log, "record_problem", lambda *_args: None)
+    tasks = _Tasks()
+    monitor = _monitor(frame, _History(minutes=15), tasks)
+
+    assert monitor.check_now(force=True) is False
+    assert tasks.submitted == []
+    assert said and "could not be checked" in said[0]
+
+
 def test_manually_only_starts_no_timer(frame) -> None:
     monitor = _monitor(frame, _History(minutes=0), _Tasks())
     assert monitor.apply() is False

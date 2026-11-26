@@ -13,36 +13,19 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.paths import app_data_dir
-from quill.core.radio import favorites as radio_favorites
-from quill.core.radio import history as radio_history
-from quill.core.radio import now_playing_source, play_counts, wake_timer
-from quill.core.radio.favorites import FavoriteStation
-from quill.core.radio.models import RadioStation
-from quill.core.radio.recording import (
-    RadioRecorder,
-    RecordingError,
-    load_recording_settings,
-)
-from quill.core.radio.recording_join import describe_reconnect
-from quill.core.radio.recording_schedule import RecordingScheduler
 from quill.core.sound_events import SoundEvent
-from quill.core.speech.ffmpeg import ffmpeg_available
-from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.main_frame_radio_callbacks import RadioCallbacksMixin
 from quill.ui.main_frame_radio_status import RadioStatusWindowsMixin
-from quill.ui.outcome_report import keep_outcome, say_recording_failed, say_recording_finished
-from quill.ui.radio import browse_door, playback_status, quick_play, stats_session, youtube_ui
-from quill.ui.radio import dial_tuning_ui as dial_tuning
-from quill.ui.radio.link_finder_dialog import LinkFinderDialog
-from quill.ui.radio.playback_state import RadioPlaybackState
-from quill.ui.radio.player_controller import RadioPlayerController, ResolvedEnhancement
-from quill.ui.radio.recording_settings_dialog import open_recording_settings
-from quill.ui.radio.schedule_recording_dialog import ScheduleRecordingDialog
-from quill.ui.radio.station_browser_dialog import StationBrowserDialog
+
+if TYPE_CHECKING:
+    from quill.core.audio.exact_optilab import ExactOptilab
+    from quill.core.radio.favorites import FavoriteStation
+    from quill.core.radio.models import RadioStation
+    from quill.ui.radio.playback_state import RadioPlaybackState
+    from quill.ui.radio.player_controller import ResolvedEnhancement
 
 
 def _search_catalog(host: object) -> object | None:
@@ -66,150 +49,9 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
     # -- setup --------------------------------------------------------------
 
     def _init_radio(self) -> None:
-        # Parents the player controller on self.frame: MainFrame.__init__ must
-        # only call this (and _init_podcasts) after the frame is constructed,
-        # or startup dies with AttributeError('frame').
-        self._radio_favorites = radio_favorites.load_favorites(app_data_dir())
-        self._radio_history = radio_history.load_history(app_data_dir())
-        # Apply the persisted verbose-logging preference (quill-radio #5).
-        from quill.core.radio.radio_logging import set_radio_debug
+        from quill.ui.radio.startup_bootstrap import initialize_radio
 
-        set_radio_debug(self._radio_history.debug_mode)
-        self._radio_history_key = ""
-        self._radio_track_title = ""
-        #: Which of the three routes supplied `_radio_track_title` (an
-        #: ``ui.radio.now_playing_source.SOURCE_*`` id). Empty until one does.
-        self._radio_track_source = ""
-        self._radio_fallback_tried = ""
-        self._radio_ever_played = False
-        # Track-title poller: fires only while a stream plays; each tick reads
-        # one ICY metadata block from the playing stream, off-thread.
-        self._radio_title_timer = self._wx.Timer(self.frame)
-        self.frame.Bind(
-            self._wx.EVT_TIMER,
-            lambda _e: self._radio_fetch_track_title(),
-            self._radio_title_timer,
-        )
-        from quill.core.spotify.session import SpotifySession
-
-        #: Hands the radio player a fresh Spotify access token (refreshing the
-        #: stored one as needed) so a spotify: station can play on the Web
-        #: Playback engine. Returns "" until the user connects Spotify.
-        self._spotify_session = SpotifySession()
-        self._radio_controller = RadioPlayerController(
-            self.frame,
-            on_state_changed=self._on_radio_state_changed,
-            on_register_click=self._radio_register_click,
-            before_play=self._stop_podcast_before_radio,
-            on_enhance_error=self._on_radio_enhance_error,
-            resolve_enhancement=self._radio_resolve_enhancement,
-            resolve_volume=self._radio_resolve_volume,
-            output_device=self._radio_history.output_device,
-            on_output_device_error=self._on_radio_output_device_error,
-            playback_engine=self._radio_history.playback_engine,
-            on_buffering=lambda: self._wx.CallAfter(self._radio_announce_buffering),
-            spotify_token_provider=self._spotify_session.access_token,
-            resolve_youtube=self._radio_resolve_youtube,
-            youtube_consent=self._radio_youtube_consent,
-        )
-        self._radio_controller.on_output_device_reverted = self._on_radio_output_device_reverted
-        from quill.ui.radio.song_marks_ui import resolve_timeshift_minutes
-
-        self._radio_controller._resolve_timeshift_minutes = lambda station: (
-            resolve_timeshift_minutes(self, station)
-        )
-        self._radio_controller.set_enhancement(
-            bass_db=self._radio_history.eq_bass_db,
-            mid_db=self._radio_history.eq_mid_db,
-            treble_db=self._radio_history.eq_treble_db,
-            compressor_enabled=self._radio_history.compressor_enabled,
-        )
-        self._radio_controller.set_sound_options(
-            channel_mode=self._radio_history.channel_mode,
-            night_mode_enabled=self._radio_history.night_mode_enabled,
-            optilab_enabled=self._radio_history.optilab_enabled,
-            optilab_mode=self._radio_history.optilab_mode,
-            optilab_input_db=self._radio_history.optilab_input_db,
-            optilab_auto_adapt=self._radio_history.optilab_auto_adapt,
-            optilab_exact_live=self._radio_history.optilab_exact_live,
-        )
-        self._radio_controller.set_volume_boost(self._radio_history.volume_boost)
-        # 11.7: Skip Silence, and the speed each *kind* of bounded row is
-        # remembered at. The controller reads the history back through
-        # episode_profile when a row loads, so hand it the same record the
-        # frame holds rather than a copy that can drift.
-        self._radio_controller._radio_history = self._radio_history
-        self._radio_controller._skip_silence = bool(self._radio_history.skip_silence)
-        self._radio_recording_settings = load_recording_settings(app_data_dir())
-        self._radio_recorder = RadioRecorder(
-            on_state_changed=self._on_radio_recording_changed,
-            on_reconnect=self._on_radio_recording_reconnect,
-            # The recorder builds the sentence (it knows how many parts there
-            # were and whether the join succeeded); the UI only speaks it.
-            on_parts_joined=lambda note: self._wx.CallAfter(self._announce, note),
-            # Same contract for the exact-OptiLab pass: the recorder knows
-            # whether it ran, and says so either way -- a listener who turned it
-            # on is entitled to know whether the file they kept actually got it.
-            on_exact_processed=lambda note: self._wx.CallAfter(self._announce, note),
-            # A recording that captured nothing is reported, in words, with the
-            # reason. Saying "Recording saved" over an empty file -- or saying
-            # nothing at all -- sends somebody looking in a folder for audio
-            # that does not exist, which is exactly what happened.
-            on_capture_failed=lambda station, reason: self._wx.CallAfter(
-                self._radio_announce_capture_failed, station, reason
-            ),
-            # Once per recording, when it is over for good: how it ended, how
-            # long it is and where it is (recording_report). Parts are silent.
-            on_finished=lambda report: self._wx.CallAfter(say_recording_finished, self, report),
-        )
-        # The ACTIVE machinery below fires recordings, shows resume prompts, and
-        # speaks missed-recording reports on its own. In a public build the
-        # editor-embedded radio is gated off (core.radio, #1340) and none of it
-        # may run — a user with a leftover schedule from a pre-gate build must
-        # not get recordings and modal prompts from a feature with no UI. The
-        # passive state above stays so shutdown and attribute access are safe.
-        if not self._feature_enabled("core.radio"):
-            self._radio_scheduler = None
-            self._radio_wake_watcher = None
-            self._radio_last_seen_timer = None
-            return
-        self._radio_scheduler = RecordingScheduler(
-            data_dir=app_data_dir(),
-            recorder=self._radio_recorder,
-            recording_settings=self._radio_recording_settings,
-            on_fired=self._on_radio_scheduled_recording_fired,
-            on_busy=self._on_radio_scheduled_recording_busy,
-            filter_graph_provider=self._radio_recording_filter_graph,
-        )
-        self._radio_wake_watcher = wake_timer.WakeUpWatcher(
-            app_data_dir(), on_wake=self._on_radio_wake_up
-        )
-        # R2/11.6: announce scheduled recordings missed while QUILL was closed
-        # (the embedded host previously had no missed reporting), then stamp
-        # last_seen. Deferred so it never blocks the window coming up.
-        self._wx.CallAfter(self._report_missed_recordings)
-        # R3: reconcile temp-dir strays from a crash and offer to resume an
-        # in-progress recording found via the persisted marker. Runs after the
-        # missed report, deferred so the window is up first.
-        self._wx.CallAfter(self._reconcile_and_offer_radio_resume)
-        # R3: stamp last_seen once a minute so a crash still leaves an accurate
-        # missed-recording window (the close-path stamp alone is lost on a kill).
-        self._radio_last_seen_timer = self._wx.Timer(self.frame)
-        self.frame.Bind(
-            self._wx.EVT_TIMER,
-            lambda _e: self._radio_minute_tick(),
-            self._radio_last_seen_timer,
-        )
-        self._radio_last_seen_timer.Start(60_000)
-        # Re-asked at launch: a one-shot task is spent once it fires, and the
-        # schedule may have been edited in another session. Deferred so a slow
-        # schtasks call cannot hold up the window coming up.
-        self._wx.CallAfter(self._refresh_radio_wake_task)
-        # Layer 1 of the station catalog: a startup check for updates, off the
-        # UI thread, skipped when fresh (6-hour floor) or toggled off.
-        from quill.ui.radio import catalog_ui as _catalog_ui
-
-        self._wx.CallAfter(_catalog_ui.refresh_on_startup, self)
+        initialize_radio(self)
 
     def _radio_minute_tick(self) -> None:
         """Once a minute: stamp last_seen, and re-ask about standby.
@@ -247,6 +89,11 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         one failure cannot block the rest -- the same isolation the per-line
         ``_safely`` calls gave. The standalone host keeps its own close path.
         """
+        if (
+            not getattr(self, "_radio_runtime_initialized", False)
+            and getattr(self, "_radio_controller", None) is None
+        ):
+            return
         for attr, _label in (
             ("_radio_controller", "radio player"),
             ("_radio_recorder", "radio recorder"),
@@ -282,6 +129,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         from quill.ui.radio import catalog_ui
 
         catalog_ui.shutdown(self)
+        self._radio_runtime_initialized = False
 
     # -- R3: resume across restart -------------------------------------------
 
@@ -434,11 +282,15 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
             podcast.stop()
 
     def _radio_register_click(self, station_uuid: str) -> None:
+        from quill.core.radio import play_counts
+
         play_counts.report_play(
             station_uuid, history=self._radio_history, safe_mode=self._safe_mode
         )
 
     def _save_radio_favorites(self) -> None:
+        from quill.core.radio import favorites as radio_favorites
+
         radio_favorites.save_favorites(app_data_dir(), self._radio_favorites)
 
     def _persist_radio_favorites(self) -> None:
@@ -453,6 +305,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         remove / rename / move / sort) still go through
         ``_save_radio_favorites`` so the tree reflects them.
         """
+        from quill.core.radio import favorites as radio_favorites
+
         radio_favorites.save_favorites(app_data_dir(), self._radio_favorites)
 
     # -- recording --------------------------------------------------------
@@ -494,6 +348,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         two outcomes must never sound alike. The reason comes from the recorder
         (which read ffmpeg's own last words); this only speaks it.
         """
+        from quill.ui.outcome_report import say_recording_failed
+
         say_recording_failed(self, station, reason)  # said, and kept (qc.md F-10)
         self._refresh_statusbar()
 
@@ -522,12 +378,16 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         self._announce("Buffering...", sound=cue)
 
     def _on_radio_recording_reconnect(self, attempt: int, maximum: int) -> None:
+        from quill.core.radio.recording_join import describe_reconnect
+
         self._wx.CallAfter(self._announce, describe_reconnect(attempt, maximum))
 
     def _on_radio_scheduled_recording_fired(self, entry: object, error: str) -> None:
         self._wx.CallAfter(self._apply_radio_scheduled_recording_fired, entry, error)
 
     def _apply_radio_scheduled_recording_fired(self, entry: object, error: str) -> None:
+        from quill.ui.outcome_report import keep_outcome
+
         station_name = getattr(entry, "station_name", "")
         if error:
             sentence = f"Scheduled recording of {station_name} could not start: {error}"
@@ -624,6 +484,9 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         return ""
 
     def radio_record_toggle(self) -> None:
+        from quill.core.radio.recording import RecordingError
+        from quill.core.speech.ffmpeg import ffmpeg_available
+
         if not ffmpeg_available():
             self._show_message_box(
                 self._radio_no_ffmpeg_message(),
@@ -730,6 +593,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         every one of which is a reason the recording simply comes out as it does
         today, not a reason to fail."""
         from quill.core.audio import exact_optilab
+        from quill.core.audio.exact_optilab import ExactOptilab
 
         history = self._radio_history
         if not history.optilab_exact or not history.optilab_enabled:
@@ -745,9 +609,13 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         )
 
     def _radio_open_recording_settings(self) -> None:
+        from quill.ui.radio.recording_settings_dialog import open_recording_settings
+
         open_recording_settings(self)
 
     def _radio_open_schedule_recording(self, *, station: Any = None) -> None:
+        from quill.ui.radio.schedule_recording_dialog import ScheduleRecordingDialog
+
         windows = getattr(self, "_windows", None)
         if windows is not None and windows.activate_title("Schedule Recording"):
             return  # already open means come to the front, not a second copy
@@ -783,6 +651,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
 
     def _on_radio_state_changed(self, state: RadioPlaybackState) -> None:
         from quill.core.settings import save_settings
+        from quill.ui.radio import dial_tuning_ui as dial_tuning
+        from quill.ui.radio import playback_status, stats_session, youtube_ui
 
         dial_tuning.on_state_changed(self, state)  # dial tuning follows playback
         self._radio_track_history_and_volume(state)
@@ -861,6 +731,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         and the per-station volume (a favorite remembers the volume you set
         while it plays -- restoring it on the way back in is
         RadioPlayerController's own job, via resolve_volume)."""
+        from quill.ui.radio import dial_tuning_ui as dial_tuning
+
         station = state.station
         if station is None:
             self._radio_history_key = ""
@@ -939,6 +811,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         fetch ended in silence, which is exactly how "the command does
         nothing" was reported.
         """
+        from quill.core.radio import now_playing_source
         from quill.core.radio.icy import read_stream_title
 
         controller = getattr(self, "_radio_controller", None)
@@ -999,6 +872,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         """Free #1111 fallback: read the current track from the station server's
         own status endpoint (Icecast/SHOUTcast) off-thread when ICY and the
         player exposed no title."""
+        from quill.core.radio import now_playing_source
 
         def _fetch(**_kwargs: object) -> str:
             from quill.core.radio.station_status import read_server_now_playing
@@ -1275,7 +1149,15 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
 
     def _radio_title_announce_command_title(self) -> str:
         """Palette label carrying the toggle's state -- it has no checkmark (#1383)."""
-        state = "On" if self._radio_history.announce_track_titles else "Off"
+        state = (
+            "On"
+            if getattr(
+                getattr(self, "_radio_history", None),
+                "announce_track_titles",
+                False,
+            )
+            else "Off"
+        )
         return f"Internet Radio: Announce Track Titles (currently {state})"
 
     def radio_toggle_title_announcements(self) -> None:
@@ -1311,6 +1193,10 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         self._wx.CallAfter(self._apply_radio_wake_up, station)
 
     def _apply_radio_wake_up(self, station: RadioStation) -> None:
+        from quill.ui.radio.startup_bootstrap import radio_automatic_enabled
+
+        if not radio_automatic_enabled(self):
+            return
         self._radio_controller.play_station(station)
         self._announce(f"Good morning. {station.display_name} is coming on.")
 
@@ -1342,6 +1228,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         tree's Record This Station... passes the row it was asked about,
         which otherwise would have to be found again inside the dialog.
         """
+        from quill.core.radio.recording import RecordingError
+        from quill.core.speech.ffmpeg import ffmpeg_available
         from quill.ui.radio.record_station_dialog import RecordStationDialog
 
         if not ffmpeg_available():
@@ -1506,7 +1394,7 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
             self.radio_toggle_play_pause()
 
     def _build_radio_status_bar_menu(self, menu: object) -> None:
-        from quill.ui.radio import transport_face
+        from quill.ui.radio import browse_door, transport_face
 
         wx = self._wx
         # Two transport rows, rebuilt on every popup so both labels are always
@@ -1602,6 +1490,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         limit. Rows are numbered so somebody who knew the quick-play slots reads
         the same numbers in the same order.
         """
+        from quill.ui.dialog_contract import apply_modal_ids
+
         wx = self._wx
         favorites = getattr(self, "_radio_favorites", None)
         if favorites is None or not favorites.favorites:
@@ -1697,6 +1587,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         by RadioPlayerController on every play_station. Every setting (EQ,
         compressor, channel mode, night mode, and OptiLab) is per-stream as well
         as global."""
+        from quill.ui.radio.player_controller import ResolvedEnhancement
+
         key = station.station_uuid or station.stream_url
         favorite = self._radio_favorites.find(key)
         if favorite is not None and favorite.has_sound_enhancement_override:
@@ -1744,6 +1636,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         to leave the current volume alone. getattr, because this runs on every
         play_station: a history predating the setting must fall through, never
         take playback down with an AttributeError."""
+        from quill.ui.radio import dial_tuning_ui as dial_tuning
+
         if dial_tuning.tuned_volume(self, station):
             return -1  # the dial keeps the level you are hearing
         if getattr(self._radio_history, "use_global_volume", False):
@@ -1758,12 +1652,16 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
 
     def _radio_youtube_consent(self) -> bool:
         """One-time consent before QUILL ever reaches YouTube (see youtube_ui)."""
+        from quill.ui.radio import youtube_ui
+
         return youtube_ui.ask_youtube_consent(self)
 
     def _radio_resolve_youtube(self, page_url: str) -> Any:
         """Resolve a saved YouTube link to a playable stream (worker thread).
         Returns the whole YouTubeStream, so the controller can tell a finished
         video (seekable, chaptered) from a live broadcast (neither)."""
+        from quill.ui.radio import youtube_ui
+
         return youtube_ui.resolve_youtube_for_host(self, page_url)
 
     def _radio_enhance_context_favorite(self) -> FavoriteStation | None:
@@ -2041,6 +1939,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         """*source_facet* pre-narrows the Source filter for this opening only
         (Search This Source... from the browse tree); the listener's own
         remembered facet is untouched unless they change it in the dialog."""
+        from quill.ui.radio.station_browser_dialog import StationBrowserDialog
+
         if self._safe_mode:
             self._show_message_box(
                 _SAFE_MODE_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
@@ -2155,6 +2055,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         )
 
     def _radio_open_link_finder(self) -> None:
+        from quill.ui.radio.link_finder_dialog import LinkFinderDialog
+
         if self._safe_mode:
             self._show_message_box(
                 _SAFE_MODE_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
@@ -2167,6 +2069,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
     def _radio_play_favorite_slot(self, slot: int) -> None:
         """Play the slot-th favorite (1-based) -- the quick-play keys. Logic is in
         quill.ui.radio.quick_play so this module stays under the size budget."""
+        from quill.ui.radio import quick_play
+
         quick_play.play_favorite_slot(
             slot,
             favorites=self._radio_favorites,

@@ -294,6 +294,30 @@ def test_scheduler_stamps_only_on_success_and_disables_once(tmp_path: Path) -> N
         scheduler.shutdown()
 
 
+def test_scheduler_does_not_start_after_feature_disable(tmp_path: Path) -> None:
+    from quill.core.radio.recording import RecordingSettings
+    from quill.core.radio.recording_schedule import RecordingScheduler
+
+    starts: list[str] = []
+
+    class _Recorder:
+        def start(self, *, station_name: str, **_kwargs: object) -> None:
+            starts.append(station_name)
+
+    scheduler = RecordingScheduler(
+        data_dir=tmp_path,
+        recorder=_Recorder(),  # type: ignore[arg-type]
+        recording_settings=RecordingSettings(),
+        can_run=lambda: False,
+    )
+    try:
+        scheduler._fire(_entry(), datetime(2026, 7, 14, 8, 0, 0))
+    finally:
+        scheduler.shutdown()
+
+    assert starts == []
+
+
 def test_scheduler_defers_when_concurrency_cap_reached_and_does_not_stamp(tmp_path: Path) -> None:
     # Concurrent recording: a fire is only deferred when the concurrency *cap*
     # is reached (RecordingLimitError). The generic "already in progress" refusal

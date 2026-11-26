@@ -219,7 +219,11 @@ def test_standalone_cast_falls_back_to_its_own_history_record() -> None:
     So ``podcast_check_enabled`` read as False forever and the background check
     was unreachable in that app -- a whole feature with no route to it.
     """
-    source = (REPO / "quill" / "ui" / "main_frame_podcasts.py").read_text(encoding="utf-8")
+    # The monitor builder moved out of the frame mixin so the Podcast runtime
+    # can initialize only after the selected profile enables it.
+    source = (REPO / "quill" / "ui" / "podcasts" / "startup_bootstrap.py").read_text(
+        encoding="utf-8"
+    )
     provider = source[source.index("settings_provider=") : source.index("library_provider=")]
     assert "_podcast_history" in provider
 

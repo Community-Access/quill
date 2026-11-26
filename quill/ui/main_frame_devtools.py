@@ -6,8 +6,7 @@ reach editor state without importing wx.
 
 Threading contract:
 - Console UI runs on the wx UI thread.
-- Python execution is synchronous on the UI thread (short commands only; long
-  commands should be wrapped in a background task by the user via threading).
+- Python runs synchronously on the UI thread; use a background task for long commands.
 - TypeScript execution runs a Node subprocess; the result arrives via
   threading.Event and is posted back to the UI with wx.CallAfter.
 """
@@ -191,6 +190,7 @@ class DevToolsMixin:
     def console_switch_profile(self, profile_id: str) -> None:
         try:
             self.features.switch_profile(profile_id)
+            self._refresh_profile_feature_runtime()
         except Exception:
             pass
 

@@ -79,6 +79,12 @@ def shutdown(host: Any) -> None:
             pass
 
 
+def pause(host: Any) -> None:
+    """Invalidate automatic catalog work while a disabled profile preserves state."""
+    host._catalog_refresh_generation = int(getattr(host, "_catalog_refresh_generation", 0) or 0) + 1
+    host._catalog_refresh_running = False
+
+
 # -- refresh scheduling --------------------------------------------------------
 
 
@@ -98,7 +104,7 @@ def _enabled_spec_ids(host: Any) -> set[str]:
 def maybe_refresh_on_tick(host: Any) -> None:
     """Called from the radio minute tick: refresh the single most overdue
     source when the cadence says so. A trickle, never a burst."""
-    if getattr(host, "_safe_mode", False):
+    if not _automatic_allowed(host):
         return
     history = host._radio_history
     if not bool(getattr(history, "catalog_enabled", True)):
@@ -111,7 +117,7 @@ def maybe_refresh_on_tick(host: Any) -> None:
 
 def refresh_on_startup(host: Any) -> None:
     """Layer 1: shortly after launch, if enabled and the catalog is stale."""
-    if getattr(host, "_safe_mode", False):
+    if not _automatic_allowed(host):
         return
     history = host._radio_history
     if not bool(getattr(history, "catalog_enabled", True)):
@@ -119,7 +125,11 @@ def refresh_on_startup(host: Any) -> None:
     if not bool(getattr(history, "catalog_refresh_on_startup", True)):
         return
 
+    generation = int(getattr(host, "_catalog_refresh_generation", 0) or 0)
+
     def _work(**_kwargs: Any) -> None:
+        if not _generation_active(host, generation):
+            return
         store = catalog_for(host)
         if store is None:
             return
@@ -129,7 +139,13 @@ def refresh_on_startup(host: Any) -> None:
             age = None
         if age is not None and age < _STARTUP_FLOOR_SECONDS:
             return
-        _refresh_now(host, only_most_overdue=True, interval_hours=1, announce_quietly=True)
+        _refresh_now(
+            host,
+            only_most_overdue=True,
+            interval_hours=1,
+            announce_quietly=True,
+            generation=generation,
+        )
 
     task_manager = getattr(host, "_task_manager", None)
     if task_manager is not None:
@@ -156,25 +172,35 @@ def _refresh_async(
     task_manager = getattr(host, "_task_manager", None)
     if task_manager is None:
         return
+    if not _automatic_allowed(host):
+        return
     if getattr(host, "_catalog_refresh_running", False):
         if not announce_quietly:
             host._announce("A catalog update is already running.")
         return
     host._catalog_refresh_running = True
+    generation = int(getattr(host, "_catalog_refresh_generation", 0) or 0)
 
     def _work(**_kwargs: Any) -> object:
+        if not _generation_active(host, generation):
+            return None
         return _refresh_now(
             host,
             only_most_overdue=only_most_overdue,
             interval_hours=interval_hours,
             announce_quietly=announce_quietly,
+            generation=generation,
         )
 
     def _done(_op: str, summary: object) -> None:
+        if not _generation_active(host, generation):
+            return
         host._catalog_refresh_running = False
         _speak_summary(host, summary, announce_quietly=announce_quietly)
 
     def _failed(_op: str, _error: BaseException) -> None:
+        if not _generation_active(host, generation):
+            return
         host._catalog_refresh_running = False
         if not announce_quietly:
             host._announce("The catalog update could not finish; keeping what you have.")
@@ -183,7 +209,12 @@ def _refresh_async(
 
 
 def _refresh_now(
-    host: Any, *, only_most_overdue: bool, interval_hours: int, announce_quietly: bool
+    host: Any,
+    *,
+    only_most_overdue: bool,
+    interval_hours: int,
+    announce_quietly: bool,
+    generation: int | None = None,
 ) -> object:
     from quill.core.radio.catalog.refresh import due_sources, refresh
     from quill.core.radio.catalog.sources import station_specs
@@ -206,9 +237,27 @@ def _refresh_now(
         due = due[:1]
     if not due:
         return None
+    if generation is not None and not _generation_active(host, generation):
+        return None
+    from quill.ui.startup_launch import ensure_ssl_trust
+
+    ensure_ssl_trust()
     summary = refresh(due, store, now=now)
     store.reopen_if_stale()
     return summary
+
+
+def _automatic_allowed(host: Any) -> bool:
+    if getattr(host, "_safe_mode", False):
+        return False
+    enabled = getattr(host, "_feature_enabled", None)
+    return not callable(enabled) or bool(enabled("core.radio"))
+
+
+def _generation_active(host: Any, generation: int) -> bool:
+    return _automatic_allowed(host) and generation == int(
+        getattr(host, "_catalog_refresh_generation", 0) or 0
+    )
 
 
 def _speak_summary(host: Any, summary: object, *, announce_quietly: bool) -> None:

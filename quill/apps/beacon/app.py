@@ -31,8 +31,8 @@ from quill.apps.beacon import (
     search,
     uld,
 )
-from quill.apps.beacon import feeds as feeds_mod
 from quill.apps.beacon import publish as publish_mod
+from quill.apps.beacon import startup as _startup
 from quill.apps.beacon.ai import BeaconAiMixin
 from quill.apps.beacon.announce import Announcer
 from quill.apps.beacon.commands import Command, CommandPalette
@@ -61,16 +61,17 @@ from quill.apps.beacon.undo import UndoManager, restore_beacons, snapshot_beacon
 from quill.core.sound_events import SoundEvent
 from quill.core.support_message import SUPPORT_EMAIL
 from quill.ui import app_sounds
-from quill.ui.companion_cues import init_app_sound
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.dpi import dip, dip_size
 from quill.ui.spoken_name import set_spoken_name
-from quill.ui.surface_lifetime import stop_timer_on_destroy
 from quill.ui.updates.host import ProductUpdateHost
 
 _TITLE = "QuillBeacon"
 _VERSION = "0.1.0"
 _BUILD = 2  # this version's build (docs/release/RELEASE.md, "Build numbers")
+defer_services = _startup.defer_services
+init_app_sound = _startup.init_app_sound
+prepare_auto_sync = _startup.prepare_auto_sync
 
 # Destinations in the sidebar (PRD 13.1).
 DESTINATIONS = [
@@ -106,20 +107,18 @@ class BeaconFrame(ProductUpdateHost, wx.Frame, BeaconAiMixin, BeaconScribeMixin)
         self.SetTitle(_TITLE)
         self.data_dir = paths.data_dir()
         self._release_app_key = "beacon"
-        from quill.core.data_format_ledger import record_running_build
-
-        record_running_build("beacon", _VERSION)
         self.store = db.BeaconStore(self.data_dir / "beacons.db")
         self.a11y = a11y_mod.load(self.data_dir)
-        init_app_sound()  # a SoundSink needs a loaded pack behind it (#1302)
         self.announcer = Announcer(self, verbosity=self.a11y.verbosity)
         # Where Beacon's own sounds play, and Alt+Shift+M (ui/app_sounds).
         self._app_sounds_id, self._app_sounds_name = "beacon", _TITLE
         self._announce = self.announcer.say
-        app_sounds.apply(self)
         self.undo = UndoManager(announcer=self.announcer.say)
         self.sync = SyncController(self.store, self.data_dir)
+        prepare_auto_sync(self, wx)
         self.publisher = publish_mod.PublishManager(self.store, self.data_dir)
+        self.bridge = None
+        self.tray = None
         self.current_scope = "all"  # destination or collection name
         self.current_sort = "added"
         self.last_query = ""
@@ -141,9 +140,6 @@ class BeaconFrame(ProductUpdateHost, wx.Frame, BeaconAiMixin, BeaconScribeMixin)
         a11y_mod.apply_to_frame(self, self.a11y)
         self._refresh_sidebar()
         self._refresh_results()
-        self._start_capture_bridge()
-        self._start_tray()
-        self._setup_auto_sync()
         self.announcer.say("QuillBeacon ready", "normal")
         self.Bind(wx.EVT_CLOSE, self._on_close)
         self.Bind(wx.EVT_ICONIZE, self._on_iconize)
@@ -1562,6 +1558,8 @@ class BeaconFrame(ProductUpdateHost, wx.Frame, BeaconAiMixin, BeaconScribeMixin)
     # -- media (Phase 3) ------------------------------------------------------
 
     def _on_subscribe(self, _e) -> None:
+        from quill.apps.beacon import feeds as feeds_mod
+
         url = wx.GetTextFromUser("Podcast feed URL:", "Subscribe to Podcast", "https://")
         if not url or url == "https://":
             return
@@ -1575,6 +1573,8 @@ class BeaconFrame(ProductUpdateHost, wx.Frame, BeaconAiMixin, BeaconScribeMixin)
         self.announcer.say("Subscribed. New episodes added to Inbox.")
 
     def _on_refresh_feeds(self, _e) -> None:
+        from quill.apps.beacon import feeds as feeds_mod
+
         shows = [
             b
             for b in self.store.list_beacons(limit=10000)
@@ -1742,9 +1742,7 @@ class BeaconFrame(ProductUpdateHost, wx.Frame, BeaconAiMixin, BeaconScribeMixin)
         sync is configured and the vault is unlocked; otherwise it quietly
         waits, so an unconfigured install never touches the network.
         """
-        self._sync_timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, self._on_auto_sync_tick, self._sync_timer)
-        stop_timer_on_destroy(self, self._sync_timer)  # _on_close is not the only exit
+        prepare_auto_sync(self, wx)
         self._apply_auto_sync_interval()
 
     def _apply_auto_sync_interval(self) -> None:
@@ -1914,6 +1912,7 @@ def run() -> int:
         from quill.ui.startup_launch import defer_ssl_trust_setup
 
         defer_ssl_trust_setup(wx)
+    defer_services(frame, wx, version=_VERSION)
     wx.CallAfter(first_task.focus_initial, frame)  # after Show, so it sticks (FUX-09)
     # OS custom-scheme handoff: a quillsync://verify link may be passed as the
     # first argv when the OS launches us to handle the scheme.

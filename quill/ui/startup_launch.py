@@ -13,6 +13,7 @@ Weather and Inkwell, and one copy is one place to get them right.
 
 from __future__ import annotations
 
+import logging
 import sys
 from collections.abc import Callable, Sequence
 from typing import Any
@@ -21,17 +22,138 @@ __all__ = [
     "START_MINIMIZED_LABEL",
     "append_windows_startup_items",
     "apply_editor_startup",
-    "tls_problem",
+    "defer_after_ssl_trust",
+    "defer_product_startup_tasks",
+    "defer_startup_tasks",
     "defer_ssl_trust_setup",
     "editor_starts_hidden",
+    "ensure_ssl_trust",
     "present_at_launch",
+    "run_product_startup_tasks",
+    "run_startup_tasks",
+    "ssl_trust_ready",
     "starts_in_tray",
+    "tls_problem",
 ]
+
+_StartupTask = tuple[str, Callable[[], object]]
 
 #: The Options-menu row. Ctrl+Alt+L ("login") is free in every app that shows
 #: it (Inkwell, Weather, Transcribe); S&tart because S is App Sounds and M is
 #: the neighbouring "Start minimized to the tray".
 START_MINIMIZED_LABEL = "S&tart minimized when Windows starts\tCtrl+Alt+L"
+
+
+def run_startup_tasks(
+    tasks: Sequence[_StartupTask],
+    *,
+    on_failure: Callable[[str], object] | None = None,
+) -> None:
+    """Run optional post-window tasks independently of one another.
+
+    A startup callback raised from the wx event loop can look like a crash
+    even though the first window is already usable.  Keep the failure inside
+    the optional task boundary and continue so later capabilities still get
+    their turn.
+    """
+    for label, task in tasks:
+        try:
+            task()
+        except Exception:  # noqa: BLE001 - one optional task must not end readiness
+            if on_failure is not None:
+                try:
+                    on_failure(label)
+                except Exception:  # noqa: BLE001 - reporting cannot raise into wx
+                    logging.getLogger(__name__).exception(
+                        "Could not report startup task failure: %s", label
+                    )
+            else:
+                logging.getLogger(__name__).exception("Startup task failed: %s", label)
+
+
+def defer_startup_tasks(
+    wx_module: Any | None,
+    tasks: Sequence[_StartupTask],
+    *,
+    on_failure: Callable[[str], object] | None = None,
+) -> None:
+    """Queue *tasks* for the first event turn after a window is ready.
+
+    ``wx.CallAfter`` is deliberately the normal path.  The synchronous fallback
+    is for non-wx probes and source-contract harnesses; it is still isolated by
+    :func:`run_startup_tasks`.
+    """
+    if wx_module is None:
+        import wx as wx_module
+
+    work = tuple(tasks)
+    call_after = getattr(wx_module, "CallAfter", None)
+    if callable(call_after):
+        call_after(lambda: run_startup_tasks(work, on_failure=on_failure))
+    else:
+        run_startup_tasks(work, on_failure=on_failure)
+
+
+def ensure_ssl_trust() -> None:
+    """Configure the process trust store once, before a startup network task."""
+    from quill.core.net import configure_ssl_trust
+
+    configure_ssl_trust()
+
+
+def ssl_trust_ready() -> bool:
+    """Whether the application has installed its process-wide TLS trust."""
+    from quill.core.net import ssl_trust_configured
+
+    return bool(ssl_trust_configured())
+
+
+def _tls_guarded(task: Callable[[], object]) -> Callable[[], object]:
+    def run() -> object:
+        ensure_ssl_trust()
+        return task()
+
+    return run
+
+
+def defer_after_ssl_trust(
+    wx_module: Any | None,
+    tasks: Sequence[_StartupTask],
+    *,
+    on_failure: Callable[[str], object] | None = None,
+) -> None:
+    """Queue startup network work through the one TLS readiness gate."""
+    guarded = tuple((label, _tls_guarded(task)) for label, task in tasks)
+    defer_startup_tasks(wx_module, guarded, on_failure=on_failure)
+
+
+def _product_tasks(product_id: str, tasks: Sequence[_StartupTask]) -> tuple[_StartupTask, ...]:
+    return tuple((f"{product_id}: {label}", task) for label, task in tasks)
+
+
+def run_product_startup_tasks(
+    product_id: str,
+    tasks: Sequence[_StartupTask],
+    *,
+    on_failure: Callable[[str], object] | None = None,
+) -> None:
+    """Run one product's optional startup work through the shared isolator."""
+    run_startup_tasks(_product_tasks(product_id, tasks), on_failure=on_failure)
+
+
+def defer_product_startup_tasks(
+    product_id: str,
+    wx_module: Any | None,
+    tasks: Sequence[_StartupTask],
+    *,
+    on_failure: Callable[[str], object] | None = None,
+) -> None:
+    """Queue one product's optional startup work through the shared scheduler."""
+    defer_startup_tasks(
+        wx_module,
+        _product_tasks(product_id, tasks),
+        on_failure=on_failure,
+    )
 
 
 def defer_ssl_trust_setup(wx_module: Any | None = None) -> None:
@@ -44,12 +166,7 @@ def defer_ssl_trust_setup(wx_module: Any | None = None) -> None:
     if wx_module is None:
         import wx as wx_module
 
-    def _configure() -> None:
-        from quill.core.net import configure_ssl_trust
-
-        configure_ssl_trust()
-
-    wx_module.CallAfter(_configure)
+    defer_startup_tasks(wx_module, (("TLS trust setup", ensure_ssl_trust),))
 
 
 def tls_problem(error: BaseException) -> str | None:

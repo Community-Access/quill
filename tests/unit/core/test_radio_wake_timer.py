@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import time
 from datetime import datetime
 from pathlib import Path
 
+from quill.core.radio import wake_timer
 from quill.core.radio.models import RadioStation
 from quill.core.radio.wake_timer import (
     WakeUpSetting,
@@ -68,3 +70,30 @@ def test_round_trip_and_defaults(tmp_path: Path) -> None:
 def test_spoken_summary_reads_naturally() -> None:
     assert "every day at 07:00" in _setting().spoken_summary()
     assert WakeUpSetting().spoken_summary() == "No wake-up timer is set."
+
+
+def test_watcher_does_not_fire_while_automatic_runtime_is_disabled(
+    tmp_path: Path, monkeypatch
+) -> None:
+    monkeypatch.setattr(wake_timer, "_CHECK_SECONDS", 0.01)
+    save_wake_setting(
+        tmp_path,
+        _setting(time_of_day=datetime.now().strftime("%H:%M"), recurrence="once"),
+    )
+    allowed = False
+    woken: list[RadioStation] = []
+    watcher = wake_timer.WakeUpWatcher(
+        tmp_path,
+        on_wake=woken.append,
+        can_run=lambda: allowed,
+    )
+    try:
+        time.sleep(0.05)
+        assert woken == []
+        allowed = True
+        deadline = time.monotonic() + 0.5
+        while not woken and time.monotonic() < deadline:
+            time.sleep(0.01)
+        assert woken == [_STATION]
+    finally:
+        watcher.shutdown()

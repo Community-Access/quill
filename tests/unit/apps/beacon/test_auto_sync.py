@@ -12,6 +12,40 @@ from quill.apps.beacon.model import Beacon, Resource
 from quill.apps.beacon.sync_ui import SyncConfig
 
 
+def test_optional_services_are_queued_after_readiness(monkeypatch):
+    from types import SimpleNamespace
+
+    from quill.apps.beacon.startup import defer_services
+    from quill.ui import startup_launch
+
+    captured = []
+    ran = []
+    frame = SimpleNamespace(
+        _start_capture_bridge=lambda: ran.append("bridge"),
+        _start_tray=lambda: ran.append("tray"),
+        _setup_auto_sync=lambda: ran.append("sync"),
+    )
+    monkeypatch.setattr(
+        startup_launch,
+        "defer_startup_tasks",
+        lambda _wx, tasks, **_kwargs: captured.extend(tasks),
+    )
+
+    monkeypatch.setattr(
+        "quill.core.data_format_ledger.record_running_build",
+        lambda *_args: ran.append("ledger"),
+    )
+    monkeypatch.setattr("quill.ui.companion_cues.init_app_sound", lambda: None)
+    monkeypatch.setattr("quill.ui.app_sounds.apply", lambda _frame: ran.append("sounds"))
+
+    defer_services(frame, object(), version="0.1.0")
+
+    assert ran == ["ledger"]
+    for _label, task in captured:
+        task()
+    assert ran == ["ledger", "sounds", "bridge", "tray", "sync"]
+
+
 @pytest.fixture
 def frame(monkeypatch):
     data_dir = tempfile.mkdtemp()

@@ -17,6 +17,8 @@ Two behaviours here are the point of section 1 rather than housekeeping:
 
 from __future__ import annotations
 
+from typing import Any
+
 import pytest
 
 from quill.core.podcasts import refresh_policy
@@ -267,6 +269,56 @@ def test_refresh_all_starts_at_most_two_feeds_and_paces_the_rest(
     assert refreshed == ["0", "1", "2", "3", "4"]
     monitor.refresh_completed("4")
     assert not monitor.is_checking
+
+
+def test_cancelled_pump_cannot_start_after_a_feature_transition(
+    frame, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    scheduled: list[Any] = []
+
+    class _Later:
+        def __init__(self, callback: object) -> None:
+            self.callback = callback
+
+        def Stop(self) -> None:
+            return
+
+        def run(self) -> None:
+            self.callback()  # type: ignore[operator]
+
+    def call_later(_delay: int, callback: object) -> _Later:
+        later = _Later(callback)
+        scheduled.append(later)
+        return later
+
+    monkeypatch.setattr(wx, "CallLater", call_later)
+    library = _Library([_Show("0"), _Show("1")])
+    monitor, refreshed = _monitor(frame, _Settings(), library)
+    monitor.check_now(force=True)
+    monitor.refresh_completed("0")
+    assert refreshed == ["0"]
+    stale = scheduled[-1]
+
+    monitor.cancel_all()
+    stale.run()
+
+    assert refreshed == ["0"]
+    assert not monitor.is_checking
+
+
+def test_stale_timer_callback_cannot_start_a_reenabled_check(frame) -> None:
+    library = _Library([_Show("live")])
+    monitor, refreshed = _monitor(frame, _Settings(), library)
+
+    monitor.check_now(force=True, defer_start=True)
+    old_generation = monitor._refresh_generation
+    monitor.cancel_all()
+    monitor.check_now(force=True, defer_start=True)
+    monitor.start_queued(old_generation)
+    assert refreshed == []
+
+    monitor.start_queued()
+    assert refreshed == ["live"]
 
 
 def test_another_request_preserves_already_queued_checks(frame) -> None:

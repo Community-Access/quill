@@ -80,14 +80,13 @@ class MenuBuilderMixin:
         # menus.md Phase 4).
         self._append_power_tools_search_items(search_menu)
         self._append_quillin_menu_items(search_menu, "Search")
-        # #15: the power-tools group's first item declares a separator_before, so
-        # when the regex Find/Replace items above are feature-gated off (basic
-        # profiles) the menu opens with a leading separator the screen reader
-        # reads but can't arrow to. Prune leading/trailing/doubled separators.
+        # #15: feature gating can leave a leading separator the reader cannot
+        # arrow to. Prune leading, trailing and doubled separators.
         self._prune_menu_separators(search_menu)
         return search_menu
 
     def _build_menu(self) -> None:
+        getattr(self, "_ensure_profile_feature_runtime", lambda: None)()
         wx = self._wx
         menu_bar = wx.MenuBar()
 

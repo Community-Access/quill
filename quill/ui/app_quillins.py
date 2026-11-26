@@ -22,9 +22,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.core.quillins.loader import remove_extension, set_enabled
-from quill.ui.dpi import dip_size
-
 _QUILLINS_MANAGER_COMMAND = "tools.quillins_manager"
 
 
@@ -33,15 +30,23 @@ class QuillinsAppMixin:
 
     # -- setup ---------------------------------------------------------------
     def _init_app_quillins(self, app_id: str) -> None:
-        """Create the app host and load contributions (unless Safe Mode)."""
+        """Arrange contribution loading after the product window is ready."""
+        self._quillin_app_id = app_id
+        self._quillin_menu_items: list[tuple[str, str]] = []
+        self._app_host = None
+        if not self._safe_mode:
+            self._defer_startup_tasks((("Quillins", self._finish_app_quillins),))  # type: ignore[attr-defined]
 
+    def _ensure_app_quillins_host(self) -> Any:
+        """Build the host on first use, preserving direct manager invocation."""
+        host = getattr(self, "_app_host", None)
+        if host is not None:
+            return host
         from quill.core.quillins.app_host import QuillinAppHost
         from quill.ui.app_quillins_host import _AppHostServices
 
-        # (command_id, title) pairs collected during load(), consumed by the menu.
-        self._quillin_menu_items: list[tuple[str, str]] = []
-        self._app_host = QuillinAppHost(
-            app_id=app_id,
+        host = QuillinAppHost(
+            app_id=self._quillin_app_id,
             services=_AppHostServices(self),
             consent=self._quillin_consent,
             frame_adapter=self,
@@ -49,9 +54,13 @@ class QuillinsAppMixin:
             keymap=self.keymap,
             safe_mode=self._safe_mode,
         )
-        # load() is a no-op in Safe Mode (the host's own choke point), so no
-        # command is registered and no contributed provider is populated.
-        self._app_host.load()
+        self._app_host = host
+        return host
+
+    def _finish_app_quillins(self) -> None:
+        """Load contributions and put them on the already-visible menu bar."""
+        self._ensure_app_quillins_host().load()
+        self._reload_quillins_menu()
 
     # -- AppFrameAdapter protocol (called by QuillinAppHost) -----------------
     def register_command(
@@ -124,7 +133,9 @@ class QuillinsAppMixin:
     def open_quillins_manager(self) -> None:
         wx = self._wx
         from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+        from quill.ui.dpi import dip_size
 
+        self._ensure_app_quillins_host()
         launcher = self.frame.FindFocus() if hasattr(self.frame, "FindFocus") else None
         installed = self._app_host.installed()
         third_party_on = self._quillins_third_party_enabled()
@@ -203,6 +214,8 @@ class QuillinsAppMixin:
             self._reload_quillins_menu()
 
         def on_enable(_e: object) -> None:
+            from quill.core.quillins.loader import set_enabled
+
             item = selected()
             if item is None:
                 return
@@ -212,6 +225,8 @@ class QuillinsAppMixin:
             refresh()
 
         def on_disable(_e: object) -> None:
+            from quill.core.quillins.loader import set_enabled
+
             item = selected()
             if item is None:
                 return
@@ -225,6 +240,8 @@ class QuillinsAppMixin:
             self._announce("Reloaded Quillins from disk.")
 
         def on_remove(_e: object) -> None:
+            from quill.core.quillins.loader import remove_extension
+
             item = selected()
             if item is None:
                 return

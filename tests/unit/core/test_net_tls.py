@@ -4,6 +4,7 @@ import ast
 import ssl
 import subprocess
 import sys
+import threading
 from pathlib import Path
 
 import pytest
@@ -32,6 +33,29 @@ def test_application_truststore_configuration_is_idempotent() -> None:
     context = ssl.create_default_context()
     assert context.verify_mode == ssl.CERT_REQUIRED
     assert context.check_hostname is True
+
+
+def test_concurrent_truststore_configuration_injects_once(monkeypatch) -> None:
+    import truststore
+
+    from quill.core import net
+
+    calls: list[bool] = []
+    barrier = threading.Barrier(6)
+    monkeypatch.setattr(net, "_SSL_TRUST_CONFIGURED", False)
+    monkeypatch.setattr(truststore, "inject_into_ssl", lambda: calls.append(True))
+
+    def configure() -> None:
+        barrier.wait()
+        net.configure_ssl_trust()
+
+    threads = [threading.Thread(target=configure) for _ in range(6)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+
+    assert calls == [True]
 
 
 def test_application_entrypoints_defer_truststore_until_network_is_possible() -> None:
