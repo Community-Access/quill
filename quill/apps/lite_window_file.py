@@ -28,6 +28,7 @@ from pathlib import Path
 
 import wx
 
+from quill.apps.lite_window_failures import report_open_failure, report_save_failure
 from quill.apps.lite_window_word import DocumentWordMixin, open_mode_for
 from quill.core.lite import APP_NAME
 from quill.core.lite import recovery as recovery_mod
@@ -109,7 +110,7 @@ class DocumentFileMixin(DocumentWordMixin):
             self._check_mode_available(mode)
             prepared = prepare_document(path, mode)
         except (OSError, RichEditRtfError) as exc:
-            self._report_failure("Open failed", f"Could not open {path.name}.\n\n{exc}")
+            report_open_failure(self, path, exc, retry=lambda: self.load(path))
             return False
         return self._commit_load(path, prepared)
 
@@ -134,7 +135,7 @@ class DocumentFileMixin(DocumentWordMixin):
                 self._commit_plain(prepared)
         except (OSError, RichEditRtfError) as exc:
             self._loading = False
-            self._report_failure("Open failed", f"Could not open {path.name}.\n\n{exc}")
+            report_open_failure(self, path, exc)
             return False
         finally:
             self._loading = False
@@ -323,7 +324,7 @@ class DocumentFileMixin(DocumentWordMixin):
         try:
             self._write_to(destination, body, as_rich=as_rich)
         except (OSError, RichEditRtfError) as exc:
-            self._report_failure("Save failed", f"Could not save {destination.name}.\n\n{exc}")
+            report_save_failure(self, destination, exc)
             return False
         saved = self._back_up_saved(destination, self.control.GetValue())
         self._settle_saved(destination)

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FUX-16: a problem becomes a next step you can take</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="fux-16-a-problem-becomes-a-next-step-you-can-take">FUX-16: a
+problem becomes a next step you can take</h1>
+<p><strong>Date:</strong> 2026-11-24 <strong>Source:</strong> FUX-16,
+“Turn a problem into a recoverable next step”, in the family UX plan
+(<code>git show b7c6a1a04^:complete2.md</code>), held to <a
+href="family-interaction-contracts.md">family-interaction-contracts.md</a>.
+It is not one of the promoted pilots (<a
+href="2026-11-19-family-ux-pilots.md">2026-11-19-family-ux-pilots.md</a>,
+section 5), so the work here is limited to the failure messages people
+meet most. It improves their words and buttons; it adds no error centre,
+panel or framework. Earshot and the macOS apps are out of scope.
+Recovery after a restart belongs to M6, and live and cached states to
+M13; this work stays out of both.</p>
+<p>The moment: “Something failed. I don’t know whether to retry or start
+over.”</p>
+<h2 id="the-rule-every-failure-message-follows">The rule every failure
+message follows</h2>
+<p>A failure message says four things, in this order, and offers one
+button for the most useful next step:</p>
+<ol type="1">
+<li><strong>What did not happen</strong>, naming the file, the station,
+the account or the task: “Could not open notes.txt.”</li>
+<li><strong>Why, in plain words</strong>: “The disk is full.” Never the
+exception’s own text, a stack, an error number or a code. Those are for
+whoever fixes the fault, so they are behind <strong>Show
+Details</strong> and <strong>Copy Details</strong>.</li>
+<li><strong>What was kept</strong>: “Nothing was opened.” “Your text is
+still open and unsaved.” “Your copy is kept on this computer; nothing
+was published.”</li>
+<li><strong>The one next step, as the default button</strong>: Retry,
+Choose Another File, Save As, Sign In Again, Open Settings. Close is the
+other way out. It has no access key, because Escape is Close
+(GATE-14).</li>
+</ol>
+<p>The kind of failure decides the step, so the four kinds the plan
+names are told apart:</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Example sentence</th>
+<th>Next step</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Something that passes (network, a busy service, a locked file)</td>
+<td>“The connection failed or timed out.”</td>
+<td>Retry, when trying again cannot do anything twice</td>
+</tr>
+<tr>
+<td>A denied permission or an expired sign-in</td>
+<td>“The sign-in was not accepted, or it has expired.”</td>
+<td>Sign In Again, or Save As somewhere else</td>
+</tr>
+<tr>
+<td>A missing part or device</td>
+<td>“A part this needs is not installed.” “The device is not connected
+or not ready.”</td>
+<td>Open Settings at the right page, or Choose Another File</td>
+</tr>
+<tr>
+<td>Something the app cannot do</td>
+<td>“This file or request is not one it can handle.”</td>
+<td>Choose Another File</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Retry is never offered where it could repeat a remote
+action.</strong> Opening, loading and checking change nothing, so they
+can be retried. Publishing, posting, sending and creating are not
+retried from a failure box. WordPress already checks whether a send
+landed before it offers Try Again, and that stays the model.</p>
+<p><strong>Copy Details sends nothing.</strong> The details are the app
+and its version, Windows, what was happening, the kind of failure and
+the error’s text, all passed through the crash-report redaction
+(<code>redact_text_for_bundle</code>, then the Windows user name). The
+document is never included. The details field can be edited before
+copying, so a person can take out anything they do not want to
+share.</p>
+<p><strong>After the next step, the result is said as it
+happens.</strong> Retry opens or loads again and its own result is
+reported, so dismissing the box is not mistaken for recovery. Focus goes
+to what the step opens (the Open or Save As dialog) or back to where it
+was.</p>
+<h2 id="the-shared-pieces">The shared pieces</h2>
+<ul>
+<li><code>quill/core/command_failure.py</code> (wx-free, strict-typed):
+<code>plain_failure(error)</code> returns the kind and the plain
+sentence. It reads <code>errno</code>, the Windows error number and an
+HTTP status, and matches library classes such as requests’
+<code>ConnectTimeout</code> by name, so core imports no network library.
+A coded error keeps its own authored words, without the bracketed code,
+plus its hint; a coded error wrapping a full disk is a full disk.
+<code>failure_details(...)</code> builds the redacted text.
+<code>save_failure_sentence(...)</code> is the one set of save-failure
+words for both editors, so QUILL Lite is no longer behind QUILL.</li>
+<li><code>quill/ui/next_step_box.py</code>:
+<code>show_next_step(...)</code> shows the box. The message, then the
+next-step button (default and focused), Show Details, Copy Details and
+Close. Every control has F1 help. It goes through the host’s
+<code>_show_modal_dialog</code> where there is one, so focus returns to
+the control that was in use.</li>
+<li>Existing pieces are reused, not replaced: Recent Problems
+(<code>problem_log</code>) and its retry-by-kind, the Activity window’s
+Retry and Open Folder, <code>persistence_reporting</code> for settings
+writes, WordPress’s <code>plain_error</code>, GitHub’s
+<code>github_exception_hint</code>, Cast’s <code>feed_problems</code>,
+Radio’s <code>recording_outcome</code> and
+<code>browse_failure</code>.</li>
+</ul>
+<h2 id="inventory">Inventory</h2>
+<p>“Box” is a modal message, “spoken” is an announcement only.
+<strong>Gap</strong> marks a message that broke the rule before this
+work. The last column says which pull request fixed it, or why it was
+left.</p>
+<h3 id="quill-and-quill-lite-the-editors">QUILL and QUILL Lite (the
+editors)</h3>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Before</th>
+<th>After</th>
+<th>Done</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QUILL: a background open fails (Word, PDF, large or remote
+file)</td>
+<td><strong>Gap</strong>: box, OK only, whose main text was
+<code>str(error)</code>; a “What to try next” toggle with general
+advice</td>
+<td>“Opening a.docx did not finish. Windows did not allow it… Nothing
+was opened.” Retry is the default; a file that has gone offers Choose
+Another File. Details behind the buttons</td>
+<td>PR 1</td>
+</tr>
+<tr>
+<td>QUILL: any other background task fails</td>
+<td><strong>Gap</strong>: box, OK only, the whole text
+<code>str(error)</code></td>
+<td>The same plain sentence. Reading tasks (Loading, Checking, Looking
+for, Previewing) offer Retry; tasks that change something (rebase,
+delete, switch branch) offer no Retry</td>
+<td>PR 1</td>
+</tr>
+<tr>
+<td>QUILL: a save fails</td>
+<td>Disk full, read-only and encoding had good words, but OK only.
+<strong>Gap</strong>: anything else was “Could not save notes.md: [Errno
+5] …”, without saying the text was kept</td>
+<td>Every case says “your text is still open and unsaved”. Save As is
+the default button. The error is behind Copy Details</td>
+<td>PR 1</td>
+</tr>
+<tr>
+<td>QUILL Lite: an open fails (small file, large file, Word, mode not
+available)</td>
+<td><strong>Gap</strong>: box, OK only, “Could not open notes.txt.” then
+the raw exception. The large-file path asked “Try again?” with the raw
+text</td>
+<td>“Could not open notes.txt. [plain reason] Nothing was opened.”
+Retry, or Choose Another File when the file is gone</td>
+<td>PR 1</td>
+</tr>
+<tr>
+<td>QUILL Lite: a save fails (text, rich text, Word)</td>
+<td><strong>Gap</strong>: box, OK only, raw exception, never said the
+text was kept, none of QUILL’s disk-full or read-only words</td>
+<td>QUILL’s words, from the same function, and Save As</td>
+<td>PR 1</td>
+</tr>
+<tr>
+<td>Ask Quill: the AI provider returns an error</td>
+<td><strong>Gap</strong>: “Error: {provider text}” in the conversation
+and spoken</td>
+<td>Plain first: a refused key says where to fix it (the AI Hub or
+Choose Your AI); a rate limit says wait, then send again; no connection
+says check it. “Your document was not changed.” The provider’s text
+stays at the end of the conversation entry as “Details:”, and is not
+spoken</td>
+<td>PR 1</td>
+</tr>
+<tr>
+<td>QUILL: the hosted AI chat fails</td>
+<td>Plain sentence, “Nothing was sent and nothing was used”, Send stays
+enabled</td>
+<td>Unchanged: already meets the rule</td>
+<td>No gap</td>
+</tr>
+<tr>
+<td>QUILL: a settings or history write fails</td>
+<td>Activity with Retry and Open Folder, “Your changes stay in use for
+this session”</td>
+<td>Unchanged: already meets the rule</td>
+<td>No gap</td>
+</tr>
+<tr>
+<td>QUILL: a command raises (status bar)</td>
+<td><code>describe_command_failure</code>, on the status bar</td>
+<td>Unchanged: the status bar is a trace, not the message a person must
+act on; the command’s own handler reports its result</td>
+<td>Left</td>
+</tr>
+</tbody>
+</table>
+<h3 id="converter-scribe-transcribe-and-dictate">Converter, Scribe,
+Transcribe and Dictate</h3>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Before</th>
+<th>After</th>
+<th>Done</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Converter: reading or downloading a link fails</td>
+<td><strong>Gap</strong>: box, OK only, “{label} failed.” then the raw
+error</td>
+<td>Plain reason, “Nothing was added to the queue”, Retry, Copy
+Details</td>
+<td>PR 2</td>
+</tr>
+<tr>
+<td>Converter: a playlist or channel cannot be read</td>
+<td><strong>Gap</strong>: the bare <code>str(error)</code>, spoken and
+on the status bar</td>
+<td>Plain sentence naming the link and what was kept</td>
+<td>PR 2</td>
+</tr>
+<tr>
+<td>Converter: Join fails; Chapter Workbench cannot read the book</td>
+<td><strong>Gap</strong>: raw text; the second an OK-only box with an
+information icon</td>
+<td>Plain words; the Workbench box offers Choose Another File</td>
+<td>PR 2</td>
+</tr>
+<tr>
+<td>Converter: a batch finishes with failures</td>
+<td>Spoken sentence names the files; the report has translated FFmpeg
+reasons; Activity offers Retry and Open Folder</td>
+<td>Unchanged</td>
+<td>No gap</td>
+</tr>
+<tr>
+<td>Converter: FFmpeg missing</td>
+<td>Names the fix (Help &gt; Get FFmpeg)</td>
+<td>Unchanged in words</td>
+<td>Left: a button for Get FFmpeg is a new action in that box, a
+candidate for later</td>
+</tr>
+<tr>
+<td>Scribe: a background request fails with an exception that is not a
+Scribe error</td>
+<td><strong>Gap</strong>: “Scribe: {raw}” spoken</td>
+<td>Plain reason; Scribe’s own sentences were already plain</td>
+<td>PR 2</td>
+</tr>
+<tr>
+<td>Scribe: QUILL cannot read the file Scribe made</td>
+<td><strong>Gap</strong>: “…but QUILL could not read it: {error}”</td>
+<td>Plain reason, and the file is named as kept on disk</td>
+<td>PR 2</td>
+</tr>
+<tr>
+<td>Scribe: a conversion fails; sign-in ends; offline</td>
+<td>Plain sentences, Retry in the Conversions window, “paused until you
+sign in again”</td>
+<td>Unchanged</td>
+<td>No gap</td>
+</tr>
+<tr>
+<td>Dictation cannot start</td>
+<td><strong>Gap</strong>: “Dictation could not start: {raw}”, and the
+microphone and privacy hint written for this case was never spoken</td>
+<td>Plain reason plus the hint</td>
+<td>PR 2</td>
+</tr>
+<tr>
+<td>Dictation: the model is not on this computer</td>
+<td>Says the three ways out, error sound, no button</td>
+<td>Unchanged: the sentence names the Model Library, and dictation start
+is not a box</td>
+<td>No gap</td>
+</tr>
+<tr>
+<td>Model download fails on a full disk or an unwritable folder</td>
+<td><strong>Gap</strong>: an OSError that was not wrapped could reach
+the person as the bare text or an error number</td>
+<td>Plain reason, “files that already arrived whole are kept”</td>
+<td>PR 2</td>
+</tr>
+</tbody>
+</table>
+<h3 id="quill-cast-and-quill-radio">Quill Cast and Quill Radio</h3>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Before</th>
+<th>After</th>
+<th>Done</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cast: a feed cannot be checked</td>
+<td>Plain sentence, Recent Problems with Retry</td>
+<td>Unchanged</td>
+<td>No gap</td>
+</tr>
+<tr>
+<td>Cast: a download fails on a full disk</td>
+<td>“The disk is full ({free}). Free some space…”, Recent Problems with
+Retry</td>
+<td>Unchanged</td>
+<td>No gap</td>
+</tr>
+<tr>
+<td>Cast: a transcript, chapters, audio processing or OPML export
+fails</td>
+<td><strong>Gap</strong>: spoken and recorded with the raw error</td>
+<td>Plain reason in the sentence; Recent Problems keeps it</td>
+<td>PR 3</td>
+</tr>
+<tr>
+<td>Radio: a recording cannot start (folder cannot be made, disk
+full)</td>
+<td><strong>Gap</strong>: spoken only, “[QUILL-RADIO-RECORDING-FAILED]”
+and the raw OSError, not in Recent Problems</td>
+<td>Plain reason and the setting to change; recorded in Recent
+Problems</td>
+<td>PR 3</td>
+</tr>
+<tr>
+<td>Radio: a scheduled recording cannot start</td>
+<td><strong>Gap</strong>: raw error in the spoken sentence</td>
+<td>Plain reason</td>
+<td>PR 3</td>
+</tr>
+<tr>
+<td>Radio: a station cannot be reconnected</td>
+<td>Plain sentence, Recent Problems with Retry</td>
+<td>Unchanged</td>
+<td>No gap</td>
+</tr>
+<tr>
+<td>Radio: a capture saved nothing; ended early</td>
+<td>Mapped reason, “No file was kept”, Activity with Open Folder</td>
+<td>Unchanged</td>
+<td>No gap</td>
+</tr>
+<tr>
+<td>Radio: the chosen output device cannot be opened</td>
+<td>Says the fallback device</td>
+<td>Unchanged</td>
+<td>No gap</td>
+</tr>
+<tr>
+<td>Radio: a backup cannot be restored</td>
+<td><strong>Gap</strong>: box with the raw error</td>
+<td>Plain reason, “nothing was changed”</td>
+<td>PR 3</td>
+</tr>
+<tr>
+<td>Radio: YouTube connect fails</td>
+<td><strong>Gap</strong>: raw error spoken</td>
+<td>Plain reason</td>
+<td>PR 3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="quill-beacon-github-workbench-and-wordpress">Quill Beacon,
+GitHub Workbench and WordPress</h3>
+<table>
+<thead>
+<tr>
+<th>Message</th>
+<th>Before</th>
+<th>After</th>
+<th>Done</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Beacon: Sync Now fails</td>
+<td><strong>Gap</strong>: box, OK only, “sync failed (local state
+intact): {raw requests error}”; an expired sign-in looked like a network
+failure</td>
+<td>Plain reason. An expired sign-in offers Sign In Again; a network
+failure offers Retry (sync re-runs from the commit log, so nothing is
+pushed twice). “Your beacons on this computer are unchanged”</td>
+<td>PR 4</td>
+</tr>
+<tr>
+<td>Beacon: the sign-in link cannot be sent or verified</td>
+<td><strong>Gap</strong>: box, OK only, “verify failed: {raw}”</td>
+<td>Plain reason; an expired link says to ask for a new one</td>
+<td>PR 4</td>
+</tr>
+<tr>
+<td>Beacon: a bookmark file cannot be imported, a feed cannot be
+fetched, an attachment cannot be opened</td>
+<td><strong>Gap</strong>: box, OK only, raw error</td>
+<td>Plain reason and what was kept</td>
+<td>PR 4</td>
+</tr>
+<tr>
+<td>GitHub Workbench: a view cannot load</td>
+<td><strong>Gap</strong>: “Could not load Issues:
+[QUILL-GITHUB-ITEMS-ERROR] … 401 {json}”; a 401 or rate limit on a list
+skipped the sign-in hint</td>
+<td>Plain reason with the hint (sign in again, wait for the rate limit);
+F5 tries again</td>
+<td>PR 4</td>
+</tr>
+<tr>
+<td>QUILL Lite: GitHub Workbench cannot start</td>
+<td><strong>Gap</strong>: box, OK only, raw text with the code</td>
+<td>Plain reason</td>
+<td>PR 4</td>
+</tr>
+<tr>
+<td>WordPress: Publish or Update refused for sign-in, role or
+server</td>
+<td><strong>Gap</strong>: spoken only; did not say the copy was kept or
+that nothing was published</td>
+<td>“Your copy is kept on this computer; nothing was published.”</td>
+<td>PR 4</td>
+</tr>
+<tr>
+<td>WordPress: Connect fails; the site cannot be reached while
+publishing</td>
+<td>Reopens Connect with the answers kept; checks whether the send
+landed before offering Try Again</td>
+<td>Unchanged: the model the rest follows</td>
+<td>No gap</td>
+</tr>
+</tbody>
+</table>
+<h2 id="acceptance-from-the-proposal">Acceptance, from the proposal</h2>
+<ul>
+<li><strong>Preserve work before offering retry, another destination or
+export.</strong> A failed save keeps the text open and says so, and
+offers Save As. A failed open leaves the window as it was. Retry is only
+offered for reads.</li>
+<li><strong>No “try again” where a retry could duplicate a remote
+action.</strong> Writes and sends are never retried from a failure box.
+WordPress’s check before Try Again is unchanged.</li>
+<li><strong>A support report can carry versions and error context
+without private content.</strong> Copy Details: app, version, Windows,
+what was happening, the kind and the error, redacted, never the
+document.</li>
+<li><strong>The person can inspect, edit and copy the report without
+sending it.</strong> Show Details reveals an editable field; Copy
+Details copies what is in it and says “Details copied. Nothing was
+sent.”</li>
+<li><strong>Unsupported, denied, unavailable and passing failures are
+told apart.</strong> <code>plain_failure</code> gives each its own
+sentence, and the button follows the kind.</li>
+<li><strong>Focus returns to a useful control after recovery.</strong>
+The box goes through the host’s modal path; the next step opens its own
+dialog or runs again.</li>
+<li><strong>Recovery is confirmed, not only dismissed.</strong> Retry
+and Save As report their own outcome as usual.</li>
+</ul>
+<h2 id="left-for-later">Left for later</h2>
+<ul>
+<li>A Get FFmpeg button in Converter’s FFmpeg-missing box, and a Model
+Library button in Transcribe, would each be a new action in an existing
+box. Both sentences already name the menu path.</li>
+<li>QUILL’s status-bar trace of a failed command
+(<code>describe_command_failure</code>) keeps the raw text; it is a
+trace for support, not the message a person acts on.</li>
+<li>The Studio and Player boxes that show <code>str(error)</code>
+(capture, demo and launch) were not in the most-met set and are left for
+the Studio release work.</li>
+<li>To be checked by hand with a screen reader in a frozen build: the
+box reads its message on opening, Retry is the default, Show Details
+moves focus to the details, and Copy Details is heard once.</li>
+</ul>
+</main>
+</body>
+</html>

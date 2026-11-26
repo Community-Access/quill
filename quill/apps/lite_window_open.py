@@ -14,8 +14,9 @@ UI thread, only if the result is still wanted. Four rules:
   window invalidates a ``UiLifetimeToken``. A result for an older generation,
   or for a window being destroyed, is never committed -- closing the opening
   window *is* Cancel, and needs no button of its own.
-* **Failure leaves the window as it was and asks what next.** Try Again
-  re-runs the read; Close closes the empty window. The failure is a box, not a
+* **Failure leaves the window as it was and asks what next.** Retry
+  re-runs the read (Choose Another File when the file is gone); Close closes
+  the empty window. The failure is a box, not a
   status message, for the same reason ``_report_failure`` is: it cost the user
   the thing they asked for.
 
@@ -32,8 +33,6 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
-
-import wx
 
 from quill.core.lite.open_prepare import PLAIN, PreparedDocument
 from quill.core.lite.open_prepare import prepare as prepare_document
@@ -76,7 +75,9 @@ class DocumentBackgroundOpenMixin:
         try:
             self._check_mode_available(mode)
         except Exception as exc:  # noqa: BLE001 - reported exactly as the sync path does
-            self._report_failure("Open failed", f"Could not open {path.name}.\n\n{exc}")
+            from quill.apps.lite_window_failures import report_open_failure
+
+            report_open_failure(self, path, exc)
             return
         self._open_generation = getattr(self, "_open_generation", 0) + 1
         generation = self._open_generation
@@ -179,24 +180,18 @@ class DocumentBackgroundOpenMixin:
     def _fail_background_load(self, generation: int, path: Path, exc: BaseException) -> None:
         if not self._still_wanted(generation):
             return
-        from quill.ui.dialog_contract import show_message_box
+        from quill.apps.lite_window_failures import report_open_failure
 
         self.opening_path = None
         self._set_editable(True)
         self._set_status_message("")
         self._end_open_progress(path, failed=exc)
         self._update_title()
-        self._cue_error()
-        answer = show_message_box(
-            f"Could not open {path.name}.\n\n{exc}\n\nTry again?",
-            "Open failed",
-            wx.YES_NO | wx.YES_DEFAULT | wx.ICON_ERROR,
-            self,
-        )
-        if answer == wx.YES:
-            self.begin_background_load(path)
-        elif self.path is None and not self.modified:
-            # The window was made for this file and holds nothing else: an
+        # FUX-16: plain words, Retry (or Choose Another File when the file is
+        # gone), and the error's text behind Copy Details.
+        report_open_failure(self, path, exc, retry=lambda: self.begin_background_load(path))
+        if self.path is None and not self.modified and self.opening_path is None:
+            # The window was made for this file and still holds nothing: an
             # empty window left behind is a stop a listener has to clear.
             self.Close()
 

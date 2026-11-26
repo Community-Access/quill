@@ -14,6 +14,7 @@ import threading
 import time
 
 from quill.ui.assistant_conversation_tools import AssistantConversationToolsMixin
+from quill.ui.assistant_error_words import classify_assistant_error
 from quill.ui.assistant_reply_delivery import AssistantReplyDeliveryMixin
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
@@ -34,20 +35,6 @@ _PROVIDER_LABELS: dict[str, str] = {
     "ollama_cloud": "Ollama Cloud",
 }
 _PROVIDER_IDS: list[str] = list(_PROVIDER_LABELS)
-
-
-def classify_assistant_error(error: str) -> tuple[str, bool]:
-    """Return (user-facing message, whether to disable input)."""
-    text = (error or "").strip()
-    lowered = text.lower()
-    if "failed to load native code" in lowered or "0xc000001d" in lowered:
-        return (
-            "On-device AI couldn't start. This processor may not support the built-in "
-            "AI engine. Use the setup strip to connect a cloud provider, or turn AI off "
-            "from Tools > AI Assistant.",
-            True,
-        )
-    return (f"Error: {text}", False)
 
 
 class AskQuillChatDialog(AssistantReplyDeliveryMixin, AssistantConversationToolsMixin):
@@ -836,7 +823,8 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin, AssistantConversationTools
         if action == "error":
             message, disable_chat = classify_assistant_error(error)
             self._append("Quill", message)
-            self._announce_incoming(message, prefix="Quill error")
+            # The transcript keeps the provider's text; speech says the plain part (FUX-16).
+            self._announce_incoming(message.split(" Details: ")[0], prefix="Quill error")
             if disable_chat:
                 self._set_busy(True)
                 if self._webview is not None:

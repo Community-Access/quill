@@ -99,6 +99,26 @@ Every QuillVille app has lessons in the same kind of window, on the same key.
 If you would rather read all the lessons straight through, press **The whole
 book as a document**. It opens the full set in your web browser.
 
+## When opening or saving fails
+
+If a file does not open, or a save does not work, QUILL Lite says three things
+in plain words: what did not happen, why, and what was kept. For example:
+"Could not open notes.txt. The file or folder is not there any more. Nothing
+was opened." A failed save always ends "your text is still open and unsaved".
+
+The box's first button is the one next step, and Enter presses it:
+
+- **Retry** when trying again may work, such as a file another program had
+  locked.
+- **Choose Another File...** when the file is not there any more. It is the
+  Open dialog.
+- **Save As...** after any failed save, to put your text somewhere else.
+
+The technical text is not in the message. **Show Details** shows it in a box
+you can edit, and **Copy Details** copies it for a support email. QUILL Lite
+says "Details copied. Nothing was sent." **Close**, or Escape, closes the box
+and does nothing else.
+
 ## Getting help
 
 There is always a way to get help. This part starts with what to do if

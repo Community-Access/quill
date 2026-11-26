@@ -22,5 +22,23 @@ def test_classify_assistant_error_native_loader_failure() -> None:
 def test_classify_assistant_error_generic() -> None:
     message, disable_chat = classify_assistant_error("temporary network issue")
 
-    assert message == "Error: temporary network issue"
+    assert message.startswith("QUILL could not reach the AI provider.")
+    assert "Your document was not changed." in message
+    assert message.endswith("Details: temporary network issue")
     assert disable_chat is False
+
+
+def test_a_refused_key_says_where_to_fix_it() -> None:
+    message, _ = classify_assistant_error("Error code: 401 - invalid_api_key")
+    assert message.startswith("The AI provider did not accept the key")
+    assert "Choose Your AI" in message
+
+
+def test_a_rate_limit_says_wait_then_send_again() -> None:
+    message, _ = classify_assistant_error("429 Too Many Requests")
+    assert "Wait a minute, then send again." in message
+
+
+def test_an_unknown_error_is_still_plain_first() -> None:
+    message, _ = classify_assistant_error("model produced invalid JSON")
+    assert message.startswith("The AI provider returned an error.")

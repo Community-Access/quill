@@ -4983,6 +4983,17 @@ class MainFrame(
             )
             self._wx.CallAfter(self._set_status, f"{label}: {current}/{total} - {message}")
 
+        def again() -> None:
+            self._run_background_task(
+                label,
+                work,
+                on_success,
+                notify_on_success=notify_on_success,
+                notify_on_error=notify_on_error,
+                notification_category=notification_category,
+                protect_on_close=protect_on_close,
+            )
+
         def worker() -> None:
             try:
                 result = work(progress)
@@ -4997,6 +5008,7 @@ class MainFrame(
                     notify_on_success,
                     notify_on_error,
                     notification_category,
+                    retry=again,  # FUX-16: the failure box's Retry runs the same work
                 )
                 return
             self._wx.CallAfter(
@@ -5025,6 +5037,7 @@ class MainFrame(
         notify_on_success: bool,
         notify_on_error: bool,
         notification_category: str,
+        retry: Callable[[], None] | None = None,
     ) -> None:
         self._background_task_count = max(0, getattr(self, "_background_task_count", 1) - 1)
         # A no-op when this task was never protected (or the registry doesn't exist yet).
@@ -5037,18 +5050,9 @@ class MainFrame(
             # stray cue can't fire after the failure was already reported.
             self._cancel_preview_cue_timer()
             self._track_background_task_finish(task_id, "failed", str(error))
-            # §8.2 Soft error recovery link: file-open and network background tasks get a hint.
-            if label.startswith("Opening "):
-                self._show_error_with_hint(
-                    str(error),
-                    label,
-                    "Check that the file exists, is not locked by another application, "
-                    "and that QUILL has permission to read it. "
-                    "For format errors, try opening in a text editor first to verify the content.",
-                )
-            else:
-                self._show_message_box(str(error), label, self._wx.ICON_ERROR | self._wx.OK)
             self._set_status(f"{label} failed")
+            # FUX-16: plain words, the next step that fits, the error behind Copy Details.
+            self._report_background_failure(label, error, retry)
             if notify_on_error:
                 self._record_notification(f"{label} failed: {error}", notification_category)
             return

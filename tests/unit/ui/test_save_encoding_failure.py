@@ -24,9 +24,18 @@ class _Host(WriteSafetyMixin):
         self._wx = _WX()
         self.boxes: list[str] = []
         self.status: list[str] = []
+        self.errors: list[object] = []
+        self.next_labels: list[str] = []
+        self.saved_as = 0
 
-    def _show_message_box(self, message: str, title: str, style: int) -> None:
+    def _show_failure_box(self, message: str, title: str, **kwargs: object) -> bool:
         self.boxes.append(message)
+        self.errors.append(kwargs.get("error"))
+        self.next_labels.append(str(kwargs.get("next_label", "")))
+        return False
+
+    def save_file_as(self) -> None:
+        self.saved_as += 1
 
     def _set_status(self, message: str) -> None:
         self.status.append(message)
@@ -78,11 +87,26 @@ def test_the_disk_full_sentence_still_works() -> None:
     assert "The disk is full" in host.boxes[0]
 
 
-def test_an_unclassified_error_still_keeps_its_text() -> None:
+def test_an_unclassified_error_keeps_its_text_behind_copy_details() -> None:
+    # FUX-16: the raw text is for whoever fixes the fault, so it goes to the
+    # details the person can copy, not into the sentence they hear first.
     host = _Host()
-    host._report_save_failure("notes.md", OSError(errno.EIO, "I/O error"), "Save")
-    assert "Could not save notes.md" in host.boxes[0]
-    assert "I/O error" in host.boxes[0]
+    error = OSError(errno.EIO, "I/O error")
+    host._report_save_failure("notes.md", error, "Save")
+    assert "could not save notes.md" in host.boxes[0]
+    assert "I/O error" not in host.boxes[0]
+    assert "still open and unsaved" in host.boxes[0]
+    assert host.errors == [error]
+
+
+def test_save_as_is_the_one_next_step() -> None:
+    host = _Host()
+    host._report_save_failure("notes.md", OSError(errno.ENOSPC, "No space"), "Save")
+    assert host.next_labels == ["Save &As..."]
+    assert host.saved_as == 0  # Close chosen: nothing else happens
+    host._show_failure_box = lambda *_a, **_k: True  # type: ignore[method-assign]
+    host._report_save_failure("notes.md", OSError(errno.ENOSPC, "No space"), "Save")
+    assert host.saved_as == 1
 
 
 def test_the_save_path_actually_catches_it() -> None:

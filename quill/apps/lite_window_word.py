@@ -208,7 +208,9 @@ class DocumentWordMixin:
         try:
             rtf = self._word_rtf()
         except Exception as exc:  # noqa: BLE001 - reported as any failed save is
-            self._report_failure("Save failed", f"Could not save {destination.name}.\n\n{exc}")
+            from quill.apps.lite_window_failures import report_save_failure
+
+            report_save_failure(self, destination, exc)
             return False
         self._back_up_before_word_save(destination)
         self._word_save_busy = destination.name
@@ -247,7 +249,9 @@ class DocumentWordMixin:
     def _fail_word_save(self, destination: Path, exc: BaseException) -> None:
         self._word_save_busy = ""
         self._set_status_message("")
-        self._report_failure("Save failed", f"Could not save {destination.name}.\n\n{exc}")
+        from quill.apps.lite_window_failures import report_save_failure
+
+        report_save_failure(self, destination, exc)
 
     def _cue_saved(self) -> None:
         from quill.core.sound_events import SoundEvent

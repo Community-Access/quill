@@ -130,8 +130,10 @@ def test_save_file_as_reports_write_failures() -> None:
     assert "except OSError" in body
     assert "_report_save_failure(" in body
     helper = (_UI_DIR / "main_frame_write_safety.py").read_text(encoding="utf-8")
-    assert "Could not save" in helper
-    assert "The disk is full" in helper
+    assert "save_failure_sentence" in helper  # shared with QUILL Lite since FUX-16
+    from quill.core.command_failure import save_failure_sentence
+
+    assert "The disk is full" in save_failure_sentence("a.md", OSError(28, "No space"))
 
 
 def test_save_file_as_announces_format_conversion() -> None:

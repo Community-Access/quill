@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import errno
 import logging
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from quill.core.autosave import autosave_document
@@ -40,6 +41,9 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
     from quill.core.document import Document
 
 logger = logging.getLogger(__name__)
+
+#: Background tasks that only read, so trying again cannot do anything twice.
+_READING_LABELS = ("Loading ", "Checking ", "Looking for ", "Previewing ")
 
 
 class WriteSafetyMixin:
@@ -66,62 +70,111 @@ class WriteSafetyMixin:
     def _report_save_failure(
         self, name: str, error: OSError | UnicodeEncodeError, title: str
     ) -> None:
-        """Explain a failed save in words that say what to do about it (#1390).
+        """Explain a failed save and offer Save As (#1390, FUX-16).
 
-        The disk-full, read-only and unencodable-character cases get their own
-        sentence; everything else keeps the error text, which at least names the
-        fault. The third one arrived with bad.md P0.9: an encoding that cannot
-        hold a character the writer just typed is not an OSError and used to
-        escape this method entirely, so the save failed with the generic
-        "Command failed: file.save" and no mention of the character at all.
+        The sentence says what went wrong in plain words and that the text is
+        still open and unsaved; the error's own text is behind Copy Details.
+        Save As is the default button, because a different place is the one
+        thing that gets the work onto disk now.
         """
         message = self._save_failure_sentence(name, error)
-        self._show_message_box(message, title, self._wx.ICON_ERROR | self._wx.OK)
         self._set_status(f"Could not save {name}")
+        if self._show_failure_box(
+            message,
+            title,
+            next_label="Save &As...",
+            next_help="Saves the document somewhere else, under a name you choose.",
+            error=error,
+            context=f"Saving {name}",
+        ):
+            self.save_file_as()
 
     def _save_failure_sentence(self, name: str, error: OSError | UnicodeEncodeError) -> str:
         """The words for a failed save, for the box above or for speech.
 
         The clipboard collector's quiet save speaks this rather than opening the
         box: a copy made in another program must never put a window in front of
-        you, and the failure still has to say what to do.
+        you, and the failure still has to say what to do. The words are shared
+        with QUILL Lite (``command_failure.save_failure_sentence``).
         """
-        if isinstance(error, OSError) and error.errno == errno.ENOSPC:
-            message = (
-                f"The disk is full. QUILL could not save {name}. Free some space "
-                "and try again -- your text is still open and unsaved."
-            )
-        elif isinstance(error, OSError) and error.errno in (
-            errno.EACCES,
-            errno.EPERM,
-            errno.EROFS,
-        ):
-            message = (
-                f"QUILL could not save {name}: the file or folder is read-only, "
-                "or another program has it open. Try File > Save As to a "
-                "different location -- your text is still open and unsaved."
-            )
-        elif isinstance(error, UnicodeEncodeError):
-            # The one save failure that is about the TEXT rather than the disk,
-            # and the one where the fix is a choice only the writer can make
-            # (bad.md P0.9, F3). Name the character: "position 1462" is a number
-            # nobody can act on, and a listener cannot go and look.
-            character = error.object[error.start : error.end]
-            # Not error.encoding: every Windows code page reports itself as
-            # "charmap" there, which names nothing. The document knows what it
-            # was opened as, and that is the word the writer will recognise.
+        from quill.core.command_failure import save_failure_sentence
+
+        codec = ""
+        if isinstance(error, UnicodeEncodeError):
+            # Not error.encoding alone: every Windows code page reports itself
+            # as "charmap", which names nothing. The document knows what it was
+            # opened as, and that is the word the writer will recognise.
             codec = str(error.encoding or "").strip()
             if codec in {"", "charmap"}:
                 codec = str(getattr(getattr(self, "document", None), "encoding", "") or "")
-            where = f" as {codec}" if codec else " in its current encoding"
-            message = (
-                f"QUILL could not save {name}{where}: it cannot hold "
-                f"{character!r}. Save As and choose UTF-8, or take that character "
-                "out -- your text is still open and unsaved."
-            )
-        else:
-            message = f"Could not save {name}: {error}"
-        return message
+        return save_failure_sentence(name, error, codec=codec)
+
+    def _show_failure_box(
+        self,
+        message: str,
+        caption: str,
+        *,
+        next_label: str = "",
+        next_help: str = "",
+        error: BaseException | None = None,
+        context: str = "",
+    ) -> bool:
+        """A failure box with one next step and Copy Details (FUX-16).
+
+        True when the person chose the next step. The error's own text goes
+        to the details, never into *message*.
+        """
+        from quill.core.command_failure import failure_details
+        from quill.ui.next_step_box import show_next_step
+
+        details = failure_details(error, app="QUILL", context=context) if error else ""
+        return show_next_step(
+            self.frame,
+            message,
+            caption,
+            next_label=next_label,
+            next_help=next_help,
+            details=details,
+            announce=self._announce,
+            show_modal=self._show_modal_dialog,
+        )
+
+    def _report_background_failure(
+        self, label: str, error: BaseException, retry: Callable[[], None] | None
+    ) -> None:
+        """A background task failed: say so plainly, with the next step that fits.
+
+        Reading tasks ("Opening", "Loading", "Checking") change nothing, so
+        Retry is safe to offer; an open whose file has gone offers Choose
+        Another File instead. A task that writes or sends is never offered
+        Retry from here, because doing it again could do it twice.
+        """
+        from quill.core.command_failure import MISSING, plain_failure
+
+        words = plain_failure(error)
+        opening = label.startswith("Opening ")
+        reading = opening or label.startswith(_READING_LABELS)
+        message = f"{label} did not finish. {words.reason}"
+        if opening:
+            message += " Nothing was opened."
+        next_label = next_help = ""
+        if opening and words.kind == MISSING:
+            next_label, next_help = "Choose Another &File...", "Opens the Open dialog."
+        elif reading and retry is not None:
+            next_label, next_help = "&Retry", f"Tries {label[0].lower()}{label[1:]} again."
+        chosen = self._show_failure_box(
+            message,
+            label,
+            next_label=next_label,
+            next_help=next_help,
+            error=error,
+            context=label,
+        )
+        if chosen and next_label:
+            if next_label.startswith("Choose"):
+                self.open_file()
+            elif retry is not None:
+                retry()
 
     def _write_named_document(self) -> OSError | UnicodeEncodeError | None:
         """Write the active document to its own path and settle what a save settles.

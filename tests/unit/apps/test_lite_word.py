@@ -391,7 +391,12 @@ def test_a_failed_background_save_is_reported_and_frees_save(lite_window, tmp_pa
     win.app.task_manager = tasks = _HeldTasks()
     win.cmd_save()
     tasks.submitted[0]["on_failure"]("op", OSError("disk full"))
-    assert win.failures[-1] == ("Save failed", "Could not save gone.docx.\n\ndisk full")
+    caption, message = win.failures[-1]
+    assert caption == "Save failed"
+    assert "could not save gone.docx" in message
+    assert "your text is still open and unsaved" in message  # FUX-16: what was kept
+    assert "disk full" not in message  # the raw text is behind Copy Details
+    assert str(win.failure_errors[-1]) == "disk full"
     assert win._word_save_busy == ""
 
 

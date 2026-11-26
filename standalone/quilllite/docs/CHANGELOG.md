@@ -2,6 +2,18 @@
 
 ## 2.0.0
 
+### A failed open or save says why, and offers the next step (2026-11-24)
+
+A file that does not open and a save that does not work no longer show an
+OK-only box with the error's raw text. The message says what did not happen,
+why in plain words, and what was kept: "Nothing was opened", or "your text is
+still open and unsaved", which a failed save never said before. Its first
+button is the next step: **Retry**, **Choose Another File...** or **Save
+As...**. A failed save now uses QUILL's words for a full disk, a read-only
+folder and a character the encoding cannot hold. The technical text is behind
+**Show Details**, which you can edit, and **Copy Details**, which copies it
+and sends nothing.
+
 ### F8 moves from one change to the next in every read-only diff (2026-11-24)
 
 The differences of a file in a pull request, Compare Branches' Changed Files,

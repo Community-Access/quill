@@ -75,7 +75,7 @@ def _capture_save_failure(error: OSError) -> tuple[list[str], list[str]]:
     boxes: list[str] = []
     statuses: list[str] = []
     frame._wx = _Wx()  # type: ignore[assignment]
-    frame._show_message_box = lambda message, *_a, **_k: boxes.append(message)  # type: ignore[method-assign]
+    frame._show_failure_box = lambda message, *_a, **_k: boxes.append(message)  # type: ignore[method-assign]
     frame._set_status = statuses.append  # type: ignore[method-assign]
     frame._report_save_failure("notes.md", error, "Save")
     return boxes, statuses
@@ -94,10 +94,10 @@ def test_read_only_save_failure_points_at_save_as() -> None:
     assert "Save As" in boxes[0]
 
 
-def test_other_errors_keep_the_errno_text() -> None:
+def test_other_errors_say_it_plainly_and_keep_the_text_for_details() -> None:
     boxes, _ = _capture_save_failure(OSError(errno.EIO, "I/O error"))
-    assert "Could not save notes.md" in boxes[0]
-    assert "I/O error" in boxes[0]
+    assert "could not save notes.md" in boxes[0]
+    assert "I/O error" not in boxes[0]  # FUX-16: behind Copy Details instead
 
 
 # --------------------------------------------------------------------------- #
@@ -110,6 +110,7 @@ def test_save_on_close_that_raises_cancels_the_close() -> None:
     frame._wx = type("W", (), {"ID_CANCEL": 5, "ID_YES": 6, "ID_NO": 7, "ICON_ERROR": 1, "OK": 2})()
     frame.document = Document(text="unsaved", modified=True)
     frame._show_message_box = lambda *_a, **_k: None  # type: ignore[method-assign]
+    frame._show_failure_box = lambda *_a, **_k: False  # type: ignore[method-assign]
     frame._set_status = lambda *_a, **_k: None  # type: ignore[method-assign]
     frame._prompt_unsaved_changes_action = lambda *_a, **_k: 6  # type: ignore[method-assign]
 

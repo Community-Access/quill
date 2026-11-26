@@ -56,6 +56,8 @@ rules:
   could not save notes.md. Free some space and try again; your text is still
   open and unsaved." A file or folder that is read-only, or held open by
   another program, gets its own message pointing you at **File > Save As**.
+  Every failed save says your text is still open and unsaved, and the box's
+  first button is **Save As...**, so Enter saves somewhere else straight away.
 - **A failed save never closes the window.** If you choose **Save** on the
   closing prompt and the save fails, the close is cancelled and QUILL tells you
   why, so you can free some space or save somewhere else. Closing a second time
@@ -281,6 +283,34 @@ do, for example:
 
 When you report a problem, include the code. It tells us exactly which failure
 you hit, with no back-and-forth.
+
+### A failure box offers the next step
+
+When opening, saving or another piece of work fails, the box says three things
+in plain words: what did not happen, why, and what was kept. For example:
+"Opening report.docx did not finish. Windows did not allow it: the file may be
+open in another program, or the folder may be protected. Nothing was opened."
+
+Its first button is the one next step that fits, and Enter presses it:
+
+- **Retry** when trying again may work, such as a file another program had
+  locked. It is offered only for opening, loading and checking, which change
+  nothing, so trying again can never do anything twice.
+- **Choose Another File...** when the file is not there any more.
+- **Save As...** when a save failed.
+
+The technical text (the error, QUILL's version and Windows's) is not in the
+message. **Show Details** shows it in a box you can edit, so you can take out
+anything you do not want to share, and **Copy Details** copies it for a
+support report. QUILL says "Details copied. Nothing was sent.": nothing leaves
+your computer unless you paste it somewhere yourself. **Close**, or Escape,
+closes the box and does nothing else.
+
+When Ask Quill's AI provider returns an error, the conversation says plainly
+what happened first: a key that was not accepted (and where to fix it in the
+AI Hub or Choose Your AI), a usage limit (wait a minute, then send again), or
+no connection. It also says your document was not changed. The provider's
+own words follow as "Details:" in the conversation, and are not read aloud.
 
 The same goes for things QUILL declines or trims:
 

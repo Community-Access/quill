@@ -204,29 +204,54 @@ def test_nothing_lands_in_a_window_being_destroyed_or_an_app_shutting_down(frame
     assert frame.committed == []
 
 
-def test_failure_offers_try_again(frame: _Frame, monkeypatch: pytest.MonkeyPatch) -> None:
-    import wx
+def _answer(monkeypatch: pytest.MonkeyPatch, chosen: bool) -> list[tuple[str, dict[str, Any]]]:
+    """Answer the FUX-16 failure box; what it was asked, for the assertions."""
+    import quill.ui.next_step_box as box
 
-    import quill.ui.dialog_contract as contract
+    asked: list[tuple[str, dict[str, Any]]] = []
 
-    asked: list[str] = []
-    monkeypatch.setattr(
-        contract, "show_message_box", lambda message, *_a, **_k: asked.append(message) or wx.YES
-    )
+    def show(_parent: Any, message: str, _caption: str, **kwargs: Any) -> bool:
+        asked.append((message, kwargs))
+        return chosen
+
+    monkeypatch.setattr(box, "show_next_step", show)
+    return asked
+
+
+def test_failure_offers_retry_with_the_error_behind_details(
+    frame: _Frame, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    asked = _answer(monkeypatch, True)
     frame.begin_background_load(Path("C:/big.txt"))
     frame.app.task_manager.submitted[0]["on_failure"]("op", OSError("device not ready"))
-    assert "device not ready" in asked[0]
-    assert "Try again?" in asked[0]
+    message, kwargs = asked[0]
+    assert message.startswith("Could not open big.txt.")
+    assert "Nothing was opened." in message
+    assert "device not ready" not in message  # FUX-16: no raw text in the sentence
+    assert "device not ready" in kwargs["details"]
+    assert kwargs["next_label"] == "&Retry"
     assert len(frame.app.task_manager.submitted) == 2  # retried
     assert frame.control.editable is False  # locked again for the retry
+    assert frame.closed == 0
+
+
+def test_a_file_that_is_gone_offers_choose_another_file(
+    frame: _Frame, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    asked = _answer(monkeypatch, True)
+    opened: list[int] = []
+    frame.cmd_open = lambda: opened.append(1)  # type: ignore[attr-defined]
+    frame.modified = True
+    frame.begin_background_load(Path("C:/big.txt"))
+    frame.app.task_manager.submitted[0]["on_failure"]("op", FileNotFoundError(2, "gone"))
+    assert asked[0][1]["next_label"] == "Choose Another &File..."
+    assert "not there any more" in asked[0][0]
+    assert opened == [1]
+    assert len(frame.app.task_manager.submitted) == 1  # not retried
 
 
 def test_declining_closes_the_empty_window(frame: _Frame, monkeypatch: pytest.MonkeyPatch) -> None:
-    import wx
-
-    import quill.ui.dialog_contract as contract
-
-    monkeypatch.setattr(contract, "show_message_box", lambda *_a, **_k: wx.NO)
+    _answer(monkeypatch, False)
     frame.begin_background_load(Path("C:/big.txt"))
     frame.app.task_manager.submitted[0]["on_failure"]("op", OSError("gone"))
     assert frame.closed == 1
@@ -236,11 +261,7 @@ def test_declining_closes_the_empty_window(frame: _Frame, monkeypatch: pytest.Mo
 def test_declining_keeps_a_window_that_holds_something(
     frame: _Frame, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import wx
-
-    import quill.ui.dialog_contract as contract
-
-    monkeypatch.setattr(contract, "show_message_box", lambda *_a, **_k: wx.NO)
+    _answer(monkeypatch, False)
     frame.modified = True
     frame.begin_background_load(Path("C:/big.txt"))
     frame.app.task_manager.submitted[0]["on_failure"]("op", OSError("gone"))

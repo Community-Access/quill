@@ -1033,6 +1033,7 @@ def lite_window(tmp_path, lite_settings):
             self.newline = chr(13) + chr(10)
             self.line_ending = self.newline
             self.failures: list[tuple[str, str]] = []
+            self.failure_errors: list[object] = []
             self.printed: list[str] = []
             # The recovery slot and the autosave timer, set up in
             # DocumentFrame.__init__ and read by save() on every write. A window
@@ -1199,6 +1200,13 @@ def lite_window(tmp_path, lite_settings):
             """Recorded, not raised. A failed print or save is announced to the
             user and must not take the command down with it."""
             self.failures.append((caption, message))
+
+        def _show_failure_box(self, message: str, caption: str, **kwargs: object) -> bool:
+            """FUX-16's failed open or save (lite_window_failures), recorded the
+            same way, with the error kept for the details. Close is the answer."""
+            self.failures.append((caption, message))
+            self.failure_errors.append(kwargs.get("error"))
+            return False
 
         def document_name(self) -> str:
             return self.path.name if self.path else "Untitled 1"

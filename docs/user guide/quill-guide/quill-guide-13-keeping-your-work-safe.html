@@ -299,7 +299,10 @@ You will not hear “[Errno 28] No space left on device”. You will hear
 “The disk is full. QUILL could not save notes.md. Free some space and
 try again; your text is still open and unsaved.” A file or folder that
 is read-only, or held open by another program, gets its own message
-pointing you at <strong>File &gt; Save As</strong>.</li>
+pointing you at <strong>File &gt; Save As</strong>. Every failed save
+says your text is still open and unsaved, and the box’s first button is
+<strong>Save As…</strong>, so Enter saves somewhere else straight
+away.</li>
 <li><strong>A failed save never closes the window.</strong> If you
 choose <strong>Save</strong> on the closing prompt and the save fails,
 the close is cancelled and QUILL tells you why, so you can free some
@@ -540,6 +543,37 @@ model.”</li>
 </ul>
 <p>When you report a problem, include the code. It tells us exactly
 which failure you hit, with no back-and-forth.</p>
+<h3 id="a-failure-box-offers-the-next-step">A failure box offers the
+next step</h3>
+<p>When opening, saving or another piece of work fails, the box says
+three things in plain words: what did not happen, why, and what was
+kept. For example: “Opening report.docx did not finish. Windows did not
+allow it: the file may be open in another program, or the folder may be
+protected. Nothing was opened.”</p>
+<p>Its first button is the one next step that fits, and Enter presses
+it:</p>
+<ul>
+<li><strong>Retry</strong> when trying again may work, such as a file
+another program had locked. It is offered only for opening, loading and
+checking, which change nothing, so trying again can never do anything
+twice.</li>
+<li><strong>Choose Another File…</strong> when the file is not there any
+more.</li>
+<li><strong>Save As…</strong> when a save failed.</li>
+</ul>
+<p>The technical text (the error, QUILL’s version and Windows’s) is not
+in the message. <strong>Show Details</strong> shows it in a box you can
+edit, so you can take out anything you do not want to share, and
+<strong>Copy Details</strong> copies it for a support report. QUILL says
+“Details copied. Nothing was sent.”: nothing leaves your computer unless
+you paste it somewhere yourself. <strong>Close</strong>, or Escape,
+closes the box and does nothing else.</p>
+<p>When Ask Quill’s AI provider returns an error, the conversation says
+plainly what happened first: a key that was not accepted (and where to
+fix it in the AI Hub or Choose Your AI), a usage limit (wait a minute,
+then send again), or no connection. It also says your document was not
+changed. The provider’s own words follow as “Details:” in the
+conversation, and are not read aloud.</p>
 <p>The same goes for things QUILL declines or trims:</p>
 <ul>
 <li>The command palette says why a command is unavailable, and a menu

@@ -2,6 +2,23 @@
 
 ## 1.0.0
 
+### A failed open or save says why, and offers the next step (2026-11-24)
+
+In QUILL and QUILL Lite, a file that does not open and a save that does not
+work no longer show an OK-only box with the error's raw text. The message says
+what did not happen, why in plain words ("The disk is full", "the file may be
+open in another program"), and what was kept ("Nothing was opened", "your text
+is still open and unsaved"). Its first button is the next step: **Retry**,
+**Choose Another File...** or **Save As...**. The technical text is behind
+**Show Details**, which you can edit, and **Copy Details**, which copies it
+for a support report and sends nothing. The same box answers any other QUILL
+task that fails in the background; only tasks that change nothing offer
+Retry.
+
+Ask Quill now says an AI provider's error plainly first, a refused key, a
+usage limit or no connection, and that your document was not changed. The
+provider's own text follows as "Details:" and is no longer read aloud.
+
 ### Review the AI's chapter titles one by one (2026-11-24)
 
 In the Chapter Workbench, **Propose AI titles...** no longer replaces every
