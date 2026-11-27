@@ -295,7 +295,7 @@ Control coverage: 346 audited sites (234 helped, 112 named-help).
 - `self.ctrl`: Type a station's website address, or press Alt+Down to choose one of the last ten addresses that found a live stream. Press Enter or Scan to scan it. The list is empty until a scan finds a live stream.
 #### FindStreamsList (`quill/ui/radio/find_streams_list.py`)
 
-- `self.ctrl`: The stream links found on the page, live streams first. Enter tests the focused link. Select several with Shift and the arrow keys, or press Ctrl+A for every row shown; to pick rows far apart, filter the list first, then press Ctrl+A. Add to Favorites, Save as Playlist (Ctrl+S) and Copy (Ctrl+C) then act on all of them. Ctrl+F finds a row, F3 and Shift+F3 find the next and previous, Ctrl+Shift+O plays a random stream from the rows shown, and the Applications key opens the list's menu.
+- `self.ctrl`: The stream links found on the page, live streams first. Enter tests the focused link, or plays several selected audio files in the order shown. Select several with Shift and the arrow keys, or press Ctrl+A for every row shown; to pick rows far apart, filter the list first, then press Ctrl+A. Add to Favorites, Save as Playlist (Ctrl+S) and Copy (Ctrl+C) then act on all of them. Ctrl+F finds a row, F3 and Shift+F3 find the next and previous, Ctrl+Shift+O plays a random stream from the rows shown, and the Applications key opens the list's menu.
 - `self.details`: What QUILL knows about the focused stream, one fact per line: its name, whether it is live, its format, listeners, link, server, and how it was found. Read only.
 #### RadioFirstRunDialog (`quill/ui/radio/first_run_dialog.py`)
 

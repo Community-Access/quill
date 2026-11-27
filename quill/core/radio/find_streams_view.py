@@ -28,11 +28,13 @@ wx-free, network-free, strict-typed.
 
 from __future__ import annotations
 
+import re
 import unicodedata
 import urllib.parse
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import PurePath
+from typing import Any
 
 from quill.core.net_public import host_is_refused
 from quill.core.radio.find_streams_text import row_status
@@ -50,7 +52,12 @@ __all__ = [
     "find",
     "format_of",
     "formats_present",
+    "has_dates",
+    "has_formats",
     "has_listeners",
+    "has_sizes",
+    "natural_key",
+    "offered",
     "order_sentence",
     "saved_sentence",
     "select_all_sentence",
@@ -60,7 +67,11 @@ __all__ = [
 ]
 
 SCAN, NAME, BITRATE, LISTENERS = "scan", "name", "bitrate", "listeners"
-ORDERS = (SCAN, NAME, BITRATE, LISTENERS)
+#: For tracks (a feed, an archive item, an open directory), which have a
+#: format, a size and a date a live stream never has. Each is offered only when
+#: some row has the fact, as Listeners is.
+FORMAT, SIZE, DATE = "format", "size", "date"
+ORDERS = (SCAN, NAME, BITRATE, LISTENERS, FORMAT, SIZE, DATE)
 #: The formats the filter offers, in menu order. FLAC and WAV are rare enough
 #: on a station's site that they are not offered; "All formats" still shows them.
 FORMATS = ("MP3", "AAC", "Ogg", "HLS", "Opus")
@@ -70,6 +81,9 @@ _ORDER_SENTENCES = {
     NAME: "Sorted by name, A to Z.",
     BITRATE: "Sorted by bitrate, highest first.",
     LISTENERS: "Sorted by listeners, most first.",
+    FORMAT: "Sorted by format, A to Z.",
+    SIZE: "Sorted by size, largest first.",
+    DATE: "Sorted by date, newest first.",
 }
 _GROUP = {"live": 0, "not checked": 1, "": 1, "file": 2}
 _LAST = 1 << 62
@@ -118,8 +132,53 @@ def _keeps(candidate: PageStreamCandidate, state: ViewState) -> bool:
     return not state.format or format_of(candidate) == state.format
 
 
-def _name_key(candidate: PageStreamCandidate) -> str:
-    return _fold(row_status(candidate).split(": ", 1)[-1])
+def has_sizes(candidates: Sequence[PageStreamCandidate]) -> bool:
+    return any(c.size_bytes for c in candidates)
+
+
+def has_dates(candidates: Sequence[PageStreamCandidate]) -> bool:
+    return any(c.modified for c in candidates)
+
+
+def has_formats(candidates: Sequence[PageStreamCandidate]) -> bool:
+    """True when the rows have more than one format, so ordering by it says something."""
+    return len({(c.codec or "").casefold() for c in candidates if c.codec}) > 1
+
+
+def offered(order: str, candidates: Sequence[PageStreamCandidate]) -> bool:
+    """Whether the Sort menu should offer *order* for these rows."""
+    return {
+        LISTENERS: has_listeners,
+        FORMAT: has_formats,
+        SIZE: has_sizes,
+        DATE: has_dates,
+    }.get(order, lambda _rows: True)(candidates)
+
+
+_DIGITS = re.compile(r"(\d+)")
+
+
+def natural_key(text: str) -> tuple[tuple[int, int, str], ...]:
+    """Case and accents ignored, and numbers by value: "Track 2" before "Track 10".
+
+    Each piece is ``(0, number, "")`` or ``(1, 0, text)``, so a number never
+    has to be compared with text, and "track 02" and "track 2" tie.
+    """
+    parts = _DIGITS.split(_fold(text))
+    return tuple(
+        (0, int(piece), "") if index % 2 else (1, 0, piece)
+        for index, piece in enumerate(parts)
+        if piece != ""
+    )
+
+
+def _date_number(text: str) -> int:
+    digits = "".join(ch for ch in text if ch.isdigit())
+    return int(digits.ljust(12, "0")[:12]) if digits else 0
+
+
+def _name_key(candidate: PageStreamCandidate) -> tuple[tuple[int, int, str], ...]:
+    return natural_key(row_status(candidate).split(": ", 1)[-1])
 
 
 def visible(candidates: Sequence[PageStreamCandidate], state: ViewState) -> list[int]:
@@ -130,10 +189,10 @@ def visible(candidates: Sequence[PageStreamCandidate], state: ViewState) -> list
     """
     shown = [i for i, c in enumerate(candidates) if _keeps(c, state)]
     order = state.order
-    if order == LISTENERS and not has_listeners(candidates):
+    if not offered(order, candidates):
         order = SCAN
 
-    def key(index: int) -> tuple[int, object]:
+    def key(index: int) -> tuple[Any, ...]:
         candidate = candidates[index]
         group = _GROUP.get(candidate.check, 1)
         if order == NAME:
@@ -143,6 +202,12 @@ def visible(candidates: Sequence[PageStreamCandidate], state: ViewState) -> list
         if order == LISTENERS:
             count = candidate.listeners
             return group, -count if count is not None else _LAST
+        if order == FORMAT:
+            return group, (candidate.codec or "￿").casefold(), _name_key(candidate)
+        if order == SIZE:
+            return group, -candidate.size_bytes if candidate.size_bytes else _LAST
+        if order == DATE:
+            return group, -_date_number(candidate.modified) if candidate.modified else _LAST
         return group, index
 
     return sorted(shown, key=key) if order != SCAN else shown

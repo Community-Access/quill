@@ -48,6 +48,7 @@ from quill.ui.radio.find_streams_cues import CuesMixin
 from quill.ui.radio.find_streams_find import FindMixin
 from quill.ui.radio.find_streams_last import LastResultsMixin
 from quill.ui.radio.find_streams_list import FindStreamsList
+from quill.ui.radio.find_streams_tracks import TracksMixin
 from quill.ui.radio.find_streams_ways import LOOKING_UP, WaysMixin
 from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import stop_timer_on_destroy, surface_tasks
@@ -67,7 +68,7 @@ def _button(wx: Any, parent: Any, label: str, help_text: str, **kwargs: Any) -> 
     return button
 
 
-class LinkFinderDialog(FindMixin, LastResultsMixin, CuesMixin, WaysMixin):
+class LinkFinderDialog(FindMixin, LastResultsMixin, CuesMixin, WaysMixin, TracksMixin):
     """Scan a website for candidate stream links, and work with what it found.
 
     *host* is the app frame (QUILL's main frame or Quill Radio's): its
@@ -562,6 +563,8 @@ class LinkFinderDialog(FindMixin, LastResultsMixin, CuesMixin, WaysMixin):
     def _on_test(self, _event: object, *, from_button: bool = False) -> None:
         """Test the focused row. While a test plays, the button (or Enter on
         the same row) stops it; Enter on another row tests that row instead."""
+        if self._play_selected_tracks():
+            return
         candidate = self._list.focused()
         if self._testing and (
             from_button or candidate is None or candidate.url == self._testing_url

@@ -50,6 +50,9 @@ ORDER_LABELS = {
     view.NAME: "&Name, A to Z",
     view.BITRATE: "&Bitrate, highest first",
     view.LISTENERS: "L&isteners, most first",
+    view.FORMAT: "Forma&t, A to Z",
+    view.SIZE: "Si&ze, largest first",
+    view.DATE: "&Date, newest first",
 }
 LIVE_ONLY_LABEL = "&Live streams only"
 ALL_FORMATS_LABEL = "&All formats"
@@ -101,9 +104,8 @@ def sort_menu(
 ) -> Any:
     """The Sort and Filter menu for these rows, the current choices checked."""
     menu = wx.Menu()
-    with_counts = view.has_listeners(candidates)
     for order in view.ORDERS:
-        if order == view.LISTENERS and not with_counts:
+        if not view.offered(order, candidates):
             continue
         item = menu.AppendRadioItem(ids[f"order:{order}"], ORDER_LABELS[order])
         item.Check(order == state.order)

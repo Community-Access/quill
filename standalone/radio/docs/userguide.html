@@ -4267,6 +4267,36 @@ program, it says “Radio Garden did not answer the way it usually does,
 so nothing was found there.” Quill Radio never plays the Radio Garden
 address itself, only the station’s real stream. Safe Mode contacts
 nothing.</p>
+<p><strong>More places to find audio.</strong> Besides a station’s web
+page, the Find Streams address box takes four kinds of address, and
+lists their <strong>audio files</strong> as tracks:</p>
+<ul>
+<li>A <strong>podcast feed</strong>: the audio of each episode, in the
+feed’s own order.</li>
+<li>A public <strong>Internet Archive item</strong>, such as
+<code>https://archive.org/details/an-item</code>: the audio files it
+holds.</li>
+<li>An <strong>article or demo page</strong> that embeds audio: the
+page’s audio sources and links to audio files, as for any page.</li>
+<li>A public <strong>open directory</strong>, the plain “Index of /”
+page a server shows for a folder: its audio files, with each file’s size
+and date.</li>
+</ul>
+<p>For these lists, <strong>Sort and Filter</strong> also offers Name
+(case ignored and numbers by value, so “Track 2” comes before “Track
+10”), Format, Size, largest first, and Date, newest first, each only
+when the files have it. As you move down the list, each row says the
+file’s name, format, size and date. Select several files (Shift and the
+arrow keys, or Ctrl+A) and press <strong>Enter</strong>: Quill Radio
+plays them in the order shown, one after another, and Ctrl+Shift+Period
+moves to the next at once. One file, or any live stream, is tested as
+before.</p>
+<p>Only public web addresses are read, one page of at most a megabyte,
+after the site’s robots.txt: a site that asks programs to stay out of an
+address is respected, and Quill Radio says so. Nothing in what is read
+is run, an open directory is read only for files on its own site (a
+sub-folder is opened by typing its address), and at most 500 files are
+listed. Torrents, web seeds and video are not offered.</p>
 <p>This works for many stations whose Listen Live button is a web
 player. For Triton Digital and StreamTheWorld players, including the
 whole <code>player.listenlive.co</code> network, Quill Radio reads the

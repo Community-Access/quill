@@ -46,6 +46,16 @@ stream finder by Andre Louis (github.com/OnjLouis/StreamSift, MIT). Thank you.
   addresses its own page uses are read, only for what you type or paste; a
   station with no stream, or a refusal, is one plain sentence. Safe Mode
   contacts nothing.
+- **More places to find audio in Find Streams** (2026-11-27). The address box
+  also takes a podcast feed (the audio of each episode), a public Internet
+  Archive item (its audio files), a page that embeds audio, and a public open
+  directory (an "Index of /" page), and lists the audio files as tracks. Sort and
+  Filter adds Format, Size and Date, and names sort with case ignored and numbers
+  by value, so "Track 2" comes before "Track 10". Each row says its name, format,
+  size and date as you reach it. Select several files and press Enter to play
+  them in the order shown, one after another. Only public web addresses are
+  read, after the site's robots.txt, with at most 500 files and one megabyte of
+  page; torrents, web seeds and video are not offered.
 
 ### Recordings are kept safe through crashes, reconnects and Stop (2026-11-20)
 

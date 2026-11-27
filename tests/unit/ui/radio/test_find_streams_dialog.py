@@ -534,6 +534,7 @@ def test_the_sort_and_filter_menu_letters(d: Any) -> None:
             "&Name, A to Z",
             "&Bitrate, highest first",
             "L&isteners, most first",
+            "Forma&t, A to Z",
             "",
             "&Live streams only",
             "",
@@ -543,7 +544,7 @@ def test_the_sort_and_filter_menu_letters(d: Any) -> None:
             "O&pus only",
         ]
         assert menu.GetMenuItems()[0].IsChecked()
-        assert menu.GetMenuItems()[7].IsChecked()
+        assert menu.GetMenuItems()[8].IsChecked()
     finally:
         menu.Destroy()
 
@@ -825,3 +826,80 @@ def test_no_recent_site_means_no_question(d: Any, monkeypatch: Any) -> None:
     )
     d.dlg._url_ctrl.ChangeValue("kexp")
     d.dlg._on_scan(None)
+
+
+# -- Tracks: a feed, an Archive item or an open directory --------------------------
+
+
+def _tracks() -> list[PageStreamCandidate]:
+    def track(name: str, size: int, date: str) -> PageStreamCandidate:
+        return _c(
+            f"https://f.example/{name}.mp3",
+            "file",
+            label=name,
+            label_is_name=True,
+            codec="MP3",
+            size_bytes=size,
+            modified=date,
+        )
+
+    return [
+        track("Track 10", 3_000_000, "2020-05-01"),
+        track("track 2", 800_000, "2021-04-02"),
+        track("Track 1", 5_000_000, "2019-01-15"),
+    ]
+
+
+def test_enter_with_several_files_selected_plays_them_in_the_order_shown(d: Any) -> None:
+    from quill.ui.radio import lineups_playback as lp
+
+    _scan(d, _tracks())
+    d.dlg._choose_order("name")  # natural: Track 1, track 2, Track 10
+    d.dlg._select_all()
+    d.said.clear()
+    d.dlg._on_test(None)
+    played = d.host._radio_controller.played
+    assert [s.name for s in played] == ["Track 1"] and played[0].is_recording
+    session = lp.session_of(d.host._radio_controller)
+    assert [e.name for e in session.entries] == ["Track 1", "track 2", "Track 10"]
+    assert d.said[-1].startswith("Playing 3 tracks in the order shown. Playing Track 1.")
+
+
+def test_the_next_selected_track_follows_when_one_ends(d: Any, monkeypatch: Any) -> None:
+    from quill.ui.radio import lineups_playback as lp
+
+    _scan(d, _tracks())
+    d.dlg._select_all()
+    d.dlg._on_test(None)
+    session = lp.session_of(d.host._radio_controller)
+    d.host._radio_controller.state = SimpleNamespace(station=session.entries[0].station)
+    d.host._radio_controller.play_station = lambda s: d.host._radio_controller.played.append(s)
+    monkeypatch.setattr(lp, "_app_of_controller", lambda controller: d.host)
+    assert lp.handle_finished(d.host._radio_controller) is True
+    assert [s.name for s in d.host._radio_controller.played][-1] == "track 2"
+
+
+def test_one_file_or_live_streams_still_just_test_the_focused_row(d: Any) -> None:
+    _scan(d, _rows())  # live streams and one unchecked link
+    d.dlg._select_all()
+    d.dlg._on_test(None)
+    assert [s.name for s in d.host._radio_controller.played] == ["Zulu FM"]
+    d.host._radio_controller.played.clear()
+    d.dlg._set_testing(False)
+    _scan(d, _tracks()[:1])
+    d.dlg._on_test(None)
+    assert [s.name for s in d.host._radio_controller.played] == ["Track 10"]
+
+
+def test_the_sort_menu_offers_size_date_and_format_only_for_files(d: Any) -> None:
+    _scan(d, _tracks())
+    menu = d.dlg._sort_menu()
+    try:
+        labels = [item.GetItemLabel() for item in menu.GetMenuItems()]
+    finally:
+        menu.Destroy()
+    assert "Si&ze, largest first" in labels and "&Date, newest first" in labels
+    assert "Forma&t, A to Z" not in labels  # every file is MP3: nothing to order by
+    d.dlg._choose_order("date")
+    assert d.said[-1] == "Sorted by date, newest first."
+    assert _texts(d)[0].endswith("2021-04-02")

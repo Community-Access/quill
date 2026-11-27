@@ -106,6 +106,7 @@ def _candidate_from_json(raw: Any) -> PageStreamCandidate | None:
         return None
     bitrate = raw.get("bitrate_kbps")
     listeners = raw.get("listeners")
+    size = raw.get("size_bytes")
     return PageStreamCandidate(
         url=url,
         reason=_text(raw.get("reason")),
@@ -118,6 +119,8 @@ def _candidate_from_json(raw: Any) -> PageStreamCandidate | None:
         check_note=_text(raw.get("check_note")),
         listeners=listeners if isinstance(listeners, int) and listeners >= 0 else None,
         label_is_name=raw.get("label_is_name") is True,
+        size_bytes=size if isinstance(size, int) and 0 <= size < 1 << 42 else 0,
+        modified=_text(raw.get("modified"))[:20],
     )
 
 

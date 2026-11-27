@@ -110,3 +110,19 @@ def test_sentences_are_plain() -> None:
     )
     assert "3 hours ago" in lr.reopened_sentence(r, now=1000.0 + 3 * 3600)
     assert json.dumps(lr.to_json(r))  # serialisable
+
+
+def test_a_files_size_and_date_survive_reopening(tmp_path: Path) -> None:
+    results = _results(1)
+    results.candidates[0].size_bytes = 3_400_000
+    results.candidates[0].modified = "2020-05-01 14:30"
+    lr.save(tmp_path, results)
+    back = lr.load(tmp_path)
+    assert back is not None
+    assert (back.candidates[0].size_bytes, back.candidates[0].modified) == (
+        3_400_000,
+        "2020-05-01 14:30",
+    )
+    raw = lr.to_json(results)
+    raw["candidates"][0]["size_bytes"] = "huge"
+    assert lr.from_json(raw).candidates[0].size_bytes == 0  # type: ignore[union-attr]

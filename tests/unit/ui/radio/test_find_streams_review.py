@@ -149,7 +149,8 @@ def test_s7_the_list_help_teaches_its_keys(wx_session_app: Any) -> None:
     try:
         assert dlg._results.GetHelpText() == (
             "The stream links found on the page, live streams first. Enter tests the "
-            "focused link. Select several with Shift and the arrow keys, or press Ctrl+A "
+            "focused link, or plays several selected audio files in the order shown. "
+            "Select several with Shift and the arrow keys, or press Ctrl+A "
             "for every row shown; to pick rows far apart, filter the list first, then "
             "press Ctrl+A. Add to Favorites, Save as Playlist (Ctrl+S) and Copy (Ctrl+C) "
             "then act on all of them. Ctrl+F finds a row, F3 and Shift+F3 find the next "

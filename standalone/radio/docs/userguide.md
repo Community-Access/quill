@@ -3500,6 +3500,33 @@ program, it says "Radio Garden did not answer the way it usually does, so
 nothing was found there." Quill Radio never plays the Radio Garden address
 itself, only the station's real stream. Safe Mode contacts nothing.
 
+**More places to find audio.** Besides a station's web page, the Find Streams
+address box takes four kinds of address, and lists their **audio files** as
+tracks:
+
+- A **podcast feed**: the audio of each episode, in the feed's own order.
+- A public **Internet Archive item**, such as
+  `https://archive.org/details/an-item`: the audio files it holds.
+- An **article or demo page** that embeds audio: the page's audio sources and
+  links to audio files, as for any page.
+- A public **open directory**, the plain "Index of /" page a server shows for a
+  folder: its audio files, with each file's size and date.
+
+For these lists, **Sort and Filter** also offers Name (case ignored and numbers
+by value, so "Track 2" comes before "Track 10"), Format, Size, largest first,
+and Date, newest first, each only when the files have it. As you move down the
+list, each row says the file's name, format, size and date. Select several files
+(Shift and the arrow keys, or Ctrl+A) and press **Enter**: Quill Radio plays them
+in the order shown, one after another, and Ctrl+Shift+Period moves to the next at
+once. One file, or any live stream, is tested as before.
+
+Only public web addresses are read, one page of at most a megabyte, after the
+site's robots.txt: a site that asks programs to stay out of an address is
+respected, and Quill Radio says so. Nothing in what is read is run, an open
+directory is read only for files on its own site (a sub-folder is opened by
+typing its address), and at most 500 files are listed. Torrents, web seeds and
+video are not offered.
+
 This works for many stations whose Listen Live button is a web player. For
 Triton Digital and StreamTheWorld players, including the whole
 `player.listenlive.co` network, Quill Radio reads the station's call letters

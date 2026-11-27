@@ -120,6 +120,15 @@ def find(
     garden_id = radio_garden.station_id(text)
     if garden_id:
         return _garden_page(garden_id, text, safe_mode)
+    from quill.core.radio import audio_sources_io
+
+    audio = (
+        audio_sources_io.find_audio(text, safe_mode=safe_mode)
+        if fb.typed_kind(text) == "address"
+        else None
+    )
+    if audio is not None:  # a podcast feed, an Archive item or an open directory
+        return audio
     kind = fb.typed_kind(text)
     query = fb.name_query(text) if kind == "name" else fb.site_name(text)
     notes: list[str] = []

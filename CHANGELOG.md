@@ -31,6 +31,12 @@ Ideas from StreamSift, a screen-reader-first stream finder by Andre Louis
   and Scan lists the station's real stream, checked as live audio; a typed name
   is searched there too. Only Radio Garden's own page addresses are used, only
   for what you type, and a refusal is one plain sentence.
+- **More places to find audio in Find Streams.** A podcast feed, a public
+  Internet Archive item, a page that embeds audio and a public open directory
+  list their audio files as tracks, sortable by name (numbers by value), format,
+  size and date, each row saying those facts as you reach it. Select several and
+  press Enter to play them in order. Public addresses only, after robots.txt;
+  no torrents, web seeds or video.
 
 ### Unsent GitHub drafts say what they are, and go once the issue exists (2026-11-24)
 
