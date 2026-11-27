@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import urllib.parse
 import urllib.robotparser
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 
 from quill.core import http_client, net_public
 from quill.core.radio import audio_sources as src
@@ -83,7 +83,7 @@ def find_audio(
     *,
     safe_mode: bool,
     fetch: Fetch | None = None,
-    archive_files: Callable[[str], list[object]] | None = None,
+    archive_files: Callable[[str], Sequence[object]] | None = None,
 ) -> FoundResult | None:
     """Tracks for a feed, an Archive item or an open directory; else ``None``."""
     if safe_mode:
@@ -127,7 +127,7 @@ def _feed(body: bytes) -> FoundResult | None:
     return _result(rows, info.title, how if rows else "That podcast feed lists no audio.")
 
 
-def _archive(identifier: str, files: Callable[[str], list[object]] | None) -> FoundResult:
+def _archive(identifier: str, files: Callable[[str], Sequence[object]] | None) -> FoundResult:
     get = files or (lambda item: internet_archive.item_files(item))
     try:
         stations = get(identifier)

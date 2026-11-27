@@ -405,8 +405,8 @@ def _apply_live_check(
     Returns the kept rows, how many were not audio, and how many were on this
     computer or the listener's own network (never read, so never "not audio").
     """
-    extra = {"on_verdict": on_checked} if on_checked is not None else {}
-    verdicts = live_check.check_urls([c.url for c in candidates], _probe, limit=limit, **extra)
+    urls = [c.url for c in candidates]
+    verdicts = live_check.check_urls(urls, _probe, limit=limit, on_verdict=on_checked)
     kept: list[PageStreamCandidate] = []
     left_out = not_public = 0
     for candidate in candidates:
