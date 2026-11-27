@@ -187,6 +187,9 @@ jobs:
 
   publish:
     needs: [decide, build]
+    # Publish every app that built, even when another app's build failed: one
+    # broken app must not keep the others' Dev builds off the release.
+    if: ${{ always() && needs.decide.result == 'success' && needs.decide.outputs.build == 'true' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write # uploads this app's files to the rolling Dev release
@@ -197,10 +200,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
+        id: files
+        continue-on-error: true # this app's build failed, so it has no artifact
         with:
           name: dev-${{ matrix.app }}
           path: dist/dev
       - name: Upload to the rolling Dev release
+        if: steps.files.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           APP: ${{ matrix.app }}
