@@ -2,6 +2,25 @@
 
 ## 1.0.0
 
+### Choose how list rows are spoken (2026-11-27)
+
+The GitHub Workbench and the WordPress Workbench now have **List Speech
+Templates** in the Tools menu (`Ctrl+Alt+Shift+V`). For each kind of list you
+choose which fields a row says and in what order: notifications, issues, pull
+requests and repositories on GitHub, and posts, pages and comments on
+WordPress. Start from Brief, Balanced or Detailed, or build your own with Add,
+Remove, Move Up and Move Down (`Alt+Up` and `Alt+Down` work on the list too),
+pick a separator, turn field labels on or off, and say what an empty field
+should read as. A sample row is shown and can be spoken aloud before you
+commit. Save your own templates by name, rename or delete them, and use one for
+every list that reads alike.
+
+Nothing changes until you choose a template: every list keeps its usual
+wording by default. If a service stops offering a field you chose, your other
+choices are kept and the window names the missing field; rows never speak a
+blank. If the saved file cannot be read, a copy is kept aside and the usual
+wording is used. The Details pane still shows the whole row.
+
 ### Unsent GitHub drafts say what they are, and go once the issue exists (2026-11-24)
 
 A recovered issue draft said only "Recovered a local draft for owner/repo", on

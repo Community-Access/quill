@@ -1057,6 +1057,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+P | Practice on GitHub... | `github.workbench.practice` |
 | Ctrl+Alt+S | Set Your Status... | `github.workbench.user_status` |
 | Ctrl+Alt+Shift+F1 | What Can I Say Here? | `github.workbench.what_can_i_say_here` |
+| Ctrl+Alt+Shift+V | List Speech Templates... | `github.workbench.list_speech` |
 | Ctrl+Alt+T | Transfer Repository... | `github.workbench.transfer_repository` |
 | Ctrl+Alt+W | Clone Wiki... | `github.workbench.clone_wiki` |
 | Ctrl+B | Compare With Default | `github.workbench.compare_default` |
@@ -1174,6 +1175,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+M | Show Its Comments | `wordpress.workbench.show_comments` |
 | Ctrl+Alt+Shift+P | Your Profile... | `wordpress.workbench.your_profile` |
 | Ctrl+Alt+Shift+S | Put Back from a Snapshot... | `wordpress.workbench.restore_snapshot` |
+| Ctrl+Alt+Shift+V | List Speech Templates... | `wordpress.workbench.list_speech` |
 | Ctrl+Alt+T | Site Sets... | `wordpress.workbench.site_sets` |
 | Ctrl+Alt+U | Mark Entry Read or Unread | `wordpress.workbench.toggle_read` |
 | Ctrl+Alt+V | View As Role... | `wordpress.workbench.view_as` |
