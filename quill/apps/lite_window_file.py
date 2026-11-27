@@ -239,8 +239,12 @@ class DocumentFileMixin(DocumentWordMixin):
                 self._set_mode_internal(PLAIN)
                 self.control.ChangeValue(decoded.text)
             restored = True
-        except (OSError, RichEditRtfError) as exc:
-            self._report_failure("Recovery failed", f"Could not restore {slot.title}.\n\n{exc}")
+        except (OSError, RichEditRtfError):
+            self._report_failure(  # the person's terms, not the exception's (FUX-05)
+                "Recovery failed",
+                f"Could not restore your unsaved work in {slot.title}: its saved-aside copy "
+                "could not be read. It stays saved aside and is offered again next time.",
+            )
         finally:
             self._loading = False
             self.doc_text.invalidate()  # as in open_path: no text event fires

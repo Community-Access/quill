@@ -409,13 +409,27 @@ rewritten every time you check or uncheck a row, so it always describes
 the window as it is.</p>
 <h3 id="after-an-unclean-exit-crash-recovery-and-email-support">After an
 unclean exit, Crash Recovery and Email Support</h3>
-<p>If QUILL closed without an error report, after a freeze, a power cut
-or a forced close, the next launch shows <strong>Crash
-Recovery</strong>, which offers your unsaved work back. Its
-<strong>Email Support</strong> button (it used to say “Send Bug Report”)
-writes a message to support for this kind of exit too. The first
-sentence also quotes how the document begins, so you know which work it
-is before you read the preview:</p>
+<p>If QUILL closed without saving your work, after a crash, a freeze, a
+power cut or a forced close, the next launch shows <strong>Crash
+Recovery</strong>, which offers the work back. Its first sentence names
+the document, when its copy was made, and how it differs from the file
+on disk, then quotes how it begins, for example: “Unsaved changes to
+chapter3.md, autosaved today at 2:14 PM: 1,200 words more than the saved
+file.” It then says what each answer does:</p>
+<ul>
+<li><strong>Restore Document</strong> opens the copy as a new, unsaved
+document. The file on disk is not changed, so you can save the copy
+under a new name and keep both, or save it over the file.</li>
+<li><strong>Skip Recovery</strong> leaves the copy in QUILL’s autosave
+folder. It is not offered again.</li>
+</ul>
+<p>If several documents had unsaved changes, Crash Recovery asks about
+each in turn, “Document 1 of 3”, rather than only the newest. A copy
+that is word for word the file on disk is not offered, because nothing
+would come back. A copy with changes is offered even when the log shows
+no error, because a power cut writes none.</p>
+<p>The <strong>Email Support</strong> button (it used to say “Send Bug
+Report”) writes a message to support for this kind of exit too:</p>
 <ol type="1">
 <li>Press <strong>Email Support</strong> in Crash Recovery.</li>
 <li>Your mail program opens with a message to <strong><a

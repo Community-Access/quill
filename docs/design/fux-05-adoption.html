@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>FUX-05: recovery that speaks in terms of the person's
+work</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="fux-05-recovery-that-speaks-in-terms-of-the-persons-work">FUX-05:
+recovery that speaks in terms of the person’s work</h1>
+<p><strong>Date:</strong> 2026-11-24 <strong>Feature:</strong> FUX-05,
+“Recovery that speaks in terms of the person’s work”, from the family UX
+plan (read it with <code>git show b7c6a1a04^:complete2.md</code>). It is
+held to <a
+href="family-interaction-contracts.md">family-interaction-contracts.md</a>.
+<strong>Out of scope:</strong> Earshot and the macOS apps.</p>
+<p>The moment: “I changed the wrong thing, or the app closed. Can I get
+back?” A recovery offer is a question about somebody’s work, so it has
+to say <em>which</em> work: “Your changes to chapter3.md, autosaved
+today at 2:14 PM, 1,200 words more than the saved file”, not a file
+name, a temporary folder or an exception. Each answer says what it does
+to the work. Nothing is lost without being said. The offer is said once
+and reached from the keyboard.</p>
+<p>No new recovery system was added. Every fix extends the recovery code
+the app already had.</p>
+<h2 id="1-the-questions-asked-of-every-path">1. The questions asked of
+every path</h2>
+<ol type="1">
+<li><strong>Names the work.</strong> The document, recording, conversion
+or draft by its own name, when its copy was made, and how much it holds
+or how it differs from what is saved. Not a hidden folder, a hash, a raw
+timestamp or exception text.</li>
+<li><strong>Choices with consequences.</strong> Can the person restore,
+keep both, or discard? Does each answer say what it does, and does a
+permanent deletion say it cannot be undone?</li>
+<li><strong>Nothing lost silently.</strong> Is any copy dropped,
+expired, skipped on an error or overwritten without a sentence saying
+so?</li>
+<li><strong>Said once, reachable.</strong> Is the offer made once (not
+every launch for the same thing), and can it be reached again from a
+menu, a list or a key after it is dismissed?</li>
+</ol>
+<p><strong>Gap</strong> marks a path that failed one of these before
+this work.</p>
+<h2 id="2-inventory-app-by-app">2. Inventory, app by app</h2>
+<h3
+id="quill-unsaved-documents-after-an-unclean-exit-first-pull-request">QUILL:
+unsaved documents after an unclean exit (first pull request)</h3>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Names the work</td>
+<td><strong>Gap.</strong> “Quill detected an unclean exit. Restore the
+latest autosave snapshot”. The snapshot file is named by a hash of the
+path, so QUILL could not say which document it was.</td>
+<td>Autosave writes one small note per document beside its snapshots,
+naming the file (<code>autosave._note_source</code>,
+<code>snapshot_source</code>). The offer says “QUILL closed without
+saving your work. Unsaved changes to chapter3.md, autosaved today at
+2:14 PM: 1,200 words more than the saved file. It begins: …”
+(<code>recovery_naming.offer_sentence</code>,
+<code>compare_with_saved</code>). A Word file is compared by date only;
+a copy from an older build with no note says “a document whose name was
+not recorded”.</td>
+</tr>
+<tr>
+<td>Choices</td>
+<td>Restore Latest Snapshot, or Skip Recovery. After three skips the
+window said Skip would “discard it and continue with a blank document”
+and, a sentence later, that it would keep it; the button became “Discard
+and Continue”, which deleted nothing.</td>
+<td><strong>Restore Document</strong> opens the copy as a new, unsaved
+document, and the sentence says the file on disk is not changed, so Save
+As keeps both. <strong>Skip Recovery</strong> says the copy stays in the
+autosave folder and is not offered again. The contradictory wording is
+gone.</td>
+</tr>
+<tr>
+<td>Nothing lost silently</td>
+<td><strong>Gap, twice.</strong> Only the newest snapshot of the session
+was offered: a second modified document was never mentioned. And with no
+error in the log, as after a power cut or a forced close, nothing was
+offered although the copies were on disk.</td>
+<td>One offer per document that left unsaved changes, newest first
+(<code>recovery_naming.snapshots_by_document</code>,
+<code>recovery._offers_for</code>). A copy identical to its saved file
+is not offered (nothing would come back), so a copy with changes no
+longer needs log evidence. Only a copy nothing can be said about (no
+note, or a Word file) still waits for an error in the log, as every copy
+did before. A copy that cannot be read says so by name, without the
+exception.</td>
+</tr>
+<tr>
+<td>Said once, reachable</td>
+<td>Once, at the launch after the exit.</td>
+<td>Unchanged, now once per document: “Document 1 of 3”, each in turn.
+The result is in Notifications.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="quill-lite-unsaved-documents-first-pull-request">QUILL Lite:
+unsaved documents (first pull request)</h3>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Names the work</td>
+<td>Each row names the document, its folder, how it begins, its size and
+when it was written (<code>recovery_triage.row_label</code>).</td>
+<td>Each row also says how the copy stands against its saved file: “2
+words more than the saved file”, “the same as the saved file”, “the
+saved file is no longer there”
+(<code>recovery_triage.saved_comparison</code>, shared with QUILL).</td>
+</tr>
+<tr>
+<td>Choices</td>
+<td>Restore Checked, Restore All, Not Now, Discard Checked, Discard
+Everything (asks first), Never Offer Untitled, each described in
+<strong>What this would do</strong>.</td>
+<td><strong>What this would do</strong> also says each document opens
+under its own name, unsaved, that the file on disk changes only when
+saved, and that Save As keeps both.</td>
+</tr>
+<tr>
+<td>Nothing lost silently</td>
+<td>Tidying (duplicates, month-old copies, untitled by preference) is
+said. A failed restore leaves the copy and says so.</td>
+<td>A failed restore no longer shows the exception text: “Could not
+restore your unsaved work in chapter3.md: its saved-aside copy could not
+be read. It stays saved aside and is offered again next time.”</td>
+</tr>
+<tr>
+<td>Said once, reachable</td>
+<td>Once per launch; Not Now offers the same list next time.</td>
+<td>Unchanged.</td>
+</tr>
+</tbody>
+</table>
+<h3
+id="quill-radio-recordings-interrupted-by-a-close-or-crash-second-pull-request">Quill
+Radio: recordings interrupted by a close or crash (second pull
+request)</h3>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Names the work</td>
+<td>Station name, and the end time as a raw ISO string (“2026-11-24
+21:00:00-05:00”). Leftover temp files: “Recovered 2 recording file(s)”,
+a count only.</td>
+<td>See the second pull request.</td>
+</tr>
+<tr>
+<td>Choices</td>
+<td>Resume / Skip, Don’t ask again. Resume records the rest as a new
+file; the window did not say the part already recorded is kept.</td>
+<td>See the second pull request.</td>
+</tr>
+<tr>
+<td>Nothing lost silently</td>
+<td><strong>Gap.</strong> A marker past the 10-minute grace was cleared
+without a word. A failed resume showed the exception text.</td>
+<td>See the second pull request.</td>
+</tr>
+<tr>
+<td>Said once, reachable</td>
+<td>Once, inside the grace window.</td>
+<td>Unchanged.</td>
+</tr>
+</tbody>
+</table>
+<p>Radio’s stream recovery (a station whose address moved) is not the
+person’s work; it is noted in section 4.</p>
+<h3
+id="quill-studio-unfinished-demonstration-recordings-and-chapter-workbench-edits-second-pull-request">QUILL
+Studio: unfinished demonstration recordings and Chapter Workbench edits
+(second pull request)</h3>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Names the work</td>
+<td><strong>Gap.</strong> The Recover prompt listed each hidden work
+folder by path (<code>.studio-recording-&lt;id&gt;</code>), with no
+title, date or length; failures carried exception text and temporary
+paths.</td>
+<td>See the second pull request.</td>
+</tr>
+<tr>
+<td>Choices</td>
+<td>Yes/No for all of them; no way to discard one.</td>
+<td>See the second pull request.</td>
+</tr>
+<tr>
+<td>Nothing lost silently</td>
+<td><strong>Gap.</strong> A recording whose check failed after its file
+was written came back next launch and produced a “ (2)“ copy. Chapter
+Workbench’s Close discarded unsaved chapter and tag edits without
+asking.</td>
+<td>See the second pull request.</td>
+</tr>
+<tr>
+<td>Said once, reachable</td>
+<td><strong>Gap.</strong> The launch notice repeated every launch.
+Capture &gt; Recover unfinished recordings reaches it.</td>
+<td>See the second pull request.</td>
+</tr>
+</tbody>
+</table>
+<p>Studio has no project autosave; Resume Last Book reopens a book for
+playback only. Quill Cast keeps playback positions and resumes partial
+downloads; it holds no work of the person’s to recover.</p>
+<h3
+id="quill-transcribe-quills-locked-dictation-quill-converter-and-scribe-third-pull-request">Quill
+Transcribe, QUILL’s Locked Dictation, Quill Converter and Scribe (third
+pull request)</h3>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Transcribe: dictated words not written</td>
+<td>“2 dictated phrases were not written last time and are kept. Recent
+Phrases, Shift+F11, brings them back.” Each row names its kind, time and
+words.</td>
+<td>No gap; unchanged.</td>
+</tr>
+<tr>
+<td>Transcribe: recordings queued for transcription</td>
+<td><strong>Gap.</strong> Exit asked nothing about a transcription
+running or waiting; the queue was lost without a word.</td>
+<td>See the third pull request.</td>
+</tr>
+<tr>
+<td>QUILL Locked Dictation: recordings awaiting review</td>
+<td>“N dictation recording(s) await review” with a literal “(s)”; the
+State column showed internal codes; Discard deleted at once.</td>
+<td>See the third pull request.</td>
+</tr>
+<tr>
+<td>Converter: a conversion batch</td>
+<td><strong>Gap.</strong> “A conversion is still running. Stop it and
+exit?” said neither how many files were left nor what Stop removes.</td>
+<td>See the third pull request.</td>
+</tr>
+<tr>
+<td>Converter: Auphonic work waiting</td>
+<td>Names the production, file count, when sent and where it saves;
+Ctrl+Alt+A brings it back.</td>
+<td>No gap in naming.</td>
+</tr>
+<tr>
+<td>Scribe: conversions left in flight</td>
+<td><strong>Gap.</strong> QUILL resumed them silently; QUILL Lite did
+not resume them at launch at all; signed out, waiting jobs were never
+mentioned.</td>
+<td>See the third pull request.</td>
+</tr>
+</tbody>
+</table>
+<h3
+id="github-workbench-drafts-quill-beacon-and-quill-inkwell-fourth-pull-request">GitHub
+Workbench drafts, Quill Beacon and Quill Inkwell (fourth pull
+request)</h3>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workbench: unsent issue drafts</td>
+<td>“Recovered a local draft for owner/repo. It has not been submitted.”
+Not announced; no time or title. <strong>Gap:</strong> Workbench’s New
+Issue never cleared the draft after the issue was created, so the next
+New Issue offered an already-created issue again. A damaged drafts file
+was overwritten.</td>
+<td>See the fourth pull request.</td>
+</tr>
+<tr>
+<td>Workbench: review drafts and pending line comments</td>
+<td>The review draft names the HEAD by 12-character SHA; line comments
+are named by place and first line.</td>
+<td>See the fourth pull request.</td>
+</tr>
+<tr>
+<td>Beacon: Sync History rollback</td>
+<td><strong>Gap.</strong> Snapshots listed as
+<code>sync_1732456789012.db</code>; the rollback could not itself be
+undone.</td>
+<td>See the fourth pull request.</td>
+</tr>
+<tr>
+<td>Inkwell: the abbreviation library</td>
+<td><strong>Gap.</strong> A damaged library silently fell back to the
+built-in list, which was later saved over it.</td>
+<td>See the fourth pull request.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-acceptance-from-the-proposal">3. Acceptance, from the
+proposal</h2>
+<ul>
+<li><strong>The proposed recovery names what will change and what cannot
+be restored.</strong> QUILL’s offer names the document and says the file
+on disk is not changed; Skip says the copy is not offered again.</li>
+<li><strong>Local edits preserve ordinary undo grouping and
+selection.</strong> Restoring opens a document; no undo history is
+touched. QUILL still puts the caret where it was in the document that
+was in front.</li>
+<li><strong>Recoverable drafts and original files are distinct from
+disposable caches.</strong> A restored copy opens unsaved beside the
+file (QUILL) or under its name, unsaved (QUILL Lite); neither writes the
+file until the person saves.</li>
+<li><strong>Destructive or remote actions are not labelled undoable
+until recovery is verified.</strong> “Discard and Continue”, which
+discarded nothing, is gone.</li>
+<li><strong>Review ambiguous duplicates instead of silently declaring
+one copy worthless.</strong> Only byte-identical copies are folded, and
+that is said. A copy identical to its saved file is not offered; one
+that differs by a single word is.</li>
+<li><strong>Include failures during undo and recovery.</strong> A copy
+that cannot be read is named, stays where it is, and the person is
+told.</li>
+</ul>
+<h2 id="4-left-for-later">4. Left for later</h2>
+<ul>
+<li>QUILL asks about each document in its own Crash Recovery window.
+QUILL Lite’s chooser, one list with checkboxes, is the better shape for
+many documents; moving QUILL onto it means moving the diagnostics
+buttons too, and was left to keep this change small.</li>
+<li>A copy Skip Recovery leaves in QUILL’s autosave folder is kept for
+the “Days of unsaved work to keep” setting but can only be opened from
+that folder. A “recover an earlier session” command would reach it.</li>
+<li>Radio’s stream recovery rewrites a favourite’s address when the
+station has moved. That is not the person’s work, but it changes
+something they saved without asking; it is noted for the Radio
+owners.</li>
+<li>Quill Social’s drafts (standalone) are saved only when you press
+Save Draft. Restoring one keeps only its text, and Delete does not ask.
+It is outside this family pass because Social’s composer is being
+rebuilt.</li>
+<li>To check by hand with a screen reader in a frozen build: QUILL after
+a power cut with two documents changed (two offers, each named), QUILL
+Lite’s row wording, and every second- to fourth-pull-request path listed
+in its own pull request.</li>
+</ul>
+</main>
+</body>
+</html>

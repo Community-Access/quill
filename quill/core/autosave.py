@@ -39,6 +39,7 @@ def autosave_document(document: Document, session_id: str, max_snapshots: int = 
     # for a BRF read) would raise UnicodeEncodeError the moment the in-memory
     # text gained a character outside that range -- crashing autosave itself.
     write_text_atomic(target, document.text, encoding="utf-8", newline="")
+    _note_source(autosave_root, key, document)
 
     snapshots = sorted(autosave_root.glob(f"{key}-*.snap"), reverse=True)
     for stale in snapshots[max_snapshots:]:
@@ -96,6 +97,46 @@ def latest_autosave(document: Document, session_id: str) -> Path | None:
     if not snapshots:
         return None
     return snapshots[0]
+
+
+def _note_source(autosave_root: Path, key: str, document: Document) -> None:
+    """Record which file a snapshot key stands for, once per session (FUX-05).
+
+    The key is a hash of the path, so without this a recovery offer could only
+    say "the latest autosave snapshot" -- never *which* document it was, and
+    never compare it with the file on disk. Written once, beside the
+    snapshots, and best-effort: a missing note costs a name, never a snapshot.
+    """
+    note = autosave_root / f"{key}.json"
+    if note.exists():
+        return
+    from quill.core.storage import write_json_atomic
+
+    try:
+        original = str(document.path.resolve()) if document.path else ""
+        write_json_atomic(note, {"original_path": original})
+    except (OSError, ValueError):
+        pass
+
+
+def snapshot_source(snapshot: Path) -> str | None:
+    """The file *snapshot* is a copy of: a path, "" for untitled, None if unknown.
+
+    None means the snapshot was written by a build that kept no note, so
+    nothing can be said about which document it was.
+    """
+    import json
+
+    key = snapshot.name.split("-", 1)[0]
+    note = snapshot.parent / f"{key}.json"
+    try:
+        payload = json.loads(note.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    original = payload.get("original_path")
+    return original if isinstance(original, str) else None
 
 
 def _document_key(document: Document) -> str:

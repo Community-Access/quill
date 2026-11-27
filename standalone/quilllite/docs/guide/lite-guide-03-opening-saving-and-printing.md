@@ -994,11 +994,16 @@ If everything it found was one of those, no window opens. Instead you hear
 The window lists what is left, one row each, with a checkbox. Each row quotes
 the first few words of the document, like `begins "Dear Margaret, thank you
 for the lovely..."`, so you can tell two untitled windows from the same
-afternoon apart. There is also a
+afternoon apart. Straight after its name, a document that has a file says how
+the copy stands against it: "1,200 words more than the saved file", "the same as the saved
+file", or "the saved file is no longer there". A Word document is compared by
+date only. There is also a
 read-only **What this would do** field you can arrow through. There are six
 buttons:
 
-- **Restore Checked** brings back the ones you have checked.
+- **Restore Checked** brings back the ones you have checked. Each opens under
+  its own name and unsaved: the file on disk changes only when you save it, and
+  saving with Save As keeps the original file too.
 - **Restore All** brings back everything.
 - **Not Now** changes nothing, and offers the same list next time.
 - **Discard Checked** throws away the ones you have checked.

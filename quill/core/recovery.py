@@ -39,6 +39,9 @@ class RecoveryOffer:
     # positive in the filed report. None when the offer fired because the
     # log was missing/unreadable (inconclusive, not evidence of anything).
     error_evidence: str | None = None
+    #: The file this snapshot is a copy of; "" for an untitled document, None
+    #: when the snapshot predates the note that records it (FUX-05).
+    original_path: str | None = None
 
 
 # Two layers of synchronization protect the read-modify-write of
@@ -281,31 +284,59 @@ def begin_session(
             offers: list[RecoveryOffer] = []
             previous_session = state.get("last_session_id")
             previous_clean = bool(state.get("clean_exit", True))
-            if (
-                isinstance(previous_session, str)
-                and previous_session
-                and not previous_clean
-                and _log_shows_actionable_error(app_data_dir() / "logs")
-            ):
-                latest = latest_session_snapshot(previous_session, include_untitled=offer_untitled)
-                if latest is not None and not _is_offer_dismissed(state, previous_session, latest):
-                    cursor_position = _load_cursor_position(state, previous_session)
-                    dismissal_count = _load_dismissal_count(state, previous_session)
-                    offers.append(
-                        RecoveryOffer(
-                            session_id=previous_session,
-                            snapshot=latest,
-                            cursor_position=cursor_position,
-                            dismissal_count=dismissal_count,
-                            error_evidence=find_error_evidence(app_data_dir() / "logs"),
-                        )
-                    )
+            if isinstance(previous_session, str) and previous_session and not previous_clean:
+                offers = _offers_for(state, previous_session, offer_untitled)
             state["last_session_id"] = session_id
             state["clean_exit"] = False
             _save_state(state)
     finally:
         if fd is not None:
             _release_file_lock(fd)
+    return offers
+
+
+def _offers_for(
+    state: dict[str, object], session_id: str, offer_untitled: bool
+) -> list[RecoveryOffer]:
+    """One offer per document the unclean session left unsaved work in (FUX-05).
+
+    Every document, not only the newest: a second modified window used to be
+    left on disk and never offered. A snapshot identical to its saved file is
+    not offered, since nothing is lost; one that differs is offered even when
+    the log shows no error, because a power cut writes no error and the work is
+    just as gone. Only a snapshot nothing can be said about (written before
+    the source note existed, or of a Word file) still waits for log evidence,
+    which is what every snapshot needed before.
+    """
+    from quill.core.autosave import snapshot_source
+    from quill.core.recovery_naming import snapshots_by_document, worth_offering
+
+    logs = app_data_dir() / "logs"
+    evidence: bool | None = None
+    offers: list[RecoveryOffer] = []
+    for snapshot in snapshots_by_document(session_id, include_untitled=offer_untitled):
+        if _is_offer_dismissed(state, session_id, snapshot):
+            continue
+        source = snapshot_source(snapshot)
+        verdict = worth_offering(snapshot, source)
+        if verdict is None:
+            if evidence is None:
+                evidence = _log_shows_actionable_error(logs)
+            verdict = evidence
+        if not verdict:
+            continue
+        offers.append(
+            RecoveryOffer(
+                session_id=session_id,
+                snapshot=snapshot,
+                # The caret was saved for the window in front, which is most
+                # likely the newest document; the others open at the top.
+                cursor_position=_load_cursor_position(state, session_id) if not offers else 0,
+                dismissal_count=_load_dismissal_count(state, session_id),
+                error_evidence=find_error_evidence(logs),
+                original_path=source,
+            )
+        )
     return offers
 
 
