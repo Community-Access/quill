@@ -4,6 +4,32 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+### Syncing with your phone: faster, safer, and yours to control (2026-11-26)
+
+#### Faster and more careful
+
+- **A sync with a large library is now quick.** With a phone sharing a
+  thousand places and tens of thousands of episodes here, a sync could take
+  twenty seconds; it now takes a moment.
+- **Finishing an episode on your phone finishes it here too,** properly: a
+  download you asked to remove after playing is removed, and Quill Radio no
+  longer offers to resume it.
+- **Cast says what it skipped, and why**: a file still downloading from your
+  cloud service, a device unused for six months, or a device whose clock is
+  wrong. None of them can win over your real, recent place.
+- **Two devices with the same name in the folder** (after restoring a backup,
+  say) no longer fight over one file: Cast leaves the other one alone and
+  starts its own.
+
+#### Your choices
+
+- **Podcasts followed or unfollowed on another device:** follow or unfollow
+  here too, or have Cast tell you and leave it to you.
+- **Folders and per-podcast speed** can each be shared or kept here.
+- **New podcasts** can start as shared, or as kept on this computer.
+- **Keep one podcast on this computer only,** in Settings for This Podcast.
+  Podcasts you sign in to always stay here.
+
 
 ### A download's status lands in its own column (2026-11-26)
 

@@ -53,28 +53,6 @@ __all__ = [
 ]
 
 
-@dataclass(frozen=True, slots=True)
-class SubscriptionPolicy:
-    """What the listener lets another device change here (ear.md 6.9).
-
-    The defaults are the behaviour before these settings existed, so nobody's
-    sync changes until they choose otherwise. Each "not here" choice is said
-    once per podcast, never on every sync.
-    """
-
-    #: "follow": a podcast followed on another device is followed here too.
-    #: "suggest": it is named once, and the listener decides.
-    follow_new: str = "follow"
-    #: "remove": unfollowing on another device unfollows here (the
-    #: subscription only; episodes, downloads and history stay).
-    #: "keep": it is named once, and stays followed here.
-    unfollows: str = "remove"
-    #: Whether folders, and which folder a podcast is filed in, travel.
-    folders: bool = True
-    #: Whether a podcast's own playback speed travels (sync.md 6.7 prefs).
-    speed: bool = True
-
-
 _STATE_FILE = "listening_subscriptions.json"
 _APP_KEY = "quill-cast"
 #: Query parameters that make an address a key rather than an address.
@@ -164,6 +142,9 @@ class SubscriptionsReport:
     said: list[str] = field(default_factory=list)
     changed: bool = False
     private_skipped: int = 0
+    #: Podcasts newly kept on this device by "New podcasts sync: No"; the
+    #: caller adds them to the saved settings (ear.md 6.10).
+    newly_local: list[str] = field(default_factory=list)
 
 
 # -- state -------------------------------------------------------------------
@@ -245,6 +226,19 @@ def sync_subscriptions(
     report = SubscriptionsReport()
     now = _now()
     incoming = _newest_rows(others)
+    rules_in = policy or SubscriptionPolicy()
+    if not rules_in.new_podcasts_share and state["first_seen"]:
+        # Sharing has run here before, so a podcast never seen is new since.
+        for show in getattr(library, "shows", []):
+            url = str(getattr(show, "feed_url", "") or "")
+            if url and not getattr(show, "is_local", False):
+                key = subscription_id(url)
+                if key not in state["first_seen"] and key not in rules_in.local_only:
+                    report.newly_local.append(key)
+        if report.newly_local:
+            from dataclasses import replace
+
+            policy = replace(rules_in, local_only=rules_in.local_only | set(report.newly_local))
     _notice_local_changes(library, state, now)
     rules = policy or SubscriptionPolicy()
     if rules.folders:
@@ -361,6 +355,15 @@ def _apply_subscriptions(
             ),
             None,
         )
+        if local is not None and rules.keeps_local(local):
+            # Kept on this device only: nothing from elsewhere is applied.
+            if told.get(f"local:{record_id}") != at:
+                told[f"local:{record_id}"] = at
+                report.said.append(
+                    f"{local.title} is kept on this device only, so its changes from "
+                    f"{item.device} were not applied."
+                )
+            continue
         if local is not None:
             local_record = subscription_id(local.feed_url)
             known = str(state["updated"].get(local_record, ""))
@@ -545,6 +548,8 @@ def _outgoing(
         if is_private(show):
             report.private_skipped += 1
             continue
+        if rules.keeps_local(show):
+            continue  # this device only: not written, and never a tombstone
         key = subscription_id(show.feed_url)
         core = _sub_core(library, show, state)
         if state["fingerprints"].get(key) != _fingerprint(core):
@@ -586,3 +591,6 @@ def _outgoing(
             continue
         rows.append({"id": key, "deleted": True, "updated_at": at})
     return rows
+
+
+from quill.core.sync.subscriptions_policy import SubscriptionPolicy  # noqa: E402

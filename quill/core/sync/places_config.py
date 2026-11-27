@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import json
 import socket
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from quill.core.storage import write_json_atomic
@@ -94,6 +94,12 @@ class PlacesConfig:
     sync_folders: bool = True
     #: Whether each podcast's own playback speed is shared.
     sync_speed: bool = True
+    #: Whether a podcast first followed here after sharing began is shared
+    #: (ear.md 6.10). False starts each new podcast as this device only.
+    new_podcasts_sync: bool = True
+    #: Podcasts kept on this device only, by their ``sub:`` id. Device-local by
+    #: design: this list never goes into the shared file (ear.md 6.10).
+    local_only: list[str] = field(default_factory=list)
 
     def subscription_policy(self) -> object:
         """These choices as the sync's :class:`SubscriptionPolicy`."""
@@ -106,6 +112,8 @@ class PlacesConfig:
             unfollows=self.sub_unfollows if self.sub_unfollows in ("remove", "keep") else "remove",
             folders=self.sync_folders,
             speed=self.sync_speed,
+            new_podcasts_share=self.new_podcasts_sync,
+            local_only=frozenset(self.local_only),
         )
 
     @property
@@ -157,6 +165,8 @@ class PlacesConfig:
             "sub_unfollows": self.sub_unfollows,
             "sync_folders": self.sync_folders,
             "sync_speed": self.sync_speed,
+            "new_podcasts_sync": self.new_podcasts_sync,
+            "local_only": sorted(set(self.local_only)),
         }
 
     @classmethod
@@ -180,6 +190,12 @@ class PlacesConfig:
             sub_unfollows=str(data.get("sub_unfollows", "remove")),
             sync_folders=bool(data.get("sync_folders", True)),
             sync_speed=bool(data.get("sync_speed", True)),
+            new_podcasts_sync=bool(data.get("new_podcasts_sync", True)),
+            local_only=[
+                str(item)
+                for item in (data.get("local_only") or [])
+                if isinstance(item, str) and item.startswith("sub:")
+            ],
         )
 
 

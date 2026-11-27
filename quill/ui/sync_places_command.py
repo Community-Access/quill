@@ -111,13 +111,16 @@ def sync_once(config: places_config.PlacesConfig, phrase: str) -> str:
             share_subscriptions=config.share_subscriptions,
             subscription_policy=config.subscription_policy(),
         )
-        if report.new_device_id:
+        if report.new_device_id or report.newly_local:
             # Another device shared this id; remember the fresh one (ear.md 6.8).
-            config.device_id = report.new_device_id
+            if report.new_device_id:
+                config.device_id = report.new_device_id
+            # "New podcasts sync: No" kept these on this device (ear.md 6.10).
+            config.local_only = sorted(set(config.local_only) | set(report.newly_local))
             try:
                 places_config.save(app_data_dir(), config)
             except OSError:
-                pass  # next sync moves again, and says so again
+                pass  # the next sync decides again, and says so again
         said.append(report.summary())
     if not said:
         return "Nothing is switched on to sync."

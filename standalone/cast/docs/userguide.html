@@ -5071,19 +5071,30 @@ if you went back to hear something again, that is where you will be.</p>
 <p>If this computer’s own file in the shared folder has been changed by
 something else since Cast last wrote it, such as a restore from a backup
 or a copy from another computer, Cast leaves it exactly as it is and
-tells you, rather than writing over it. Move that file out of the
-folder’s devices folder and Cast writes a fresh one the next time it
-syncs. If Cast cannot write its file at all, it says that too, so your
-place never quietly stops travelling.</p>
+tells you, rather than writing over it. It then starts a fresh file of
+its own under a new name, so your place keeps travelling, and the other
+file is never touched. If Cast cannot write its file at all, it says
+that too, so your place never quietly stops travelling.</p>
+<p>Cast is careful about what it reads, too, and says in one sentence
+whenever it skips or corrects something:</p>
+<ul>
+<li>A file that has not finished downloading from your cloud service is
+tried again next time.</li>
+<li>A device you have not used for six months no longer counts, so its
+old places cannot win.</li>
+<li>A device whose clock is wrong, and dates its places in the future,
+cannot win every time; its places count as written when it last
+synced.</li>
+</ul>
 <p>With the plain file, <strong>Include episode and file names</strong>
 lets Cast name an episode when it tells you about a disagreement. Turn
 it off if you would rather the shared folder knew less about what you
 listen to.</p>
-<p><strong>Also share the podcasts I follow, and their folders</strong>
-goes one step further. Follow a podcast on one device and it appears on
-the others, in the same folder and at the same speed. Stop following it
-on one, and it goes from the others too. Here is what to know before you
-turn it on:</p>
+<p><strong>Also share the podcasts I follow</strong> goes one step
+further. Follow a podcast on one device and it appears on the others, in
+the same folder and at the same speed. Stop following it on one, and it
+goes from the others too. Here is what to know before you turn it
+on:</p>
 <ul>
 <li>Anybody who can see the shared folder can read the list of podcasts
 you follow. That is why it is off until you choose it.</li>
@@ -5099,6 +5110,38 @@ changes without you hearing about it.</li>
 <li>If your phone puts a podcast in two folders, Cast files it in the
 first one and leaves the phone’s second folder alone.</li>
 </ul>
+<p>Once podcasts are shared, you decide how much another device may
+change here. These choices are in Sync Places, under the switch:</p>
+<ul>
+<li><strong>Podcasts followed on another device:</strong> <em>Follow
+them here too</em>, or <em>Tell me, and let me choose</em>. With the
+second, Cast names a new podcast once after a sync and leaves it for you
+to follow.</li>
+<li><strong>Podcasts unfollowed on another device:</strong> <em>Unfollow
+them here too</em>, or <em>Keep following them here</em>. With the
+second, Cast tells you once and changes nothing.</li>
+<li><strong>Share folders, and which folder each podcast is in.</strong>
+Turn it off to keep your folders on this computer. Folders another
+device shares are left as they are, never removed.</li>
+<li><strong>Keep each podcast’s playback speed the same.</strong> A
+podcast’s own speed follows you. Your general speed is never
+changed.</li>
+<li><strong>Sharing includes podcasts I follow from now on.</strong>
+Turn it off and each podcast you follow on this computer from now on
+starts as kept on this computer only.</li>
+</ul>
+<h4 id="keeping-one-podcast-on-this-computer">Keeping one podcast on
+this computer</h4>
+<p>Some podcasts are nobody else’s business. In <strong>Settings for
+This Podcast</strong>, check <strong>Keep this podcast on this device
+only</strong>, and nothing about it goes to the shared folder: not that
+you follow it, not its folder, not your place in its episodes. Nothing
+about it is taken from the folder either. It is not an unfollow, so your
+other devices keep it exactly as they have it. The choice is for this
+computer only; set it on each device where you want it.</p>
+<p>A podcast you sign in to, or whose address carries a key, is always
+kept on this computer. Its box is checked and cannot be changed, and
+Cast says why.</p>
 <h3 id="cast-and-the-other-quill-apps">Cast and the other Quill
 apps</h3>
 <p>If you use Quill Radio or QUILL as well, Cast shares with them, so

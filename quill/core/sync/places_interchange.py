@@ -74,6 +74,9 @@ class InterchangeReport:
     #: Set when another device was writing this device's file, and this device
     #: moved to a fresh id; the caller saves it (ear.md 6.8, item 2).
     new_device_id: str = ""
+    #: Podcasts "New podcasts sync: No" just kept on this device; the caller
+    #: saves them into the settings (ear.md 6.10).
+    newly_local: list[str] = field(default_factory=list)
 
     @property
     def changed(self) -> bool:
@@ -162,7 +165,16 @@ def sync_interchange(
         report.problems.append(f"Could not read the sync folder: {error}")
         return report
 
-    local = {record.id: record for record in position_sync.collect_records(library)}
+    from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+    rules = subscription_policy if subscription_policy is not None else SubscriptionPolicy()
+    # This device only, or a feed that needs a sign-in: its places stay here
+    # (ear.md 6.10), in both directions.
+    keeps_local = rules.keeps_local
+    local = {
+        record.id: record
+        for record in position_sync.collect_records(library, keeps_local=keeps_local)
+    }
     incoming = remote_view(others)
     sources = remote_sources(others)
     merged, disagreements = merge_records(local, incoming)
@@ -175,7 +187,7 @@ def sync_interchange(
         if entity_id in local and local[entity_id].updated_at >= record.updated_at:
             continue
         if index is None:
-            index = position_sync.episode_index(library)
+            index = position_sync.episode_index(library, keeps_local=keeps_local)
         episode = index.get(entity_id)
         was_played = bool(getattr(episode, "played", False))
         if position_sync.apply_record(
@@ -202,6 +214,7 @@ def sync_interchange(
             subscriptions_changed = subs.changed
             report.subscription_news = subs.said
             report.private_skipped = subs.private_skipped
+            report.newly_local = list(subs.newly_local)
 
     if applied or subscriptions_changed:
         try:
@@ -214,7 +227,9 @@ def sync_interchange(
         except Exception as error:  # noqa: BLE001
             report.problems.append(f"Those places could not be saved: {error}")
 
-    outgoing = _outgoing_records(library, data_dir, include_labels=include_labels)
+    outgoing = _outgoing_records(
+        library, data_dir, include_labels=include_labels, keeps_local=keeps_local
+    )
     report.sent = len(outgoing)
 
     def _write(as_device: str) -> bool:
@@ -260,7 +275,7 @@ def sync_interchange(
 
 
 def _outgoing_records(
-    library: Any, data_dir: Path | str, *, include_labels: bool
+    library: Any, data_dir: Path | str, *, include_labels: bool, keeps_local: Any = None
 ) -> list[PlaceRecord]:
     """This device's whole view: podcast episodes, plus books and local files.
 
@@ -271,7 +286,9 @@ def _outgoing_records(
     """
     from quill.core.podcasts import position_sync
 
-    records = position_sync.collect_records(library, include_labels=include_labels)
+    records = position_sync.collect_records(
+        library, include_labels=include_labels, keeps_local=keeps_local
+    )
     records.extend(_file_records(data_dir, include_labels=include_labels))
     return records
 

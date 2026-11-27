@@ -121,10 +121,18 @@ def record_for(show: Any, episode: Any, *, include_label: bool = True) -> PlaceR
     )
 
 
-def collect_records(library: Any, *, include_labels: bool = True) -> list[PlaceRecord]:
-    """Every place this library knows about, ready to write out."""
+def collect_records(
+    library: Any, *, include_labels: bool = True, keeps_local: Any = None
+) -> list[PlaceRecord]:
+    """Every place this library knows about, ready to write out.
+
+    *keeps_local*, when given, says which podcasts stay on this device only;
+    their places are not written (ear.md 6.10).
+    """
     records: list[PlaceRecord] = []
     for show in getattr(library, "shows", []) or []:
+        if keeps_local is not None and keeps_local(show):
+            continue
         for episode in getattr(show, "episodes", []) or []:
             record = record_for(show, episode, include_label=include_labels)
             if record is not None:
@@ -132,7 +140,7 @@ def collect_records(library: Any, *, include_labels: bool = True) -> list[PlaceR
     return records
 
 
-def episode_index(library: Any) -> dict[str, Any]:
+def episode_index(library: Any, *, keeps_local: Any = None) -> dict[str, Any]:
     """Every episode in *library* by its public ``episode:`` id, built once.
 
     The id is a one-way hash, so finding the episode a record names means
@@ -144,6 +152,8 @@ def episode_index(library: Any) -> dict[str, Any]:
     """
     index: dict[str, Any] = {}
     for show in getattr(library, "shows", []) or []:
+        if keeps_local is not None and keeps_local(show):
+            continue  # this device only: places from elsewhere are not applied
         for episode in getattr(show, "episodes", []) or []:
             key = episode_id(
                 str(getattr(episode, "guid", "") or ""),

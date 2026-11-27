@@ -4462,18 +4462,29 @@ something again, that is where you will be.
 If this computer's own file in the shared folder has been changed by something
 else since Cast last wrote it, such as a restore from a backup or a copy from
 another computer, Cast leaves it exactly as it is and tells you, rather than
-writing over it. Move that file out of the folder's devices folder and Cast
-writes a fresh one the next time it syncs. If Cast cannot write its file at
-all, it says that too, so your place never quietly stops travelling.
+writing over it. It then starts a fresh file of its own under a new name, so
+your place keeps travelling, and the other file is never touched. If Cast
+cannot write its file at all, it says that too, so your place never quietly
+stops travelling.
+
+Cast is careful about what it reads, too, and says in one sentence whenever it
+skips or corrects something:
+
+- A file that has not finished downloading from your cloud service is tried
+  again next time.
+- A device you have not used for six months no longer counts, so its old
+  places cannot win.
+- A device whose clock is wrong, and dates its places in the future, cannot
+  win every time; its places count as written when it last synced.
 
 With the plain file, **Include episode and file names** lets Cast name an
 episode when it tells you about a disagreement. Turn it off if you would
 rather the shared folder knew less about what you listen to.
 
-**Also share the podcasts I follow, and their folders** goes one step
-further. Follow a podcast on one device and it appears on the others,
-in the same folder and at the same speed. Stop following it on one, and it goes
-from the others too. Here is what to know before you turn it on:
+**Also share the podcasts I follow** goes one step further. Follow a podcast
+on one device and it appears on the others, in the same folder and at the same
+speed. Stop following it on one, and it goes from the others too. Here is what
+to know before you turn it on:
 
 - Anybody who can see the shared folder can read the list of podcasts you
   follow. That is why it is off until you choose it.
@@ -4487,6 +4498,36 @@ from the others too. Here is what to know before you turn it on:
   changes without you hearing about it.
 - If your phone puts a podcast in two folders, Cast files it in the first
   one and leaves the phone's second folder alone.
+
+Once podcasts are shared, you decide how much another device may change here.
+These choices are in Sync Places, under the switch:
+
+- **Podcasts followed on another device:** *Follow them here too*, or *Tell
+  me, and let me choose*. With the second, Cast names a new podcast once after
+  a sync and leaves it for you to follow.
+- **Podcasts unfollowed on another device:** *Unfollow them here too*, or
+  *Keep following them here*. With the second, Cast tells you once and changes
+  nothing.
+- **Share folders, and which folder each podcast is in.** Turn it off to keep
+  your folders on this computer. Folders another device shares are left as
+  they are, never removed.
+- **Keep each podcast's playback speed the same.** A podcast's own speed
+  follows you. Your general speed is never changed.
+- **Sharing includes podcasts I follow from now on.** Turn it off and each
+  podcast you follow on this computer from now on starts as kept on this
+  computer only.
+
+#### Keeping one podcast on this computer
+
+Some podcasts are nobody else's business. In **Settings for This Podcast**,
+check **Keep this podcast on this device only**, and nothing about it goes to
+the shared folder: not that you follow it, not its folder, not your place in
+its episodes. Nothing about it is taken from the folder either. It is not an
+unfollow, so your other devices keep it exactly as they have it. The choice is
+for this computer only; set it on each device where you want it.
+
+A podcast you sign in to, or whose address carries a key, is always kept on
+this computer. Its box is checked and cannot be changed, and Cast says why.
 
 ### Cast and the other Quill apps
 

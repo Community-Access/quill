@@ -184,7 +184,17 @@ class ShowSettingsWindow:
         self._auto_queue = wx.CheckBox(body, label="New episodes go straight to the Play &Queue")
         self._auto_queue.SetValue(show.auto_queue)
         self._auto_queue.SetHelpText(settings_help.SHOW_HELP["auto_queue"])
-        root.Add(self._auto_queue, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        root.Add(self._auto_queue, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+
+        from quill.ui.podcasts import sync_scope
+
+        kept, locked = sync_scope.state(show)
+        self._kept_local = wx.CheckBox(body, label="Keep this podcast on this device onl&y")
+        self._kept_local.SetValue(kept)
+        self._kept_local.SetHelpText(sync_scope.PRIVATE_REASON if locked else sync_scope.HELP)
+        self._kept_local.Enable(not locked)
+        self._kept_local_at_open = kept
+        root.Add(self._kept_local, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         self._filters_btn = wx.Button(body, label="Episode Fi&lters...")
@@ -398,6 +408,7 @@ class ShowSettingsWindow:
         show.is_favorite = self._favorite.GetValue()
         show.route_to_inbox = self._route_inbox.GetValue()
         show.auto_queue = self._auto_queue.GetValue()
+        kept_note = self._save_kept_local(show)
         self._changed = True
         if changed:
             first = changed[0].say(
@@ -415,7 +426,21 @@ class ShowSettingsWindow:
         self._close_ok()
         if any(definition.id == "speed" for definition in changed):
             said = f"{said} {self._speed_held(show)}".strip()
-        self._announce(said)
+        self._announce(f"{said} {kept_note}".strip())
+
+    def _save_kept_local(self, show: PodcastShow) -> str:
+        """Save "on this device only" if it changed; the sentence to add, or ""."""
+        from quill.ui.podcasts import sync_scope
+
+        kept = bool(self._kept_local.GetValue())
+        if not self._kept_local.IsEnabled() or kept == self._kept_local_at_open:
+            return ""
+        if not sync_scope.set_kept_local(show, kept):
+            return "Whether it syncs could not be saved."
+        self._kept_local_at_open = kept
+        if kept:
+            return f"{show.title} now stays on this device only."
+        return f"{show.title} syncs with your other devices again."
 
     def _speed_held(self, show: PodcastShow) -> str:
         """The clause for a saved speed the episode playing did not take, or ""."""

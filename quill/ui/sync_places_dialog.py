@@ -190,6 +190,7 @@ class SyncPlacesDialog:
             self._unfollows,
             self._folders,
             self._speed,
+            self._new_share,
         )
         root.Add(shared, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -271,6 +272,9 @@ class SyncPlacesDialog:
             sub_unfollows=_UNFOLLOWS[max(0, self._unfollows.GetSelection())][0],
             sync_folders=bool(self._folders.GetValue()),
             sync_speed=bool(self._speed.GetValue()),
+            new_podcasts_sync=bool(self._new_share.GetValue()),
+            # Chosen podcast by podcast in Settings for This Podcast; kept as is.
+            local_only=list(self._config.local_only),
         )
 
     def _build_subscription_rules(self, sizer: Any, config: PlacesConfig) -> None:
@@ -310,6 +314,15 @@ class SyncPlacesDialog:
             "devices. Your general speed is never changed."
         )
         self._speed.SetValue(config.sync_speed)
+        self._new_share = wx.CheckBox(
+            self._dialog, label="Shar&ing includes podcasts I follow from now on"
+        )
+        self._new_share.SetHelpText(
+            "With this off, each podcast you follow on this device from now on starts as "
+            "kept on this device only; you can change that in its own settings. Podcasts "
+            "you already follow keep their choice. Feeds with a sign-in always stay here."
+        )
+        self._new_share.SetValue(config.new_podcasts_sync)
         for label, control in ((follow_label, self._follow_new), (unfollow_label, self._unfollows)):
             row = wx.BoxSizer(wx.HORIZONTAL)
             row.Add(label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
@@ -317,6 +330,7 @@ class SyncPlacesDialog:
             sizer.Add(row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
         sizer.Add(self._folders, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
         sizer.Add(self._speed, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+        sizer.Add(self._new_share, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
         self._rule_controls = (
             follow_label,
             self._follow_new,
@@ -324,6 +338,7 @@ class SyncPlacesDialog:
             self._unfollows,
             self._folders,
             self._speed,
+            self._new_share,
         )
         self._subscriptions.Bind(wx.EVT_CHECKBOX, lambda _e: self._enable_rules())
         self._enable_rules()
