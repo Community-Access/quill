@@ -1332,9 +1332,15 @@ The window has **Title:**, **Body:**, **Labels (comma-separated):** and
 must already exist in the repository.
 
 What you type is saved on this computer as you go, so closing the window by
-mistake loses nothing: the next New Issue in that repository says "Recovered
-a local draft", and **Discard Saved Draft** throws it away. A draft is never
-sent by itself.
+mistake loses nothing. The next New Issue in that repository brings the draft
+back and says what it is, for example "Recovered your unsent issue for
+owner/repo, "Crash on save", 120 words, saved today at 2:14 PM. It has not been
+submitted." **Discard Saved Draft** asks first, then throws it away for good.
+A draft is never sent by itself, and once the issue is created its draft is
+cleared, so it is not offered again.
+
+If the file that holds your drafts cannot be read, it is kept aside under a
+new name rather than written over, and the next draft window says where.
 
 **Create Issue** is the only button that sends anything, and it shows a
 preview first: the repository, title, template, labels, assignees and body.
@@ -2086,11 +2092,15 @@ and has:
 - **Comment Window...** (`Alt+W`) writes the message in the comment window,
   with mentions, references, emoji, saved replies, the preview and the check;
   **Use This Text** brings it back.
-- **Discard Saved Draft**, to throw away a saved review message.
+- **Discard Saved Draft**, to throw away a saved review message. It asks
+  first, because a draft that was never sent cannot be brought back.
 - **Submit Review**, which sends it, and **Save Draft and Close**, which keeps
   it. Escape is Save Draft and Close.
 
 The review message saves as you type, so closing the window loses nothing.
+When you come back, the window says which review it is, how long, and when it
+was saved, and, if the pull request has new commits since, that you should
+read the draft against the current changes first.
 Submit Review is the only thing that sends. Request changes asks once more
 before it goes. You hear "Review submitted on pull request #42." and how many
 line comments GitHub took with it.

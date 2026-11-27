@@ -1789,7 +1789,10 @@ class BeaconFrame(ProductUpdateHost, wx.Frame, BeaconAiMixin, BeaconScribeMixin)
         self._refresh_results()
 
     def _do_rollback(self, backup_name: str) -> None:
-        """Restore a pre-sync snapshot: close, overwrite, reopen, refresh."""
+        """Restore a snapshot: close, keep the current library, overwrite, reopen."""
+        from quill.apps.beacon.sync_snapshots import rollback_outcome
+
+        entry = next((b for b in self.sync.list_backups() if b["name"] == backup_name), {})
         self.store.close()
         ok = self.sync.restore_backup(backup_name)
         self.store = db.BeaconStore(self.data_dir / "beacons.db")
@@ -1797,9 +1800,7 @@ class BeaconFrame(ProductUpdateHost, wx.Frame, BeaconAiMixin, BeaconScribeMixin)
         if ok:
             self._refresh_sidebar()
             self._refresh_results()
-            self.announcer.say(f"Rolled back to {backup_name}")
-        else:
-            self.announcer.say("Rollback failed; library reopened from current DB")
+        wx.CallLater(300, self.announcer.say, rollback_outcome(entry, backup_name, ok))
 
     def handle_verify_url(self, url: str) -> bool:
         """Handle a quillsync://verify?... link (custom-scheme handoff).
