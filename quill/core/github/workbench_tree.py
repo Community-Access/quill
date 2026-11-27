@@ -42,6 +42,15 @@ def _n(key: str, label: str, parent: str | None = None, **kwargs: Any) -> NodeSp
 
 _FIXED: tuple[NodeSpec, ...] = (
     _n("start", "Start Here"),
+    # The front door: one queue of what needs you (quill/core/github/my_github.py).
+    _n(
+        "my_github",
+        "My GitHub",
+        needs=_SIGN_IN,
+        scope=Scope.ACCOUNT,
+        loader="explore:my_github",
+        row_type="mixed",
+    ),
     _n("attention", "Needs My Attention", scope=Scope.ACCOUNT),
     _n("inbox", "Inbox", "attention", loader="explore:attention", row_type="mixed"),
     _n(

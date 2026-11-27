@@ -194,6 +194,13 @@ _VIEW = MenuSpec(
         FILTER_SUB,
         GROUP_SUB,
         COLUMNS_ROW,
+        _row(
+            "my_github_options",
+            "My GitHub &View Options...",
+            "Ctrl+Alt+M",
+            "Choose which kinds My GitHub shows, one repository, how it is ordered and grouped. "
+            "Remembered for your account.",
+        ),
         None,
         _row("back", "&Back", "Alt+Left", "The view you were on before. Backspace too."),
         _row("forward", "&Forward", "Alt+Right", "The view you went back from."),
@@ -224,6 +231,13 @@ _VIEW = MenuSpec(
 _GO = MenuSpec(
     "&Go",
     (
+        _row(
+            "go_my_github",
+            "&My GitHub",
+            "Alt+Shift+Home",
+            "Your whole queue in one list: unread notifications, assigned work, review requests "
+            "and your pull requests with failing checks.",
+        ),
         _row("go_inbox", "I&nbox", "Ctrl+1", "What needs you, across GitHub. Alt+Home too."),
         _row(
             "go_repository",

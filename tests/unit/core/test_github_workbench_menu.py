@@ -116,9 +116,10 @@ def test_every_moved_row_has_a_normal_home_and_every_new_one_is_listed() -> None
 def test_the_github_menu_is_a_short_list_of_doors() -> None:
     """GitHub PRD section 6: Workbench, Inbox, the three repository doors, and so on."""
     top = [entry.command_id for entry in table.WORKBENCH_ROWS if isinstance(entry, table.Row)]
-    assert top[:6] == [
+    assert top[:7] == [
         table.TOGGLE_COMMAND_ID,
         "file.open_github_items",
+        "github.workbench_my_github",
         "github.workbench_inbox",
         "github.workbench_issues",
         "github.workbench_pulls",

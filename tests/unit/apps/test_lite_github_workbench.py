@@ -87,6 +87,7 @@ def test_lite_github_workbench_refuses_safe_mode_before_network(monkeypatch) -> 
 @pytest.mark.parametrize(
     ("press", "node"),
     [
+        (lambda h: h.cmd_github_my_github(), "my_github"),
         (lambda h: h.cmd_github_inbox(), "inbox"),
         (lambda h: h.cmd_github_my_work(), "attention"),
         (lambda h: h.cmd_github_notifications(), "notifications"),
@@ -110,6 +111,7 @@ def test_each_github_menu_row_opens_its_node_through_the_one_gate(opened, press,
     ("press", "node"),
     [
         (lambda h: h.cmd_github_workbench(), ""),
+        (lambda h: h.cmd_github_my_github(), "my_github"),
         (lambda h: h.cmd_github_inbox(), "inbox"),
         (lambda h: h.cmd_github_my_work(), "attention"),
         (lambda h: h.cmd_github_notifications(), "notifications"),

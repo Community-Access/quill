@@ -513,8 +513,8 @@ def start_ref(
     choice = load_prefs().open_on
     if choice == "start":
         return NodeRef("", START_NODE)
-    if choice == "inbox":
-        return NodeRef("", "inbox")
+    if choice in ("my_github", "inbox"):
+        return NodeRef("", choice)
     return None
 
 

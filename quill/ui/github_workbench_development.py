@@ -101,6 +101,11 @@ from quill.ui.github_workbench_merge import (
     MERGE_VERBS,
     GitHubWorkbenchMergeMixin,
 )
+from quill.ui.github_workbench_my_github import (
+    MY_GITHUB_REASONS,
+    MY_GITHUB_VERBS,
+    GitHubWorkbenchMyGitHubMixin,
+)
 from quill.ui.github_workbench_new_ruleset import (
     NEW_RULESET_REASONS,
     NEW_RULESET_VERBS,
@@ -225,6 +230,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **COLLAB_VERBS,
     **DRAFT_VERBS,
     **INBOX_RULE_VERBS,
+    **MY_GITHUB_VERBS,
     **DRY_RUN_VERBS,
     **PLAIN_BATCH_VERBS,
     **PRACTICE_VERBS,
@@ -268,6 +274,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **COLLAB_REASONS,
     **DRAFT_REASONS,
     **INBOX_RULE_REASONS,
+    **MY_GITHUB_REASONS,
     **DRY_RUN_REASONS,
     **PLAIN_BATCH_REASONS,
     **PRACTICE_REASONS,
@@ -309,6 +316,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchCollabMixin,
     GitHubWorkbenchDraftsMixin,
     GitHubWorkbenchInboxRulesMixin,
+    GitHubWorkbenchMyGitHubMixin,
     GitHubWorkbenchDryRunMixin,
     GitHubWorkbenchPlainBatchMixin,
     GitHubWorkbenchPracticeMixin,

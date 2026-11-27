@@ -32,8 +32,8 @@ PREF_HELP: dict[str, tuple[str, str, str]] = {
     "open_on": (
         "General",
         "&Open the Workbench on:",
-        "Where the window opens when no menu row asks for a place: Inbox (Start Here "
-        "until you have signed in), Start Here, or wherever you were last time.",
+        "Where the window opens when no menu row asks for a place: My GitHub (Start Here "
+        "until you have signed in), Inbox, Start Here, or wherever you were last time.",
     ),
     "list_mode": (
         "General",
@@ -117,6 +117,7 @@ PREF_HELP: dict[str, tuple[str, str, str]] = {
 
 #: How each choice value reads in the dialog.
 CHOICE_WORDS: dict[str, str] = {
+    "my_github": "My GitHub",
     "inbox": "Inbox",
     "start": "Start Here",
     "last": "Where I was last time",

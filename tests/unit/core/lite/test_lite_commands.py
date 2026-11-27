@@ -99,6 +99,7 @@ KEYLESS_WITH_REASON: dict[str, str] = {
         handler: "As in QUILL (rule 2), where no GitHub command has a chord: the GitHub menu "
         "it sits in exists only in workbench mode, and its access letter, Alt+G, is the way in."
         for handler in (
+            "cmd_github_my_github",
             "cmd_github_inbox",
             "cmd_github_my_work",
             "cmd_github_notifications",

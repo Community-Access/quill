@@ -533,6 +533,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Node | Under | What it is |
 | --- | --- | --- |
 | Start Here (`:start`) | the top | Start Here: what the Workbench is, whether you are signed in, and the five keys to learn first. |
+| My GitHub (`:my_github`) | the top | My GitHub: your whole queue in one list: unread notifications, issues and pull requests assigned to you, review requests, and your pull requests with failing checks. Enter opens the full thread; Ctrl+Q marks a notification read and Delete marks it done. Ctrl+Alt+M chooses what to show, the order and the grouping. |
 | Needs My Attention (`:attention`) | the top | Needs My Attention: everything waiting on you, across GitHub. Inbox first, then notifications, review requests and your own open work. |
 | Inbox (`:inbox`) | attention | Inbox: one list of what needs you, from notifications, review requests, assignments and mentions. Enter opens a row; Delete marks it done. |
 | Notifications (`:notifications`) | attention | Notifications: what GitHub has told you about, unread first. Ctrl+Q marks one read, Delete marks it done, and Ctrl+Shift+Q marks the whole view read. |
@@ -847,6 +848,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Group By > Review State | (submenu letter) | Put the list's groups in the tree, one node per review state. |
 | Group By > By Column... | (submenu letter) | Group this list by one of its columns, the groups as tree nodes; remembered for this list. For lists other than Issues, which group by the rows above. |
 | Columns... | Ctrl+Shift+U | Choose which columns this list shows, and their order. |
+| My GitHub View Options... | Ctrl+Alt+M | Choose which kinds My GitHub shows, one repository, how it is ordered and grouped. Remembered for your account. |
 | Back | Alt+Left | The view you were on before. Backspace too. |
 | Forward | Alt+Right | The view you went back from. |
 | Next Pane | F6 | Tree, filter, list, details, status bar. |
@@ -865,6 +867,7 @@ Everything below is generated from the tables the window is built from. The GitH
 
 | Row | Key | What it does |
 | --- | --- | --- |
+| My GitHub | Alt+Shift+Home | Your whole queue in one list: unread notifications, assigned work, review requests and your pull requests with failing checks. |
 | Inbox | Ctrl+1 | What needs you, across GitHub. Alt+Home too. |
 | Current Repository | Ctrl+2 | The repository this window opened on. |
 | Search | Ctrl+3 | Search GitHub. |
@@ -1052,7 +1055,7 @@ Keys the window answers that are not menu rows:
 
 | Setting | Page | Label | What it does |
 | --- | --- | --- | --- |
-| `open_on` | General | Open the Workbench on | Where the window opens when no menu row asks for a place: Inbox (Start Here until you have signed in), Start Here, or wherever you were last time. |
+| `open_on` | General | Open the Workbench on | Where the window opens when no menu row asks for a place: My GitHub (Start Here until you have signed in), Inbox, Start Here, or wherever you were last time. |
 | `list_mode` | General | List shows | Quick lists show a few columns, fast to arrow through; Full lists show every column the Workbench has for that list. |
 | `default_sort` | General | Sort issues and pull requests by | The order a list of issues and pull requests opens in. Newest first is the usual choice. |
 | `default_state` | General | Show issues that are | Open, closed or all, when a list opens. The filter box can always say is:open or is:closed for one list. |
