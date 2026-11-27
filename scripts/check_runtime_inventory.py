@@ -49,12 +49,18 @@ _DIST_INFO = re.compile(r"^(?P<name>.+?)-[0-9][^-]*\.dist-info$", re.IGNORECASE)
 _EXT_TAG = re.compile(r"\.cp3\d+[^.]*\.(pyd|dll)$", re.IGNORECASE)
 
 
+#: ``libheif-18c57b017b404cb1ef96dee8a6eef027.dll`` -> ``libheif.dll``: the
+#: 32-hex suffix delvewheel adds to a bundled library differs on every machine
+#: that builds the wheel, so it must not count as a different file.
+_WHEEL_HASH = re.compile(r"-[0-9a-f]{32}(?=\.dll$)", re.IGNORECASE)
+
+
 def normalize(name: str) -> str:
     """One top-level dist entry to its stable, version-free identity."""
     match = _DIST_INFO.match(name)
     if match:
         return match.group("name").casefold().replace("_", "-")
-    return _EXT_TAG.sub("", name).casefold()
+    return _WHEEL_HASH.sub("", _EXT_TAG.sub("", name)).casefold()
 
 
 #: Layouts: which top-level areas each artifact family sweeps content into.
