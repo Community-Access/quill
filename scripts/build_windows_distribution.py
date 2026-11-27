@@ -673,6 +673,9 @@ def build_windows_distribution(
         # contract is documented in docs/design/portable-launcher.md.
         for entry in sorted(staged_runtime.iterdir()):
             dest = portable_dir / entry.name
+            if entry.name == "LICENSE.txt" and dest.exists():
+                # Python's own licence and QUILL's both ship; keep both, side by side.
+                dest = portable_dir / "PYTHON-LICENSE.txt"
             if dest.exists():
                 raise RuntimeError(
                     f"Embedded-runtime file {entry.name!r} collides with a staged "

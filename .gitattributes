@@ -45,3 +45,7 @@ quill/core/forms/schema/** -text
 
 # The Practice Site lock is checked byte for byte as LF (test_wp_playground_lock).
 scripts/wp_playground/package-lock.json text eol=lf
+
+# Licence texts are pinned by SHA-256 (the build refuses a changed copy), so a
+# Windows checkout must not turn their line endings into CRLF.
+quill/data/third_party/licenses/** -text
