@@ -174,7 +174,7 @@ class ManagerRowViewMixin:
 
         By column id, never position: the listener can reorder and hide the
         episode columns, so "column 3" may be Time Left, or not exist at all.
-        ``set_row`` writes only cells whose text changed, so a status tick does
+        ``set_row`` writes only cells whose text changed, so a status update does
         not make a screen reader say the whole row again.
         """
         show = self._row_show(row)

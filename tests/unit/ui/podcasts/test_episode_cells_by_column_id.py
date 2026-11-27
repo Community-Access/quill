@@ -97,7 +97,7 @@ def test_a_layout_with_fewer_than_four_columns_is_not_written_past_its_end() -> 
 
 
 def test_an_unchanged_cell_is_not_rewritten() -> None:
-    """A status tick must not make a screen reader read the whole row again."""
+    """A status update must not make a screen reader read the whole row again."""
     columns = [_col("title"), _col("status")]
     host = _Host(columns, show=PodcastShow(id="s1", title="Show"))
     episode = _episode()
