@@ -15,7 +15,6 @@ from typing import Any
 import pytest
 
 from quill.core.radio.link_finder import PageScanResult, PageStreamCandidate
-from quill.ui.radio import link_finder_dialog as lfd
 from quill.ui.radio.link_finder_dialog import STILL_SCANNING, LinkFinderDialog
 
 
@@ -108,7 +107,14 @@ def test_scan_stays_enabled_and_a_second_press_is_answered(dialog: Any) -> None:
 
 def test_the_scan_asks_for_the_live_check(dialog: Any, monkeypatch: pytest.MonkeyPatch) -> None:
     asked: list[dict[str, Any]] = []
-    monkeypatch.setattr(lfd, "scan_page_for_streams", lambda url, **k: asked.append(k))
+    from quill.core.radio import link_finder
+    from quill.core.radio.link_finder import PageScanResult
+
+    def fake_scan(url: str, **k: Any) -> PageScanResult:
+        asked.append(k)
+        return PageScanResult("", "", [], checked=True)
+
+    monkeypatch.setattr(link_finder, "scan_page_for_streams", fake_scan)
     _scan(dialog)
     dialog.tasks.pending[0]["func"]()
     assert len(asked) == 1 and asked[0]["check_live"] is True and asked[0]["safe_mode"] is False
@@ -188,7 +194,7 @@ def test_a_failure_is_spoken(dialog: Any) -> None:
 
 def test_an_empty_address_is_spoken(dialog: Any) -> None:
     _scan(dialog, url="")
-    assert dialog.said == ["Type a website address first."]
+    assert dialog.said == ["Type a website address or a station name first."]
 
 
 def test_the_still_scanning_notice_is_silent_once_the_scan_is_over(dialog: Any) -> None:

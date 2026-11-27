@@ -22,6 +22,16 @@ SOUNDS_HELP = (
     "says is not changed. The Sound Scheme list still applies on top."
 )
 
+FALLBACK_LABEL = "Try other ways when a website has no stream"
+FALLBACK_HELP = (
+    "Off by default. When on, and Find Streams finds no playable stream on the "
+    "website you typed, it looks for the station in the public directories, Radio "
+    "Browser and IPRD, by the name in the address, and says which way found it. "
+    "A station name typed on its own is always looked up in the directories, "
+    "whatever this says. Nothing is contacted that Find Stations does not already "
+    "use, and Safe Mode contacts nothing."
+)
+
 
 class FindRows:
     """The rows, and what to do with their answers."""
@@ -37,10 +47,15 @@ class FindRows:
             PreferenceCheckbox(
                 SOUNDS_LABEL, SOUNDS_HELP, self._history.find_streams_sounds, group=GROUP
             ),
+            PreferenceCheckbox(
+                FALLBACK_LABEL, FALLBACK_HELP, self._history.find_streams_fallback, group=GROUP
+            ),
         ]
 
     def apply(self, checks: list[bool]) -> None:
-        (self._history.find_streams_sounds,) = (bool(value) for value in checks)
+        self._history.find_streams_sounds, self._history.find_streams_fallback = (
+            bool(value) for value in checks
+        )
 
 
 __all__ = ["GROUP", "FindRows"]

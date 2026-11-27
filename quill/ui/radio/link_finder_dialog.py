@@ -27,14 +27,16 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.radio import find_fallback as fb
 from quill.core.radio import find_streams_view as view
+from quill.core.radio.find_fallback_io import FoundResult
 from quill.core.radio.find_streams_text import (
     failure_sentence,
     scan_counts,
     status_label,
     summary_sentence,
 )
-from quill.core.radio.link_finder import PageStreamCandidate, scan_page_for_streams
+from quill.core.radio.link_finder import PageStreamCandidate
 from quill.core.radio.page_url import normalize_page_url
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
@@ -46,6 +48,7 @@ from quill.ui.radio.find_streams_cues import CuesMixin
 from quill.ui.radio.find_streams_find import FindMixin
 from quill.ui.radio.find_streams_last import LastResultsMixin
 from quill.ui.radio.find_streams_list import FindStreamsList
+from quill.ui.radio.find_streams_ways import LOOKING_UP, WaysMixin
 from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import stop_timer_on_destroy, surface_tasks
 
@@ -64,7 +67,7 @@ def _button(wx: Any, parent: Any, label: str, help_text: str, **kwargs: Any) -> 
     return button
 
 
-class LinkFinderDialog(FindMixin, LastResultsMixin, CuesMixin):
+class LinkFinderDialog(FindMixin, LastResultsMixin, CuesMixin, WaysMixin):
     """Scan a website for candidate stream links, and work with what it found.
 
     *host* is the app frame (QUILL's main frame or Quill Radio's): its
@@ -265,19 +268,23 @@ class LinkFinderDialog(FindMixin, LastResultsMixin, CuesMixin):
             return
         url = self._url_ctrl.GetValue().strip()
         if not url:
-            self._say("Type a website address first.")
+            self._say("Type a website address or a station name first.")
             return
+        url = self._what_to_look_up(url)
+        is_name = fb.typed_kind(url) == "name"
         # Shown, not said: the listener has just pressed Scan.
-        self._status.SetLabel(f"Scanning {url} and checking the links it finds...")
+        self._status.SetLabel(
+            LOOKING_UP.format(name=url)
+            if is_name
+            else f"Scanning {url} and checking the links it finds..."
+        )
         self._scanning = True
-        self._page_url = normalize_page_url(url)
+        self._page_url = "" if is_name else normalize_page_url(url)
         self._still_timer.StartOnce(STILL_SCANNING_SECONDS * 1000)
         self._start_cues()
 
         def _do_scan(**_kwargs: Any) -> Any:
-            return scan_page_for_streams(
-                url, safe_mode=self._safe_mode, check_live=True, on_checked=self._on_checked
-            )
+            return self._run_ways(url, self._on_checked)
 
         self._task_manager.submit(
             "radio-link-finder",
@@ -312,7 +319,10 @@ class LinkFinderDialog(FindMixin, LastResultsMixin, CuesMixin):
             # Said once focus has settled where emptying the list left it.
             self._say_after(failed, self._outcome_sound(failed=True, found=0), show=False)
             return
-        self._page_title = result.page_title
+        how = ""
+        if isinstance(result, FoundResult):  # the way that found it, when it is worth saying
+            how, result = result.how, result.scan
+        self._page_title = result.page_title or self._url_ctrl.GetValue().strip()
         self._favicon_url = result.favicon_url
         candidates: list[PageStreamCandidate] = list(result.candidates)
         counts = scan_counts(result)
@@ -332,6 +342,8 @@ class LinkFinderDialog(FindMixin, LastResultsMixin, CuesMixin):
             extra.append(view.order_sentence(self._state.order))
         if was_filtered:
             extra.append(FILTER_CLEARED)
+        if how:
+            extra.append(how)
         sentence = " ".join([summary_sentence(candidates, **counts), *extra])
         self._status.SetLabel(" ".join([status_label(candidates, **counts), *extra]))
         if not candidates:

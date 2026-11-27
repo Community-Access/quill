@@ -747,3 +747,77 @@ def test_a_reported_name_is_shown_and_spoken_while_checking(d: Any) -> None:
     d.dlg._task_manager.pending.pop()["on_success"](None, PageScanResult("W", "", [], checked=True))
     d.dlg._show_title("Late")  # after the scan: ignored
     assert d.dlg._status.GetLabel() != "Checking Late."
+
+
+# -- Other ways to find a stream -----------------------------------------------------
+
+
+def _directory_hit(name: str = "KEXP 90.3") -> Any:
+    from quill.core.radio.find_fallback_io import FoundResult
+
+    scan = PageScanResult("", "", [_c("http://rb.example/kexp", stream_name=name)], checked=True)
+    return FoundResult(scan, "Found by the public directories (Radio Browser and IPRD).")
+
+
+def test_a_typed_name_is_looked_up_not_scanned_and_says_which_way(d: Any, monkeypatch: Any) -> None:
+    seen: list[tuple[str, bool]] = []
+
+    def find(text: str, *, safe_mode: bool, fallback: bool, on_checked: Any) -> Any:
+        seen.append((text, fallback))
+        return _directory_hit()
+
+    monkeypatch.setattr("quill.ui.radio.find_streams_ways.io.find", find)
+    d.dlg._url_ctrl.ChangeValue("kexp")
+    d.dlg._on_scan(None)
+    assert d.dlg._status.GetLabel().startswith("Looking up kexp in the public directories")
+    task = d.dlg._task_manager.pending.pop()
+    task["on_success"](None, task["func"]())
+    assert seen == [("kexp", False)]
+    assert d.said[-1].endswith("Found by the public directories (Radio Browser and IPRD).")
+    assert d.dlg._page_url == "" and d.dlg._page_title == "kexp"
+
+
+def test_the_setting_reaches_the_scan(d: Any, monkeypatch: Any) -> None:
+    seen: list[bool] = []
+
+    def find(text: str, *, safe_mode: bool, fallback: bool, on_checked: Any) -> Any:
+        seen.append(fallback)
+        return _directory_hit()
+
+    monkeypatch.setattr("quill.ui.radio.find_streams_ways.io.find", find)
+    d.host._radio_history = SimpleNamespace(find_streams_fallback=True, recent_websites=())
+    d.dlg._url_ctrl.ChangeValue("https://www.kexp.org/")
+    d.dlg._on_scan(None)
+    d.dlg._task_manager.pending.pop()["func"]()
+    assert seen == [True]
+
+
+@pytest.mark.parametrize("answer", [True, False])
+def test_a_matching_recent_website_is_offered_and_yes_scans_it(
+    d: Any, monkeypatch: Any, answer: bool
+) -> None:
+    asked: list[str] = []
+    monkeypatch.setattr(d.dlg, "_ask_recheck", lambda site: asked.append(site) or answer)
+    d.host._radio_history = SimpleNamespace(
+        find_streams_fallback=False, recent_websites=("https://www.kexp.org/listen",)
+    )
+    ran: list[str] = []
+    monkeypatch.setattr(
+        "quill.ui.radio.find_streams_ways.io.find",
+        lambda text, **_k: ran.append(text) or _directory_hit(),
+    )
+    d.dlg._url_ctrl.ChangeValue("kexp")
+    d.dlg._on_scan(None)
+    d.dlg._task_manager.pending.pop()["func"]()
+    assert asked == ["https://www.kexp.org/listen"]
+    assert ran == (["https://www.kexp.org/listen"] if answer else ["kexp"])
+    assert d.dlg._url_ctrl.GetValue() == ("https://www.kexp.org/listen" if answer else "kexp")
+
+
+def test_no_recent_site_means_no_question(d: Any, monkeypatch: Any) -> None:
+    monkeypatch.setattr(d.dlg, "_ask_recheck", lambda site: pytest.fail("asked"))
+    monkeypatch.setattr(
+        "quill.ui.radio.find_streams_ways.io.find", lambda *a, **k: _directory_hit()
+    )
+    d.dlg._url_ctrl.ChangeValue("kexp")
+    d.dlg._on_scan(None)

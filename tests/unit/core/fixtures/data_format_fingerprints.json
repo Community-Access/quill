@@ -1599,6 +1599,7 @@
             "reminder_default_lead_seconds": "int",
             "reminder_sound": "bool",
             "find_streams_sounds": "bool",
+            "find_streams_fallback": "bool",
             "skip_silence": "bool",
             "recording_speed": "float",
             "youtube_speed": "float",

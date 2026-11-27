@@ -29,6 +29,15 @@ stream finder by Andre Louis (github.com/OnjLouis/StreamSift, MIT). Thank you.
   reports a name shows it ("Checking KEXP."), and the name is spoken at most once
   every two seconds. One new switch in Preferences, Play sounds while Find
   Streams searches, turns the three sounds off; the sentences are still said.
+- **Find Streams takes a station name, and can try other ways** (2026-11-27).
+  Type `kexp`, `bbcradio4` without spaces, or `kexp.mp3` with an ending, and the
+  public directories (Radio Browser and IPRD) are searched by name, ignoring
+  spaces and punctuation, instead of the name being sent to the website scanner.
+  A name that matches one of your recent websites first asks whether to check
+  that site again. A new setting, Try other ways when a website has no stream
+  (off by default), lets a website with no stream fall back to the directories.
+  The result always says which way found it. Quill Radio has no browser-assisted
+  way, so that step is not part of it.
 
 ### Recordings are kept safe through crashes, reconnects and Stop (2026-11-20)
 

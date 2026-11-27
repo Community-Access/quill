@@ -22,6 +22,11 @@ Ideas from StreamSift, a screen-reader-first stream finder by Andre Louis
   another for one that could not finish, and the name each stream reports shown
   (and spoken, at most every two seconds) while it is checked. One switch in
   Radio's Preferences turns the sounds off.
+- **Find Streams takes a station name, and can try other ways.** `kexp`,
+  `bbcradio4` without spaces and `kexp.mp3` with an ending are looked up in the
+  public directories by name. A name that matches a recent website offers to
+  check that site again. A new setting, off by default, lets a website with no
+  stream fall back to the directories, and the result says which way found it.
 
 ### Unsent GitHub drafts say what they are, and go once the issue exists (2026-11-24)
 

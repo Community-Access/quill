@@ -269,6 +269,11 @@ class RadioHistory:
     #: one for a search that could not finish. On by default; the words are said
     #: either way. An idea from StreamSift.
     find_streams_sounds: bool = True
+    #: Find Streams' other ways (quill.core.radio.find_fallback): when the
+    #: website has no playable stream, try the public directories, and say which
+    #: way found the result. Off by default, so nobody's search starts contacting
+    #: more places after an update. An idea from StreamSift.
+    find_streams_fallback: bool = False
     #: Skip Silence for bounded playback (11.7): long pauses in a recording,
     #: a YouTube row or a podcast episode are shortened as it plays. The
     #: engine has always been able to do this (audio_enhance's Smart Speed

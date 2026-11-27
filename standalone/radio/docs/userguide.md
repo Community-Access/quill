@@ -3472,6 +3472,20 @@ seconds, so fifty links are not fifty sentences. To turn the three sounds off,
 clear **Play sounds while Find Streams searches** under Find Streams in
 Preferences (Ctrl+,). The sentences are still said.
 
+**Typing a name, and other ways to find it.** The address box also takes a
+station's name. Type `kexp`, `bbcradio4` without spaces, or `kexp.mp3` with an
+ending, and Quill Radio looks the name up in the public directories, Radio
+Browser and IPRD, ignoring spaces and punctuation, and checks each stream it
+finds as it does for a website. If the name is one of your recent websites, it
+first asks "Check it again?" Yes scans that site; No looks the name up. The
+result says which way found it: "Found by the public directories (Radio Browser
+and IPRD)." To have a website that has no stream fall back to the directories
+too, turn on **Try other ways when a website has no stream** under Find Streams
+in Preferences. It is off by default, and then it says "The website had none, so
+these were found by the public directories." Quill Radio has no browser-assisted
+way of finding a stream, so that step is not part of it. Safe Mode contacts
+nothing.
+
 This works for many stations whose Listen Live button is a web player. For
 Triton Digital and StreamTheWorld players, including the whole
 `player.listenlive.co` network, Quill Radio reads the station's call letters

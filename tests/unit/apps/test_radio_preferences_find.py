@@ -21,8 +21,9 @@ def test_the_switch_is_on_by_default_and_round_trips(tmp_path: Path) -> None:
 def test_the_preferences_row_reads_and_writes_it() -> None:
     history = RadioHistory()
     rows = FindRows(SimpleNamespace(_radio_history=history))
-    (row,) = rows.checkboxes()
-    assert row.name == SOUNDS_LABEL and row.group == GROUP and row.value is True
-    assert "&" not in row.name  # no access key: the dialog has no letter left
-    rows.apply([False])
-    assert history.find_streams_sounds is False
+    sounds, fallback = rows.checkboxes()
+    assert sounds.name == SOUNDS_LABEL and sounds.group == GROUP and sounds.value is True
+    assert fallback.value is False  # the other ways are off until asked for
+    assert "&" not in sounds.name + fallback.name  # no access key: no letter left
+    rows.apply([False, True])
+    assert history.find_streams_sounds is False and history.find_streams_fallback is True
