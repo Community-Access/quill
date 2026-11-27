@@ -294,20 +294,24 @@ class LiteScribeHost:
             )
 
 
+def lite_controller(app: Any) -> Any:
+    """QUILL Lite's one Scribe controller, for the app rather than a window."""
+    from quill.ui.scribe_controller import controller_for
+
+    host = getattr(app, "_scribe_host", None)
+    if host is None:
+        host = LiteScribeHost(app)
+        app._scribe_host = host
+    return controller_for(host)
+
+
 class DocumentScribeMixin(ScribeEntryPoints):
     """File > Scribe for Documents in a QUILL Lite window."""
 
     # -- the shared commands' hooks --------------------------------------
 
     def _scribe(self) -> Any:
-        from quill.ui.scribe_controller import controller_for
-
-        app = self.app  # type: ignore[attr-defined]
-        host = getattr(app, "_scribe_host", None)
-        if host is None:
-            host = LiteScribeHost(app)
-            app._scribe_host = host
-        return controller_for(host)
+        return lite_controller(self.app)  # type: ignore[attr-defined]
 
     def _scribe_frame(self) -> Any:
         return self
