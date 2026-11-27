@@ -250,29 +250,51 @@ this project adheres to <a
 href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <h2 id="unreleased">[Unreleased]</h2>
 <ul>
-<li><strong>Before the first place, the window says how to add
+<li><p><strong>You can tell “no alerts” from “could not reach the
+service”</strong> (2026-11-27). Before, a failed check was silent, which
+sounded exactly like a quiet sky. Now a failed check is never treated as
+no alerts: it does not clear the alerts you already had and it never
+says all clear. If checks keep failing for about ten minutes (sooner
+while an alert is active), Quill Weather says once, “Quill Weather
+cannot reach the National Weather Service. Alerts may be missing. The
+last successful check was at 3:12 PM, and it found no alerts.” It
+repeats only after about half an hour of still failing, and says once
+when it recovers. The background check shows the same as a notification,
+and the tray tooltip shows the state. When monitoring starts, a place
+that could not be checked is named as unchecked rather than counted as
+clear.</p></li>
+<li><p><strong>Weather menu &gt; Alert Feed Status</strong>
+(Ctrl+Alt+Shift+H) is a new report, with Copy, of how the alert feed is
+doing for each place you watch: the state, the last successful check,
+the last attempt, what went wrong in plain words, and the last alerts
+the service provided, marked last known when they are old. In Safe Mode
+it says network checks are off, not that the service is
+unreachable.</p></li>
+<li><p><strong>Before the first place, the window says how to add
 one</strong> (FUX-09, 2026-11-24). It used to speak “Add a weather
 location to begin monitoring.” while the window was still being built.
 Now a <strong>Getting started</strong> line says “No weather location
 yet. Add Location (Ctrl+Alt+Shift+L) finds a US place by ZIP code, city
 or address, over the internet.”, and the window opens with focus on it,
 and goes as soon as you have a place. An empty Weather Center shows the
-same with its own button’s key, Alt+A, and opens on Add Location.</li>
-<li><strong>The Weather Center keeps your place</strong> (FUX-06,
+same with its own button’s key, Alt+A, and opens on Add
+Location.</p></li>
+<li><p><strong>The Weather Center keeps your place</strong> (FUX-06,
 2026-11-23). Refresh used to empty all four lists and put each detail
 box on the first row with nothing selected. Now each list keeps the
 alert, period, hour or day you were on, and its details. An alert you
 were on that expired is named once at the end of the summary, and you
 land on its neighbour. A slow answer for the place you chose before is
 ignored, and redrawing after Settings says the summary again only when
-it changed.</li>
-<li><strong>The alert sound’s Play button stops</strong> (FUX-08,
+it changed.</p></li>
+<li><p><strong>The alert sound’s Play button stops</strong> (FUX-08,
 2026-11-24). In Weather Settings, <strong>Play</strong> pressed again,
 or Escape, stops the alert sound, repeats and all, and Escape then
 leaves the window open. Closing Weather Settings stops it too. Before,
 with a repeat count above one, the sound could not be stopped, it went
 on after the window closed, and each press of Play started another set
-of repeats on top. Stopping a preview never cuts off a real alert.</li>
+of repeats on top. Stopping a preview never cuts off a real
+alert.</p></li>
 </ul>
 <h2 id="221---2026-10-08">[2.2.1] - 2026-10-08</h2>
 <p>Current build: <strong>2.2.1 (build 2)</strong>. Build 2 keeps

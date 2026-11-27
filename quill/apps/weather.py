@@ -523,24 +523,24 @@ def _run_headless_check() -> int:
     def _fetch(latitude: float, longitude: float) -> list:
         return nws.active_alerts(latitude, longitude, safe_mode=safe_mode)
 
+    notices: list = []
     try:
-        result = headless_check.run_check(data_dir, fetch_alerts=_fetch, safe_mode=safe_mode)
+        result = headless_check.run_check(
+            data_dir, fetch_alerts=_fetch, safe_mode=safe_mode, on_notice=notices.append
+        )
     except Exception:  # noqa: BLE001 - offline / transient: try again next tick
-        return 0
-    if result.new_alerts:
-        from quill.core.weather import locations as loc_store
-        from quill.core.weather import settings as settings_mod
+        result = None
+    toast = headless_check.final_toast(data_dir, result, notices)
+    if toast is not None:
+        if result is not None and result.new_alerts:
+            from quill.core.weather import settings as settings_mod
 
-        settings = settings_mod.load_settings(data_dir)
-        if settings.alert_sound_enabled:
-            from quill.platform import alert_sound
+            settings = settings_mod.load_settings(data_dir)
+            if settings.alert_sound_enabled:
+                from quill.platform import alert_sound
 
-            alert_sound.play_alert_sound(settings.alert_sound_path, settings.alert_sound_repeat)
-        store = loc_store.load_locations(data_dir)
-        primary = store.primary()
-        label = result.location_label or (primary.label if primary is not None else "your area")
-        title, body = headless_check.toast_content(result.new_alerts, label)
-        _show_alert_toast(title, body)
+                alert_sound.play_alert_sound(settings.alert_sound_path, settings.alert_sound_repeat)
+        _show_alert_toast(*toast)
     return 0
 
 

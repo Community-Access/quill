@@ -19,6 +19,8 @@ from quill.core.radio import wxindex
 from quill.core.radio.models import RadioStation
 from quill.core.radio.wxindex_models import local_noaa_radio_station
 from quill.core.sound_events import SoundEvent
+from quill.ui.main_frame_weather_cues import WeatherCuesMixin
+from quill.ui.main_frame_weather_health import WeatherHealthMixin
 
 _SAFE_MODE_WEATHER = (
     "Weather is a network service and is turned off in Safe Mode. "
@@ -26,7 +28,7 @@ _SAFE_MODE_WEATHER = (
 )
 
 
-class WeatherMixin:
+class WeatherMixin(WeatherHealthMixin, WeatherCuesMixin):
     # Attributes provided by the host frame.
     frame: Any
     _wx: Any
@@ -72,7 +74,7 @@ class WeatherMixin:
         menu.Append(quick_id, "&Quick Weather\tCtrl+Shift+Q")
         menu.Append(alerts_id, "Active &Alerts...\tCtrl+Shift+Alt+A")
         menu.AppendSeparator()
-        test_id = wx.NewIdRef()
+        test_id, feed_id = wx.NewIdRef(), wx.NewIdRef()
         menu.Append(add_id, "A&dd Location...\tCtrl+Alt+Shift+L")
         menu.Append(settings_id, "&Settings...\tCtrl+Alt+Shift+F")
         menu.Append(test_id, "&Test Alert (preview sound, tray, and dialog)\tCtrl+Alt+Shift+T")
@@ -95,6 +97,7 @@ class WeatherMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_weather_add_location(), id=add_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_weather_settings(), id=settings_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.weather_test_alert(), id=test_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_weather_feed_status(), id=feed_id)
 
         # Monitor state is initialized unconditionally so the app's startup path
         # (start_weather_monitoring_if_enabled) is always safe, even when the
@@ -111,6 +114,9 @@ class WeatherMixin:
         self._weather_monitor_round_pending = 0
         self._weather_monitor_round_active = False
         self._weather_monitor_baseline_counts: dict[str, int] = {}
+        #: Places whose very first check failed this round (id -> label): the
+        #: start summary says they could not be checked instead of leaving them out.
+        self._weather_monitor_unchecked: dict[str, str] = {}
         self._weather_monitor_menu_item = None
         self._weather_monitor_pause_item = None
         if self._weather_area_enabled("monitoring"):
@@ -570,8 +576,15 @@ class WeatherMixin:
         if getattr(self, "_weather_monitor_paused", False):
             return  # paused mid-flight: stay quiet, do not re-arm
         try:
-            if not isinstance(result, list):
-                return  # a transient fetch error (e.g. offline); try again next tick
+            # Record what came back before anything else. A failure is *never*
+            # an empty answer: it leaves this place's state and last known
+            # alerts alone, so nothing is cleared and no all-clear is spoken.
+            succeeded = self._weather_health_record(location, result)
+            if not succeeded or not isinstance(result, list):
+                if not state.primed:
+                    self._weather_monitor_unchecked[location.id] = location.label
+                return  # a missed poll, never the end; try again next tick
+            self._weather_monitor_unchecked.pop(location.id, None)
             update = monitor.apply_poll(state, result)
             # Persist the union of every watched place's seen ids, so the
             # OS-scheduled background check never re-toasts an alert this window
@@ -617,64 +630,13 @@ class WeatherMixin:
 
         config = getattr(self, "_weather_monitor_config", None)
         counts = self._weather_monitor_baseline_counts
-        if counts and config is not None:
-            # Every place baselined this round -> the start round. Speak it once.
-            self._announce(monitor.start_summary_multi(dict(counts), config))
+        failed = dict(self._weather_monitor_unchecked)
+        if (counts or failed) and config is not None:
+            # Every place answered or failed its first check -> the start round.
+            # Speak it once; a place that could not be checked is never counted clear.
+            notes = self._weather_health_unchecked_notes(failed) if failed else None
+            self._announce(monitor.start_summary_multi(dict(counts), config, notes))
             self._weather_monitor_baseline_counts = {}
+            self._weather_monitor_unchecked = {}
+        self._weather_health_round_end()
         self._schedule_next_monitor_poll(self._weather_monitor_round_active)
-
-    # -- test alert (preview the whole experience) --------------------------
-
-    def weather_test_alert(self) -> None:
-        """Weather > Test Alert: let the user preview exactly what a real alert
-        does -- the spoken/shown text, the sound, a system-tray toast, and the
-        alert dialog -- all clearly marked as a TEST and dismissable. Does not
-        touch the network or the monitor's real state."""
-        headline = "This is a TEST of Quill Weather alerts. No action is needed."
-        # 1) The sound cue (honoring the user's enable + custom-file choice, so
-        #    the test reflects what they have actually configured).
-        self._play_weather_alert_sound()
-        # 2) Spoken, forced so it interrupts like a real urgent alert would,
-        #    led by the same earcon a real new alert posts (#1302) -- the
-        #    point of the preview is that it sounds exactly like the real thing.
-        self._announce(
-            f"Test weather alert. {headline}", force=True, sound=SoundEvent.WEATHER_ALERT
-        )
-        # 3) A system-tray toast, marked as a test.
-        self._show_weather_toast(
-            "[TEST] Weather alert", "This is a test of Quill Weather alerts. No action is needed."
-        )
-        # 4) The alert dialog, dismissable.
-        body = (
-            "TEST WEATHER ALERT\n\n"
-            f"{headline}\n\n"
-            "Severity Severe, urgency Expected, certainty Observed. (Sample values.)\n"
-            "Area: your area (test).\n\n"
-            "Instructions: This is only a test. When a real alert is issued, its official "
-            "instructions appear here -- follow them.\n\n"
-            "This preview shows how a real National Weather Service alert would be announced, "
-            "sounded, shown in the system tray, and displayed. Select OK to dismiss it."
-        )
-        self._show_message_box(body, "Test Weather Alert", self._wx.OK | self._wx.ICON_INFORMATION)
-
-    def _show_weather_toast(self, title: str, body: str) -> None:
-        """Show a Windows notification-area toast (screen readers announce it).
-        Best-effort; a toast failure never disrupts the rest of the alert."""
-        from quill.ui.toast import show_toast
-
-        show_toast(title, body, parent=self.frame, icon=self._wx.ICON_WARNING)
-
-    def _play_weather_alert_sound(self) -> None:
-        """Play the alert cue for a newly-issued alert, honoring the user's
-        enable toggle and custom-sound choice. Best-effort; never raises."""
-        from quill.core.weather import settings as settings_mod
-
-        try:
-            settings = settings_mod.load_settings(self._weather_data_dir())
-            if not settings.alert_sound_enabled:
-                return
-            from quill.platform import alert_sound
-
-            alert_sound.play_alert_sound(settings.alert_sound_path, settings.alert_sound_repeat)
-        except Exception:  # noqa: BLE001 - a sound must never disrupt the alert
-            pass

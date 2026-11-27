@@ -1976,13 +1976,15 @@ Control coverage: 44 audited sites (44 helped).
 
 ## Quill Weather
 
-Control coverage: 40 audited sites (40 helped).
+Control coverage: 43 audited sites (43 helped).
 
 ### Every window, and what it is for
 
 **AI Usage.** How much each AI you have set up has been used, one sentence each, and whose count it is. Manage Usage opens the selected one's own page.
 
 **Add Weather Location.** Save a new place to watch. Type a ZIP code, city, county, or address and press Search; the matching places come back as a list so same-named towns are told apart, and Add Selected saves the one you choose. A bare latitude,longitude pair resolves to that exact point with no search.
+
+**Alert Feed Status.** Whether Quill Weather can reach the National Weather Service, and the last alerts it was given. For each place you watch it says the state, the last successful check, the last attempt and, when a check failed, what went wrong in plain words. A check that failed is never the same as no alerts: alerts shown from before are marked last known. Copy puts the report on the clipboard.
 
 **Ask.** A conversation about the weather, on whichever AI is in use: your primary place's name, never its coordinates, the current conditions, the next hours, the forecast and any active alerts by their official names go with every message. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. Quick questions holds Do I need a coat at 5? and a few more.
 
@@ -2016,6 +2018,11 @@ Control coverage: 40 audited sites (40 helped).
 - `self._name`: What Quill Weather should call this place -- Home, Work, Mom's -- in lists, reports, and spoken alerts. Optional: left empty, the place's own name from the search result is used.
 - `self._add_btn`: Save the highlighted place to your locations and close this window. Enabled once the results list has something chosen; the first location you save becomes the primary one.
 - `cancel_btn`: Close without saving anything. Escape does the same.
+#### FeedStatusDialog (`quill/ui/weather/feed_status_dialog.py`)
+
+- `self._box`: A read-only report. For each watched place it gives the state of the alert feed, the last successful check, the last attempt, what went wrong in plain words, and the last alerts the service provided, marked last known when they are old. Use the arrow keys to read it.
+- `copy_btn`: Copy the whole report to the clipboard.
+- `close_btn`: Close this window. Escape does the same.
 #### WeatherSettingsDialog (`quill/ui/weather/settings_dialog.py`)
 
 - `self._temp`: The scale every temperature is shown and spoken in: Fahrenheit (the default) or Celsius. It applies everywhere -- current conditions, forecasts, and the Quick Weather line.

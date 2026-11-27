@@ -89,6 +89,13 @@ PURPOSES: dict[str, str] = {
         "the app is doing -- never which key you pressed -- and moves you on by "
         "itself."
     ),
+    "Alert Feed Status": (
+        "Whether Quill Weather can reach the National Weather Service, and the last alerts "
+        "it was given. For each place you watch it says the state, the last successful "
+        "check, the last attempt and, when a check failed, what went wrong in plain words. "
+        "A check that failed is never the same as no alerts: alerts shown from before are "
+        "marked last known. Copy puts the report on the clipboard."
+    ),
     "Weather Center": (
         "The full text weather report for one location at a time, in "
         "reading order: active alerts first, then current conditions, the "

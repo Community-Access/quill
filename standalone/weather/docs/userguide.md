@@ -89,6 +89,28 @@ and Reno. All clear right now." The status line and the main window say either
 the one place's name or "for 3 places". (Picking exactly which of your saved
 places to watch is coming; today the watch covers all of them.)
 
+### How do I know alerts are working?
+
+Silence from a weather watcher can mean two very different things: there are no
+alerts, or Quill Weather could not reach the National Weather Service. Quill
+Weather tells them apart, and it never says all clear after a check that failed.
+
+- **Weather menu > Alert Feed Status** (Ctrl+Alt+Shift+H) opens a report you can read
+  with the arrow keys and copy. For each place you watch it gives the state (working,
+  having trouble, cannot be reached, not checked yet), the last successful check, the
+  last attempt, what went wrong in plain words, and the last alerts the service
+  provided. Alerts from before a failed check are marked **last known**.
+- If checks keep failing for about ten minutes (sooner while an alert is active), you
+  hear once: "Quill Weather cannot reach the National Weather Service. Alerts may be
+  missing. The last successful check was at 3:12 PM, and it found no alerts." You are
+  reminded only after about half an hour of still failing, and told once when it
+  recovers. The background check says the same with a notification, and the tray
+  tooltip shows the state.
+- When monitoring starts, a place that could not be checked is named as unchecked
+  instead of being counted as clear.
+- In Safe Mode the report says network checks are off. That is a choice you made,
+  not a service problem.
+
 ## Customizing features
 
 **Options > Customize Features...** lists the app's switchable areas -- **Alert

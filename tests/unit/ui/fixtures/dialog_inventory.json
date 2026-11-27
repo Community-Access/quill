@@ -1121,6 +1121,7 @@
   "quill/ui/vision_prompt_manager_dialog.py::VisionPromptManagerDialog._show_prompt_editor::wx.Dialog": "hardened_custom",
   "quill/ui/voice_browser_dialog.py::VoiceBrowserDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/weather/add_location_dialog.py::AddLocationDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/weather/feed_status_dialog.py::FeedStatusDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/weather/settings_dialog.py::WeatherSettingsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/weather/settings_dialog.py::WeatherSettingsDialog._choose_alert_sound::wx.FileDialog": "native",
   "quill/ui/weather/weather_center_dialog.py::WeatherCenterDialog.__init__::wx.Dialog": "hardened_custom",

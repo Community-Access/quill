@@ -499,6 +499,8 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         "weather.add_location": "Ctrl+Alt+Shift+L",
         "weather.settings": "Ctrl+Alt+Shift+F",
         "weather.test_alert": "Ctrl+Alt+Shift+T",
+        # Alert Feed Status (H for health); Studio's H is another app's window.
+        "weather.feed_status": "Ctrl+Alt+Shift+H",
         "weather.monitor_toggle": "Ctrl+Alt+Shift+M",
         "weather.monitor_pause": "Ctrl+Alt+Shift+P",
         "weather.noaa_listen": "Ctrl+Alt+N",

@@ -169,13 +169,24 @@ def start_summary(location_label: str, current: list[WeatherAlert], config: Moni
     )
 
 
-def start_summary_multi(active_counts: dict[str, int], config: MonitorConfig) -> str:
+def start_summary_multi(
+    active_counts: dict[str, int],
+    config: MonitorConfig,
+    unchecked: dict[str, str] | None = None,
+) -> str:
     """The one-time spoken line when monitoring several places at once.
 
     ``active_counts`` maps each watched location's label to how many alerts it
     currently has. Names the places, says which are clear and which are not, and
     ends with the cadence -- one warm sentence, however many places you watch.
+
+    ``unchecked`` maps the label of each place whose check *failed* to a short
+    note about its last good check ("" when there was none). A failed place is
+    never counted as clear: the summary says it could not be checked, and a line
+    that would have said "all clear" says so only for the places that answered.
     """
+    if unchecked:
+        return _start_summary_with_failures(active_counts, config, unchecked)
     labels = list(active_counts)
     if not labels:
         return "Weather monitoring is on, but no locations are set to watch yet."
@@ -203,6 +214,35 @@ def start_summary_multi(active_counts: dict[str, int], config: MonitorConfig) ->
     return (
         f"Weather monitoring on for {len(labels)} places: {places}. "
         f"{total} active alert{plural} right now, at {where}. {cadence}."
+    )
+
+
+def _start_summary_with_failures(
+    active_counts: dict[str, int], config: MonitorConfig, unchecked: dict[str, str]
+) -> str:
+    """The start line when at least one place could not be checked."""
+    cadence = config.cadence_phrase()
+    failed = list(unchecked)
+    notes = " ".join(f"{note}" for note in unchecked.values() if note)
+    if not active_counts:
+        where = _join_places(failed)
+        return (
+            f"Weather monitoring is on for {where}, but Quill Weather could not reach the "
+            "National Weather Service, so it does not know whether there are alerts. "
+            f"{notes + ' ' if notes else ''}It will keep trying and tell you if alerts may be "
+            f"missing. {cadence}."
+        )
+    ok_labels = list(active_counts)
+    total = sum(active_counts.values())
+    if total:
+        plural = "" if total == 1 else "s"
+        alerting = _join_places([lbl for lbl, n in active_counts.items() if n > 0])
+        state = f"{total} active alert{plural} right now, at {alerting}"
+    else:
+        state = "No active alerts at " + _join_places(ok_labels)
+    return (
+        f"Weather monitoring is on. {state}. Could not check {_join_places(failed)} just now, "
+        f"so its alerts are unknown. {notes + ' ' if notes else ''}{cadence}."
     )
 
 

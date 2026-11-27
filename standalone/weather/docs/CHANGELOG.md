@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **You can tell "no alerts" from "could not reach the service"** (2026-11-27).
+  Before, a failed check was silent, which sounded exactly like a quiet sky. Now
+  a failed check is never treated as no alerts: it does not clear the alerts you
+  already had and it never says all clear. If checks keep failing for about ten
+  minutes (sooner while an alert is active), Quill Weather says once, "Quill
+  Weather cannot reach the National Weather Service. Alerts may be missing. The
+  last successful check was at 3:12 PM, and it found no alerts." It repeats only
+  after about half an hour of still failing, and says once when it recovers. The
+  background check shows the same as a notification, and the tray tooltip shows
+  the state. When monitoring starts, a place that could not be checked is named
+  as unchecked rather than counted as clear.
+- **Weather menu > Alert Feed Status** (Ctrl+Alt+Shift+H) is a new report, with
+  Copy, of how the alert feed is doing for each place you watch: the state, the
+  last successful check, the last attempt, what went wrong in plain words, and
+  the last alerts the service provided, marked last known when they are old. In
+  Safe Mode it says network checks are off, not that the service is unreachable.
+
 - **Before the first place, the window says how to add one** (FUX-09,
   2026-11-24). It used to speak "Add a weather location to begin monitoring."
   while the window was still being built. Now a **Getting started** line says

@@ -133,7 +133,7 @@ The reason this app exists: a watch that speaks a warning the moment it is issue
 
 Turn on Weather Monitoring, hear what it says as it starts, and know precisely what it is watching and how often.
 
-*6 steps, about 5 minutes.*
+*7 steps, about 5 minutes.*
 
 1. **Turn it on.** Weather Monitoring -- the Weather Guardian -- watches your saved places' official watches, warnings and advisories and speaks each new one the moment it is issued. The same key turns it off, and the menu item says which it will do.
    - Keys: Ctrl+Alt+Shift+M
@@ -152,7 +152,11 @@ Turn on Weather Monitoring, hear what it says as it starts, and know precisely w
    - Keys: Ctrl+Alt+Shift+P
    - You should hear: Alert checks paused -- and the menu item now offering to resume.
 
-6. **Know that it comes back by itself.** Monitoring keeps running while the window is in the tray, and starts again automatically the next time you launch. Choosing Stop Weather Monitoring is what turns it off for good.
+6. **Know the difference between quiet and cannot reach.** Alert Feed Status says whether Quill Weather can reach the National Weather Service, when the last check worked, and the last alerts it was given. A check that failed is never treated as no alerts: if checks keep failing you are told once that alerts may be missing, and told again when it recovers.
+   - Keys: Ctrl+Alt+Shift+H
+   - You should hear: A one-sentence state, then the report: the last successful check, per place.
+
+7. **Know that it comes back by itself.** Monitoring keeps running while the window is in the tray, and starts again automatically the next time you launch. Choosing Stop Weather Monitoring is what turns it off for good.
    - You should hear: At the next launch: the same combined summary as when you started it.
 
 The watch is the app. Everything else here is about making sure it reaches you.
