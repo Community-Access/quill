@@ -1379,7 +1379,7 @@ Control coverage: 308 audited sites (11 help-elsewhere, 297 helped).
 - `self._save_btn`: Writes the chapter and tag edits into the MP3 in place -- only the tags are rewritten, the audio is untouched. An M4B cannot be rewritten in place, so this button is disabled for one; use Save As instead.
 - `save_as_btn`: Saves the edited book as a new file, losslessly, leaving the original alone. For an M4B this is the only save; the audio is copied without re-encoding.
 - `self._publish_btn`: Opens the Publish window for this book: a local podcast feed file, an SFTP upload, or Auphonic post-production. Unsaved chapter edits must be saved first.
-- `close_btn`: Closes the Workbench, remembering your listening position. Unsaved chapter or tag edits are discarded -- press Save or Save As first to keep them.
+- `close_btn`: Closes the Workbench, remembering your listening position. With chapter or tag edits unsaved, it first asks whether to save or discard them.
 #### SilenceParamsDialog (`quill/ui/audio_studio/chapter_workbench_dialogs.py`)
 
 - `self._noise`: How quiet the audio must be to count as silence, in decibels; -60 to -10 in steps of 1, default -30. Lower the number to make the scan more sensitive (it will find more, quieter pauses); raise it for noisy recordings so room hiss stops counting as silence.
