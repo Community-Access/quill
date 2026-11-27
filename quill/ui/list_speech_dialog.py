@@ -62,29 +62,32 @@ class ListSpeechDialog:
         panel = wx.Panel(self.dialog)
         root = wx.BoxSizer(wx.VERTICAL)
 
-        def labelled(text: str, control: Any) -> None:
+        def labelled(text: str, make: Callable[[], Any]) -> Any:
+            # The label is created first so it precedes its control in tab and
+            # reading order (A11Y-Z-ORDER).
             root.Add(wx.StaticText(panel, label=text), 0, wx.LEFT | wx.TOP, 8)
+            control = make()
             root.Add(control, 0, wx.EXPAND | wx.ALL, 6)
+            return control
 
-        self._types = wx.Choice(panel, choices=[t.title for t in LIST_TYPES])
+        self._types = labelled(
+            "&List:", lambda: wx.Choice(panel, choices=[t.title for t in LIST_TYPES])
+        )
         self._types.SetName("List type")
         self._types.SetHelpText("Which kind of list these choices are for.")
-        labelled("&List:", self._types)
-        self._source = wx.Choice(panel, choices=[])
+        self._source = labelled("&Template:", lambda: wx.Choice(panel, choices=[]))
         self._source.SetName("Template")
         self._source.SetHelpText(
             "The usual wording, a built-in preset (Brief, Balanced or Detailed) or a template "
             "you saved. Changing the fields below turns it into a custom template."
         )
-        labelled("&Template:", self._source)
 
-        self._fields = wx.ListBox(panel, choices=[])
+        self._fields = labelled("Fields in spoken &order:", lambda: wx.ListBox(panel, choices=[]))
         self._fields.SetName("Fields in spoken order")
         self._fields.SetHelpText(
             "The fields a row says, first to last. Alt+Up and Alt+Down move the selected field, "
             "and Delete removes it."
         )
-        labelled("Fields in spoken &order:", self._fields)
         moves = wx.BoxSizer(wx.HORIZONTAL)
         self._up = self._button(panel, "Move &Up", "Moves the selected field earlier in the row.")
         self._down = self._button(panel, "Move &Down", "Moves the selected field later.")
@@ -93,33 +96,39 @@ class ListSpeechDialog:
             moves.Add(button, 0, wx.RIGHT, 6)
         root.Add(moves, 0, wx.LEFT | wx.BOTTOM, 8)
 
-        self._picker = wx.Choice(panel, choices=[])
+        self._picker = labelled("Choose &field:", lambda: wx.Choice(panel, choices=[]))
         self._picker.SetName("Field to add")
         self._picker.SetHelpText("A field this list offers that the row does not say yet.")
-        labelled("Choose &field:", self._picker)
         self._add = self._button(panel, "&Add", "Adds the chosen field at the end of the row.")
         root.Add(self._add, 0, wx.LEFT | wx.BOTTOM, 8)
 
         names = [name for _text, name in SEPARATOR_CHOICES]
-        self._separator = wx.Choice(panel, choices=[*names, _CUSTOM_SEPARATOR])
+        self._separator = labelled(
+            "Separator (&between fields):",
+            lambda: wx.Choice(panel, choices=[*names, _CUSTOM_SEPARATOR]),
+        )
         self._separator.SetName("Separator")
         self._separator.SetHelpText("What is said between one field and the next.")
-        labelled("Separator (&between fields):", self._separator)
         self._labels = wx.CheckBox(panel, label="Say field la&bels")
         self._labels.SetHelpText("Introduces a value with its name, such as author or updated.")
         self._omit = wx.CheckBox(panel, label="Leave out &empty fields")
         self._omit.SetHelpText("Skips a field that has no value. Off speaks the text below.")
         root.Add(self._labels, 0, wx.LEFT | wx.TOP, 8)
         root.Add(self._omit, 0, wx.LEFT | wx.TOP, 8)
-        self._fallback = wx.TextCtrl(panel)
+        self._fallback = labelled("Empty-field te&xt:", lambda: wx.TextCtrl(panel))
         self._fallback.SetName("Text for an empty field")
         self._fallback.SetHelpText("Said in place of an empty field when empty fields are kept.")
-        labelled("Empty-field te&xt:", self._fallback)
 
-        self._preview = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 60))
+        self._preview = labelled(
+            "Sample row &preview:",
+            lambda: wx.TextCtrl(
+                panel,
+                style=wx.TE_MULTILINE | wx.TE_READONLY,
+                size=wx.Size(-1, self.dialog.FromDIP(60)),
+            ),
+        )
         self._preview.SetName("Sample row preview")
         self._preview.SetHelpText("A sample row exactly as this template would say it.")
-        labelled("Sample row &preview:", self._preview)
         self._hear = self._button(panel, "&Hear Preview", "Says the sample row aloud.")
         root.Add(self._hear, 0, wx.LEFT | wx.BOTTOM, 8)
 
