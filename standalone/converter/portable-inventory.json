@@ -156,6 +156,8 @@
     "mpv"
   ],
   "optional": [
+    "numpy",
+    "numpy.libs",
     "optilabcore-license.txt",
     "optilabcore-notice.txt",
     "quill-optilab.exe"
