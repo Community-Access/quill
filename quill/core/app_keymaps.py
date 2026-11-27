@@ -22,6 +22,7 @@ from quill.core.family_chords import SHOW_HIDE_DEFAULTS
 from quill.core.keymap import DEFAULT_KEYMAP
 from quill.core.radio.dial_tuning import DIAL_KEYS
 from quill.core.radio.song_marks import SONG_MARK_KEYS
+from quill.core.radio.streamsift_keys import STREAMSIFT_KEYS
 from quill.core.wordpress.workbench_keymaps import WORKBENCH_KEYMAPS
 
 #: app id -> {command id: binding}.
@@ -193,6 +194,7 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         "radio.forward": "Ctrl+Shift+Right",
         "radio.jump_to_live": "Ctrl+Shift+L",
         **SONG_MARK_KEYS,  # song marks and per-station length: song_marks.py
+        **STREAMSIFT_KEYS,  # Play Random and the StreamSift ideas: streamsift_keys.py
         # Identify This Song (AcoustID, 2026-10-15). Not Ctrl+Alt+Shift+R,
         # which looks free on this bar only because it is Radio's own
         # system-wide show/hide key. Ctrl+K is one of the few plain Ctrl

@@ -938,6 +938,13 @@ rather than something to learn.
   newest YouTube helper.
 - **Find Streams from a Website...** (Ctrl+Alt+S): look through a station's web
   page for its stream.
+- **Play Random Station** (Ctrl+Shift+O) and **Play Random Favorite**
+  (Ctrl+Alt+Shift+Q): put something on without choosing. Play Random Station
+  picks from the list you last searched or scanned, and from your favorites when
+  none is open; Play Random Favorite always picks from your favorites. It never
+  plays the same station twice in a row when there is a choice, and says what it
+  picked and where from, for example "Playing KEXP, picked at random from 12
+  favorites."
 - **Clear Recent Searches...** (Ctrl+Alt+Shift+Backspace): forget the station
   searches and the websites Quill Radio remembers. It asks first, and No is the
   default; no station or favorite is removed.
@@ -8726,6 +8733,8 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | Find in this folder (inside Browse Stations) | Ctrl+F |
 | Add Custom Station | Ctrl+N |
 | Find Streams from a Website | Ctrl+Alt+S |
+| Play Random Station | Ctrl+Shift+O |
+| Play Random Favorite | Ctrl+Alt+Shift+Q |
 | Search Sources | Ctrl+Alt+Shift+U |
 | Choose Browse Sources | Ctrl+Shift+Alt+O |
 | Update Station Catalog | Ctrl+Alt+Shift+G |

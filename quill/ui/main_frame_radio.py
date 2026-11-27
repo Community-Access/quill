@@ -1282,6 +1282,24 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         self._radio_controller.play_station(station)
         self._announce(f"Playing {station.display_name}")
 
+    def radio_play_random(self) -> None:
+        """Play a random station from the open list, else from Favorites."""
+        from quill.ui.radio import play_random_ui
+
+        play_random_ui.play_random_station(self)
+
+    def radio_play_random_favorite(self) -> None:
+        """Play a random favorite, never the one just played when there is a choice."""
+        from quill.ui.radio import play_random_ui
+
+        play_random_ui.play_random_favorite(self)
+
+    def _radio_add_random_items(self, menu: object) -> None:
+        """Play Random Station and Play Random Favorite, after Play Last Station."""
+        from quill.apps.radio_random_menu import build_random_items
+
+        self._keep_menu_ids(*build_random_items(self, menu, self._wx))
+
     def _append_radio_recent_submenu(self, menu: object) -> None:
         """A Recently Played submenu: the last stations, newest first.
 

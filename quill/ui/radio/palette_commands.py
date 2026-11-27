@@ -164,6 +164,16 @@ def register_radio_commands(host: Any) -> None:
             host.radio_play_last,
         ),
         (
+            "radio.play_random",
+            "Internet Radio: Play Random Station",
+            host.radio_play_random,
+        ),
+        (
+            "radio.play_random_favorite",
+            "Internet Radio: Play Random Favorite",
+            host.radio_play_random_favorite,
+        ),
+        (
             "radio.whats_playing",
             "Internet Radio: What's Playing?",
             host.radio_whats_playing,

@@ -175,6 +175,9 @@ class RadioMenuBarMixin(RadioAiMixin):  # Ask and the AI rows (Community)
         play_last_id = wx.NewIdRef()
         station_menu.Append(play_last_id, self._menu_label("Play &Last Station", "radio.play_last"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_play_last(), id=play_last_id)
+        from quill.apps.radio_random_menu import build_random_items
+
+        self._keep_menu_ids(*build_random_items(self, station_menu, wx))
         # ACB Media and NFB Radio no longer nest here: both are bundled source
         # categories in Browse Stations already, so the flat menu copies only
         # duplicated them -- and drifted out of date. They live in Browse now.

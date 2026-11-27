@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### Quill Radio: ideas from StreamSift (2026-11-27)
+
+Ideas from StreamSift, a screen-reader-first stream finder by Andre Louis
+(github.com/OnjLouis/StreamSift, MIT). Thank you.
+
+- **Play Random Station and Play Random Favorite.** In Quill Radio's Station
+  menu (Ctrl+Shift+O and Ctrl+Alt+Shift+Q) and QUILL's Internet Radio menu.
+  Random Station picks from the list you last searched or scanned, or from your
+  favorites when none is open. It never plays the same station twice in a row
+  when there is a choice, and says what it picked in one sentence.
+
 ### Unsent GitHub drafts say what they are, and go once the issue exists (2026-11-24)
 
 A recovered issue draft said only "Recovered a local draft for owner/repo", on

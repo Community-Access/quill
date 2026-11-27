@@ -4,6 +4,18 @@ All notable changes to Quill Radio are documented here. See `docs/release-notes-
 
 ## [Unreleased] - 2026-11-07
 
+### Ideas from StreamSift
+
+Several things arrive together, each an idea from StreamSift, a screen-reader-first
+stream finder by Andre Louis (github.com/OnjLouis/StreamSift, MIT). Thank you.
+
+- **Play Random Station and Play Random Favorite** (Ctrl+Shift+O and
+  Ctrl+Alt+Shift+Q, 2026-11-27). Put something on without choosing. Play Random
+  Station picks from the list you last searched or scanned, or from your
+  favorites when none is open; Play Random Favorite always uses favorites. It
+  never plays the same station twice in a row when there is a choice, and says
+  what it picked in one sentence.
+
 ### Recordings are kept safe through crashes, reconnects and Stop (2026-11-20)
 
 - **Crash recovery never replaces a recording.** When Quill Radio starts after a
