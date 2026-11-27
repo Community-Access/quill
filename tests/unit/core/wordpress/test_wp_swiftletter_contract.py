@@ -27,6 +27,7 @@ _PLACEHOLDER = re.compile(r"\{\{([a-z_.]+)\}\}")
 
 
 def _fixture(name: str) -> dict[str, Any]:
+    """A scenario by name; ``compat/<name>`` reads a fixture for an older SwiftLetter."""
     data = json.loads((_FIXTURES / f"{name}.json").read_bytes())
     assert data["contract_version"] == 1, "a new contract version needs QUILL's review first"
     return data
@@ -127,10 +128,24 @@ def test_the_save_example_is_read_and_sends_title_content_and_if_match_only():
         site.api(), article, title=sent["title"], content=sent["content"]
     )
     assert saved.edit_version == step["response"]["example"]["edit_version"]
-    assert not saved.returned_stored  # this build answers id and edit_version only
+    assert saved.returned_stored  # SwiftLetter #13: the stored title and content come back
     request = site.requests[-1]
     assert json.loads(request.data) == sent
     assert request.get_header("If-match") == article.edit_version
+
+
+def test_an_rc1_save_answer_without_stored_text_still_saves():
+    site = _Site()
+    article = _opened(site)
+    step = _step("compat/article-save-1.1.0-rc.1", "save-current-version")
+    site.answer(step)
+    sent = step["request"]["json"]
+    saved = swiftletter.save_article_stored(
+        site.api(), article, title=sent["title"], content=sent["content"]
+    )
+    assert saved.edit_version == step["response"]["example"]["edit_version"]
+    assert not saved.returned_stored  # rc.1 answers id and edit_version only
+    assert not saved.stored_differs
 
 
 @pytest.mark.parametrize(
@@ -155,15 +170,15 @@ def test_each_contract_refusal_is_said_in_swiftletters_exact_words(step_id, kind
 
 
 def test_kses_rewriting_an_image_on_a_contributor_save_counts_as_wordpress_changing_it():
-    # SwiftLetter's CI found WordPress stores a contributor's `"/>` as `" />`.
+    # SwiftLetter's CI found WordPress stores a contributor's `"/>` as `" />`, and since
+    # #13 the save answer itself carries that sanitised text.
     site = _Site()
     article = _opened(site)
     step = _step("article-save", "save-current-version")
+    site.answer(step)
     sent = step["request"]["json"]
-    stored = sent["content"].replace('"/>', '" />')
-    assert stored != sent["content"]
-    answer = {**step["response"]["example"], "title": sent["title"], "content": stored}
-    site.answer(step, body=answer)
+    stored = step["response"]["example"]["content"]
+    assert stored == sent["content"].replace('"/>', '" />') != sent["content"]
     saved = swiftletter.save_article_stored(
         site.api(), article, title=sent["title"], content=sent["content"]
     )
@@ -172,3 +187,44 @@ def test_kses_rewriting_an_image_on_a_contributor_save_counts_as_wordpress_chang
     # person's own copy and tells them, rather than replacing it.
     assert saved.baseline(article).content == stored
     assert saved.sent_content == sent["content"]
+
+
+def _overlay(base: Any, partial: Any) -> Any:
+    """*base* (a whole answer) with a step's partial body laid over it, rows matched by id.
+
+    A step's ``body`` lists only the fields it asserts; replaying it on its own would
+    look to the client like a reply with fields missing.
+    """
+    if isinstance(base, dict) and isinstance(partial, dict):
+        return {**base, **{key: _overlay(base.get(key), item) for key, item in partial.items()}}
+    if isinstance(base, list) and isinstance(partial, list):
+        by_id = {row.get("id"): row for row in partial if isinstance(row, dict)}
+        return [_overlay(row, by_id.get(row.get("id"), {})) for row in base]
+    return partial
+
+
+def test_reopening_after_a_save_reports_changed_since_review():
+    # SwiftLetter #17: the article was reviewed, then edited, so it reads "changed".
+    site = _Site()
+    whole = _step("article-context", "editor-opens-article")["response"]["example"]
+    step = _step("article-save", "reopen-shows-saved-draft-changed-since-review")
+    answer = _overlay(whole, step["response"]["body"])
+    # The live run captures saved_version from the save; the save example stands in for it.
+    saved_version = _step("article-save", "save-current-version")["response"]["example"]
+    answer["swiftletter"]["edit_version"] = saved_version["edit_version"]
+    site.answer(step, body=answer)
+    reopened = swiftletter.open_article(site.api(), 4)
+    assert reopened.edit_version == saved_version["edit_version"]
+    assert reopened.review_state == "changed"
+    assert swiftletter.review_words(reopened.review_state) == "Changed since review"
+    assert reopened.content == step["response"]["body"]["content"]["raw"]
+
+
+def test_the_newsletter_lists_the_edited_article_as_changed_and_the_other_as_reviewed():
+    site = _Site()
+    whole = _step("article-context", "editor-browses-newsletter-in-order")["response"]["body"]
+    step = _step("article-save", "editor-sees-changed-since-review")
+    site.answer(step, body=_overlay(whole, step["response"]["body"]))
+    _newsletter, rows = swiftletter.newsletter_detail(site.api(), 9)
+    assert [(row.id, row.review_state) for row in rows] == [(4, "changed"), (5, "reviewed")]
+    assert rows[0].title == "Community Garden Opens Its Gates on Saturday"

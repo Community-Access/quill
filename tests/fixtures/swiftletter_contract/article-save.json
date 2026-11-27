@@ -1,7 +1,7 @@
 {
 	"contract_version": 1,
 	"name": "article-save",
-	"description": "A contributor saves their own article through a real application password with If-Match. A save keeps the article a draft, clears its review, and is refused with 412 once the article has changed on the site.",
+	"description": "A contributor saves their own article through a real application password with If-Match. The article starts reviewed through confirm-review. A save keeps the article a draft, returns the title and content WordPress stored, marks the review as changed since review, and is refused with 412 once the article has changed on the site.",
 	"steps": [
 		{
 			"id": "open-article",
@@ -72,7 +72,7 @@
 					"data": { "status": 400 }
 				}
 			},
-			"site": { "article_status": { "garden": "draft" }, "article_review_confirmed": { "garden": true } }
+			"site": { "article_status": { "garden": "draft" }, "article_review_confirmed": { "garden": true }, "article_review_state": { "garden": "reviewed" } }
 		},
 		{
 			"id": "save-current-version",
@@ -91,24 +91,29 @@
 				"headers": { "ETag": "{{body.edit_version}}", "Cache-Control": { "$pattern": "no-store" } },
 				"body": {
 					"id": "{{articles.garden.id}}",
-					"edit_version": { "$pattern": "^\"[0-9a-f]{64}\"$", "$not": "{{captures.opened_version}}" }
+					"edit_version": { "$pattern": "^\"[0-9a-f]{64}\"$", "$not": "{{captures.opened_version}}" },
+					"title": "Community Garden Opens Its Gates on Saturday",
+					"content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\" id=\"planting-day\">Planting day</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Volunteers planted forty-two raised beds on Saturday. Read the <a href=\"https://example.org/lantern-street/garden-rota\">garden rota</a> to sign up for watering.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:image -->\n<figure class=\"wp-block-image\"><img src=\"https://example.org/lantern-street/raised-beds.jpg\" alt=\"Two volunteers lift a wooden raised bed into place beside a brick wall.\" /></figure>\n<!-- /wp:image -->"
 				},
 				"example": {
 					"id": "{{articles.garden.id}}",
-					"edit_version": "\"9a8b7c6d5e4f30211203f4e5d6c7b8a99a8b7c6d5e4f30211203f4e5d6c7b8a9\""
+					"edit_version": "\"9a8b7c6d5e4f30211203f4e5d6c7b8a99a8b7c6d5e4f30211203f4e5d6c7b8a9\"",
+					"title": "Community Garden Opens Its Gates on Saturday",
+					"content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\" id=\"planting-day\">Planting day</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Volunteers planted forty-two raised beds on Saturday. Read the <a href=\"https://example.org/lantern-street/garden-rota\">garden rota</a> to sign up for watering.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:image -->\n<figure class=\"wp-block-image\"><img src=\"https://example.org/lantern-street/raised-beds.jpg\" alt=\"Two volunteers lift a wooden raised bed into place beside a brick wall.\" /></figure>\n<!-- /wp:image -->"
 				}
 			},
 			"capture": { "saved_version": "edit_version" },
 			"site": {
 				"article_status": { "garden": "draft" },
 				"article_review_confirmed": { "garden": false, "market": true },
+				"article_review_state": { "garden": "changed", "market": "reviewed" },
 				"newsletter_status": { "gazette": "draft" },
 				"new_public_posts": 0
 			}
 		},
 		{
-			"id": "reopen-shows-saved-draft-not-reviewed",
-			"description": "WordPress sanitises a contributor's content (kses), so the stored text can differ from what was sent: here the image's \"/>\" becomes \" />\".",
+			"id": "reopen-shows-saved-draft-changed-since-review",
+			"description": "WordPress sanitises a contributor's content (kses), so the stored text can differ from what was sent: here the image's \"/>\" becomes \" />\". The save already returned that stored text. The article was reviewed before the edit, so it reads as changed since review.",
 			"request": {
 				"as": "contributor",
 				"method": "GET",
@@ -118,22 +123,23 @@
 			"response": {
 				"status": 200,
 				"body": {
+					"id": "{{articles.garden.id}}",
 					"status": "draft",
 					"title": { "raw": "Community Garden Opens Its Gates on Saturday" },
 					"content": { "raw": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\" id=\"planting-day\">Planting day</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Volunteers planted forty-two raised beds on Saturday. Read the <a href=\"https://example.org/lantern-street/garden-rota\">garden rota</a> to sign up for watering.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:image -->\n<figure class=\"wp-block-image\"><img src=\"https://example.org/lantern-street/raised-beds.jpg\" alt=\"Two volunteers lift a wooden raised bed into place beside a brick wall.\" /></figure>\n<!-- /wp:image -->" },
-					"swiftletter": { "review_state": "not_reviewed", "edit_version": "{{captures.saved_version}}" }
+					"swiftletter": { "review_state": "changed", "edit_version": "{{captures.saved_version}}" }
 				}
 			}
 		},
 		{
-			"id": "editor-sees-review-cleared",
+			"id": "editor-sees-changed-since-review",
 			"request": { "as": "editor", "method": "GET", "route": "/swiftletter/v1/newsletters/{{newsletters.gazette.id}}" },
 			"response": {
 				"status": 200,
 				"body": {
 					"articles": [
-						{ "id": "{{articles.garden.id}}", "title": "Community Garden Opens Its Gates on Saturday", "review_confirmed": false },
-						{ "id": "{{articles.market.id}}", "review_confirmed": true }
+						{ "id": "{{articles.garden.id}}", "title": "Community Garden Opens Its Gates on Saturday", "review_confirmed": false, "review_state": "changed" },
+						{ "id": "{{articles.market.id}}", "review_confirmed": true, "review_state": "reviewed" }
 					]
 				}
 			}

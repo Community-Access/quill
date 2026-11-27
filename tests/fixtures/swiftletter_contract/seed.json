@@ -28,6 +28,7 @@
 			"order": 0,
 			"status": "draft",
 			"review_confirmed": true,
+			"reviewed_by": "editor",
 			"content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\" id=\"planting-day\">Planting day</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Volunteers planted forty raised beds on Saturday. Read the <a href=\"https://example.org/lantern-street/garden-rota\">garden rota</a> to sign up for watering.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:image -->\n<figure class=\"wp-block-image\"><img src=\"https://example.org/lantern-street/raised-beds.jpg\" alt=\"Two volunteers lift a wooden raised bed into place beside a brick wall.\"/></figure>\n<!-- /wp:image -->\n\n<!-- wp:heading {\"level\":3} -->\n<h3 class=\"wp-block-heading\" id=\"what-grows-next\">What grows next</h3>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Beans, chard and sunflowers go in next month.</p>\n<!-- /wp:paragraph -->"
 		},
 		"market": {
@@ -37,6 +38,7 @@
 			"order": 1,
 			"status": "draft",
 			"review_confirmed": true,
+			"reviewed_by": "editor",
 			"content": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\" id=\"stalls\">Stalls and opening hours</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Twenty stalls open from six until ten on the first Friday of each month.</p>\n<!-- /wp:paragraph -->"
 		}
 	}

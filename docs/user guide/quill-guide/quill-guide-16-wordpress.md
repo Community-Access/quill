@@ -129,7 +129,9 @@ SwiftLetter only on self-hosted sites.
    your site, then **SwiftLetter**.
 2. The list has each newsletter, with how many articles it has and when it
    last changed. If the site has more than the Workbench reads at first, the
-   list says how many more there are; **View > Load More** reads them.
+   list says how many more there are. To read them, choose Load More on the
+   View menu of the Workbench window itself (Ctrl+Shift+L while the Workbench
+   has focus); Load All there reads every one.
 3. Press Enter on a newsletter. That is **Show Articles**: the newsletter is
    selected in the tree and its articles are listed, in newsletter order.
 4. Each article says its title, its review state in words (Reviewed, Not
