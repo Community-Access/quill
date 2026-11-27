@@ -99,7 +99,8 @@ class FindStreamsList:
             "for every row shown; to pick rows far apart, filter the list first, then "
             "press Ctrl+A. Add to Favorites, Save as Playlist (Ctrl+S) and Copy (Ctrl+C) "
             "then act on all of them. Ctrl+F finds a row, F3 and Shift+F3 find the next "
-            "and previous, and the Applications key opens the list's menu."
+            "and previous, Ctrl+Shift+O plays a random stream from the rows shown, and the "
+            "Applications key opens the list's menu."
         )
         # The verdict first: it is what a screen reader reads first, and in
         # JAWS's first-column mode the only thing it reads.

@@ -19,6 +19,12 @@ from quill.ui.radio import link_finder_dialog as lfd
 from quill.ui.radio.link_finder_dialog import STILL_SCANNING, LinkFinderDialog
 
 
+@pytest.fixture(autouse=True)
+def _last_results_in_tmp(tmp_path, monkeypatch):
+    """Find Streams saves its last results on close: keep them out of the real profile."""
+    monkeypatch.setattr("quill.ui.radio.find_streams_last._directory", lambda: tmp_path)
+
+
 class _Tasks:
     """Holds the scan until the test delivers it, like a slow network."""
 

@@ -12,6 +12,11 @@ Ideas from StreamSift, a screen-reader-first stream finder by Andre Louis
   Random Station picks from the list you last searched or scanned, or from your
   favorites when none is open. It never plays the same station twice in a row
   when there is a choice, and says what it picked in one sentence.
+- **Reopen Last Results in Find Streams.** The streams from your last scan are
+  kept with their sort order, filter and current row, and Reopen Last Results
+  puts them back without scanning or playing anything. Find Streams offers it
+  when it opens. A new search replaces them, and damaged saved results are
+  ignored quietly.
 
 ### Unsent GitHub drafts say what they are, and go once the issue exists (2026-11-24)
 

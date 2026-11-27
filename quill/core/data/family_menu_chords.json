@@ -730,6 +730,7 @@
   ["Quill Radio", "ui/radio/find_streams_menus.py Find Next", "F3"],
   ["Quill Radio", "ui/radio/find_streams_menus.py Find Previous", "Shift+F3"],
   ["Quill Radio", "ui/radio/find_streams_menus.py Find...", "Ctrl+F"],
+  ["Quill Radio", "ui/radio/find_streams_menus.py Play Random Stream", "Ctrl+Shift+O"],
   ["Quill Radio", "ui/radio/find_streams_menus.py Select All", "Ctrl+A"],
   ["Quill Radio", "ui/radio/find_streams_menus.py Test", "Enter"],
   ["Quill Radio", "ui/radio/local_media_window_menu.py Add Media Files...", "Ctrl+O"],

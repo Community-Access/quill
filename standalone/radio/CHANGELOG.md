@@ -15,6 +15,14 @@ stream finder by Andre Louis (github.com/OnjLouis/StreamSift, MIT). Thank you.
   favorites when none is open; Play Random Favorite always uses favorites. It
   never plays the same station twice in a row when there is a choice, and says
   what it picked in one sentence.
+- **Reopen Last Results in Find Streams** (2026-11-27). Close Find Streams to
+  listen to a stream and the list is gone; now the last results are kept, with
+  the sort order, the filter and the row you were on. When Find Streams opens
+  with results waiting it says so, and Reopen Last Results (Alt+P) puts them back
+  without scanning or playing anything. A new scan replaces them, a search that
+  finds nothing clears them, and a damaged or missing saved file is ignored
+  without a word. Ctrl+Shift+O in the list plays a random stream from the rows
+  shown.
 
 ### Recordings are kept safe through crashes, reconnects and Stop (2026-11-20)
 
@@ -695,7 +703,7 @@ than by build. A date in brackets says when a change arrived.
 - **Share these choices with my other Quill apps.** A Preferences checkbox, off until you turn it on. With it on here and in another Quill app, Announce dialog transitions stays the same in both, and Quill Radio says when it picks up a choice from another app. Nothing about keys, focus or the screen reader is shared (`quill/core/family_preferences.py`, `quill/ui/family_sharing.py`).
 - **Undo History (Edit menu, Ctrl+Alt+Shift+A).** The last ten things you can take back, newest first, each with Undo This One, so a mistake from three steps ago can be undone without losing what came after. Ctrl+Z still takes back the newest, and the one before when pressed again. QUILL Cast has the same list (`quill/core/undo_last.py`, `quill/ui/undo_history_dialog.py`).
 - **Record Key in Show and Hide Key.** The key box has a **Record Key...**
-  button (Alt+R): press the combination you want and it is written into the box
+  button (Alt+P): press the combination you want and it is written into the box
   for you. Typing it still works, and is the way for a key another program has
   already taken, which never reaches the window.
 - **Ctrl+Alt+Shift+R is Quill Radio's alone, and four Radio keys work beside the other apps.** QUILL's Keymap Editor, QUILL Lite's Keyboard Manager, QUILL Cast's Restore from a Backup and QUILL Studio's Resume Last Book on Launch sat on Radio's system-wide show and hide key and have moved. Quill Weather, Inkwell, the Media Player and Converter no longer take a show and hide key by default, so Restore from Backup (Ctrl+Alt+Shift+W), Recording Settings (Ctrl+Alt+Shift+I), Recent Problems (Ctrl+Alt+Shift+P) and Choose Columns (Ctrl+Alt+Shift+C) fire while those apps run (`quill/core/family_chords.py`).
@@ -824,7 +832,7 @@ A fix release, and the one to install. Quill Radio 3.0.0 is withdrawn and its do
 
 - **Everything is bundled; nothing downloads on first use.** Both downloads now carry Deno 2.9.7, the JavaScript engine yt-dlp uses to answer YouTube's signature and "n" challenges, with its SHA-256 checksum pinned at build time, and yt-dlp-ejs 0.8.0, the scripts it runs. Without them some YouTube formats went missing or played throttled. The scripts come only from the bundled package: yt-dlp never fetches code from npm or GitHub, and Deno on your PATH is never used, only the copy Quill Radio shipped and verified.
 - **The media tools install in every order.** If another QuillVille app put the shared runtime on your computer first, the Quill Radio installer still adds Deno and the OptiLab Core adapter, so Exact OptiLab processing and YouTube playback do not depend on which app you installed first.
-- **Get became Repair.** Help > Get FFmpeg... is now **Help > Repair FFmpeg...** (Ctrl+Alt+F), Help > Get mpv Playback Engine... is now **Help > Repair mpv Playback Engine...** (Ctrl+Alt+M), and Station > Update YouTube Support... is now **Station > Repair YouTube Support...** (Ctrl+Alt+Y). In Audio Health (Ctrl+Alt+Shift+M) the buttons are **Repair FFmpeg...** (Alt+R) and **Repair mpv...** (Alt+M). The keys are unchanged. Every message that used to send you to a Get item now names the Repair item.
+- **Get became Repair.** Help > Get FFmpeg... is now **Help > Repair FFmpeg...** (Ctrl+Alt+F), Help > Get mpv Playback Engine... is now **Help > Repair mpv Playback Engine...** (Ctrl+Alt+M), and Station > Update YouTube Support... is now **Station > Repair YouTube Support...** (Ctrl+Alt+Y). In Audio Health (Ctrl+Alt+Shift+M) the buttons are **Repair FFmpeg...** (Alt+P) and **Repair mpv...** (Alt+M). The keys are unchanged. Every message that used to send you to a Get item now names the Repair item.
 - **Version 3.0.1** everywhere: the app, the installer, the About box, the support and suggestion emails, the user guide, the tutorials, the website and these notes.
 
 ## [3.0.0] - 2026-09-26

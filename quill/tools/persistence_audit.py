@@ -353,6 +353,9 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # definition -- every entry has a live fetch behind it -- and each answer
     # carries its own age so a stale one can say so rather than imply currency.
     "core/radio/directory_cache.py::save": "cache",
+    # The last Find Streams results, reopened on request (last_results.py): rebuilt
+    # by one more scan, validated on load, and a damaged file is ignored quietly.
+    "core/radio/last_results.py::save": "cache",
     "core/speech/synth_cache.py::save_cache": "cache",
     "core/palette.py::save_palette_usage": "cache",
     "core/recent.py::save_recent_files": "cache",

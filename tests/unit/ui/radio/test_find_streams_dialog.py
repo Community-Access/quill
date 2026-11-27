@@ -502,6 +502,7 @@ def _check_tab_order_and_labels(dlg: Any) -> None:
         dlg._use_btn,
         dlg._add_btn,
         dlg._save_btn,
+        dlg._reopen_btn,
         focusable[-1],
     ]
     labels = [w.GetLabel() for w in focusable[4:]]
@@ -511,6 +512,7 @@ def _check_tab_order_and_labels(dlg: Any) -> None:
         "&Use This Link...",
         "Add to &Favorites",
         "Save as Play&list...",
+        "Reo&pen Last Results",
         "Close",
     ]
     statics = [w.GetLabel() for w in dlg.dialog.GetChildren() if isinstance(w, wx.StaticText)]
@@ -557,6 +559,7 @@ def test_the_context_menu_letters_and_keys(d: Any) -> None:
     assert labels == [
         "&Test\tEnter",
         "&Use This Link...",
+        "Play &Random Stream\tCtrl+Shift+O",
         "Add to &Favorites",
         "Save as Play&list...\tCtrl+S",
         "&Copy Stream Link\tCtrl+C",
@@ -594,3 +597,96 @@ def test_test_and_use_act_on_the_focused_row(d: Any) -> None:
     assert d.host._radio_controller.played[-1].stream_url == "https://a.example/mike"
     d.dlg._on_use(None)
     assert d.used[-1].stream_url == "https://a.example/mike"
+
+
+# -- Reopen Last Results ---------------------------------------------------------
+
+
+def test_reopen_is_dimmed_with_nothing_saved(d: Any) -> None:
+    assert not d.dlg._reopen_btn.IsEnabled()
+    d.dlg._on_reopen_last()
+    assert d.said[-1] == "There are no saved results to reopen."
+
+
+def test_a_scan_saves_and_reopen_restores_rows_order_filter_and_row(d: Any) -> None:
+    from quill.core.radio import find_streams_view as view
+
+    _scan(d, _rows())
+    assert d.dlg._reopen_btn.IsEnabled()
+    d.dlg._choose_order("name")
+    d.dlg._choose_filter(fmt="MP3")
+    d.dlg._results.Focus(1)
+    d.dlg._remember_last()  # what closing the window does
+    focused = _focused_url(d)
+
+    # A new window, as after closing and opening Find Streams again.
+    d.dlg._candidates, d.dlg._rows = [], []
+    d.dlg._state = view.ViewState()
+    d.dlg._list.clear()
+    d.dlg._load_last()
+    assert d.dlg._reopen_btn.IsEnabled()
+    d.said.clear()
+    d.host._radio_controller.played.clear()
+    d.dlg._on_reopen_last()
+    assert d.dlg._state == view.ViewState(order="name", format="MP3")
+    assert len(_texts(d)) == 2 and _focused_url(d) == focused
+    assert d.said[-1].startswith("Reopened 4 streams from a.example, found")
+    assert d.said[-1].endswith("Nothing was scanned or played.")
+    assert d.host._radio_controller.played == []
+    assert d.dlg._task_manager.pending == []  # nothing rescans
+
+
+def test_the_offer_is_said_when_results_wait(d: Any) -> None:
+    _scan(d, _rows())
+    d.dlg._remember_last()
+    d.dlg._load_last()
+    d.said.clear()
+    d.dlg._offer_last()
+    assert d.said == [
+        "Your last results are saved: 4 streams from a.example. "
+        "Choose Reopen Last Results to see them."
+    ]
+
+
+def test_a_search_that_finds_nothing_clears_the_saved_results(d: Any) -> None:
+    _scan(d, _rows())
+    assert d.dlg._reopen_btn.IsEnabled()
+    _scan(d, [])
+    assert not d.dlg._reopen_btn.IsEnabled()
+    d.dlg._load_last()
+    assert d.dlg._last is None
+
+
+def test_damaged_saved_results_are_ignored_quietly(d: Any) -> None:
+    from quill.ui.radio import find_streams_last
+
+    folder = find_streams_last._directory()
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / "find_streams_last.json").write_text("{not json", encoding="utf-8")
+    d.said.clear()
+    d.dlg._load_last()
+    d.dlg._offer_last()
+    assert d.dlg._last is None and not d.dlg._reopen_btn.IsEnabled() and d.said == []
+
+
+# -- Play Random Stream in the list ------------------------------------------------
+
+
+def test_ctrl_shift_o_plays_a_random_shown_stream_and_says_which(d: Any) -> None:
+    _scan(d, _rows())
+    d.dlg._choose_filter(fmt="MP3")  # two rows shown: Zulu and Mike
+    d.said.clear()
+    d.dlg._run("random")
+    played = d.host._radio_controller.played
+    assert len(played) == 1 and played[0].stream_url in {
+        "https://a.example/zulu",
+        "https://a.example/mike",
+    }
+    assert d.said[-1].endswith("picked at random from 2 streams found.")
+    d.dlg._run("random")
+    assert played[1].stream_url != played[0].stream_url
+
+
+def test_the_random_key_is_ctrl_shift_o_in_the_list() -> None:
+    assert menus.key_command(wx, ord("O"), wx.MOD_CONTROL | wx.MOD_SHIFT) == "random"
+    assert menus.key_command(wx, ord("O"), wx.MOD_CONTROL) is None

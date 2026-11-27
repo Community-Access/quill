@@ -756,7 +756,7 @@ order.
    numbered. Arrow to one.
 4. Press **Tab** to **Move Up** or **Move Down** and press **Space** to move
    it. Quill Radio tells you its new number.
-5. To take a place off, select it and choose **Remove** (Alt+R). It moves to
+5. To take a place off, select it and choose **Remove** (Alt+P). It moves to
    the second list.
 6. The second list, **Not in the menu** (Alt+N), holds places you can add:
    Scheduled Recordings, Station Catalog Status, Audio Health, Keyboard
@@ -904,7 +904,7 @@ Ask for the Sleep Timer and Favourite This Station by name, or use their keys.
 
 The main window's menu bar, from left to right, is **Station** (Alt+S),
 **Edit** (Alt+E), **View** (Alt+V), **Playback** (Alt+P), **Audio** (Alt+A),
-**Video** (Alt+D), **Record** (Alt+R), **Community** (Alt+C), **QuillVille**
+**Video** (Alt+D), **Record** (Alt+P), **Community** (Alt+C), **QuillVille**
 (Alt+Q), **Help** (Alt+H) and **Window** (Alt+W).
 
 Every menu item shows its own key, and if you change a key, the menu shows
@@ -1132,7 +1132,7 @@ tell you so.
 
 See "Video, captions and described audio" in Chapter 5.
 
-#### Record menu (Alt+R)
+#### Record menu (Alt+P)
 
 - **Record Now / Stop Recording** (Ctrl+R).
 - **Record Station...** (Ctrl+Alt+R).
@@ -1258,7 +1258,7 @@ Window menu. Each window's own menu has its own key:
 | Search Stations ("Internet Radio") | Go (Alt+G) |
 | Player | Player (Alt+P) |
 | Manage Favorite Stations | Favorites (Alt+F) |
-| Radio Recordings | Recordings (Alt+R) |
+| Radio Recordings | Recordings (Alt+P) |
 | Schedule Recording | Schedule (Alt+D) |
 | Song History | Songs (Alt+G) |
 | Now Playing | View (Alt+V) |
@@ -2316,7 +2316,7 @@ Open Sound Enhancements while a favorite plays, and your settings are saved
 for that station only. Open it with nothing playing, or while a station that
 is not a favorite plays, and you set the shared settings that every other
 station follows. When a favorite's own settings are open, **Reset to Default**
-(Alt+R) puts that station back on the shared settings. **Reset All Stations'
+(Alt+P) puts that station back on the shared settings. **Reset All Stations'
 Sound Enhancements...** in Preferences does that for every station at once.
 
 ### Video, captions and described audio
@@ -3307,7 +3307,7 @@ the catalog's copy steps in, and every such row says how old it is, such as
    listings".
 3. Choose **Update Now** (Alt+U) to bring it up to date now. The window closes
    and the update runs.
-4. Or choose **Rebuild From Shipped Snapshot** (Alt+R) to put back the catalog
+4. Or choose **Rebuild From Shipped Snapshot** (Alt+P) to put back the catalog
    that came with Quill Radio. **It does not ask first.** Your favorites and
    your own stations are never touched.
 5. Press **Escape** to close.
@@ -3340,7 +3340,7 @@ once the project has agreed how it may use them.
    no pack is installed yet. Your cursor is in the **Find stations** box
    (Alt+F).
 2. Type what you know, such as **94.9**, **98.5 FM**, **KIRO**, **Seahawks**
-   or **jazz Seattle**. The **Results** list (Alt+R) fills as you type.
+   or **jazz Seattle**. The **Results** list (Alt+P) fills as you type.
 3. Press **Enter** to move to the results. Each row says why it matched, for
    example "KIRO-FM, matched slogan: Official home of the Seattle Seahawks".
    If nothing matched as you typed, Enter also looks for stations whose name
@@ -3450,6 +3450,17 @@ Radio, and not in Safe Mode.
 6. Press **Escape** to close the window.
 
 Enter on the list does nothing; use the buttons.
+
+**Reopen Last Results.** Quill Radio keeps the streams from your last scan, with
+the sort order, the filter and the row you were on. When you open Find Streams
+and results are waiting, it says so, for example "Your last results are saved:
+12 streams from example.com. Choose Reopen Last Results to see them." Press
+**Reopen Last Results** (Alt+P) to see them again. Nothing is scanned and
+nothing plays; the status line says how long ago they were found, and **Test**
+checks a stream again by playing it. A new scan that finds streams replaces the
+saved results, and one that finds nothing clears them. Clear Recent Searches...
+forgets them too. Ctrl+Shift+O in the list plays a random stream from the rows
+shown.
 
 This works for many stations whose Listen Live button is a web player. For
 Triton Digital and StreamTheWorld players, including the whole
@@ -5705,7 +5716,7 @@ now, or the most-watched first.
    - **Uploaded** (Alt+U): any time, the last hour, today, this week, this
      month or this year.
    - **Length** (Alt+L): under 4 minutes, 4 to 20 minutes, or over 20 minutes.
-   - **Sort by** (Alt+R): relevance, upload date, view count or rating.
+   - **Sort by** (Alt+P): relevance, upload date, view count or rating.
 4. Press **Enter**. Browse Stations opens, and you hear something like
    "Searching YouTube for walking tours, videos, this week...".
 5. The answers arrive in **Search Results**, just like Search YouTube's. Every
@@ -6968,7 +6979,7 @@ Enter on a row still does what it always did.
 4. Press **Alt+Up** or **Alt+Down** to move it, or Tab to **Move Up** (Alt+U),
    **Move Down** (Alt+D) or **Move to Top** (Alt+T). Quill Radio tells you its
    new number.
-5. **Reset This List** (Alt+R) puts the chosen list back the way it came. The
+5. **Reset This List** (Alt+P) puts the chosen list back the way it came. The
    other list is left alone.
 6. Choose **OK** (Enter). You should hear "Quick Actions saved." Escape
    cancels.
@@ -6994,7 +7005,7 @@ Recordings list.
    **Show** (Alt+W) to put it back in its proper place.
 6. **A row will read** (Alt+A) spells out the sentence one row will say with
    your choices, so you can hear the difference before you save.
-7. **Reset This List** (Alt+R) puts the chosen list back the way it came.
+7. **Reset This List** (Alt+P) puts the chosen list back the way it came.
 8. Choose **OK**. You should hear "Columns saved."
 
 One column in each list always stays, the station's name or the recording's
@@ -7045,7 +7056,7 @@ of every command and its key that you can search.
 1. Press **Ctrl+Alt+K**. The Keymap Editor opens with your cursor in
    **Search** (Alt+S).
 2. Type part of a command's name, such as `record`. Or type a key, such as
-   `Ctrl+B`, to see what it does. **Record Keys...** (Alt+R) lets you press the
+   `Ctrl+B`, to see what it does. **Record Keys...** (Alt+P) lets you press the
    key instead of typing its name.
 3. Tab to the **Keyboard shortcuts** list and arrow to the command.
 4. Choose **Edit Keybinding...** (Alt+E). A box opens with the current key.
@@ -7131,7 +7142,7 @@ perfect for a radio by the bed.
 2. Check **Quiet hours on** (Alt+Q) with Space.
 3. Choose **From** (Alt+F) and **To** (Alt+T), in half hours. The time can go
    past midnight.
-4. Check **Let reminders through anyway** (Alt+R) if you want every reminder
+4. Check **Let reminders through anyway** (Alt+P) if you want every reminder
    to speak during quiet hours.
 5. A line below tells you what your setting will do. Choose **OK**.
 
@@ -7255,7 +7266,7 @@ something Quill Radio said about a failure, this is where it waits for you.
 1. Press **Ctrl+Alt+Shift+P**. Your cursor is in **What has failed recently**
    (Alt+W), newest first. If there is nothing, you hear "No recent problems".
 2. Arrow through the list.
-3. **Retry** (Alt+R) tries the highlighted problem again, such as playing a
+3. **Retry** (Alt+P) tries the highlighted problem again, such as playing a
    station or downloading something again.
 4. **Copy All** (Alt+C) copies the list as text, for a message to support. It
    includes addresses and error messages, never passwords.
@@ -7288,7 +7299,7 @@ together with what you can do about them.
    first. If there is nothing yet, the summary says so.
 2. Arrow through the list. **Details** (Alt+D) below has the full sentence,
    the reason, the time and what you can do.
-3. **Retry** (Alt+R) does the selected thing again, the same way. For the
+3. **Retry** (Alt+P) does the selected thing again, the same way. For the
    settings file, that means trying the save again.
 4. **Open Folder** (Alt+F) opens the folder in File Explorer with the file
    selected, so you can see for yourself if a disk is full or a folder is
@@ -7445,7 +7456,7 @@ The Tutorials window is a window of its own. Leave it open, press **Ctrl+Tab**
 to go to the part of the app the step is about, do the step there, and hear
 the lesson move on behind you. The playing keys work inside it too.
 
-On the contents page, **Read it all** (Alt+R) shows a whole lesson as one page
+On the contents page, **Read it all** (Alt+P) shows a whole lesson as one page
 of text. **The whole book as a document** (Alt+D) opens every lesson as one
 document. **Forget my progress** (Alt+P) clears which lessons you finished and
 where you were, after asking you.
@@ -7637,7 +7648,7 @@ to open even during a recording.
    recordings folder right now.
 3. **Check Again** (Alt+C) looks at everything again, for example after you
    plug in a headset, and tells you the headline.
-4. **Repair FFmpeg...** (Alt+R) and **Repair mpv...** (Alt+M) are only
+4. **Repair FFmpeg...** (Alt+P) and **Repair mpv...** (Alt+M) are only
    available when that tool is missing.
 5. Press **Escape** to close.
 
@@ -7711,7 +7722,7 @@ None of them is posted on GitHub or any other public website.
    starts a new line, so press **Tab** to move on.
 5. **What you expected** (Alt+X): what you thought would happen instead.
    Optional.
-6. **Steps to reproduce** (Alt+R): how someone else could make it happen, such
+6. **Steps to reproduce** (Alt+P): how someone else could make it happen, such
    as "Play BBC Radio 4, press Ctrl+R, wait an hour". Optional, but worth more
    than anything else when you can give it.
 7. **Your email address** (Alt+E): where support should reply. Optional. The
