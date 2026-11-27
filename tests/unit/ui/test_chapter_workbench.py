@@ -430,3 +430,87 @@ def test_ai_titles_go_in_only_as_reviewed(wx_app, tmp_path, monkeypatch):
     finally:
         dlg.Destroy()
         frame.Destroy()
+
+
+# -- closing with unsaved edits (FUX-05) ------------------------------------
+
+
+def _close_button(dlg):
+    return next(
+        child
+        for child in dlg.GetChildren()
+        if isinstance(child, wx.Button) and child.GetId() == wx.ID_CANCEL
+    )
+
+
+def _press_close(dlg):
+    event = wx.CommandEvent(wx.wxEVT_BUTTON, wx.ID_CANCEL)
+    event.SetEventObject(_close_button(dlg))
+    dlg._on_close_button(event)
+    return event.GetSkipped()
+
+
+def test_close_with_nothing_unsaved_asks_nothing(wx_app, tmp_path):
+    frame, dlg = _make(wx_app, tmp_path)
+    try:
+        dlg._ask_unsaved = lambda _unsaved: pytest.fail("asked with nothing unsaved")
+        assert _press_close(dlg) is True
+    finally:
+        dlg.Destroy()
+        frame.Destroy()
+
+
+def test_close_with_unsaved_edits_names_them_and_cancel_stays_open(wx_app, tmp_path):
+    frame, dlg = _make(wx_app, tmp_path)
+    try:
+        dlg._chapters_dirty = True
+        dlg._tags_dirty = True
+        asked = []
+        dlg._ask_unsaved = lambda unsaved: asked.append(unsaved) or "cancel"
+        assert _press_close(dlg) is False
+        assert asked == ["chapter edits and tag edits"]
+    finally:
+        dlg.Destroy()
+        frame.Destroy()
+
+
+def test_discard_closes_and_says_what_was_discarded_once(wx_app, tmp_path):
+    announces: list[str] = []
+    frame, dlg = _make(wx_app, tmp_path, announces)
+    try:
+        dlg._chapters_dirty = True
+        asked = []
+        dlg._ask_unsaved = lambda unsaved: asked.append(unsaved) or "discard"
+        assert _press_close(dlg) is True
+        assert announces[-1] == "Discarded the unsaved chapter edits."
+        # The X that follows the button does not ask a second time.
+        assert dlg._may_close() is True
+        assert len(asked) == 1
+    finally:
+        dlg.Destroy()
+        frame.Destroy()
+
+
+def test_save_saves_and_keeps_the_workbench_open(wx_app, tmp_path):
+    frame, dlg = _make(wx_app, tmp_path)
+    try:
+        dlg._tags_dirty = True
+        saves = []
+        dlg._on_save = lambda: saves.append(True)
+        dlg._ask_unsaved = lambda _unsaved: "save"
+        assert _press_close(dlg) is False
+        assert saves == [True]
+    finally:
+        dlg.Destroy()
+        frame.Destroy()
+
+
+def test_a_close_that_cannot_be_refused_never_asks(wx_app, tmp_path):
+    frame, dlg = _make(wx_app, tmp_path)
+    try:
+        dlg._chapters_dirty = True
+        dlg._ask_unsaved = lambda _unsaved: pytest.fail("asked on a forced close")
+        assert dlg._may_close(False) is True
+    finally:
+        dlg.Destroy()
+        frame.Destroy()

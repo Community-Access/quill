@@ -388,9 +388,10 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
         close_btn = wx.Button(self, wx.ID_CANCEL, label=_("Close"))
         close_btn.SetHelpText(
             "Closes the Workbench, remembering your listening position. "
-            "Unsaved chapter or tag edits are discarded -- press Save or Save "
-            "As first to keep them."
+            "With chapter or tag edits unsaved, it first asks whether to save "
+            "or discard them."
         )
+        close_btn.Bind(wx.EVT_BUTTON, self._on_close_button)
         btn_row.AddStretchSpacer()
         btn_row.Add(self._save_btn, 0, wx.RIGHT, 6)
         btn_row.Add(save_as_btn, 0, wx.RIGHT, 6)
@@ -893,6 +894,8 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
     # -- lifecycle --------------------------------------------------------------------
 
     def _on_close(self, evt: wx.CloseEvent) -> None:
+        if self._close_vetoed(evt):  # unsaved edits: asked first (FUX-05)
+            return
         self.keep_place_and_stop()
         evt.Skip()
 
