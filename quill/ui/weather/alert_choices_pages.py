@@ -11,6 +11,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.weather import alert_rules as ar
+from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.dpi import dip_size
 
@@ -48,31 +49,30 @@ class AlertChoicesPages:
         btn.Bind(self._wx.EVT_BUTTON, lambda _e: handler())
         return btn
 
-    def _place_control(self, parent: Any, sizer: Any, label: str, control: Any, name: str) -> None:
-        """Add a labelled control; the caller has already set its help text inline."""
+    def _add_label(self, parent: Any, sizer: Any, label: str) -> None:
+        """The caption of the control built NEXT: on wxMSW a control is named by the
+        wx.StaticText constructed immediately before it."""
         wx = self._wx
         sizer.Add(wx.StaticText(parent, label=label), 0, wx.LEFT | wx.TOP, 6)
+
+    def _add_control(self, sizer: Any, control: Any, name: str) -> None:
+        """Place a control built right after its label; its help is already set."""
         set_accessible_name(control, name)
-        sizer.Add(control, 0, wx.EXPAND | wx.ALL, 6)
+        sizer.Add(control, 0, self._wx.EXPAND | self._wx.ALL, 6)
 
     def _build_which(self) -> Any:
         wx = self._wx
         page = wx.ScrolledWindow(self._book)
         page.SetScrollRate(0, 12)
         sizer = wx.BoxSizer(wx.VERTICAL)
+        self._add_label(page, sizer, "&Which alerts do you want to hear about?")
         self._preset = wx.Choice(page, choices=[ar.PRESET_LABELS[p] for p in _PRESET_ORDER])
         self._preset.SetHelpText(
             "Everything tells you about every alert. Essentials is tornado, severe "
             "thunderstorm and flash flood warnings, and anything Extreme. Safety is all "
             "warnings and the Extreme or Severe watches. Custom lets you choose below."
         )
-        self._place_control(
-            page,
-            sizer,
-            "&Which alerts do you want to hear about?",
-            self._preset,
-            "Which alerts to be told about",
-        )
+        self._add_control(sizer, self._preset, "Which alerts to be told about")
         self._preset_help = wx.StaticText(page, label="")
         sizer.Add(self._preset_help, 0, wx.LEFT | wx.RIGHT, 12)
         self._extreme = wx.CheckBox(page, label="Always tell me about &Extreme alerts")
@@ -85,19 +85,17 @@ class AlertChoicesPages:
 
         self._custom_box = wx.StaticBoxSizer(wx.VERTICAL, page, "Custom choices")
         inner = self._custom_box.GetStaticBox()
+        self._add_label(inner, self._custom_box, "Alert &types you want, by category:")
         self._cat_list = wx.ListBox(inner, size=dip_size(inner, 260, 90))
         self._cat_list.SetHelpText(
             "The categories you will be told about. Use the chooser below to add one and "
             "Remove to take the selected one out. Empty means every type."
         )
-        self._place_control(
-            inner,
-            self._custom_box,
-            "Alert &types you want, by category:",
-            self._cat_list,
-            "Chosen alert categories",
-        )
+        self._add_control(self._custom_box, self._cat_list, "Chosen alert categories")
         cat_row = wx.BoxSizer(wx.HORIZONTAL)
+        cat_row.Add(
+            wx.StaticText(inner, label="Add a category:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
+        )
         self._cat_add = wx.Choice(inner, choices=list(ar.CATEGORIES))
         set_accessible_name(self._cat_add, "Category to add")
         self._cat_add.SetHelpText("Pick a category, then press Add category.")
@@ -116,10 +114,16 @@ class AlertChoicesPages:
         self._custom_box.Add(cat_row, 0, wx.EXPAND | wx.ALL, 6)
 
         pick_row = wx.BoxSizer(wx.HORIZONTAL)
+        pick_row.Add(
+            wx.StaticText(inner, label="Category:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
+        )
         self._evt_cat = wx.Choice(inner, choices=list(ar.CATEGORIES))
         set_accessible_name(self._evt_cat, "Category of the specific alert type")
         self._evt_cat.SetHelpText("Choose a category to list its alert types.")
         self._evt_cat.Bind(wx.EVT_CHOICE, lambda _e: self._fill_events())
+        pick_row.Add(
+            wx.StaticText(inner, label="Alert type:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
+        )
         self._evt = wx.Choice(inner)
         set_accessible_name(self._evt, "Specific alert type")
         self._evt.SetHelpText(
@@ -152,24 +156,14 @@ class AlertChoicesPages:
             )
         )
         self._custom_box.Add(btns, 0, wx.ALL, 6)
+        self._add_label(inner, self._custom_box, "Types always included:")
         self._inc_list = wx.ListBox(inner, size=dip_size(inner, 260, 60))
         self._inc_list.SetHelpText("Alert types you asked to always hear about.")
-        self._place_control(
-            inner,
-            self._custom_box,
-            "Types always included:",
-            self._inc_list,
-            "Specific alert types always included",
-        )
+        self._add_control(self._custom_box, self._inc_list, "Specific alert types always included")
+        self._add_label(inner, self._custom_box, "Types skipped:")
         self._skip_list = wx.ListBox(inner, size=dip_size(inner, 260, 60))
         self._skip_list.SetHelpText("Alert types you asked never to hear about.")
-        self._place_control(
-            inner,
-            self._custom_box,
-            "Types skipped:",
-            self._skip_list,
-            "Specific alert types skipped",
-        )
+        self._add_control(self._custom_box, self._skip_list, "Specific alert types skipped")
         rm = wx.BoxSizer(wx.HORIZONTAL)
         rm.Add(
             self._button(
@@ -200,6 +194,7 @@ class AlertChoicesPages:
             box.SetHelpText(f"Tell me about {ar.KIND_LABELS[kind].lower()}.")
             kinds.Add(box, 0, wx.ALL, 6)
             self._kind_boxes[kind] = box
+            describe_group(kinds, box)
         self._custom_box.Add(kinds, 0, wx.EXPAND | wx.ALL, 6)
         self._sev_boxes: dict[str, Any] = {}
         sevs = wx.StaticBoxSizer(wx.HORIZONTAL, inner, "Severity")
@@ -209,6 +204,13 @@ class AlertChoicesPages:
             box.SetHelpText(f"Tell me about alerts the National Weather Service rates {sev}.")
             sevs.Add(box, 0, wx.ALL, 6)
             self._sev_boxes[sev] = box
+            describe_group(sevs, box)
+        sevs.Add(
+            wx.StaticText(sevs.GetStaticBox(), label="This severity and above:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.ALL,
+            6,
+        )
         self._shortcut = wx.Choice(sevs.GetStaticBox(), choices=[label for label, _v in _AND_ABOVE])
         set_accessible_name(self._shortcut, "This severity and above")
         self._shortcut.SetHelpText(
@@ -227,18 +229,13 @@ class AlertChoicesPages:
         wx = self._wx
         page = wx.Panel(self._book)
         sizer = wx.BoxSizer(wx.VERTICAL)
+        self._add_label(page, sizer, "&How should an alert you chose be delivered?")
         self._delivery = wx.Choice(page, choices=[ar.DELIVERY_LABELS[d] for d in ar.Delivery])
         self._delivery.SetHelpText(
             "As before interrupts for urgent alerts and speaks the rest. Alerts you did not "
             "choose are never lost: they stay in the alert list and in Alert Feed Status."
         )
-        self._place_control(
-            page,
-            sizer,
-            "&How should an alert you chose be delivered?",
-            self._delivery,
-            "How chosen alerts are delivered",
-        )
+        self._add_control(sizer, self._delivery, "How chosen alerts are delivered")
         sizer.Add(
             wx.StaticText(page, label="Alert sound for each severity:"), 0, wx.LEFT | wx.TOP, 8
         )
@@ -292,20 +289,14 @@ class AlertChoicesPages:
             "They stay in the alert list."
         )
         sizer.Add(self._quiet_on, 0, wx.ALL, 8)
+        self._add_label(page, sizer, "&Start (24-hour, like 22:00):")
         self._quiet_start = wx.TextCtrl(page)
         self._quiet_start.SetHelpText("When quiet hours begin, as hours and minutes.")
-        self._place_control(
-            page,
-            sizer,
-            "&Start (24-hour, like 22:00):",
-            self._quiet_start,
-            "Quiet hours start time",
-        )
+        self._add_control(sizer, self._quiet_start, "Quiet hours start time")
+        self._add_label(page, sizer, "&End (24-hour, like 07:00):")
         self._quiet_end = wx.TextCtrl(page)
         self._quiet_end.SetHelpText("When quiet hours end, as hours and minutes.")
-        self._place_control(
-            page, sizer, "&End (24-hour, like 07:00):", self._quiet_end, "Quiet hours end time"
-        )
+        self._add_control(sizer, self._quiet_end, "Quiet hours end time")
         self._quiet_extreme = wx.CheckBox(
             page, label="Let &Extreme alerts break through quiet hours"
         )
@@ -324,6 +315,9 @@ class AlertChoicesPages:
         box = wx.StaticBoxSizer(wx.VERTICAL, self.dialog, "Preview")
         inner = box.GetStaticBox()
         row = wx.BoxSizer(wx.HORIZONTAL)
+        row.Add(
+            wx.StaticText(inner, label="Sample alert:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
+        )
         self._sample = wx.Choice(inner, choices=[f"{e} ({s})" for e, s in _SAMPLES])
         set_accessible_name(self._sample, "Sample alert to preview")
         self._sample.SetHelpText("A sample alert. Preview says what your choices would do with it.")
@@ -350,6 +344,7 @@ class AlertChoicesPages:
                 )
             )
         box.Add(row, 0, wx.EXPAND | wx.ALL, 6)
+        box.Add(wx.StaticText(inner, label="What would happen:"), 0, wx.LEFT | wx.TOP, 6)
         self._preview_text = wx.TextCtrl(
             inner, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(inner, -1, 48)
         )

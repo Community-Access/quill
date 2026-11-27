@@ -34,9 +34,8 @@ class AlertChoicesPlaces:
 
     def _announce(self, message: str) -> None: ...
     def _button(self, parent: Any, label: str, help_text: str, handler: Any) -> Any: ...
-    def _place_control(
-        self, parent: Any, sizer: Any, label: str, control: Any, name: str
-    ) -> None: ...
+    def _add_label(self, parent: Any, sizer: Any, label: str) -> None: ...
+    def _add_control(self, sizer: Any, control: Any, name: str) -> None: ...
     def _collect_general(self) -> ar.RuleSet: ...
 
     @staticmethod
@@ -81,77 +80,66 @@ class AlertChoicesPlaces:
             row.Add(self._button(page, label, help_text, handler), 0, wx.RIGHT, 6)
         sizer.Add(row, 0, wx.LEFT | wx.BOTTOM, 8)
 
+        self._add_label(page, sizer, "S&nooze the selected place:")
         self._snooze = wx.Choice(page, choices=[*place_watch.SNOOZE_CHOICES, _ENDS])
         self._snooze.SetHelpText(
             "A snoozed place is still checked, but stays quiet until the snooze ends. An "
             "Extreme alert still breaks through unless you turned that off in Quiet hours."
         )
-        self._place_control(
-            page, sizer, "S&nooze the selected place:", self._snooze, "Snooze the selected place"
-        )
+        self._add_control(sizer, self._snooze, "Snooze the selected place")
         self._snooze.Bind(wx.EVT_CHOICE, lambda _e: self._apply_snooze())
+        self._add_label(
+            page, sizer, "Watch the selected place &until (like 2026-12-03 18:00, empty to clear):"
+        )
         self._until = wx.TextCtrl(page)
         self._until.SetHelpText(
             "Watch a switched-off place for a while, such as a trip. It stops by itself at "
             "that time and tells you once."
         )
-        self._place_control(
-            page,
-            sizer,
-            "Watch the selected place &until (like 2026-12-03 18:00, empty to clear):",
-            self._until,
-            "Watch the selected place until",
-        )
+        self._add_control(sizer, self._until, "Watch the selected place until")
         sizer.Add(
             self._button(page, "Set watch &until", "Apply the time above.", self._apply_until),
             0,
             wx.LEFT,
             8,
         )
+        self._add_label(
+            page,
+            sizer,
+            "Sche&dule for the selected place (like Mon-Fri 08:00-18:00, empty for always):",
+        )
         self._schedule = wx.TextCtrl(page)
         self._schedule.SetHelpText(
             "Outside its schedule a place is quiet, like a snooze. Days like Mon-Fri or "
             "Sat,Sun, then hours like 08:00-18:00."
         )
-        self._place_control(
-            page,
-            sizer,
-            "Sche&dule for the selected place (like Mon-Fri 08:00-18:00, empty for always):",
-            self._schedule,
-            "Schedule for the selected place",
-        )
+        self._add_control(sizer, self._schedule, "Schedule for the selected place")
         sizer.Add(
             self._button(page, "Set sche&dule", "Apply the schedule above.", self._apply_schedule),
             0,
             wx.LEFT,
             8,
         )
+        self._add_label(
+            page,
+            sizer,
+            "&Groups for the selected place (separated by commas, like Family, Travel):",
+        )
         self._groups = wx.TextCtrl(page)
         self._groups.SetHelpText(
             "Names that let you watch or stop watching several places together."
         )
-        self._place_control(
-            page,
-            sizer,
-            "&Groups for the selected place (separated by commas, like Family, Travel):",
-            self._groups,
-            "Groups for the selected place",
-        )
+        self._add_control(sizer, self._groups, "Groups for the selected place")
         sizer.Add(
             self._button(page, "Set &groups", "Apply the groups above.", self._apply_groups),
             0,
             wx.LEFT,
             8,
         )
+        self._add_label(page, sizer, "Watch or stop watching a whole group:")
         self._group_pick = wx.Choice(page)
         self._group_pick.SetHelpText("Pick a group, then use the buttons below.")
-        self._place_control(
-            page,
-            sizer,
-            "Watch or stop watching a whole group:",
-            self._group_pick,
-            "Group to change",
-        )
+        self._add_control(sizer, self._group_pick, "Group to change")
         grow = wx.BoxSizer(wx.HORIZONTAL)
         grow.Add(
             self._button(
@@ -173,6 +161,7 @@ class AlertChoicesPlaces:
             )
         )
         sizer.Add(grow, 0, wx.LEFT | wx.BOTTOM, 8)
+        self._add_label(page, sizer, "Alert choices for the selected &place:")
         self._place_choice = wx.Choice(
             page, choices=[_SAME, *[ar.PRESET_LABELS[p] for p in _PRESETS]]
         )
@@ -180,13 +169,7 @@ class AlertChoicesPlaces:
             "Same as everywhere uses the choices on the first page. The others give this "
             "place its own ready-made choices."
         )
-        self._place_control(
-            page,
-            sizer,
-            "Alert choices for the selected &place:",
-            self._place_choice,
-            "Alert choices for the selected place",
-        )
+        self._add_control(sizer, self._place_choice, "Alert choices for the selected place")
         self._place_choice.Bind(wx.EVT_CHOICE, lambda _e: self._place_choice_changed())
         page.SetSizer(sizer)
         return page

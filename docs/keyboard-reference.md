@@ -926,14 +926,17 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
 | Ctrl+Alt+F1 | Tutorials | `weather.tutorials` |
 | Ctrl+Alt+N | Noaa listen | `weather.noaa_listen` |
+| Ctrl+Alt+Shift+C | Alert choices | `weather.alert_choices` |
 | Ctrl+Alt+Shift+F | Settings | `weather.settings` |
 | Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+H | Feed status | `weather.feed_status` |
 | Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+Shift+L | Add location | `weather.add_location` |
 | Ctrl+Alt+Shift+M | Monitor toggle | `weather.monitor_toggle` |
 | Ctrl+Alt+Shift+N | Noaa update | `weather.noaa_update` |
 | Ctrl+Alt+Shift+P | Monitor pause | `weather.monitor_pause` |
 | Ctrl+Alt+Shift+T | Test alert | `weather.test_alert` |
+| Ctrl+Alt+Shift+U | Watch place | `weather.watch_place` |
 | Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+Shift+Alt+A | Alerts | `weather.alerts` |
@@ -1057,6 +1060,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+P | Practice on GitHub... | `github.workbench.practice` |
 | Ctrl+Alt+S | Set Your Status... | `github.workbench.user_status` |
 | Ctrl+Alt+Shift+F1 | What Can I Say Here? | `github.workbench.what_can_i_say_here` |
+| Ctrl+Alt+Shift+V | List Speech Templates... | `github.workbench.list_speech` |
 | Ctrl+Alt+T | Transfer Repository... | `github.workbench.transfer_repository` |
 | Ctrl+Alt+W | Clone Wiki... | `github.workbench.clone_wiki` |
 | Ctrl+B | Compare With Default | `github.workbench.compare_default` |
@@ -1174,6 +1178,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+M | Show Its Comments | `wordpress.workbench.show_comments` |
 | Ctrl+Alt+Shift+P | Your Profile... | `wordpress.workbench.your_profile` |
 | Ctrl+Alt+Shift+S | Put Back from a Snapshot... | `wordpress.workbench.restore_snapshot` |
+| Ctrl+Alt+Shift+V | List Speech Templates... | `wordpress.workbench.list_speech` |
 | Ctrl+Alt+T | Site Sets... | `wordpress.workbench.site_sets` |
 | Ctrl+Alt+U | Mark Entry Read or Unread | `wordpress.workbench.toggle_read` |
 | Ctrl+Alt+V | View As Role... | `wordpress.workbench.view_as` |

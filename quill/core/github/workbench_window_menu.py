@@ -427,6 +427,12 @@ _TOOLS = MenuSpec(
             "Where the Workbench opens, how notifications check, lists and privacy.",
         ),
         _row(
+            "list_speech",
+            "List Speech &Templates...",
+            "Ctrl+Alt+Shift+V",
+            "How rows are spoken: choose and order the fields, a separator and labels.",
+        ),
+        _row(
             "dry_run",
             "&Dry Run",
             "Ctrl+Alt+D",

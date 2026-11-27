@@ -162,6 +162,7 @@ _NATIVE: dict[str, frozenset[str]] = {
     "run_admin": frozenset({"admin_action"}),
     "rate_limit": frozenset({"view"}),
     "options": frozenset({"view"}),
+    "list_speech": frozenset({"view"}),
     "repository_actions": frozenset({"view"}),
     "new_here": frozenset({"view"}),
     "new_any": frozenset({"view"}),
@@ -503,6 +504,11 @@ class GitHubWorkbenchActionsMixin(
         from quill.ui.github_workbench_options import show_workbench_options
 
         show_workbench_options(self.frame.frame)
+
+    def _do_list_speech(self, _ref: Any, _row: object) -> None:
+        from quill.ui.list_speech_dialog import show_list_speech_editor
+
+        show_list_speech_editor(self.frame.frame, list_type="github_issues", announce=self._say)
 
     def _do_repository_actions(self, ref: Any, row: object) -> None:
         offered = [

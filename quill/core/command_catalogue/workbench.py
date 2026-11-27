@@ -326,6 +326,22 @@ WORDPRESS_WORKBENCH_ROWS: tuple[CommandSpec, ...] = (
         aliases=("batch in words",),
         kind=_D,
     ),
+    _gh(
+        "list_speech",
+        "List Speech Templates",
+        "Choose which fields a list row says, and in what order",
+        ("edit list speech templates", "change how rows are read", "set what a row says"),
+        group="Tools",
+        kind=_D,
+    ),
+    _wp(
+        "list_speech",
+        "List Speech Templates",
+        "Choose which fields a list row says, and in what order",
+        ("edit list speech templates", "change how rows are read", "set what a row says"),
+        group="Tools",
+        kind=_D,
+    ),
     _wp(
         "rest_console",
         "REST Console",

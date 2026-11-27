@@ -30,6 +30,11 @@ class WorkbenchOptionsCommands:
     def options(self) -> WorkbenchOptions:
         return load_options(self._data_dir)
 
+    def do_list_speech(self, _ref: Any, _row: Any) -> None:
+        from quill.ui.list_speech_dialog import show_list_speech_editor
+
+        show_list_speech_editor(self.parent, list_type="wordpress_posts", announce=self.say)
+
     def do_options(self, _ref: Any, _row: Any) -> None:
         options = self.options()
         kinds = list(KINDS)
