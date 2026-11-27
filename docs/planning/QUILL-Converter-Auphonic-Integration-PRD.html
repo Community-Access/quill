@@ -993,6 +993,35 @@ download.</li>
 <li>Download Again on a production a week old (Auphonic’s
 retention).</li>
 </ul>
+<h3 id="reverb-breath-chapters-and-show-notes-2026-11-26">Reverb,
+breath, chapters and show notes (2026-11-26)</h3>
+<p>Field names checked against Auphonic’s published API on 2026-11-26
+(<code>auphonic.com/help/api/details.html</code> and
+<code>/api/info/algorithms.json</code>), not guessed:</p>
+<ul>
+<li><strong>Reverb reduction:</strong> <code>deverbamount</code> in dB,
+with <code>denoisemethod</code> <code>static</code>,
+<code>dynamic</code> or <code>speech_isolation</code>. <code>0</code>
+(full) is Auphonic’s default with those methods, so the default choice
+sends nothing.</li>
+<li><strong>Breath reduction:</strong> <code>debreathamount</code> in dB
+(<code>-1</code>, off, is the default), with <code>dynamic</code> or
+<code>speech_isolation</code>.</li>
+<li><strong>Generated chapters and show notes:</strong>
+<code>"shownotes": true</code> in <code>speech_recognition</code>, for
+paying accounts. The results are the production’s <code>chapters</code>
+(also written into the files’ metadata) and
+<code>shownotes.summaries.{long,brief,subtitle}</code> and
+<code>shownotes.tags</code>. A <code>chaps</code> output
+(<code>chapters.txt</code>) is requested, and the show notes are saved
+as <code>&lt;title&gt; show notes.txt</code>.</li>
+<li><strong>A correction to Custom processing:</strong>
+<code>denoiseamount</code> <code>0</code> is “Auto” only for the classic
+method. With <code>static</code>, <code>dynamic</code> and
+<code>speech_isolation</code> it is full strength, so the choice is
+relabelled “Auphonic’s default”.</li>
+</ul>
+<p>Still in the live check (below): a production with each of these.</p>
 <h3 id="ported-to-main-2026-11-07">Ported to main (2026-11-07)</h3>
 <p>The paused branch was ported onto current main as one change, with
 three fixes it did not have:</p>

@@ -633,6 +633,29 @@ not yet checked, in `docs/qa/screen-reader-checks-2026-10.md`):
   `subtitle`/`srt` and `transcript`/`txt` outputs arrive and download.
 - Download Again on a production a week old (Auphonic's retention).
 
+### Reverb, breath, chapters and show notes (2026-11-26)
+
+Field names checked against Auphonic's published API on 2026-11-26
+(`auphonic.com/help/api/details.html` and `/api/info/algorithms.json`), not
+guessed:
+
+- **Reverb reduction:** `deverbamount` in dB, with `denoisemethod` `static`,
+  `dynamic` or `speech_isolation`. `0` (full) is Auphonic's default with those
+  methods, so the default choice sends nothing.
+- **Breath reduction:** `debreathamount` in dB (`-1`, off, is the default),
+  with `dynamic` or `speech_isolation`.
+- **Generated chapters and show notes:** `"shownotes": true` in
+  `speech_recognition`, for paying accounts. The results are the production's
+  `chapters` (also written into the files' metadata) and
+  `shownotes.summaries.{long,brief,subtitle}` and `shownotes.tags`. A `chaps`
+  output (`chapters.txt`) is requested, and the show notes are saved as
+  `<title> show notes.txt`.
+- **A correction to Custom processing:** `denoiseamount` `0` is "Auto" only
+  for the classic method. With `static`, `dynamic` and `speech_isolation` it is
+  full strength, so the choice is relabelled "Auphonic's default".
+
+Still in the live check (below): a production with each of these.
+
 ### Ported to main (2026-11-07)
 
 The paused branch was ported onto current main as one change, with three

@@ -135,6 +135,9 @@ class ProductionStatus:
     status: int
     status_string: str
     output_files: list[dict[str, object]] = field(default_factory=list)
+    #: Generated show notes and chapters, when asked for (speech recognition).
+    shownotes: dict[str, object] = field(default_factory=dict)
+    chapters: list[dict[str, object]] = field(default_factory=list)
 
     @property
     def done(self) -> bool:
@@ -349,6 +352,8 @@ def production_status(token: str, production_uuid: str) -> ProductionStatus:
     if not isinstance(production, dict):
         raise AuphonicError("Auphonic returned an unexpected response.")
     outputs = production.get("output_files")
+    notes = production.get("shownotes")
+    marks = production.get("chapters")
     return ProductionStatus(
         uuid=production_uuid,
         status=int(production.get("status", -1) or -1),
@@ -356,6 +361,8 @@ def production_status(token: str, production_uuid: str) -> ProductionStatus:
         output_files=[o for o in outputs if isinstance(o, dict)]
         if isinstance(outputs, list)
         else [],
+        shownotes=notes if isinstance(notes, dict) else {},
+        chapters=[c for c in marks if isinstance(c, dict)] if isinstance(marks, list) else [],
     )
 
 
@@ -447,8 +454,8 @@ _AUDIO_RESULT_FORMATS = frozenset({
 _AUDIO_RESULT_ENDINGS = frozenset({"mp3", "ogg", "oga", "opus", "m4a", "aac", "flac", "wav"})
 #: Captions and a transcript (post-MVP): plain-text results kept beside the
 #: sound, by format and ending; speech data, statistics and images are not.
-_TEXT_RESULT_FORMATS = frozenset({"subtitle", "transcript"})
-_TEXT_RESULT_ENDINGS = frozenset({"srt", "vtt", "webvtt", "txt", "html"})
+_TEXT_RESULT_FORMATS = frozenset({"subtitle", "transcript", "chaps"})
+_TEXT_RESULT_ENDINGS = frozenset({"srt", "vtt", "webvtt", "txt", "html", "chapters.txt"})
 #: The host every result is downloaded from.
 _RESULT_HOST = "auphonic.com"
 
@@ -530,7 +537,17 @@ def audio_results(status: ProductionStatus) -> tuple[ProductionStatus, int]:
         if (audio or text) and is_result_url(str(output.get("download_url", ""))):
             kept.append(output)
     left_out = len(status.output_files) - len(kept)
-    return ProductionStatus(status.uuid, status.status, status.status_string, kept), left_out
+    return (
+        ProductionStatus(
+            status.uuid,
+            status.status,
+            status.status_string,
+            kept,
+            shownotes=status.shownotes,
+            chapters=status.chapters,
+        ),
+        left_out,
+    )
 
 
 def _safe_name(name: str) -> str:

@@ -14,6 +14,26 @@ the launcher, installer, icon and these documents.
 
 ## Unreleased
 
+### Auphonic: reverb, breaths, chapters and show notes (2026-11-26)
+
+#### Cleaner speech
+
+- **Reverb reduction** takes the echo of a room out of a recording, and
+  **Breath reduction** makes breaths between phrases quieter. Both are in
+  More Auphonic Options, offered with the noise reduction methods they work
+  with.
+- **Noise reduction's "Automatic" is now named for what it does.** With the
+  steady noise, changing noise and keep only the speech methods, Auphonic's
+  default is full strength, not automatic; the choice is now called
+  Auphonic's default and says so.
+
+#### Chapters and show notes, written for you
+
+- **Generate chapters and show notes** asks Auphonic to listen and write
+  chapter marks, put into the saved file and saved as a chapters file, and
+  show notes (a subtitle, a brief and a long summary, and tags) saved as a
+  text file beside the sound. For paying Auphonic accounts.
+
 ### F1 on the queue says what happened to that file (2026-11-23)
 
 After a conversion, F1 on a row of the queue says what that file converted
