@@ -6405,6 +6405,10 @@ your organizations. Alt+Enter opens a team’s sheet.</p>
 <p><strong>My Billing and Usage.</strong> Billing and Usage: this
 month’s metered use of your account, by product, from GitHub’s billing
 report. Read only; Enter opens your billing page.</p>
+<p><strong>Tracked Accounts.</strong> Tracked Accounts: people and
+organizations you kept, favorites first, then your favorite
+repositories. A list on this computer only; GitHub is not told. Enter
+opens one; Ctrl+Alt+E finds more.</p>
 <p><strong>Find a Person….</strong> Find a Person: type a login with
 Ctrl+L, and the person gets a node of their own here.</p>
 <p><strong>Gists.</strong> Gists: small shared files and snippets.</p>
@@ -6956,6 +6960,9 @@ are.</p>
 <p><strong>File &gt; Open GitHub Address….</strong> Open a repository by
 owner/name or link; a compare link opens the comparison, and #42 opens
 that issue or pull request in this repository.</p>
+<p><strong>File &gt; Find a Person or Organization….</strong> Search
+GitHub for people and organizations as you type, then look at their
+repositories, keep them in Tracked Accounts, or follow a person.</p>
 <p><strong>File &gt; Go to Number….</strong> Go to an issue or pull
 request in this repository by its number.</p>
 <p><strong>File &gt; Open on GitHub.</strong> Open the selected row, or
@@ -7595,6 +7602,9 @@ account or an organization’s.</p>
 files, each read as model, messages and tests.</p>
 <p><strong>Open.</strong> Select the person’s node in the tree.</p>
 <p><strong>Follow or Unfollow.</strong> Follow them, or stop.</p>
+<p><strong>Account Actions.</strong> Its repositories, and track,
+favorite or follow it. Track and favorite stay on this computer; follow
+and star are public.</p>
 <p><strong>Block or Unblock.</strong> Block them from following you and
 from your repositories, or lift the block.</p>
 <p><strong>Find Issues with Label.</strong> Issues and pull requests
@@ -8397,6 +8407,20 @@ Ctrl+S.</li>
 <li><code>ok</code>: Write this filter into the filter box and apply it.
 Ctrl+Enter.</li>
 <li><code>cancel</code>: Change nothing.</li>
+</ul>
+<h4
+id="findaccountdialog-quilluigithub_find_account_dialogpy">FindAccountDialog
+(<code>quill/ui/github_find_account_dialog.py</code>)</h4>
+<ul>
+<li><code>self.query</code>: Type at least two letters of a GitHub
+username or name. Matching people and organizations appear in the list
+below after a short pause; Down Arrow moves there.</li>
+<li><code>self.list</code>: Each row says whether it is a person or an
+organization, then the username, the name, the public repositories and a
+description. Enter opens the account’s repositories.</li>
+<li><code>self.details</code>: The selected account in full, and what
+this computer keeps for it.</li>
+<li><code>close</code>: Close this window. Escape does the same.</li>
 </ul>
 <h4
 id="githubgisteditordialog-quilluigithub_gist_editor_dialogpy">GitHubGistEditorDialog

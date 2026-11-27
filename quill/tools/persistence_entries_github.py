@@ -67,4 +67,8 @@ GITHUB_ENTRIES: dict[str, str] = {
     # areas, refusals and gated commands per one-way account key, never a token or
     # an object name. Rebuilt by using the Workbench again; losing it is harmless.
     "core/github/observed_use.py::_change": "cache",
+    # Tracked Accounts and local favorites (People discovery): logins, names and
+    # owner/name text per account, version stamped. A shortcut list on this
+    # computer; nothing is sent to GitHub and no token is kept. Losing it loses the list.
+    "core/github/tracked_accounts.py::save": "versioned",
 }

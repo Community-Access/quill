@@ -907,6 +907,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Re-run Failed Jobs | Ctrl+Shift+F5 | Run only what failed in the selected run again. |
 | Mark Read | Ctrl+Q | Mark the selected notification read. |
 | Mark All Read in View | Ctrl+Shift+Q | Mark every notification in this view read. Asks first when there are many. |
+| Find a Person or Organization... | Ctrl+Alt+E | Search GitHub for people and organizations as you type, then look at their repositories, keep them in Tracked Accounts, or follow a person. |
 | Inbox Rules... | Ctrl+Alt+N | Rules that mark notifications done or read, or move them to the top, as they arrive. Each is tried on today's notifications before it is saved. |
 | Add to or Remove from Favorites | Ctrl+D | Keep the selected row under Repositories, Favorites. |
 

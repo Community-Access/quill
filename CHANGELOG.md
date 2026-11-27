@@ -2,6 +2,22 @@
 
 ## 1.0.0
 
+### Find a person or organization in the GitHub Workbench (2026-11-27)
+
+**Find a Person or Organization...** (`Ctrl+Alt+E`) searches GitHub as you
+type. Each match says whether it is a person or an organization, with the
+username, name, public repositories and description, and adds the follower
+count when two accounts share a name. From a match you can list its
+repositories, keep it in **People > Tracked Accounts**, mark it a favorite,
+follow a person, or open it on GitHub. In a repository list you can star or
+unstar, mark a local favorite, or add it to one of your GitHub Lists.
+
+A favorite is a shortcut on this computer and sends nothing. A star and a
+follow are public, and QUILL asks GitHub for the new state afterward and
+says what GitHub reports. Organizations are opened on GitHub to follow,
+because GitHub documents that only as a public preview. Read Only accounts
+can search and look; Safe Mode searches nothing.
+
 ### Unsent GitHub drafts say what they are, and go once the issue exists (2026-11-24)
 
 A recovered issue draft said only "Recovered a local draft for owner/repo", on
