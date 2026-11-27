@@ -206,7 +206,7 @@ jobs:
           APP: ${{ matrix.app }}
           VERSIONS_JSON: ${{ needs.decide.outputs.versions }}
         run: |
-          IFS=$'\t' read -r VERSION TAG NAME < <(
+          IFS=$'\t' read -r _ TAG _ < <(
             python -c "import json,os; from quill.core.release_catalog import product; p=product(os.environ['APP']); v=json.loads(os.environ['VERSIONS_JSON'])[p.key]; print(v, p.tag_prefix+v, p.name, sep='\\t')"
           )
           # This build's checksums are named for it, because every build's files
