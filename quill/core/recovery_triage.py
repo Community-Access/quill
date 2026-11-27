@@ -60,6 +60,7 @@ __all__ = [
     "opening_words",
     "opening_words_of_text",
     "row_label",
+    "saved_comparison",
     "size_phrase",
     "summarise_recovery",
     "triage",
@@ -258,19 +259,61 @@ def opening_words(slot: Recoverable, count: int = OPENING_WORDS) -> str:
     that cannot be described is still a row that can be restored.
     """
     limit = _RICH_READ_LIMIT if slot.mode == "rich" else _PLAIN_READ_LIMIT
+    text = _slot_text(slot, limit)
+    return opening_words_of_text(text, count) if text is not None else ""
+
+
+def _slot_text(slot: Recoverable, limit: int) -> str | None:
+    """The words a slot holds (RTF read as its words), or None when unreadable."""
     try:
         with slot.content_path.open("rb") as handle:
             text = handle.read(limit).decode("utf-8", errors="replace")
     except OSError:
-        return ""
+        return None
     if slot.mode == "rich":
         try:
             from quill.io.rtf import rtf_to_markdown
 
             text = rtf_to_markdown(text)
         except Exception:  # noqa: BLE001 - a damaged copy still gets a row
-            return ""
-    return opening_words_of_text(text, count)
+            return None
+    return text
+
+
+def saved_comparison(slot: Recoverable) -> str:
+    """How this copy stands against the file it came from, or "" (FUX-05).
+
+    "1,200 words more than the saved file", "the same as the saved file",
+    "the saved file is no longer there". The date says when and the size says
+    how much; only this says whether restoring would bring anything back.
+    """
+    if is_untitled(slot):
+        return ""
+    try:
+        copied_at: float | None = slot.content_path.stat().st_mtime
+    except OSError:
+        copied_at = None
+    try:
+        saved_at: float | None = Path(slot.original_path).stat().st_mtime
+    except OSError:
+        saved_at = None
+    # The chooser rebuilds every row on each check; read both files once.
+    key = (str(slot.content_path), slot.original_path, copied_at, saved_at)
+    if key in _COMPARED:
+        return _COMPARED[key]
+    text = _slot_text(slot, _RICH_READ_LIMIT)
+    said = ""
+    if text is not None:
+        from quill.core.recovery_naming import compare_with_saved
+
+        said = compare_with_saved(text, slot.original_path, copied_at)
+    if len(_COMPARED) > 256:
+        _COMPARED.clear()
+    _COMPARED[key] = said
+    return said
+
+
+_COMPARED: dict[tuple[str, str, float | None, float | None], str] = {}
 
 
 def size_phrase(slot: Recoverable) -> str:
@@ -334,7 +377,13 @@ def row_label(slot: Recoverable, copies: int = 1, now: float | None = None) -> s
     where = "" if is_untitled(slot) else f"  --  {slot.original_path}"
     opening = opening_words(slot)
     begins = f'  --  begins "{opening}"' if opening else ""
-    label = f"{slot.title}{where}{begins}  --  {size_phrase(slot)}, {when_phrase(slot, now)}"
+    # How it differs from the saved file comes straight after the name: it is
+    # the fact that decides whether restoring brings anything back (FUX-05).
+    comparison = saved_comparison(slot)
+    against = f"  --  {comparison}" if comparison else ""
+    label = (
+        f"{slot.title}{where}{against}{begins}  --  {size_phrase(slot)}, {when_phrase(slot, now)}"
+    )
     if copies > 1:
         label += f"  ({copies} identical copies, kept as one)"
     return label
@@ -425,6 +474,10 @@ def describe_plan(
     if ticked:
         names = ", ".join(slot.title for slot in ticked)
         lines.append(f"  Restore Checked opens {_count(len(ticked), 'document')}: {names}.")
+        lines.append(
+            "  Each opens under its own name and unsaved: a file on disk changes only "
+            "when you save it, and saving with Save As keeps the original file too."
+        )
         lines.append(
             f"  Discard Checked permanently deletes {_count(len(ticked), 'checked document')}. "
             "Nothing else has a copy."

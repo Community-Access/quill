@@ -158,12 +158,30 @@ it always describes the window as it is.
 
 ### After an unclean exit, Crash Recovery and Email Support
 
-If QUILL closed without an error report, after a freeze, a power cut or a
-forced close, the next launch shows **Crash Recovery**, which offers your
-unsaved work back. Its **Email Support** button (it used to say "Send Bug
-Report") writes a message to support for this kind of exit too. The first
-sentence also quotes how the document begins, so you know which work it is
-before you read the preview:
+If QUILL closed with unsaved changes, after a crash, a freeze, a power cut
+or a forced close, the next launch shows **Crash Recovery**, which offers the
+work back. Its first sentence names the document, when its copy was made, and
+how it differs from the file on disk, for example: "QUILL closed unexpectedly.
+Unsaved changes to chapter3.md, autosaved today at 2:14 PM: 1,200 words more
+than the saved file." The read-only **About this copy** field, first in Tab
+order, says it again with how the copy begins and what each answer does:
+
+- **Restore Document** opens the copy as a new, unsaved document.
+  The file on disk is not changed, so you can save the copy under a new name
+  and keep both, or save it over the file.
+- **Skip Recovery**, or `Escape`, leaves the copy in QUILL's autosave
+  folder. It is not offered again.
+
+If several documents had unsaved changes, Crash Recovery asks about each in
+turn, "Document 1 of 3", rather than only the newest. Each window after the
+first begins with what happened to the one before, and after the last, focus
+goes to your document. A copy that is word for
+word the file on disk is not offered, because nothing would come back. A copy
+with changes is offered even when the log shows no error, because a power cut
+writes none.
+
+The **Email Support** button (it used to say "Send Bug Report") writes a
+message to support for this kind of exit too:
 
 1. Press **Email Support** in Crash Recovery.
 2. Your mail program opens with a message to **support@community-access.org**.

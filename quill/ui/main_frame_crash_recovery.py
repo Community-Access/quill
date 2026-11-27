@@ -195,6 +195,7 @@ class CrashRecoveryMixin:
 
         preview_text = ""
         opening = ""
+        full = ""
         try:
             full, _had_rep = read_recovery_snapshot(offer.snapshot)
             opening = opening_words_of_text(full)
@@ -203,12 +204,13 @@ class CrashRecoveryMixin:
             if len(lines) > 30:
                 preview_text += f"\n\n... ({len(lines) - 30} more lines)"
         except OSError:
-            preview_text = "(Could not read snapshot preview)"
+            preview_text = "(The autosaved copy could not be read.)"
 
         return {
             "logs_path": logs_path,
             "preview_text": preview_text,
             "opening": opening,
+            "about": describe_crash_offer(offer, full),
         }
 
     def _offer_crash_recovery(self) -> None:
@@ -225,21 +227,23 @@ class CrashRecoveryMixin:
             return
         offer = self._recovery_offers[0]
 
-        # M-28 / §8.2: adaptive prompt text after repeated dismissals.
-        if offer.dismissal_count >= 3:
+        # FUX-05: the offer names the work and says what each answer does. The
+        # old wording after three dismissals told the person Skip would
+        # discard the copy and, a sentence later, that it would keep it.
+        total = int(getattr(self, "_recovery_offer_total", 0)) or len(self._recovery_offers)
+        self._recovery_offer_total = total
+        place = total - len(self._recovery_offers) + 1
+        intro = "QUILL closed unexpectedly."
+        if total > 1 and place == 1:
             intro = (
-                "You have dismissed this recovery offer "
-                f"{offer.dismissal_count} time(s). "
-                "Press Restore to keep the recovered version, "
-                "or Skip to discard it and continue with a blank document. "
-                "Pressing Skip again will keep the in-memory version; "
-                "press Restore now to save your work."
+                f"QUILL closed unexpectedly, with unsaved changes in {total} documents. "
+                f"Document 1 of {total}."
             )
-        else:
-            intro = (
-                "Quill detected an unclean exit. Restore the latest autosave snapshot, "
-                "open the logs folder, or save diagnostics before continuing."
-            )
+        elif total > 1:
+            # What happened to the previous document is said here, at the top of
+            # the next window, because the status bar it went to is not read.
+            previous = str(getattr(self, "_recovery_previous_outcome", ""))
+            intro = f"{previous} Document {place} of {total}.".strip()
 
         # Hold a slot so the ``TaskManager`` callback can reach the offer and
         # intro without re-reading instance state.  The callback runs on the
@@ -254,6 +258,7 @@ class CrashRecoveryMixin:
 
         def _on_failed(_operation_id: str, _exc: BaseException) -> None:
             self._report_startup_task_failure("crash recovery")
+            self._next_recovery_offer(offer)
 
         self._task_manager.submit(
             name="crash-recovery-prepare",
@@ -280,23 +285,32 @@ class CrashRecoveryMixin:
         # Which document this is, in its own words, before anything else is read:
         # the time of a crash does not say what was being written.
         opening = prepared.get("opening", "")
-        if opening:
-            intro = f'{intro} The document begins: "{opening}"'
+        about = str(prepared.get("about", ""))
+        summary = f"{intro} {about}".strip()
+        # The whole account, in a field that can be read again line by line;
+        # the static text is read once when the window opens (FUX-05).
+        begins = f'The copy begins: "{opening}"' if opening else ""
+        details = " ".join(part for part in (about, begins, _answers_sentence(offer)) if part)
         logs_path = prepared["logs_path"]
         preview_text = prepared["preview_text"]
 
-        dialog = wx.Dialog(self.frame, title="Crash Recovery", size=dip_size(self.frame, 780, 520))
+        parent = self._dialog_parent()
+        dialog = wx.Dialog(parent, title="Crash Recovery", size=dip_size(self.frame, 780, 560))
         root = wx.BoxSizer(wx.VERTICAL)
-        root.Add(
-            wx.StaticText(dialog, label=intro),
-            0,
-            wx.ALL | wx.EXPAND,
-            8,
+        heading = wx.StaticText(dialog, label=summary)
+        heading.Wrap(dip_size(self.frame, 740, 1).GetWidth())
+        root.Add(heading, 0, wx.ALL | wx.EXPAND, 8)
+        root.Add(wx.StaticText(dialog, label="About this copy"), 0, wx.LEFT | wx.RIGHT, 8)
+        about_ctrl = wx.TextCtrl(
+            dialog, value=details, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2
         )
+        set_accessible_name(about_ctrl, "About this copy")
+        about_ctrl.SetMinSize(dip_size(self.frame, 400, 90))
+        root.Add(about_ctrl, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
         # §8.2: read-only snapshot preview so the user can decide before restoring.
         root.Add(
-            wx.StaticText(dialog, label="Snapshot preview (first 30 lines):"),
+            wx.StaticText(dialog, label="Autosaved copy, first 30 lines:"),
             0,
             wx.LEFT | wx.RIGHT | wx.TOP,
             8,
@@ -316,8 +330,8 @@ class CrashRecoveryMixin:
             dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP | wx.TE_RICH2,
         )
-        preview_ctrl.SetName("Snapshot preview")
-        preview_ctrl.SetValue(preview_text if preview_text else "(snapshot is empty)")
+        set_accessible_name(preview_ctrl, "Autosaved copy, first 30 lines")
+        preview_ctrl.SetValue(preview_text if preview_text else "(the autosaved copy is empty)")
         root.Add(preview_ctrl, 1, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
         root.Add(wx.StaticText(dialog, label="Logs folder"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
@@ -326,15 +340,14 @@ class CrashRecoveryMixin:
         logs_field.SetValue(str(logs_path))
         root.Add(logs_field, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
 
-        restore_button = wx.Button(dialog, id=wx.ID_YES, label="Restore Latest Snapshot")
-        open_logs_button = wx.Button(dialog, label="Open Logs Folder")
-        clear_logs_button = wx.Button(dialog, label="Clear Logs")
-        save_diagnostics_button = wx.Button(dialog, label="Save Diagnostics...")
+        restore_button = wx.Button(dialog, id=wx.ID_YES, label="&Restore Document")
+        open_logs_button = wx.Button(dialog, label="Open &Logs Folder")
+        clear_logs_button = wx.Button(dialog, label="&Clear Logs")
+        save_diagnostics_button = wx.Button(dialog, label="Save &Diagnostics...")
         # Email Support (2026-09-26): was "Send Bug Report", which filed a
         # public GitHub issue. It now opens the mail program to support@.
-        send_report_button = wx.Button(dialog, label="Email Support")
-        skip_label = "Discard and Continue" if offer.dismissal_count >= 3 else "Skip Recovery"
-        skip_button = wx.Button(dialog, id=wx.ID_NO, label=skip_label)
+        send_report_button = wx.Button(dialog, label="&Email Support")
+        skip_button = wx.Button(dialog, id=wx.ID_NO, label="&Skip Recovery")
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.Add(restore_button, 0, wx.RIGHT, 6)
         buttons.Add(open_logs_button, 0, wx.RIGHT, 6)
@@ -395,8 +408,13 @@ class CrashRecoveryMixin:
                         "offer-dismissed",
                         detail=f"session={offer.session_id}; snapshot={offer.snapshot}",
                     )
-                    self._set_status("Skipped crash recovery")
-                    self._record_notification("Crash recovery offer dismissed", "recovery")
+                    skipped = (
+                        f"Did not restore {_work_name(offer)}. Its autosaved copy stays "
+                        "in QUILL's autosave folder."
+                    )
+                    self._set_status(skipped)
+                    self._record_notification(skipped, "recovery")
+                    self._recovery_previous_outcome = skipped
                     return
                 try:
                     recovered_text, had_replacements = read_recovery_snapshot(offer.snapshot)
@@ -408,12 +426,13 @@ class CrashRecoveryMixin:
                             f"session={offer.session_id}; snapshot={offer.snapshot}; error={error}"
                         ),
                     )
-                    self._show_message_box(
-                        f"Could not restore snapshot: {error}",
-                        "Crash Recovery",
-                        wx.ICON_ERROR | wx.OK,
+                    failed = (
+                        f"Could not restore {_work_name(offer)}: its autosaved copy could "
+                        "not be read. The copy was left where it is, in QUILL's autosave folder."
                     )
-                    self._set_status("Crash recovery failed")
+                    self._show_message_box(failed, "Crash Recovery", wx.ICON_ERROR | wx.OK)
+                    self._set_status(failed)
+                    self._recovery_previous_outcome = failed
                     return
                 self._create_document_tab(
                     Document(text=recovered_text, path=None, modified=True),
@@ -448,22 +467,88 @@ class CrashRecoveryMixin:
                 else:
                     self._location_ring.record(0)
                 self._refresh_title()
-                status = _recovered_sentence(offer.snapshot)
+                status = _recovered_sentence(offer.snapshot, offer.original_path)
                 if had_replacements:
                     status += " (some bytes replaced — check notifications)"
                 self._set_status(status)
-                self._record_notification("Recovered autosave snapshot", "recovery")
+                self._record_notification(status, "recovery")
+                self._recovery_previous_outcome = status
                 return
         finally:
             dialog.Destroy()
+            self._next_recovery_offer(offer)
+
+    def _next_recovery_offer(self, offer: object) -> None:
+        """Put the next document's offer up once this one is answered (FUX-05).
+
+        One window per document, in turn, rather than one for the newest and
+        silence for the rest: each says which document it is and what its
+        answers do, which one list of several could not without a new window.
+        After the last, focus goes to the editor -- the restored document when
+        one was restored -- rather than staying on the bare frame.
+        """
+        remaining = [item for item in self._recovery_offers if item is not offer]
+        self._recovery_offers = remaining
+        if remaining:
+            self._wx.CallAfter(self._put_up_next_offer)
+            return
+        editor = getattr(self, "editor", None)
+        if editor is not None:
+            self._wx.CallAfter(editor.SetFocus)
+
+    def _put_up_next_offer(self) -> None:
+        """The next offer, once no other window is modal (onboarding, a notice)."""
+        from quill.ui import modal_stack
+
+        if len(modal_stack.stack_of(self)):
+            self._wx.CallLater(500, self._put_up_next_offer)
+            return
+        self._offer_crash_recovery()
 
 
-def _recovered_sentence(snapshot: Path) -> str:
-    """What a crash recovery ends with: from when, and that it is not saved (FUX-04).
+def _work_name(offer: object) -> str:
+    """The document an offer is about, as a person would name it."""
+    original = getattr(offer, "original_path", None)
+    if original:
+        return Path(original).name
+    if original == "":
+        return "the untitled document"
+    return "the autosaved document"
+
+
+def _answers_sentence(offer: object) -> str:
+    """What Restore Document and Skip Recovery each do, said before either is pressed."""
+    original = getattr(offer, "original_path", None)
+    unchanged = "; the saved file is not changed" if original else ""
+    opens = f"Restore Document opens this copy as a new, unsaved document{unchanged}."
+    skip = (
+        "Skip Recovery, or Escape, leaves the copy in QUILL's autosave folder, "
+        "and it is not offered again."
+    )
+    return f"{opens} {skip}"
+
+
+def describe_crash_offer(offer: object, text: str) -> str:
+    """One sentence naming the work an offer would restore (FUX-05). No wx; runs on a worker."""
+    from quill.core.action_feedback import when_said
+    from quill.core.recovery_naming import compare_with_saved, offer_sentence, snapshot_when
+
+    snapshot = Path(offer.snapshot)  # type: ignore[attr-defined]
+    original = getattr(offer, "original_path", None)
+    moment = snapshot_when(snapshot)
+    when = when_said(moment) if moment is not None else "at an unknown time"
+    copied_at = moment.timestamp() if moment is not None else None
+    comparison = compare_with_saved(text, original, copied_at) if original else ""
+    return offer_sentence(original, when, comparison)
+
+
+def _recovered_sentence(snapshot: Path, original_path: str | None = None) -> str:
+    """What a crash recovery ends with: what, from when, and that it is not saved (FUX-04).
 
     The same sentence QUILL Lite says after restoring one document
     (:func:`quill.core.action_feedback.recovered_result`), so the two editors
-    describe a recovered draft identically.
+    describe a recovered draft identically, then that the file on disk is
+    untouched, because the copy opens as a new document beside it (FUX-05).
     """
     from datetime import datetime
 
@@ -473,4 +558,8 @@ def _recovered_sentence(snapshot: Path) -> str:
         when: datetime | None = datetime.fromtimestamp(Path(snapshot).stat().st_mtime)
     except (OSError, ValueError):
         when = None
+    if original_path:
+        name = Path(original_path).name
+        said = recovered_result([f"your changes to {name}"], asked=1, when=when)
+        return f"{said} {name} on disk is unchanged."
     return recovered_result(["the autosaved document"], asked=1, when=when)

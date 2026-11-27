@@ -25,6 +25,32 @@ the current ones, so Compose Review is no longer blocked until it is deleted.
 If the file holding the drafts cannot be read, it is copied aside rather than
 written over by the next keystroke, and the draft window says where.
 
+### Crash Recovery names the document, and offers every one (2026-11-24)
+
+After QUILL closed without saving, Crash Recovery said "Restore the latest
+autosave snapshot". It now names the document, when its copy was made and how
+it differs from the file on disk, such as "Unsaved changes to chapter3.md,
+autosaved today at 2:14 PM: 1,200 words more than the saved file", and says
+what each button does: **Restore Document** (it was Restore Latest Snapshot)
+opens the copy as a new, unsaved document and leaves the file on disk as it
+is; **Skip Recovery** (or Escape) leaves the copy in the autosave folder.
+The whole account can be read again in a new read-only **About this copy**
+field, and the buttons now have access keys.
+
+Before, only the newest document of the session was offered. A second
+document with unsaved changes was never mentioned. Now each is offered in
+turn, "Document 1 of 3", each window beginning with what happened to the one
+before; after the last, focus goes to your document. After a power cut or a forced close, when the log
+holds no error, unsaved changes were not offered at all; they are now, while a
+copy that matches the saved file word for word is not offered. The wording
+that, after three skips, said Skip would discard the copy is gone: Skip never
+deleted anything. A copy that cannot be read is named, not shown as an error
+message.
+
+In QUILL Lite's recovery window each row now says how the copy stands against
+its saved file, and **What this would do** says that a file on disk changes
+only when you save it (FUX-05).
+
 
 ### Podcast show notes and transcripts say where they came from (2026-11-24)
 

@@ -2,6 +2,15 @@
 
 ## 2.0.0
 
+### The recovery window says how each copy differs from its file (2026-11-24)
+
+Each row of the recovery window now says how the copy stands against the
+file it came from: "1,200 words more than the saved file", "the same as the
+saved file", or "the saved file is no longer there". **What this would do**
+says that each document opens under its own name, unsaved, and that the file
+on disk changes only when you save it. A copy that cannot be read says so in
+words, without the error text (FUX-05).
+
 ### Recording transcriptions survive a restart (2026-11-25)
 
 - **Ctrl+Shift+PageUp** opens **Transcriptions on This Computer**, a modeless

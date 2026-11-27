@@ -271,6 +271,32 @@ deleted.</p>
 rather than written over by the next keystroke, and the draft window
 says where.</p>
 <h3
+id="crash-recovery-names-the-document-and-offers-every-one-2026-11-24">Crash
+Recovery names the document, and offers every one (2026-11-24)</h3>
+<p>After QUILL closed without saving, Crash Recovery said “Restore the
+latest autosave snapshot”. It now names the document, when its copy was
+made and how it differs from the file on disk, such as “Unsaved changes
+to chapter3.md, autosaved today at 2:14 PM: 1,200 words more than the
+saved file”, and says what each button does: <strong>Restore
+Document</strong> (it was Restore Latest Snapshot) opens the copy as a
+new, unsaved document and leaves the file on disk as it is; <strong>Skip
+Recovery</strong> (or Escape) leaves the copy in the autosave folder.
+The whole account can be read again in a new read-only <strong>About
+this copy</strong> field, and the buttons now have access keys.</p>
+<p>Before, only the newest document of the session was offered. A second
+document with unsaved changes was never mentioned. Now each is offered
+in turn, “Document 1 of 3”, each window beginning with what happened to
+the one before; after the last, focus goes to your document. After a
+power cut or a forced close, when the log holds no error, unsaved
+changes were not offered at all; they are now, while a copy that matches
+the saved file word for word is not offered. The wording that, after
+three skips, said Skip would discard the copy is gone: Skip never
+deleted anything. A copy that cannot be read is named, not shown as an
+error message.</p>
+<p>In QUILL Lite’s recovery window each row now says how the copy stands
+against its saved file, and <strong>What this would do</strong> says
+that a file on disk changes only when you save it (FUX-05).</p>
+<h3
 id="podcast-show-notes-and-transcripts-say-where-they-came-from-2026-11-24">Podcast
 show notes and transcripts say where they came from (2026-11-24)</h3>
 <p>In QUILL’s podcasts, Send to Editor, Send Show Notes to Editor and
