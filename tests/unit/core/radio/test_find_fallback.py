@@ -134,7 +134,7 @@ def test_the_directories_follow_the_website_when_the_setting_is_on() -> None:
     assert [a.method for a in outcome.attempts] == [fb.METHOD_WEBSITE, fb.METHOD_DIRECTORY]
     assert fb.found_by_sentence(outcome) == (
         "The website had none, so these were found by the public directories "
-        "(Radio Browser and IPRD)."
+        "(Radio Browser, IPRD and Radio Garden)."
     )
 
 
@@ -154,19 +154,23 @@ def test_a_name_goes_straight_to_the_directories_whatever_the_setting() -> None:
     )
     assert called == [] and outcome.method == fb.METHOD_DIRECTORY
     assert fb.found_by_sentence(outcome) == (
-        "Found by the public directories (Radio Browser and IPRD)."
+        "Found by the public directories (Radio Browser, IPRD and Radio Garden)."
     )
 
 
 def test_describe_attempts() -> None:
     attempts = [fb.Attempt(fb.METHOD_WEBSITE, 0), fb.Attempt(fb.METHOD_DIRECTORY, 0)]
     assert fb.describe_attempts(attempts) == (
-        "Tried the website and the public directories (Radio Browser and IPRD)."
+        "Tried the website and the public directories (Radio Browser, IPRD and Radio Garden)."
     )
     assert fb.describe_attempts([]) == ""
 
 
 # -- the real wiring, with fake scanners -------------------------------------------
+
+
+def _no_garden(url: str, timeout: float, max_bytes: int) -> Any:
+    raise OSError("no network in tests")
 
 
 @pytest.fixture
@@ -186,6 +190,7 @@ def fakes(monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
     monkeypatch.setattr(radio_browser, "search_stations", browse)
     monkeypatch.setattr(io.iprd, "search_stations", lambda q, **_k: [])
     monkeypatch.setattr(io.iprd, "catalog", lambda **_k: [])
+    monkeypatch.setattr(io, "garden_fetch", _no_garden)
     monkeypatch.setattr(
         link_finder, "_apply_live_check", lambda rows, *_a, **_k: (list(rows), 0, 0)
     )
@@ -196,7 +201,9 @@ def test_find_a_name_without_spaces_and_with_an_ending(fakes: dict[str, Any]) ->
     for typed in ("kexp", "kexp.mp3"):
         found = io.find(typed, safe_mode=False, fallback=False)
         assert [c.url for c in found.scan.candidates] == ["http://rb/kexp"]
-        assert found.how == "Found by the public directories (Radio Browser and IPRD)."
+        assert (
+            found.how == "Found by the public directories (Radio Browser, IPRD and Radio Garden)."
+        )
     assert fakes["scans"] == []  # a name is never sent to the website scanner
 
 

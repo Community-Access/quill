@@ -17,8 +17,9 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
+from quill.core import http_client, net_public
 from quill.core.radio import find_fallback as fb
-from quill.core.radio import iprd, link_finder, live_check, radio_browser
+from quill.core.radio import iprd, link_finder, live_check, radio_browser, radio_garden
 from quill.core.radio.link_finder import PageScanResult
 from quill.core.radio.page_links import PageStreamCandidate
 
@@ -35,13 +36,42 @@ class FoundResult:
     how: str = ""
 
 
+def garden_fetch(url: str, timeout: float, max_bytes: int) -> net_public.HttpReply:
+    """One read of a public Radio Garden address, through the public-only guard."""
+    return net_public.fetch(
+        url,
+        max_bytes=max_bytes,
+        timeout=timeout,
+        deadline_seconds=timeout * 2,
+        headers={"User-Agent": http_client.user_agent()},
+    )
+
+
+def _garden_candidates(
+    query: str, notes: list[str] | None, fetch: radio_garden.Fetch
+) -> list[PageStreamCandidate]:
+    hits = radio_garden.search(query, fetch)
+    if hits is None:
+        if notes is not None:
+            notes.append(radio_garden.NOT_ANSWERING)
+        return []
+    found = (radio_garden.resolve(hit, fetch) for hit in hits[: radio_garden.MAX_PLAYBACK_LOOKUPS])
+    return [candidate for candidate in found if candidate is not None]
+
+
 def search_directories(
     query: str,
     *,
     safe_mode: bool = False,
     on_checked: Callable[[str, live_check.Verdict], None] | None = None,
+    notes: list[str] | None = None,
+    garden: radio_garden.Fetch | None = None,
 ) -> list[PageStreamCandidate]:
-    """Live-checked candidates from Radio Browser and IPRD for *query*."""
+    """Live-checked candidates from Radio Browser, IPRD and Radio Garden for *query*.
+
+    *notes* collects plain sentences about a directory that could not help (Radio
+    Garden, which has no official API, may refuse a program).
+    """
     if safe_mode or not fb.compact(query):
         return []
     stations = []
@@ -63,12 +93,16 @@ def search_directories(
     except Exception:  # noqa: BLE001
         pass
     rows = fb.directory_candidates(stations, query)
-    if not rows:
-        return []
-    kept, _left_out, _not_public = link_finder._apply_live_check(
-        rows, link_finder.live_check.MAX_CHECKS, on_checked
-    )
-    return kept
+    kept: list[PageStreamCandidate] = []
+    if rows:
+        kept, _left_out, _not_public = link_finder._apply_live_check(
+            rows, link_finder.live_check.MAX_CHECKS, on_checked
+        )
+    # Radio Garden's rows are already checked on the way (resolve follows the
+    # redirect to the real stream and judges it), so they skip the second check.
+    seen = {c.url for c in kept}
+    extra = _garden_candidates(fb.name_query(query), notes, garden or garden_fetch)
+    return kept + [c for c in extra if c.url not in seen]
 
 
 def find(
@@ -83,8 +117,12 @@ def find(
     Raises what the website scanner raises when the page cannot be read **and**
     no other way found anything, so the listener hears the real reason.
     """
+    garden_id = radio_garden.station_id(text)
+    if garden_id:
+        return _garden_page(garden_id, text, safe_mode)
     kind = fb.typed_kind(text)
     query = fb.name_query(text) if kind == "name" else fb.site_name(text)
+    notes: list[str] = []
     website_error: list[BaseException] = []
     scanned: list[PageScanResult] = []
 
@@ -103,7 +141,7 @@ def find(
         kind,
         scan_website=scan_website,
         search_directories=lambda q: search_directories(
-            q, safe_mode=safe_mode, on_checked=on_checked
+            q, safe_mode=safe_mode, on_checked=on_checked, notes=notes
         ),
         query=query,
         fallback=fallback,
@@ -118,5 +156,25 @@ def find(
     if website_error:
         raise website_error[0]
     return FoundResult(
-        PageScanResult("", "", [], checked=True), fb.describe_attempts(outcome.attempts)
+        PageScanResult("", "", [], checked=True),
+        " ".join([fb.describe_attempts(outcome.attempts), *notes]).strip(),
     )
+
+
+def _garden_page(
+    channel_id: str, text: str, safe_mode: bool, fetch: radio_garden.Fetch | None = None
+) -> FoundResult:
+    """A pasted Radio Garden station page: its real stream, or one plain sentence."""
+    empty = PageScanResult("", "", [], checked=True)
+    if safe_mode:
+        return FoundResult(empty, "Radio Garden is not contacted in Safe Mode.")
+    get = fetch or garden_fetch
+    title = radio_garden.channel_title(channel_id, get)
+    slug = text.rstrip("/").rsplit("/", 2)[-2].replace("-", " ") if "/" in text else ""
+    candidate = radio_garden.resolve(
+        radio_garden.Hit(channel_id, title or slug or "Radio Garden"), get
+    )
+    if candidate is None:
+        return FoundResult(empty, radio_garden.NO_PLAYBACK if title else radio_garden.NOT_ANSWERING)
+    scan = PageScanResult(title, "", [candidate], checked=True)
+    return FoundResult(scan, f"Found by {radio_garden.SOURCE}.")

@@ -27,6 +27,10 @@ Ideas from StreamSift, a screen-reader-first stream finder by Andre Louis
   public directories by name. A name that matches a recent website offers to
   check that site again. A new setting, off by default, lets a website with no
   stream fall back to the directories, and the result says which way found it.
+- **Radio Garden stations in Find Streams.** Paste a Radio Garden station page
+  and Scan lists the station's real stream, checked as live audio; a typed name
+  is searched there too. Only Radio Garden's own page addresses are used, only
+  for what you type, and a refusal is one plain sentence.
 
 ### Unsent GitHub drafts say what they are, and go once the issue exists (2026-11-24)
 

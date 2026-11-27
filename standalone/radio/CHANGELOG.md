@@ -31,13 +31,21 @@ stream finder by Andre Louis (github.com/OnjLouis/StreamSift, MIT). Thank you.
   Streams searches, turns the three sounds off; the sentences are still said.
 - **Find Streams takes a station name, and can try other ways** (2026-11-27).
   Type `kexp`, `bbcradio4` without spaces, or `kexp.mp3` with an ending, and the
-  public directories (Radio Browser and IPRD) are searched by name, ignoring
+  public directories (Radio Browser, IPRD and Radio Garden) are searched by name, ignoring
   spaces and punctuation, instead of the name being sent to the website scanner.
   A name that matches one of your recent websites first asks whether to check
   that site again. A new setting, Try other ways when a website has no stream
   (off by default), lets a website with no stream fall back to the directories.
   The result always says which way found it. Quill Radio has no browser-assisted
   way, so that step is not part of it.
+- **Radio Garden stations in Find Streams** (2026-11-27). Paste a Radio Garden
+  station page, such as https://radio.garden/listen/kexp/Zk1UxX-Y, and Scan finds
+  the station's real stream, checks it is live audio and lists it, saying "Found
+  by Radio Garden." A typed station name is searched there too, with the other
+  directories. Radio Garden has no official public interface, so only the three
+  addresses its own page uses are read, only for what you type or paste; a
+  station with no stream, or a refusal, is one plain sentence. Safe Mode
+  contacts nothing.
 
 ### Recordings are kept safe through crashes, reconnects and Stop (2026-11-20)
 

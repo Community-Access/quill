@@ -3475,16 +3475,30 @@ Preferences (Ctrl+,). The sentences are still said.
 **Typing a name, and other ways to find it.** The address box also takes a
 station's name. Type `kexp`, `bbcradio4` without spaces, or `kexp.mp3` with an
 ending, and Quill Radio looks the name up in the public directories, Radio
-Browser and IPRD, ignoring spaces and punctuation, and checks each stream it
+Browser, IPRD and Radio Garden, ignoring spaces and punctuation, and checks each stream it
 finds as it does for a website. If the name is one of your recent websites, it
 first asks "Check it again?" Yes scans that site; No looks the name up. The
 result says which way found it: "Found by the public directories (Radio Browser
-and IPRD)." To have a website that has no stream fall back to the directories
+, IPRD and Radio Garden)." To have a website that has no stream fall back to the directories
 too, turn on **Try other ways when a website has no stream** under Find Streams
 in Preferences. It is off by default, and then it says "The website had none, so
 these were found by the public directories." Quill Radio has no browser-assisted
 way of finding a stream, so that step is not part of it. Safe Mode contacts
 nothing.
+
+**Radio Garden.** Paste the address of a Radio Garden station page, for example
+`https://radio.garden/listen/kexp/Zk1UxX-Y`, into the address box and press
+Scan. Quill Radio asks Radio Garden for that one station, follows its link to the
+station's own stream, checks that it is live audio, and lists it with the
+sentence "Found by Radio Garden." A station name typed in the box is searched
+there too, with the other directories, and at most five of its stations are
+looked up. Radio Garden has no official public interface, so Quill Radio uses
+only the three addresses that its own web page uses, and only for what you type
+or paste. When a station has no stream to play, it says "Radio Garden does not
+offer a stream for that station right now." When Radio Garden does not answer a
+program, it says "Radio Garden did not answer the way it usually does, so
+nothing was found there." Quill Radio never plays the Radio Garden address
+itself, only the station's real stream. Safe Mode contacts nothing.
 
 This works for many stations whose Listen Live button is a web player. For
 Triton Digital and StreamTheWorld players, including the whole

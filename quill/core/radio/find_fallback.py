@@ -4,7 +4,7 @@ Three ideas from Andre Louis's StreamSift (https://github.com/OnjLouis/StreamSif
 MIT), written in QUILL's own code:
 
 * **Automatic fallback** (a setting, off by default). When the website scan finds
-  no playable stream, try the public directories next -- Radio Browser and IPRD,
+  no playable stream, try the public directories next -- Radio Browser, IPRD and Radio Garden,
   by the name the site's address carries ("kexp" from ``www.kexp.org``) -- and
   say which way found the result. Quill Radio has no browser-assisted method, so
   that last step of the idea does not exist here; it is not faked.
@@ -56,7 +56,7 @@ METHOD_WEBSITE = "website"
 METHOD_DIRECTORY = "directory"
 _METHOD_WORDS = {
     METHOD_WEBSITE: "the website",
-    METHOD_DIRECTORY: "the public directories (Radio Browser and IPRD)",
+    METHOD_DIRECTORY: "the public directories (Radio Browser, IPRD and Radio Garden)",
 }
 
 #: Endings people type onto a name: the stream's own file type.
@@ -178,7 +178,7 @@ class FallbackOutcome:
 
 
 def found_by_sentence(outcome: FallbackOutcome) -> str:
-    """ "Found by the public directories (Radio Browser and IPRD) ..." or ``""``.
+    """ "Found by the public directories (Radio Browser, IPRD and Radio Garden) ..." or ``""``.
 
     Said only when more than one way was tried or a name was looked up, because
     a plain website scan that worked needs no explaining. When the website found

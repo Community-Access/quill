@@ -801,6 +801,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+N | Import My Setup... | `app.import_setup` |
 | Ctrl+Alt+Shift+O | Internet Radio: Choose Browse Sources... | `radio.browse_sources` |
 | Ctrl+Alt+Shift+P | Recent Problems... | `app.recent_problems` |
+| Ctrl+Alt+Shift+Q | Internet Radio: Play Random Favorite | `radio.play_random_favorite` |
 | Ctrl+Alt+Shift+S | Internet Radio: Station Catalog Status... | `radio.catalog_status` |
 | Ctrl+Alt+Shift+V | Internet Radio: Forget Every Station's Own Volume... | `radio.forget_station_volumes` |
 | Ctrl+Alt+Shift+X | Export My Setup... | `app.export_setup` |
@@ -845,6 +846,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+Left | Rewind | `radio.rewind` |
 | Ctrl+Shift+M | Manage Favorites... | `radio.manage_favorites` |
 | Ctrl+Shift+N | ACB Media Schedule... | `radio.acb_calendar` |
+| Ctrl+Shift+O | Internet Radio: Play Random Station | `radio.play_random` |
 | Ctrl+Shift+Q | Internet Radio: Listening Statistics... | `radio.statistics` |
 | Ctrl+Shift+R | Recordings... | `radio.recordings` |
 | Ctrl+Shift+Right | Forward | `radio.forward` |

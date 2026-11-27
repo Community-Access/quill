@@ -756,7 +756,9 @@ def _directory_hit(name: str = "KEXP 90.3") -> Any:
     from quill.core.radio.find_fallback_io import FoundResult
 
     scan = PageScanResult("", "", [_c("http://rb.example/kexp", stream_name=name)], checked=True)
-    return FoundResult(scan, "Found by the public directories (Radio Browser and IPRD).")
+    return FoundResult(
+        scan, "Found by the public directories (Radio Browser, IPRD and Radio Garden)."
+    )
 
 
 def test_a_typed_name_is_looked_up_not_scanned_and_says_which_way(d: Any, monkeypatch: Any) -> None:
@@ -773,7 +775,9 @@ def test_a_typed_name_is_looked_up_not_scanned_and_says_which_way(d: Any, monkey
     task = d.dlg._task_manager.pending.pop()
     task["on_success"](None, task["func"]())
     assert seen == [("kexp", False)]
-    assert d.said[-1].endswith("Found by the public directories (Radio Browser and IPRD).")
+    assert d.said[-1].endswith(
+        "Found by the public directories (Radio Browser, IPRD and Radio Garden)."
+    )
     assert d.dlg._page_url == "" and d.dlg._page_title == "kexp"
 
 
