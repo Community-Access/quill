@@ -1652,6 +1652,7 @@ VERBS: dict[str, Scenario | str] = {
     "sub_issues": sub_issues,
     "transfer": transfer,
     "unsnooze": "with snooze: snoozed, then unsnoozed",
+    "my_github_options": "not here: a local preference in single-choice dialogs; unit-tested",
     "unsubscribe": "sheet:issue.subscribed",
     "upload_asset": upload_and_delete_asset,
     "watch": "sheet:repository.watch",

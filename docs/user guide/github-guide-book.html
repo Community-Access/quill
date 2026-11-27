@@ -8610,6 +8610,49 @@ whether GitHub says everything is working, which parts are slow or down,
 and any incident GitHub is working on, with its latest update. It asks
 the first time, reads the page only when you choose the command, and is
 greyed in Safe Mode. Chapter 10 has more.</p>
+<h2 id="list-speech-templates">List Speech Templates</h2>
+<p>Each row in a list is read as its cells, one after another.
+<strong>List Speech Templates</strong> (Tools menu,
+<code>Ctrl+Alt+Shift+V</code>) lets you decide what a row says, and in
+what order, for each kind of list: notifications, issues, pull requests
+and repositories. Nothing changes until you choose a template; until
+then every list is read the way it always was.</p>
+<p>In the window:</p>
+<ol type="1">
+<li><strong>List</strong> picks the kind of list.</li>
+<li><strong>Template</strong> picks the usual wording, one of three
+built-in presets, or a template you saved. <strong>Brief</strong> says
+only what identifies the row. <strong>Balanced</strong> adds the state
+and how long ago it changed. <strong>Detailed</strong> says everything
+and introduces each value with its name.</li>
+<li><strong>Fields in spoken order</strong> is the row, first to last.
+<strong>Move Up</strong> and <strong>Move Down</strong> (or
+<code>Alt+Up</code> and <code>Alt+Down</code> on the list) change the
+order, and each move says where the field landed, such as “Title moved
+to position 2 of 4”. <strong>Remove</strong> (or <code>Delete</code>)
+takes a field out. <strong>Choose field</strong> and
+<strong>Add</strong> put one back at the end.</li>
+<li><strong>Separator</strong> is what is said between fields.
+<strong>Say field labels</strong> adds the name before a value, such as
+“by octocat”. <strong>Leave out empty fields</strong> skips a field with
+no value; turn it off and <strong>Empty-field text</strong> is said
+instead.</li>
+<li><strong>Sample row preview</strong> is a real-looking row said
+exactly as your rows will be. <strong>Hear Preview</strong> says it
+aloud.</li>
+<li><strong>Save As</strong> names your choices. <strong>Rename</strong>
+and <strong>Delete Template</strong> work on a saved template.
+<strong>Use for This List</strong> makes the list speak this way, and
+<strong>Use for Similar Lists</strong> does the same for lists that read
+alike, such as issues and pull requests; a list that lacks one of the
+fields keeps its own choice and is named.</li>
+</ol>
+<p>If GitHub or WordPress stops offering a field you chose, the rest of
+your choices are kept, the window says which field is gone, and the row
+simply does not say it: you never hear a blank. The Details pane always
+has the full row, whatever the template says. If the template file
+cannot be read, a copy is kept aside and the usual wording is used until
+you save again.</p>
 <h2 id="workbench-options">Workbench Options</h2>
 <p>GitHub’s preferences live in the Workbench, not in the editor’s
 Options: <strong>Tools &gt; Workbench Options…</strong>,

@@ -953,6 +953,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Row | Key | What it does |
 | --- | --- | --- |
 | Workbench Options... | Ctrl+Shift+O | Where the Workbench opens, how notifications check, lists and privacy. |
+| List Speech Templates... | Ctrl+Alt+Shift+V | How rows are spoken: choose and order the fields, a separator and labels. |
 | Dry Run | Ctrl+Alt+D | Turn Dry Run on or off. While it is on, every write asks and previews as usual, then stops before sending and says what it would have sent. |
 | Plain-Language Batch... | Ctrl+Shift+S | Say a change to many issues or pull requests in words, such as close every issue labelled duplicate older than 90 days; check the exact items it found, then send them. No AI: the same words always mean the same thing. |
 | GitHub API Console... | Ctrl+Shift+J | Send any GitHub REST request or GraphQL query: completion from GitHub's API description, what it does and needs said first, the answer as a tree. |

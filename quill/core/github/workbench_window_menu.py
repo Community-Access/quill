@@ -30,6 +30,7 @@ Delete, Backspace, Escape) are not menu rows; the window handles them itself and
 from __future__ import annotations
 
 from quill.core.github.item_actions import PROPERTIES_COMMAND
+from quill.core.github.workbench_my_github_menu import GO_MY_GITHUB_ROW, MY_GITHUB_OPTIONS_ROW
 from quill.core.github.workbench_view_menu import (
     ACCOUNT_ROWS,
     COLUMNS_ROW,
@@ -194,13 +195,7 @@ _VIEW = MenuSpec(
         FILTER_SUB,
         GROUP_SUB,
         COLUMNS_ROW,
-        _row(
-            "my_github_options",
-            "My GitHub &View Options...",
-            "Ctrl+Alt+M",
-            "Choose which kinds My GitHub shows, one repository, how it is ordered and grouped. "
-            "Remembered for your account.",
-        ),
+        MY_GITHUB_OPTIONS_ROW,
         None,
         _row("back", "&Back", "Alt+Left", "The view you were on before. Backspace too."),
         _row("forward", "&Forward", "Alt+Right", "The view you went back from."),
@@ -231,13 +226,7 @@ _VIEW = MenuSpec(
 _GO = MenuSpec(
     "&Go",
     (
-        _row(
-            "go_my_github",
-            "&My GitHub",
-            "Alt+Shift+Home",
-            "Your whole queue in one list: unread notifications, assigned work, review requests "
-            "and your pull requests with failing checks.",
-        ),
+        GO_MY_GITHUB_ROW,
         _row("go_inbox", "I&nbox", "Ctrl+1", "What needs you, across GitHub. Alt+Home too."),
         _row(
             "go_repository",
@@ -439,6 +428,12 @@ _TOOLS = MenuSpec(
             "Workbench &Options...",
             "Ctrl+Shift+O",
             "Where the Workbench opens, how notifications check, lists and privacy.",
+        ),
+        _row(
+            "list_speech",
+            "List Speech &Templates...",
+            "Ctrl+Alt+Shift+V",
+            "How rows are spoken: choose and order the fields, a separator and labels.",
         ),
         _row(
             "dry_run",
