@@ -6044,12 +6044,12 @@ this device’s version.</li>
 the other device’s version.</li>
 <li><code>self.r_merged</code>: Resolve the selected conflict with the
 merged combination of both versions.</li>
-<li><code>self.backup_list</code>: The database snapshots taken before
-each sync, kept so a bad sync can be undone. Select one and press Roll
-Back to restore it.</li>
+<li><code>self.backup_list</code>: The library as it was before each
+sync and each rollback, newest first, kept so either can be undone.
+Select one and press Roll Back to restore it.</li>
 <li><code>self.rollback</code>: Restore the library to the selected
-pre-sync snapshot, after a confirmation. The current database is
-overwritten; the commit log is kept.</li>
+snapshot, after a confirmation. The library as it is now is kept as a
+snapshot first; the commit log is kept.</li>
 <li><code>close</code>: Close sync history without changing
 anything.</li>
 </ul>
@@ -8428,11 +8428,14 @@ issue text.</li>
 for none.</li>
 <li><code>self._assignees</code>: Optional usernames separated by
 commas; @ is optional.</li>
-<li><code>self._discard_btn</code>: Remove this draft from this device
-without submitting it.</li>
+<li><code>self._discard_btn</code>: Delete this draft from this device
+without submitting it, after a confirmation. It was never submitted, so
+it cannot be recovered.</li>
 <li><code>create_btn</code>: Create the issue on GitHub with this title
 and text.</li>
-<li><code>cancel_btn</code>: Close without creating the issue.</li>
+<li><code>cancel_btn</code>: Close without creating the issue. The draft
+stays saved on this device and comes back the next time you start a new
+issue here.</li>
 </ul>
 <h4
 id="issueformdialog-quilluigithub_issue_form_dialogpy">IssueFormDialog
@@ -9004,8 +9007,9 @@ comment window: mentions, references, emoji, saved replies, a preview
 and a check. Its text comes back here.</li>
 <li><code>self._stale_confirm</code>: The saved review was created for a
 different pull request head commit.</li>
-<li><code>self._discard_btn</code>: Remove the review draft from this
-device without submitting it.</li>
+<li><code>self._discard_btn</code>: Delete the review draft from this
+device without submitting it, after a confirmation. It was never
+submitted, so it cannot be recovered.</li>
 <li><code>submit_btn</code>: Send the selected review action to GitHub
 now.</li>
 <li><code>cancel_btn</code>: Keep the review as a draft on this computer

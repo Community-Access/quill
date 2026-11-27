@@ -22,12 +22,16 @@ acknowledging, and nothing changed.
 from __future__ import annotations
 
 import json
-import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from quill.core.abbreviations import Abbreviation, AbbreviationLibrary, save_abbreviation_library
+from quill.core.abbreviations import (
+    SCHEMA_VERSION,
+    AbbreviationLibrary,
+    save_abbreviation_library,
+)
+from quill.core.abbreviations_store import entry_from_dict, entry_to_dict
 
 __all__ = [
     "ImportCounts",
@@ -91,14 +95,7 @@ def merge_imported(library: AbbreviationLibrary, incoming: list[Any]) -> ImportC
             already += 1
             continue
         try:
-            entry = Abbreviation(
-                id=str(item.get("id") or uuid.uuid4()),
-                abbreviation=str(item.get("abbreviation", "")),
-                expansion=str(item.get("expansion", "")),
-                case_sensitive=bool(item.get("case_sensitive", False)),
-                enabled=bool(item.get("enabled", True)),
-                description=str(item.get("description", "")),
-            )
+            entry = entry_from_dict(item)  # every per-entry setting, as stored
         except Exception:  # noqa: BLE001 - one bad entry must not stop the rest
             unusable += 1
             continue
@@ -181,19 +178,12 @@ def export_abbreviations(parent: Any, library: AbbreviationLibrary, host: Any = 
     )
     if path is None:
         return
+    # The same shape the library is saved in, so Export is a whole backup: the
+    # category (AutoCorrect entries), speech, sound, triggers and per-app scope
+    # used to be dropped, and an import made them plain abbreviations (FUX-05).
     data = {
-        "version": library.version,
-        "abbreviations": [
-            {
-                "id": a.id,
-                "abbreviation": a.abbreviation,
-                "expansion": a.expansion,
-                "case_sensitive": a.case_sensitive,
-                "enabled": a.enabled,
-                "description": a.description,
-            }
-            for a in library.abbreviations
-        ],
+        "version": SCHEMA_VERSION,
+        "abbreviations": [entry_to_dict(a) for a in library.abbreviations],
     }
     try:
         with open(path, "w", encoding="utf-8") as handle:

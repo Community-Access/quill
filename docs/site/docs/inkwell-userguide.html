@@ -700,6 +700,13 @@ text. If you missed it, <strong>Help &gt; Repeat Last Result</strong>
 Activity…</strong> (<code>Shift+F9</code>) keeps it with an <strong>Open
 Folder</strong> button. A file that cannot be read or written still gets
 a box, because nothing changed and it needs your attention.</p>
+<p>If the library itself cannot be read when Inkwell starts, Inkwell
+starts with its built-in abbreviations and copies the damaged file aside
+first, as
+<code>abbreviations.damaged-&lt;date&gt;-&lt;time&gt;.json</code> in the
+same folder, so saving does not destroy it. It says so once: “Your
+abbreviation library could not be read, so Quill Inkwell started with
+its built-in abbreviations. Your library was kept as …”.</p>
 <h2 id="14-settings-reference">14. Settings reference</h2>
 <p>Inkwell’s own preferences live in <code>inkwell.json</code> beside
 the library:</p>

@@ -248,6 +248,18 @@
 published yet. The testing build is <strong>1.0.0 (build 2)</strong>.
 First, the work since the first build, grouped by subject; then the
 first build itself.</p>
+<h3
+id="a-library-that-cannot-be-read-is-kept-not-replaced-fux-05-2026-11-24">A
+library that cannot be read is kept, not replaced (FUX-05,
+2026-11-24)</h3>
+<p>When <code>abbreviations.json</code> could not be read, Inkwell
+started with its built-in abbreviations, and the next save wrote them
+over your file, with nothing said. It now copies the damaged file aside
+first, as
+<code>abbreviations.damaged-&lt;date&gt;-&lt;time&gt;.json</code> beside
+it, and says once where it is: “Your abbreviation library could not be
+read, so Quill Inkwell started with its built-in abbreviations. Your
+library was kept as …”.</p>
 <h3 id="an-empty-list-says-how-to-make-a-first-entry-2026-11-24">An
 empty list says how to make a first entry (2026-11-24)</h3>
 <p>With every abbreviation deleted, the list said nothing. A

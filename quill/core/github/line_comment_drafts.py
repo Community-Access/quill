@@ -163,7 +163,15 @@ class LineCommentDraftStore:
             return None
         return comment if self._write(key, [*existing, comment]) else None
 
-    def update(self, repository: str, number: int, comment_id: str, body: str) -> bool:
+    def update(
+        self, repository: str, number: int, comment_id: str, body: str, head_sha: str = ""
+    ) -> bool:
+        """Rewrite a pending comment. With *head_sha*, it now describes that head.
+
+        Compose Review tells somebody to "delete or rewrite" a comment written
+        against older commits, and a rewrite that kept the old head left it
+        stale forever, so only Delete ever unblocked the review (FUX-05).
+        """
         key = _pull_key(repository, number)
         if not key or not body.strip():
             return False
@@ -171,7 +179,13 @@ class LineCommentDraftStore:
         if not any(comment.id == comment_id for comment in existing):
             return False
         changed = [
-            replace(comment, body=body[:_MAX_BODY_CHARS]) if comment.id == comment_id else comment
+            replace(
+                comment,
+                body=body[:_MAX_BODY_CHARS],
+                head_sha=head_sha[:64] or comment.head_sha,
+            )
+            if comment.id == comment_id
+            else comment
             for comment in existing
         ]
         return self._write(key, changed)

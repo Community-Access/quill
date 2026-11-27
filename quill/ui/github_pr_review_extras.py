@@ -77,10 +77,14 @@ class GitHubPullReviewExtrasMixin:
         if not body:
             self._announce("A comment needs some text; it was not changed.")
             return
-        if not self._line_comment_store.update(self._repo, self._number, comment.id, body):
+        head = self._state.head_sha if self._state is not None else ""
+        store = self._line_comment_store
+        if not store.update(self._repo, self._number, comment.id, body, head_sha=head):
             self._announce("Could not save the change on this device.")
             return
-        self._announce("Pending comment changed. It is still not sent.")
+        moved = bool(head) and comment.head_sha != head
+        now = " It now applies to the current changes." if moved else ""
+        self._announce(f"Pending comment changed.{now} It is still not sent.")
         self._render_outline()
 
     def _delete_pending(self, _event: object) -> None:

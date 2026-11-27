@@ -438,9 +438,16 @@ your own.</p>
 usernames):</strong>. Labels and assignees are optional, and must
 already exist in the repository.</p>
 <p>What you type is saved on this computer as you go, so closing the
-window by mistake loses nothing: the next New Issue in that repository
-says “Recovered a local draft”, and <strong>Discard Saved Draft</strong>
-throws it away. A draft is never sent by itself.</p>
+window by mistake loses nothing. The next New Issue in that repository
+brings the draft back and says what it is, for example “Recovered your
+unsent issue for owner/repo, “Crash on save”, 120 words, saved today at
+2:14 PM. It has not been submitted.” <strong>Discard Saved
+Draft</strong> asks first, then throws it away for good. A draft is
+never sent by itself, and once the issue is created its draft is
+cleared, so it is not offered again.</p>
+<p>If the file that holds your drafts cannot be read, it is kept aside
+under a new name rather than written over, and the next draft window
+says where.</p>
 <p><strong>Create Issue</strong> is the only button that sends anything,
 and it shows a preview first: the repository, title, template, labels,
 assignees and body. For a long body the preview is shortened and says
