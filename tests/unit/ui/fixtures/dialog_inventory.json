@@ -170,6 +170,7 @@
   "quill/ui/audio_studio/chapter_workbench_dialogs.py::AcxResultDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/audio_studio/chapter_workbench_dialogs.py::ChapterDetailsDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/audio_studio/chapter_workbench_dialogs.py::SilenceParamsDialog::subclass:wx.Dialog": "hardened_custom",
+  "quill/ui/audio_studio/chapter_workbench_edits.py::ChapterEditsMixin._ask_unsaved::wx.MessageDialog": "native",
   "quill/ui/audio_studio/chapter_workbench_edits.py::ChapterEditsMixin._on_add_chapter::wx.TextEntryDialog": "native",
   "quill/ui/audio_studio/chapter_workbench_edits.py::ChapterEditsMixin._on_add_chapter::wx.TextEntryDialog#2": "native",
   "quill/ui/audio_studio/chapter_workbench_silence.py::SilenceProposalMixin._ask_keep_or_replace::wx.MessageDialog": "native",
