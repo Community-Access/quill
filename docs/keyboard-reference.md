@@ -767,6 +767,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+Shift+Left | Previous song | `radio.previous_song` |
 | Alt+Shift+N | Whats new | `radio.whats_new` |
 | Alt+Shift+P | Internet Radio: Go to Playing Station | `radio.go_to_playing_station` |
+| Alt+Shift+R | Internet Radio: Play Random Favorite | `radio.play_random_favorite` |
 | Alt+Shift+Right | Next song | `radio.next_song` |
 | Alt+Shift+T | Station timeshift | `radio.station_timeshift` |
 | Alt+Shift+U | Internet Radio: Tune as I Move Through Stations | `radio.dial_tuning` |
@@ -801,7 +802,6 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+N | Import My Setup... | `app.import_setup` |
 | Ctrl+Alt+Shift+O | Internet Radio: Choose Browse Sources... | `radio.browse_sources` |
 | Ctrl+Alt+Shift+P | Recent Problems... | `app.recent_problems` |
-| Ctrl+Alt+Shift+Q | Internet Radio: Play Random Favorite | `radio.play_random_favorite` |
 | Ctrl+Alt+Shift+S | Internet Radio: Station Catalog Status... | `radio.catalog_status` |
 | Ctrl+Alt+Shift+V | Internet Radio: Forget Every Station's Own Volume... | `radio.forget_station_volumes` |
 | Ctrl+Alt+Shift+X | Export My Setup... | `app.export_setup` |

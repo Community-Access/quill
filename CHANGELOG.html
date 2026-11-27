@@ -250,8 +250,8 @@ from StreamSift (2026-11-27)</h3>
 Louis (github.com/OnjLouis/StreamSift, MIT). Thank you.</p>
 <ul>
 <li><strong>Play Random Station and Play Random Favorite.</strong> In
-Quill Radio’s Station menu (Ctrl+Shift+O and Ctrl+Alt+Shift+Q) and
-QUILL’s Internet Radio menu. Random Station picks from the list you last
+Quill Radio’s Station menu (Ctrl+Shift+O and Alt+Shift+R) and QUILL’s
+Internet Radio menu. Random Station picks from the list you last
 searched or scanned, or from your favorites when none is open. It never
 plays the same station twice in a row when there is a choice, and says
 what it picked in one sentence.</li>
@@ -7809,9 +7809,9 @@ ninth Open Recent row in both editors, so whichever lost was silent
 about losing. The menu-accelerator gate could not see it: recent rows
 are dynamic and exist only once nine files have been opened, and
 <code>family_chords._numbered</code> assumed nine digits for every
-numbered row. No family-wide key was free to move either to
-(Ctrl+Alt+Shift+Q and R are QUILL’s and Radio’s system-wide keys, rule
-9’s F-keys are spent, Shift+F12 is Word’s Save), so, by Jeff’s decision,
+numbered row. No family-wide key was free to move either to (Alt+Shift+R
+and R are QUILL’s and Radio’s system-wide keys, rule 9’s F-keys are
+spent, Shift+F12 is Word’s Save), so, by Jeff’s decision,
 <code>NUMBERED</code> is 8: Alt+Shift+1 to 8 reopen recent files and the
 ninth stays one row down in Recent Documents (Alt+Shift+0).
 <code>family_chords._row_count</code> reads <code>NUMBERED</code>, so
@@ -12033,9 +12033,9 @@ else. Those four now have <strong>no show and hide key until you choose
 one</strong> in their new <strong>File &gt; Show and Hide Key…</strong>
 (Ctrl+Alt+Shift+H), which refuses a key any QuillVille app uses, naming
 the app in one sentence. Somebody who had the old key is moved to none
-and told once; a key somebody chose is kept. QUILL keeps
-Ctrl+Alt+Shift+Q, Quill Radio Ctrl+Alt+Shift+R and Quill Cast
-Ctrl+Alt+Shift+F12 (<code>quill/core/family_chords.py</code>,
+and told once; a key somebody chose is kept. QUILL keeps Alt+Shift+R,
+Quill Radio Ctrl+Alt+Shift+R and Quill Cast Ctrl+Alt+Shift+F12
+(<code>quill/core/family_chords.py</code>,
 <code>quill/core/show_hide_keys.py</code>,
 <code>quill/ui/show_hide_key_picker.py</code>).</li>
 <li><strong>Four commands off Quill Radio’s key.</strong> The Keymap
@@ -12594,9 +12594,9 @@ that clashed across the family (2026-10-04)</h3>
 <ul>
 <li><strong>QUILL Cast’s Mark as Played and Next is
 Ctrl+Alt+Shift+Down</strong>, Next in Queue’s key with Shift added. It
-was Ctrl+Alt+Shift+Q, QUILL’s show-and-hide key for the whole of
-Windows, so it never fired while QUILL ran. A test now checks every
-app’s keys against every family app’s show-and-hide key
+was Alt+Shift+R, QUILL’s show-and-hide key for the whole of Windows, so
+it never fired while QUILL ran. A test now checks every app’s keys
+against every family app’s show-and-hide key
 (<code>tests/unit/ui/test_global_hotkeys.py</code>).</li>
 <li><strong>Quill Radio’s Station &gt; Local Media… has no access
 letter.</strong> It had taken D, which Download Preferences already had,
@@ -12616,8 +12616,8 @@ QUILL key, then N, which the QUILL key keeps for browse mode, so it
 never played anything. It now sits with Stop (0) and Mute (9).</li>
 <li><strong>Unquote Lines is Alt+Shift+.</strong> (Alt, Shift and the
 period), in QUILL and in QUILL Lite, where it is called Remove Quote
-Marks. Its old key, Ctrl+Alt+Shift+Q, is QUILL’s show-and-hide key for
-the whole of Windows, so Windows handed it to that instead.</li>
+Marks. Its old key, Alt+Shift+R, is QUILL’s show-and-hide key for the
+whole of Windows, so Windows handed it to that instead.</li>
 <li><strong>The language suggestion names the right key.</strong> “This
 looks like Python” used to say press Ctrl+Shift+L, which starts a bullet
 list. It now names whatever Set Document Language is on (Ctrl+Alt+F6
@@ -13277,9 +13277,9 @@ Notifications, problems in Recent Problems. The old per-show
 <code>watched_folders_window.py</code>,
 <code>watched_folder_settings.py</code>.</li>
 <li><strong>Cast’s own show/hide key</strong>, Ctrl+Alt+Shift+F12. The
-shared default had taken Ctrl+Alt+Shift+Q system-wide, which was then
-Cast’s Mark as Played and Next, so that row never fired while Cast ran
-(it moved off that key on 2026-10-04).</li>
+shared default had taken Alt+Shift+R system-wide, which was then Cast’s
+Mark as Played and Next, so that row never fired while Cast ran (it
+moved off that key on 2026-10-04).</li>
 <li><strong>Episode &gt; Player Information… (Ctrl+I)</strong> and
 <strong>Podcasts &gt; Carry My Place Between Machines…</strong>, both
 previously reachable only from the Command Palette; <strong>Bookmark
@@ -20120,17 +20120,17 @@ window to the system tray, or brings it back and focuses it, even while
 another program has focus — so a family that lives in the tray (Quill
 Weather watching for alerts, Quill Radio playing in the background) is
 always one key away without hunting for the tray icon. The chords never
-collide: <strong>QUILL is Ctrl+Alt+Shift+Q, Quill Radio is
-Ctrl+Alt+Shift+R, Quill Weather is Ctrl+Alt+Shift+W.</strong> Hiding
-leaves the app fully running (playback, recording, and alert monitoring
-continue); the toggle speaks “hidden to the tray” or “shown” so a press
-from another window still tells you what happened. It is Windows-only
-(built on <code>RegisterHotKey</code>, the same mechanism Quill Radio
-already uses for the hardware media keys) and best-effort: if another
-program already owns a chord, that chord stays theirs and the app simply
-doesn’t grab it — nothing breaks, and QUILL’s press is a low-risk
+collide: <strong>QUILL is Alt+Shift+R, Quill Radio is Ctrl+Alt+Shift+R,
+Quill Weather is Ctrl+Alt+Shift+W.</strong> Hiding leaves the app fully
+running (playback, recording, and alert monitoring continue); the toggle
+speaks “hidden to the tray” or “shown” so a press from another window
+still tells you what happened. It is Windows-only (built on
+<code>RegisterHotKey</code>, the same mechanism Quill Radio already uses
+for the hardware media keys) and best-effort: if another program already
+owns a chord, that chord stays theirs and the app simply doesn’t grab it
+— nothing breaks, and QUILL’s press is a low-risk
 <strong>window-visibility</strong> command that can never touch a
-document. In QUILL the Ctrl+Alt+Shift+Q default is a normal, rebindable
+document. In QUILL the Alt+Shift+R default is a normal, rebindable
 global hotkey you can change or clear in <strong>Tools &gt; Global
 Hotkeys…</strong>. Built on a shared, unit-tested chord parser
 (<code>ui/tray_hotkey.py</code>). (<code>ui/tray_hotkey.py</code>,

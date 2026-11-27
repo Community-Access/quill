@@ -19,7 +19,7 @@ STREAMSIFT_KEYS: dict[str, str] = {
     # Play Random Station: O, as in rand-O-m: every nearer letter was taken, which a test of the
     # real Radio menu bar showed on 2026-11-27 (Ctrl+Alt+M and Ctrl+Alt+K are Help).
     "radio.play_random": "Ctrl+Shift+O",
-    # Play Random Favorite: one of two three-modifier letters left (R is the
-    # system-wide show and hide key).
-    "radio.play_random_favorite": "Ctrl+Alt+Shift+Q",
+    # Play Random Favorite: Alt+Shift+R. Every Ctrl+Alt+Shift letter is taken
+    # (Q and R are the family's system-wide show and hide keys).
+    "radio.play_random_favorite": "Alt+Shift+R",
 }

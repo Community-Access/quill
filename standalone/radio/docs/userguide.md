@@ -939,7 +939,7 @@ rather than something to learn.
 - **Find Streams from a Website...** (Ctrl+Alt+S): look through a station's web
   page for its stream.
 - **Play Random Station** (Ctrl+Shift+O) and **Play Random Favorite**
-  (Ctrl+Alt+Shift+Q): put something on without choosing. Play Random Station
+  (Alt+Shift+R): put something on without choosing. Play Random Station
   picks from the list you last searched or scanned, and from your favorites when
   none is open; Play Random Favorite always picks from your favorites. It never
   plays the same station twice in a row when there is a choice, and says what it
@@ -1304,7 +1304,7 @@ Tray** (Ctrl+W) hides every Quill Radio window.
 
 If another program already uses Ctrl+Alt+Shift+R, Quill Radio leaves it alone
 and says nothing, so use the tray icon instead. Each family app has its own
-key: QUILL is Ctrl+Alt+Shift+Q and Quill Weather is Ctrl+Alt+Shift+W.
+key: QUILL is Alt+Shift+R and Quill Weather is Ctrl+Alt+Shift+W.
 
 If you open Quill Radio again while it is already running, even hidden in the
 tray, the copy that is running comes forward. You never end up with two.
@@ -8810,7 +8810,7 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | Add Custom Station | Ctrl+N |
 | Find Streams from a Website | Ctrl+Alt+S |
 | Play Random Station | Ctrl+Shift+O |
-| Play Random Favorite | Ctrl+Alt+Shift+Q |
+| Play Random Favorite | Alt+Shift+R |
 | Search Sources | Ctrl+Alt+Shift+U |
 | Choose Browse Sources | Ctrl+Shift+Alt+O |
 | Update Station Catalog | Ctrl+Alt+Shift+G |
