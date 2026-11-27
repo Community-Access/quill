@@ -17,6 +17,11 @@ Ideas from StreamSift, a screen-reader-first stream finder by Andre Louis
   puts them back without scanning or playing anything. Find Streams offers it
   when it opens. A new search replaces them, and damaged saved results are
   ignored quietly.
+- **Sounds and names while Find Streams works.** A soft sound every two seconds
+  during a long scan, a different sound for a search that finds nothing and
+  another for one that could not finish, and the name each stream reports shown
+  (and spoken, at most every two seconds) while it is checked. One switch in
+  Radio's Preferences turns the sounds off.
 
 ### Unsent GitHub drafts say what they are, and go once the issue exists (2026-11-24)
 

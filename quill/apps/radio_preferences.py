@@ -18,6 +18,7 @@ from typing import Any
 from quill.apps import radio_preferences_listening, radio_preferences_load
 from quill.apps import radio_preferences_rows as rows
 from quill.apps.radio_preferences_dial import DialRows
+from quill.apps.radio_preferences_find import FindRows
 from quill.apps.radio_preferences_load import PreferencesDataLoad, podcast_schedule_help
 from quill.apps.radio_preferences_scrobble import ScrobbleRows
 from quill.core.radio import main_view, reminders
@@ -107,6 +108,7 @@ def open_preferences(app: Any) -> None:
     timeshift_choice, acoustid_text = radio_preferences_listening.rows(app)
     scrobble = ScrobbleRows(app)  # Scrobbling and Song recognition (BlindRadio ideas)
     dial_rows = DialRows(app)  # Tune as I move through stations (BlindRadio's dial)
+    find_rows = FindRows(app)  # Find Streams sounds (a StreamSift idea)
     close_action_index = _CLOSE_ACTION_VALUES.index(history.close_action)
     mpv_present = mpv_output_device_available()
     cached_devices = cached_output_devices()
@@ -263,6 +265,7 @@ def open_preferences(app: Any) -> None:
             yt_check,
             *scrobble.checkboxes(),
             *dial_rows.checkboxes(),
+            *find_rows.checkboxes(),
         ],
         choices=[
             PreferenceChoice(
@@ -459,7 +462,8 @@ def open_preferences(app: Any) -> None:
         youtube_signin_on,
         *extra_checks,
     ) = checkbox_values
-    scrobble_checks, dial_checks = extra_checks[:3], extra_checks[3:]
+    scrobble_checks, dial_checks = extra_checks[:3], extra_checks[3:8]
+    find_checks = extra_checks[8:]
 
     startup_said = ""
     if start_minimized_at_windows_startup != minimized_at_startup_before:
@@ -500,6 +504,7 @@ def open_preferences(app: Any) -> None:
     listening_said = radio_preferences_listening.apply(app, choice_indices[11], text_values[2])
     scrobble_said = scrobble.apply(list(scrobble_checks), choice_indices[12], text_values[3:7])
     dial_rows.apply(list(dial_checks), list(choice_indices[13:15]))
+    find_rows.apply(list(find_checks))
     # Apply verbose logging immediately (quill-radio #5) so it takes effect
     # this session, not just the next launch.
     from quill.core.radio.radio_logging import set_radio_debug

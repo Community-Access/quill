@@ -3462,6 +3462,16 @@ saved results, and one that finds nothing clears them. Clear Recent Searches...
 forgets them too. Ctrl+Shift+O in the list plays a random stream from the rows
 shown.
 
+**Sounds and names while it works.** A long scan makes a soft sound every two
+seconds, so a quiet screen reader does not sound like a frozen program. A search
+that finds nothing plays its own sound, and a search that could not finish plays
+a different one, so you can tell which it was without waiting for the words.
+While the links are checked, each stream that reports a name shows it in the
+status line as "Checking KEXP.", and the name is spoken at most once every two
+seconds, so fifty links are not fifty sentences. To turn the three sounds off,
+clear **Play sounds while Find Streams searches** under Find Streams in
+Preferences (Ctrl+,). The sentences are still said.
+
 This works for many stations whose Listen Live button is a web player. For
 Triton Digital and StreamTheWorld players, including the whole
 `player.listenlive.co` network, Quill Radio reads the station's call letters

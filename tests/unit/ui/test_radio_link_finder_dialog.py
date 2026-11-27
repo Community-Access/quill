@@ -111,7 +111,8 @@ def test_the_scan_asks_for_the_live_check(dialog: Any, monkeypatch: pytest.Monke
     monkeypatch.setattr(lfd, "scan_page_for_streams", lambda url, **k: asked.append(k))
     _scan(dialog)
     dialog.tasks.pending[0]["func"]()
-    assert asked == [{"safe_mode": False, "check_live": True}]
+    assert len(asked) == 1 and asked[0]["check_live"] is True and asked[0]["safe_mode"] is False
+    assert callable(asked[0]["on_checked"])  # the window hears each name as it is checked
 
 
 def test_the_result_is_said_once_and_rows_lead_with_the_verdict(dialog: Any) -> None:

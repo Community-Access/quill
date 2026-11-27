@@ -690,3 +690,60 @@ def test_ctrl_shift_o_plays_a_random_shown_stream_and_says_which(d: Any) -> None
 def test_the_random_key_is_ctrl_shift_o_in_the_list() -> None:
     assert menus.key_command(wx, ord("O"), wx.MOD_CONTROL | wx.MOD_SHIFT) == "random"
     assert menus.key_command(wx, ord("O"), wx.MOD_CONTROL) is None
+
+
+# -- Search sounds and live titles -------------------------------------------------
+
+
+def _fail(d: Any) -> None:
+    d.dlg._url_ctrl.ChangeValue("https://a.example/")
+    d.dlg._on_scan(None)
+    d.dlg._task_manager.pending.pop()["on_failure"](None, RuntimeError("down"))
+
+
+def test_an_empty_search_and_a_failed_one_each_play_their_own_cue(d: Any) -> None:
+    _scan(d, [])
+    assert d.sounds[-1] == str(SoundEvent.RADIO_SEARCH_EMPTY)
+    _fail(d)
+    assert d.sounds[-1] == str(SoundEvent.RADIO_SEARCH_FAILED)
+
+
+def test_a_search_that_finds_streams_adds_no_cue(d: Any) -> None:
+    _scan(d, _rows())
+    assert d.sounds == [""]
+
+
+def test_the_off_switch_silences_the_cues_but_not_the_words(d: Any) -> None:
+    d.host._radio_history = SimpleNamespace(find_streams_sounds=False)
+    _scan(d, [])
+    assert d.sounds[-1] == "" and d.said[-1]
+    d.dlg._start_cues()
+    assert not d.dlg._cue_timer.IsRunning()
+
+
+def test_the_working_cue_runs_only_while_scanning(d: Any, monkeypatch: Any) -> None:
+    posted: list[Any] = []
+    monkeypatch.setattr(d.dlg, "_post_cue", lambda event: posted.append(event))
+    d.dlg._url_ctrl.ChangeValue("https://a.example/")
+    d.dlg._on_scan(None)
+    assert d.dlg._cue_timer.IsRunning() and d.dlg._cue_timer.GetInterval() == 2000
+    d.dlg._on_cue_timer(None)
+    assert posted == [SoundEvent.RADIO_SEARCH_WORKING]
+    d.dlg._task_manager.pending.pop()["on_success"](None, PageScanResult("W", "", [], checked=True))
+    assert not d.dlg._cue_timer.IsRunning()
+    d.dlg._on_cue_timer(None)  # a queued tick after the scan ended says nothing
+    assert len(posted) == 1
+
+
+def test_a_reported_name_is_shown_and_spoken_while_checking(d: Any) -> None:
+    d.dlg._url_ctrl.ChangeValue("https://a.example/")
+    d.dlg._on_scan(None)
+    d.said.clear()
+    d.dlg._show_title("KEXP 90.3")
+    assert d.dlg._status.GetLabel() == "Checking KEXP 90.3."
+    assert d.said == ["Checking KEXP 90.3."]
+    d.dlg._show_title("WFMU")  # inside the gap: shown, not spoken
+    assert d.dlg._status.GetLabel() == "Checking WFMU." and d.said == ["Checking KEXP 90.3."]
+    d.dlg._task_manager.pending.pop()["on_success"](None, PageScanResult("W", "", [], checked=True))
+    d.dlg._show_title("Late")  # after the scan: ignored
+    assert d.dlg._status.GetLabel() != "Checking Late."

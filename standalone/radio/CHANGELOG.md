@@ -23,6 +23,12 @@ stream finder by Andre Louis (github.com/OnjLouis/StreamSift, MIT). Thank you.
   finds nothing clears them, and a damaged or missing saved file is ignored
   without a word. Ctrl+Shift+O in the list plays a random stream from the rows
   shown.
+- **Sounds and names while Find Streams works** (2026-11-27). A soft sound every
+  two seconds during a long scan, a different sound when a search finds nothing,
+  and another when it could not finish. While links are checked, each stream that
+  reports a name shows it ("Checking KEXP."), and the name is spoken at most once
+  every two seconds. One new switch in Preferences, Play sounds while Find
+  Streams searches, turns the three sounds off; the sentences are still said.
 
 ### Recordings are kept safe through crashes, reconnects and Stop (2026-11-20)
 

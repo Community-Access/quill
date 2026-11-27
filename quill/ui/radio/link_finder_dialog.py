@@ -42,6 +42,7 @@ from quill.ui.radio import find_streams_actions as actions
 from quill.ui.radio import find_streams_menus as menus
 from quill.ui.radio import play_random_ui
 from quill.ui.radio.find_streams_address import AddressBox
+from quill.ui.radio.find_streams_cues import CuesMixin
 from quill.ui.radio.find_streams_find import FindMixin
 from quill.ui.radio.find_streams_last import LastResultsMixin
 from quill.ui.radio.find_streams_list import FindStreamsList
@@ -63,7 +64,7 @@ def _button(wx: Any, parent: Any, label: str, help_text: str, **kwargs: Any) -> 
     return button
 
 
-class LinkFinderDialog(FindMixin, LastResultsMixin):
+class LinkFinderDialog(FindMixin, LastResultsMixin, CuesMixin):
     """Scan a website for candidate stream links, and work with what it found.
 
     *host* is the app frame (QUILL's main frame or Quill Radio's): its
@@ -201,6 +202,7 @@ class LinkFinderDialog(FindMixin, LastResultsMixin):
         self._still_timer = wx.Timer(self.dialog)
         self.dialog.Bind(wx.EVT_TIMER, self._on_still_scanning, self._still_timer)
         stop_timer_on_destroy(self.dialog, self._still_timer)
+        self._init_cues()
 
     def show(self) -> None:
         self.dialog.CentreOnParent()
@@ -218,6 +220,7 @@ class LinkFinderDialog(FindMixin, LastResultsMixin):
             show_modal_dialog(self.dialog, "Find Streams from a Website", announce=self._announce)
         finally:
             self._remember_last()
+            self._stop_cues()
             self._scanning = False
             self._still_timer.Stop()
             self.dialog.Destroy()
@@ -269,9 +272,12 @@ class LinkFinderDialog(FindMixin, LastResultsMixin):
         self._scanning = True
         self._page_url = normalize_page_url(url)
         self._still_timer.StartOnce(STILL_SCANNING_SECONDS * 1000)
+        self._start_cues()
 
         def _do_scan(**_kwargs: Any) -> Any:
-            return scan_page_for_streams(url, safe_mode=self._safe_mode, check_live=True)
+            return scan_page_for_streams(
+                url, safe_mode=self._safe_mode, check_live=True, on_checked=self._on_checked
+            )
 
         self._task_manager.submit(
             "radio-link-finder",
@@ -295,6 +301,7 @@ class LinkFinderDialog(FindMixin, LastResultsMixin):
     def _on_scan_done(self, result: Any, error: BaseException | None) -> None:
         self._scanning = False
         self._still_timer.Stop()
+        self._stop_cues()
         if error is not None or result is None:
             self._keep_focus_through_refill()
             self._candidates, self._rows = [], []
@@ -303,7 +310,7 @@ class LinkFinderDialog(FindMixin, LastResultsMixin):
             failed = failure_sentence(error)
             self._status.SetLabel(failed)
             # Said once focus has settled where emptying the list left it.
-            self._say_after(failed, show=False)
+            self._say_after(failed, self._outcome_sound(failed=True, found=0), show=False)
             return
         self._page_title = result.page_title
         self._favicon_url = result.favicon_url
@@ -333,7 +340,7 @@ class LinkFinderDialog(FindMixin, LastResultsMixin):
             self._list.clear()
             self._enable_row_buttons()
             self._forget_last()
-            self._say_after(sentence, show=False)
+            self._say_after(sentence, self._outcome_sound(failed=False, found=0), show=False)
             return
         self._candidates = candidates
         self._rows = view.distinct_rows(candidates)

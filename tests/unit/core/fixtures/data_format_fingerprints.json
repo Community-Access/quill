@@ -1598,6 +1598,7 @@
             "podcast_refresh_on_launch": "bool",
             "reminder_default_lead_seconds": "int",
             "reminder_sound": "bool",
+            "find_streams_sounds": "bool",
             "skip_silence": "bool",
             "recording_speed": "float",
             "youtube_speed": "float",
@@ -1681,7 +1682,7 @@
         "function:quill.core.radio.history_store:save_history": "sha256:ab4ddc8289ea7635"
       },
       "classification": "additive, compatible",
-      "note": "One new optional key, recent_websites (Find Streams' last ten sites that worked); older builds ignore unknown keys, and the default is empty."
+      "note": ""
     },
     "shared.listens": {
       "current": 1,

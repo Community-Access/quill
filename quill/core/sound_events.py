@@ -166,6 +166,14 @@ class SoundEvent(StrEnum):
     #: up to speed, so "carrying on where you were" is tellable from "tuned in
     #: to something new" (RADIO_PLAYING) before the audio says which.
     RADIO_RESUMED = "radio_resumed"
+    #: Find Streams (2026-11-27, an idea from StreamSift): a search that found
+    #: nothing, one that could not finish, and a soft cue every two seconds while
+    #: a long scan runs. The first two are different on purpose -- an empty list
+    #: and a failure are not the same news. Quill Radio's own switch (Preferences:
+    #: Play sounds while Find Streams searches) turns all three off.
+    RADIO_SEARCH_EMPTY = "radio_search_empty"
+    RADIO_SEARCH_FAILED = "radio_search_failed"
+    RADIO_SEARCH_WORKING = "radio_search_working"
     CAST_EPISODE_FINISHED = "cast_episode_finished"
     #: The four outcomes of a one-key action in QUILL Cast (qc.md 18.7), under
     #: Cast's own action_feedback choice; failures use ERROR.

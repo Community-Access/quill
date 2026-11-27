@@ -117,6 +117,7 @@ def load_history(data_dir: Path) -> RadioHistory:
             raw.get("reminder_default_lead_seconds"), 900
         )
         history.reminder_sound = bool(raw.get("reminder_sound", True))
+        history.find_streams_sounds = bool(raw.get("find_streams_sounds", True))
         history.skip_silence = bool(raw.get("skip_silence", False))
         history.recording_speed = _coerce_float(raw.get("recording_speed"), 1.0) or 1.0
         history.youtube_speed = _coerce_float(raw.get("youtube_speed"), 1.0) or 1.0
@@ -337,6 +338,7 @@ def snapshot_history(history: RadioHistory) -> dict[str, object]:
         "podcast_refresh_on_launch": history.podcast_refresh_on_launch,
         "reminder_default_lead_seconds": history.reminder_default_lead_seconds,
         "reminder_sound": history.reminder_sound,
+        "find_streams_sounds": history.find_streams_sounds,
         "skip_silence": history.skip_silence,
         "recording_speed": history.recording_speed,
         "youtube_speed": history.youtube_speed,
