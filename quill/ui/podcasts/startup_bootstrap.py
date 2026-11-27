@@ -143,13 +143,13 @@ def _build_podcasts(host: Any, *, defer_library_load: bool) -> None:
 
 def _new_check_monitor(host: Any) -> Any:
     from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
-    from quill.ui.podcasts.new_feed_check import check_start_failed
+    from quill.ui.podcasts.new_feed_check import check_settings, check_start_failed
 
     return PodcastCheckMonitor(
         host.frame,
-        settings_provider=lambda: (
-            getattr(host, "settings", None) or getattr(host, "_podcast_history", None)
-        ),
+        # ``Settings`` in QUILL, PodcastHistory in QUILL Cast: whichever
+        # store that app's own Preferences writes (new_feed_check.py).
+        settings_provider=lambda: check_settings(host),
         library_provider=lambda: host._podcast_library,
         refresh_show=host.refresh_podcast_feed,
         safe_mode=host._safe_mode,

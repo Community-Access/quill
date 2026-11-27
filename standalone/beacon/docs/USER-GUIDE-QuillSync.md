@@ -146,7 +146,13 @@ that work, and they never harm your data:
 - **If a sync transfer is interrupted**, your library is not left half-written.
   Each change is saved as a complete step or not at all, so a crash or a lost
   connection rolls back cleanly. Before every sync the app also snapshots your
-  library, so you can roll back to exactly how it was before a sync.
+  library, so you can roll back to exactly how it was before a sync. Sync
+  History lists each snapshot by when it was taken and how big it is, for
+  example "Today at 2:05 PM, before a sync, 1.2 MB". Rolling back keeps the
+  library as it was a moment before as one more snapshot, "before a
+  rollback", so a rollback to the wrong point can itself be rolled back. If
+  the rollback cannot be done, nothing in the library is changed, and Beacon
+  says so.
 - **If email sending is not configured**, sign-in still works for testing --
   the link is shown to you directly -- and it never sends mail by accident.
 - **If an external media player is not installed**, handing off playback falls

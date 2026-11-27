@@ -218,6 +218,11 @@ def test_standalone_cast_falls_back_to_its_own_history_record() -> None:
 
     So ``podcast_check_enabled`` read as False forever and the background check
     was unreachable in that app -- a whole feature with no route to it.
+
+    Then "settings, else history" still read the editor's Settings, because
+    Cast's frame does have one; the provider now asks ``check_settings``, which
+    Cast answers from its history (test_cast_check_reads_history.py has the
+    behaviour).
     """
     # The monitor builder moved out of the frame mixin so the Podcast runtime
     # can initialize only after the selected profile enables it.
@@ -225,7 +230,9 @@ def test_standalone_cast_falls_back_to_its_own_history_record() -> None:
         encoding="utf-8"
     )
     provider = source[source.index("settings_provider=") : source.index("library_provider=")]
-    assert "_podcast_history" in provider
+    assert "check_settings(host)" in provider
+    routes = (REPO / "quill" / "apps" / "podcasts_routes.py").read_text(encoding="utf-8")
+    assert "_podcast_check_reads_history = True" in routes
 
 
 def test_standalone_cast_offers_the_setting_in_preferences() -> None:

@@ -394,6 +394,13 @@ it could not use because they had no abbreviation or no text. If you missed it,
 (`Shift+F9`) keeps it with an **Open Folder** button. A file that cannot be read or written still
 gets a box, because nothing changed and it needs your attention.
 
+If the library itself cannot be read when Inkwell starts, Inkwell starts with
+its built-in abbreviations and copies the damaged file aside first, as
+`abbreviations.damaged-<date>-<time>.json` in the same folder, so saving does
+not destroy it. It says so once: "Your abbreviation library could not be read,
+so Quill Inkwell started with its built-in abbreviations. Your library was kept
+as ...".
+
 ## 14. Settings reference
 
 Inkwell's own preferences live in `inkwell.json` beside the library:

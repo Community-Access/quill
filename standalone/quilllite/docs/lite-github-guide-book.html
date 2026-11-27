@@ -1762,9 +1762,16 @@ your own.</p>
 usernames):</strong>. Labels and assignees are optional, and must
 already exist in the repository.</p>
 <p>What you type is saved on this computer as you go, so closing the
-window by mistake loses nothing: the next New Issue in that repository
-says “Recovered a local draft”, and <strong>Discard Saved Draft</strong>
-throws it away. A draft is never sent by itself.</p>
+window by mistake loses nothing. The next New Issue in that repository
+brings the draft back and says what it is, for example “Recovered your
+unsent issue for owner/repo, “Crash on save”, 120 words, saved today at
+2:14 PM. It has not been submitted.” <strong>Discard Saved
+Draft</strong> asks first, then throws it away for good. A draft is
+never sent by itself, and once the issue is created its draft is
+cleared, so it is not offered again.</p>
+<p>If the file that holds your drafts cannot be read, it is kept aside
+under a new name rather than written over, and the next draft window
+says where.</p>
 <p><strong>Create Issue</strong> is the only button that sends anything,
 and it shows a preview first: the repository, title, template, labels,
 assignees and body. For a long body the preview is shortened and says
@@ -2598,15 +2605,19 @@ message in the comment window, with mentions, references, emoji, saved
 replies, the preview and the check; <strong>Use This Text</strong>
 brings it back.</li>
 <li><strong>Discard Saved Draft</strong>, to throw away a saved review
-message.</li>
+message. It asks first, because a draft that was never sent cannot be
+brought back.</li>
 <li><strong>Submit Review</strong>, which sends it, and <strong>Save
 Draft and Close</strong>, which keeps it. Escape is Save Draft and
 Close.</li>
 </ul>
 <p>The review message saves as you type, so closing the window loses
-nothing. Submit Review is the only thing that sends. Request changes
-asks once more before it goes. You hear “Review submitted on pull
-request #42.” and how many line comments GitHub took with it.</p>
+nothing. When you come back, the window says which review it is, how
+long, and when it was saved, and, if the pull request has new commits
+since, that you should read the draft against the current changes first.
+Submit Review is the only thing that sends. Request changes asks once
+more before it goes. You hear “Review submitted on pull request #42.”
+and how many line comments GitHub took with it.</p>
 <p>GitHub never lets you approve your own pull request. If you keep a
 second account for that, see <a
 href="#approving-with-another-of-your-accounts">Approving with another
