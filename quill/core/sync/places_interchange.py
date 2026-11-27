@@ -71,6 +71,12 @@ class InterchangeReport:
     subscription_news: list[str] = field(default_factory=list)
     #: Private feeds left out of the plain file, counted so it can be said.
     private_skipped: int = 0
+    #: Set when another device was writing this device's file, and this device
+    #: moved to a fresh id; the caller saves it (ear.md 6.8, item 2).
+    new_device_id: str = ""
+    #: Podcasts "New podcasts sync: No" just kept on this device; the caller
+    #: saves them into the settings (ear.md 6.10).
+    newly_local: list[str] = field(default_factory=list)
 
     @property
     def changed(self) -> bool:
@@ -104,6 +110,9 @@ class InterchangeReport:
             )
         if self.problems:
             said += f" {self.problems[0]}"
+            if len(self.problems) > 1:
+                more = len(self.problems) - 1
+                said += f" ({more} more note{'' if more == 1 else 's'} in the sync report.)"
         return (said + " " + news).strip()
 
 
@@ -117,6 +126,7 @@ def sync_interchange(
     library: Any = None,
     save_library: Any = None,
     share_subscriptions: bool = False,
+    subscription_policy: Any = None,
 ) -> InterchangeReport:
     """Read every other device, apply what is newer, rewrite this device's file.
 
@@ -149,24 +159,46 @@ def sync_interchange(
             return report
 
     try:
-        others = read_other_devices(root, device_id)
+        # Skipped or corrected files each say one sentence (ear.md C4, 6.8).
+        others = read_other_devices(root, device_id, problems=report.problems)
     except Exception as error:  # noqa: BLE001
         report.problems.append(f"Could not read the sync folder: {error}")
         return report
 
-    local = {record.id: record for record in position_sync.collect_records(library)}
+    from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+    rules = subscription_policy if subscription_policy is not None else SubscriptionPolicy()
+    # This device only, or a feed that needs a sign-in: its places stay here
+    # (ear.md 6.10), in both directions.
+    keeps_local = rules.keeps_local
+    local = {
+        record.id: record
+        for record in position_sync.collect_records(library, keeps_local=keeps_local)
+    }
     incoming = remote_view(others)
     sources = remote_sources(others)
     merged, disagreements = merge_records(local, incoming)
     report.disagreements = disagreements
 
     applied = 0
+    index: dict[str, Any] | None = None  # built on first need, once per pass (ear.md C1)
+    finished: list[Any] = []
     for entity_id, record in merged.items():
         if entity_id in local and local[entity_id].updated_at >= record.updated_at:
             continue
-        if position_sync.apply_record(library, record, device=sources.get(entity_id, "")):
+        if index is None:
+            index = position_sync.episode_index(library, keeps_local=keeps_local)
+        episode = index.get(entity_id)
+        was_played = bool(getattr(episode, "played", False))
+        if position_sync.apply_record(
+            library, record, device=sources.get(entity_id, ""), index=index
+        ):
             applied += 1
+            if record.played and not was_played and episode is not None:
+                finished.append(episode)
     report.applied = applied
+    if finished:
+        _finish_from_elsewhere(library, finished, Path(data_dir))
 
     extra_rows: list[dict[str, object]] = []
     subscriptions_changed = False
@@ -174,7 +206,7 @@ def sync_interchange(
         from quill.core.sync.subscriptions_sync import sync_subscriptions
 
         try:
-            subs = sync_subscriptions(library, Path(data_dir), others)
+            subs = sync_subscriptions(library, Path(data_dir), others, subscription_policy)
         except Exception as error:  # noqa: BLE001 - a sentence, never a traceback
             report.problems.append(f"Podcasts you follow could not be shared: {error}")
         else:
@@ -182,6 +214,7 @@ def sync_interchange(
             subscriptions_changed = subs.changed
             report.subscription_news = subs.said
             report.private_skipped = subs.private_skipped
+            report.newly_local = list(subs.newly_local)
 
     if applied or subscriptions_changed:
         try:
@@ -194,28 +227,55 @@ def sync_interchange(
         except Exception as error:  # noqa: BLE001
             report.problems.append(f"Those places could not be saved: {error}")
 
-    outgoing = _outgoing_records(library, data_dir, include_labels=include_labels)
+    outgoing = _outgoing_records(
+        library, data_dir, include_labels=include_labels, keeps_local=keeps_local
+    )
     report.sent = len(outgoing)
-    try:
-        report.written = write_device_file(
+
+    def _write(as_device: str) -> bool:
+        return write_device_file(
             root,
-            device_id=device_id,
+            device_id=as_device,
             device_label=device_label,
             app=_app_version(),
             records=outgoing,
             include_labels=include_labels,
             extra_rows=extra_rows,
         )
+
+    try:
+        report.written = _write(device_id)
     except ListeningPlacesWriteError as error:
-        # Already one sentence for the listener, said without its code (E3).
+        if not getattr(error, "not_ours", False):
+            # Already one sentence for the listener, said without its code (E3).
+            report.problems.append(str(error.args[0]) if error.args else str(error))
+            return report
+        # Another device is writing this device's file, usually because both
+        # have the same id (a restored backup or a copied portable folder).
+        # Never write over it: move this computer to a fresh id of its own, and
+        # leave the other device's file exactly as it is (ear.md 6.8, item 2).
+        from quill.core.sync.listening_places import new_device_id
+
+        # Why the old file was left alone comes first (earshot.md E3).
         report.problems.append(str(error.args[0]) if error.args else str(error))
+        fresh = new_device_id()
+        try:
+            report.written = _write(fresh)
+        except Exception as retry_error:  # noqa: BLE001
+            report.problems.append(f"Could not write to the sync folder: {retry_error}")
+            return report
+        report.new_device_id = fresh
+        report.problems.append(
+            "Another device was writing under this computer's sync name, so this computer "
+            "now keeps a new file of its own. Nothing of the other device's was changed."
+        )
     except Exception as error:  # noqa: BLE001
         report.problems.append(f"Could not write to the sync folder: {error}")
     return report
 
 
 def _outgoing_records(
-    library: Any, data_dir: Path | str, *, include_labels: bool
+    library: Any, data_dir: Path | str, *, include_labels: bool, keeps_local: Any = None
 ) -> list[PlaceRecord]:
     """This device's whole view: podcast episodes, plus books and local files.
 
@@ -226,7 +286,9 @@ def _outgoing_records(
     """
     from quill.core.podcasts import position_sync
 
-    records = position_sync.collect_records(library, include_labels=include_labels)
+    records = position_sync.collect_records(
+        library, include_labels=include_labels, keeps_local=keeps_local
+    )
     records.extend(_file_records(data_dir, include_labels=include_labels))
     return records
 
@@ -258,20 +320,60 @@ def _file_records(data_dir: Path | str, *, include_labels: bool) -> list[PlaceRe
         return []
 
 
+def _finish_from_elsewhere(library: Any, episodes: list[Any], data_dir: Path) -> None:
+    """What a finish on another device implies here (``ear.md`` C2).
+
+    Cast's own finish (``finish_bookkeeping.record_finish``) also does
+    delete-after-play and tells Quill Radio the episode is done, so Radio does
+    not offer to resume it. A finish that arrived from the phone must do the
+    same, or the outcome would depend on which device the listener happened to
+    finish on. The listening statistics are not counted here: they record
+    listening on this computer, and the phone keeps its own.
+
+    Delete-after-play goes through the shared ``retention.on_episode_played``,
+    which every "this is finished" path uses. A file the player still has open
+    simply stays (Windows refuses the delete, and nothing is lost).
+    """
+    from quill.core.podcasts import retention
+    from quill.core.podcasts.radio_listens import record_listen
+
+    owner = {
+        id(episode): show
+        for show in getattr(library, "shows", []) or []
+        for episode in getattr(show, "episodes", []) or []
+    }
+    for episode in episodes:
+        show = owner.get(id(episode))
+        try:
+            retention.on_episode_played(library, show, episode)
+        except Exception:  # noqa: BLE001 - a tidy-up never costs the sync
+            pass
+        feed_url = str(getattr(show, "feed_url", "") or "")
+        audio_url = str(getattr(episode, "audio_url", "") or "")
+        if feed_url and audio_url:
+            record_listen(
+                data_dir,
+                feed_url=feed_url,
+                audio_url=audio_url,
+                title=str(getattr(episode, "title", "") or ""),
+                position_ms=0,
+                finished=True,
+                app="cast",
+            )
+
+
 def _as_z(stamp: str) -> str:
     """A local ISO timestamp as RFC 3339 UTC with a trailing ``Z``.
 
     The position store writes ``datetime.now(UTC).isoformat()``, which ends
     ``+00:00``. Plain string comparison is the merge rule, so the two spellings
-    of the same instant must not be allowed to sort against each other.
+    of the same instant must not be allowed to sort against each other. The
+    instant is converted to UTC first: reformatting a ``+01:00`` time without
+    converting it stamped it an hour late (fixed with ``ear.md`` C3).
     """
-    from datetime import datetime
+    from quill.core.sync.listening_places import normalize_stamp
 
-    try:
-        parsed = datetime.fromisoformat(stamp)
-    except (TypeError, ValueError):
-        return stamp
-    return parsed.strftime("%Y-%m-%dT%H:%M:%SZ")
+    return normalize_stamp(stamp) or stamp
 
 
 def _app_version() -> str:

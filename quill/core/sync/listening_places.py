@@ -58,7 +58,6 @@ path.
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 import secrets
 from dataclasses import dataclass, field
@@ -242,16 +241,43 @@ class PlaceRecord:
         entity_id = str(data.get("id", "")).strip()
         if not entity_id or ":" not in entity_id:
             return None
+        duration_ms = max(0, _as_int(data.get("duration_ms")))
+        position_ms = max(0, _as_int(data.get("position_ms")))
+        if duration_ms:
+            # A place past the end is a writer's slip; the end is the place.
+            position_ms = min(position_ms, duration_ms)
         return cls(
             id=entity_id,
-            position_ms=max(0, _as_int(data.get("position_ms"))),
-            duration_ms=max(0, _as_int(data.get("duration_ms"))),
+            position_ms=position_ms,
+            duration_ms=duration_ms,
             played=bool(data.get("played", False)),
-            updated_at=str(data.get("updated_at", "")),
+            updated_at=normalize_stamp(str(data.get("updated_at", ""))),
             label=str(data.get("label", "")),
             feed=str(data.get("feed", "")),
             deleted=bool(data.get("deleted", False)),
         )
+
+
+def normalize_stamp(stamp: str) -> str:
+    """Any RFC 3339 / ISO 8601 instant as ``YYYY-MM-DDTHH:MM:SSZ`` in UTC.
+
+    The merge compares timestamps as text, which is only right while every
+    writer uses exactly this shape (``ear.md`` C3). Earshot and Cast both do
+    today; normalizing on read keeps the comparison right if either ever adds
+    fractional seconds or an offset. A naive time is taken as UTC. Anything
+    that will not parse becomes ``""``, which the merge already treats as
+    "unknown" rather than as a time.
+    """
+    text = (stamp or "").strip()
+    if not text:
+        return ""
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return ""
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _as_int(value: object) -> int:
@@ -294,7 +320,7 @@ class DeviceFile:
             device=str(data.get("device", "")),
             device_label=str(data.get("device_label", "")),
             app=str(data.get("app", "")),
-            written_at=str(data.get("written_at", "")),
+            written_at=normalize_stamp(str(data.get("written_at", ""))),
             records=[
                 row
                 for row in rows
@@ -362,7 +388,12 @@ def write_device_file(
         target, device_id=device_id, format_id=FORMAT_ID, previous_fingerprint=previous
     )
     if problem:
-        raise ListeningPlacesWriteError(problem)
+        refusal = ListeningPlacesWriteError(problem)
+        # Somebody else's file at this device's path: most often a second
+        # device with the same id (a restored backup, a copied portable
+        # folder). The caller moves this device to a fresh id (ear.md 6.8, 2).
+        refusal.not_ours = True  # type: ignore[attr-defined]
+        raise refusal
 
     payload = {
         "format": FORMAT_ID,
@@ -417,32 +448,17 @@ def _ensure_readme(remote_dir: Path | str) -> None:
         return
 
 
-def read_other_devices(remote_dir: Path | str, device_id: str) -> list[DeviceFile]:
-    """Every device file except this device's own. Never raises.
+def read_other_devices(
+    remote_dir: Path | str,
+    device_id: str,
+    *,
+    problems: list[str] | None = None,
+    now: datetime | None = None,
+) -> list[DeviceFile]:
+    """Every other device's file, read defensively (``listening_places_read``)."""
+    from quill.core.sync.listening_places_read import read_other_devices as _read
 
-    A folder that is not there, a file half-written by a cloud client, a file
-    from a newer format: all of them are "nothing to read from that one", never
-    an error. One unreadable file must not cost the rest.
-    """
-    folder = devices_dir(remote_dir)
-    if not folder.is_dir():
-        return []
-    found: list[DeviceFile] = []
-    try:
-        entries = sorted(folder.glob("*.json"))
-    except OSError:
-        return []
-    for entry in entries:
-        if entry.stem == device_id:
-            continue
-        try:
-            data = json.loads(entry.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            continue
-        parsed = DeviceFile.from_dict(data)
-        if parsed is not None:
-            found.append(parsed)
-    return found
+    return _read(remote_dir, device_id, problems=problems, now=now)
 
 
 # -- merging (6.4, 6.5) ------------------------------------------------------

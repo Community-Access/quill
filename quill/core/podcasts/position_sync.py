@@ -121,10 +121,18 @@ def record_for(show: Any, episode: Any, *, include_label: bool = True) -> PlaceR
     )
 
 
-def collect_records(library: Any, *, include_labels: bool = True) -> list[PlaceRecord]:
-    """Every place this library knows about, ready to write out."""
+def collect_records(
+    library: Any, *, include_labels: bool = True, keeps_local: Any = None
+) -> list[PlaceRecord]:
+    """Every place this library knows about, ready to write out.
+
+    *keeps_local*, when given, says which podcasts stay on this device only;
+    their places are not written (ear.md 6.10).
+    """
     records: list[PlaceRecord] = []
     for show in getattr(library, "shows", []) or []:
+        if keeps_local is not None and keeps_local(show):
+            continue
         for episode in getattr(show, "episodes", []) or []:
             record = record_for(show, episode, include_label=include_labels)
             if record is not None:
@@ -132,7 +140,37 @@ def collect_records(library: Any, *, include_labels: bool = True) -> list[PlaceR
     return records
 
 
-def apply_record(library: Any, record: PlaceRecord, *, device: str = "") -> bool:
+def episode_index(library: Any, *, keeps_local: Any = None) -> dict[str, Any]:
+    """Every episode in *library* by its public ``episode:`` id, built once.
+
+    The id is a one-way hash, so finding the episode a record names means
+    hashing the library. Doing that once per sync pass, not once per record,
+    is the difference between milliseconds and tens of seconds: Earshot writes
+    up to 1,000 records, and a library of 50,000 episodes took about 23 seconds
+    when every record rescanned it (``ear.md`` C1). The first episode with an
+    id wins, matching the order a scan would find.
+    """
+    index: dict[str, Any] = {}
+    for show in getattr(library, "shows", []) or []:
+        if keeps_local is not None and keeps_local(show):
+            continue  # this device only: places from elsewhere are not applied
+        for episode in getattr(show, "episodes", []) or []:
+            key = episode_id(
+                str(getattr(episode, "guid", "") or ""),
+                str(getattr(episode, "audio_url", "") or ""),
+            )
+            if key:
+                index.setdefault(key, episode)
+    return index
+
+
+def apply_record(
+    library: Any,
+    record: PlaceRecord,
+    *,
+    device: str = "",
+    index: dict[str, Any] | None = None,
+) -> bool:
     """Apply one incoming record to the library. Returns whether it changed anything.
 
     An episode the library has never heard of is **not** an error and **not**
@@ -144,7 +182,7 @@ def apply_record(library: Any, record: PlaceRecord, *, device: str = "") -> bool
     """
     if record.deleted or not record.id.startswith("episode:"):
         return False
-    episode = _find_episode(library, record.id)
+    episode = index.get(record.id) if index is not None else _find_episode(library, record.id)
     if episode is None:
         return False
     local_at = str(getattr(episode, "position_updated_at", "") or "")
@@ -169,10 +207,9 @@ def apply_record(library: Any, record: PlaceRecord, *, device: str = "") -> bool
 def _find_episode(library: Any, entity_id: str) -> Any:
     """The episode whose id hashes to *entity_id*, or ``None``.
 
-    A scan rather than an index: the hash is one-way, so there is nothing to
-    look up by. Libraries are thousands of episodes, this runs at most twice per
-    sync, and an index would be a second thing to keep in step with the library
-    for no measurable gain.
+    A full scan, kept for a single lookup. A sync pass applies up to a thousand
+    records, so it builds :func:`episode_index` once and passes it to
+    :func:`apply_record` instead (``ear.md`` C1).
     """
     for show in getattr(library, "shows", []) or []:
         for episode in getattr(show, "episodes", []) or []:

@@ -166,3 +166,198 @@ def test_an_old_unfollow_does_not_undo_a_new_follow(tmp_path: Path) -> None:
     _sync(tmp_path, "desk", "aaaaaaaa", desk)
     _sync(tmp_path, "desk", "aaaaaaaa", desk)
     assert [s.id for s in desk.shows] == ["ba"]
+
+
+# -- what another device may change here (ear.md 6.9) -----------------------------
+
+
+def _sync_with(tmp: Path, name: str, device: str, library: PodcastLibrary, policy):
+    return sync_interchange(
+        data_dir=tmp / name,
+        remote_dir=tmp / "remote",
+        device_id=device,
+        device_label=name,
+        library=library,
+        save_library=lambda _library: None,
+        share_subscriptions=True,
+        subscription_policy=policy,
+    )
+
+
+def test_suggest_names_a_new_follow_once_and_does_not_add_it(tmp_path: Path) -> None:
+    from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+    _setup(tmp_path)
+    _sync(tmp_path, "desk", "aaaaaaaa", _desk())
+    laptop = PodcastLibrary()
+    rules = SubscriptionPolicy(follow_new="suggest")
+    first = _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, rules)
+    assert laptop.shows == []
+    assert "Blind Abilities is followed on desk" in first.summary()
+    again = _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, rules)
+    assert "Blind Abilities is followed on desk" not in again.summary()  # said once
+
+
+def test_keep_names_an_unfollow_once_and_keeps_the_podcast(tmp_path: Path) -> None:
+    from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+    _setup(tmp_path)
+    desk = _desk()
+    _sync(tmp_path, "desk", "aaaaaaaa", desk)
+    laptop = PodcastLibrary()
+    _sync(tmp_path, "laptop", "bbbbbbbb", laptop)
+    assert len(laptop.shows) == 1
+    desk.remove_show("ba")
+    _sync(tmp_path, "desk", "aaaaaaaa", desk)
+    rules = SubscriptionPolicy(unfollows="keep")
+    report = _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, rules)
+    assert len(laptop.shows) == 1
+    assert "still followed here" in report.summary()
+    again = _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, rules)
+    assert "still followed here" not in again.summary()
+
+
+def test_folders_off_keeps_folders_on_this_device(tmp_path: Path) -> None:
+    from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+    _setup(tmp_path)
+    _sync_with(tmp_path, "desk", "aaaaaaaa", _desk(), SubscriptionPolicy(folders=False))
+    rows = _rows(tmp_path, "aaaaaaaa")
+    assert not [r for r in rows if str(r.get("id", "")).startswith("folder:")]
+    sub = next(r for r in rows if str(r.get("id", "")).startswith("sub:"))
+    assert sub["folders"] == []
+    laptop = PodcastLibrary()
+    _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, SubscriptionPolicy(folders=False))
+    assert laptop.shows[0].folder_id in (None, "")
+
+
+def test_speed_off_neither_sends_nor_takes_a_speed(tmp_path: Path) -> None:
+    from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+    _setup(tmp_path)
+    _sync(tmp_path, "desk", "aaaaaaaa", _desk())  # desk shares 1.4
+    laptop = PodcastLibrary()
+    _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, SubscriptionPolicy(speed=False))
+    assert laptop.effective_settings(laptop.shows[0]).speed != 1.4
+    _sync_with(tmp_path, "desk2", "cccccccc", _desk(), SubscriptionPolicy(speed=False))
+    sub = next(r for r in _rows(tmp_path, "cccccccc") if str(r.get("id", "")).startswith("sub:"))
+    assert "prefs" not in sub
+
+
+def test_the_policy_settings_round_trip_and_default_to_the_old_behaviour() -> None:
+    from quill.core.sync.places_config import PlacesConfig
+
+    old = PlacesConfig.from_dict({"enabled": True})
+    assert (old.sub_follow_new, old.sub_unfollows, old.sync_folders, old.sync_speed) == (
+        "follow",
+        "remove",
+        True,
+        True,
+    )
+    chosen = PlacesConfig(
+        sub_follow_new="suggest", sub_unfollows="keep", sync_folders=False, sync_speed=False
+    )
+    again = PlacesConfig.from_dict(chosen.to_dict())
+    policy = again.subscription_policy()
+    assert (policy.follow_new, policy.unfollows, policy.folders, policy.speed) == (
+        "suggest",
+        "keep",
+        False,
+        False,
+    )
+    assert PlacesConfig(sub_follow_new="nonsense").subscription_policy().follow_new == "follow"
+
+
+# -- ear.md 6.10: a podcast kept on this device only ------------------------------
+
+
+def test_a_podcast_kept_on_this_device_is_not_written_and_never_unfollowed(tmp_path: Path) -> None:
+    from quill.core.podcasts import position_sync
+    from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+    _setup(tmp_path)
+    desk = _desk()
+    _sync(tmp_path, "desk", "aaaaaaaa", desk)
+    laptop = PodcastLibrary()
+    _sync(tmp_path, "laptop", "bbbbbbbb", laptop)
+    assert len(laptop.shows) == 1
+    # Now the desk keeps it here only, and has a place in one of its episodes.
+    from quill.core.podcasts.models import PodcastEpisode
+
+    desk.shows[0].episodes = [
+        PodcastEpisode(guid="g1", title="One", audio_url="https://cdn.example.com/1.mp3")
+    ]
+    position_sync.remember_position(desk.shows[0].episodes[0], 60_000)
+    local = SubscriptionPolicy(local_only=frozenset({subscription_id(FEED)}))
+    _sync_with(tmp_path, "desk", "aaaaaaaa", desk, local)
+    rows = _rows(tmp_path, "aaaaaaaa")
+    assert not [r for r in rows if r.get("id") == subscription_id(FEED)]  # no row, no tombstone
+    assert not [r for r in rows if str(r.get("id", "")).startswith("episode:")]  # no places
+    _sync(tmp_path, "laptop", "bbbbbbbb", laptop)
+    assert len(laptop.shows) == 1  # the laptop still follows it
+
+
+def test_changes_from_elsewhere_to_a_kept_podcast_are_not_applied_and_said_once(
+    tmp_path: Path,
+) -> None:
+    from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+    _setup(tmp_path)
+    desk = _desk()
+    _sync(tmp_path, "desk", "aaaaaaaa", desk)
+    laptop = PodcastLibrary()
+    _sync(tmp_path, "laptop", "bbbbbbbb", laptop)
+    desk.remove_show("ba")
+    _sync(tmp_path, "desk", "aaaaaaaa", desk)  # the desk unfollows
+    local = SubscriptionPolicy(local_only=frozenset({subscription_id(FEED)}))
+    report = _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, local)
+    assert len(laptop.shows) == 1
+    assert "kept on this device only" in report.summary()
+    again = _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, local)
+    assert "kept on this device only" not in again.summary()
+
+
+def test_new_podcasts_can_start_as_this_device_only(tmp_path: Path) -> None:
+    from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+    _setup(tmp_path)
+    desk = _desk()
+    rules = SubscriptionPolicy(new_podcasts_share=False)
+    first = _sync_with(tmp_path, "desk", "aaaaaaaa", desk, rules)
+    assert first.newly_local == []  # podcasts followed before sharing began keep their choice
+    desk.shows.append(PodcastShow(id="new", title="New One", feed_url="https://new.example.com/f"))
+    second = _sync_with(tmp_path, "desk", "aaaaaaaa", desk, rules)
+    assert second.newly_local == [subscription_id("https://new.example.com/f")]
+    assert not [
+        r
+        for r in _rows(tmp_path, "aaaaaaaa")
+        if r.get("id") == subscription_id("https://new.example.com/f")
+    ]
+
+
+def test_a_feed_that_needs_a_sign_in_keeps_its_places_here_too(tmp_path: Path) -> None:
+    from quill.core.podcasts import position_sync
+    from quill.core.podcasts.models import PodcastEpisode
+
+    _setup(tmp_path)
+    library = PodcastLibrary()
+    show = PodcastShow(id="p", title="Members", feed_url="https://x.example.com/f?token=abc")
+    show.episodes = [
+        PodcastEpisode(guid="m1", title="M1", audio_url="https://x.example.com/m1.mp3")
+    ]
+    library.shows.append(show)
+    position_sync.remember_position(show.episodes[0], 30_000)
+    _sync(tmp_path, "desk", "aaaaaaaa", library)
+    assert not [
+        r for r in _rows(tmp_path, "aaaaaaaa") if str(r.get("id", "")).startswith("episode:")
+    ]
+
+
+def test_the_device_only_list_round_trips_and_is_never_shared() -> None:
+    from quill.core.sync.places_config import PlacesConfig
+
+    config = PlacesConfig(local_only=["sub:abc", "sub:abc", "not-a-key"], new_podcasts_sync=False)
+    again = PlacesConfig.from_dict(config.to_dict())
+    assert again.local_only == ["sub:abc"]
+    assert again.new_podcasts_sync is False
+    assert again.subscription_policy().local_only == frozenset({"sub:abc"})

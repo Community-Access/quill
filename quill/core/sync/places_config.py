@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import json
 import socket
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from quill.core.storage import write_json_atomic
@@ -84,6 +84,37 @@ class PlacesConfig:
     #: a plain list of what somebody follows is readable by anybody who can
     #: see the folder, which sharing a place does not imply agreeing to.
     share_subscriptions: bool = False
+    #: What another device may change here when subscriptions are shared
+    #: (ear.md 6.9). Defaults are the behaviour before these existed.
+    #: "follow" or "suggest": a podcast followed elsewhere.
+    sub_follow_new: str = "follow"
+    #: "remove" or "keep": a podcast unfollowed elsewhere.
+    sub_unfollows: str = "remove"
+    #: Whether folders, and which folder each podcast is in, are shared.
+    sync_folders: bool = True
+    #: Whether each podcast's own playback speed is shared.
+    sync_speed: bool = True
+    #: Whether a podcast first followed here after sharing began is shared
+    #: (ear.md 6.10). False starts each new podcast as this device only.
+    new_podcasts_sync: bool = True
+    #: Podcasts kept on this device only, by their ``sub:`` id. Device-local by
+    #: design: this list never goes into the shared file (ear.md 6.10).
+    local_only: list[str] = field(default_factory=list)
+
+    def subscription_policy(self) -> object:
+        """These choices as the sync's :class:`SubscriptionPolicy`."""
+        from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+        return SubscriptionPolicy(
+            follow_new=self.sub_follow_new
+            if self.sub_follow_new in ("follow", "suggest")
+            else "follow",
+            unfollows=self.sub_unfollows if self.sub_unfollows in ("remove", "keep") else "remove",
+            folders=self.sync_folders,
+            speed=self.sync_speed,
+            new_podcasts_share=self.new_podcasts_sync,
+            local_only=frozenset(self.local_only),
+        )
 
     @property
     def is_ready(self) -> bool:
@@ -130,6 +161,12 @@ class PlacesConfig:
             "device_id": self.device_id,
             "include_labels": self.include_labels,
             "share_subscriptions": self.share_subscriptions,
+            "sub_follow_new": self.sub_follow_new,
+            "sub_unfollows": self.sub_unfollows,
+            "sync_folders": self.sync_folders,
+            "sync_speed": self.sync_speed,
+            "new_podcasts_sync": self.new_podcasts_sync,
+            "local_only": sorted(set(self.local_only)),
         }
 
     @classmethod
@@ -149,6 +186,16 @@ class PlacesConfig:
             device_id=str(data.get("device_id", "")),
             include_labels=bool(data.get("include_labels", True)),
             share_subscriptions=bool(data.get("share_subscriptions", False)),
+            sub_follow_new=str(data.get("sub_follow_new", "follow")),
+            sub_unfollows=str(data.get("sub_unfollows", "remove")),
+            sync_folders=bool(data.get("sync_folders", True)),
+            sync_speed=bool(data.get("sync_speed", True)),
+            new_podcasts_sync=bool(data.get("new_podcasts_sync", True)),
+            local_only=[
+                str(item)
+                for item in (data.get("local_only") or [])
+                if isinstance(item, str) and item.startswith("sub:")
+            ],
         )
 
 
