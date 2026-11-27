@@ -5,6 +5,18 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 ## Unreleased
 
 
+### A download's status lands in its own column (2026-11-26)
+
+- **Status and Downloaded follow your column layout.** When you had moved or
+  hidden episode columns with Choose Columns, a download finishing wrote its
+  status into whatever column happened to be fourth (Time Left, say), or into
+  a column that was not there. Rows now update by column, wherever you put it.
+- **The Inbox, folders and the other all-podcast views use your columns too.**
+  They had always laid out Title, Published, Duration and Status in that fixed
+  order, whatever you chose.
+- **Only the cells that changed are rewritten**, so a download ticking over no
+  longer makes your screen reader read the whole row again.
+
 ### Show notes and transcripts open in QUILL, saying where they came from (2026-11-24)
 
 Send to Editor, Send Show Notes to Editor, Open Transcript in Editor and the
