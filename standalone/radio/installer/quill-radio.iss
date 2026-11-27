@@ -34,7 +34,7 @@
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
 #ifndef AppVersion
-  #define AppVersion "3.2.0"
+  #define AppVersion "4.0.0"
 #endif
 ; The build of this version and the Windows file version (X.Y.Z.B)
 ; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
@@ -43,7 +43,7 @@
   #define AppBuild "5"
 #endif
 #ifndef AppFileVersion
-  #define AppFileVersion "3.2.0.5"
+  #define AppFileVersion "4.0.0.1"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://quillforall.org/radio.html"
