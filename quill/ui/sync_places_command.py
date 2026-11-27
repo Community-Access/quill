@@ -102,16 +102,22 @@ def sync_once(config: places_config.PlacesConfig, phrase: str) -> str:
         # once the other QUILL machines have already been merged in.
         from quill.core.sync.places_interchange import sync_interchange
 
-        said.append(
-            sync_interchange(
-                data_dir=app_data_dir(),
-                remote_dir=config.remote_dir,
-                device_id=config.device_id,
-                device_label=config.device or places_config.default_device_name(),
-                include_labels=config.include_labels,
-                share_subscriptions=config.share_subscriptions,
-            ).summary()
+        report = sync_interchange(
+            data_dir=app_data_dir(),
+            remote_dir=config.remote_dir,
+            device_id=config.device_id,
+            device_label=config.device or places_config.default_device_name(),
+            include_labels=config.include_labels,
+            share_subscriptions=config.share_subscriptions,
         )
+        if report.new_device_id:
+            # Another device shared this id; remember the fresh one (ear.md 6.8).
+            config.device_id = report.new_device_id
+            try:
+                places_config.save(app_data_dir(), config)
+            except OSError:
+                pass  # next sync moves again, and says so again
+        said.append(report.summary())
     if not said:
         return "Nothing is switched on to sync."
     return " ".join(said)
