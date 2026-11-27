@@ -87,6 +87,18 @@ Run these in order from a single merged `main` commit. Don't build from a featur
 
 Run this **once**, after the code work for Beta is finished. The goal is that every reader-facing document, for every app, matches every change merged to `main`.
 
+**Releases go out one app at a time (owner decision, 2026-11-26).** Each app's release is its own story, so its documents must read as one coherent, professional account of that release, not a diary of commits.
+
+- **Changelogs are reorganized, not just appended to.** Each app's `## Unreleased` section (and its root `CHANGELOG.md` share) is regrouped to cover **everything since that app's last public release**, by feature rather than by date:
+  - `###` headings name the feature area as a user knows it (for example "Listening and playback", "Your library", "Recovery and safety", "Accessibility", "Getting started"). `####` subheadings name individual features.
+  - Each feature is described once, in its final form. Entries that changed the same feature over several days are merged, and intermediate states that never shipped are dropped.
+  - Fixes are grouped under a closing "Fixes" heading by area, each saying what the user experienced and what happens now.
+  - Dates move out of headings. The release's own version and date head the section when it ships.
+  - The engineering detail a maintainer needs stays, but under the user-facing heading, not instead of it.
+- **Every release's documents tell the same story at their own depth:** the announcement (why it matters), the release notes and What's New (what's new and how to try it), the changelog (the complete organized record), the user guide and help (how to use it), and the PRD and technical guides (how it works and why). Each names the same features with the same words.
+- **Order:** one app at a time, in the release order the owner sets. Finish an app's full document set, run the docs gates, release it, then start the next.
+- **Mechanics:** use the single-app path, the protected `promote-release.yml` workflow (or `promote_release_batch.py --apps <app>` once the monorepo change adds that option), so one app can be listed and promoted without the other ten.
+
 **Scope, for each of the 11 apps (QUILL, Lite, Radio, Cast, Transcribe, Converter, Studio, Inkwell, Weather, Beacon, Social) plus the family docs:**
 
 - user guides and their chapters, tutorials, and keyboard references
