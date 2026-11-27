@@ -40,8 +40,8 @@ _TITLE = "Quill Weather"
 #: they had missed a major release that does not exist. The two update
 #: independently (each resolves its own release asset), so nothing requires the
 #: numbers to agree.
-_VERSION = "2.2.1"
-_BUILD = 2  # this version's build (docs/release/RELEASE.md, "Build numbers")
+_VERSION = "2.3.0"
+_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 #: Every QuillVille app now updates from the one shared repo, each resolving its
 #: own release asset (Quill-Weather-*), so they update and maintain independently.
 _REPO = "Community-Access/quill"

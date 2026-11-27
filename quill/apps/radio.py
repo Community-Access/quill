@@ -40,8 +40,8 @@ from quill.ui.spoken_name import set_spoken_name
 _TITLE = "Quill Radio"
 from quill.core.app_version import describe_version, installed_version  # noqa: E402
 
-_VERSION = "3.2.0"
-_BUILD = 5  # this version's build (docs/release/RELEASE.md, "Build numbers")
+_VERSION = "4.0.0"
+_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 #: Two downloads since 3.0.0 (installer, portable zip): Check for Updates asks "portable,
 #: or not" and nothing else, as QUILL Lite does (AppShell.check_for_app_updates says why).
