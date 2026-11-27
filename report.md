@@ -35,12 +35,12 @@ Items are ordered by how much they block a trustworthy 11-app Beta. "Done when" 
 | 3 | ~~Verify the GitHub Workbench is complete.~~ **Verified complete as code (2026-11-26).** 99 of 100 live requirements are Met, and the API coverage gate shows nothing still planned (`planned_ceiling: 0`). Roadmap GX01 to GX16 have all shipped. The one Partly-met item, GH-R-119, needs human help sessions (see Part 3). | | Done. |
 | 4 | **Verify the WordPress Workbench and Practice Site are complete** against their own plan. SwiftLetter is excluded (see 1.3). *Pending review.* | Same as above. | Verdict recorded, with any code gap fixed. |
 | 5 | **Fix the Dependabot alerts in `scripts/wp_playground/package-lock.json`**: `isomorphic-git` to 1.38.6 (1 high: arbitrary file write through a directory symlink; 3 moderate) and `qs` to 6.16.1 (2 moderate). | A high-severity alert on `main` is a release risk if this tooling ships with the packaged Practice Site, and noise if it doesn't. | Lockfile updated in a green PR, and `main` shows no open high alerts. |
-| 6 | **Cast: automatic feed check never runs in standalone Cast.** The fix is in `train/handoff-cast` commit `f3003b03a` (same fix as `claude/festive-meitner-3e3470`). On `main`, `quill/ui/podcasts/startup_bootstrap.py` (around line 151) and `new_feed_check.py:23` read `host.settings or host._podcast_history`, but Cast Preferences write the switch to `PodcastHistory`. So "Look for new episodes on a schedule" can never turn on. Changing only the interval is also ignored until restart, and per-show schedules are ignored. | A core feature of a pilot app silently does nothing. | One small PR, hand-ported because #2083 moved the monitor setup: about 60 lines plus the 204-line test `test_cast_check_reads_history.py`. Then delete both source branches. |
-| 7 | **Cast: download status is written to a fixed column.** `SetItem(row, 3, …)` in `manager_downloads.py:115`, `manager_downloads.py:124` and `manager_phase4.py:348`, but Episodes columns are user-configurable. | It overwrites the wrong cell, or targets a column that doesn't exist. | A PR of about 30 lines plus a test, using `_set_episode_state_cells` (write by column id) from `feat/m13-cast-radio-player` and covering all three call sites. |
-| 8 | **QUILL and Lite crash recovery loses drafts.** `recovery.begin_session` offers only the newest snapshot, and only when the log shows an error. After a power cut or forced close, nothing is offered, and a second unsaved document is never offered. | Real draft loss in the flagship editor. | Land `feat/m6-quill-lite` (about 800 lines with tests; those files are unchanged on `main`, so no conflicts). |
-| 9 | **Damaged files are silently overwritten.** A damaged `abbreviations.json` loads the defaults and the next save overwrites the user's file; a damaged GitHub drafts file is overwritten; a Beacon rollback can't be undone. | Silent data loss. | Land the data-safety core of `feat/m6-drafts-backups` (about 500 lines; low conflict risk). |
-| 10 | **Chapter Workbench Close discards unsaved chapter and tag edits without asking.** | Silent loss of edits. | Land only the Close prompt from `feat/m6-radio-studio`: `chapter_workbench.py`, `chapter_workbench_edits.py`, and the test, about 150 lines. |
-| 11 | **Lite never resumes Scribe jobs left running at launch, and Transcribe exit discards a running queue without asking.** | A functional gap if Scribe ships in Lite for Beta. | Land those two pieces of `feat/m6-transcribe-converter` (about 200 lines). Expect conflicts in `lite.py`, `lite_window_scribe.py` and `transcribe.py` after #2083. |
+| 6 | ~~Cast: automatic feed check never runs in standalone Cast.~~ **Fixed: merged in #2086.** `check_settings` reads the store each app's Preferences writes. A cadence-only change takes effect at once, and each show's own schedule decides when it's due. | | Done. |
+| 7 | **Cast: download status is written to a fixed column.** **PR #2087.** Rows now update by column id through `set_row`, writing only cells that changed. The Inbox and other all-podcast views, which wrote *every* cell by position, now use the listener's columns too. | | Merge when CI is green. |
+| 8 | **QUILL and Lite crash recovery loses drafts.** **PR #2088** (from `feat/m6-quill-lite`). Every unsaved document is offered after any unclean exit, each named, with how it differs from the saved file. | | Merge when CI is green. Then a screen-reader check of the reworded window (Part 3). |
+| 9 | ~~Damaged files are silently overwritten.~~ **Fixed: merged in #2089** (from `feat/m6-drafts-backups`). Damaged abbreviation and GitHub draft files are copied aside, and a Beacon rollback can be undone. | | Done. |
+| 10 | **Chapter Workbench Close discards unsaved edits without asking.** **PR #2090.** Close, Escape and X ask Save, Discard or keep working, before the place is kept or the player is stopped. | | Merge when CI is green. |
+| 11 | **Lite Scribe resume and the Transcribe exit question.** Mostly already on `main`: Lite resumes Scribe work at launch (#2071), and closing Transcribe requeues the current job (#2075), so the branch's exit question would now be untrue and wasn't ported. **PR #2091** fixes the one real flaw: startup made a second Scribe controller for the same queue. | | Merge when CI is green. |
 | 12 | *Optional one-liner:* `quill/ui/dictation_transcription.py:55` calls `frame._speech_provider(registry=registry)`, but `MainFrame._speech_provider` takes no arguments. It raises TypeError only when the provider ladder returns an id that isn't registered. | A latent crash. | Fix the call, or the signature. |
 
 ### 1.2 Release engineering (the Beta path)
@@ -84,6 +84,12 @@ Every reader-facing document must match what `main` actually ships:
 - the generated EPUB, HTML and DOCX copies of all of the above
 
 Regenerate the outputs from their Markdown sources **once**, after the last code merge, not piecemeal.
+
+Known problems going in (found 2026-11-26):
+
+- **Eight site pages are already stale on `main`:** running `scripts/sync_site_docs.py` changes `converter-prd`, `converter-userguide`, `player-prd`, `quilllite-changelog`, three Lite guide chapters and the Lite GitHub guide chapter 12 under `docs/site/docs`. Run the sync once and commit the result as part of this gate.
+- **Use the repository's renderer, never plain Pandoc.** The app `render_docs.ps1` scripts (and `scripts/DocRender.ps1`) apply the accessible template (`docs/pandoc/quill-accessible.html5`: page language, skip link, `<main>` landmark), the first-heading page title, `gfm+smart`, and stable EPUB identifiers. Plain `pandoc` drops all of these.
+- **Pandoc version:** this PC has Pandoc 3.12.1, while the committed outputs were made with the pinned 3.10. Regenerating unrelated EPUBs here changes their bytes, so restore any output whose Markdown didn't change.
 
 **Done when:** the docs parity and help-reference gates pass, each app's What's New names its Beta changes, and no guide documents a menu or feature that a new install doesn't have. The `View > Load More` mismatch in PR #2003 is the known example.
 
@@ -137,7 +143,10 @@ All 24 folders were scanned, and all 24 were deleted on 2026-11-26.
 |---|---|---|
 | `preserved-beta-builds` (214,169 files) | Build trees from five old branches: `build/deps` (including `wordpress-7.1.4.zip`), dictation models and Python, launcher, and the Lite and runtime build folders. Also `orphan-key-snapshot/quill-pub.key`, which is the same public key as the root copy apart from its line ending. | **Low risk to delete.** Everything here is either regenerated by a build from `main` or downloaded by the build. The Beta builds must come fresh from `main` anyway. It is the owner's decision; I recommend deleting it once the first Beta build succeeds. |
 | `release-notes-backup-20261109` (4 files) | Old release-notes drafts: QUILL 1.0.0, Lite 2.0, Radio 3.2, Cast 2.0. None is identical to what is in Git. | **Copied** to `D:\quill-local-backup-2026-11-26\release-notes-backup-20261109`, so the folder can be deleted with no loss. |
-| `voice-prototype`, `swl-client`, `ext` | Separate prototypes or tools, not QUILL worktrees | Identify each. Keep and relocate any that are their own project; delete the rest. |
+| `ext\swl-server`, `ext\swl-dash`, `ext\swl-ci` | Three clean clones of the external SwiftLetter repository (`payown/SwiftLetter`), last updated 21–22 November. They are the reference copies for QUILL's SwiftLetter client work (PR #2003) while its contract fixtures are pending. | **Keep** until SwiftLetter Phase 1 merges. Nothing in them is unique (all clean and on GitHub), so they can be re-cloned at any time. |
+| `ext\StreamSift`, `ext\StreamSift-build` | A clean clone of `OnjLouis/StreamSift` (another developer's project, studied for Radio and Cast), plus its local build output. | **Low value.** Delete both whenever you like; the clone can be re-made from GitHub. |
+| `swl-client` | Empty folder. | **Delete.** |
+| `voice-prototype` | Two files from 8 November: `output\liquid-e2e-tts.md` and `liquid-e2e.log`, notes and a log from an end-to-end text-to-speech prototype run. | **Delete**, after copying the two files to the backup folder if the notes are still wanted. |
 | About 80 loose files | Old helper scripts, transcripts, PR conflict notes, gateway compose files, `jev_*` evaluation data, plans | Keep anything not already in a repository by moving it to the backup folder; delete the rest. |
 
 ### Branch queue
@@ -202,6 +211,18 @@ Families under review:
 | WordPress and SwiftLetter | `wp/*` (2), `wp-finish/*` (5), `feat/wordpress-*` (3), `deferred/wordpress-workbench-15-12`, `docs/wp-live-run`, `feat/swiftletter`, `feat/swiftletter-client-followups`, `fix/swl-browse-review` |
 | Family UX M1 to M8 | `feat/m1-*` through `feat/m8-*`, `train/family-m1-m2-m7`, `train/editor-recovery`, `train/handoff-cast`, `train/workbench-sets` |
 | Family UX M9 to M16 and others | `feat/m9-*` through `feat/m16-*`, `train/media-recovery`, `feat/scribe-sets`, `feat/scribe-live-regression`, `feat/mobi-reading`, `fix/settings-apps`, `claude/festive-meitner-3e3470`, `codex/coverage-stage1-2026-11-11`, `rescue/agent-a3cb8ce7ee947a5d9`, `wip/*`, `fix/ai-and-settings-legible`, `pr/1999`, `pr/2000` |
+
+### Old Git stashes (found 2026-11-26)
+
+`git stash list` in `D:\QUILL` holds five stashes from 5–6 November. A stash is work set aside without a commit or a branch; it isn't on GitHub, so it's the last place unsaved work can hide.
+
+| Stash | Made on | Size | Next step |
+|---|---|---|---|
+| `stash@{0}` "Preserve primary Studio work before payment merge 2026-11-06" | `feature/report-findings-family-completion` | 30 files, +947 / −107 | Compare with `main`'s Studio code; push as a `rescue/` branch if anything is unique, then drop. |
+| `stash@{1}` "paused-for-main-consolidation-payments-2026-11-05" | `payments-stripe-paypal` | 2 files, +20 | Same check; very likely superseded by the WordPress payment work on `main`. |
+| `stash@{2}` "paused-for-main-consolidation-github-2026-11-05" | `agents/use-s-code-ghmanage-if-it-helps-you` | 4 files, +55 / −4 | Same check; GitHub Workbench is complete on `main`. |
+| `stash@{3}` "paused-for-main-consolidation-main-2026-11-05" | `main` | no tracked changes | Drop after a quick look at its untracked part. |
+| `stash@{4}` "docs-before-main-merge" | `docs/rich-documentation` | 64 files, +7,412 / −116,835 | Mostly a generated-docs snapshot; check the Markdown files only, then drop. |
 
 ### Recovery
 
