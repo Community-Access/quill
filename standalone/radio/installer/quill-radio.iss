@@ -40,7 +40,7 @@
 ; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
 ; /dAppBuild= and /dAppFileVersion=; these literals are only the fallback.
 #ifndef AppBuild
-  #define AppBuild "5"
+  #define AppBuild "1"
 #endif
 #ifndef AppFileVersion
   #define AppFileVersion "4.0.0.1"
