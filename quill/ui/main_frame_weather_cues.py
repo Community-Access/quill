@@ -62,7 +62,7 @@ class WeatherCuesMixin:
 
         show_toast(title, body, parent=self.frame, icon=self._wx.ICON_WARNING)
 
-    def _play_weather_alert_sound(self) -> None:
+    def _play_weather_alert_sound(self, severity: str = "") -> None:
         """Play the alert cue for a newly-issued alert, honoring the user's
         enable toggle and custom-sound choice. Best-effort; never raises."""
         from quill.core.weather import settings as settings_mod
@@ -71,8 +71,11 @@ class WeatherCuesMixin:
             settings = settings_mod.load_settings(self._weather_data_dir())
             if not settings.alert_sound_enabled:
                 return
+            from quill.core.weather import alert_rules_store
             from quill.platform import alert_sound
 
-            alert_sound.play_alert_sound(settings.alert_sound_path, settings.alert_sound_repeat)
+            custom = alert_rules_store.load_choices(self._weather_data_dir()).sounds.get(severity)
+            path = custom or settings.alert_sound_path
+            alert_sound.play_alert_sound(path, settings.alert_sound_repeat)
         except Exception:  # noqa: BLE001 - a sound must never disrupt the alert
             pass

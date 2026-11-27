@@ -18,7 +18,7 @@ from typing import Any
 from quill.core.radio import wxindex
 from quill.core.radio.models import RadioStation
 from quill.core.radio.wxindex_models import local_noaa_radio_station
-from quill.core.sound_events import SoundEvent
+from quill.ui.main_frame_weather_choices import WeatherChoicesMixin
 from quill.ui.main_frame_weather_cues import WeatherCuesMixin
 from quill.ui.main_frame_weather_health import WeatherHealthMixin
 
@@ -28,7 +28,7 @@ _SAFE_MODE_WEATHER = (
 )
 
 
-class WeatherMixin(WeatherHealthMixin, WeatherCuesMixin):
+class WeatherMixin(WeatherHealthMixin, WeatherCuesMixin, WeatherChoicesMixin):
     # Attributes provided by the host frame.
     frame: Any
     _wx: Any
@@ -78,6 +78,8 @@ class WeatherMixin(WeatherHealthMixin, WeatherCuesMixin):
         menu.Append(add_id, "A&dd Location...\tCtrl+Alt+Shift+L")
         menu.Append(settings_id, "&Settings...\tCtrl+Alt+Shift+F")
         menu.Append(test_id, "&Test Alert (preview sound, tray, and dialog)\tCtrl+Alt+Shift+T")
+        menu.Append(feed_id, "Alert &Feed Status...\tCtrl+Alt+Shift+H")
+        self._append_weather_choice_items(menu)
         if self._weather_area_enabled("noaa_radio"):
             menu.AppendSeparator()
             menu.Append(noaa_listen_id, "&Listen to your Local NOAA Weather Radio\tCtrl+Alt+N")
@@ -117,6 +119,7 @@ class WeatherMixin(WeatherHealthMixin, WeatherCuesMixin):
         #: Places whose very first check failed this round (id -> label): the
         #: start summary says they could not be checked instead of leaving them out.
         self._weather_monitor_unchecked: dict[str, str] = {}
+        self._weather_monitor_hidden = 0  # alerts held back by the user's choices
         self._weather_monitor_menu_item = None
         self._weather_monitor_pause_item = None
         if self._weather_area_enabled("monitoring"):
@@ -427,13 +430,10 @@ class WeatherMixin(WeatherHealthMixin, WeatherCuesMixin):
         data_dir = self._weather_data_dir()
         config = monitor.load_config(data_dir)
         store = loc_store.load_locations(data_dir)
-        # Explicit list wins; else watch every saved place, not just the primary.
-        watched_ids = config.watched_ids() or [loc.id for loc in store.locations]
-        locations = [loc for cid in watched_ids if (loc := store.find(cid)) is not None]
+        # Every saved place is watched unless switched off (Alert Choices).
+        locations = self._weather_places_to_watch(config, store)
         if not locations:
-            # Force a choice before monitoring can start: there is nothing to watch.
-            self._announce("No weather location to monitor yet. Opening Add Location.")
-            self.open_weather_add_location()
+            self._weather_nothing_to_watch(store)
             return
 
         self._weather_monitor_locations = locations
@@ -540,6 +540,10 @@ class WeatherMixin(WeatherHealthMixin, WeatherCuesMixin):
             return
         from quill.core.weather import nws
 
+        locations = self._weather_locations_to_poll(locations)  # snoozes, schedules, ends
+        if not locations:
+            self._schedule_next_monitor_poll(False)
+            return
         # One round = one fetch per watched location. The round-pending counter
         # lets the last poll to return arm the next tick exactly once (so N
         # locations never spawn N overlapping timers).
@@ -576,16 +580,12 @@ class WeatherMixin(WeatherHealthMixin, WeatherCuesMixin):
         if getattr(self, "_weather_monitor_paused", False):
             return  # paused mid-flight: stay quiet, do not re-arm
         try:
-            # Record what came back before anything else. A failure is *never*
-            # an empty answer: it leaves this place's state and last known
-            # alerts alone, so nothing is cleared and no all-clear is spoken.
-            succeeded = self._weather_health_record(location, result)
-            if not succeeded or not isinstance(result, list):
-                if not state.primed:
-                    self._weather_monitor_unchecked[location.id] = location.label
+            # A failure is *never* an empty answer: it is recorded as a failure and
+            # leaves the last known alerts alone, so no all-clear is spoken.
+            handled = self._weather_handle_poll(location, result, state)
+            if handled is None:
                 return  # a missed poll, never the end; try again next tick
-            self._weather_monitor_unchecked.pop(location.id, None)
-            update = monitor.apply_poll(state, result)
+            update, plan = handled
             # Persist the union of every watched place's seen ids, so the
             # OS-scheduled background check never re-toasts an alert this window
             # already spoke (alert ids are globally unique across locations).
@@ -596,27 +596,12 @@ class WeatherMixin(WeatherHealthMixin, WeatherCuesMixin):
             if result:
                 self._weather_monitor_round_active = True
             if update.is_baseline:
-                # Collect each place's baseline count; the combined "monitoring on
-                # for N places" line is spoken once, when the last baseline lands.
-                self._weather_monitor_baseline_counts[location.label] = len(result)
+                # Each place's baseline count (alerts the user chose to hear about);
+                # the combined "monitoring on" line speaks once, when the last lands.
+                self._weather_monitor_baseline_counts[location.label] = plan.active_told
+                self._weather_monitor_hidden += len(plan.hidden)
             else:
-                # The earcon rides the alert announcement, and only when
-                # ``apply_poll`` says an alert id is genuinely new (#1302):
-                # every poll produces an update, but ``new_alerts`` is empty
-                # for an alert this window already told the user about, and
-                # the baseline round above never cues at all.
-                cue = ""
-                if update.new_alerts:
-                    self._play_weather_alert_sound()
-                    cue = SoundEvent.WEATHER_ALERT
-                    top = update.new_alerts[0]
-                    self._show_weather_toast(
-                        f"Weather alert: {top.event}",
-                        top.headline or f"A {top.event} is in effect for {location.label}.",
-                    )
-                message = monitor.update_announcement(update, location.label)
-                if message:
-                    self._announce(message, force=monitor.should_force_speech(update), sound=cue)
+                self._weather_deliver(location, update, plan)
         finally:
             self._weather_monitor_round_pending -= 1
             if self._weather_monitor_round_pending <= 0:
@@ -635,7 +620,11 @@ class WeatherMixin(WeatherHealthMixin, WeatherCuesMixin):
             # Every place answered or failed its first check -> the start round.
             # Speak it once; a place that could not be checked is never counted clear.
             notes = self._weather_health_unchecked_notes(failed) if failed else None
-            self._announce(monitor.start_summary_multi(dict(counts), config, notes))
+            summary = monitor.start_summary_multi(
+                dict(counts), config, notes, hidden=self._weather_monitor_hidden
+            )
+            self._announce(summary + self._weather_not_watched_note())
+            self._weather_monitor_hidden = 0
             self._weather_monitor_baseline_counts = {}
             self._weather_monitor_unchecked = {}
         self._weather_health_round_end()

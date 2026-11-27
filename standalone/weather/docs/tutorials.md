@@ -192,25 +192,29 @@ Next: Decide what gets through.
 
 Severity, event names, the sound and how often it repeats -- the four settings that decide whether the watch is useful or noisy.
 
-*6 steps, about 5 minutes.*
+*7 steps, about 5 minutes.*
 
-1. **Open Settings.** Four things here decide what an alert costs you. Everything else in this window is about how the weather reads; this is about how it interrupts.
+1. **Choose which alerts and places.** Alert Choices decides which saved places are watched and which alerts reach you: Everything, Essentials, Safety or your own. Extreme alerts are always told unless you turn that off. Anything your choices keep quiet stays in the alert list.
+   - Keys: Ctrl+Alt+Shift+C
+   - You should hear: Entered Alert Choices.
+
+2. **Open Settings.** Four things here decide what an alert costs you. Everything else in this window is about how the weather reads; this is about how it interrupts.
    - Keys: Ctrl+Alt+Shift+F
    - You should hear: Entered Weather Settings.
 
-2. **Set the severity floor.** Show everything, or only Moderate and above, Severe and above, and so on. Somewhere on the coast a Small Craft Advisory is news; two hundred miles inland it is noise, and the app cannot know which you are.
+3. **Set the severity floor.** Show everything, or only Moderate and above, Severe and above, and so on. Somewhere on the coast a Small Craft Advisory is news; two hundred miles inland it is noise, and the app cannot know which you are.
    - You should hear: The severity choice read back.
 
-3. **Hide the events you never want.** Below it is a list of specific event names to hide, one per line. This is the finer tool: keep every severity but never hear about Air Quality Alerts again, without dropping the floor and losing something else.
+4. **Hide the events you never want.** Below it is a list of specific event names to hide, one per line. This is the finer tool: keep every severity but never hear about Air Quality Alerts again, without dropping the floor and losing something else.
    - You should hear: Nothing spoken: the effect shows up the next time one of those is issued.
 
-4. **Choose the sound, and hear it.** The alert sound can be switched off, or replaced with a .wav of your own -- there is a Play button so you can hear a candidate before committing, and Use Default to go back.
+5. **Choose the sound, and hear it.** The alert sound can be switched off, or replaced with a .wav of your own -- there is a Play button so you can hear a candidate before committing, and Use Default to go back.
    - You should hear: The sound you chose, played once.
 
-5. **Decide how insistent it is.** The sound can play from one to ten times per alert. Once is polite; five is what you want if you are in another room and the tornado siren is the point of owning this app.
+6. **Decide how insistent it is.** The sound can play from one to ten times per alert. Once is polite; five is what you want if you are in another room and the tornado siren is the point of owning this app.
    - You should hear: The repeat count read back.
 
-6. **Set how often it refreshes.** The refresh interval governs the Weather Center's own updating. It is never allowed faster than the National Weather Service's recommended minimum, which is a courtesy to a free public service everybody depends on.
+7. **Set how often it refreshes.** The refresh interval governs the Weather Center's own updating. It is never allowed faster than the National Weather Service's recommended minimum, which is a courtesy to a free public service everybody depends on.
    - You should hear: The interval read back.
 
 A watch you have tuned is a watch you leave on. That is the only measure that matters here.

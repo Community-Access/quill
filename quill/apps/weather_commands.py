@@ -36,6 +36,8 @@ def register_weather_commands(host: Any) -> None:
             "Weather: Alert Feed Status...",
             host.open_weather_feed_status,
         ),
+        ("weather.alert_choices", "Weather: Alert Choices...", host.open_weather_alert_choices),
+        ("weather.watch_place", "Weather: Watch This Place", host.toggle_weather_current_place),
         (
             "weather.monitor_toggle",
             "Weather: Start or Stop Weather Monitoring",

@@ -86,8 +86,8 @@ new alert names its place when it is spoken and in its tray notification, so you
 always know where as well as what. When monitoring starts you hear one combined
 summary rather than a line per place -- for example, "3 places: Tucson, Boston,
 and Reno. All clear right now." The status line and the main window say either
-the one place's name or "for 3 places". (Picking exactly which of your saved
-places to watch is coming; today the watch covers all of them.)
+the one place's name or "for 3 places". (You can switch places off, snooze them
+and more in **Alert Choices**, below.)
 
 ### How do I know alerts are working?
 
@@ -110,6 +110,50 @@ Weather tells them apart, and it never says all clear after a check that failed.
   instead of being counted as clear.
 - In Safe Mode the report says network checks are off. That is a choice you made,
   not a service problem.
+
+### Choosing which alerts and places
+
+**Weather menu > Alert Choices** (Ctrl+Alt+Shift+C) decides which places Weather
+Guardian watches, which alerts it tells you about, and how. If you never open it,
+nothing changes: every saved place is watched and you are told about every alert,
+as before. The window has four pages, and a Preview and a Test Alert button below
+them.
+
+- **Which alerts.** Pick **Everything**, **Essentials** (tornado, severe
+  thunderstorm and flash flood warnings, and anything Extreme), **Safety** (all
+  warnings, and Extreme or Severe watches), or **Custom**. Custom lets you pick
+  categories (Tornado, Severe thunderstorm, Flash flood and flood, Winter weather,
+  Heat and cold, Wind, Fire weather, Hurricane and tropical, Coastal and marine,
+  Air quality, Other), include or skip single alert types, and narrow by kind
+  (warnings, watches, advisories, statements) and by the National Weather Service
+  severity, with a "this severity and above" shortcut.
+- **Extreme alerts are always told** unless you turn that off, and turning it off
+  asks you first. Nothing you choose hides an Extreme alert by accident.
+- **Places.** Each row says its own state, like "Home, watched" or "Cabin, not
+  watched, switched off". Space switches the focused place; Watch All, Watch None
+  and Invert change them together. A place can be **snoozed** for 1, 4 or 12 hours
+  or until tomorrow morning (you are told when the snooze ends), **watched until**
+  a date and time while otherwise off, such as a trip (it stops by itself and says
+  so once), given a **schedule** like Mon-Fri 08:00-18:00, and put in **groups**
+  such as Family or Travel that you can watch or stop watching together. A
+  snoozed place, or one outside its schedule, is still checked, but stays quiet
+  like quiet hours. **Weather > Watch This Place** (Ctrl+Alt+Shift+U) and the tray's
+  **Watched Places** submenu switch places without opening the window.
+- **How you are told.** For the alerts you chose: as before (interrupt for urgent
+  alerts, speak the rest), speak and interrupt, speak quietly, sound only, or show
+  in the list only. Each severity can have its own sound file.
+- **Quiet hours.** Between the times you set, nothing below Extreme is spoken or
+  sounded. Extreme alerts still break through, and you can turn that off after a
+  plain warning that nothing at all would then be spoken, tornado warnings
+  included. The same rule applies to snoozed places and places outside their
+  schedule.
+
+**Nothing is lost.** An alert your choices keep quiet still appears in Active
+Alerts and in Alert Feed Status, which says how many were hidden by your settings.
+The start-watching summary says which places are not watched and why. Every save
+says one sentence, such as "Watching 3 of 5 places. Cabin is snoozed until 6 PM.
+Telling you about tornado, severe thunderstorm and flash flood warnings, and
+anything Extreme."
 
 ## Customizing features
 
@@ -407,10 +451,11 @@ A few things stay the same no matter what:
 
 This is the full reference for the weather features, shared by the standalone
 **Quill Weather** app and Quill Radio's **Weather** menu (they run the same
-code). It brings official U.S. weather to you as clear, screen-reader-first
+code). It brings official weather to you as clear, screen-reader-first
 text: current conditions, the forecast, an extended daily outlook, and -- most
 importantly -- active watches, warnings, and advisories for the places you care
-about.
+about. Forecasts and current conditions work worldwide; alerts and the hourly
+forecast come from the National Weather Service, so they cover the United States.
 
 Everything comes from free, no-account, no-key sources: the **National Weather
 Service** (api.weather.gov) for observations, the forecast, and alerts;
@@ -563,7 +608,7 @@ a notification in the system tray for each new alert, so you can see it there.
   tray notification. Starting the watch speaks a single combined summary across
   the places ("3 places: Tucson, Boston, and Reno. All clear right now."), and
   turning it off or reading the status line says either the one place's name or
-  "for 3 places". Choosing a subset of your saved places is a later addition.
+  "for 3 places". Choosing a subset of your saved places is in **Alert Choices**.
 - It keeps working while the app is **minimized to the tray**, and it starts
   again automatically the next time you launch (choose **Stop Weather Monitoring**
   to turn it off for good).

@@ -38,7 +38,7 @@ class WeatherHealthMixin:
             self._weather_feed_tracker_obj = tracker
         return tracker
 
-    def _weather_health_record(self, location: Any, result: object) -> bool:
+    def _weather_health_record(self, location: Any, result: object, hidden: Any = ()) -> bool:
         """Record one place's poll result. Returns True when it was a success.
         A failure leaves the last known alerts and success time alone."""
         from quill.core.weather import feed_health
@@ -46,7 +46,7 @@ class WeatherHealthMixin:
         tracker = self._weather_feed_tracker()
         now = time.time()
         if isinstance(result, list):
-            tracker.record_success(location.id, location.label, result, now)
+            tracker.record_success(location.id, location.label, result, now, hidden_ids=hidden)
             return True
         error = result if isinstance(result, BaseException) else feed_health.FailureKind.UNREADABLE
         tracker.record_failure(location.id, location.label, error, now)
@@ -92,19 +92,19 @@ class WeatherHealthMixin:
     # -- the Alert Feed Status window ----------------------------------------
 
     def _weather_watched_places(self) -> tuple[list[str], dict[str, str]]:
-        from quill.core.weather import locations as loc_store
-        from quill.core.weather import monitor
+        """The saved places that are being checked now, and every place's label."""
+        from quill.core.weather import place_watch
 
-        data_dir = self._weather_data_dir()
-        store = loc_store.load_locations(data_dir)
-        config = monitor.load_config(data_dir)
-        ids = config.watched_ids() or [loc.id for loc in store.locations]
+        store, muted, watches, now = self._weather_watch_setup()  # type: ignore[attr-defined]
         labels = {loc.id: loc.label for loc in store.locations}
-        return [i for i in ids if i in labels], labels
+        ids = [i for i in labels if place_watch.state_of(i, muted, watches, now).checked]
+        return ids, labels
 
     def weather_feed_status_text(self) -> str:
         ids, labels = self._weather_watched_places()
-        return self._weather_feed_tracker().status_text(ids, labels, time.time())
+        text = self._weather_feed_tracker().status_text(ids, labels, time.time())
+        note = self._weather_not_watched_note()  # type: ignore[attr-defined]
+        return f"{text}\n\n{note.strip()}" if note else text
 
     def weather_feed_summary(self) -> str:
         ids, _labels = self._weather_watched_places()

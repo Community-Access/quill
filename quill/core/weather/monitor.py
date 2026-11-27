@@ -52,6 +52,14 @@ class MonitorConfig:
     #: Severe-weather mode: tighten the poll while an alert is active.
     fast_when_active: bool = True
     fast_interval_seconds: int = MONITOR_FAST_DEFAULT_SECONDS
+    #: Saved places switched off (kept, just not watched). Everything else is
+    #: watched, including places added later: "watch all" is the default.
+    muted_ids: list[str] = field(default_factory=list)
+
+    def places_to_watch(self, all_ids: list[str]) -> list[str]:
+        """Every saved place that is switched on, in the saved order."""
+        muted = set(self.muted_ids)
+        return [i for i in all_ids if i not in muted]
 
     def watched_ids(self, *, fallback: str = "") -> list[str]:
         """The locations to actually watch, in order and de-duplicated. Uses
@@ -118,6 +126,10 @@ class MonitorState:
     #: Whether at least one poll has completed (so the first poll is a baseline,
     #: not a burst of "new" announcements for already-active alerts).
     primed: bool = False
+    #: Active alerts the user's alert choices said to tell them about (the rest
+    #: are held back from speech but stay in the alert list). Lets an all-clear
+    #: be spoken only for alerts the user was actually told about.
+    told_ids: set[str] = field(default_factory=set)
 
 
 @dataclass(slots=True)
@@ -173,6 +185,7 @@ def start_summary_multi(
     active_counts: dict[str, int],
     config: MonitorConfig,
     unchecked: dict[str, str] | None = None,
+    hidden: int = 0,
 ) -> str:
     """The one-time spoken line when monitoring several places at once.
 
@@ -185,6 +198,16 @@ def start_summary_multi(
     never counted as clear: the summary says it could not be checked, and a line
     that would have said "all clear" says so only for the places that answered.
     """
+    text = _start_summary_core(active_counts, config, unchecked)
+    if hidden:
+        plural = "" if hidden == 1 else "s"
+        text += f" {hidden} alert{plural} hidden by your settings, still in the alert list."
+    return text
+
+
+def _start_summary_core(
+    active_counts: dict[str, int], config: MonitorConfig, unchecked: dict[str, str] | None
+) -> str:
     if unchecked:
         return _start_summary_with_failures(active_counts, config, unchecked)
     labels = list(active_counts)
@@ -354,6 +377,9 @@ def load_config(data_dir: Path) -> MonitorConfig:
         config.fast_when_active = raw["fast_when_active"]
     if isinstance(raw.get("fast_interval_seconds"), (int, float)):
         config.fast_interval_seconds = int(raw["fast_interval_seconds"])
+    raw_muted = raw.get("muted_ids")
+    if isinstance(raw_muted, list):
+        config.muted_ids = [str(x) for x in raw_muted if isinstance(x, str) and x.strip()]
     return config.normalized()
 
 
@@ -371,5 +397,6 @@ def save_config(data_dir: Path, config: MonitorConfig) -> None:
             "interval_minutes": config.interval_minutes,
             "fast_when_active": config.fast_when_active,
             "fast_interval_seconds": config.fast_interval_seconds,
+            "muted_ids": config.muted_ids,
         },
     )

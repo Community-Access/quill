@@ -18,9 +18,17 @@ from __future__ import annotations
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 
-from quill.core.weather import feed_health, feed_health_store, monitor
+from quill.core.weather import (
+    alert_delivery,
+    alert_rules_store,
+    feed_health,
+    feed_health_store,
+    monitor,
+    place_watch,
+)
 from quill.core.weather import locations as loc_store
 from quill.core.weather.models import WeatherAlert
 
@@ -66,16 +74,30 @@ def run_check(
         return HeadlessCheckResult(checked=False, reason="safe mode")
     store = loc_store.load_locations(data_dir)
     config = monitor.load_config(data_dir)
-    watched = config.watched_ids() or [loc.id for loc in store.locations]
-    places = [loc for cid in watched if (loc := store.find(cid)) is not None]
-    if not places and (primary := store.primary()) is not None:
-        places = [primary]
-    if not places:
+    if not store.locations:
         return HeadlessCheckResult(checked=False, reason="no location")
+    # Every saved place unless switched off; a snoozed or out-of-schedule place is
+    # still checked, but quiet (an Extreme alert breaks through, as in the app).
+    moment = datetime.fromtimestamp(now()).astimezone()
+    muted, watches = set(config.muted_ids), place_watch.load_watches(data_dir)
+    states = {
+        loc.id: place_watch.state_of(loc.id, muted, watches, moment) for loc in store.locations
+    }
+    places = [loc for loc in store.locations if states[loc.id].checked]
+    if not places:
+        return HeadlessCheckResult(checked=False, reason="every place is switched off")
+    choices = alert_rules_store.load_choices(data_dir)
+    at = moment.time()
+    quiet_reason = {
+        pid: ("a snooze" if st is place_watch.WatchState.SNOOZED else "its schedule")
+        for pid, st in states.items()
+        if st.quiet
+    }
 
     alerts: list[WeatherAlert] = []
     where: dict[str, str] = {}  # alert id -> the first place it was seen for
     failures: list[Exception] = []
+    held_back: set[str] = set()  # alerts the user's choices keep from a toast
     tracker = feed_health_store.load_tracker(data_dir)
     for place in places:
         try:
@@ -86,12 +108,16 @@ def run_check(
             # alerts and the last good check time are left exactly as they were.
             tracker.record_failure(place.id, place.label, error, now())
             continue
-        tracker.record_success(place.id, place.label, found, now())
+        quiet = quiet_reason.get(place.id, "")
+        hidden = alert_delivery.hidden_ids(found, place.id, choices, at, quiet)
+        tracker.record_success(place.id, place.label, found, now(), hidden_ids=hidden)
         for alert in found:
             if alert.id and alert.id in where:
                 continue  # one alert covering two watched places is said once
             if alert.id:
                 where[alert.id] = place.label
+                if alert.id in hidden:
+                    held_back.add(alert.id)
             alerts.append(alert)
     notice = tracker.end_of_round(now())
     feed_health_store.save_tracker(data_dir, tracker)
@@ -114,7 +140,9 @@ def run_check(
         return HeadlessCheckResult(is_baseline=True, checked=True, feed_notice=notice)
 
     previous = monitor.load_notified_ids(data_dir)
-    fresh = [a for a in alerts if a.id and a.id not in previous]
+    # An alert the choices hold back is still recorded as seen (it stays in the
+    # alert list and in Alert Feed Status) but is not toasted.
+    fresh = [a for a in alerts if a.id and a.id not in previous and a.id not in held_back]
     monitor.save_notified_ids(data_dir, current_ids | previous if failures else current_ids)
     fresh.sort(key=lambda a: a.tier_rank)
     labels = list(dict.fromkeys(where[a.id] for a in fresh if a.id in where))

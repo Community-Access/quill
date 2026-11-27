@@ -376,7 +376,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, WeatherOptionsMixin, WeatherA
             menu.Append(toggle_id, "Stop Monitoring" if active else "Start Monitoring")
             menu.Bind(wx.EVT_MENU, lambda _e: self._toggle_and_refresh(), id=toggle_id)
         self._keep_menu_ids(status_id, center_id, quick_id, toggle_id)
-        # Reach the sibling apps from the tray, each in its own window.
+        self._append_weather_tray_places(menu)  # a check mark on each watched place
         menu.AppendSeparator()
         self._append_sibling_app_tray_items(menu, exclude="weather")
 

@@ -176,6 +176,17 @@ TUTORIALS: tuple[Tutorial, ...] = (
         ),
         steps=(
             Step(
+                title="Choose which alerts and places",
+                body=(
+                    "Alert Choices decides which saved places are watched and which "
+                    "alerts reach you: Everything, Essentials, Safety or your own. "
+                    "Extreme alerts are always told unless you turn that off. "
+                    "Anything your choices keep quiet stays in the alert list."
+                ),
+                command="weather.alert_choices",
+                hear="Entered Alert Choices.",
+            ),
+            Step(
                 title="Open Settings",
                 body=(
                     "Four things here decide what an alert costs you. Everything "

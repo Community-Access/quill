@@ -2,6 +2,30 @@
 
 ## 1.0.0
 
+### Quill Weather: choose your places and alerts (2026-11-27)
+
+**Choose which places and which alerts** (2026-11-27). The new **Weather menu >
+Alert Choices** (Ctrl+Alt+Shift+C) lets you switch saved places on or off
+without deleting them, and choose which alerts you hear about: Everything,
+Essentials (tornado, severe thunderstorm and flash flood warnings, and anything
+Extreme), Safety (all warnings and Extreme or Severe watches), or your own by
+category, kind and severity. Each choice can speak and interrupt, speak quietly,
+play a sound only, or show in the list only, with its own sound for each
+severity, and quiet hours let only Extreme alerts break through. If you never
+open it, nothing changes. Extreme alerts are always told unless you turn that
+off after a plain warning, and an alert your choices keep quiet is never lost: it
+stays in the alert list and in Alert Feed Status, which counts how many were
+hidden. Every save says one sentence about what you chose.
+
+**Snooze, schedule and group your places** (2026-11-27). A place can be snoozed
+for 1, 4 or 12 hours or until tomorrow morning, watched until a date and time
+(a trip), given a schedule such as weekdays 8 to 6, and put in groups such as
+Family or Travel to watch or stop watching together. A snoozed place is still
+checked, and Extreme alerts still break through. **Weather > Watch This Place**
+(Ctrl+Alt+Shift+U) and a **Watched Places** submenu in the tray switch places
+quickly. The start-watching summary and Alert Feed Status say which places are
+not watched and why.
+
 ### Quill Weather tells "no alerts" from "could not reach the service" (2026-11-27)
 
 **You can tell "no alerts" from "could not reach the service"** (2026-11-27).

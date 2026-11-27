@@ -89,6 +89,15 @@ PURPOSES: dict[str, str] = {
         "the app is doing -- never which key you pressed -- and moves you on by "
         "itself."
     ),
+    "Alert Choices": (
+        "Choose which saved places Weather Guardian watches, which alerts it tells you "
+        "about, how it tells you, and when it stays quiet. Which alerts picks a ready-made "
+        "set (Everything, Essentials, Safety) or your own; Places switches places on or off, "
+        "snoozes them, watches one for a while, or sets a schedule; How you are told chooses "
+        "speech and a sound for each severity; Quiet hours holds back everything below "
+        "Extreme. Alerts these choices hide are never lost: they stay in the alert list and "
+        "in Alert Feed Status. Preview says what would happen to a sample alert."
+    ),
     "Alert Feed Status": (
         "Whether Quill Weather can reach the National Weather Service, and the last alerts "
         "it was given. For each place you watch it says the state, the last successful "
