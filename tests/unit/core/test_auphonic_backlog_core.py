@@ -542,3 +542,131 @@ def test_the_backlog_modules_reach_the_network_only_through_the_client() -> None
     for module in (auphonic_account, auphonic_history, auphonic_options):
         source = Path(str(module.__file__)).read_text(encoding="utf-8")
         assert "urllib" not in source and "urlopen" not in source and "http_client" not in source
+
+
+# -- reverb, breath, generated chapters and show notes (2026-11-26) ---------------
+# Field names and values checked against auphonic.com/help/api/details.html and
+# /api/info/algorithms.json on 2026-11-26, not guessed.
+
+
+def test_reverb_and_breath_go_to_auphonic_with_the_methods_they_need() -> None:
+    from quill.core.publish import auphonic_options as opts
+
+    custom = opts.CustomProcessing(noise=12, noise_method="dynamic", reverb=24, breath=6)
+    body, _track = custom.algorithms(multitrack=False)
+    assert body["deverbamount"] == 24 and body["debreathamount"] == 6
+    assert custom.problem() == ""
+    assert "reverb reduction strong" in custom.describe()
+    assert "breath reduction light" in custom.describe()
+
+
+def test_reverbs_default_sends_nothing_so_auphonic_keeps_its_own() -> None:
+    from quill.core.publish import auphonic_options as opts
+
+    custom = opts.CustomProcessing(noise=12, noise_method="static")
+    body, _track = custom.algorithms(multitrack=False)
+    assert "deverbamount" not in body and "debreathamount" not in body
+
+
+def test_reverb_or_breath_without_a_method_that_takes_them_is_refused_in_words() -> None:
+    from quill.core.publish import auphonic_options as opts
+
+    assert "Reverb reduction works" in opts.CustomProcessing(noise=12, reverb=12).problem()
+    static_breath = opts.CustomProcessing(noise=12, noise_method="static", breath=6)
+    assert "Breath reduction works" in static_breath.problem()
+    assert "Reverb reduction works" in opts.CustomProcessing(reverb=6).problem()
+
+
+def test_noise_amount_zero_is_described_as_auphonic_describes_it() -> None:
+    """0 is automatic only with the classic method; full with the others."""
+    from quill.core.publish import auphonic_options as opts
+
+    label = dict(opts.NOISE_AMOUNTS)[0]
+    assert "automatic with its usual method" in label and "full with the others" in label
+
+
+def test_show_notes_ask_speech_recognition_and_add_a_chapters_file() -> None:
+    from quill.core.publish import auphonic_options as opts
+
+    assert opts.speech_recognition("en", shownotes=True) == {
+        "type": "auphonic",
+        "language": "en",
+        "shownotes": True,
+    }
+    assert "shownotes" not in opts.speech_recognition("en")
+    files = opts.outputs("mp3", "", True, chapters=True)
+    assert {"format": "chaps", "ending": "chapters.txt"} in files
+
+
+def test_show_notes_need_a_transcript_and_no_edited_chapters() -> None:
+    from quill.core.publish import auphonic_options as opts
+
+    common = {
+        "output_format": "mp3",
+        "second_format": "",
+        "language": "en",
+        "cover": "",
+        "productions": 1,
+    }
+    no_transcript = opts.extras_problem(
+        transcript=False, chapters_edited=False, shownotes=True, **common
+    )
+    assert "turn on Make captions" in no_transcript
+    edited = opts.extras_problem(transcript=True, chapters_edited=True, shownotes=True, **common)
+    assert "Clear the edited chapter marks" in edited
+    fine = opts.extras_problem(transcript=True, chapters_edited=False, shownotes=True, **common)
+    assert fine == ""
+
+
+def test_show_notes_read_as_plain_text() -> None:
+    from quill.core.publish import auphonic_options as opts
+
+    text = opts.shownotes_text(
+        "Episode 9",
+        {
+            "summaries": {"long": ["The long one."], "brief": ["Brief."], "subtitle": ["Sub."]},
+            "tags": ["access", "radio"],
+        },
+        [{"start": "00:00:00.000", "title": "Hello"}, {"start": "00:05:10.000", "title": "News"}],
+    )
+    assert text.startswith("Show notes for Episode 9")
+    assert "Brief summary\nBrief." in text and "Tags\naccess, radio" in text
+    assert "00:05:10.000 News" in text
+    assert opts.shownotes_text("x", {}, []) == ""
+
+
+def test_the_status_keeps_show_notes_and_the_chapters_file(monkeypatch) -> None:
+    from quill.core.publish import auphonic as client
+
+    production = {
+        "status": client.DONE_STATUS,
+        "status_string": "Done",
+        "shownotes": {"tags": ["a"]},
+        "chapters": [{"start": "00:00:00", "title": "One"}],
+        "output_files": [
+            {
+                "format": "chaps",
+                "ending": "chapters.txt",
+                "download_url": "https://auphonic.com/api/download/audio-result/x/y.chapters.txt",
+            }
+        ],
+    }
+    monkeypatch.setattr(client, "_json", lambda _url, _token: {"data": production})
+    status = client.production_status("t", "uuid")
+    assert status.shownotes == {"tags": ["a"]} and status.chapters[0]["title"] == "One"
+    kept, left_out = client.audio_results(status)
+    assert len(kept.output_files) == 1 and left_out == 0
+    assert kept.shownotes == status.shownotes
+
+
+def test_show_notes_are_saved_beside_the_sound_and_never_overwrite(tmp_path) -> None:
+    from types import SimpleNamespace
+
+    from quill.core.publish import auphonic_run
+
+    status = SimpleNamespace(shownotes={"tags": ["a"]}, chapters=[])
+    (tmp_path / "Episode show notes.txt").write_text("mine", encoding="utf-8")
+    saved = auphonic_run._save_shownotes(tmp_path, "Episode", status)
+    assert saved is not None and saved.name == "Episode show notes (2).txt"
+    assert (tmp_path / "Episode show notes.txt").read_text(encoding="utf-8") == "mine"
+    assert auphonic_run._save_shownotes(tmp_path, "Nothing", SimpleNamespace()) is None

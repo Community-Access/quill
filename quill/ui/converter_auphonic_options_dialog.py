@@ -29,10 +29,14 @@ import wx
 
 from quill.core.publish.auphonic import OUTPUT_FORMATS
 from quill.core.publish.auphonic_options import (
+    BREATH_AMOUNTS,
+    BREATH_METHODS,
     LOUDNESS_TARGETS,
     NOISE_AMOUNTS,
     NOISE_METHODS,
     PEAK_LIMITS,
+    REVERB_AMOUNTS,
+    REVERB_METHODS,
     TRANSCRIPT_LANGUAGES,
     CustomProcessing,
     cover_problem,
@@ -236,6 +240,7 @@ class AuphonicMoreDialog(wx.Dialog):
         second_format: str,
         transcript: bool,
         language: str,
+        shownotes: bool = False,
     ) -> None:
         super().__init__(
             parent,
@@ -300,6 +305,26 @@ class AuphonicMoreDialog(wx.Dialog):
             "Which kind of noise to take out. Keep only the speech removes music and "
             "every other sound as well, so use it for speech alone.",
         )
+        self._reverb = self._choice(
+            root,
+            "&Reverb reduction:",
+            "Reverb reduction",
+            REVERB_AMOUNTS,
+            custom.reverb,
+            "Takes out the echo of a room, such as a kitchen or a bare office. It works "
+            "with a noise reduction method of steady noise, changing noise, or keep only "
+            "the speech; with those, Auphonic already reduces reverb fully unless you "
+            "choose less here.",
+        )
+        self._breath = self._choice(
+            root,
+            "&Breath reduction:",
+            "Breath reduction",
+            BREATH_AMOUNTS,
+            custom.breath,
+            "Makes breaths between phrases quieter. It works with a noise reduction "
+            "method of changing noise, or keep only the speech.",
+        )
         self._second = self._choice(
             root,
             "Also &save as:",
@@ -326,6 +351,16 @@ class AuphonicMoreDialog(wx.Dialog):
             language,
             "The language spoken in the recording, so the transcript is written in it.",
         )
+        self._shownotes = wx.CheckBox(self, label="Generate &chapters and show notes")
+        self._shownotes.SetValue(shownotes)
+        self._shownotes.SetHelpText(
+            "Auphonic listens to the recording and writes chapter marks, which go into "
+            "the saved file and a chapters file beside it, and show notes: a subtitle, "
+            "a brief and a long summary, and tags, saved as a text file beside the "
+            "sound. It needs Make captions and a transcript on, and a paying Auphonic "
+            "account: a free account may refuse the production."
+        )
+        root.Add(self._shownotes, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         _ok_cancel(self, root, "Keeps these options for this submission.")
         apply_modal_ids(
             self,
@@ -336,6 +371,7 @@ class AuphonicMoreDialog(wx.Dialog):
         )
         self.SetSizerAndFit(root)
         self._noise.Bind(wx.EVT_CHOICE, lambda _e: self._sync())
+        self._method.Bind(wx.EVT_CHOICE, lambda _e: self._sync())
         self._transcript.Bind(wx.EVT_CHECKBOX, lambda _e: self._sync())
         self._sync()
         self._leveler.SetFocus()
@@ -365,24 +401,42 @@ class AuphonicMoreDialog(wx.Dialog):
         return keys[max(0, control.GetSelection())]
 
     def _sync(self) -> None:
-        self._method.Enable(self._value(self._noise) != NOISE_AMOUNTS[0][0])
+        noise_on = self._value(self._noise) != NOISE_AMOUNTS[0][0]
+        method = self._value(self._method)
+        self._method.Enable(noise_on)
+        # Each works only with some methods (Auphonic's API pages), so it is
+        # offered only where it would do something.
+        self._reverb.Enable(noise_on and method in REVERB_METHODS)
+        self._breath.Enable(noise_on and method in BREATH_METHODS)
         self._language.Enable(self._transcript.GetValue())
+        self._shownotes.Enable(self._transcript.GetValue())
 
-    def values(self) -> tuple[CustomProcessing, str, bool, str]:
-        """``(custom, second_format, transcript, language)``."""
+    def values(self) -> tuple[CustomProcessing, str, bool, str, bool]:
+        """``(custom, second_format, transcript, language, shownotes)``."""
+        noise_on = self._value(self._noise) != NOISE_AMOUNTS[0][0]
+        method = self._value(self._method)
         custom = CustomProcessing(
             leveler=self._leveler.GetValue(),
             filtering=self._filtering.GetValue(),
             loudness=self._value(self._loudness),
             max_peak=self._value(self._peak),
             noise=self._value(self._noise),
-            noise_method=self._value(self._method),
+            noise_method=method,
+            # A choice that is dimmed is not sent: it could not do anything.
+            reverb=self._value(self._reverb)
+            if noise_on and method in REVERB_METHODS
+            else REVERB_AMOUNTS[0][0],
+            breath=self._value(self._breath)
+            if noise_on and method in BREATH_METHODS
+            else BREATH_AMOUNTS[0][0],
         )
+        transcript = bool(self._transcript.GetValue())
         return (
             custom,
             self._value(self._second),
-            self._transcript.GetValue(),
+            transcript,
             self._value(self._language),
+            transcript and bool(self._shownotes.GetValue()),
         )
 
 
@@ -430,13 +484,19 @@ def edit_more(parent: Any, extras: AuphonicChoices, show_modal: Any) -> Auphonic
         second_format=extras.second_format,
         transcript=extras.transcript,
         language=extras.language,
+        shownotes=extras.shownotes,
     )
     values = _values_on_ok(dialog, MORE_TITLE, show_modal)
     if values is None:
         return extras
-    custom, second, transcript, language = values
+    custom, second, transcript, language, shownotes = values
     return replace(
-        extras, custom=custom, second_format=second, transcript=transcript, language=language
+        extras,
+        custom=custom,
+        second_format=second,
+        transcript=transcript,
+        language=language,
+        shownotes=shownotes,
     )
 
 

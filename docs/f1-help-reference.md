@@ -2221,6 +2221,7 @@ Control coverage: 60 audited sites (60 helped).
 - `self._leveler`: Auphonic's leveler: quiet and loud speakers, and quiet and loud passages, come out at a similar level. Usually on for speech.
 - `self._filtering`: Auphonic's filtering: takes out rumble and other sound below the voice, and evens out the tone. Usually on.
 - `self._transcript`: Auphonic's speech recognition writes what is said: captions (an SRT file) and a plain-text transcript, saved beside the sound. It uses more of your Auphonic credits, and it needs an output format chosen.
+- `self._shownotes`: Auphonic listens to the recording and writes chapter marks, which go into the saved file and a chapters file beside it, and show notes: a subtitle, a brief and a long summary, and tags, saved as a text file beside the sound. It needs Make captions and a transcript on, and a paying Auphonic account: a free account may refuse the production.
 #### AuphonicHistoryDialog (`quill/ui/converter_auphonic_history_dialog.py`)
 
 - `self._list`: Every production Quill Converter sent to Auphonic, newest first: its title, its last known status and when it was sent. The list is kept on this computer; nothing contacted Auphonic to show it.
