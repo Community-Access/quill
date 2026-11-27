@@ -119,9 +119,12 @@ class LiteStartupMixin:
         if self.shutting_down or not self.feature_enabled("scribe"):  # type: ignore[attr-defined]
             return
         try:
-            from quill.apps.lite_window_scribe import LiteScribeHost
-            from quill.ui.scribe_controller import controller_for
+            # The app's one controller, the same one every window's Scribe
+            # commands use: a throwaway host here made a second controller
+            # (and service) for the same queue, keyed by an id() that could
+            # later be reused.
+            from quill.apps.lite_window_scribe import lite_controller
 
-            controller_for(LiteScribeHost(self)).start_if_jobs_waiting()
+            lite_controller(self).start_if_jobs_waiting()
         except Exception:  # noqa: BLE001 - a queue never gets to take startup down
             logger.warning("Could not resume the Scribe queue at startup", exc_info=True)

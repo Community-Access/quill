@@ -180,6 +180,33 @@ def test_saved_scribe_work_resumes_only_after_feature_check(monkeypatch) -> None
     assert started == [True]
 
 
+def test_startup_resume_and_windows_share_one_scribe_controller(monkeypatch) -> None:
+    """One controller for Lite's one queue: startup used to make a throwaway
+    host, and with it a second controller and service keyed by its id()."""
+    from quill.apps import lite_window_scribe
+    from quill.apps.lite import QuillLiteApp
+    from quill.ui import scribe_controller
+
+    made = []
+    monkeypatch.setattr(
+        lite_window_scribe, "LiteScribeHost", lambda _app: made.append(object()) or made[-1]
+    )
+    controllers = {}
+    monkeypatch.setattr(
+        scribe_controller,
+        "controller_for",
+        lambda host: controllers.setdefault(
+            id(host), SimpleNamespace(start_if_jobs_waiting=lambda: None)
+        ),
+    )
+    app = SimpleNamespace(shutting_down=False, feature_enabled=lambda _area: True)
+    QuillLiteApp._resume_scribe_queue(app)
+    window = SimpleNamespace(app=app)
+    from_window = lite_window_scribe.DocumentScribeMixin._scribe(window)
+    assert len(made) == 1
+    assert from_window is controllers[id(made[0])]
+
+
 def test_stop_background_sources_is_idempotent() -> None:
     from quill.apps.lite import QuillLiteApp
 
