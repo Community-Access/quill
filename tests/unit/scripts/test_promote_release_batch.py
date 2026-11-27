@@ -50,7 +50,30 @@ def _release_rows() -> list[dict[str, object]]:
     return [_release_row(app) for app in batch.catalogue_apps()]
 
 
+def _rolling_release(rows: Sequence[dict[str, object]]) -> dict[str, object]:
+    """The one rolling ``dev-builds`` release that holds *rows* as files and note lines.
+
+    Every build is files named for its version, a checksums file named for its
+    tag, and one line in the notes naming the commit it came from.
+    """
+    lines: list[str] = []
+    assets: list[dict[str, object]] = []
+    for row in rows:
+        tag = str(row["tag_name"])
+        marker = batch.SOURCE_MARKER_RE.search(str(row["body"]))
+        if marker is not None:
+            lines.append(f"{tag}: Built from Community-Access/quill@{marker.group('sha')}.")
+        for asset in row["assets"]:  # type: ignore[attr-defined]
+            name = str(asset["name"])
+            if name == "SHA256SUMS.txt":
+                name = f"{tag}.SHA256SUMS.txt"
+            assets.append({"name": name, "created_at": row["published_at"]})
+    return {"id": 7, "body": "\n".join(lines), "assets": assets}
+
+
 class ReleaseListGh:
+    """A fake ``gh`` that serves the rolling Dev release holding *releases*."""
+
     def __init__(self, releases: Sequence[dict[str, object]]) -> None:
         self.releases = list(releases)
         self.calls: list[list[str]] = []
@@ -59,7 +82,12 @@ class ReleaseListGh:
         argv = list(args)
         self.calls.append(argv)
         assert argv[0] == "api"
-        return json.dumps([self.releases])
+        rolling = _rolling_release(self.releases)
+        if argv[1].endswith(f"/releases/tags/{rf.DEV_TAG}"):
+            return json.dumps({"id": rolling["id"], "body": rolling["body"]})
+        if "/releases/7/assets" in argv[1]:
+            return json.dumps([rolling["assets"]])
+        raise AssertionError(argv)
 
 
 def _candidate(app: str, version: str, *, when: datetime = PUBLISHED):
@@ -67,7 +95,7 @@ def _candidate(app: str, version: str, *, when: datetime = PUBLISHED):
     asset = FeedAsset(
         kind="portable",
         name=name,
-        url=f"https://github.com/{rf.DEV_REPO}/releases/download/{rf.tag_for(app, version)}/{name}",
+        url=f"https://github.com/{rf.MAIN_REPO}/releases/download/{rf.DEV_TAG}/{name}",
         size=10,
         sha256="b" * 64,
     )
@@ -401,12 +429,25 @@ class DownloadGh:
     def __call__(self, args: Sequence[str]) -> str:
         argv = list(args)
         if argv[:2] == ["release", "download"]:
+            # Dev builds are files in the one rolling release, fetched by name.
+            assert argv[2] == rf.DEV_TAG
+            asked = [argv[i + 1] for i, a in enumerate(argv) if a == "--pattern"]
+            assert asked and set(asked) <= set(self.files) | {f"{self.tag}.SHA256SUMS.txt"}
             folder = Path(argv[argv.index("--dir") + 1])
             for name, data in self.files.items():
                 (folder / name).write_bytes(data)
             return ""
         if argv[:2] == ["release", "view"]:
-            return json.dumps({"isDraft": False, "tagName": self.tag})
+            assert argv[2] == rf.DEV_TAG
+            return json.dumps({"isDraft": False, "tagName": rf.DEV_TAG})
+        if argv[0] == "api" and "releases?per_page" in argv[1]:
+            return "[]"
+        if argv[0] == "api" and argv[1].endswith(f"/releases/tags/{rf.DEV_TAG}"):
+            body = f"{self.tag}: Built from Community-Access/quill@{SOURCE_SHA}."
+            return json.dumps({"id": 7, "body": body})
+        if argv[0] == "api" and "/releases/7/assets" in argv[1]:
+            names = [*self.files, f"{self.tag}.SHA256SUMS.txt"]
+            return json.dumps([[{"name": n, "created_at": "2026-11-24T06:00:00Z"} for n in names]])
         raise AssertionError(argv)
 
 
@@ -437,7 +478,7 @@ def test_existing_publish_and_promote_dry_paths_write_only_their_preview(
             "dev",
             "--existing",
             "--repo",
-            rf.DEV_REPO,
+            rf.MAIN_REPO,
             "--dry-run",
         ],
         gh=gh,

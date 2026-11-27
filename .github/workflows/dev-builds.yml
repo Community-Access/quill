@@ -6,28 +6,26 @@ name: dev-builds
 #   the last Dev build (scripts/dev_build_plan.py decides);
 # - UNSIGNED (no Authenticode secret is used, so Windows may say "unknown
 #   publisher"; the Dev risk window says so);
-# - published to the separate repository Community-Access/quillville-dev-builds,
-#   never to Community-Access/quill, whose first page of 30 releases is all that
-#   installed Quill Radio 3.0.4 and QUILL Lite 1.1.2 ever read.
+# - published as files in ONE rolling prerelease of this repository, tagged
+#   "dev-builds", so anyone can download them. A release per build would push
+#   installed Quill Radio 3.0.4 and QUILL Lite 1.1.2's newest Stable build off the
+#   first page of 30 releases that is all they read; one release takes one place
+#   for good (quill/tools/dev_release.py, scripts/dev_release_finalize.py).
 #
 # The signed v2 feed is NOT written here: Dev artifacts and feed publication
 # are separate approved jobs. A protected promote/listing run adds a Dev build
 # after review:
 #   python scripts/publish_release.py --app radio --version <v> --channel dev --existing
 #
-# Needs the repository secret DEV_BUILDS_TOKEN: a fine-grained token with
-# "Contents: read and write" on Community-Access/quillville-dev-builds only.
-# That repository must exist and have at least one commit on main (a README is
-# enough): a release's tag is created on its main branch. Without the secret
-# the "decide" job stops at once with an error, rather than building any app
-# it cannot publish. Cast's build also reads QUILL_PODCAST_INDEX_KEY and
-# QUILL_PODCAST_INDEX_SECRET; without them Cast builds with no Podcast Index
-# search (docs/release/RELEASE.md, "Dev builds").
+# No personal token is needed: the workflow's own token writes to this
+# repository, and only the jobs that publish are given contents: write. Cast's
+# build also reads QUILL_PODCAST_INDEX_KEY and QUILL_PODCAST_INDEX_SECRET;
+# without them Cast builds with no Podcast Index search
+# (docs/release/RELEASE.md, "Dev builds").
 #
 # Every ${{ }} value reaches a script through env:, never pasted into it, so no
 # input or computed version can become shell (actionlint's injection rule).
-# Run only in Community-Access/quill: a fork has neither the secret nor the
-# dev-builds repository.
+# Run only in Community-Access/quill: a fork has none of the secrets.
 
 on:
   schedule:
@@ -46,13 +44,12 @@ concurrency:
   group: dev-builds
   cancel-in-progress: false
 
-env:
-  DEV_REPO: Community-Access/quillville-dev-builds
-
 jobs:
   decide:
     if: github.repository == 'Community-Access/quill'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # makes the rolling Dev release once, before the uploads start
     outputs:
       build: ${{ steps.plan.outputs.build }}
       reason: ${{ steps.plan.outputs.reason }}
@@ -67,28 +64,23 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.14"
-      - name: Check the dev-builds token is set
+      - name: Make sure the rolling Dev release exists
         env:
-          GH_TOKEN: ${{ secrets.DEV_BUILDS_TOKEN }}
-        run: |
-          if [ -z "$GH_TOKEN" ]; then
-            echo "::error::The DEV_BUILDS_TOKEN secret is not set, so no Dev build could be published. See docs/release/RELEASE.md, Dev builds."
-            exit 1
-          fi
-          gh api "repos/$DEV_REPO" --jq .full_name
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/dev_release_finalize.py --ensure --repo "$GITHUB_REPOSITORY"
       - name: The commit every job builds from
         id: head
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Decide whether today's Dev build runs
         id: plan
         env:
-          GH_TOKEN: ${{ secrets.DEV_BUILDS_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           FORCE_INPUT: ${{ inputs.force }}
           SHA: ${{ steps.head.outputs.sha }}
         run: |
           FORCE=()
           if [ "$FORCE_INPUT" = "true" ]; then FORCE=(--force); fi
-          python scripts/dev_build_plan.py --sha "$SHA" --repo "$DEV_REPO" "${FORCE[@]}" >> "$GITHUB_OUTPUT"
+          python scripts/dev_build_plan.py --sha "$SHA" --repo "$GITHUB_REPOSITORY" "${FORCE[@]}" >> "$GITHUB_OUTPUT"
           cat "$GITHUB_OUTPUT"
 
   build:
@@ -196,6 +188,8 @@ jobs:
   publish:
     needs: [decide, build]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # uploads this app's files to the rolling Dev release
     strategy:
       fail-fast: false
       matrix:
@@ -206,24 +200,39 @@ jobs:
         with:
           name: dev-${{ matrix.app }}
           path: dist/dev
-      - name: Publish to the dev-builds repository
+      - name: Upload to the rolling Dev release
         env:
-          GH_TOKEN: ${{ secrets.DEV_BUILDS_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           APP: ${{ matrix.app }}
-          SHA: ${{ needs.decide.outputs.sha }}
           VERSIONS_JSON: ${{ needs.decide.outputs.versions }}
         run: |
           IFS=$'\t' read -r VERSION TAG NAME < <(
             python -c "import json,os; from quill.core.release_catalog import product; p=product(os.environ['APP']); v=json.loads(os.environ['VERSIONS_JSON'])[p.key]; print(v, p.tag_prefix+v, p.name, sep='\\t')"
           )
-          # The commit every job built from (decide's), so the next run's
-          # "has main changed?" compares against what was really built.
-          (cd dist/dev && sha256sum -- * > SHA256SUMS.txt)
-          printf 'Dev build of %s, unsigned. Built from Community-Access/quill@%s.\n\nNot listed on the Dev channel until the owner signs it into the feed.\n' "$NAME" "$SHA" > notes.md
-          gh release create "$TAG" dist/dev/* \
-            --repo "$DEV_REPO" \
-            --target main \
-            --title "$NAME $VERSION (Dev)" \
-            --notes-file notes.md \
-            --prerelease \
-            --latest=false
+          # This build's checksums are named for it, because every build's files
+          # share the one release. The commit it came from is written into the
+          # release notes afterwards, by the finalize job, once for all apps.
+          (cd dist/dev && sha256sum -- * > "${TAG}.SHA256SUMS.txt")
+          # --clobber: re-running a failed job uploads the same files again.
+          gh release upload dev-builds dist/dev/* --repo "$GITHUB_REPOSITORY" --clobber
+
+  finalize:
+    # After the uploads, even if some apps failed: record the builds that arrived
+    # and retire old ones. Never runs when nothing was built.
+    needs: [decide, publish]
+    if: ${{ always() && needs.decide.result == 'success' && needs.decide.outputs.build == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # writes the release notes and removes old Dev files
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - name: Record the new builds and retire the old
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ needs.decide.outputs.sha }}
+        run: python scripts/dev_release_finalize.py --sha "$SHA" --repo "$GITHUB_REPOSITORY"

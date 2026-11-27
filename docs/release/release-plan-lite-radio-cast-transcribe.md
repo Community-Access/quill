@@ -48,8 +48,9 @@ Release Channel... (Alt+H, L), and the publish and promote scripts accept
 
 ## Step 1: one-time setup (you)
 
-Only what these four releases need. The Dev-build setup in RELEASE.md (the
-`DEV_BUILDS_TOKEN` secret, the dev-builds repository) is **not** needed.
+Only what these four releases need. There is no separate Dev-builds repository
+or `DEV_BUILDS_TOKEN` secret any more (RELEASE.md, "Dev builds"); Dev builds are
+files in the one rolling `dev-builds` release of this repository.
 
 1. **Restore the feed-signing key.** Every publish and promotion signs the
    app's update list with it, and it is not on this computer: neither

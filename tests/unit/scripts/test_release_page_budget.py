@@ -114,6 +114,34 @@ def test_publish_release_refuses_before_creating_anything(tmp_path: Path) -> Non
     assert [c[0] for c in calls] == ["api"]
 
 
-def test_dev_builds_never_touch_the_main_repository() -> None:
-    assert rf.DEV_REPO == "Community-Access/quillville-dev-builds"
-    assert rf.DEV_REPO != rf.MAIN_REPO
+def test_dev_builds_never_take_a_release_of_their_own_on_the_page() -> None:
+    """Every Dev build is files in ONE rolling release, so it takes one place.
+
+    A release per build, for eleven apps a day, would push installed Radio 3.0.4
+    and Lite 1.1.2's newest Stable build off the 30 they read.
+    """
+    publish = _load_publish()
+    calls: list[list[str]] = []
+
+    def gh(args):
+        calls.append(list(args))
+        raise AssertionError(f"nothing may reach GitHub: {args}")
+
+    out: list[str] = []
+    code = publish.run(
+        [
+            "--app",
+            "radio",
+            "--version",
+            "3.3.0-dev.20261003.1",
+            "--channel",
+            "dev",
+            "--dist",
+            "unused",
+        ],
+        gh=gh,
+        out=out.append,
+    )
+    assert code == 2 and not calls
+    assert "rolling dev-builds release" in out[0]
+    assert rf.DEV_TAG == "dev-builds"

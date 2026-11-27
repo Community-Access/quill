@@ -495,7 +495,7 @@ The following table describes the three channels and how a build moves.
 | --- | --- | --- |
 | **Stable** | The recommended, fully promoted version for everyday use. Every copy starts here. | Stable receives the exact files that passed their Beta soak and every promotion gate. Those files are not rebuilt or replaced during promotion. |
 | **Beta** | A final-numbered release candidate, available before it is promoted to Stable. It is intended to be mostly finished, but it can still have a problem. | A candidate is built once, signed, uploaded once, and listed in the signed Beta feed. After the seven-day soak and all gates pass, those same files move to Stable. |
-| **Dev** | Unsigned work-in-progress builds for testing and diagnosis. Things can break. | Changed code may produce at most one Dev build per day in the separate `quillville-dev-builds` artifact repository. Dev is never an automatic route to Stable. A Dev build must become a new signed candidate before it can enter Beta and Stable. |
+| **Dev** | Unsigned work-in-progress builds for testing and diagnosis. Things can break. | Changed code may produce at most one Dev build per day on the Dev builds page of QUILL's GitHub releases, where anyone can download it. Dev is never an automatic route to Stable. A Dev build must become a new signed candidate before it can enter Beta and Stable. |
 
 The menu does not turn a Dev build into a Beta candidate or silently promote a
 candidate to Stable. Checking a channel only changes which signed feed entry

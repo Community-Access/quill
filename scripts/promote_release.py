@@ -64,6 +64,7 @@ from quill.core.updater.feed_publish import (  # noqa: E402
     promotion_checks,
 )
 from quill.core.updater.notes_rollup import notes_summary  # noqa: E402
+from quill.tools import dev_release  # noqa: E402
 from quill.tools import release_feed as rf  # noqa: E402
 
 DocsGate = Callable[[], bool]
@@ -126,18 +127,24 @@ def gather_checks(
         return feed, checks
     tag = rf.tag_for(args.app, args.version)
     repo = rf.repo_of(feed, args.version)
+    # Where the files are: this build's own release, or the rolling Dev one.
+    on_tag = dev_release.release_tag_of(feed, args.version, args.app)
     feed_path = rf.feed_dir(root) / f"{args.app}.json"
     checks.append(Check("P3s", "the feed's signature is valid", rf.feed_signature_ok(feed_path)))
     try:
-        info = gh(["release", "view", tag, "--repo", repo, "--json", "isDraft,tagName"])
+        info = gh(["release", "view", on_tag, "--repo", repo, "--json", "isDraft,tagName"])
         ok = '"isDraft":false' in info.replace(" ", "")
-        checks.append(Check("P1g", f"{tag} is published on {repo}", ok))
+        checks.append(Check("P1g", f"{on_tag} is published on {repo}", ok))
     except (subprocess.CalledProcessError, OSError) as error:
-        checks.append(Check("P1g", f"{tag} is published on {repo}", False, str(error)))
+        checks.append(Check("P1g", f"{on_tag} is published on {repo}", False, str(error)))
     mismatched: list[str] = []
     with tempfile.TemporaryDirectory() as scratch:
         try:
-            gh(["release", "download", tag, "--repo", repo, "--dir", scratch])
+            gh(
+                dev_release.download_command(
+                    on_tag, repo, scratch, [a.name for a in release.assets]
+                )
+            )
         except (subprocess.CalledProcessError, OSError) as error:
             mismatched.append(f"download failed: {error}")
         for asset in release.assets:
@@ -265,7 +272,10 @@ def run(
     )
     tag = rf.tag_for(args.app, args.version)
     repo = rf.repo_of(feed, args.version)
-    if args.to == "stable" and repo == rf.MAIN_REPO:
+    # The rolling Dev release holds every app's builds: it is never promoted,
+    # marked latest or retitled; the feed alone moves a build to Stable.
+    own_release = dev_release.release_tag_of(feed, args.version, args.app) != dev_release.DEV_TAG
+    if args.to == "stable" and repo == rf.MAIN_REPO and own_release:
         title = f"{rf.app(args.app).name} {args.version} (promoted to Stable on {moment:%d %B %Y})"
         latest = "--latest=true" if args.app == "quill" else "--latest=false"
         command = ["release", "edit", tag, "--repo", repo, "--prerelease=false", latest]

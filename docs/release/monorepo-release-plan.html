@@ -310,10 +310,10 @@
 <h1 id="quillville-monorepo-release-plan">QuillVille monorepo release
 plan</h1>
 <p><strong>Decision:</strong> <code>Community-Access/quill</code> is the
-one source repository for all QuillVille Windows products.
-<code>Community-Access/quillville-dev-builds</code> is only an artifact
-repository for unsigned Dev builds. It is not another source
-repository.</p>
+one source repository for all QuillVille Windows products. Unsigned Dev
+builds are files in one rolling prerelease of this repository (tag
+<code>dev-builds</code>); there is no second repository (the separate
+Dev-builds repository was retired on 2026-11-26).</p>
 <p><strong>Implementation owner:</strong>
 <code>quill.core.release_catalog</code>, checked by
 <code>quill.tools.release_catalog_audit</code>, and wired into
@@ -437,8 +437,7 @@ sibling/version feed by accident.</p>
 <li>release notes, website links and source archives;</li>
 <li>release audit history, sign-off references and catalogue waves.</li>
 </ul>
-<p><code>Community-Access/quillville-dev-builds</code> contains
-only:</p>
+<p>The rolling <code>dev-builds</code> release contains only:</p>
 <ul>
 <li>unsigned Windows Dev artifacts;</li>
 <li>SHA-256 files;</li>
@@ -512,8 +511,9 @@ bytes.</p>
 <li>Runs only when <code>main</code> changed, unless an owner forces a
 run.</li>
 <li>Unsigned and plainly labelled Dev.</li>
-<li>Published only to
-<code>Community-Access/quillville-dev-builds</code>.</li>
+<li>Published only as files in the one rolling <code>dev-builds</code>
+release, so Dev builds take a single place on the page of releases that
+installed Quill Radio 3.0.4 and QUILL Lite 1.1.2 read.</li>
 <li>Contains a SHA-256 list and exact source commit.</li>
 <li>Never enters a signed v2 feed automatically.</li>
 </ul>
@@ -601,8 +601,8 @@ build jobs.</p>
 actions</h2>
 <p>Protected release environments may use:</p>
 <ul>
-<li><code>DEV_BUILDS_TOKEN</code>, scoped only to the Dev-artifact
-repository;</li>
+<li>the workflow’s own token, with <code>contents: write</code> only in
+the jobs that publish Dev builds (no personal token);</li>
 <li>source-only build secrets needed by a Dev matrix, such as Podcast
 Index credentials;</li>
 <li><code>QUILL_FEED_SIGNING_KEY</code>, a repository secret available
