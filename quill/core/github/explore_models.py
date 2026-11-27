@@ -24,6 +24,9 @@ class ExploreRow:
     key: str = ""
     updated_at: str = ""
     title: str = ""
+    #: Structured values a List Speech Template can speak (name, value pairs);
+    #: empty for rows that have none, which then keep their ``label``.
+    fields: tuple[tuple[str, str], ...] = ()
 
 
 def _text(value: object) -> str:
@@ -62,7 +65,17 @@ def _repo_row(row: Any, source: str = "") -> ExploreRow:
     description = _text(getattr(row, "description", ""))
     url = _text(getattr(row, "html_url", ""))
     detail = f"Repository: {name}\n{description}\nSource: {source}\n{url}"
-    return ExploreRow(name, detail.strip(), url, name, "repo")
+    private = bool(getattr(row, "private", False))
+    stars = getattr(row, "stargazers_count", None)
+    fields = (
+        ("name", name),
+        ("description", description),
+        ("visibility", "private" if private else "public"),
+        ("language", _text(getattr(row, "language", ""))),
+        ("stars", "" if stars is None else f"{stars} star" + ("" if stars == 1 else "s")),
+        ("updated", _date(getattr(row, "updated_at", None))),
+    )
+    return ExploreRow(name, detail.strip(), url, name, "repo", fields=fields)
 
 
 def _person_row(row: Any, source: str) -> ExploreRow:
