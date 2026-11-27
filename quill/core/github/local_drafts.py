@@ -15,6 +15,13 @@ _FILENAME = "github_local_drafts.json"
 _MAX_ACCOUNTS = 32
 _MAX_REPOSITORY_DRAFTS = 100
 _MAX_BODY_CHARS = 50_000
+#: The name a damaged draft file's notice is queued under (settings_recovery).
+_NOTICE_APP = "GitHub Workbench drafts"
+_EVENT_NAMES = {
+    "comment": "comment",
+    "approve": "approval",
+    "request changes": "request for changes",
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -99,6 +106,9 @@ class GitHubIssueDraftStore:
         self.path = path
         self.account_key = account_key
         self._accounts = accounts
+        #: True when the file on disk could not be read *and* could not be
+        #: copied aside: then nothing is written over it.
+        self._read_only = False
         account = accounts.get(account_key, {})
         drafts = account.get("issue_drafts", {}) if isinstance(account, dict) else {}
         self._drafts = dict(drafts) if isinstance(drafts, dict) else {}
@@ -108,11 +118,21 @@ class GitHubIssueDraftStore:
     @classmethod
     def load(cls, token: str | None) -> GitHubIssueDraftStore:
         path = app_data_dir() / _FILENAME
-        raw = read_json(path, default={})
-        accounts = raw.get("accounts", {}) if isinstance(raw, dict) else {}
+        damaged = object()
+        raw = read_json(path, default=damaged) if path.exists() else {}
+        read_only = False
+        if raw is damaged or not isinstance(raw, dict):
+            # Every account's drafts are in this one file. Loading it as empty
+            # and saving the next keystroke over it lost all of them without a
+            # word (FUX-05): keep the damaged file first, and say so.
+            read_only = _keep_damaged_drafts(path) is None
+            raw = {}
+        accounts = raw.get("accounts", {})
         if not isinstance(accounts, dict):
             accounts = {}
-        return cls(path, account_key_for_token(token), accounts)
+        store = cls(path, account_key_for_token(token), accounts)
+        store._read_only = read_only
+        return store
 
     def get_issue(self, repository: str) -> GitHubIssueDraftData | None:
         normalized = _repository(repository)
@@ -217,6 +237,8 @@ class GitHubIssueDraftStore:
         review_value = review_drafts if review_drafts is not None else self._review_drafts
         account_data["issue_drafts"] = issue_value
         account_data["review_drafts"] = review_value
+        if self._read_only:
+            return False
         accounts = dict(self._accounts)
         accounts[self.account_key] = account_data
         if len(accounts) > _MAX_ACCOUNTS:
@@ -231,8 +253,103 @@ class GitHubIssueDraftStore:
         return True
 
 
+def _keep_damaged_drafts(path: Path) -> Path | None:
+    """Copy an unreadable draft file aside and queue the one sentence about it."""
+    from quill.core.settings_recovery import keep_damaged
+
+    def said(copy: Path | None) -> str:
+        if copy is None:
+            return (
+                "Your saved GitHub drafts could not be read, and could not be copied "
+                f"aside, so new drafts are not saved over them. The file is {path.name}, "
+                f"in {path.parent}. Nothing was submitted."
+            )
+        return (
+            "Your saved GitHub drafts could not be read, so they were set aside rather "
+            f"than replaced: the file was kept as {copy.name}, in {copy.parent}. "
+            "Nothing was submitted."
+        )
+
+    return keep_damaged(path, app=_NOTICE_APP, what="drafts", sentence=said)
+
+
+def damaged_drafts_notice() -> str:
+    """The damaged-file sentence, once per launch; ``""`` when there is none."""
+    from quill.core.settings_recovery import take_notice
+
+    return take_notice(_NOTICE_APP)
+
+
+def saved_when(updated_at: str, now: datetime | None = None) -> str:
+    """``today at 2:14 PM`` in local time for a stored UTC stamp; ``""`` if unreadable."""
+    from quill.core.action_feedback import when_said
+
+    try:
+        moment = datetime.fromisoformat(updated_at)
+    except (TypeError, ValueError):
+        return ""
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=UTC)
+    local = moment.astimezone()
+    return when_said(local, now.astimezone() if now is not None else None)
+
+
+def _words(text: str) -> str:
+    count = len(text.split())
+    return "1 word" if count == 1 else f"{count} words"
+
+
+def recovered_issue_notice(
+    draft: GitHubIssueDraftData, repository: str, now: datetime | None = None
+) -> str:
+    """What a recovered issue draft is, in the person's terms (FUX-05).
+
+    ``Recovered your unsent issue for owner/repo, "Crash on save", 120 words,
+    saved today at 2:14 PM. It has not been submitted.`` The title says which
+    issue, the word count how much, and the time whether it is the one they
+    remember; the repository alone said none of that.
+    """
+    from quill.core.recovery_triage import opening_words_of_text
+
+    parts = [f"Recovered your unsent issue for {repository}"]
+    if draft.title:
+        parts.append(f'"{draft.title}"')
+    elif opening := opening_words_of_text(draft.body):
+        parts.append(f'beginning "{opening}"')
+    parts.append(_words(draft.body) if draft.body.strip() else "no body text")
+    if when := saved_when(draft.updated_at, now):
+        parts.append(f"saved {when}")
+    return ", ".join(parts) + ". It has not been submitted."
+
+
+def recovered_review_notice(
+    draft: GitHubReviewDraftData,
+    number: int,
+    current_head_sha: str,
+    now: datetime | None = None,
+) -> str:
+    """What a recovered review draft is, and whether the pull request moved since."""
+    kind = _EVENT_NAMES.get(draft.event, "comment")
+    said = f"Recovered your unsent review of pull request #{number}: a {kind}"
+    if draft.body.strip():
+        said += f" of {_words(draft.body)}"
+    if when := saved_when(draft.updated_at, now):
+        said += f", saved {when}"
+    said += "."
+    if draft.head_sha and current_head_sha and draft.head_sha != current_head_sha:
+        said += (
+            " The pull request has new commits since you wrote it, so read the "
+            "draft against the current changes before submitting it."
+        )
+    return said + " It has not been submitted."
+
+
 __all__ = [
     "GitHubIssueDraftData",
     "GitHubIssueDraftStore",
     "GitHubReviewDraftData",
+    "damaged_drafts_notice",
+    "recovered_issue_notice",
+    "recovered_review_notice",
+    "saved_when",
 ]

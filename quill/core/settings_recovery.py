@@ -38,11 +38,22 @@ _kept: dict[Path, Path | None] = {}
 _notices: dict[str, str] = {}
 
 
-def keep_damaged(path: Path, *, app: str, what: str = "settings") -> Path | None:
+def keep_damaged(
+    path: Path,
+    *,
+    app: str,
+    what: str = "settings",
+    sentence: Callable[[Path | None], str] | None = None,
+) -> Path | None:
     """Copy the damaged *path* aside and queue the sentence *app* will say.
 
     Returns the copy, or ``None`` when it could not be made (the sentence then
     says the file was left where it is).
+
+    *sentence*, when given, words the notice for a file that is the person's
+    work rather than their settings (a draft store, a library): it receives
+    the copy, or ``None`` when no copy could be made. "Using its defaults"
+    is true of a preference and misleading about a draft (FUX-05).
     """
     key = path.resolve() if path.exists() else path
     with _lock:
@@ -57,19 +68,21 @@ def keep_damaged(path: Path, *, app: str, what: str = "settings") -> Path | None
         logger.warning("QUILL-SETTINGS-RECOVERY: could not keep %s (%s)", path.name, error)
         copy = None
     logger.warning("QUILL-SETTINGS-RECOVERY: %s had values %s could not use", path.name, app)
-    if copy is not None:
-        sentence = (
+    if sentence is not None:
+        said = sentence(copy)
+    elif copy is not None:
+        said = (
             f"Some of your {app} {what} could not be read, so {app} is using its "
             f"defaults for them. Your file was kept as {copy.name}, in {copy.parent}."
         )
     else:
-        sentence = (
+        said = (
             f"Some of your {app} {what} could not be read, so {app} is using its "
             f"defaults for them. The file {path.name} was left in {path.parent}."
         )
     with _lock:
         _kept[key] = copy
-        _notices.setdefault(app, sentence)
+        _notices.setdefault(app, said)
     return copy
 
 

@@ -13,8 +13,9 @@ feature's rules, shared by both editors.
   file. Every key is checked (by ``tests/unit/core/test_autocorrect.py``) to be
   a non-word: the list must never "correct" something somebody spelled right.
 * **Your own entries**, which are ordinary entries in the abbreviation library
-  -- the same ``abbreviations.json``, saved by the same store, backed up by the
-  same Back Up Settings -- marked with the
+  -- the same ``abbreviations.json``, saved by the same store and carried,
+  category and all, by Manage Abbreviations' Export (Back Up Settings does
+  not carry it) -- marked with the
   :data:`~quill.core.abbreviations.AUTOCORRECT_CATEGORY` category. There is no
   second file. An entry of yours with the same typed word as a built-in one
   wins; a *disabled* entry of yours stops the built-in one (that is what

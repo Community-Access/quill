@@ -6,7 +6,11 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from quill.core.github.issue_templates import GitHubIssueTemplate
-from quill.core.github.local_drafts import GitHubIssueDraftStore
+from quill.core.github.local_drafts import (
+    GitHubIssueDraftStore,
+    damaged_drafts_notice,
+    recovered_issue_notice,
+)
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 
@@ -52,6 +56,14 @@ class GitHubIssueDraftDialog:
         self._draft_suppressed = False
         saved_draft = draft_store.get_issue(repository) if draft_store and repository else None
         self._recovered = saved_draft is not None
+        # Said once when the window is up, not only shown: focus lands on the
+        # title, so a reader never reaches a notice above it unprompted.
+        recovered = (
+            recovered_issue_notice(saved_draft, repository) if saved_draft is not None else ""
+        )
+        self._opening_notice = " ".join(
+            part for part in (damaged_drafts_notice(), recovered) if part
+        )
         self.dialog = wx.Dialog(
             parent,
             title="New Issue",
@@ -75,7 +87,7 @@ class GitHubIssueDraftDialog:
         self._draft_notice = wx.StaticText(
             panel,
             label=(
-                f"Recovered a local draft for {repository}. It has not been submitted."
+                recovered
                 if self._recovered
                 else "Draft changes save locally as you type. They are not submitted."
             ),
@@ -148,9 +160,12 @@ class GitHubIssueDraftDialog:
         self._status.SetName("Issue draft validation status")
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
-        self._discard_btn = wx.Button(panel, wx.ID_ANY, label="Discard Saved Draft")
+        self._discard_btn = wx.Button(panel, wx.ID_ANY, label="&Discard Saved Draft")
         self._discard_btn.SetName("Discard the recovered local issue draft")
-        self._discard_btn.SetHelpText("Remove this draft from this device without submitting it.")
+        self._discard_btn.SetHelpText(
+            "Delete this draft from this device without submitting it, after a "
+            "confirmation. It was never submitted, so it cannot be recovered."
+        )
         self._discard_btn.Enable(self._recovered)
         root.Add(self._discard_btn, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -160,7 +175,10 @@ class GitHubIssueDraftDialog:
         create_btn.SetDefault()
         create_btn.SetName("Create issue on GitHub")
         cancel_btn = wx.Button(panel, wx.ID_CANCEL, label="Cancel")
-        cancel_btn.SetHelpText("Close without creating the issue.")
+        cancel_btn.SetHelpText(
+            "Close without creating the issue. The draft stays saved on this device "
+            "and comes back the next time you start a new issue here."
+        )
         cancel_btn.SetName("Cancel issue creation")
         buttons.AddButton(create_btn)
         buttons.AddButton(cancel_btn)
@@ -229,6 +247,8 @@ class GitHubIssueDraftDialog:
             self._save_timer = None
         if self._draft_store is None or not self._repository:
             return
+        if not self._confirm_discard():
+            return
         if not self._draft_store.delete_issue(self._repository):
             self._say(self._draft_notice, "Could not discard the saved local draft.")
             return
@@ -238,8 +258,27 @@ class GitHubIssueDraftDialog:
         self._body.ChangeValue(self._template.body if self._template else "")
         self._labels.ChangeValue(", ".join(self._template.labels) if self._template else "")
         self._assignees.ChangeValue(", ".join(self._template.assignees) if self._template else "")
+        self._title.SetFocus()  # not left on a button that is about to be disabled
         self._discard_btn.Enable(False)
         self._say(self._draft_notice, "Saved local draft discarded. Nothing has been submitted.")
+
+    def _confirm_discard(self) -> bool:
+        """Ask before deleting: the same question a pending line comment gets."""
+        wx = self._wx
+        title = self._title.GetValue().strip()
+        named = f' "{title}"' if title else ""
+        dialog = wx.MessageDialog(
+            self.dialog,
+            f"Discard the saved issue draft{named}? It was never submitted, so it "
+            "cannot be recovered.",
+            "Discard Saved Draft",
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
+        )
+        dialog.SetYesNoLabels("&Discard Draft", "&Keep Draft")
+        try:
+            return show_modal_dialog(dialog, "Discard Saved Draft") == wx.ID_YES
+        finally:
+            dialog.Destroy()
 
     def _on_create(self, _event: object) -> None:
         title = self._title.GetValue().strip()
@@ -267,6 +306,10 @@ class GitHubIssueDraftDialog:
             affirmative_id=wx.ID_OK,
             escape_id=wx.ID_CANCEL,
         )
+        if self._opening_notice:
+            # After the reader has said the title and the focused field, as
+            # ask_password does (scribe_convert_password.py), or it is cut off.
+            wx.CallLater(250, self._announce, self._opening_notice)
         try:
             if show_modal_dialog(self.dialog, "New Issue") != wx.ID_OK:
                 return None

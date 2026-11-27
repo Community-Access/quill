@@ -196,9 +196,15 @@ The window has **Title:**, **Body:**, **Labels (comma-separated):** and
 must already exist in the repository.
 
 What you type is saved on this computer as you go, so closing the window by
-mistake loses nothing: the next New Issue in that repository says "Recovered
-a local draft", and **Discard Saved Draft** throws it away. A draft is never
-sent by itself.
+mistake loses nothing. The next New Issue in that repository brings the draft
+back and says what it is, for example "Recovered your unsent issue for
+owner/repo, "Crash on save", 120 words, saved today at 2:14 PM. It has not been
+submitted." **Discard Saved Draft** asks first, then throws it away for good.
+A draft is never sent by itself, and once the issue is created its draft is
+cleared, so it is not offered again.
+
+If the file that holds your drafts cannot be read, it is kept aside under a
+new name rather than written over, and the next draft window says where.
 
 **Create Issue** is the only button that sends anything, and it shows a
 preview first: the repository, title, template, labels, assignees and body.

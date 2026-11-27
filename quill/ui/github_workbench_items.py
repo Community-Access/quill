@@ -408,10 +408,11 @@ class GitHubWorkbenchItemsMixin:
         if selected is not None and selected.form is not None:
             self._create_issue_from_form(repository, selected)
             return
+        store = GitHubIssueDraftStore.load(getattr(self.items, "token", None))
         draft = GitHubIssueDraftDialog(
             self._parent(),
             selected,
-            draft_store=GitHubIssueDraftStore.load(getattr(self.items, "token", None)),
+            draft_store=store,
             repository=repository,
             announce_cb=self._say,
         ).show()
@@ -429,7 +430,7 @@ class GitHubWorkbenchItemsMixin:
             f"Assignees: {', '.join(assignees) or 'none'}\n\n"
             f"Body:\n{shown_body or '(empty)'}"
         )
-        self._preview_and_create(repository, title, body, labels, assignees, preview)
+        self._preview_and_create(repository, title, body, labels, assignees, preview, store)
 
     def _create_issue_from_form(self, repository: str, template: Any) -> None:
         """A YAML issue form, filled natively (github_issue_form_dialog.py)."""
@@ -463,13 +464,25 @@ class GitHubWorkbenchItemsMixin:
         labels: Any,
         assignees: Any,
         preview: str,
+        draft_store: Any = None,
     ) -> None:
         if not self._confirm("Preview New Issue", preview):
             return
+
+        def created(item: Any) -> None:
+            # The issue exists now, so its draft is not unsent work any more:
+            # left behind, the next New Issue here offered it back as "not
+            # submitted" (FUX-05), inviting a duplicate.
+            said = f"Created issue #{item.number}."
+            if draft_store is not None and not draft_store.delete_issue(repository):
+                said += " The local draft could not be cleared; review it before creating again."
+            self._say(said)
+            self.frame.reload()
+
         self._background(
             "create the issue",
             lambda: self.items.create_issue(
                 repository, title, body, labels=labels, assignees=assignees
             ),
-            lambda item: (self._say(f"Created issue #{item.number}."), self.frame.reload()),
+            created,
         )
