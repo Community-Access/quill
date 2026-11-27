@@ -379,13 +379,14 @@ promoted as the same files (4); screen-reader sign-off for Stable only
 (3); at least 7 days on Beta, shorter only with a written reason
 recorded in the promotion (3); Dev builds by CI from <code>main</code>,
 at most once a day and only when <code>main</code> changed, unsigned,
-published to the separate repository
-<code>Community-Access/quillville-dev-builds</code>, and Dev runtimes do
-not repair themselves (“Reinstall the Dev build”) (1); about 335 MB
-extra for a Beta or Dev runtime slot is accepted and the risk window
-says so (2); the v2 feed expires after 90 days and is refreshed at every
-release, and the existing seed remains a GitHub Actions repository
-secret that is delivered only to owner-approved signing jobs in
+published as files in one rolling <code>dev-builds</code> prerelease of
+<code>Community-Access/quill</code> (it replaced a separate Dev-builds
+repository on 2026-11-26), and Dev runtimes do not repair themselves
+(“Reinstall the Dev build”) (1); about 335 MB extra for a Beta or Dev
+runtime slot is accepted and the risk window says so (2); the v2 feed
+expires after 90 days and is refreshed at every release, and the
+existing seed remains a GitHub Actions repository secret that is
+delivered only to owner-approved signing jobs in
 <code>release-feed-signing</code> or <code>stable-promotion</code>; the
 local key file remains the recovery path, and
 <code>publish_release.py</code> and <code>platform_report</code> warn
@@ -2411,12 +2412,15 @@ The pagination hazard (must be handled before any Beta or Dev
 publishing)</h3>
 <p>Installed Radio and Lite read only the first 30 releases.</p>
 <ul>
-<li><strong>Do not publish Dev builds as GitHub Releases in
-<code>Community-Access/quill</code>.</strong> Host them in a separate
-repo,
-<strong><code>Community-Access/quillville-dev-builds</code></strong>
-(assets only; feed URLs point there; add it to trusted hosts as a
-<code>github.com</code> path, which is already trusted).</li>
+<li><strong>Do not publish each Dev build as a GitHub Release of its own
+in <code>Community-Access/quill</code>.</strong> <em>(Updated
+2026-11-26: the separate <code>quillville-dev-builds</code> repository
+this bullet first chose, and its personal token, are retired.)</em> Dev
+builds are files in <strong>one rolling prerelease, tagged
+<code>dev-builds</code></strong>, which takes a single place on that
+first page for good; feed URLs point at its files
+(<code>quill/tools/dev_release.py</code>,
+<code>scripts/dev_release_finalize.py</code>).</li>
 <li><strong>Cap Betas in the main repo.</strong> When a Beta is
 superseded, <code>publish_release.py</code> <em>deletes the GitHub
 release object but keeps the tag</em> (old Beta bits stay downloadable

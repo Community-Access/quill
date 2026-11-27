@@ -6,8 +6,10 @@ build. Prints ``build=true|false``, ``reason=...``, and one
 
     python scripts/dev_build_plan.py --sha "$GITHUB_SHA" >> "$GITHUB_OUTPUT"
 
-Reads the dev-builds repository's releases with ``gh`` (``GH_TOKEN`` must be
-able to read it) and the published Stable and Beta tags from the checkout.
+Reads the rolling ``dev-builds`` release of this repository with ``gh`` (the
+workflow's own token is enough) and the published Stable and Beta tags from the
+checkout. That release holds every Dev build as files and lists the commit each
+came from in its notes (``quill.tools.dev_release``).
 """
 
 from __future__ import annotations
@@ -23,6 +25,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from quill.tools import dev_release  # noqa: E402
 from quill.tools import release_feed as rf  # noqa: E402
 
 
@@ -36,13 +39,11 @@ def _tags() -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--sha", required=True)
-    parser.add_argument("--repo", default=rf.DEV_REPO)
+    parser.add_argument("--repo", default=rf.MAIN_REPO)
     parser.add_argument("--force", action="store_true")
     args = parser.parse_args(argv)
-    try:
-        raw = json.loads(rf.gh_cli(["api", f"repos/{args.repo}/releases?per_page=100"]) or "[]")
-    except (subprocess.CalledProcessError, OSError, ValueError):
-        raw = []
+    # No release yet is a first run: nothing has been built.
+    raw = dev_release.build_rows(dev_release.get_release(rf.gh_cli, args.repo))
     published: dict[str, list[str]] = {key: [] for key in rf.APPS}
     for tag in _tags():
         found = rf.app_for_tag(tag)

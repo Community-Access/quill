@@ -1,9 +1,9 @@
 # QuillVille monorepo release plan
 
 **Decision:** `Community-Access/quill` is the one source repository for all
-QuillVille Windows products. `Community-Access/quillville-dev-builds` is only
-an artifact repository for unsigned Dev builds. It is not another source
-repository.
+QuillVille Windows products. Unsigned Dev builds are files in one rolling
+prerelease of this repository (tag `dev-builds`); there is no second repository
+(the separate Dev-builds repository was retired on 2026-11-26).
 
 **Implementation owner:** `quill.core.release_catalog`, checked by
 `quill.tools.release_catalog_audit`, and wired into pre-commit and
@@ -61,7 +61,7 @@ Everything below stays in `Community-Access/quill`:
 - release notes, website links and source archives;
 - release audit history, sign-off references and catalogue waves.
 
-`Community-Access/quillville-dev-builds` contains only:
+The rolling `dev-builds` release contains only:
 
 - unsigned Windows Dev artifacts;
 - SHA-256 files;
@@ -133,7 +133,9 @@ number. Stable is a promotion of those exact candidate bytes.
 - At most once per day from `main`.
 - Runs only when `main` changed, unless an owner forces a run.
 - Unsigned and plainly labelled Dev.
-- Published only to `Community-Access/quillville-dev-builds`.
+- Published only as files in the one rolling `dev-builds` release, so Dev builds
+  take a single place on the page of releases that installed Quill Radio 3.0.4
+  and QUILL Lite 1.1.2 read.
 - Contains a SHA-256 list and exact source commit.
 - Never enters a signed v2 feed automatically.
 
@@ -229,7 +231,8 @@ request or ordinary build jobs.
 
 Protected release environments may use:
 
-- `DEV_BUILDS_TOKEN`, scoped only to the Dev-artifact repository;
+- the workflow's own token, with `contents: write` only in the jobs that publish
+  Dev builds (no personal token);
 - source-only build secrets needed by a Dev matrix, such as Podcast Index
   credentials;
 - `QUILL_FEED_SIGNING_KEY`, a repository secret available only to feed-signing

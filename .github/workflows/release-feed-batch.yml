@@ -92,7 +92,7 @@ jobs:
         run: python -m pip install -e . pynacl
       - name: List and promote every Dev app, sequentially
         env:
-          GH_TOKEN: ${{ secrets.DEV_BUILDS_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           QUILL_FEED_SIGNING_KEY: ${{ secrets.QUILL_FEED_SIGNING_KEY }}
         run: |
           ARGS=(--sha "$SOURCE_SHA" --report "$REPORT_PATH")

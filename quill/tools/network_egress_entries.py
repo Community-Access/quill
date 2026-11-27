@@ -362,8 +362,8 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "Update, or -- on the Beta and Dev channels only -- in the background after an "
         "automatic check, held on metered connections, in Quiet Hours and while Quill "
         "Radio records, and never installed without asking. Plain GET (with a Range "
-        "header to resume) to github.com release assets, including the separate "
-        "Community-Access/quillville-dev-builds repository for Dev builds; verified "
+        "header to resume) to github.com release assets, including the one rolling "
+        "dev-builds release of Community-Access/quill for Dev builds; verified "
         "TLS, trusted hosts, and the list's SHA-256 checked before the file is kept."
     ),
     "core/companion_install.py::fetch_companion_asset": (

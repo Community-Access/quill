@@ -396,9 +396,10 @@ all four have release notes
 against the published releases before building.</li>
 </ul>
 <h2 id="step-1-one-time-setup-you">Step 1: one-time setup (you)</h2>
-<p>Only what these four releases need. The Dev-build setup in RELEASE.md
-(the <code>DEV_BUILDS_TOKEN</code> secret, the dev-builds repository) is
-<strong>not</strong> needed.</p>
+<p>Only what these four releases need. There is no separate Dev-builds
+repository or <code>DEV_BUILDS_TOKEN</code> secret any more (RELEASE.md,
+“Dev builds”); Dev builds are files in the one rolling
+<code>dev-builds</code> release of this repository.</p>
 <ol type="1">
 <li><strong>Restore the feed-signing key.</strong> Every publish and
 promotion signs the app’s update list with it, and it is not on this
