@@ -71,4 +71,8 @@ GITHUB_ENTRIES: dict[str, str] = {
     # owner/name text per account, version stamped. A shortcut list on this
     # computer; nothing is sent to GitHub and no token is kept. Losing it loses the list.
     "core/github/tracked_accounts.py::save": "versioned",
+    # List Speech Templates (list_speech_templates.json), shared by both
+    # Workbenches: named templates and which one each list uses. Schema
+    # stamped, coerced entry by entry; a damaged file is copied aside first.
+    "core/list_speech/store.py::save_library": "versioned",
 }

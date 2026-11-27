@@ -2502,7 +2502,7 @@ Control coverage: 128 audited sites (128 helped).
 
 ## GitHub Workbench
 
-Control coverage: 408 audited sites (408 helped).
+Control coverage: 413 audited sites (413 helped).
 
 ### Every window, and what it is for
 
@@ -2553,6 +2553,8 @@ Control coverage: 408 audited sites (408 helped).
 **Export JSON.** Where to save GitHub's answer as a JSON file.
 
 **Filter Builder.** Build a filter one condition at a time: an attribute, an operator and a value from the repository. The query appears as you go, in GitHub's own syntax; OK puts it in the filter box, Save as Search also keeps it.
+
+**Find a Person or Organization.** Type a username or name and the matching people and organizations appear. Open an account's repositories, keep it in Tracked Accounts, mark a favorite on this computer, follow a person on GitHub, or open the account on GitHub.
 
 **Form Field:.** One field of a form: its label, id, description and, for its kind, placeholder, options, default and whether it is required.
 
@@ -3415,6 +3417,8 @@ Control coverage: 408 audited sites (408 helped).
 **Account > Least Privilege Advice....** The smallest token scopes, fine-grained permissions and Workbench level that cover what QUILL saw this account do here, and what it cannot know. Changes nothing.
 
 **Tools > Workbench Options....** Where the Workbench opens, how notifications check, lists and privacy.
+
+**Tools > List Speech Templates....** How rows are spoken: choose and order the fields, a separator and labels.
 
 **Tools > Dry Run.** Turn Dry Run on or off. While it is on, every write asks and previews as usual, then stops before sending and says what it would have sent.
 

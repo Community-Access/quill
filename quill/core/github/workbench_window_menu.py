@@ -84,7 +84,7 @@ _FILE = MenuSpec(
         ),
         _row(
             "find_account",
-            "Find a Person or &Organization...",
+            "Find a &Person or Organization...",
             "Ctrl+Alt+E",
             "Search GitHub for people and organizations as you type, then look at their "
             "repositories, keep them in Tracked Accounts, or follow a person.",
@@ -432,6 +432,12 @@ _TOOLS = MenuSpec(
             "Workbench &Options...",
             "Ctrl+Shift+O",
             "Where the Workbench opens, how notifications check, lists and privacy.",
+        ),
+        _row(
+            "list_speech",
+            "List Speech &Templates...",
+            "Ctrl+Alt+Shift+V",
+            "How rows are spoken: choose and order the fields, a separator and labels.",
         ),
         _row(
             "dry_run",

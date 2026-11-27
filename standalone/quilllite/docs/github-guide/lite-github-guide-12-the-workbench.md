@@ -1243,6 +1243,42 @@ is working on, with its latest update. It asks the first time, reads the page
 only when you choose the command, and is greyed in Safe Mode. Chapter 10 has
 more.
 
+## List Speech Templates
+
+Each row in a list is read as its cells, one after another. **List Speech
+Templates** (Tools menu, `Ctrl+Alt+Shift+V`) lets you decide what a row says,
+and in what order, for each kind of list: notifications, issues, pull requests and repositories. Nothing changes until you choose a
+template; until then every list is read the way it always was.
+
+In the window:
+
+1. **List** picks the kind of list.
+2. **Template** picks the usual wording, one of three built-in presets, or a
+   template you saved. **Brief** says only what identifies the row.
+   **Balanced** adds the state and how long ago it changed. **Detailed** says
+   everything and introduces each value with its name.
+3. **Fields in spoken order** is the row, first to last. **Move Up** and
+   **Move Down** (or `Alt+Up` and `Alt+Down` on the list) change the order, and
+   each move says where the field landed, such as "Title moved to position 2
+   of 4". **Remove** (or `Delete`) takes a field out. **Choose field** and
+   **Add** put one back at the end.
+4. **Separator** is what is said between fields. **Say field labels** adds the
+   name before a value, such as "by octocat". **Leave out empty fields** skips a
+   field with no value; turn it off and **Empty-field text** is said instead.
+5. **Sample row preview** is a real-looking row said exactly as your rows will
+   be. **Hear Preview** says it aloud.
+6. **Save As** names your choices. **Rename** and **Delete Template** work on a
+   saved template. **Use for This List** makes the list speak this way, and
+   **Use for Similar Lists** does the same for lists that read alike, such as
+   issues and pull requests; a list that lacks one of the fields keeps its own
+   choice and is named.
+
+If GitHub or WordPress stops offering a field you chose, the rest of your
+choices are kept, the window says which field is gone, and the row simply does
+not say it: you never hear a blank. The Details pane always has the full
+row, whatever the template says. If the template file cannot be read, a copy is
+kept aside and the usual wording is used until you save again.
+
 ## Workbench Options
 
 GitHub's preferences live in the Workbench, not in the editor's Options:
