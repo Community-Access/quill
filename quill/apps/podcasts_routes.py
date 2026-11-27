@@ -42,6 +42,9 @@ class CastPlaceRoutesMixin:
 
     #: The command palette in Cast's own words (read by the shared mixin).
     _podcast_palette_titles = CAST_PALETTE_TITLES
+    #: Cast Preferences write the automatic check onto PodcastHistory, so the
+    #: monitor reads it there, not the editor's Settings (new_feed_check.py).
+    _podcast_check_reads_history = True
 
     def say_now_playing(self) -> None:
         """Ctrl+T: the Now Playing line, said again (qc.md 4.1)."""
