@@ -579,15 +579,19 @@ message in the comment window, with mentions, references, emoji, saved
 replies, the preview and the check; <strong>Use This Text</strong>
 brings it back.</li>
 <li><strong>Discard Saved Draft</strong>, to throw away a saved review
-message.</li>
+message. It asks first, because a draft that was never sent cannot be
+brought back.</li>
 <li><strong>Submit Review</strong>, which sends it, and <strong>Save
 Draft and Close</strong>, which keeps it. Escape is Save Draft and
 Close.</li>
 </ul>
 <p>The review message saves as you type, so closing the window loses
-nothing. Submit Review is the only thing that sends. Request changes
-asks once more before it goes. You hear “Review submitted on pull
-request #42.” and how many line comments GitHub took with it.</p>
+nothing. When you come back, the window says which review it is, how
+long, and when it was saved, and, if the pull request has new commits
+since, that you should read the draft against the current changes first.
+Submit Review is the only thing that sends. Request changes asks once
+more before it goes. You hear “Review submitted on pull request #42.”
+and how many line comments GitHub took with it.</p>
 <p>GitHub never lets you approve your own pull request. If you keep a
 second account for that, see <a
 href="#approving-with-another-of-your-accounts">Approving with another

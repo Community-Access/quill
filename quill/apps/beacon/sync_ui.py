@@ -461,14 +461,17 @@ class SyncController:
         return {"ok": True, "resolution": choice}
 
     def list_backups(self) -> list[dict]:
-        out = []
-        for p in sorted(self.backup_dir.glob("sync_*.db"), reverse=True):
-            name = p.name
+        """Every snapshot, newest first: before each sync, and before each rollback."""
+        from quill.apps.beacon.sync_snapshots import stamp_of
+
+        out: list[dict[str, Any]] = []
+        for p in [*self.backup_dir.glob("sync_*.db"), *self.backup_dir.glob("rollback_*.db")]:
             try:
-                ts = int(name[len("sync_") : -len(".db")])
-            except ValueError:
-                ts = 0
-            out.append({"name": name, "created": ts, "size": p.stat().st_size})
+                size = p.stat().st_size
+            except OSError:
+                continue
+            out.append({"name": p.name, "created": stamp_of(p.name), "size": size})
+        out.sort(key=lambda b: int(b["created"]), reverse=True)
         return out
 
     def restore_backup(self, name: str) -> bool:
@@ -490,7 +493,16 @@ class SyncController:
         db_file = self._db_path()
         if not db_file:
             return False
-        shutil.copy2(src, db_file)
+        # The library as it is now becomes one more snapshot first, so the
+        # rollback can be rolled back (FUX-05). No copy, no rollback.
+        from quill.apps.beacon.sync_snapshots import keep_before_rollback
+
+        if keep_before_rollback(db_file, self.backup_dir, _now_ms()) is None:
+            return False
+        try:
+            shutil.copy2(src, db_file)
+        except OSError:
+            return False
         return True
 
 

@@ -2,6 +2,29 @@
 
 ## 1.0.0
 
+### Unsent GitHub drafts say what they are, and go once the issue exists (2026-11-24)
+
+A recovered issue draft said only "Recovered a local draft for owner/repo", on
+a line above the title that a screen reader reached only by looking for it.
+It now names the draft and is said when the window opens: "Recovered your
+unsent issue for owner/repo, "Crash on save", 120 words, saved today at 2:14
+PM. It has not been submitted." A recovered review says which pull request,
+what kind of review, how long and when, and, when the pull request has new
+commits since, that the draft should be read against the current changes. The
+sentence is said a moment after the window opens, so the screen reader's
+reading of the window does not cut it off.
+
+New Issue from GitHub Workbench now clears the draft once the issue is
+created. Before, the next New Issue in that repository offered it back as
+"not submitted", inviting a duplicate. **Discard Saved Draft** (`Alt+D`)
+asks first, with **Discard Draft** and **Keep Draft** buttons, because a
+draft that was never sent cannot be brought back. Rewriting a
+pending line comment that was written against older commits now moves it to
+the current ones, so Compose Review is no longer blocked until it is deleted.
+
+If the file holding the drafts cannot be read, it is copied aside rather than
+written over by the next keystroke, and the draft window says where.
+
 ### Crash Recovery names the document, and offers every one (2026-11-24)
 
 After QUILL closed without saving, Crash Recovery said "Restore the latest

@@ -6,6 +6,15 @@ Quill Inkwell 1.0.0 is its first public release, and it has not been published
 yet. The testing build is **1.0.0 (build 2)**. First, the work since the first
 build, grouped by subject; then the first build itself.
 
+### A library that cannot be read is kept, not replaced (FUX-05, 2026-11-24)
+
+When `abbreviations.json` could not be read, Inkwell started with its built-in
+abbreviations, and the next save wrote them over your file, with nothing said.
+It now copies the damaged file aside first, as
+`abbreviations.damaged-<date>-<time>.json` beside it, and says once where it
+is: "Your abbreviation library could not be read, so Quill Inkwell started
+with its built-in abbreviations. Your library was kept as ...".
+
 ### An empty list says how to make a first entry (2026-11-24)
 
 With every abbreviation deleted, the list said nothing. A **Getting started**

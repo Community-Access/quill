@@ -12,6 +12,7 @@ import wx
 
 from quill.apps.beacon.model import ALL_TYPES
 from quill.apps.beacon.sync_conflicts import add_conflict_detail, show_selected_conflict
+from quill.apps.beacon.sync_snapshots import confirm_rollback, snapshot_label
 from quill.ui.accessible_group import describe_group
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 from quill.ui.dpi import dip_size
@@ -2913,28 +2914,29 @@ class SyncHistoryDialog(wx.Dialog):
         sizer.Add(resolve_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         sizer.Add(
-            wx.StaticText(self, label="&Pre-sync snapshots (rollback):"),
+            wx.StaticText(self, label="&Past snapshots (rollback):"),
             0,
             wx.LEFT | wx.RIGHT | wx.TOP,
             8,
         )
         self.backup_list = wx.ListBox(self, style=wx.LB_SINGLE)
-        _name(self.backup_list, "Pre-sync snapshots. Select and Roll Back to restore.")
+        _name(self.backup_list, "Past snapshots. Select and Roll Back to restore.")
         self.backup_list.SetHelpText(
-            "The database snapshots taken before each sync, kept so a bad "
-            "sync can be undone. Select one and press Roll Back to restore "
-            "it."
+            "The library as it was before each sync and each rollback, newest "
+            "first, kept so either can be undone. Select one and press Roll "
+            "Back to restore it."
         )
-        for b in controller.list_backups():
-            self.backup_list.Append(b["name"])
+        self._backups = controller.list_backups()  # rows say when and how big (FUX-05)
+        for b in self._backups:
+            self.backup_list.Append(snapshot_label(b))
         sizer.Add(self.backup_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         self.rollback = wx.Button(self, label="Roll &Back to Selected Snapshot")
         _name(self.rollback, "Roll back to selected snapshot")
         self.rollback.SetHelpText(
-            "Restore the library to the selected pre-sync snapshot, after "
-            "a confirmation. The current database is overwritten; the "
+            "Restore the library to the selected snapshot, after a confirmation. "
+            "The library as it is now is kept as a snapshot first; the "
             "commit log is kept."
         )
         close = wx.Button(self, label="Close", id=wx.ID_CLOSE)
@@ -2992,11 +2994,10 @@ class SyncHistoryDialog(wx.Dialog):
                 "Select a snapshot to roll back to.", "QuillBeacon", style=wx.ICON_WARNING
             )
             return
-        name = self.backup_list.GetString(sel)
+        entry = self._backups[sel]
         if (
             show_message_box(
-                f"Restore the library to the snapshot {name}? This overwrites the "
-                "current database with the pre-sync copy. The commit log is kept.",
+                confirm_rollback(entry),
                 "Roll Back",
                 wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
                 self,
@@ -3005,7 +3006,7 @@ class SyncHistoryDialog(wx.Dialog):
         ):
             return
         if self._on_rollback:
-            self._on_rollback(name)
+            self._on_rollback(entry["name"])
         self.EndModal(wx.ID_OK)
 
 

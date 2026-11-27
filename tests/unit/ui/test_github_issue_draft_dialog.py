@@ -50,12 +50,18 @@ def test_issue_dialog_recovers_edits_and_discards_local_draft(
         assert dialog._body.GetValue() == "Saved body"
         assert dialog._labels.GetValue() == "bug"
         assert dialog._assignees.GetValue() == "alice"
-        assert "Recovered a local draft" in dialog._draft_notice.GetLabel()
+        assert 'Recovered your unsent issue for owner/repo, "Saved title"' in (
+            dialog._draft_notice.GetLabel()
+        )
 
         dialog._body.SetValue("Edited saved body")
         dialog._save_local_draft()
         assert store.get_issue("owner/repo").body == "Edited saved body"
 
+        dialog._confirm_discard = lambda: False
+        dialog._discard_local_draft(None)
+        assert store.get_issue("owner/repo") is not None  # asked first, and kept
+        dialog._confirm_discard = lambda: True
         dialog._discard_local_draft(None)
         assert store.get_issue("owner/repo") is None
         assert dialog._title.GetValue() == "[Bug] "

@@ -318,11 +318,15 @@ and has:
 - **Comment Window...** (`Alt+W`) writes the message in the comment window,
   with mentions, references, emoji, saved replies, the preview and the check;
   **Use This Text** brings it back.
-- **Discard Saved Draft**, to throw away a saved review message.
+- **Discard Saved Draft**, to throw away a saved review message. It asks
+  first, because a draft that was never sent cannot be brought back.
 - **Submit Review**, which sends it, and **Save Draft and Close**, which keeps
   it. Escape is Save Draft and Close.
 
 The review message saves as you type, so closing the window loses nothing.
+When you come back, the window says which review it is, how long, and when it
+was saved, and, if the pull request has new commits since, that you should
+read the draft against the current changes first.
 Submit Review is the only thing that sends. Request changes asks once more
 before it goes. You hear "Review submitted on pull request #42." and how many
 line comments GitHub took with it.

@@ -5,7 +5,12 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from quill.core.github.local_drafts import GitHubIssueDraftStore, GitHubReviewDraftData
+from quill.core.github.local_drafts import (
+    GitHubIssueDraftStore,
+    GitHubReviewDraftData,
+    damaged_drafts_notice,
+    recovered_review_notice,
+)
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 
@@ -142,10 +147,11 @@ class GitHubReviewDraftDialog:
         self._status.SetName("Review draft validation status")
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
-        self._discard_btn = wx.Button(panel, wx.ID_ANY, label="Discard Saved Draft")
+        self._discard_btn = wx.Button(panel, wx.ID_ANY, label="&Discard Saved Draft")
         self._discard_btn.SetName("Discard this saved local review draft")
         self._discard_btn.SetHelpText(
-            "Remove the review draft from this device without submitting it."
+            "Delete the review draft from this device without submitting it, after a "
+            "confirmation. It was never submitted, so it cannot be recovered."
         )
         self._discard_btn.Enable(saved is not None)
         root.Add(self._discard_btn, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -189,13 +195,8 @@ class GitHubReviewDraftDialog:
         self._body.SetFocus()
 
     def _notice_text(self, saved: GitHubReviewDraftData | None) -> str:
-        if self._stale and saved is not None:
-            return (
-                f"Recovered a local draft saved for HEAD {saved.head_sha[:12]}. "
-                f"The current HEAD is {self._current_head_sha[:12]}. It is not submitted."
-            )
         if saved is not None:
-            return "Recovered a local review draft. It is not submitted to GitHub."
+            return recovered_review_notice(saved, self._number, self._current_head_sha)
         return "Review changes save locally as you type. They are not submitted."
 
     def _schedule_save(self, _event: object | None = None) -> None:
@@ -237,6 +238,8 @@ class GitHubReviewDraftDialog:
         if self._save_timer is not None:
             self._save_timer.Stop()
             self._save_timer = None
+        if not self._confirm_discard():
+            return
         if not self._draft_store.delete_review(self._repository, self._number):
             self._say(self._status, "Could not discard the local review draft.")
             return
@@ -247,8 +250,25 @@ class GitHubReviewDraftDialog:
         self._stale = False
         self._saved = None
         self._draft_head_sha = self._current_head_sha
+        self._body.SetFocus()  # not left on a button that is about to be disabled
         self._discard_btn.Enable(False)
         self._say(self._notice, "Local review draft discarded. Nothing has been submitted.")
+
+    def _confirm_discard(self) -> bool:
+        """Ask before deleting: the same question a pending line comment gets."""
+        wx = self._wx
+        dialog = wx.MessageDialog(
+            self.dialog,
+            f"Discard the saved review draft for pull request #{self._number}? It was "
+            "never submitted, so it cannot be recovered.",
+            "Discard Saved Draft",
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_WARNING,
+        )
+        dialog.SetYesNoLabels("&Discard Draft", "&Keep Draft")
+        try:
+            return show_modal_dialog(dialog, "Discard Saved Draft") == wx.ID_YES
+        finally:
+            dialog.Destroy()
 
     def _submit(self, _event: object) -> None:
         event_index = self._event.GetSelection()
@@ -276,6 +296,14 @@ class GitHubReviewDraftDialog:
     def show(self) -> GitHubReviewDraft | None:
         wx = self._wx
         apply_modal_ids(self.dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
+        # Said once when the window is up: focus lands on the review action,
+        # so the notice above it is otherwise only found by looking for it.
+        opening = damaged_drafts_notice()
+        if self._saved is not None:
+            opening = f"{opening} {self._notice.GetLabel()}".strip()
+        if opening:
+            # After the title and focus are spoken (ask_password's 250 ms).
+            wx.CallLater(250, self._announce, opening)
         try:
             if show_modal_dialog(self.dialog, f"Review Pull Request #{self._number}") != wx.ID_OK:
                 return None

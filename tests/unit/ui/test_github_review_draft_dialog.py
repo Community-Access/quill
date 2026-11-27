@@ -43,7 +43,7 @@ def test_review_draft_recovers_and_requires_confirmation_after_head_changes(
         assert dialog._event.GetSelection() == 2
         assert dialog._stale
         assert dialog._stale_confirm.IsShown()
-        assert "current HEAD is newhead" in dialog._notice.GetLabel()
+        assert "new commits since you wrote it" in dialog._notice.GetLabel()
 
         dialog._body.SetValue("Rechecked against the new diff.")
         dialog._save_local()

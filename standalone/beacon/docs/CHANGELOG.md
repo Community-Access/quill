@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- **Sync History says when each snapshot was taken, and a rollback can be
+  undone** (FUX-05, 2026-11-24). Snapshots were listed by file name
+  ("sync_1732456789012.db"); each row now reads "Today at 2:05 PM, before a
+  sync, 1.2 MB", in the list now called Past snapshots. Rolling back first
+  keeps the library as it was as one more snapshot ("before a rollback"), and
+  says so in the question and the result. A rollback that could not be done
+  says "The library was not rolled back, and nothing in it was changed." rather
+  than "Rollback failed; library reopened from current DB".
+
 - **Read both versions of a sync conflict before choosing** (FUX-12,
   2026-11-24). Sync History shows the selected conflict below the list
   (Alt+V): this device's version, the other device's, each line that differs

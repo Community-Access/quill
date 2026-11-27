@@ -2477,8 +2477,8 @@ Control coverage: 128 audited sites (128 helped).
 - `self.r_local`: Resolve the selected conflict by keeping this device's version.
 - `self.r_remote`: Resolve the selected conflict by taking the other device's version.
 - `self.r_merged`: Resolve the selected conflict with the merged combination of both versions.
-- `self.backup_list`: The database snapshots taken before each sync, kept so a bad sync can be undone. Select one and press Roll Back to restore it.
-- `self.rollback`: Restore the library to the selected pre-sync snapshot, after a confirmation. The current database is overwritten; the commit log is kept.
+- `self.backup_list`: The library as it was before each sync and each rollback, newest first, kept so either can be undone. Select one and press Roll Back to restore it.
+- `self.rollback`: Restore the library to the selected snapshot, after a confirmation. The library as it is now is kept as a snapshot first; the commit log is kept.
 - `close`: Close sync history without changing anything.
 #### PlayerSettingsDialog (`quill/apps/beacon/dialogs.py`)
 
@@ -4441,9 +4441,9 @@ Control coverage: 408 audited sites (408 helped).
 - `self._body`: Optional. Markdown is submitted as plain issue text.
 - `self._labels`: Optional repository labels. Leave blank for none.
 - `self._assignees`: Optional usernames separated by commas; @ is optional.
-- `self._discard_btn`: Remove this draft from this device without submitting it.
+- `self._discard_btn`: Delete this draft from this device without submitting it, after a confirmation. It was never submitted, so it cannot be recovered.
 - `create_btn`: Create the issue on GitHub with this title and text.
-- `cancel_btn`: Close without creating the issue.
+- `cancel_btn`: Close without creating the issue. The draft stays saved on this device and comes back the next time you start a new issue here.
 #### IssueFormDialog (`quill/ui/github_issue_form_dialog.py`)
 
 - `self._issue_title`: What it is about, in a line.
@@ -4709,7 +4709,7 @@ Control coverage: 408 audited sites (408 helped).
 - `self._body`: Required for Comment and Request Changes. Saved locally until submitted.
 - `self._window_btn`: Write the review message in the comment window: mentions, references, emoji, saved replies, a preview and a check. Its text comes back here.
 - `self._stale_confirm`: The saved review was created for a different pull request head commit.
-- `self._discard_btn`: Remove the review draft from this device without submitting it.
+- `self._discard_btn`: Delete the review draft from this device without submitting it, after a confirmation. It was never submitted, so it cannot be recovered.
 - `submit_btn`: Send the selected review action to GitHub now.
 - `cancel_btn`: Keep the review as a draft on this computer and close.
 - `pending`: Line comments you added from the diff are sent in the same request as the review.
