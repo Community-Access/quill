@@ -16,7 +16,7 @@ from __future__ import annotations
 from quill.core.media.list_columns import ColumnDef
 from quill.core.podcasts.list_columns import EPISODES as _EPISODE_COLUMNS
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
-from quill.ui.media.list_columns_view import build_columns, columns_for
+from quill.ui.media.list_columns_view import build_columns, columns_for, set_row
 
 #: This list's id in Cast's column catalogue -- taken from the catalogue itself
 #: rather than retyped, so the fill site and the preference cannot end up naming
@@ -152,6 +152,37 @@ class ManagerRowViewMixin:
         if item is not None and item.status in ("queued", "downloading", "paused"):
             return item.status.capitalize()
         return "Streaming"
+
+    def _row_show(self, row: int) -> PodcastShow | None:
+        """The show an existing row belongs to: its own in a cross-show view."""
+        pair_shows = getattr(self, "_pair_shows", None) or []
+        if 0 <= row < len(pair_shows):
+            return pair_shows[row]
+        return getattr(self, "_current_show", None)
+
+    def _cross_show_row_values(self, episode: PodcastEpisode, show: PodcastShow) -> dict[str, str]:
+        """A cross-show row's cells: the title carries the show's name."""
+        values = self._episode_row_values(episode, show)
+        if self._library.settings.announce_show_name_first:
+            values["title"] = f"{show.title} — {episode.title}"
+        else:
+            values["title"] = f"{episode.title} — {show.title}"
+        return values
+
+    def _rewrite_episode_row(self, row: int, episode: PodcastEpisode) -> None:
+        """Bring one existing row up to date where its columns really are.
+
+        By column id, never position: the listener can reorder and hide the
+        episode columns, so "column 3" may be Time Left, or not exist at all.
+        ``set_row`` writes only cells whose text changed, so a status update does
+        not make a screen reader say the whole row again.
+        """
+        show = self._row_show(row)
+        if getattr(self, "_pair_shows", None) and show is not None:
+            values = self._cross_show_row_values(episode, show)
+        else:
+            values = self._episode_row_values(episode, show)
+        set_row(self._episodes, row, self._episode_columns, values)
 
     def reapply_columns(self) -> None:
         """Rebuild the episode list after the column layout changed.

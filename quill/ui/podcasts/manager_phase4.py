@@ -24,6 +24,7 @@ from quill.core.podcasts.filtering import (
 )
 from quill.core.podcasts.models import Playlist, PodcastEpisode, PodcastShow
 from quill.core.podcasts.virtual_views import virtual_view_pairs
+from quill.ui.media.list_columns_view import fill_row
 from quill.ui.podcasts import volume_boost_ui
 from quill.ui.podcasts.episode_search import EpisodeSearchMixin
 from quill.ui.podcasts.manager_expired import ManagerExpiredMixin
@@ -327,25 +328,20 @@ class ManagerPhase4Mixin(ManagerExpiredMixin, EpisodeSearchMixin, SearchEverywhe
         self._current_show = None
         self._current_episodes = [episode for _show, episode in shown]
         self._pair_shows = [show for show, _episode in shown]
-        name_first = self._library.settings.announce_show_name_first
         # Freeze/Thaw around a bulk fill: without it wxMSW repaints and
         # re-measures per row, which is the difference between a snappy list
         # and a visible redraw storm at a thousand rows.
         self._episodes.Freeze()
         try:
+            # Every cell by column id, as the single-show fill does: the
+            # listener's column order and hidden columns apply here too.
             for row, (show, episode) in enumerate(shown):
-                label = (
-                    f"{show.title} — {episode.title}"
-                    if name_first
-                    else f"{episode.title} — {show.title}"
+                fill_row(
+                    self._episodes,
+                    row,
+                    self._episode_columns,
+                    self._cross_show_row_values(episode, show),
                 )
-                self._episodes.InsertItem(row, label)
-                self._episodes.SetItem(row, 1, episode.published[:16])
-                minutes, seconds = divmod(episode.duration_seconds, 60)
-                self._episodes.SetItem(
-                    row, 2, f"{minutes}:{seconds:02d}" if episode.duration_seconds else ""
-                )
-                self._episodes.SetItem(row, 3, self._episode_status_text(episode))
         finally:
             self._episodes.Thaw()
         if total > len(shown):
