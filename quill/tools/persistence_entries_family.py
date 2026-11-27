@@ -41,4 +41,7 @@ FAMILY_ENTRIES: dict[str, str] = {
     # run's dated folder outside the repository: a QA output the tool makes for
     # the person who ran it, never read by an app (2026-11-23).
     "tools/scribe_live/layout.py::save_record": "export",
+    # FUX-05 crash recovery: the sidecar naming which file a snapshot copies.
+    # Best-effort; losing it costs the offer a document name, never the snapshot.
+    "core/autosave.py::_note_source": "cache",
 }
