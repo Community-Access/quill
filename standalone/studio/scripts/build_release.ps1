@@ -88,8 +88,12 @@ Assert-QuillBuildEnv -Python $Python -QuillRepo $QuillRepo
 
 # -- ffmpeg to bundle ---------------------------------------------------------
 if (-not $FfmpegDir) {
-    $ffmpeg = Get-Command ffmpeg -ErrorAction SilentlyContinue
-    if ($ffmpeg) { $FfmpegDir = Split-Path -Parent $ffmpeg.Source }
+    # Not whatever ffmpeg is on PATH (a stale or planted local install would ship
+    # unverified): stage QUILL's pinned, SHA-256-verified asset, as Cast and Radio do.
+    Write-Host "Staging ffmpeg from QUILL's pinned release assets..."
+    & $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") --only ffmpeg
+    if ($LASTEXITCODE -ne 0) { throw "Could not stage ffmpeg (see scripts/fetch_build_deps.py)." }
+    $FfmpegDir = Join-Path $QuillRepo "build\deps\ffmpeg"
 }
 if (-not $FfmpegDir -or -not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
     throw "ffmpeg.exe not found. Pass -FfmpegDir; recording must ship bundled."
