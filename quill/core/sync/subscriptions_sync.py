@@ -44,12 +44,36 @@ from typing import Any
 from urllib.parse import parse_qsl, urlsplit, urlunsplit
 
 __all__ = [
+    "SubscriptionPolicy",
     "SubscriptionsReport",
     "canonical_url",
     "is_private",
     "subscription_id",
     "sync_subscriptions",
 ]
+
+
+@dataclass(frozen=True, slots=True)
+class SubscriptionPolicy:
+    """What the listener lets another device change here (ear.md 6.9).
+
+    The defaults are the behaviour before these settings existed, so nobody's
+    sync changes until they choose otherwise. Each "not here" choice is said
+    once per podcast, never on every sync.
+    """
+
+    #: "follow": a podcast followed on another device is followed here too.
+    #: "suggest": it is named once, and the listener decides.
+    follow_new: str = "follow"
+    #: "remove": unfollowing on another device unfollows here (the
+    #: subscription only; episodes, downloads and history stay).
+    #: "keep": it is named once, and stays followed here.
+    unfollows: str = "remove"
+    #: Whether folders, and which folder a podcast is filed in, travel.
+    folders: bool = True
+    #: Whether a podcast's own playback speed travels (sync.md 6.7 prefs).
+    speed: bool = True
+
 
 _STATE_FILE = "listening_subscriptions.json"
 _APP_KEY = "quill-cast"
@@ -153,7 +177,16 @@ def _load_state(data_dir: Path) -> dict[str, Any]:
     if not isinstance(raw, dict):
         raw = {}
     state: dict[str, Any] = {}
-    for key in ("fingerprints", "updated", "first_seen", "tombstones", "folder_map", "carried"):
+    # "told": what a "not here" setting has already said, so it is said once (ear.md 6.9).
+    for key in (
+        "fingerprints",
+        "updated",
+        "first_seen",
+        "tombstones",
+        "folder_map",
+        "carried",
+        "told",
+    ):
         value = raw.get(key)
         state[key] = dict(value) if isinstance(value, dict) else {}
     return state
@@ -199,7 +232,10 @@ def _newest_rows(others: list[Any]) -> dict[str, _Incoming]:
 
 
 def sync_subscriptions(
-    library: Any, data_dir: Path | str, others: list[Any]
+    library: Any,
+    data_dir: Path | str,
+    others: list[Any],
+    policy: SubscriptionPolicy | None = None,
 ) -> SubscriptionsReport:
     """Apply newer subscription and folder rows from *others*, then build this
     device's own rows. Mutates *library*; the caller saves it when
@@ -210,9 +246,11 @@ def sync_subscriptions(
     now = _now()
     incoming = _newest_rows(others)
     _notice_local_changes(library, state, now)
-    _apply_folders(library, state, incoming, report)
-    _apply_subscriptions(library, state, incoming, report, now)
-    report.rows = _outgoing(library, state, report, now)
+    rules = policy or SubscriptionPolicy()
+    if rules.folders:
+        _apply_folders(library, state, incoming, report)
+    _apply_subscriptions(library, state, incoming, report, now, rules)
+    report.rows = _outgoing(library, state, report, now, rules)
     try:
         _save_state(data, state)
     except OSError:
@@ -296,9 +334,13 @@ def _apply_subscriptions(
     incoming: dict[str, _Incoming],
     report: SubscriptionsReport,
     now: str,
+    rules: SubscriptionPolicy | None = None,
 ) -> None:
     from quill.core.podcasts.models import PodcastShow
     from quill.core.podcasts.subscriptions import new_id
+
+    rules = rules or SubscriptionPolicy()
+    told: dict[str, str] = state.setdefault("told", {})
 
     shows = [s for s in getattr(library, "shows", []) if getattr(s, "feed_url", "")]
     for record_id, item in incoming.items():
@@ -331,6 +373,15 @@ def _apply_subscriptions(
             first = str(state["first_seen"].get(subscription_id(local.feed_url), ""))
             if first and at < first:
                 continue  # an old unsubscribe must not undo a deliberate resubscribe
+            if rules.unfollows == "keep":
+                # The listener's setting: say it once, keep following here.
+                if told.get(f"kept:{record_id}") != at:
+                    told[f"kept:{record_id}"] = at
+                    report.said.append(
+                        f"{local.title} was unfollowed on {item.device}; it is still "
+                        "followed here, as your sync settings ask."
+                    )
+                continue
             library.remove_show(local.id)
             shows.remove(local)
             report.changed = True
@@ -347,8 +398,17 @@ def _apply_subscriptions(
         state["carried"][record_id]["app_private"] = (
             row.get("app_private") if isinstance(row.get("app_private"), dict) else {}
         )
-        folder = _first_known_folder(state, row)
+        folder = _first_known_folder(state, row) if rules.folders else None
         if local is None:
+            if rules.follow_new == "suggest":
+                if told.get(f"suggested:{record_id}") != at:
+                    told[f"suggested:{record_id}"] = at
+                    name = str(row.get("title", "") or "").strip()[:200] or "A podcast"
+                    report.said.append(
+                        f"{name} is followed on {item.device}. Your sync settings ask "
+                        "before following it here, so it was not added."
+                    )
+                continue
             if str(state["tombstones"].get(record_id, "")) >= at:
                 # This device unfollowed at or after that follow; a tie keeps
                 # the unfollow, because re-adding is the louder mistake.
@@ -378,7 +438,8 @@ def _apply_subscriptions(
             if folder and local.folder_id != folder:
                 local.folder_id = folder
                 report.changed = True
-        _apply_speed(library, local, row, report)
+        if rules.speed:
+            _apply_speed(library, local, row, report)
         own = (
             row.get("app_private", {}).get(_APP_KEY)
             if isinstance(row.get("app_private"), dict)
@@ -446,12 +507,19 @@ def _fingerprint(row: dict[str, Any]) -> str:
 
 
 def _outgoing(
-    library: Any, state: dict[str, Any], report: SubscriptionsReport, now: str
+    library: Any,
+    state: dict[str, Any],
+    report: SubscriptionsReport,
+    now: str,
+    rules: SubscriptionPolicy | None = None,
 ) -> list[dict[str, Any]]:
+    rules = rules or SubscriptionPolicy()
     rows: list[dict[str, Any]] = []
     folder_back = {local: record for record, local in state["folder_map"].items()}
     written: set[str] = set()
-    for folder in getattr(library, "folders", []):
+    # With folder sharing off, this device's folders stay here; memberships
+    # other devices wrote are still carried back untouched (sync.md 6.7).
+    for folder in getattr(library, "folders", []) if rules.folders else []:
         record_id = folder_back.get(folder.id) or _folder_record_id(folder.id)
         core = {"name": folder.name, "parent": folder.parent_folder_id or ""}
         key = record_id
@@ -485,7 +553,7 @@ def _outgoing(
         state["first_seen"].setdefault(key, now)
         carried = dict(state["carried"].get(key, {}))
         alt = set(carried.pop("alt_urls", []) or [])
-        folders = list(core["folders"])
+        folders = list(core["folders"]) if rules.folders else []
         for extra in carried.pop("folders", []) or []:
             if extra not in folders:
                 folders.append(extra)  # memberships Cast cannot hold, carried back
@@ -506,7 +574,7 @@ def _outgoing(
         })
         if show.artwork_url:
             row["artwork_url"] = show.artwork_url
-        if "speed" in core:
+        if "speed" in core and rules.speed:
             row["prefs"] = {"speed": core["speed"]}
         rows.append(row)
         written.add(key)

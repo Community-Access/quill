@@ -58,6 +58,16 @@ JOIN_VAULT_HEADING = (
 )
 
 
+#: Sync Places' choices for what another device may change (ear.md 6.9): the
+#: stored value, then the words the listener hears.
+_FOLLOW_NEW = (("follow", "Follow them here too"), ("suggest", "Tell me, and let me choose"))
+_UNFOLLOWS = (("remove", "Unfollow them here too"), ("keep", "Keep following them here"))
+
+
+def _index_of(options: tuple[tuple[str, str], ...], value: str) -> int:
+    return next((i for i, (stored, _w) in enumerate(options) if stored == value), 0)
+
+
 class SyncPlacesDialog:
     """Set up (or join) a shared folder, and sync on demand."""
 
@@ -158,20 +168,28 @@ class SyncPlacesDialog:
         self._labels.SetValue(config.include_labels)
         shared.Add(self._labels, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
 
-        self._subscriptions = wx.CheckBox(
-            self._dialog, label="Also share the podcasts I follow, and their fol&ders"
-        )
+        self._subscriptions = wx.CheckBox(self._dialog, label="Also share the podcasts I follo&w")
         self._subscriptions.SetHelpText(
-            "Adds the podcasts you follow and your podcast folders to the plain file, so following "
-            "or unfollowing a podcast on one device does the same on the others. Anybody who can "
-            "see the folder can read the list. Private feeds, ones with a sign-in or a key in "
-            "their address, never go in it. Unfollowing elsewhere never deletes episodes or "
-            "downloads here, and every podcast added or removed is named when you sync."
+            "Adds the podcasts you follow to the plain file, so following or unfollowing a "
+            "podcast on one device can do the same on the others; the choices below say how "
+            "much. Anybody who can see the folder can read the list. Private feeds, ones with a "
+            "sign-in or a key in their address, never go in it. Unfollowing elsewhere never "
+            "deletes episodes or downloads here, and every podcast added or removed is named "
+            "when you sync."
         )
         self._subscriptions.SetValue(config.share_subscriptions)
         shared.Add(self._subscriptions, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+        self._build_subscription_rules(shared, config)
         describe_group(
-            shared, self._encrypted, self._interchange, self._labels, self._subscriptions
+            shared,
+            self._encrypted,
+            self._interchange,
+            self._labels,
+            self._subscriptions,
+            self._follow_new,
+            self._unfollows,
+            self._folders,
+            self._speed,
         )
         root.Add(shared, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -249,7 +267,72 @@ class SyncPlacesDialog:
             device_id=self._config.device_id or (_new_device_id() if interchange else ""),
             include_labels=bool(self._labels.GetValue()),
             share_subscriptions=bool(self._subscriptions.GetValue()),
+            sub_follow_new=_FOLLOW_NEW[max(0, self._follow_new.GetSelection())][0],
+            sub_unfollows=_UNFOLLOWS[max(0, self._unfollows.GetSelection())][0],
+            sync_folders=bool(self._folders.GetValue()),
+            sync_speed=bool(self._speed.GetValue()),
         )
+
+    def _build_subscription_rules(self, sizer: Any, config: PlacesConfig) -> None:
+        """What another device may change here, when podcasts are shared (ear.md 6.9)."""
+        wx = self._wx
+        follow_label = wx.StaticText(self._dialog, label="Podcasts followed on &another device:")
+        self._follow_new = wx.Choice(self._dialog, choices=[words for _v, words in _FOLLOW_NEW])
+        set_spoken_name(self._follow_new, "Podcasts followed on another device")
+        self._follow_new.SetHelpText(
+            "Follow them here too adds a podcast you follow on your phone or another computer. "
+            "Tell me, and let me choose names it once after a sync and leaves it for you to add."
+        )
+        self._follow_new.SetSelection(_index_of(_FOLLOW_NEW, config.sub_follow_new))
+        unfollow_label = wx.StaticText(
+            self._dialog, label="Podcasts &unfollowed on another device:"
+        )
+        self._unfollows = wx.Choice(self._dialog, choices=[words for _v, words in _UNFOLLOWS])
+        set_spoken_name(self._unfollows, "Podcasts unfollowed on another device")
+        self._unfollows.SetHelpText(
+            "Unfollow them here too removes the subscription only; episodes, downloads and "
+            "history stay. Keep following them here names it once and changes nothing."
+        )
+        self._unfollows.SetSelection(_index_of(_UNFOLLOWS, config.sub_unfollows))
+        self._folders = wx.CheckBox(
+            self._dialog, label="Share fol&ders, and which folder each podcast is in"
+        )
+        self._folders.SetHelpText(
+            "With this off, your folders stay on this device, and folders another device "
+            "shares are left as they are, never removed."
+        )
+        self._folders.SetValue(config.sync_folders)
+        self._speed = wx.CheckBox(
+            self._dialog, label="&Keep each podcast's playback speed the same"
+        )
+        self._speed.SetHelpText(
+            "A podcast's own speed, set in Settings for This Podcast, follows you between "
+            "devices. Your general speed is never changed."
+        )
+        self._speed.SetValue(config.sync_speed)
+        for label, control in ((follow_label, self._follow_new), (unfollow_label, self._unfollows)):
+            row = wx.BoxSizer(wx.HORIZONTAL)
+            row.Add(label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+            row.Add(control, 1)
+            sizer.Add(row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+        sizer.Add(self._folders, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+        sizer.Add(self._speed, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+        self._rule_controls = (
+            follow_label,
+            self._follow_new,
+            unfollow_label,
+            self._unfollows,
+            self._folders,
+            self._speed,
+        )
+        self._subscriptions.Bind(wx.EVT_CHECKBOX, lambda _e: self._enable_rules())
+        self._enable_rules()
+
+    def _enable_rules(self) -> None:
+        """The rules mean something only while podcasts are being shared."""
+        on = bool(self._subscriptions.GetValue())
+        for control in self._rule_controls:
+            control.Enable(on)
 
     def browse(self) -> str:
         """Choose the shared folder."""

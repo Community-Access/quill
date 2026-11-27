@@ -109,6 +109,7 @@ def sync_once(config: places_config.PlacesConfig, phrase: str) -> str:
             device_label=config.device or places_config.default_device_name(),
             include_labels=config.include_labels,
             share_subscriptions=config.share_subscriptions,
+            subscription_policy=config.subscription_policy(),
         )
         if report.new_device_id:
             # Another device shared this id; remember the fresh one (ear.md 6.8).

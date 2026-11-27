@@ -1422,6 +1422,8 @@
   "quill/ui/sync_places_dialog.py::SyncPlacesDialog.__init__::wx.TextCtrl#2": "named",
   "quill/ui/sync_places_dialog.py::SyncPlacesDialog.__init__::wx.TextCtrl#3": "named",
   "quill/ui/sync_places_dialog.py::SyncPlacesDialog.__init__::wx.TextCtrl#4": "named",
+  "quill/ui/sync_places_dialog.py::SyncPlacesDialog._build_subscription_rules::wx.Choice": "modal-hook",
+  "quill/ui/sync_places_dialog.py::SyncPlacesDialog._build_subscription_rules::wx.Choice#2": "modal-hook",
   "quill/ui/thesaurus_dialog.py::ThesaurusDialog.__init__::wx.ListBox": "named",
   "quill/ui/thesaurus_dialog.py::ThesaurusDialog.__init__::wx.ListBox#2": "named",
   "quill/ui/train_style_dialog.py::TrainStyleDialog.__init__::wx.TextCtrl": "named",

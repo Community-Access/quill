@@ -123,6 +123,7 @@ def sync_interchange(
     library: Any = None,
     save_library: Any = None,
     share_subscriptions: bool = False,
+    subscription_policy: Any = None,
 ) -> InterchangeReport:
     """Read every other device, apply what is newer, rewrite this device's file.
 
@@ -193,7 +194,7 @@ def sync_interchange(
         from quill.core.sync.subscriptions_sync import sync_subscriptions
 
         try:
-            subs = sync_subscriptions(library, Path(data_dir), others)
+            subs = sync_subscriptions(library, Path(data_dir), others, subscription_policy)
         except Exception as error:  # noqa: BLE001 - a sentence, never a traceback
             report.problems.append(f"Podcasts you follow could not be shared: {error}")
         else:

@@ -166,3 +166,103 @@ def test_an_old_unfollow_does_not_undo_a_new_follow(tmp_path: Path) -> None:
     _sync(tmp_path, "desk", "aaaaaaaa", desk)
     _sync(tmp_path, "desk", "aaaaaaaa", desk)
     assert [s.id for s in desk.shows] == ["ba"]
+
+
+# -- what another device may change here (ear.md 6.9) -----------------------------
+
+
+def _sync_with(tmp: Path, name: str, device: str, library: PodcastLibrary, policy):
+    return sync_interchange(
+        data_dir=tmp / name,
+        remote_dir=tmp / "remote",
+        device_id=device,
+        device_label=name,
+        library=library,
+        save_library=lambda _library: None,
+        share_subscriptions=True,
+        subscription_policy=policy,
+    )
+
+
+def test_suggest_names_a_new_follow_once_and_does_not_add_it(tmp_path: Path) -> None:
+    from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+    _setup(tmp_path)
+    _sync(tmp_path, "desk", "aaaaaaaa", _desk())
+    laptop = PodcastLibrary()
+    rules = SubscriptionPolicy(follow_new="suggest")
+    first = _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, rules)
+    assert laptop.shows == []
+    assert "Blind Abilities is followed on desk" in first.summary()
+    again = _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, rules)
+    assert "Blind Abilities is followed on desk" not in again.summary()  # said once
+
+
+def test_keep_names_an_unfollow_once_and_keeps_the_podcast(tmp_path: Path) -> None:
+    from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+    _setup(tmp_path)
+    desk = _desk()
+    _sync(tmp_path, "desk", "aaaaaaaa", desk)
+    laptop = PodcastLibrary()
+    _sync(tmp_path, "laptop", "bbbbbbbb", laptop)
+    assert len(laptop.shows) == 1
+    desk.remove_show("ba")
+    _sync(tmp_path, "desk", "aaaaaaaa", desk)
+    rules = SubscriptionPolicy(unfollows="keep")
+    report = _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, rules)
+    assert len(laptop.shows) == 1
+    assert "still followed here" in report.summary()
+    again = _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, rules)
+    assert "still followed here" not in again.summary()
+
+
+def test_folders_off_keeps_folders_on_this_device(tmp_path: Path) -> None:
+    from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+    _setup(tmp_path)
+    _sync_with(tmp_path, "desk", "aaaaaaaa", _desk(), SubscriptionPolicy(folders=False))
+    rows = _rows(tmp_path, "aaaaaaaa")
+    assert not [r for r in rows if str(r.get("id", "")).startswith("folder:")]
+    sub = next(r for r in rows if str(r.get("id", "")).startswith("sub:"))
+    assert sub["folders"] == []
+    laptop = PodcastLibrary()
+    _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, SubscriptionPolicy(folders=False))
+    assert laptop.shows[0].folder_id in (None, "")
+
+
+def test_speed_off_neither_sends_nor_takes_a_speed(tmp_path: Path) -> None:
+    from quill.core.sync.subscriptions_sync import SubscriptionPolicy
+
+    _setup(tmp_path)
+    _sync(tmp_path, "desk", "aaaaaaaa", _desk())  # desk shares 1.4
+    laptop = PodcastLibrary()
+    _sync_with(tmp_path, "laptop", "bbbbbbbb", laptop, SubscriptionPolicy(speed=False))
+    assert laptop.effective_settings(laptop.shows[0]).speed != 1.4
+    _sync_with(tmp_path, "desk2", "cccccccc", _desk(), SubscriptionPolicy(speed=False))
+    sub = next(r for r in _rows(tmp_path, "cccccccc") if str(r.get("id", "")).startswith("sub:"))
+    assert "prefs" not in sub
+
+
+def test_the_policy_settings_round_trip_and_default_to_the_old_behaviour() -> None:
+    from quill.core.sync.places_config import PlacesConfig
+
+    old = PlacesConfig.from_dict({"enabled": True})
+    assert (old.sub_follow_new, old.sub_unfollows, old.sync_folders, old.sync_speed) == (
+        "follow",
+        "remove",
+        True,
+        True,
+    )
+    chosen = PlacesConfig(
+        sub_follow_new="suggest", sub_unfollows="keep", sync_folders=False, sync_speed=False
+    )
+    again = PlacesConfig.from_dict(chosen.to_dict())
+    policy = again.subscription_policy()
+    assert (policy.follow_new, policy.unfollows, policy.folders, policy.speed) == (
+        "suggest",
+        "keep",
+        False,
+        False,
+    )
+    assert PlacesConfig(sub_follow_new="nonsense").subscription_policy().follow_new == "follow"
