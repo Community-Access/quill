@@ -112,6 +112,39 @@ A taste of what the Workbench does, with the manual chapter that shows how:
 - **A shop, events, SEO, memberships and redirects**, on sites with
   WooCommerce, The Events Calendar, Yoast SEO, Paid Memberships Pro or
   Redirection. ([Chapter 10](../wordpress-and-forms/wordpress-forms-10-shop-events-seo-memberships.html))
+- **Browse newsletters** on a site with the SwiftLetter plugin: each
+  newsletter, its articles in order, whether each is reviewed, and who changed
+  it last. See [Newsletters with SwiftLetter](#newsletters-with-swiftletter)
+  below.
+
+## Newsletters with SwiftLetter
+
+SwiftLetter is a WordPress plugin that builds a newsletter from articles. On a
+self-hosted site with SwiftLetter 1.1 or later, the site's branch of the
+Workbench has **SwiftLetter**. A site without the plugin does not show it, and
+a site connected through WordPress.com says, in one sentence, that QUILL offers
+SwiftLetter only on self-hosted sites.
+
+1. Open the Workbench (the WordPress key, then H), and in the tree move to
+   your site, then **SwiftLetter**.
+2. The list has each newsletter, with how many articles it has and when it
+   last changed. If the site has more than the Workbench reads at first, the
+   list says how many more there are. To read them, choose Load More on the
+   View menu of the Workbench window itself (Ctrl+Shift+L while the Workbench
+   has focus); Load All there reads every one.
+3. Press Enter on a newsletter. That is **Show Articles**: the newsletter is
+   selected in the tree and its articles are listed, in newsletter order.
+4. Each article says its title, its review state in words (Reviewed, Not
+   reviewed, or Changed since review) and its place, such as "3 of 8".
+5. Press Enter on an article to read it in full: its newsletter and site, who
+   changed it last and when ("Editor unknown" when SwiftLetter cannot say),
+   and whether your account can edit it.
+
+Browsing only reads. Nothing in the SwiftLetter branch changes your site, and
+F1 on any newsletter or article says what it is. Opening and saving articles
+in QUILL's editor, reordering, review and exports will come in later updates.
+[Chapter 10](../wordpress-and-forms/wordpress-forms-10-shop-events-seo-memberships.html#newsletters-swiftletter)
+of the manual has the details.
 
 ## From the page you are writing
 

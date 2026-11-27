@@ -319,8 +319,8 @@ class WordPressWorkbenchProvider(
         from quill.core.wordpress.workbench_plugin_branches import shows
 
         context = self._contexts.get(self.split(ref.instance)[0])
-        info = context.info if context is not None else None
-        return shows(node.key, info.namespaces if info is not None else None)
+        names = context.info.namespaces if context is not None and context.info else None
+        return shows(node.key, names) and self.swiftletter_offered(node.key, context)
 
     def unavailable(self, ref: NodeRef, node: NodeSpec) -> str:
         if node.loader.startswith("planned:"):
@@ -379,9 +379,9 @@ class WordPressWorkbenchProvider(
         with page_limit(self.pages_for_ref(ref)), scope as left:
             preset = {**dict(node.preset), **self.analytics_params(ref, node)}  # Shop Analytics
             rows = load(ctx, node.loader, preset, params, dynamic=dynamic)
-            if node.loader == "swiftletter:newsletters":
-                self.remember_newsletters(site, SEP, rows)
             self.note_loaded(ref, len(rows))
+            if node.loader == "swiftletter:newsletters":
+                self.remember_newsletters(site, SEP, rows, ref)
             self.remember_rows(rows)  # the glossary's examples come from these
         rows = self.with_update_facts(
             self.with_directory_facts(self.narrow_to_group(dynamic, rows))

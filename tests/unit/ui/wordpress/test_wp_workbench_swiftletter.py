@@ -102,3 +102,48 @@ def test_show_articles_ignores_a_row_that_is_not_a_newsletter():
     other: Any = WbRow("swiftletter_article", "Test", "4", {"title": "Draft"}, "Draft.")
     bench.do_show_articles(NodeRef("site", NEWSLETTER, "Test"), other)
     assert frame.selected == [] and bench.said == []
+
+
+class _Listing(_Bench):
+    """A bench with the lists mixin's two pieces remember_newsletters writes to."""
+
+    def __init__(self, frame: _Frame) -> None:
+        super().__init__(frame)
+        self.cut: dict[str, str] = {"site|swiftletter|Test": "The first 300 are shown."}
+
+    @staticmethod
+    def page_key(ref: NodeRef) -> str:
+        return f"{ref.template}|{ref.key}|{ref.instance}"
+
+
+def test_a_known_total_replaces_the_usual_more_words_once(monkeypatch: Any) -> None:
+    from tests.wx_session import patch_call_after
+
+    patch_call_after(monkeypatch, lambda *_args: None)
+    ref = NodeRef("site", ROOT, "Test")
+    bench = _Listing(_Frame(ref, {ref}))
+    left = "112 more of the site's 412 newsletters are not listed yet."
+    row = WbRow(NEWSLETTER, "Test", "9", {"title": "December"}, "December.", raw={"left": left})
+    bench.remember_newsletters("Test", SEP, [row], ref)
+    assert bench.cut["site|swiftletter|Test"] == left
+    empty = WbRow(NEWSLETTER, "Test", "9", {}, "", raw={"left": ""})
+    bench.remember_newsletters("Test", SEP, [empty], ref)
+    assert bench.cut["site|swiftletter|Test"] == ""
+
+
+class _Address:
+    def __init__(self, wpcom: bool) -> None:
+        self.is_wpcom = wpcom
+
+
+class _Context:
+    def __init__(self, wpcom: bool) -> None:
+        self.api = type("Api", (), {"address": _Address(wpcom)})()
+
+
+def test_swiftletter_is_never_offered_on_a_wordpress_com_connection() -> None:
+    bench = _Bench(_Frame(None, set()))
+    assert not bench.swiftletter_offered(ROOT, _Context(wpcom=True))
+    assert bench.swiftletter_offered(ROOT, _Context(wpcom=False))
+    assert bench.swiftletter_offered(ROOT, None)  # not yet connected: decided by the index
+    assert bench.swiftletter_offered("shop", _Context(wpcom=True))

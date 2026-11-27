@@ -241,6 +241,7 @@ Redirection, each in a section of its own, and a site's podcast.
 - [Search engines: Yoast SEO](wordpress-forms-10-shop-events-seo-memberships.html#search-engines-yoast-seo)
 - [Memberships: Paid Memberships Pro](wordpress-forms-10-shop-events-seo-memberships.html#memberships-paid-memberships-pro)
 - [Redirects: Redirection](wordpress-forms-10-shop-events-seo-memberships.html#redirects-redirection)
+- [Newsletters: SwiftLetter](wordpress-forms-10-shop-events-seo-memberships.html#newsletters-swiftletter)
 - [A podcast](wordpress-forms-10-shop-events-seo-memberships.html#a-podcast)
 
 ### [Chapter 11: Writing a form](wordpress-forms-11-writing-forms.html)

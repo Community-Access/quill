@@ -62,8 +62,10 @@ class _Site:
         if isinstance(answer, Exception):
             raise answer
         response = io.BytesIO(json.dumps(answer).encode())
-        response.headers = {"X-WP-TotalPages": "1"}
+        response.headers = dict(self.headers)
         return response
+
+    headers = {"X-WP-TotalPages": "1"}
 
     def api(self, url="https://example.org"):
         return WordPressApi(
@@ -117,7 +119,7 @@ def test_older_discovery_can_browse_without_advertising_save():
 def test_unsupported_api_major_version_fails_without_reading_editorial_content():
     site = _Site()
     site.routes["GET", _NAMESPACE]["swiftletter"]["api_version"] = "2.0"
-    with pytest.raises(WordPressApiError, match="knows version 1"):
+    with pytest.raises(WordPressApiError, match="needs a newer QUILL"):
         swiftletter.discover(site.api())
     assert len(site.requests) == 2
 
@@ -275,3 +277,238 @@ def test_forgetting_a_site_reads_swiftletter_again():
     load(ctx, "swiftletter:newsletters", {}, {})
     asked = [urlparse(request.full_url).path for request in site.requests]
     assert asked.count(_NAMESPACE) == 2
+
+
+# -- Michael's answers, 2026-11-22 ------------------------------------------------------
+
+
+def _refusal(status, code, message=None):
+    body = {"code": code, "data": {"status": status}}
+    if message is not None:
+        body["message"] = message
+    raw = io.BytesIO(json.dumps(body).encode())
+    return HTTPError(f"https://example.org{_SAVE}", status, "Refused", {}, raw)
+
+
+@pytest.mark.parametrize(
+    ("status", "code", "kind", "quill_code"),
+    [
+        (428, "swiftletter_version_required", "SwiftLetterVersionRequired", "VERSION-REQUIRED"),
+        (400, "swiftletter_invalid_version", "SwiftLetterInvalidVersion", "INVALID-VERSION"),
+        (400, "swiftletter_invalid_save", "SwiftLetterInvalidSave", "INVALID-SAVE"),
+        (
+            404,
+            "swiftletter_article_unavailable",
+            "SwiftLetterArticleUnavailable",
+            "ARTICLE-UNAVAILABLE",
+        ),
+        (403, "swiftletter_forbidden", "SwiftLetterForbidden", "FORBIDDEN"),
+        (412, "swiftletter_precondition_failed", "SwiftLetterConflict", "CONFLICT"),
+        (409, "swiftletter_article_locked", "SwiftLetterArticleLocked", "ARTICLE-LOCKED"),
+        (503, "swiftletter_save_unavailable", "SwiftLetterSaveUnavailable", "SAVE-UNAVAILABLE"),
+    ],
+)
+def test_each_refusal_says_swiftletters_sentence_as_written_never_its_code(
+    status, code, kind, quill_code
+):
+    from quill.core.wordpress import swiftletter_errors
+
+    site = _Site()
+    api = site.api()
+    article = swiftletter.open_article(api, 4)
+    said = "Pat Reyes is editing this article in WordPress. Your changes are still in QUILL."
+    site.routes["POST", _SAVE] = _refusal(status, code, said)
+    with pytest.raises(getattr(swiftletter_errors, kind)) as refused:
+        swiftletter.save_article(api, article, title="Edit", content="Text")
+    assert refused.value.plain == said
+    assert code not in str(refused.value)
+    assert refused.value.code == f"QUILL-SWIFTLETTER-API-{quill_code}"
+    assert refused.value.status == status
+    # Sent once: never retried, whatever the refusal.
+    assert [request.get_method() for request in site.requests] == ["GET", "POST"]
+
+
+def test_a_refusal_without_a_sentence_falls_back_to_quills_own():
+    from quill.core.wordpress.swiftletter_errors import SwiftLetterArticleLocked
+
+    site = _Site()
+    api = site.api()
+    article = swiftletter.open_article(api, 4)
+    site.routes["POST", _SAVE] = _refusal(409, "article_locked")
+    with pytest.raises(SwiftLetterArticleLocked) as refused:
+        swiftletter.save_article(api, article, title="Edit", content="Text")
+    assert refused.value.plain == SwiftLetterArticleLocked.fallback
+    assert "still in QUILL" in refused.value.plain
+
+
+def test_the_conflict_offers_compare_and_the_version_errors_offer_reopen():
+    from quill.core.wordpress import swiftletter_errors as errors
+
+    assert errors.SwiftLetterConflict.next_step == "compare"
+    assert errors.SwiftLetterVersionRequired.next_step == "reopen"
+    assert errors.SwiftLetterArticleLocked.next_step == ""
+    codes = {kind.code for kind in errors.BY_CODE.values()}
+    assert len(codes) == len(errors.BY_CODE)  # each its own code (GATE-EC)
+
+
+def test_a_wordpress_refusal_swiftletter_did_not_send_keeps_wordpress_words():
+    site = _Site()
+    raw = io.BytesIO(b'{"code":"rest_not_logged_in","message":"x"}')
+    site.routes["GET", _ARTICLE] = HTTPError(f"https://example.org{_ARTICLE}", 401, "No", {}, raw)
+    with pytest.raises(WordPressApiError) as refused:
+        swiftletter.open_article(site.api(), 4)
+    assert not isinstance(refused.value, swiftletter.SwiftLetterError)
+
+
+def test_save_reads_the_stored_title_and_content_and_says_when_they_differ():
+    site = _Site()
+    api = site.api()
+    article = swiftletter.open_article(api, 4)
+    site.routes["POST", _SAVE] = {
+        "id": 4,
+        "edit_version": _NEXT_VERSION,
+        "title": {"raw": "Edit"},
+        "content": {"raw": "<p>Text</p>"},
+    }
+    saved = swiftletter.save_article_stored(
+        api, article, title="Edit", content='<p onclick="x">Text</p>'
+    )
+    assert saved.returned_stored and saved.stored_differs
+    assert saved.content_changed and not saved.title_changed
+    baseline = saved.baseline(article)
+    assert baseline.content == "<p>Text</p>" and baseline.edit_version == _NEXT_VERSION
+
+    site.routes["POST", _SAVE] = {
+        "id": 4,
+        "edit_version": _NEXT_VERSION,
+        "title": "Edit",
+        "content": "<p>Text</p>",
+    }
+    same = swiftletter.save_article_stored(api, article, title="Edit", content="<p>Text</p>")
+    assert same.returned_stored and not same.stored_differs
+
+
+def test_the_current_test_builds_save_answer_still_works():
+    site = _Site()
+    api = site.api()
+    article = swiftletter.open_article(api, 4)
+    saved = swiftletter.save_article_stored(api, article, title="Edit", content="Text")
+    assert not saved.returned_stored and not saved.stored_differs
+    assert saved.baseline(article).content == "Text"
+
+
+def test_compare_with_site_reads_the_edit_route_and_never_writes():
+    site = _Site()
+    api = site.api()
+    article = swiftletter.open_article(api, 4)
+    current = swiftletter.current_article(api, article)
+    assert current.content == "<p>Keep this markup.</p>"
+    assert [request.get_method() for request in site.requests] == ["GET", "GET"]
+    assert site.requests[-1].full_url.endswith("?context=edit")
+    with pytest.raises(WordPressApiError, match="original WordPress site"):
+        swiftletter.current_article(site.api("https://elsewhere.example"), article)
+
+
+def test_article_rows_read_permissions_and_who_changed_them():
+    site = _Site()
+    rows = site.routes["GET", f"{_NAMESPACE}/newsletters/9"]["articles"]
+    rows[0].update(
+        review_state="changed",
+        can_edit=False,
+        can_review=False,
+        modified_gmt="2026-11-21T09:30:00",
+        modified_by="Pat Reyes",
+    )
+    rows[1].update(can_edit=True, can_review=True, modified_gmt="2026-11-20T08:00:00")
+    rows[1]["modified_by"] = None
+    first, second = swiftletter.articles(site.api(), 9)
+    assert (first.review_state, first.can_edit, first.can_review) == ("changed", False, False)
+    assert first.editor_words == "Pat Reyes"
+    assert second.modified_by is None and second.editor_words == "Editor unknown"
+    loaded = load(SiteContext("Test", site.api()), "swiftletter:articles", {}, {}, dynamic="9")
+    assert loaded[0].detail.endswith(
+        "Last changed 21 November 2026, 9:30 AM by Pat Reyes. "
+        "Your account cannot edit this article."
+    )
+    assert loaded[1].detail.endswith("Last changed 20 November 2026, 8:00 AM. Editor unknown.")
+
+
+@pytest.mark.parametrize("version", ["1", "1.0", "1.7", "1.12.3"])
+def test_any_1x_is_accepted(version):
+    site = _Site()
+    site.routes["GET", _NAMESPACE]["swiftletter"]["api_version"] = version
+    assert swiftletter.discover(site.api()) is not None
+
+
+@pytest.mark.parametrize("version", ["2.0", "3.1", "", None, "one"])
+def test_other_versions_are_refused_in_one_sentence(version):
+    site = _Site()
+    site.routes["GET", _NAMESPACE]["swiftletter"]["api_version"] = version
+    with pytest.raises(swiftletter.SwiftLetterVersionError) as refused:
+        swiftletter.discover(site.api())
+    assert refused.value.plain.endswith("which needs a newer QUILL.")
+    assert refused.value.plain.count(". ") == 0
+
+
+def test_missing_feature_flags_are_off_and_each_flag_is_its_own():
+    site = _Site()
+    del site.routes["GET", _NAMESPACE]["swiftletter"]["features"]
+    found = swiftletter.discover(site.api())
+    assert found == swiftletter.Discovery(can_browse=False, can_save=False)
+    site = _Site()
+    site.routes["GET", _NAMESPACE]["swiftletter"]["features"] = {
+        "browse": True,
+        "article_context": True,
+        "reorder": False,
+    }
+    found = swiftletter.discover(site.api())
+    assert found is not None and found.can_browse and found.can_open and not found.can_save
+    assert found.offers("article_context") and not found.offers("reorder")
+
+
+def test_the_list_says_how_many_newsletters_remain_when_the_site_gives_a_total():
+    site = _Site()
+    site.headers = {"X-WP-TotalPages": "5", "X-WP-Total": "412"}
+    site.routes["GET", f"{_NAMESPACE}/newsletters"] = [
+        {"id": n, "title": f"Issue {n}"} for n in range(1, 101)
+    ]
+    listing = swiftletter.newsletter_list(site.api(), max_pages=3)
+    assert len(listing.items) == 300 and listing.total == 412 and listing.remaining == 112
+    rows = load(SiteContext("Test", site.api()), "swiftletter:newsletters", {}, {})
+    assert rows[0].raw["left"].startswith("112 more of the site's 412 newsletters")
+
+
+def test_no_remaining_words_when_the_total_is_unknown_or_all_are_shown():
+    from quill.core.wordpress.workbench_swiftletter import left_words
+
+    assert left_words(300, None) == ""
+    assert left_words(12, 12) == ""
+    rows = load(SiteContext("Test", _Site().api()), "swiftletter:newsletters", {}, {})
+    assert rows[0].raw["left"] == ""
+
+
+def test_wordpress_com_never_reads_swiftletter_and_says_so_in_one_sentence():
+    from quill.core.wordpress.workbench_swiftletter import WPCOM_WORDS
+
+    site = _Site()
+    api = WordPressApi(
+        SiteAddress("https://example.wordpress.com", wpcom_site="example.wordpress.com"),
+        SiteAuth("bearer", secret="fixture"),
+        opener=site,
+    )
+    assert swiftletter.discover(api) is None
+    with pytest.raises(swiftletter.SwiftLetterError) as refused:
+        load(SiteContext("Test", api), "swiftletter:newsletters", {}, {})
+    assert refused.value.plain == WPCOM_WORDS.format(site="Test")
+    assert site.requests == []
+
+
+def test_a_version_quill_cannot_speak_is_explained_without_reading_again():
+    site = _Site()
+    site.routes["GET", _NAMESPACE]["swiftletter"]["api_version"] = "2.0"
+    ctx = SiteContext("Test", site.api())
+    for _ in range(2):
+        with pytest.raises(swiftletter.SwiftLetterVersionError):
+            load(ctx, "swiftletter:newsletters", {}, {})
+    asked = [urlparse(request.full_url).path for request in site.requests]
+    assert asked.count(_NAMESPACE) == 1
