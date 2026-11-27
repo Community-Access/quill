@@ -64,7 +64,7 @@ _NOT_A_DISTRIBUTION = {
 }
 _INTERPRETER = re.compile(
     r"^(_[a-z0-9]+|pyexpat|select|unicodedata|winsound|python3|python314|sqlite3|"
-    r"libcrypto-3|libssl-3|libffi-8|vcruntime140|vcruntime140_1|msvcp140|libtommath)"
+    r"libcrypto-3|libssl-3|libffi-8|vcruntime140|vcruntime140_1|msvcp140|mfc140u|libtommath)"
     r"(\.pyd|\.dll)?$"
 )
 #: Bundled native libraries that arrive inside a wheel's own folder or beside it,
