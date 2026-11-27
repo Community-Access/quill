@@ -1976,13 +1976,17 @@ Control coverage: 44 audited sites (44 helped).
 
 ## Quill Weather
 
-Control coverage: 40 audited sites (40 helped).
+Control coverage: 66 audited sites (66 helped).
 
 ### Every window, and what it is for
 
 **AI Usage.** How much each AI you have set up has been used, one sentence each, and whose count it is. Manage Usage opens the selected one's own page.
 
 **Add Weather Location.** Save a new place to watch. Type a ZIP code, city, county, or address and press Search; the matching places come back as a list so same-named towns are told apart, and Add Selected saves the one you choose. A bare latitude,longitude pair resolves to that exact point with no search.
+
+**Alert Choices.** Choose which saved places Weather Guardian watches, which alerts it tells you about, how it tells you, and when it stays quiet. Which alerts picks a ready-made set (Everything, Essentials, Safety) or your own; Places switches places on or off, snoozes them, watches one for a while, or sets a schedule; How you are told chooses speech and a sound for each severity; Quiet hours holds back everything below Extreme. Alerts these choices hide are never lost: they stay in the alert list and in Alert Feed Status. Preview says what would happen to a sample alert.
+
+**Alert Feed Status.** Whether Quill Weather can reach the National Weather Service, and the last alerts it was given. For each place you watch it says the state, the last successful check, the last attempt and, when a check failed, what went wrong in plain words. A check that failed is never the same as no alerts: alerts shown from before are marked last known. Copy puts the report on the clipboard.
 
 **Ask.** A conversation about the weather, on whichever AI is in use: your primary place's name, never its coordinates, the current conditions, the next hours, the forecast and any active alerts by their official names go with every message. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. Quick questions holds Do I need a coat at 5? and a few more.
 
@@ -2016,6 +2020,43 @@ Control coverage: 40 audited sites (40 helped).
 - `self._name`: What Quill Weather should call this place -- Home, Work, Mom's -- in lists, reports, and spoken alerts. Optional: left empty, the place's own name from the search result is used.
 - `self._add_btn`: Save the highlighted place to your locations and close this window. Enabled once the results list has something chosen; the first location you save becomes the primary one.
 - `cancel_btn`: Close without saving anything. Escape does the same.
+#### AlertChoicesDialog (`quill/ui/weather/alert_choices_dialog.py`)
+
+- `ok`: Save these choices and close. A sentence then says what you chose.
+- `cancel`: Close without changing anything. Escape does the same.
+#### AlertChoicesPages (`quill/ui/weather/alert_choices_pages.py`)
+
+- `self._preset`: Everything tells you about every alert. Essentials is tornado, severe thunderstorm and flash flood warnings, and anything Extreme. Safety is all warnings and the Extreme or Severe watches. Custom lets you choose below.
+- `self._extreme`: On by default. An Extreme alert is told to you whatever else you choose here. Turning it off lets your other choices hide Extreme alerts too.
+- `self._cat_list`: The categories you will be told about. Use the chooser below to add one and Remove to take the selected one out. Empty means every type.
+- `self._cat_add`: Pick a category, then press Add category.
+- `self._evt_cat`: Choose a category to list its alert types.
+- `self._evt`: Pick one alert type, then choose whether to always include or skip it.
+- `self._inc_list`: Alert types you asked to always hear about.
+- `self._skip_list`: Alert types you asked never to hear about.
+- `self._shortcut`: A shortcut that selects this severity and every more serious one.
+- `self._delivery`: As before interrupts for urgent alerts and speaks the rest. Alerts you did not choose are never lost: they stay in the alert list and in Alert Feed Status.
+- `self._quiet_on`: During quiet hours Weather Guardian does not speak or sound alerts below Extreme. They stay in the alert list.
+- `self._quiet_start`: When quiet hours begin, as hours and minutes.
+- `self._quiet_end`: When quiet hours end, as hours and minutes.
+- `self._quiet_extreme`: On by default. Turned off, nothing at all is spoken during quiet hours, Extreme tornado warnings included.
+- `self._sample`: A sample alert. Preview says what your choices would do with it.
+- `self._preview_text`: The result of Preview, in one sentence.
+- `field`: The sound file for this severity. The standard alert sound when empty.
+#### AlertChoicesPlaces (`quill/ui/weather/alert_choices_places.py`)
+
+- `self._place_list`: Your saved places. Each row says whether the place is watched, snoozed, outside its schedule or switched off. Space switches the selected place on or off.
+- `self._snooze`: A snoozed place is still checked, but stays quiet until the snooze ends. An Extreme alert still breaks through unless you turned that off in Quiet hours.
+- `self._until`: Watch a switched-off place for a while, such as a trip. It stops by itself at that time and tells you once.
+- `self._schedule`: Outside its schedule a place is quiet, like a snooze. Days like Mon-Fri or Sat,Sun, then hours like 08:00-18:00.
+- `self._groups`: Names that let you watch or stop watching several places together.
+- `self._group_pick`: Pick a group, then use the buttons below.
+- `self._place_choice`: Same as everywhere uses the choices on the first page. The others give this place its own ready-made choices.
+#### FeedStatusDialog (`quill/ui/weather/feed_status_dialog.py`)
+
+- `self._box`: A read-only report. For each watched place it gives the state of the alert feed, the last successful check, the last attempt, what went wrong in plain words, and the last alerts the service provided, marked last known when they are old. Use the arrow keys to read it.
+- `copy_btn`: Copy the whole report to the clipboard.
+- `close_btn`: Close this window. Escape does the same.
 #### WeatherSettingsDialog (`quill/ui/weather/settings_dialog.py`)
 
 - `self._temp`: The scale every temperature is shown and spoken in: Fahrenheit (the default) or Celsius. It applies everywhere -- current conditions, forecasts, and the Quick Weather line.

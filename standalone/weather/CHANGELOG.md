@@ -7,6 +7,46 @@ and EPUB twins) and ships with the app.
 Quill Weather shares weather code with Quill Radio, but the two release and
 update independently. This version history begins with 2.2.0.
 
+## Unreleased
+
+- **Choose which places and which alerts** (2026-11-27). The new **Weather menu >
+  Alert Choices** (Ctrl+Alt+Shift+C) lets you switch saved places on or off
+  without deleting them, and choose which alerts you hear about: Everything,
+  Essentials (tornado, severe thunderstorm and flash flood warnings, and anything
+  Extreme), Safety (all warnings and Extreme or Severe watches), or your own by
+  category, kind and severity. Each choice can speak and interrupt, speak quietly,
+  play a sound only, or show in the list only, with its own sound for each
+  severity, and quiet hours let only Extreme alerts break through. If you never
+  open it, nothing changes. Extreme alerts are always told unless you turn that
+  off after a plain warning, and an alert your choices keep quiet is never lost: it
+  stays in the alert list and in Alert Feed Status, which counts how many were
+  hidden. Every save says one sentence about what you chose.
+- **Snooze, schedule and group your places** (2026-11-27). A place can be snoozed
+  for 1, 4 or 12 hours or until tomorrow morning, watched until a date and time
+  (a trip), given a schedule such as weekdays 8 to 6, and put in groups such as
+  Family or Travel to watch or stop watching together. A snoozed place is still
+  checked, and Extreme alerts still break through. **Weather > Watch This Place**
+  (Ctrl+Alt+Shift+U) and a **Watched Places** submenu in the tray switch places
+  quickly. The start-watching summary and Alert Feed Status say which places are
+  not watched and why.
+
+- **You can tell "no alerts" from "could not reach the service"** (2026-11-27).
+  Before, a failed check was silent, which sounded exactly like a quiet sky. Now
+  a failed check is never treated as no alerts: it does not clear the alerts you
+  already had and it never says all clear. If checks keep failing for about ten
+  minutes (sooner while an alert is active), Quill Weather says once, "Quill
+  Weather cannot reach the National Weather Service. Alerts may be missing. The
+  last successful check was at 3:12 PM, and it found no alerts." It repeats only
+  after about half an hour of still failing, and says once when it recovers. The
+  background check shows the same as a notification, and the tray tooltip shows
+  the state. When monitoring starts, a place that could not be checked is named
+  as unchecked rather than counted as clear.
+- **Weather menu > Alert Feed Status** (Ctrl+Alt+Shift+H) is a new report, with
+  Copy, of how the alert feed is doing for each place you watch: the state, the
+  last successful check, the last attempt, what went wrong in plain words, and
+  the last alerts the service provided, marked last known when they are old. In
+  Safe Mode it says network checks are off, not that the service is unreachable.
+
 ## 2.2.1 - 2026-10-08
 
 ### Fixes from the November review (2026-11-09)
