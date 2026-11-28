@@ -24,6 +24,7 @@ def start_next(
     2026-11-18); each one passed over is named, and stays in the queue.
     """
     from quill.core.podcasts.queue_steps import step_next
+    from quill.ui.podcasts.queue_synced_place import newest_queue_place
     from quill.ui.podcasts.show_actions import start_episode_playback
 
     announce: Callable[[str], None] = getattr(host, "_announce")  # noqa: B009
@@ -32,7 +33,14 @@ def start_next(
     skipped: list[str] = []
     attempts = max(1, len(getattr(library, "queue", ()))) if from_queue else 1
     for _ in range(attempts):
-        if start_episode_playback(controller, library, show, episode) is not False:
+        peer_ms = None
+        if from_queue and getattr(host, "_startup_app_id", None) == "cast":
+            try:
+                peer_ms = newest_queue_place(host, show, episode)
+            except Exception:  # noqa: BLE001 - a peer lookup must not stop the queue
+                pass
+        resume = {"resume_ms": peer_ms, "automatic_resume": True} if peer_ms is not None else {}
+        if start_episode_playback(controller, library, show, episode, **resume) is not False:
             if skipped:
                 up_next = (
                     f"Could not start {', '.join(skipped)}: nothing to play yet. "

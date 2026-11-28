@@ -252,6 +252,7 @@
             "auto_skip_intro_seconds": "int",
             "auto_skip_outro_seconds": "int",
             "finished_within_seconds": "int",
+            "resume_rewind_seconds": "int",
             "auto_download_count": "int",
             "auto_download_queued": "bool",
             "auto_download_inbox": "bool",
@@ -382,8 +383,8 @@
         },
         "function:quill.core.podcasts.subscriptions:save_library": "sha256:4a4485eeda51a642"
       },
-      "classification": "version bumped",
-      "note": "Added optional podcast folder-copy metadata and Lite startup-folder preference; older readers ignore these fields."
+      "classification": "additive, compatible",
+      "note": "Older Cast builds ignore the optional zero-default resume rewind setting."
     },
     "converter.queue": {
       "current": 1,

@@ -81,6 +81,7 @@ def start_episode_playback(
     episode: PodcastEpisode,
     *,
     resume_ms: int | None = None,
+    automatic_resume: bool = False,
     announce: Callable[[str], None] | None = None,
 ) -> bool:
     """Start one episode on the shared player, with the show's effective
@@ -112,10 +113,13 @@ def start_episode_playback(
         start_ms, crossed = cross_app_start(show, episode, start_ms)
         if crossed and announce is not None:
             announce(crossed)
+    saved_start_ms = max(0, int(start_ms))
+    if (resume_ms is None or automatic_resume) and saved_start_ms > 0:
+        start_ms = max(0, saved_start_ms - settings.resume_rewind_seconds * 1000)
     # The intro skip fires on a genuine first play only (R20): not on a resume,
     # and not again on a replay. Going back to hear the beginning and being
     # helpfully skipped past it is the one case a listener notices.
-    intro_ms = intro_skip.skip_ms_for(settings, episode, start_ms)
+    intro_ms = intro_skip.skip_ms_for(settings, episode, saved_start_ms)
     controller.play_episode(
         show_id=show.id,
         episode_guid=episode.guid,

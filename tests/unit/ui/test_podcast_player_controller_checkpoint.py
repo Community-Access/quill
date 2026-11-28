@@ -111,6 +111,18 @@ def test_no_checkpoint_when_nothing_was_ever_playing() -> None:
     assert checkpoints == []
 
 
+def test_natural_finish_reports_one_terminal_event_without_position_echo() -> None:
+    controller, checkpoints, fake = _make_controller()
+    finished: list[tuple[str, str]] = []
+    controller._on_episode_finished = lambda show, guid: finished.append((show, guid))
+    _start_playing(controller, fake)
+    fake._position = 100_000
+    controller._on_finished()
+    controller._on_finished()  # a late duplicate engine callback has no identity
+    assert finished == [("show-1", "ep-1")]
+    assert checkpoints == []
+
+
 def test_shutdown_checkpoints_the_active_episode() -> None:
     controller, checkpoints, fake = _make_controller()
     _start_playing(controller, fake)
