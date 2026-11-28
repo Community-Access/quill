@@ -366,7 +366,12 @@ def _found_chapters(controller: Any) -> tuple[list[Any], str]:
                 str(getattr(station, "homepage", "") or ""),
                 str(getattr(station, "stream_url", "") or ""),
             )
-        return chapters_for_media(local_media_path(controller), show_id=show_id, episode_guid=guid)
+        return chapters_for_media(
+            local_media_path(controller),
+            show_id=show_id,
+            episode_guid=guid,
+            media_url=str(getattr(station, "stream_url", "") or "") if station is not None else "",
+        )
     except Exception:  # noqa: BLE001 - a lookup that fails is simply no chapters
         return [], ""
 

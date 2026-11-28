@@ -33,7 +33,7 @@ Pure and wx-free: every tier here is string or tag parsing, no network, no model
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -123,19 +123,50 @@ def show_identity(show: PodcastShow | None) -> str:
 
 
 def read_file_chapters(path: Path) -> list[PodcastChapter]:
-    """Chapters embedded in a downloaded episode's own tags, or []."""
+    """Chapters embedded in an episode's own file, or [].
+
+    MP3 (ID3 CHAP, titles from TIT2 then TIT3) and MP4/M4A (chapter atoms,
+    through ffprobe). The playback cache names files after the address, so the
+    kind is sniffed from the first bytes rather than trusted to the extension.
+    Untitled marks are kept with an empty title -- they are still places -- and
+    are shown as "Untitled", never as an invented "Chapter 3".
+    """
+    kind = _audio_kind(path)
     try:
-        from quill.core.speech.chapters import read_mp3_chapters
-    except Exception:  # noqa: BLE001 - mutagen missing is not an error here
+        if kind == "mp4":
+            from quill.core.speech.audiobook import read_m4b_chapters
+
+            # That reader names an untitled atom "Chapter N" for the book
+            # editor; here it is "Untitled" instead.
+            found = [
+                replace(c, title="") if c.title == f"Chapter {c.index + 1}" else c
+                for c in read_m4b_chapters(path)
+            ]
+        else:
+            from quill.core.speech.id3_chapter_titles import read_podcast_chapters
+
+            return [
+                PodcastChapter(start_ms=start, title=title, end_ms=end or None)
+                for start, end, title in read_podcast_chapters(path)
+            ]
+    except Exception:  # noqa: BLE001 - mutagen/ffprobe missing or an unreadable tag
         return []
+    return [
+        PodcastChapter(start_ms=c.start_ms, title=c.title.strip(), end_ms=c.end_ms or None)
+        for c in found
+    ]
+
+
+def _audio_kind(path: Path) -> str:
+    """ "mp4" for an MP4/M4A container, "mp3" otherwise."""
+    if path.suffix.lower() in {".m4a", ".m4b", ".mp4", ".m4v", ".aac", ".mov"}:
+        return "mp4"
     try:
-        return [
-            PodcastChapter(start_ms=c.start_ms, title=c.title)
-            for c in read_mp3_chapters(path)
-            if c.title
-        ]
-    except Exception:  # noqa: BLE001 - an unreadable tag is simply "no chapters"
-        return []
+        with path.open("rb") as handle:
+            head = handle.read(12)
+    except OSError:
+        return "mp3"
+    return "mp4" if head[4:8] == b"ftyp" else "mp3"
 
 
 def soundbite_chapters(episode: PodcastEpisode | None) -> list[PodcastChapter]:
@@ -162,6 +193,21 @@ def soundbite_chapters(episode: PodcastEpisode | None) -> list[PodcastChapter]:
             )
         )
     return chapters
+
+
+def psc_chapters(episode: PodcastEpisode | None) -> list[PodcastChapter]:
+    """The item's Podlove Simple Chapters (``psc:chapter``), earliest first."""
+    tags = getattr(episode, "tags", None)
+    marks = list(getattr(tags, "psc_chapters", []) or [])
+    return [
+        PodcastChapter(
+            start_ms=mark.start_ms,
+            title=mark.title,
+            link_url=mark.link_url,
+            image_url=mark.image_url,
+        )
+        for mark in marks
+    ]
 
 
 def chapter_cascade(
@@ -193,14 +239,19 @@ def chapter_cascade(
         if len(chapters) >= 2:
             return ChapterSet(_clamp(chapters, total_ms), "published")
 
+    untitled: list[PodcastChapter] = []
     if audio_path is not None and audio_path.exists():
         chapters = read_file_chapters(audio_path)
-        if len(chapters) >= 2:
+        if len(chapters) >= 2 and any(c.title for c in chapters):
             return ChapterSet(_clamp(chapters, total_ms), "file")
+        if len(chapters) >= 2:
+            untitled = chapters  # places with no names: show notes may name them
 
     chapters = parse_show_notes_chapters(show_notes, total_ms=total_ms)
     if chapters:
         return ChapterSet(_clamp(chapters, total_ms), "show_notes")
+    if untitled:
+        return ChapterSet(_clamp(untitled, total_ms), "file")
 
     # One marked moment is still a place worth jumping to, so unlike the tiers
     # above this one has no floor of two: the honest label carries the meaning.
@@ -221,6 +272,7 @@ def episode_has_possible_chapters(episode: PodcastEpisode) -> bool:
         or str(getattr(episode, "description", ""))
         or str(getattr(episode, "downloaded_path", ""))
         or getattr(getattr(episode, "tags", None), "soundbites", None)
+        or getattr(getattr(episode, "tags", None), "psc_chapters", None)
     )
 
 
@@ -239,8 +291,19 @@ def build_episode_chapters(
     chapters_url = str(getattr(episode, "chapters_url", ""))
 
     def _published() -> list[PodcastChapter]:
+        # Podlove Simple Chapters are written in the feed item itself, so they
+        # cost no fetch and are read even in Safe Mode; a chapters document, when
+        # there is one, is the publisher's fuller answer and is preferred.
+        inline = psc_chapters(episode)
         if not chapters_url or safe_mode:
-            return []
+            return inline
+        try:
+            fetched = _fetch_published()
+        except Exception:  # noqa: BLE001 - the inline marks are still the publisher's
+            return inline
+        return fetched if len([c for c in fetched if c.title]) >= 2 else inline or fetched
+
+    def _fetch_published() -> list[PodcastChapter]:
         auth_header = ""
         if show is not None:
             try:
@@ -259,7 +322,7 @@ def build_episode_chapters(
     duration_seconds = int(getattr(episode, "duration_seconds", 0) or 0)
     found = chapter_cascade(
         published=_published,
-        audio_path=audio_path,
+        audio_path=audio_path or _streaming_head(show, episode),
         show_notes=str(getattr(episode, "description", "")),
         soundbites=soundbite_chapters(episode),
         total_ms=duration_seconds * 1000,
@@ -282,6 +345,35 @@ def build_episode_chapters(
     if len(cached) >= 2 and source in SOURCE_LABELS:
         return ChapterSet(_clamp(cached, duration_seconds * 1000), source)
     return found
+
+
+def _streaming_head(show: PodcastShow | None, episode: PodcastEpisode) -> Path | None:
+    """The part-cached file of an episode still streaming, when it is an MP3.
+
+    The whole file is not there yet, but an MP3's ID3 tag -- and every CHAP
+    frame in it -- is at its very start, so its chapters can be read from the
+    first bytes. An MP4 keeps its chapter atoms wherever its writer put them,
+    often at the end, so a partial MP4 is left alone.
+    """
+    from quill.core.podcasts.playback_cache import partial_path
+
+    try:
+        path = partial_path(
+            str(getattr(show, "id", "") or ""),
+            str(getattr(episode, "guid", "") or ""),
+            str(getattr(episode, "audio_url", "") or ""),
+        )
+        with path.open("rb") as handle:
+            head = handle.read(10)
+    except OSError:
+        return None
+    if not head.startswith(b"ID3"):
+        return None
+    size = int.from_bytes(bytes(b & 0x7F for b in head[6:10]), "big")  # synchsafe
+    try:
+        return path if path.stat().st_size >= size + 10 else None
+    except OSError:
+        return None
 
 
 def _clamp(chapters: list[PodcastChapter], total_ms: int) -> list[PodcastChapter]:

@@ -14,6 +14,11 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
   is playing, the chapter you are in, the position with how far through you
   are ("18:30 of 58:00, 39:30 left, 31 percent"), and speed and volume.
 
+### Chapters for streamed podcast episodes (2026-11-27)
+
+- **A podcast episode you stream** gets its file's chapters when QUILL Cast
+  has it in its playback cache, with the real names, M4A as well as MP3.
+
 ### Chapters read title first (2026-11-27)
 
 - **Each row in Chapters reads title first**, then its time, its length and
