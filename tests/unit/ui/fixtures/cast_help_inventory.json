@@ -213,6 +213,7 @@
   "quill/ui/podcasts/now_playing_layout.py::build_controls::wx.Slider": "helped",
   "quill/ui/podcasts/now_playing_layout.py::build_controls::wx.Slider#2": "helped",
   "quill/ui/podcasts/now_playing_layout.py::build_controls::wx.TextCtrl": "helped",
+  "quill/ui/podcasts/now_playing_layout.py::build_controls::wx.TextCtrl#2": "helped",
   "quill/ui/podcasts/opml_import_dialog.py::OpmlImportDialog.__init__::wx.Button": "helped",
   "quill/ui/podcasts/opml_import_dialog.py::OpmlImportDialog.__init__::wx.Button#2": "helped",
   "quill/ui/podcasts/opml_import_dialog.py::OpmlImportDialog.__init__::wx.Button#3": "helped",

@@ -32,6 +32,7 @@ from typing import Any
 import wx
 
 from quill.ui.podcasts.jump_back_wiring import note_jump
+from quill.ui.podcasts.now_playing_info import refresh_info_field
 from quill.ui.podcasts.now_playing_layout import SPEEDS, TITLE, build_controls
 from quill.ui.podcasts.now_playing_peer import _install_peer
 from quill.ui.podcasts.now_playing_time import (
@@ -166,6 +167,7 @@ class NowPlayingWindow:
         self._refresh_position(controller)
         self._refresh_chapter_status(controller)
         self._refresh_sleep()
+        refresh_info_field(self)
 
     def _load_episode(self, show: Any, episode: Any, state: Any) -> None:
         if episode is None:

@@ -942,6 +942,7 @@
   "quill/ui/podcasts/now_playing_layout.py::build_controls::wx.Slider": "modal-hook",
   "quill/ui/podcasts/now_playing_layout.py::build_controls::wx.Slider#2": "modal-hook",
   "quill/ui/podcasts/now_playing_layout.py::build_controls::wx.TextCtrl": "modal-hook",
+  "quill/ui/podcasts/now_playing_layout.py::build_controls::wx.TextCtrl#2": "modal-hook",
   "quill/ui/podcasts/opml_import_dialog.py::OpmlImportDialog.__init__::wx.Gauge": "named",
   "quill/ui/podcasts/opml_import_report_dialog.py::OpmlImportReportDialog.__init__::wx.ListBox": "named",
   "quill/ui/podcasts/places_chooser.py::PlacesChooser.__init__::wx.ListBox": "named",

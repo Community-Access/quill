@@ -575,7 +575,7 @@ Control coverage: 346 audited sites (234 helped, 112 named-help).
 
 ## QUILL Cast
 
-Control coverage: 343 audited sites (247 helped, 96 named-help).
+Control coverage: 344 audited sites (248 helped, 96 named-help).
 
 ### Every window, and what it is for
 
@@ -928,6 +928,7 @@ Control coverage: 343 audited sites (247 helped, 96 named-help).
 - `close`: Closes this window and returns to where you were.
 #### (module level) (`quill/ui/podcasts/now_playing_layout.py`)
 
+- `self._info`: Everything about what is playing, one fact a line: the episode, the chapter, the position and how far through, speed and volume, and where the chapters came from. Read it with the arrow keys; it does not change while you are in it.
 - `self._slider`: Where you are in the episode. Left and Right move five seconds, Page Up and Page Down thirty, Home and End to the ends. The time beside it says minutes and seconds of the whole.
 - `self._speed`: Playback speed, for this show or for every podcast, as the Speed keys choose it. The status bar and the keys change the same setting.
 - `self._volume`: Playback volume, from silent to full. Arrow keys change it.
