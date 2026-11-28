@@ -56,7 +56,7 @@ def say_where_am_i(host: Any) -> None:
     last = getattr(host, "_cast_where_pressed_at", None)
     host._cast_where_pressed_at = now
     sentence = where_am_i_sentence(host)
-    if last is not None and now - last <= DOUBLE_PRESS_WINDOW:
+    if last is not None and now - last <= DOUBLE_PRESS_WINDOW and _playing(host) is not None:
         host._cast_where_pressed_at = None  # a third press speaks again
         from quill.ui.say_commands import set_clipboard_text
 

@@ -1625,7 +1625,8 @@ episode, a recording or a downloaded file.
   5 seconds a repeat while you hold the key. They say where you landed, such
   as "3 minutes 10 seconds of 18 minutes 40 seconds".
 - **Where Am I?** (Ctrl+Shift+W) tells you your position, the length and the
-  chapter you are in.
+  chapter you are in. Press it twice quickly to copy that instead, as in QUILL
+  Cast, which uses the same key.
 - **Next Chapter** (Ctrl+Shift+.) and **Previous Chapter** (Ctrl+Shift+,) move
   by chapter. Like a CD player, Previous Chapter first goes back to the start
   of the chapter you are in. Each move says the chapter's name and its place,

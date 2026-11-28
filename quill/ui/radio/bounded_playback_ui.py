@@ -187,7 +187,26 @@ def announce_position(host: Any) -> None:
         where = local_media_playback.where_suffix(host)
     except Exception:  # noqa: BLE001 - the position alone is still the answer
         where = ""
-    host._announce(f"{spoken.rstrip('.')}, {where}." if where else spoken)
+    sentence = f"{spoken.rstrip('.')}, {where}." if where else spoken
+    # Pressed twice quickly, copy it -- the same as QUILL Cast's Where Am I? on
+    # the same chord (family rule 2).
+    import time
+
+    from quill.ui.hosted_ai_choose_commands import DOUBLE_PRESS_WINDOW
+
+    now = time.monotonic()
+    last = getattr(host, "_radio_where_pressed_at", None)
+    host._radio_where_pressed_at = now
+    if last is not None and now - last <= DOUBLE_PRESS_WINDOW:
+        host._radio_where_pressed_at = None
+        from quill.ui.say_commands import set_clipboard_text
+
+        copied = set_clipboard_text(sentence)
+        host._announce(
+            "Copied where you are." if copied else "Could not copy; the clipboard is in use."
+        )
+        return
+    host._announce(sentence)
 
 
 def go_to_position(host: Any) -> None:

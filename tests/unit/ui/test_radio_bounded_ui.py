@@ -172,6 +172,18 @@ def test_the_position_names_the_chapter_you_are_in() -> None:
     assert host.said[0].endswith("in The problem")
 
 
+def test_where_am_i_pressed_twice_copies_like_cast(monkeypatch) -> None:
+    copied: list[str] = []
+    monkeypatch.setattr(
+        "quill.ui.say_commands.set_clipboard_text", lambda text: copied.append(text) or True
+    )
+    host, _ = _host(position=70_000)
+    ui.announce_position(host)
+    ui.announce_position(host)
+    assert copied == [host.said[0]]
+    assert host.said[-1] == "Copied where you are."
+
+
 # -- speed -------------------------------------------------------------------
 
 

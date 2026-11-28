@@ -15,6 +15,8 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
   no title reads "Untitled", and the one playing ends with "playing".
 - **A podcast episode's chapters no longer say "video" or "uploader".** The
   list is "Chapters in this episode", published by the podcast.
+- **Where Am I?** (Ctrl+Shift+W), pressed twice quickly, copies what it said,
+  as it does in QUILL Cast.
 
 ### Open in QUILL works in the transcript window (2026-11-24)
 
