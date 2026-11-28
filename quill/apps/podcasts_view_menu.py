@@ -133,7 +133,7 @@ class CastViewMenuMixin:
     #: places model so a place whose feature is off is absent here too.
     _PLACE_ROWS: tuple[tuple[str, str, str, str], ...] = (
         ("inbox", "&Inbox", "Ctrl+Shift+I", "open_cast_inbox"),
-        ("new_episodes", "Ne&w Episodes", "Ctrl+Shift+W", "open_cast_new_episodes"),
+        ("new_episodes", "Ne&w Episodes", "Ctrl+Shift+F", "open_cast_new_episodes"),
         ("continue_listening", "Con&tinue Listening", "Ctrl+Shift+L", "open_continue_listening"),
         ("favorites", "Fa&vorites", "Alt+Shift+V", "open_cast_favorites"),
         ("playlists", "Pla&ylists", "Alt+Shift+Y", "open_cast_playlists"),

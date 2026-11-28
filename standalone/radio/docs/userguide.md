@@ -1663,8 +1663,10 @@ already worked through.
 2. Its first line tells you how many chapters there are and where they came
    from. Your cursor is in the **Chapters** list (Alt+C), and the chapter
    playing now is marked.
-3. Arrow to a chapter. Each one reads as a sentence, such as "3. Introducing
-   layers, starts at 5 minutes 31 seconds".
+3. Arrow to a chapter. Each one reads title first, then its time, its length
+   and its place, such as "Introducing layers, 5:31, 4 minutes 10, 3 of 9". A
+   chapter with no title reads "Untitled". The one playing ends with
+   "playing".
 4. To jump there, Tab to **Go To** and press **Space**. The list stays open,
    so you can keep exploring.
 5. When what is playing is a file on your computer, **Preview This Mark** plays

@@ -1,15 +1,15 @@
 """Jump between a video's published chapters.
 
 The same accessibility shape as the playlist picker: a plain ``wx.ListBox``
-whose every row already says everything about that chapter ("2. The problem,
-starts at 1 minute"), so a screen reader reads one line instead of the user
-arrowing across columns. Times are spelled in words, because a bare
-colon-separated number read aloud is ambiguous.
+whose every row already says everything about that chapter ("The problem, 1:00,
+4 minutes 30, 2 of 6"), so a screen reader reads one line instead of the user
+arrowing across columns. The title always comes first and the time follows it
+(:mod:`quill.core.podcasts.chapter_words`, the family's one wording).
 
 Two details that matter more than they look:
 
 * The chapter currently playing is **selected when the dialog opens** and says
-  "playing now" in its own label. Opening a chapter list and landing on row one
+  "playing" in its own label. Opening a chapter list and landing on row one
   when you are twelve minutes in tells you nothing about where you are.
 * The dialog does not close when you jump. Chapter lists are used to *explore*
   -- hearing the start of one section and moving on -- and closing after every
@@ -60,12 +60,16 @@ class ChapterListDialog:
         transport_host: object | None = None,
         audio_path: Path | None = None,
         source_label: str = "published by the uploader",
+        item_kind: str = "video",
+        length_ms: int = 0,
     ) -> None:
         import wx
 
         self._wx = wx
         self._transport_host = transport_host
         self._source_label = source_label
+        self._item_kind = item_kind
+        self._length_ms = max(0, int(length_ms or 0))
         self._preview: Any = None
         if audio_path is not None and audio_path.is_file():
             from quill.ui.media.chapter_preview import ChapterPreviewPlayer
@@ -102,7 +106,7 @@ class ChapterListDialog:
         label = wx.StaticText(panel, label="&Chapters:")
         root.Add(label, 0, wx.LEFT, 8)
         self._list = wx.ListBox(panel, choices=self._labels(), style=wx.LB_SINGLE)
-        self._list.SetName("Chapters in this video")
+        self._list.SetName(f"Chapters in this {self._item_kind}")
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         hint_text = "Press Enter or Go To to jump. The list stays open so you can keep exploring."
@@ -167,7 +171,13 @@ class ChapterListDialog:
 
     def _labels(self) -> list[str]:
         return [
-            describe_chapter(index, chapter, current=index == self._current)
+            describe_chapter(
+                index,
+                chapter,
+                current=index == self._current,
+                chapters=self._chapters,
+                length_ms=self._length_ms,
+            )
             for index, chapter in enumerate(self._chapters)
         ]
 
@@ -201,8 +211,11 @@ class ChapterListDialog:
         selection = self._list.GetSelection()
         self._list.Set(self._labels())
         self._list.SetSelection(selection)
-        title = str(getattr(self._chapters[index], "title", "") or "").strip()
-        self._announce(f"{title or 'Chapter'}, chapter {index + 1} of {len(self._chapters)}.")
+        from quill.core.podcasts.chapter_words import chapter_heading
+
+        # Title, then time, then where it sits; never "Chapter, chapter 3".
+        heading = chapter_heading(self._chapters[index])
+        self._announce(f"{heading}, {index + 1} of {len(self._chapters)}.")
 
     def show(self) -> None:
         try:

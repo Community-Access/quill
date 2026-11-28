@@ -105,19 +105,29 @@ def test_durations_are_spoken_as_words_not_punctuation() -> None:
     assert ui.spoken_duration(-5) == "0 seconds"
 
 
-def test_a_chapter_row_reads_as_a_whole_sentence() -> None:
+def test_a_chapter_row_reads_title_first_then_time() -> None:
+    """Jeff, 2026-11-27: the title comes first and the time follows."""
     row = ui.describe_chapter(1, _Chapter("The problem", 60_000))
-    assert row == "2. The problem, starts at 1 minute"
+    assert row == "The problem, 1:00"
+
+
+def test_a_chapter_row_with_its_list_says_length_and_place() -> None:
+    chapters = [_Chapter("Intro", 0), _Chapter("The problem", 60_000)]
+    row = ui.describe_chapter(0, chapters[0], chapters=chapters, length_ms=300_000)
+    assert row == "Intro, 0:00, 1 minute, 1 of 2"
+    last = ui.describe_chapter(1, chapters[1], chapters=chapters, length_ms=330_000)
+    assert last == "The problem, 1:00, 4 minutes 30, 2 of 2"
 
 
 def test_the_playing_chapter_says_so_in_its_own_label() -> None:
     """Otherwise the list gives no clue where playback actually is."""
     row = ui.describe_chapter(0, _Chapter("Intro", 0), current=True)
-    assert row.endswith("playing now")
+    assert row.endswith("playing")
 
 
-def test_a_chapter_with_no_title_still_reads() -> None:
-    assert "Untitled chapter" in ui.describe_chapter(0, _Chapter("  ", 0))
+def test_a_chapter_with_no_title_reads_untitled_not_a_number() -> None:
+    row = ui.describe_chapter(0, _Chapter("  ", 0))
+    assert row == "Untitled, 0:00"
 
 
 # -- refusing, out loud ------------------------------------------------------

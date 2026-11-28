@@ -186,6 +186,35 @@ def test_the_slider_keys_seek_and_say_the_time(host) -> None:
     assert host._podcast_controller.seeks[-1] == 1_799_000
 
 
+def test_the_slider_reads_as_a_time_not_a_percentage(host) -> None:
+    """Jeff, 2026-11-27: "Position reads as a percentage"."""
+    window = _open(host)
+    window._slider.SetValue(754)
+
+    accessible = getattr(window._slider, "_quill_time_accessible", None)
+    if accessible is None:
+        pytest.skip("this wx build has no accessibility support")
+    assert accessible.GetName(0) == (wx.ACC_OK, "Position")
+    assert accessible.GetValue(0) == (wx.ACC_OK, "12 minutes 34 of 30 minutes")
+
+
+def test_the_now_playing_menu_has_where_am_i_and_time_remaining(host) -> None:
+    host._menu_label = lambda title, command: (
+        f"{title}	"
+        + {
+            "podcasts.where_am_i": "Ctrl+Shift+W",
+            "podcasts.time_remaining": "Ctrl+Shift+T",
+        }[command]
+    )
+    host.say_where_am_i = lambda: host.calls.append("where")
+    host.say_time_remaining = lambda: host.calls.append("left")
+    window = _open(host)
+    menu = window.frame.GetMenuBar().GetMenu(0)
+    labels = [item.GetItemLabel() for item in menu.GetMenuItems()]
+    assert "&Where Am I?	Ctrl+Shift+W" in labels
+    assert "Time &Remaining	Ctrl+Shift+T" in labels
+
+
 def test_the_transport_buttons_call_the_hosts_verbs(host) -> None:
     window = _open(host)
     for button, verb in (

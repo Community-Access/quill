@@ -8,6 +8,14 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased] - 2026-11-07
 
+### Chapters read title first (2026-11-27)
+
+- **Each row in Chapters reads title first**, then its time, its length and
+  its place: "Introducing layers, 5:31, 4 minutes 10, 3 of 9". A chapter with
+  no title reads "Untitled", and the one playing ends with "playing".
+- **A podcast episode's chapters no longer say "video" or "uploader".** The
+  list is "Chapters in this episode", published by the podcast.
+
 ### Open in QUILL works in the transcript window (2026-11-24)
 
 The transcript window's Open in QUILL button was always dimmed, because

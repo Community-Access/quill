@@ -16,7 +16,9 @@ import wx
 
 from quill.ui.dpi import dip_size
 from quill.ui.notes_reader import NotesReader
+from quill.ui.podcasts.now_playing_time import slider_value_words
 from quill.ui.slider_keys import bind_up_means_more
+from quill.ui.time_slider_accessible import speak_time_value
 
 __all__ = ["SPEEDS", "TITLE", "build_controls"]
 
@@ -54,6 +56,8 @@ def build_controls(self: Any, host: Any) -> None:
         "and Page Down thirty, Home and End to the ends. The time beside it says "
         "minutes and seconds of the whole."
     )
+    # Read as a time, not the trackbar's percentage (Jeff, 2026-11-27).
+    speak_time_value(self._slider, "Position", lambda: slider_value_words(self))
     self._time = wx.StaticText(panel, label="0:00 of 0:00")
     row.Add(caption, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
     row.Add(self._slider, 1, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)

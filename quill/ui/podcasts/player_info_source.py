@@ -38,11 +38,13 @@ def gather(host: Any) -> Any:
     extras: list[str] = []
     chapters = list(getattr(host, "_podcast_current_chapters", []) or [])
     if chapters:
+        from quill.core.podcasts.chapter_words import chapter_index_at, chapter_report_line
+
+        # Title first, then where it sits: "Listener mail, 3 of 12, from the
+        # publisher" (Jeff, 2026-11-27). It said "3 of 12" and never the name.
         source = str(getattr(host, "_podcast_chapters_source", ""))
-        current = sum(1 for chapter in chapters if chapter.start_ms <= position_ms)
-        extras.append(
-            f"Chapter: {max(1, current)} of {len(chapters)}" + (f" ({source})" if source else "")
-        )
+        current = max(0, chapter_index_at(chapters, position_ms))
+        extras.append("Chapter: " + chapter_report_line(chapters, current, source=source))
     # Where "next" is coming from (R6). A line in the report and never an
     # announcement: the source does not change between episode four and episode
     # five of the same run, so speaking it again would cost a sentence and say
