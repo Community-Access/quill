@@ -1,5 +1,5 @@
-"""The next few hours: the four-hour glance ahead, the daylight change, the one
-request, and a failure said as a failure."""
+"""The next few hours: rain starting soon, the four-hour glance ahead, the
+daylight change, the one request, and a failure said as a failure."""
 
 from __future__ import annotations
 
@@ -65,6 +65,7 @@ def test_extras_respect_settings_and_say_failures() -> None:
         return _reply()
 
     settings = WeatherSettings()
+    settings.show_rain_soon = False
     settings.show_glance_ahead = False
     lines = report_extras.gather(location, settings, get=ok).lines()
     assert lines == ["8 hours 51 minutes of daylight today, 2 minutes less than yesterday."]
@@ -77,3 +78,51 @@ def test_extras_respect_settings_and_say_failures() -> None:
 
     failed = report_extras.gather(location, WeatherSettings(), get=down).lines()
     assert failed and "not the same as no data" in failed[0]
+
+
+def _steps(precip: list[float], *, snow: list[float] | None = None, code: int = 61) -> Any:
+    times = [f"2026-11-27T15:{m:02d}" for m in (0, 15, 30, 45)] + [
+        f"2026-11-27T16:{m:02d}" for m in (0, 15, 30, 45)
+    ]
+    return {
+        "minutely_15": {
+            "time": times[: len(precip)],
+            "precipitation": precip,
+            "snowfall": snow or [0.0] * len(precip),
+            "weather_code": [code if p else 3 for p in precip],
+        }
+    }
+
+
+def _rain(data: Any, lat: float = 47.6, lon: float = -122.3, unit: str = "F") -> str:
+    return nowcast.rain_soon_text(nowcast.parse(data, unit=unit, latitude=lat, longitude=lon))
+
+
+def test_rain_starting_soon() -> None:
+    assert _rain(_steps([0, 0, 0.01, 0.02, 0.02, 0, 0, 0])) == (
+        "Light rain starting in about 30 minutes."
+    )
+
+
+def test_rain_now_and_stopping() -> None:
+    assert _rain(_steps([0.05, 0.05, 0.05, 0, 0, 0, 0, 0])) == (
+        "Moderate rain now, stopping in about 45 minutes."
+    )
+
+
+def test_dry_and_estimated_outside_native_coverage() -> None:
+    text = _rain(_steps([0] * 8), lat=-33.9, lon=151.2, unit="C")
+    assert text == (
+        "No rain or snow expected in the next 2 hours. This is estimated from hourly data here."
+    )
+
+
+def test_snow_is_named_snow() -> None:
+    data = _steps([0, 0, 0, 0, 0.01, 0.01, 0, 0], snow=[0, 0, 0, 0, 0.2, 0.2, 0, 0], code=73)
+    assert _rain(data) == "Light snow starting in about an hour."
+
+
+def test_the_request_asks_for_two_hours_of_15_minute_steps() -> None:
+    url = nowcast.request_url(1, 2, unit="F")
+    assert "minutely_15=precipitation%2Csnowfall%2Cweather_code" in url
+    assert "forecast_minutely_15=8" in url and "precipitation_unit=inch" in url
