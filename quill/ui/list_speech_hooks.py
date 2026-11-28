@@ -84,6 +84,8 @@ def row_label(row: Any, default: str) -> str:
 _WORDPRESS_LISTS: dict[str, tuple[str, ...]] = {
     "item": ("wordpress_posts",),
     "comment": ("wordpress_comments",),
+    "media": ("wordpress_media",),
+    "user": ("wordpress_users",),
 }
 
 

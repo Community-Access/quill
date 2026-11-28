@@ -116,6 +116,14 @@ def wordpress_row_fields(row: Any) -> tuple[str, dict[str, str]] | None:
         text = " ".join(_strip_tags(text).split())
         values["excerpt"] = _first_words(text)
         return "wordpress_comments", values
+    if kind == "media":
+        return "wordpress_media", {
+            k: str(cells.get(k, "")) for k in ("title", "type", "alt_text", "uploaded")
+        }
+    if kind == "user":
+        return "wordpress_users", {
+            k: str(cells.get(k, "")) for k in ("name", "username", "role", "email")
+        }
     return None
 
 

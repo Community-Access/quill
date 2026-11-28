@@ -639,9 +639,9 @@ so leave your passwords out of what you write too.</li>
 <p>Each row in a list is read as its cells, one after another.
 <strong>List Speech Templates</strong> (Tools menu,
 <code>Ctrl+Alt+Shift+V</code>) lets you decide what a row says, and in
-what order, for each kind of list: WordPress posts and pages and
-comments. Nothing changes until you choose a template; until then every
-list is read the way it always was.</p>
+what order, for each kind of list: WordPress posts, pages, comments,
+media and users. Nothing changes until you choose a template; until then
+every list is read the way it always was.</p>
 <p>In the window:</p>
 <ol type="1">
 <li><strong>List</strong> picks the kind of list.</li>
@@ -671,6 +671,15 @@ and <strong>Delete Template</strong> work on a saved template.
 <strong>Use for Similar Lists</strong> does the same for lists that read
 alike, such as issues and pull requests; a list that lacks one of the
 fields keeps its own choice and is named.</li>
+<li><strong>Import</strong> adds templates from a file someone shared,
+and <strong>Export</strong> saves all of yours to a file. Import asks,
+template by template, before replacing one you already have:
+<strong>Replace</strong>, <strong>Keep Mine</strong> or <strong>Cancel
+Import</strong>. A file that is not a template file, or comes from a
+newer QUILL, is refused and the window says nothing changed; an older
+file is read, and any template that cannot be used is counted in what
+the window says. Which template each list uses is not shared: choose
+that yourself after importing.</li>
 </ol>
 <p>If GitHub or WordPress stops offering a field you chose, the rest of
 your choices are kept, the window says which field is gone, and the row

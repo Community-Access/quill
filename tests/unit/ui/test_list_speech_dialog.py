@@ -76,3 +76,28 @@ def test_removed_field_is_named_not_blank(dialog) -> None:
     window._state = replace(state, draft=replace(state.draft, fields=(*state.draft.fields, "gone")))
     window._refresh()
     assert "gone" in window._note.GetLabel() and "gone (not offered)" in window._fields.GetStrings()
+
+
+def test_import_adds_templates_and_saves_them(dialog, monkeypatch) -> None:
+    from quill.core.list_speech import library as lib
+    from quill.core.list_speech.template import Template
+    from quill.ui import list_speech_dialog as mod
+
+    window, said, path = dialog
+    extra = lib.add_template(
+        window._state.library,
+        Template("github_issues", "Shared", ("title",), ", ", False, True, ""),
+    )
+    monkeypatch.setattr(
+        mod, "import_from_file", lambda wx, parent, library, announce: (extra, "Imported: 1 added.")
+    )
+    window._import_file()
+    assert said[-1] == "Imported: 1 added."
+    library, _notice = load_library(path)
+    assert [t.name for t in library.templates] == ["Shared"]
+
+
+def test_export_with_nothing_saved_says_so(dialog) -> None:
+    window, said, _path = dialog
+    window._export_file()
+    assert said[-1] == "There are no saved templates to export. Save one first."
