@@ -22,6 +22,23 @@ from quill.core.wordpress.menu import DOCUMENT_ONLY, PLACES, Submenu, all_rows
 #: wx's code for Escape, which is 27 on every platform wx runs on here.
 _WXK_ESCAPE = 27
 
+#: How long after opening a document its outcome sentence waits, so NVDA's speech
+#: for the new window and its focus is not what cancels it.
+AFTER_OPEN_MS = 500
+
+
+def later_announce(announce: Callable[[str], None], text: str) -> None:
+    """Call *announce* with *text* once a just-opened document has focus."""
+    import wx
+
+    def say() -> None:
+        try:
+            announce(text)
+        except RuntimeError:  # the window closed in the meantime
+            pass
+
+    wx.CallLater(AFTER_OPEN_MS, say)
+
 
 class QuillWordPressHost:
     """The main frame, as the shared WordPress commands see it."""
@@ -38,6 +55,12 @@ class QuillWordPressHost:
 
     def announce(self, text: str) -> None:
         self._mf._announce(text)
+
+    def announce_soon(self, text: str) -> None:
+        later_announce(self.announce, text)
+
+    def guard_document(self, path: Path, guarded: bool) -> None:
+        self._mf._read_only_guards().set(path, guarded)
 
     def run_task(
         self,

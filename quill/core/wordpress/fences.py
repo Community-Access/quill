@@ -39,6 +39,7 @@ from dataclasses import dataclass, field
 
 from quill.core.wordpress.blocks import Block, parse
 from quill.core.wordpress.fences_markup import (
+    _ANCHOR,
     _HEADING,
     _IMAGE,
     _LIST_ITEM,
@@ -150,7 +151,10 @@ class _Reader:
             elif kind == "heading":
                 m = _HEADING.match(text)
                 assert m is not None
-                out.append(_heading(len(m.group(1)), _inline_to_html(m.group(2))))
+                text, anchor = m.group(2), ""
+                if (named := _ANCHOR.match(text)) is not None:
+                    text, anchor = named.group(1), named.group(2)
+                out.append(_heading(len(m.group(1)), _inline_to_html(text), anchor))
                 self.i += 1
             elif kind == "separator":
                 out.append(_separator())

@@ -174,6 +174,8 @@ def _inline_to_html(md: str) -> str:
 
 _FENCE = re.compile(r"^:::(?:\s+(.*?))?\s*$")
 _HEADING = re.compile(r"^(#{1,6}) (.*)$")
+#: A heading's anchor, written after its text: ``## Planting day {#planting-day}``.
+_ANCHOR = re.compile(r"^(.*?)\s+\{#([A-Za-z][\w-]*)\}$")
 _LIST_ITEM = re.compile(r"^(?:([-*+])|(\d+)([.)])) (.*)$")
 _IMAGE = re.compile(
     r'^!\[((?:\\.|[^\\\]])*)\]\(([^\s()]+)(?:\s+"((?:\\.|[^\\"])*)")?\)'
@@ -275,9 +277,12 @@ def _paragraph(inner: str) -> Block:
     return _new("core/paragraph", None, f"\n<p>{inner}</p>\n")
 
 
-def _heading(level: int, inner: str) -> Block:
+def _heading(level: int, inner: str, anchor: str = "") -> Block:
     attrs = None if level == 2 else {"level": level}
-    return _new("core/heading", attrs, f'\n<h{level} class="wp-block-heading">{inner}</h{level}>\n')
+    at = f' id="{anchor}"' if anchor else ""
+    return _new(
+        "core/heading", attrs, f'\n<h{level} class="wp-block-heading"{at}>{inner}</h{level}>\n'
+    )
 
 
 def _list(ordered: bool, items: Sequence[Block]) -> Block:

@@ -41,6 +41,7 @@ REASON_SAVED = "Saved"
 REASON_SITE_BEFORE_UPDATE = "Site copy before update"
 REASON_BEFORE_AI = "Before AI change"
 REASON_BEFORE_RESTORE = "Before restore"
+REASON_BEFORE_REOPEN = "Before reopening from the site"
 REASON_PUBLISHED = "Published"
 
 #: In a working copy's properties: each uploaded picture's ``file:`` address

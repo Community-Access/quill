@@ -22,6 +22,7 @@ from quill.core.error_codes import CodedError
 from quill.core.wordpress import local as lc
 from quill.core.wordpress import site as wp
 from quill.core.wordpress import sites as st
+from quill.core.wordpress import swiftletter_copy
 from quill.core.wordpress.api import WordPressApi, WordPressApiError
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui import wordpress_item_dialogs as idlg
@@ -45,6 +46,7 @@ from quill.ui.wordpress_plugin_commands import WordPressPluginCommands
 from quill.ui.wordpress_route_commands import WordPressRouteCommands
 from quill.ui.wordpress_shop_commands import WordPressShopCommands
 from quill.ui.wordpress_site_commands import WordPressSiteCommands
+from quill.ui.wordpress_swiftletter_commands import WordPressSwiftLetterCommands
 
 NOT_WORDPRESS = (
     "This is not a WordPress document. Open one with Open Page or Post, or start one with "
@@ -71,6 +73,7 @@ class WordPressCommands(
     WordPressPluginCommands,
     WordPressShopCommands,
     WordPressAbilitiesCommands,
+    WordPressSwiftLetterCommands,
 ):
     def __init__(self, host: WordPressHost, *, data_dir: Any = None, opener: Any = None) -> None:
         self.host = host
@@ -404,6 +407,12 @@ class WordPressCommands(
         if found is None:
             return
         copy, profile = found
+        if swiftletter_copy.is_article(copy):
+            self.host.announce(
+                "SwiftLetter articles are moved to the Trash from SwiftLetter in WordPress, "
+                "not from QUILL."
+            )
+            return
         if not copy.remote_id:
             self.host.announce(
                 "This is only on this computer. There is nothing on the site to move to the Trash."
@@ -443,6 +452,9 @@ class WordPressCommands(
         if found is None:
             return
         copy, profile = found
+        if swiftletter_copy.is_article(copy):
+            self.swiftletter_compare(copy, profile)
+            return
         if not copy.remote_id:
             self.host.announce("This is not on the site yet, so there is nothing to compare with.")
             return

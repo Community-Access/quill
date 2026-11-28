@@ -15,6 +15,7 @@ from quill.core.wordpress import checks as chk
 from quill.core.wordpress import local as lc
 from quill.core.wordpress import site as wp
 from quill.core.wordpress import site_media as wpm
+from quill.core.wordpress import swiftletter_copy
 from quill.ui import wordpress_dialogs as dlg
 from quill.ui import wordpress_item_dialogs as idlg
 from quill.ui.wordpress_check_commands import reading_level_line
@@ -40,6 +41,10 @@ class WordPressMoreCommands:
     def _send(self, *, publish: bool) -> None:
         found = self.current()  # type: ignore[attr-defined]
         if found is None:
+            return
+        if swiftletter_copy.is_article(found[0]):
+            # Draft only, with If-Match; never through the generic post route.
+            self.swiftletter_send(*found, publish=publish)  # type: ignore[attr-defined]
             return
         if not self.host.save_current():
             return

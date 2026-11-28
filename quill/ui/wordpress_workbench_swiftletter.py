@@ -51,6 +51,32 @@ class WorkbenchSwiftLetter:
             if current.instance not in kept:
                 frame.select(NodeRef(current.template, ROOT, site), remember=False)
 
+    def open_swiftletter_row(self, row: WbRow) -> None:
+        """Open in Editor on an article row: the editor's own open path, so QUILL and
+        QUILL Lite share it. A site whose SwiftLetter does not offer opening says so."""
+        from quill.core.wordpress.workbench_swiftletter import discovered
+
+        profile = self.profile(row.site)  # type: ignore[attr-defined]
+        if profile is None:
+            self.say(f"{row.site} is no longer in your list of sites.")
+            return
+        offered = discovered(profile.site_url)
+        if offered is not None and not offered.can_open:
+            self.say(
+                f"SwiftLetter on {row.site} does not offer opening articles in QUILL. "
+                "Ask the site's administrator to update SwiftLetter."
+            )
+            return
+        raw = row.raw or {}
+        can_edit = raw.get("can_edit")
+        self.commands.open_swiftletter(  # type: ignore[attr-defined]
+            profile,
+            int(row.key),
+            can_edit=can_edit if isinstance(can_edit, bool) else None,
+            can_save=offered is None or offered.can_save,
+            newsletter_title=str(raw.get("newsletter_title") or ""),
+        )
+
     def do_show_articles(self, ref: Any, row: WbRow | None) -> None:
         from quill.ui.wordpress_workbench_window import SEP
         from quill.ui.workbench_frame import NodeRef

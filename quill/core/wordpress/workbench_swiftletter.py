@@ -56,6 +56,14 @@ def forget_discovery(site_url: str = "") -> None:
         _discovered.clear()
 
 
+def discovered(site_url: str) -> swiftletter.Discovery | None:
+    """What this site's SwiftLetter offered when the Workbench last read it, without
+    asking again; None when it has not been read (SwiftLetter still checks every request)."""
+    cached = _discovered.get(site_url)
+    found = cached[2] if cached is not None else None
+    return found if isinstance(found, swiftletter.Discovery) else None
+
+
 def _discover(
     api: WordPressApi, namespaces: tuple[str, ...] | None
 ) -> tuple[bool, swiftletter.Discovery | None]:

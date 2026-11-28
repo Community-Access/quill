@@ -106,6 +106,9 @@ class WorkbenchRowCommands(
         self.frame.details.SetFocus()
 
     def do_open_in_editor(self, _ref: Any, row: WbRow | None) -> None:
+        if row is not None and row.kind == "swiftletter_article":
+            self.open_swiftletter_row(row)  # type: ignore[attr-defined]
+            return
         if row is None or row.kind != "item":
             self.say("Choose a post or page to open in the editor.")
             return

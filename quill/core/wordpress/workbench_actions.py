@@ -439,7 +439,19 @@ WORDPRESS_ACTIONS = ActionTable(
             ),
             _SHEET,
         ),
-        "swiftletter_article": (_READ, _SHEET),
+        "swiftletter_article": (
+            _a(
+                "open_in_editor",
+                "Open in Editor",
+                default=True,
+                help=(
+                    "Open the article in the editor as a working copy; Save Draft to Site sends "
+                    "it back as a draft, never published. Enter."
+                ),
+            ),
+            _READ_TOO,
+            _SHEET,
+        ),
         "search_result": (
             _a(
                 "open_on_site",

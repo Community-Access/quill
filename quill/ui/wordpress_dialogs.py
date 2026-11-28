@@ -26,7 +26,7 @@ from typing import Any
 import wx
 
 from quill.ui.dialog_contract import apply_modal_ids
-from quill.ui.dpi import dip_size
+from quill.ui.dpi import dip, dip_size
 from quill.ui.spoken_name import set_spoken_name
 
 ShowModal = Callable[[Any, str], int]
@@ -264,10 +264,19 @@ class ChooseDialog(wx.Dialog):
         rows: Sequence[str],
         initial: int,
         help_text: str,
+        message: str = "",
     ) -> None:
         super().__init__(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self.SetHelpText(help_text)
         sizer = wx.BoxSizer(wx.VERTICAL)
+        if message:
+            # Dialog text, read when the dialog opens and again with the screen reader's
+            # read-window key; kept out of the list's label so it is not repeated on
+            # every return of focus. Wrapped, so the window reflows at 400% zoom.
+            said = wx.StaticText(self, label=message.replace("&", "&&"))
+            said.SetHelpText(help_text)
+            said.Wrap(dip(self, 420))
+            sizer.Add(said, 0, wx.EXPAND | wx.ALL, 8)
         self.rows = wx.ListBox(self, choices=list(rows), style=wx.LB_SINGLE)
         self.rows.SetHelpText(help_text + " Press Enter to choose the selected one.")
         self.rows.SetMinSize(dip_size(self, 420, 220))
@@ -289,9 +298,16 @@ def ask_choice(
     rows: Sequence[str],
     initial: int = 0,
     help_text: str,
+    message: str = "",
 ) -> int | None:
     dialog = ChooseDialog(
-        parent, title=title, prompt=prompt, rows=rows, initial=initial, help_text=help_text
+        parent,
+        title=title,
+        prompt=prompt,
+        rows=rows,
+        initial=initial,
+        help_text=help_text,
+        message=message,
     )
     try:
         if show_modal(dialog, title) != wx.ID_OK:

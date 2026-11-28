@@ -416,14 +416,39 @@ newsletter order.</li>
 <li>Each article says its title, its review state in words (Reviewed,
 Not reviewed, or Changed since review) and its place, such as “3 of
 8”.</li>
-<li>Press Enter on an article to read it in full: its newsletter and
-site, who changed it last and when (“Editor unknown” when SwiftLetter
-cannot say), and whether your account can edit it.</li>
+<li>The details pane says its newsletter and site, who changed it last
+and when (“Editor unknown” when SwiftLetter cannot say), and whether
+your account can edit it. <strong>Read in Full</strong>, on the
+article’s context menu (Applications key), moves you there.</li>
+<li>Press Enter on an article to <strong>open it in the editor</strong>.
+QUILL asks whether to open it as HTML, exactly as SwiftLetter has it, or
+as Markdown, which shows headings, links, lists and picture descriptions
+plainly. Either way SwiftLetter receives WordPress blocks. QUILL then
+says the title and the review state. If your account cannot edit the
+article, it opens read-only and QUILL says so.</li>
 </ol>
-<p>Browsing only reads. Nothing in the SwiftLetter branch changes your
-site, and F1 on any newsletter or article says what it is. Opening and
-saving articles in QUILL’s editor, reordering, review and exports will
-come in later updates. <a
+<p>To send your changes back, choose <strong>File &gt; WordPress &gt;
+Save Draft to Site</strong> (the WordPress key, then D). It saves a
+draft and never publishes: the newsletter is published from SwiftLetter.
+A reviewed article reads Changed since review after you save it. If
+WordPress tidies your text as it saves it (for example, the spacing in
+an image tag), QUILL tells you once and keeps your copy as you wrote
+it.</p>
+<p>QUILL never sends a save twice. If SwiftLetter refuses, QUILL says
+SwiftLetter’s own sentence and your copy stays as it is:</p>
+<ul>
+<li><strong>Someone changed the article on the site</strong> since you
+opened it: choose <strong>Compare with Site</strong> to hear the
+differences, or <strong>Reopen</strong> to load the site’s copy. Reopen
+keeps yours in Previous Versions, and Undo brings it back.</li>
+<li><strong>Someone else has the article open</strong> in WordPress:
+QUILL says who. Try again once they have finished.</li>
+<li><strong>Markdown QUILL cannot turn back into blocks</strong> without
+losing something: nothing is sent, and QUILL says which line. Fix the
+line, or open the article as HTML.</li>
+</ul>
+<p>F1 on any newsletter or article says what it is. Reordering, review
+and exports will come in later updates. <a
 href="../wordpress-and-forms/wordpress-forms-10-shop-events-seo-memberships.html#newsletters-swiftletter">Chapter
 10</a> of the manual has the details.</p>
 <h2 id="from-the-page-you-are-writing">From the page you are

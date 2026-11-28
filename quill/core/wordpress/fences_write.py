@@ -92,13 +92,20 @@ class _Writer:
         return [_escape_line(line) for line in lines]
 
     def heading(self, block: Block) -> list[str] | None:
+        # An HTML anchor (``id="..."``, what a newsletter's "jump to" links point
+        # at) is written ``{#anchor}`` after the text, so it survives the round trip.
         m = re.fullmatch(
-            r'\n<h([1-6]) class="wp-block-heading">(.*)</h\1>\n', block.inner_html, re.S
+            r'\n<h([1-6]) class="wp-block-heading"(?: id="([A-Za-z][\w-]*)")?>(.*)</h\1>\n',
+            block.inner_html,
+            re.S,
         )
         if m is None:
             return None
-        md = _single(m.group(2))
-        return None if md is None else ["#" * int(m.group(1)) + " " + md]
+        md = _single(m.group(3))
+        if md is None:
+            return None
+        anchor = f" {{#{m.group(2)}}}" if m.group(2) else ""
+        return ["#" * int(m.group(1)) + " " + md + anchor]
 
     def list_block(self, block: Block) -> list[str] | None:
         ordered = block.attrs.get("ordered") is True
