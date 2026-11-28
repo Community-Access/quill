@@ -279,6 +279,12 @@ WINDOW_MENU: tuple[MenuSpec, ...] = (
                 "Ctrl+Shift+O",
                 "Choose which Watches the Workbench announces.",
             ),
+            _row(
+                "list_speech",
+                "List Speech &Templates...",
+                "Ctrl+Alt+Shift+V",
+                "How rows are spoken: choose and order the fields, a separator and labels.",
+            ),
             _row("rest_console", "&REST Console...", "Ctrl+Shift+T", "Any route on the site."),
             _row(
                 "run_saved",

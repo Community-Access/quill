@@ -374,7 +374,14 @@ class GitHubWorkbenchViewMixin(GitHubWorkbenchListOrderMixin):
         """*visible*, or the one braille column when Short rows for braille is on (GH-R-114)."""
         from quill.core.github.workbench_prefs import load_prefs
         from quill.core.workbench.braille_rows import BRAILLE_COLUMN
+        from quill.ui.list_speech_hooks import github_items_columns
 
+        self._speech_on = False
+        spoken = github_items_columns(visible)  # a List Speech Template, when one is assigned
+        if spoken is not None:
+            self._speech_on = True
+            self._braille_source = visible
+            return spoken
         self._braille_source = visible
         if len(visible) < 2 or not load_prefs().braille_rows:
             return visible
@@ -385,12 +392,15 @@ class GitHubWorkbenchViewMixin(GitHubWorkbenchListOrderMixin):
         from quill.core.github.explore_models import ExploreRow
         from quill.core.workbench.braille_rows import BRAILLE_COLUMN, braille_row
         from quill.ui.github_items_view import row_cells
+        from quill.ui.list_speech_hooks import row_label, spoken_cells
 
         if isinstance(row, ExploreRow):
-            return [row.label]
+            return [row_label(row, row.label)]
         if columns != (BRAILLE_COLUMN,):
             return row_cells(row, columns, full=False)
         source = getattr(self, "_braille_source", ())
+        if getattr(self, "_speech_on", False):
+            return spoken_cells(row, source, lambda r, c: row_cells(r, c, full=False))
         return [braille_row(row_cells(row, source, full=False), source)]
 
     def choose_columns(self) -> None:

@@ -1004,6 +1004,15 @@ QUILL and QUILL Lite.</p>
 the five keys to learn first.</td>
 </tr>
 <tr>
+<td>My GitHub (<code>:my_github</code>)</td>
+<td>the top</td>
+<td>My GitHub: your whole queue in one list: unread notifications,
+issues and pull requests assigned to you, review requests, and your pull
+requests with failing checks. Enter opens the full thread; Ctrl+Q marks
+a notification read and Delete marks it done. Ctrl+Alt+M chooses what to
+show, the order and the grouping.</td>
+</tr>
+<tr>
 <td>Needs My Attention (<code>:attention</code>)</td>
 <td>the top</td>
 <td>Needs My Attention: everything waiting on you, across GitHub. Inbox
@@ -1209,6 +1218,13 @@ Alt+Enter opens a team’s sheet.</td>
 <td>Billing and Usage: this month’s metered use of your account, by
 product, from GitHub’s billing report. Read only; Enter opens your
 billing page.</td>
+</tr>
+<tr>
+<td>Tracked Accounts (<code>:tracked_accounts</code>)</td>
+<td>people</td>
+<td>Tracked Accounts: people and organizations you kept, favorites
+first, then your favorite repositories. A list on this computer only;
+GitHub is not told. Enter opens one; Ctrl+Alt+E finds more.</td>
 </tr>
 <tr>
 <td>Find a Person… (<code>:find_person</code>)</td>
@@ -2514,6 +2530,13 @@ comparison, and #42 opens that issue or pull request in this
 repository.</td>
 </tr>
 <tr>
+<td>Find a Person or Organization…</td>
+<td>Ctrl+Alt+E</td>
+<td>Search GitHub for people and organizations as you type, then look at
+their repositories, keep them in Tracked Accounts, or follow a
+person.</td>
+</tr>
+<tr>
 <td>Go to Number…</td>
 <td>Ctrl+G</td>
 <td>Go to an issue or pull request in this repository by its
@@ -2873,6 +2896,12 @@ the rows above.</td>
 <td>Choose which columns this list shows, and their order.</td>
 </tr>
 <tr>
+<td>My GitHub View Options…</td>
+<td>Ctrl+Alt+M</td>
+<td>Choose which kinds My GitHub shows, one repository, how it is
+ordered and grouped. Remembered for your account.</td>
+</tr>
+<tr>
 <td>Back</td>
 <td>Alt+Left</td>
 <td>The view you were on before. Backspace too.</td>
@@ -2949,6 +2978,12 @@ the rows above.</td>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>My GitHub</td>
+<td>Alt+Shift+Home</td>
+<td>Your whole queue in one list: unread notifications, assigned work,
+review requests and your pull requests with failing checks.</td>
+</tr>
 <tr>
 <td>Inbox</td>
 <td>Ctrl+1</td>
@@ -3353,6 +3388,12 @@ know. Changes nothing.</td>
 privacy.</td>
 </tr>
 <tr>
+<td>List Speech Templates…</td>
+<td>Ctrl+Alt+Shift+V</td>
+<td>How rows are spoken: choose and order the fields, a separator and
+labels.</td>
+</tr>
+<tr>
 <td>Dry Run</td>
 <td>Ctrl+Alt+D</td>
 <td>Turn Dry Run on or off. While it is on, every write asks and
@@ -3601,8 +3642,8 @@ Automation Tools and Triggers, Agent Secrets from the Organization,
 Agent Variables from the Organization, Allow a Blocked Secret…, Copilot
 Agent Configuration, Copilot Review Settings, Fork…, Prompt Files…;
 Properties…</li>
-<li><strong>person</strong>: Open, Follow or Unfollow, Open on GitHub,
-Block or Unblock…; Properties…</li>
+<li><strong>person</strong>: Open, Follow or Unfollow, Account Actions…,
+Open on GitHub, Block or Unblock…; Properties…</li>
 <li><strong>label</strong>: Find Issues with Label, Edit Label…, Delete
 Label…; Properties…</li>
 <li><strong>gist</strong>: Edit Gist…, Star or Unstar, Comments…,
@@ -3642,16 +3683,16 @@ a Workflow…, Share the Project…, Link a Team…, Unlink a Team…;
 Properties…</li>
 <li><strong>team</strong>: Members and Access…, Copy Link, Open on
 GitHub, Delete Team…, Pending Invitations; Properties…</li>
-<li><strong>organization</strong>: Open, Roles…, Rulesets…, Open on
-GitHub, Fork Workflow Settings, Fork Workflows from Private
-Repositories…; More: Dependabot Repository Access, Give Dependabot a
-Repository…, Take a Repository from Dependabot…, Dependabot’s Default
-Access…, Make Someone an Outside Collaborator…, Define a Custom
-Property…, Set Repositories’ Custom Property…, New Team…, Accept
-Membership, Members Without Two-Factor, My Activity Here, Require
-Sign-off on Web Commits…, Follow Organization, Unfollow Organization,
-Security Overview, Copilot Plan, Copilot Seats, A Member’s Copilot
-Seat…, Give Copilot Seats…, Take Copilot Seats Away…, Give Teams
+<li><strong>organization</strong>: Open, Roles…, Rulesets…, Account
+Actions…, Open on GitHub, Fork Workflow Settings; More: Fork Workflows
+from Private Repositories…, Dependabot Repository Access, Give
+Dependabot a Repository…, Take a Repository from Dependabot…,
+Dependabot’s Default Access…, Make Someone an Outside Collaborator…,
+Define a Custom Property…, Set Repositories’ Custom Property…, New
+Team…, Accept Membership, Members Without Two-Factor, My Activity Here,
+Require Sign-off on Web Commits…, Follow Organization, Unfollow
+Organization, Security Overview, Copilot Plan, Copilot Seats, A Member’s
+Copilot Seat…, Give Copilot Seats…, Take Copilot Seats Away…, Give Teams
 Copilot…, Take Copilot from Teams…, Copilot Usage Report, Copilot Agent
 Access, Copilot Content Exclusions, Block from Organization…, Leave
 Organization…, Your Invitation; Properties…</li>
@@ -3749,9 +3790,9 @@ Open on GitHub, Publish Tier, Retire Tier…; Properties…</li>
 <td><code>open_on</code></td>
 <td>General</td>
 <td>Open the Workbench on</td>
-<td>Where the window opens when no menu row asks for a place: Inbox
-(Start Here until you have signed in), Start Here, or wherever you were
-last time.</td>
+<td>Where the window opens when no menu row asks for a place: My GitHub
+(Start Here until you have signed in), Inbox, Start Here, or wherever
+you were last time.</td>
 </tr>
 <tr>
 <td><code>list_mode</code></td>

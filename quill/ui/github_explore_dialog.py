@@ -370,7 +370,9 @@ class GitHubExploreDialog(
                     seen.add(row.repo.casefold())
                     merged.append(row)
             self._rows = merged
-        self._list.Set([row.label for row in self._rows])
+        from quill.ui.list_speech_hooks import row_label
+
+        self._list.Set([row_label(row, row.label) for row in self._rows])
         self._detail.SetValue("")
         self._open_btn.Enable(False)
         self._use_btn.Enable(False)

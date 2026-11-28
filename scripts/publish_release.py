@@ -11,9 +11,10 @@ Two ways in:
           --channel beta --dist standalone/radio/dist --notes-file notes.md
 
 * **A release that already exists on GitHub** -- QUILL's own, made by
-  ``windows-release.yml``, or a Dev build made by ``dev-builds.yml`` in
-  ``Community-Access/quillville-dev-builds`` -- with ``--existing``: the files
-  are downloaded and hashed here, never taken from GitHub's word::
+  ``windows-release.yml``, or a Dev build made by ``dev-builds.yml``, which
+  is a few files in the one rolling ``dev-builds`` release of this repository
+  (``quill/tools/dev_release.py``) -- with ``--existing``: the files are
+  downloaded and hashed here, never taken from GitHub's word::
 
       python scripts/publish_release.py --app quill --version 1.0.0-rc.1 \\
           --channel beta --existing
@@ -85,6 +86,7 @@ from quill.core.updater.feed_publish import (  # noqa: E402
     superseded_prereleases,
 )
 from quill.core.versioning import ReleaseVersion  # noqa: E402
+from quill.tools import dev_release  # noqa: E402
 from quill.tools import release_feed as rf  # noqa: E402
 
 #: Is this release file Authenticode-signed throughout? (code_signing.asset_is_signed)
@@ -216,7 +218,18 @@ def run(
     if parsed is None:
         out(f"{args.version!r} is not a version.")
         return 2
-    repo = args.repo or (rf.DEV_REPO if args.channel == "dev" else rf.MAIN_REPO)
+    repo = args.repo or rf.MAIN_REPO
+    # A Dev build (3.3.0-dev.20261003.1) is a few files in the one rolling
+    # release. The Dev *channel* also lists ordinary numbered candidates, which
+    # are releases of their own like any other.
+    rolling = dev_release.DEV_VERSION_RE.fullmatch(args.version) is not None
+    if rolling and not args.existing:
+        out(
+            "Dev builds are made by dev-builds.yml and kept in the one rolling "
+            f"{dev_release.DEV_TAG} release. List one with --existing; a release of its own "
+            "would take a place on the page of releases that installed copies read."
+        )
+        return 2
     if args.build and parsed.build and args.build != parsed.build:
         out(f"{args.version} is build {parsed.build}, not build {args.build}.")
         return 2
@@ -228,6 +241,8 @@ def run(
         if repo == rf.MAIN_REPO or (wants_build and not (parsed.build or args.build))
         else []
     )
+    # Where the files are: the build's own release, or the rolling Dev one.
+    source_tag = dev_release.DEV_TAG if rolling else None
     if wants_build:
         build = parsed.build or args.build
         if not build:
@@ -240,6 +255,7 @@ def run(
                 build -= 1
         version = parsed.with_build(build).semver()
     tag = rf.tag_for(args.app, version)
+    source_tag = source_tag or tag
     if feed.release(version) is not None:
         out(f"{version} is already in the {args.app} feed. Nothing to do.")
         return 1
@@ -254,12 +270,20 @@ def run(
     on_release: set[str] = set()
     with tempfile.TemporaryDirectory() as scratch:
         if args.existing:
-            gh(["release", "download", tag, "--repo", repo, "--dir", scratch])
+            names: list[str] = []
+            if rolling:
+                names = dev_release.asset_names(
+                    dev_release.get_release(gh, repo), args.app, version
+                )
+                if not names:
+                    out(f"No Dev build {version} of {args.app} is in the {source_tag} release.")
+                    return 1
+            gh(dev_release.download_command(source_tag, repo, scratch, names))
             on_release = {p.name for p in Path(scratch).iterdir()}
             files = [p for p in Path(scratch).iterdir() if rf.asset_kind(p.name)]
         else:
             files = rf.dist_files(args.dist, args.app, version)
-        assets = rf.assets_from_files(files, repo=repo, tag=tag)
+        assets = rf.assets_from_files(files, repo=repo, tag=source_tag)
         refused = signing_problems(list(files), ReleaseVersion.parse(version), authenticode)
     if refused:
         for line in refused:
@@ -272,7 +296,12 @@ def run(
         out(f"{asset.kind:10} {asset.name}  {asset.size} bytes  sha256 {asset.sha256}")
 
     if args.existing:
-        missing = [name for name in COMPLIANCE_NAMES if name not in on_release]
+        # In the rolling release every build's licence files carry its tag, so
+        # they cannot collide with another build's.
+        def named(name: str) -> str:
+            return f"{tag}.{name}" if rolling else name
+
+        missing = [name for name in COMPLIANCE_NAMES if named(name) not in on_release]
         if not missing:
             out("Licence files: already on the release.")
         elif args.dry_run:
@@ -280,8 +309,14 @@ def run(
         else:
             with tempfile.TemporaryDirectory() as staging:
                 staged = stage_compliance_files(args.app, Path(staging))
-                upload = [str(p) for p in staged if p.name in missing]
-                gh(["release", "upload", tag, "--repo", repo, *upload])
+                upload = []
+                for path in staged:
+                    if path.name in missing:
+                        target = path.with_name(named(path.name))
+                        if target != path:
+                            path.replace(target)
+                        upload.append(str(target))
+                gh(["release", "upload", source_tag, "--repo", repo, *upload])
             out(f"Licence files: added {', '.join(missing)}.")
     elif args.dry_run:
         out(f"Licence files: would add {', '.join(COMPLIANCE_NAMES)}.")
@@ -305,7 +340,7 @@ def run(
         channel=args.channel,
         assets=assets,
         now=moment,
-        notes_url=f"https://github.com/{repo}/releases/tag/{tag}",
+        notes_url=f"https://github.com/{repo}/releases/tag/{source_tag}",
         notes_summary=notes,
         data_formats=writes,
         reads_formats=reads,
@@ -315,7 +350,9 @@ def run(
         old = [
             r
             for r in superseded_prereleases(feed, "beta")
+            # A build in the rolling Dev release has no release object of its own.
             if any(f"/{rf.MAIN_REPO}/" in a.url for a in r.assets)
+            and not any(f"/download/{dev_release.DEV_TAG}/" in a.url for a in r.assets)
         ]
         for release in old:
             out(f"Superseded: {release.version} (its release object goes; the tag stays)")

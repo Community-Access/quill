@@ -297,6 +297,7 @@ ACCOUNT_ROWS: tuple[MenuRow | MenuSub | None, ...] = (
 
 GO_NODES: dict[str, tuple[str, str]] = {
     f"{_P}go_start": ("", "start"),
+    f"{_P}go_my_github": ("", "my_github"),
     f"{_P}go_inbox": ("", "inbox"),
     f"{_P}go_repository": ("repository", "repository"),
     f"{_P}go_search": ("", "search"),

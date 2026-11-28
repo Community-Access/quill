@@ -32,6 +32,13 @@ def register_weather_commands(host: Any) -> None:
         ("weather.settings", "Weather: Settings...", host.open_weather_settings),
         ("weather.test_alert", "Weather: Test Alert", host.weather_test_alert),
         (
+            "weather.feed_status",
+            "Weather: Alert Feed Status...",
+            host.open_weather_feed_status,
+        ),
+        ("weather.alert_choices", "Weather: Alert Choices...", host.open_weather_alert_choices),
+        ("weather.watch_place", "Weather: Watch This Place", host.toggle_weather_current_place),
+        (
             "weather.monitor_toggle",
             "Weather: Start or Stop Weather Monitoring",
             host.toggle_weather_monitoring,
@@ -42,6 +49,8 @@ def register_weather_commands(host: Any) -> None:
             host.toggle_weather_monitoring_pause,
         ),
         ("weather.tutorials", "Weather: Tutorials...", host.open_weather_tutorials),
+        ("weather.past_date", "Weather: Weather on a Past Date...", host.open_weather_past_date),
+        ("weather.history", "Weather: Weather History...", host.open_weather_history),
     ):
         host.commands.try_register(
             command_id, title, handler, host._binding_for(command_id), feature_id="core.weather"

@@ -86,8 +86,74 @@ new alert names its place when it is spoken and in its tray notification, so you
 always know where as well as what. When monitoring starts you hear one combined
 summary rather than a line per place -- for example, "3 places: Tucson, Boston,
 and Reno. All clear right now." The status line and the main window say either
-the one place's name or "for 3 places". (Picking exactly which of your saved
-places to watch is coming; today the watch covers all of them.)
+the one place's name or "for 3 places". (You can switch places off, snooze them
+and more in **Alert Choices**, below.)
+
+### How do I know alerts are working?
+
+Silence from a weather watcher can mean two very different things: there are no
+alerts, or Quill Weather could not reach the National Weather Service. Quill
+Weather tells them apart, and it never says all clear after a check that failed.
+
+- **Weather menu > Alert Feed Status** (Ctrl+Alt+Shift+H) opens a report you can read
+  with the arrow keys and copy. For each place you watch it gives the state (working,
+  having trouble, cannot be reached, not checked yet), the last successful check, the
+  last attempt, what went wrong in plain words, and the last alerts the service
+  provided. Alerts from before a failed check are marked **last known**.
+- If checks keep failing for about ten minutes (sooner while an alert is active), you
+  hear once: "Quill Weather cannot reach the National Weather Service. Alerts may be
+  missing. The last successful check was at 3:12 PM, and it found no alerts." You are
+  reminded only after about half an hour of still failing, and told once when it
+  recovers. The background check says the same with a notification, and the tray
+  tooltip shows the state.
+- When monitoring starts, a place that could not be checked is named as unchecked
+  instead of being counted as clear.
+- In Safe Mode the report says network checks are off. That is a choice you made,
+  not a service problem.
+
+### Choosing which alerts and places
+
+**Weather menu > Alert Choices** (Ctrl+Alt+Shift+C) decides which places Weather
+Guardian watches, which alerts it tells you about, and how. If you never open it,
+nothing changes: every saved place is watched and you are told about every alert,
+as before. The window has four pages, and a Preview and a Test Alert button below
+them.
+
+- **Which alerts.** Pick **Everything**, **Essentials** (tornado, severe
+  thunderstorm and flash flood warnings, and anything Extreme), **Safety** (all
+  warnings, and Extreme or Severe watches), or **Custom**. Custom lets you pick
+  categories (Tornado, Severe thunderstorm, Flash flood and flood, Winter weather,
+  Heat and cold, Wind, Fire weather, Hurricane and tropical, Coastal and marine,
+  Air quality, Other), include or skip single alert types, and narrow by kind
+  (warnings, watches, advisories, statements) and by the National Weather Service
+  severity, with a "this severity and above" shortcut.
+- **Extreme alerts are always told** unless you turn that off, and turning it off
+  asks you first. Nothing you choose hides an Extreme alert by accident.
+- **Places.** Each row says its own state, like "Home, watched" or "Cabin, not
+  watched, switched off". Space switches the focused place; Watch All, Watch None
+  and Invert change them together. A place can be **snoozed** for 1, 4 or 12 hours
+  or until tomorrow morning (you are told when the snooze ends), **watched until**
+  a date and time while otherwise off, such as a trip (it stops by itself and says
+  so once), given a **schedule** like Mon-Fri 08:00-18:00, and put in **groups**
+  such as Family or Travel that you can watch or stop watching together. A
+  snoozed place, or one outside its schedule, is still checked, but stays quiet
+  like quiet hours. **Weather > Watch This Place** (Ctrl+Alt+Shift+U) and the tray's
+  **Watched Places** submenu switch places without opening the window.
+- **How you are told.** For the alerts you chose: as before (interrupt for urgent
+  alerts, speak the rest), speak and interrupt, speak quietly, sound only, or show
+  in the list only. Each severity can have its own sound file.
+- **Quiet hours.** Between the times you set, nothing below Extreme is spoken or
+  sounded. Extreme alerts still break through, and you can turn that off after a
+  plain warning that nothing at all would then be spoken, tornado warnings
+  included. The same rule applies to snoozed places and places outside their
+  schedule.
+
+**Nothing is lost.** An alert your choices keep quiet still appears in Active
+Alerts and in Alert Feed Status, which says how many were hidden by your settings.
+The start-watching summary says which places are not watched and why. Every save
+says one sentence, such as "Watching 3 of 5 places. Cabin is snoozed until 6 PM.
+Telling you about tornado, severe thunderstorm and flash flood warnings, and
+anything Extreme."
 
 ## Customizing features
 
@@ -385,10 +451,11 @@ A few things stay the same no matter what:
 
 This is the full reference for the weather features, shared by the standalone
 **Quill Weather** app and Quill Radio's **Weather** menu (they run the same
-code). It brings official U.S. weather to you as clear, screen-reader-first
+code). It brings official weather to you as clear, screen-reader-first
 text: current conditions, the forecast, an extended daily outlook, and -- most
 importantly -- active watches, warnings, and advisories for the places you care
-about.
+about. Forecasts and current conditions work worldwide; alerts and the hourly
+forecast come from the National Weather Service, so they cover the United States.
 
 Everything comes from free, no-account, no-key sources: the **National Weather
 Service** (api.weather.gov) for observations, the forecast, and alerts;
@@ -475,6 +542,107 @@ of your primary location without opening a window -- for example:
 
 You choose what that line includes in Settings.
 
+### Weather on a Past Date
+
+**Weather menu > Weather on a Past Date...** (or **Ctrl+Alt+D**) shows one past
+day's weather for any saved place, read like the current report. Type a date in
+the **Date** field and press Enter. The field is plain text, not a calendar, and
+it understands:
+
+- `2011-03-14`, `14 March 2011`, `March 14, 2011`
+- `3/14/2011`, in the order your system writes dates (month first or day first).
+  Quill Weather says which order it read, and a date only one order allows, such
+  as `14/3/2011`, is read that way.
+- `yesterday`, `3 days ago`, `last week`, `last month`, `a year ago today`
+- a year alone, such as `2011`, or a month and year, such as `March 2011`, which
+  lists every day in it under **Days in this span**. Press Enter on a day to open
+  it.
+
+If a date cannot be used, Quill Weather says why and keeps what you typed: it is
+in the future, it is before 1940 (where the history starts), or it was not
+understood. A date in the last 5 days works, and Quill Weather says it uses
+Open-Meteo's recent data, because the archive runs about 5 days behind.
+
+**Weather that day** reads the summary line, the high and low, what it felt
+like, precipitation and snow, wind, sunrise, sunset and the length of daylight,
+and then a **Compared with normal** line. For US places that compares the high
+with the nearest weather station's 1991 to 2020 normal and gives that station's
+records for the date. Elsewhere it compares with the average for the date over
+the 10 years before. **Hour by hour** lists each hour: time, sky, temperature,
+feels like, precipitation and wind.
+
+Moving between days. Each move says the new date first, then the day in brief:
+
+| To move | Press |
+|---|---|
+| A day back or on | Alt+Left or Alt+Right. Page Up or Page Down also work, except in the Weather that day box, the lists and the Place list, where they keep their usual meaning. |
+| A week back or on | Alt+Shift+Left or Alt+Shift+Right, or Shift+Page Up or Shift+Page Down (with the same exceptions) |
+| A month back or on | Ctrl+Page Up or Ctrl+Page Down |
+| The same day last year or next year | Ctrl+Shift+Page Up or Ctrl+Shift+Page Down, or the Same Day Last Year and Same Day Next Year buttons |
+| Back to the Date field | Ctrl+G |
+| Save a date range | Ctrl+S |
+
+**Place** chooses another saved place for the same date. **Recent dates** lists
+the last 10 dates you looked at, with their places; press Enter on one to open
+it again. **Copy Day** puts the day, every hour and the data credits on the
+clipboard. **Save Range...** saves every day between two dates as a spreadsheet
+file (CSV) or as plain text, in your units, with the credits at the end.
+
+### Weather History
+
+**Weather menu > Weather History...** (or **Ctrl+Shift+T**) looks up the weather
+of the past for any saved place. In **Look up**, choose one of three kinds:
+
+- **On this day, over the years**: today's date in each of the last 20 years (set
+  **Years to look back**, from 1 to 85).
+- **Another date, over the years**: choose the **Month** and **Day**.
+- **A date range**: type the **From** and **To** dates as year-month-day, for
+  example 2024-06-01. A range can be up to a year.
+
+Only the fields the chosen kind uses are shown. Press **Look Up** (or Enter).
+
+**Go to Date...** (or **Ctrl+G**) opens Weather on a Past Date for the day chosen
+in Day by day, or for today, and pressing Enter on a day does the same.
+
+The **Summary** says what the numbers mean, in plain words. For example:
+
+> November 27 in Tucson. Today's forecast high of 77 degrees is 7 degrees above
+> the 1991 to 2020 normal of 70 at Tucson International Airport, where the normal
+> low is 44. Records at Tucson International Airport since 1946: warmest high 92
+> in 2017, coldest low 26 in 1984. Rain or snow fell on this date in 3 of 19
+> years.
+
+**Day by day** lists every day found, newest first, with its conditions, high,
+low and precipitation. **Copy** puts the summary, every day as a sentence and the
+data credits on the clipboard.
+
+Where the data comes from:
+
+- **The last 92 days** come from Open-Meteo's forecast service, so yesterday is
+  there today.
+- **Older dates, back to 1940**, come from Open-Meteo's historical weather
+  service, which uses the Copernicus ERA5 reanalysis.
+- **For US places**, the 1991 to 2020 normals and the records come from the
+  nearest long-running weather station, through the NOAA Regional Climate
+  Centers' ACIS service. Outside the US there are no station records, so the
+  summary compares with the years it looked up and never calls them records.
+
+Every day looked up is saved on your computer for that place, so a second look
+costs no internet request. If a service cannot be reached, the summary says so
+and gives the reason. It never treats a failed request as "no data". Alert Feed
+Status lists these data services too, under **Data feeds**.
+
+### Where the data comes from, and fair use
+
+Forecast and history data is by **Open-Meteo.com**, under the CC BY
+4.0 licence. Historical weather is the **Copernicus Climate Change Service ERA5**
+reanalysis. US station records and normals are from the **NOAA Regional Climate
+Centers (RCC-ACIS)**. None of these needs an account or a key. Open-Meteo is free
+for non-commercial use up to about 10,000 requests a day, so Quill Weather keeps
+well under that: it saves what it fetches for good, asks for one day per year rather than
+whole decades, and if Open-Meteo asks it to slow down, it waits before asking again and says so.
+The same credits are in Help > About Quill Weather.
+
 ### Active Alerts
 
 **Weather menu > Active Alerts...** opens Weather Now with focus already on the
@@ -541,7 +709,7 @@ a notification in the system tray for each new alert, so you can see it there.
   tray notification. Starting the watch speaks a single combined summary across
   the places ("3 places: Tucson, Boston, and Reno. All clear right now."), and
   turning it off or reading the status line says either the one place's name or
-  "for 3 places". Choosing a subset of your saved places is a later addition.
+  "for 3 places". Choosing a subset of your saved places is in **Alert Choices**.
 - It keeps working while the app is **minimized to the tray**, and it starts
   again automatically the next time you launch (choose **Stop Weather Monitoring**
   to turn it off for good).

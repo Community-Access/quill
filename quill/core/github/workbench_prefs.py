@@ -69,7 +69,7 @@ LEGACY_SETTINGS_KEYS: dict[str, str] = {
 
 #: The allowed values of every choice field, in the order the dialog lists them.
 CHOICES: dict[str, tuple[str, ...]] = {
-    "open_on": ("inbox", "start", "last"),
+    "open_on": ("my_github", "inbox", "start", "last"),
     "list_mode": ("quick", "full"),
     "default_sort": (
         "number_desc",
@@ -88,12 +88,12 @@ CHOICES: dict[str, tuple[str, ...]] = {
 class WorkbenchPrefs:
     """Everything a person can choose about the GitHub Workbench.
 
-    *open_on* is where the window opens: ``"inbox"`` (Start Here until you are
-    signed in, then Inbox: decision 2), ``"start"`` or ``"last"`` (the place you
+    *open_on* is where the window opens: ``"my_github"`` (Start Here until you are
+    signed in, then My GitHub: decision 2), ``"inbox"``, ``"start"`` or ``"last"`` (the place you
     left).
     """
 
-    open_on: str = "inbox"
+    open_on: str = "my_github"
     list_mode: str = "quick"
     default_sort: str = "number_desc"
     default_state: str = "open"

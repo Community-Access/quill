@@ -296,6 +296,10 @@ class FakeGh:
     def __call__(self, args):
         args = list(args)
         self.calls.append(args)
+        if args[0] == "api" and args[1].endswith("/releases/tags/dev-builds"):
+            return json.dumps({"id": 7, "body": ""})
+        if args[0] == "api" and "/releases/7/assets" in args[1]:
+            return json.dumps([[{"name": name} for name in self.files]])
         if args[0] == "api":
             return json.dumps([])
         if args[:2] == ["release", "download"]:
@@ -472,8 +476,9 @@ def test_no_sign_leaves_the_feed_unsigned_for_the_owner(tmp_path: Path, key) -> 
     folder = tmp_path / "docs" / "site" / "updates" / "v2"
     assert (folder / "radio.json").exists()
     assert not (folder / "radio.json.sig").exists()
-    assert any(
-        "Community-Access/quillville-dev-builds" in a.url
+    # A Dev build is files in the one rolling release of this repository.
+    assert all(
+        "Community-Access/quill/releases/download/dev-builds/" in a.url
         for a in parse_feed((folder / "radio.json").read_bytes()).releases[0].assets
     )
     out: list[str] = []

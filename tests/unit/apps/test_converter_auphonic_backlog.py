@@ -639,12 +639,40 @@ def test_the_more_options_window_reads_back_what_it_says(wx_app) -> None:
         None, custom=custom, second_format="mp3", transcript=True, language="fr"
     )
     try:
-        assert dialog.values() == (custom, "mp3", True, "fr")
+        assert dialog.values() == (custom, "mp3", True, "fr", False)
         assert dialog._method.IsEnabled() and dialog._language.IsEnabled()
+        assert dialog._shownotes.IsEnabled()
+        # Auphonic's usual method: reverb and breath reduction would do nothing.
+        assert not dialog._reverb.IsEnabled() and not dialog._breath.IsEnabled()
         dialog._noise.SetSelection(0)
         dialog._transcript.SetValue(False)
         dialog._sync()
         assert not dialog._method.IsEnabled() and not dialog._language.IsEnabled()
+        assert not dialog._shownotes.IsEnabled()
+    finally:
+        dialog.Destroy()
+
+
+def test_reverb_breath_and_show_notes_are_read_back_only_where_they_work(wx_app) -> None:
+    from quill.core.publish import auphonic_options as opts
+
+    custom = CustomProcessing(noise=12, noise_method="dynamic", reverb=12, breath=6)
+    dialog = options_ui.AuphonicMoreDialog(
+        None, custom=custom, second_format="", transcript=True, language="en", shownotes=True
+    )
+    try:
+        assert dialog._reverb.IsEnabled() and dialog._breath.IsEnabled()
+        got, _second, transcript, _lang, shownotes = dialog.values()
+        assert (got.reverb, got.breath, transcript, shownotes) == (12, 6, True, True)
+        # Static: reverb still works, breath does not, so breath is not sent.
+        dialog._method.SetSelection(dialog._method.keys.index("static"))
+        dialog._sync()
+        assert dialog._reverb.IsEnabled() and not dialog._breath.IsEnabled()
+        assert dialog.values()[0].breath == opts.BREATH_OFF
+        # No transcript, no show notes.
+        dialog._transcript.SetValue(False)
+        dialog._sync()
+        assert dialog.values()[4] is False
     finally:
         dialog.Destroy()
 

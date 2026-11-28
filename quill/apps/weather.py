@@ -40,8 +40,8 @@ _TITLE = "Quill Weather"
 #: they had missed a major release that does not exist. The two update
 #: independently (each resolves its own release asset), so nothing requires the
 #: numbers to agree.
-_VERSION = "2.2.1"
-_BUILD = 2  # this version's build (docs/release/RELEASE.md, "Build numbers")
+_VERSION = "2.3.0"
+_BUILD = 1  # this version's build (docs/release/RELEASE.md, "Build numbers")
 #: Every QuillVille app now updates from the one shared repo, each resolving its
 #: own release asset (Quill-Weather-*), so they update and maintain independently.
 _REPO = "Community-Access/quill"
@@ -376,7 +376,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, WeatherOptionsMixin, WeatherA
             menu.Append(toggle_id, "Stop Monitoring" if active else "Start Monitoring")
             menu.Bind(wx.EVT_MENU, lambda _e: self._toggle_and_refresh(), id=toggle_id)
         self._keep_menu_ids(status_id, center_id, quick_id, toggle_id)
-        # Reach the sibling apps from the tray, each in its own window.
+        self._append_weather_tray_places(menu)  # a check mark on each watched place
         menu.AppendSeparator()
         self._append_sibling_app_tray_items(menu, exclude="weather")
 
@@ -523,24 +523,24 @@ def _run_headless_check() -> int:
     def _fetch(latitude: float, longitude: float) -> list:
         return nws.active_alerts(latitude, longitude, safe_mode=safe_mode)
 
+    notices: list = []
     try:
-        result = headless_check.run_check(data_dir, fetch_alerts=_fetch, safe_mode=safe_mode)
+        result = headless_check.run_check(
+            data_dir, fetch_alerts=_fetch, safe_mode=safe_mode, on_notice=notices.append
+        )
     except Exception:  # noqa: BLE001 - offline / transient: try again next tick
-        return 0
-    if result.new_alerts:
-        from quill.core.weather import locations as loc_store
-        from quill.core.weather import settings as settings_mod
+        result = None
+    toast = headless_check.final_toast(data_dir, result, notices)
+    if toast is not None:
+        if result is not None and result.new_alerts:
+            from quill.core.weather import settings as settings_mod
 
-        settings = settings_mod.load_settings(data_dir)
-        if settings.alert_sound_enabled:
-            from quill.platform import alert_sound
+            settings = settings_mod.load_settings(data_dir)
+            if settings.alert_sound_enabled:
+                from quill.platform import alert_sound
 
-            alert_sound.play_alert_sound(settings.alert_sound_path, settings.alert_sound_repeat)
-        store = loc_store.load_locations(data_dir)
-        primary = store.primary()
-        label = result.location_label or (primary.label if primary is not None else "your area")
-        title, body = headless_check.toast_content(result.new_alerts, label)
-        _show_alert_toast(title, body)
+                alert_sound.play_alert_sound(settings.alert_sound_path, settings.alert_sound_repeat)
+        _show_alert_toast(*toast)
     return 0
 
 

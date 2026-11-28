@@ -306,6 +306,38 @@ them access to a server: "SSH key 4, ending abcdefgh."), **Social Accounts**,
 `Ctrl+6` goes to Projects; each repository's own Projects are under it,
 `Ctrl+Shift+7`. Chapter 4 covers Projects.
 
+### Finding people and organizations
+
+`Ctrl+Alt+E` (File > **Find a Person or Organization...**) opens a search
+window. Type at least two letters of a username or a name; after a short pause
+the matches appear, people and organizations together. Each row says which it
+is: "Person: octocat (The Octocat), 8 public repositories. Cat." When two
+accounts share a name, their rows also say how many followers they have, so
+you can tell them apart. Press the Down Arrow to move from the search box to
+the list.
+
+On a match, the buttons are **Repositories...** (Enter does this), **Track or
+Untrack**, **Favorite or Unfavorite**, **Follow or Unfollow** and **Open on
+GitHub**. The same actions are on a person's or organization's context menu as
+**Account Actions...**. Following works for people. For an organization,
+QUILL opens its page on GitHub and says so, because GitHub documents following
+an organization only as a public preview.
+
+Four words mean four different things, and QUILL keeps them apart:
+
+- A **favorite** is a shortcut on this computer. Nothing is sent to GitHub.
+- A **star** is a public action on GitHub, shown on your profile.
+- A **GitHub List** is GitHub's own collection of starred repositories.
+  **Add to GitHub List...** in the repositories window puts a repository on
+  one of your lists.
+- **Following** a person is public too. After every follow or star QUILL asks
+  GitHub for the new state and says what GitHub reports.
+
+**People > Tracked Accounts** lists the accounts you kept, favorites first,
+and then your favorite repositories. Enter opens an account's place in the
+tree. A Read Only account can search and look, but follow and star need
+Organize. In Safe Mode nothing is searched.
+
 ### Profiles
 
 **People > My Profile** is your own profile, and every person's place in the
@@ -1210,6 +1242,49 @@ everything is working, which parts are slow or down, and any incident GitHub
 is working on, with its latest update. It asks the first time, reads the page
 only when you choose the command, and is greyed in Safe Mode. Chapter 10 has
 more.
+
+## List Speech Templates
+
+Each row in a list is read as its cells, one after another. **List Speech
+Templates** (Tools menu, `Ctrl+Alt+Shift+V`) lets you decide what a row says,
+and in what order, for each kind of list: notifications, issues, pull requests and repositories. Nothing changes until you choose a
+template; until then every list is read the way it always was.
+
+In the window:
+
+1. **List** picks the kind of list.
+2. **Template** picks the usual wording, one of three built-in presets, or a
+   template you saved. **Brief** says only what identifies the row.
+   **Balanced** adds the state and how long ago it changed. **Detailed** says
+   everything and introduces each value with its name.
+3. **Fields in spoken order** is the row, first to last. **Move Up** and
+   **Move Down** (or `Alt+Up` and `Alt+Down` on the list) change the order, and
+   each move says where the field landed, such as "Title moved to position 2
+   of 4". **Remove** (or `Delete`) takes a field out. **Choose field** and
+   **Add** put one back at the end.
+4. **Separator** is what is said between fields. **Say field labels** adds the
+   name before a value, such as "by octocat". **Leave out empty fields** skips a
+   field with no value; turn it off and **Empty-field text** is said instead.
+5. **Sample row preview** is a real-looking row said exactly as your rows will
+   be. **Hear Preview** says it aloud.
+6. **Save As** names your choices. **Rename** and **Delete Template** work on a
+   saved template. **Use for This List** makes the list speak this way, and
+   **Use for Similar Lists** does the same for lists that read alike, such as
+   issues and pull requests; a list that lacks one of the fields keeps its own
+   choice and is named.
+7. **Import** adds templates from a file someone shared, and **Export** saves
+   all of yours to a file. Import asks, template by template, before replacing
+   one you already have: **Replace**, **Keep Mine** or **Cancel Import**. A file
+   that is not a template file, or comes from a newer QUILL, is refused and the
+   window says nothing changed; an older file is read, and any template that
+   cannot be used is counted in what the window says. Which template each list
+   uses is not shared: choose that yourself after importing.
+
+If GitHub or WordPress stops offering a field you chose, the rest of your
+choices are kept, the window says which field is gone, and the row simply does
+not say it: you never hear a blank. The Details pane always has the full
+row, whatever the template says. If the template file cannot be read, a copy is
+kept aside and the usual wording is used until you save again.
 
 ## Workbench Options
 

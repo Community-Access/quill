@@ -60,6 +60,9 @@ GITHUB_ENTRIES: dict[str, str] = {
     # Inbox rules (PRD 22.12): conditions and an action per rule, version
     # stamped; no token, no notification content. Losing it loses the rules.
     "core/github/inbox_rules.py::save_rules": "versioned",
+    # My GitHub (front door): per account, the kinds, repository, unread filter, sort and
+    # group the person chose; version stamped, no token, no GitHub content.
+    "core/github/my_github_prefs.py::save": "versioned",
     # Workbench tips (GH-R-116): how often each slow way was used and which
     # tips were offered. Losing it only means a tip is offered again.
     "core/github/workbench_tips.py::save": "cache",
@@ -67,4 +70,12 @@ GITHUB_ENTRIES: dict[str, str] = {
     # areas, refusals and gated commands per one-way account key, never a token or
     # an object name. Rebuilt by using the Workbench again; losing it is harmless.
     "core/github/observed_use.py::_change": "cache",
+    # Tracked Accounts and local favorites (People discovery): logins, names and
+    # owner/name text per account, version stamped. A shortcut list on this
+    # computer; nothing is sent to GitHub and no token is kept. Losing it loses the list.
+    "core/github/tracked_accounts.py::save": "versioned",
+    # List Speech Templates (list_speech_templates.json), shared by both
+    # Workbenches: named templates and which one each list uses. Schema
+    # stamped, coerced entry by entry; a damaged file is copied aside first.
+    "core/list_speech/store.py::save_library": "versioned",
 }

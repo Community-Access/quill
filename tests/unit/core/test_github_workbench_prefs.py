@@ -43,7 +43,7 @@ def test_defaults_round_trip_and_bad_values_fall_back(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     loaded = load_prefs(path)
-    assert loaded.open_on == "inbox"
+    assert loaded.open_on == "my_github"
     assert loaded.poll_interval_minutes == 5  # the MONITOR_GITHUB clamp, never zero
     assert loaded.poll_audible_tick is False
     path.write_text("not json", encoding="utf-8")

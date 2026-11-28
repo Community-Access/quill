@@ -479,14 +479,15 @@ tag and asset names, changelogs, build entries and rollout waves.
 <code>platform_report</code> gate; it refuses a new standalone wrapper,
 feed entry, sibling-version row or <code>build-quill-apps.ps1</code>
 table that is not in the catalogue.</p>
-<p>This repository remains the only source repository. A separate
-Dev-builds repository is only for unsigned Dev artifacts, while
-production artifacts, signed feeds, release history and source archives
-stay owned by the <code>Community-Access/quill</code> monorepo. A
-product marked <code>held</code> may wait for a build wrapper or release
-evidence, but it cannot silently disappear from the inventory.
-Radio-on-macOS and Weather-on-iOS are explicit platform variants, not
-duplicate Windows products.</p>
+<p>This repository is the only source repository, and it owns everything
+that is released from it: unsigned Dev builds, Beta and Stable
+artifacts, the signed feeds, release history and source archives. (Dev
+builds used to live in a separate repository reached with a personal
+token; they are now files in one rolling release here, described under
+Dev builds below.) A product marked <code>held</code> may wait for a
+build wrapper or release evidence, but it cannot silently disappear from
+the inventory. Radio-on-macOS and Weather-on-iOS are explicit platform
+variants, not duplicate Windows products.</p>
 <p>Every buildable, non-held product in the release catalogue is offered
 updates from one signed list per app,
 <code>docs/site/updates/v2/&lt;app&gt;.json</code> plus
@@ -768,18 +769,47 @@ builds when <code>main</code> has changed since the last Dev build
 (<code>scripts/dev_build_plan.py</code> decides; Run workflow with
 <strong>force</strong> overrides both rules). It builds every app
 unsigned, with a version like <code>3.3.1-dev.20261003.1</code>, and
-publishes them to
-<strong>Community-Access/quillville-dev-builds</strong>, never to the
-main repository.</p>
+publishes them as files in <strong>one rolling prerelease of this
+repository, tagged <code>dev-builds</code></strong>, which anyone can
+download without signing in: <a
+href="https://github.com/Community-Access/quill/releases/tag/dev-builds">https://github.com/Community-Access/quill/releases/tag/dev-builds</a>.</p>
+<p><strong>Why one release, not one per build.</strong> Installed Quill
+Radio 3.0.4 and QUILL Lite 1.1.2 read only the first 30 releases of this
+repository, newest first (prereleases count, though they are ignored). A
+release for each of eleven apps a day would push their newest Stable
+build off that page within three days, and those copies would stop
+seeing updates without saying so. One release takes one place on the
+page for good, so the page budget below is unaffected.</p>
+<p><strong>What is in it.</strong> Each build is a few files named for
+its version: the installer and portable zip, a checksums file named for
+the build’s tag (<code>&lt;tag&gt;.SHA256SUMS.txt</code>), and its
+licence and notices (<code>&lt;tag&gt;.LICENSE.txt</code>, and so on).
+The release notes list one line per build naming the commit it came from
+(<code>&lt;tag&gt;: Built from Community-Access/quill@&lt;sha&gt;.</code>);
+a build with files but no line is not yet ready to promote.
+<code>quill/tools/dev_release.py</code> is the one place that knows this
+shape, and gives the planner and the batch promoter back one row per
+build.</p>
 <ul>
-<li>The first job stops at once, with an error naming the secret, when
-<code>DEV_BUILDS_TOKEN</code> is missing or cannot read the dev-builds
-repository, so a missing secret never costs a family-wide Windows build
-matrix.</li>
-<li>Every job builds from the one commit the first job chose, and that
-commit is the one written into the release notes, so “has
-<code>main</code> changed since the last Dev build?” compares against
-what was really built.</li>
+<li><strong>No personal token.</strong> The workflow’s own token writes
+to this repository. Only the jobs that publish are given
+<code>contents: write</code>; compiling is read-only. The old
+<code>DEV_BUILDS_TOKEN</code> secret is not used and can be
+deleted.</li>
+<li>The first job makes the release if it is missing
+(<code>scripts/dev_release_finalize.py --ensure</code>) before eleven
+apps upload in parallel, so they never race to make it.</li>
+<li>Every job builds from the one commit the first job chose. After the
+uploads, the last job writes that commit into the release notes for
+every build that arrived, so “has <code>main</code> changed since the
+last Dev build?” compares against what was really built, even when some
+apps failed.</li>
+<li><strong>Old builds are removed automatically.</strong> The newest 3
+builds of each app are kept, <strong>plus any build a signed update feed
+in <code>main</code> still points at</strong>, so a build promoted to
+Beta or Stable is never pulled from under the people downloading it.
+Promote soon after a build, and merge the signed-feed pull request
+promptly: the feed protects a build only once it is merged.</li>
 <li>Quill Radio’s Dev build skips its catalog seed
 (<code>-SkipCatalog</code>, which only Radio’s build script has) and
 browses live until its first refresh. QUILL Cast’s build reads
@@ -791,8 +821,15 @@ no Podcast Index search.</li>
 computer:</p>
 <div class="sourceCode" id="cb6"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.3</span><span class="op">.</span><span class="dv">1</span><span class="op">-</span>dev<span class="op">.</span><span class="dv">20261003.1</span> <span class="op">--</span>channel dev <span class="op">--</span>existing</span></code></pre></div>
+<p>That downloads only that build’s files from the rolling release,
+hashes them, and lists them. A Dev build is always listed with
+<code>--existing</code>: a release of its own would take a place on the
+page. A Dev <em>channel</em> listing of an ordinary numbered candidate
+(<code>3.3.0</code>) is different, and still makes its own release.</p>
 <p>A good Dev build can go to Beta as-is:
-<code>promote_release.py --to beta</code>.</p>
+<code>promote_release.py --to beta</code>. The rolling release itself is
+never promoted, retitled or marked latest; only the feed moves a build
+between channels.</p>
 <p>To move one complete catalogue-driven Dev run, identified by the
 exact 40-character <code>main</code> commit written into all eleven
 release bodies, first run the unprotected dry-run path:</p>
@@ -812,10 +849,10 @@ the protected write. Its unprotected preflight has no signing key. With
 environment delivers <code>QUILL_FEED_SIGNING_KEY</code>, lists and
 promotes the eleven apps sequentially, verifies every signed feed and
 the index, and opens one pull request containing all feed updates plus
-<code>docs/release/promotions.log</code>. The real job uses the existing
-<code>DEV_BUILDS_TOKEN</code> only for the Dev release’s required
-licence-file upload; the main-repository pull request still uses the
-workflow token. No private key is restored to a workstation.</p>
+<code>docs/release/promotions.log</code>. The workflow’s own token adds
+each build’s licence files to the rolling Dev release and opens the pull
+request; no personal token is involved. No private key is restored to a
+workstation.</p>
 <div class="sourceCode" id="cb8"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>gh <span class="kw">workflow</span> run release-feed-batch<span class="op">.</span><span class="fu">yml</span> <span class="op">-</span>f sha<span class="op">=</span>0123456789abcdef0123456789abcdef01234567 <span class="op">-</span>f dry_run<span class="op">=</span>true</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>gh <span class="kw">workflow</span> run release-feed-batch<span class="op">.</span><span class="fu">yml</span> <span class="op">-</span>f sha<span class="op">=</span>0123456789abcdef0123456789abcdef01234567 <span class="op">-</span>f dry_run<span class="op">=</span>false</span></code></pre></div>
@@ -1022,20 +1059,24 @@ gone back.</li>
 in Help &gt; Update History.</li>
 </ul>
 <h3 id="one-time-setup-owner">One-time setup (owner)</h3>
-<p>The durable GitHub pieces and the exact remaining owner secrets
-are:</p>
+<p>The durable GitHub pieces and the repository secrets are:</p>
 <ol type="1">
-<li><strong>Done.</strong>
-<code>Community-Access/quillville-dev-builds</code> exists with a
-<code>main</code> branch.</li>
-<li><strong>Still needed.</strong> Add the repository secret
-<strong>DEV_BUILDS_TOKEN</strong> to
-<code>Community-Access/quill</code>: a fine-grained token with Contents
-read and write on the dev-builds repository only.</li>
-<li><strong>Still needed for Cast index search.</strong> Add the
-repository secrets <strong>QUILL_PODCAST_INDEX_KEY</strong> and
-<strong>QUILL_PODCAST_INDEX_SECRET</strong> (QUILL Cast’s Dev builds
-read them; without them Cast builds with no Podcast Index search).</li>
+<li><strong>Not needed any more.</strong> The separate Dev-builds
+repository (<code>Community-Access/quillville-dev-builds</code>) and its
+<code>DEV_BUILDS_TOKEN</code> secret are retired: Dev builds are files
+in the rolling <code>dev-builds</code> release of this repository,
+written with the workflow’s own token. After one full Dev to Beta cycle
+has worked, the old repository can be archived or deleted, and the
+<code>DEV_BUILDS_TOKEN</code> secret removed.</li>
+<li><strong>Done (2026-11-26).</strong> The repository secrets
+<strong>QUILL_PODCAST_INDEX_KEY</strong> and
+<strong>QUILL_PODCAST_INDEX_SECRET</strong> are set. QUILL Cast’s Dev
+and Beta builds read them to bundle Cast’s Podcast Index search; without
+them Cast builds with no search. Rotate them by running
+<code>gh secret set</code> for each name again.</li>
+<li><strong>Done.</strong> <strong>QUILL_FEED_SIGNING_KEY</strong> is
+the feed’s signing seed. It is delivered only to the protected
+<code>release-feed-signing</code> jobs, never to a build.</li>
 <li><strong>Done.</strong> <strong>stable-promotion</strong> and
 <strong>release-feed-signing</strong> both exist with the owner as
 required reviewer. The feed-signing environment is limited to
@@ -1048,13 +1089,14 @@ Run <strong>release-feeds</strong>, approve
 signed-feed pull request. Until then, apps keep the legacy GitHub path
 when their v2 list is missing.</li>
 <li>Watch the first runs: run <strong>dev-builds</strong> once by hand
-with <strong>force</strong> and read each job; check the
-catalogue-driven releases in the dev-builds repository and that the next
-scheduled run says “main has not changed”; run
-<strong>promote-release</strong> with <strong>dry_run</strong> on before
-any real promotion; and update one portable copy and one installed copy
-by hand, reading <code>apply-update.log</code> in the app’s
-<code>updates</code> folder.</li>
+with <strong>force</strong> and read each job; check that the
+<code>dev-builds</code> release holds eleven apps’ files and one line
+per build in its notes, and that the next scheduled run says “main has
+not changed”; run <strong>promote-release</strong> with
+<strong>dry_run</strong> on before any real promotion; and update one
+portable copy and one installed copy by hand, reading
+<code>apply-update.log</code> in the app’s <code>updates</code>
+folder.</li>
 </ol>
 <h3 id="the-old-v1-list-and-the-protected-actions-key">The old v1 list
 and the protected Actions key</h3>

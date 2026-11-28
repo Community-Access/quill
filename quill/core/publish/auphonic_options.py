@@ -46,16 +46,45 @@ PEAK_LIMITS: tuple[tuple[float, str], ...] = (
     (-2.0, "Peaks no louder than -2 dB, safer for MP3 and AAC"),
     (-3.0, "Peaks no louder than -3 dB, for audiobook stores"),
 )
-#: Noise reduction strengths, in dB; 0 lets Auphonic decide; -1 is off.
+#: Noise reduction strengths, in dB; -1 is off. 0 is Auphonic's default, whose
+#: meaning depends on the method: automatic with Auphonic's usual (classic)
+#: method, but full strength with static, dynamic and speech isolation
+#: (auphonic.com/help/api/details.html, checked 2026-11-26).
 NOISE_OFF = -1
 NOISE_AMOUNTS: tuple[tuple[int, str], ...] = (
     (NOISE_OFF, "Off"),
-    (0, "Automatic: Auphonic decides how much"),
+    (0, "Auphonic's default: automatic with its usual method, full with the others"),
     (6, "Light"),
     (12, "Medium"),
     (18, "Strong"),
     (100, "As much as possible"),
 )
+#: Reverb reduction (``deverbamount``), in dB. It needs the static, dynamic or
+#: speech isolation method, where Auphonic's own default is full strength, so
+#: "Auphonic's default" sends nothing and keeps that behaviour.
+REVERB_DEFAULT = -2
+REVERB_AMOUNTS: tuple[tuple[int, str], ...] = (
+    (REVERB_DEFAULT, "Auphonic's default, which is full strength"),
+    (-1, "Off: keep the room's sound"),
+    (6, "Light"),
+    (12, "Medium"),
+    (24, "Strong"),
+    (100, "As much as possible"),
+)
+#: Breath reduction (``debreathamount``), in dB; -1 (off) is Auphonic's default.
+#: It needs the dynamic or speech isolation method.
+BREATH_OFF = -1
+BREATH_AMOUNTS: tuple[tuple[int, str], ...] = (
+    (BREATH_OFF, "Off"),
+    (6, "Light"),
+    (12, "Medium"),
+    (24, "Strong"),
+    (100, "As much as possible"),
+)
+#: The noise methods each of those works with (Auphonic's API pages).
+REVERB_METHODS = frozenset({"static", "dynamic", "speech_isolation"})
+BREATH_METHODS = frozenset({"dynamic", "speech_isolation"})
+
 #: Noise reduction methods, by Auphonic's name.
 NOISE_METHODS: tuple[tuple[str, str], ...] = (
     ("", "Auphonic's usual method"),
@@ -95,6 +124,8 @@ class CustomProcessing:
     max_peak: float = -1.0
     noise: int = NOISE_OFF
     noise_method: str = ""
+    reverb: int = REVERB_DEFAULT
+    breath: int = BREATH_OFF
 
     def algorithms(self, *, multitrack: bool) -> tuple[dict[str, object], dict[str, object]]:
         """``(production, per_track)`` algorithm settings.
@@ -113,6 +144,10 @@ class CustomProcessing:
             track["denoiseamount"] = self.noise
             if self.noise_method:
                 track["denoisemethod"] = self.noise_method
+            if self.reverb != REVERB_DEFAULT and self.noise_method in REVERB_METHODS:
+                track["deverbamount"] = self.reverb
+            if self.breath != BREATH_OFF and self.noise_method in BREATH_METHODS:
+                track["debreathamount"] = self.breath
         if multitrack:
             return master, track
         return {**track, **master}, {}
@@ -133,6 +168,12 @@ class CustomProcessing:
             amount = _label(NOISE_AMOUNTS, self.noise, str(self.noise)).split(":")[0]
             method = _label(NOISE_METHODS, self.noise_method, self.noise_method)
             parts.append(f"noise reduction {amount.lower()}, {method[0].lower()}{method[1:]}")
+            if self.reverb != REVERB_DEFAULT:
+                reverb = _label(REVERB_AMOUNTS, self.reverb, str(self.reverb)).split(":")[0]
+                parts.append(f"reverb reduction {reverb.lower()}")
+            if self.breath != BREATH_OFF:
+                breath = _label(BREATH_AMOUNTS, self.breath, str(self.breath))
+                parts.append(f"breath reduction {breath.lower()}")
         return "Custom processing, which replaces the preset's own: " + ", ".join(parts)
 
     def problem(self) -> str:
@@ -145,6 +186,24 @@ class CustomProcessing:
             return "Choose a noise reduction strength from the list."
         if self.noise_method not in {value for value, _l in NOISE_METHODS}:
             return "Choose a noise reduction method from the list."
+        if self.reverb not in {value for value, _l in REVERB_AMOUNTS}:
+            return "Choose a reverb reduction strength from the list."
+        if self.breath not in {value for value, _l in BREATH_AMOUNTS}:
+            return "Choose a breath reduction strength from the list."
+        if self.reverb != REVERB_DEFAULT and (
+            self.noise == NOISE_OFF or self.noise_method not in REVERB_METHODS
+        ):
+            return (
+                "Reverb reduction works with noise reduction on and a method of steady "
+                "noise, changing noise, or keep only the speech."
+            )
+        if self.breath != BREATH_OFF and (
+            self.noise == NOISE_OFF or self.noise_method not in BREATH_METHODS
+        ):
+            return (
+                "Breath reduction works with noise reduction on and a method of changing "
+                "noise, or keep only the speech."
+            )
         return ""
 
 
@@ -218,20 +277,73 @@ def cover_problem(cover: str) -> str:
 # -- the request ------------------------------------------------------------------------
 
 
-def outputs(primary: str, second: str, transcript: bool) -> list[dict[str, str]]:
-    """The ``output_files`` list: the chosen format, the second one, and the transcript's."""
+#: The chapters file Auphonic writes beside the audio (``info.json`` output_files).
+CHAPTERS_OUTPUT: dict[str, str] = {"format": "chaps", "ending": "chapters.txt"}
+
+
+def outputs(
+    primary: str, second: str, transcript: bool, chapters: bool = False
+) -> list[dict[str, str]]:
+    """The ``output_files`` list: the chosen format, the second one, the
+    transcript's files, and a chapters file when chapters are generated."""
     files: list[dict[str, str]] = []
     for name in (primary, second):
         if name and {"format": name} not in files:
             files.append({"format": name})
     if transcript:
         files += [dict(item) for item in TRANSCRIPT_OUTPUTS]
+    if chapters:
+        files.append(dict(CHAPTERS_OUTPUT))
     return files
 
 
-def speech_recognition(language: str) -> dict[str, str]:
-    """The request's speech-recognition block: Auphonic's own, in *language*."""
-    return {"type": "auphonic", "language": language or "en"}
+def speech_recognition(language: str, *, shownotes: bool = False) -> dict[str, object]:
+    """The request's speech-recognition block: Auphonic's own, in *language*.
+
+    With *shownotes*, Auphonic also writes chapters and show notes: summaries
+    and tags (``"shownotes": true``, for paying Auphonic accounts only;
+    auphonic.com/help/api/details.html, checked 2026-11-26).
+    """
+    block: dict[str, object] = {"type": "auphonic", "language": language or "en"}
+    if shownotes:
+        block["shownotes"] = True
+    return block
+
+
+def shownotes_text(title: str, shownotes: object, chapters: object) -> str:
+    """Auphonic's generated show notes and chapters as plain text, or ``""``.
+
+    ``shownotes`` is the production's ``{"summaries": {"long", "brief",
+    "subtitle"}, "tags": [...]}``; ``chapters`` its list of ``{"start",
+    "title"}``. Written as a text file beside the audio, for reading and
+    editing in any editor.
+    """
+    lines: list[str] = []
+    notes = shownotes if isinstance(shownotes, dict) else {}
+    summaries = notes.get("summaries") if isinstance(notes.get("summaries"), dict) else {}
+    for key, heading in (("subtitle", "Subtitle"), ("brief", "Brief summary"), ("long", "Summary")):
+        values = summaries.get(key) if isinstance(summaries, dict) else None
+        texts = (
+            [str(v).strip() for v in values or [] if str(v).strip()]
+            if isinstance(values, list)
+            else []
+        )
+        if texts:
+            lines += [heading, *texts, ""]
+    tags = [str(tag).strip() for tag in notes.get("tags") or [] if str(tag).strip()]
+    if tags:
+        lines += ["Tags", ", ".join(tags), ""]
+    marks = [c for c in chapters or [] if isinstance(c, dict)] if isinstance(chapters, list) else []
+    if marks:
+        lines.append("Chapters")
+        for mark in marks:
+            lines.append(
+                f"{str(mark.get('start', '')).strip()} {str(mark.get('title', '')).strip()}"
+            )
+        lines.append("")
+    if not lines:
+        return ""
+    return "\n".join([f"Show notes for {title}", "", *lines]).rstrip() + "\n"
 
 
 def extras_problem(
@@ -243,8 +355,19 @@ def extras_problem(
     cover: str,
     chapters_edited: bool,
     productions: int,
+    shownotes: bool = False,
 ) -> str:
     """Why the extra choices cannot be sent, in words; ``""`` when they can."""
+    if shownotes and not transcript:
+        return (
+            "Generated chapters and show notes come from Auphonic's speech recognition, "
+            "so turn on Make captions and a transcript as well."
+        )
+    if shownotes and chapters_edited:
+        return (
+            "Auphonic generates chapters only when none are given. Clear the edited "
+            "chapter marks, or turn off generated chapters and show notes."
+        )
     if (second_format or transcript) and not output_format:
         return (
             "A second format or a transcript needs an output format chosen too, because "

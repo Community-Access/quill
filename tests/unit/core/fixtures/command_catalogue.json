@@ -198,6 +198,7 @@
         "github.workbench_actions_runs",
         "github.workbench_explore",
         "github.workbench_inbox",
+        "github.workbench_my_github",
         "github.workbench_issues",
         "github.workbench_my_work",
         "github.workbench_pulls",

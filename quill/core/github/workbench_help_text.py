@@ -32,8 +32,8 @@ PREF_HELP: dict[str, tuple[str, str, str]] = {
     "open_on": (
         "General",
         "&Open the Workbench on:",
-        "Where the window opens when no menu row asks for a place: Inbox (Start Here "
-        "until you have signed in), Start Here, or wherever you were last time.",
+        "Where the window opens when no menu row asks for a place: My GitHub (Start Here "
+        "until you have signed in), Inbox, Start Here, or wherever you were last time.",
     ),
     "list_mode": (
         "General",
@@ -117,6 +117,7 @@ PREF_HELP: dict[str, tuple[str, str, str]] = {
 
 #: How each choice value reads in the dialog.
 CHOICE_WORDS: dict[str, str] = {
+    "my_github": "My GitHub",
     "inbox": "Inbox",
     "start": "Start Here",
     "last": "Where I was last time",
@@ -222,6 +223,11 @@ RESULT_EXPLANATIONS: tuple[tuple[str, str], ...] = (
 
 #: Window title (or its start) -> what the window is for, said first by F1.
 SURFACE_PURPOSES: dict[str, str] = {
+    "Find a Person or Organization": (
+        "Type a username or name and the matching people and organizations appear. "
+        "Open an account's repositories, keep it in Tracked Accounts, mark a favorite "
+        "on this computer, follow a person on GitHub, or open the account on GitHub."
+    ),
     "Filter Builder": (
         "Build a filter one condition at a time: an attribute, an operator and a value "
         "from the repository. The query appears as you go, in GitHub's own syntax; OK "

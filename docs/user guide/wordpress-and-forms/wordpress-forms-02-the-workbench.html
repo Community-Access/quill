@@ -635,6 +635,58 @@ Workbench.</li>
 own email. The Workbench sends nothing and puts nothing of yours in it,
 so leave your passwords out of what you write too.</li>
 </ul>
+<h2 id="list-speech-templates">List Speech Templates</h2>
+<p>Each row in a list is read as its cells, one after another.
+<strong>List Speech Templates</strong> (Tools menu,
+<code>Ctrl+Alt+Shift+V</code>) lets you decide what a row says, and in
+what order, for each kind of list: WordPress posts, pages, comments,
+media and users. Nothing changes until you choose a template; until then
+every list is read the way it always was.</p>
+<p>In the window:</p>
+<ol type="1">
+<li><strong>List</strong> picks the kind of list.</li>
+<li><strong>Template</strong> picks the usual wording, one of three
+built-in presets, or a template you saved. <strong>Brief</strong> says
+only what identifies the row. <strong>Balanced</strong> adds the state
+and how long ago it changed. <strong>Detailed</strong> says everything
+and introduces each value with its name.</li>
+<li><strong>Fields in spoken order</strong> is the row, first to last.
+<strong>Move Up</strong> and <strong>Move Down</strong> (or
+<code>Alt+Up</code> and <code>Alt+Down</code> on the list) change the
+order, and each move says where the field landed, such as “Title moved
+to position 2 of 4”. <strong>Remove</strong> (or <code>Delete</code>)
+takes a field out. <strong>Choose field</strong> and
+<strong>Add</strong> put one back at the end.</li>
+<li><strong>Separator</strong> is what is said between fields.
+<strong>Say field labels</strong> adds the name before a value, such as
+“by octocat”. <strong>Leave out empty fields</strong> skips a field with
+no value; turn it off and <strong>Empty-field text</strong> is said
+instead.</li>
+<li><strong>Sample row preview</strong> is a real-looking row said
+exactly as your rows will be. <strong>Hear Preview</strong> says it
+aloud.</li>
+<li><strong>Save As</strong> names your choices. <strong>Rename</strong>
+and <strong>Delete Template</strong> work on a saved template.
+<strong>Use for This List</strong> makes the list speak this way, and
+<strong>Use for Similar Lists</strong> does the same for lists that read
+alike, such as issues and pull requests; a list that lacks one of the
+fields keeps its own choice and is named.</li>
+<li><strong>Import</strong> adds templates from a file someone shared,
+and <strong>Export</strong> saves all of yours to a file. Import asks,
+template by template, before replacing one you already have:
+<strong>Replace</strong>, <strong>Keep Mine</strong> or <strong>Cancel
+Import</strong>. A file that is not a template file, or comes from a
+newer QUILL, is refused and the window says nothing changed; an older
+file is read, and any template that cannot be used is counted in what
+the window says. Which template each list uses is not shared: choose
+that yourself after importing.</li>
+</ol>
+<p>If GitHub or WordPress stops offering a field you chose, the rest of
+your choices are kept, the window says which field is gone, and the row
+simply does not say it: you never hear a blank. The Details pane always
+has the full row, whatever the template says. If the template file
+cannot be read, a copy is kept aside and the usual wording is used until
+you save again.</p>
 <h2 id="a-walk-through-your-first-five-minutes">A walk-through: your
 first five minutes</h2>
 <ol type="1">

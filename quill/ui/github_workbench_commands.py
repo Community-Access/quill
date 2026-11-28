@@ -60,6 +60,7 @@ ITEMS_VIEWS: dict[str, str] = {
 #: person's own choice in Workbench Options: Inbox, Start Here or the last place).
 WORKBENCH_NODES: dict[str, str] = {
     "file.open_github_items": "",
+    "github.workbench_my_github": "my_github",
     "github.workbench_inbox": "inbox",
     "github.workbench_my_work": "attention",
     "github.view_notifications": "notifications",
@@ -138,6 +139,9 @@ class GitHubWorkbenchCommands:
         if self._open_workbench is None:
             raise RuntimeError("The GitHub Workbench window is not available.")
         self._open_workbench(WORKBENCH_NODES[command_id])
+
+    def my_github(self) -> None:
+        self.run("github.workbench_my_github")
 
     def inbox(self) -> None:
         self.run("github.workbench_inbox")

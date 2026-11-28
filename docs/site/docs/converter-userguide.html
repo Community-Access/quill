@@ -373,7 +373,9 @@ the list, which reads “Nothing to convert yet. Add Files (Ctrl+O)
 chooses audio or video files, or Add Folder (Ctrl+Shift+O) brings a
 whole folder.” The line goes away as soon as something is in the queue;
 after that, Quill Converter opens on the <strong>Files to
-convert</strong> list.</li>
+convert</strong> list. On later starts, the files and folders you left
+in that list are already there, in the same order; opening the app never
+starts a conversion.</li>
 <li>Press Alt+A (<strong>Add Files…</strong>) and choose one or more
 files. Or press Alt+O (<strong>Add Folder…</strong>) to add a whole
 folder, sub-folders included. You can also paste files you copied in
@@ -422,12 +424,16 @@ href="#advanced-options">Advanced Options</a>.</p>
 <p>Quill Converter remembers your format, presets, effects, custom
 effects, the keep-from and keep-until times, the Chapter marks choice,
 the Advanced Options, and the output folder between runs, so the next
-job starts where the last one ended.</p>
+job starts where the last one ended. The editable queue is kept
+separately, with each file or folder and its original folder root, so
+queue work survives restarting the app without being mixed into
+settings.</p>
 <h3 id="the-main-window">The main window</h3>
 <p>Tab order, top to bottom, with each control’s access key:</p>
 <ul>
 <li><strong>Files to convert</strong> – the queue (focus starts here). A
-folder reads as “name (folder)”.</li>
+folder reads as “name (folder)”. A disconnected or moved item stays in
+the list as “(missing)” and can still be removed.</li>
 <li><strong>Add Files…</strong> (Alt+A), <strong>Add Folder…</strong>
 (Alt+O), <strong>Remove</strong> (Alt+R).</li>
 <li><strong>Convert to</strong> (Alt+T) – the output format. Sound
@@ -949,7 +955,9 @@ queue</h2>
 <p>The queue is the list of files waiting to be converted. This chapter
 covers filling it and ordering it, editing tags, what happens during and
 after a conversion, and the Advanced Options for when a preset is not
-quite right.</p>
+quite right. Closing Quill Converter does not clear it: add, reorder,
+remove and clear changes are written locally, and the same editable list
+returns at the next launch. Nothing in that list starts by itself.</p>
 <h3 id="managing-the-queue">Managing the queue</h3>
 <ul>
 <li><strong>Add files:</strong> Alt+A, or File &gt; Add Files…
@@ -968,6 +976,15 @@ row.</li>
 deleted from disk.</li>
 <li><strong>Clear the queue:</strong> Queue &gt; Clear Queue
 (Ctrl+Shift+Delete).</li>
+<li><strong>Keep working after a missing path:</strong> if a file is
+moved or a drive is disconnected, its row says “missing” instead of
+disappearing. The row can be removed, reordered or cleared; reconnect
+the drive or move the path back and the row is usable again.</li>
+<li><strong>When the queue cannot be saved:</strong> the files remain
+active in the open window. Help &gt; Activity (Shift+F9) records the
+write failure with <strong>Retry</strong> and <strong>Open
+Folder</strong>. Retry saves the queue as it is now, including changes
+made after the first failure.</li>
 <li><strong>File Properties:</strong> Alt+Enter describes the
 highlighted file: its length, size, container, overall bit rate, tags,
 each video, audio and subtitle track, whether it has cover art, and its
@@ -986,7 +1003,9 @@ everything else still shows. The window only reads; nothing on the drive
 changes.</li>
 </ul>
 <p>Adding the same file twice queues it once. A file that is not a media
-file is left out, and the announcement says how many were.</p>
+file is left out, and the announcement says how many were. Queue
+persistence is local only: it makes no network request, and in Safe Mode
+it has the same no-start behaviour as an ordinary launch.</p>
 <h3 id="editing-tags">Editing tags</h3>
 <p><strong>Queue &gt; Edit Tags…</strong> (Ctrl+T) opens the Tag Editor
 on the highlighted file: the same editor Audio Studio uses, built into
@@ -1326,9 +1345,9 @@ production; with several separate files, each keeps its own chapters.
 The title is still each file’s own (or the multitrack title). Your
 choices here are not remembered for next time.</p>
 <h3
-id="more-options-custom-processing-a-second-format-captions-and-a-transcript">More
-options: custom processing, a second format, captions and a
-transcript</h3>
+id="more-options-custom-processing-a-second-format-captions-chapters-and-show-notes">More
+options: custom processing, a second format, captions, chapters and show
+notes</h3>
 <p>The <strong>More Auphonic Options</strong> window (Alt+O in Process
 with Auphonic) has three parts.</p>
 <p><strong>Custom processing.</strong> Used only when
@@ -1345,13 +1364,24 @@ audiobook (-20) and European and American broadcast (-23 and -24).</li>
 <li><strong>Peak limit</strong> (Alt+P): how loud the loudest moment may
 be: -1, -2 or -3 dB. -2 leaves room for MP3 and AAC; -3 suits audiobook
 stores.</li>
-<li><strong>Noise reduction</strong> (Alt+N): Off, Automatic (Auphonic
-decides), Light, Medium, Strong, or As much as possible.</li>
+<li><strong>Noise reduction</strong> (Alt+N): Off, Auphonic’s default,
+Light, Medium, Strong, or As much as possible. Auphonic’s default means
+automatic with its usual method, but full strength with the three named
+methods below.</li>
 <li><strong>Noise reduction method</strong> (Alt+M), when noise
 reduction is on: Auphonic’s usual method, steady noise only (hum and
 hiss), changing noise too (traffic, other voices), or <strong>Keep only
 the speech</strong>, which removes music and every other sound as
 well.</li>
+<li><strong>Reverb reduction</strong> (Alt+R): takes out the echo of a
+room, such as a kitchen or a bare office. It is offered with the steady
+noise, changing noise and keep only the speech methods. With those,
+Auphonic already reduces reverb fully, so <strong>Auphonic’s
+default</strong> keeps that, and you can choose Off to keep the room’s
+sound, or Light, Medium or Strong.</li>
+<li><strong>Breath reduction</strong> (Alt+B): makes breaths between
+phrases quieter. It is offered with the changing noise and keep only the
+speech methods, and is off unless you choose a strength.</li>
 </ul>
 <p>A multitrack production filters and denoises each track and levels
 and sets the loudness of the final mix.</p>
@@ -1364,6 +1394,22 @@ recognition writes down what is said: you get captions (an SRT file) and
 a plain-text transcript (a TXT file), saved beside the sound. Choose the
 language spoken: English, German, Spanish, French, Italian, Dutch or
 Portuguese. This uses more of your Auphonic credits.</p>
+<p><strong>Generate chapters and show notes</strong> (Alt+C), with
+captions and a transcript on. Auphonic listens to the recording and
+writes:</p>
+<ul>
+<li><strong>chapter marks</strong>, put into the saved sound file and
+saved as a chapters file beside it;</li>
+<li><strong>show notes</strong>: a subtitle, a brief summary, a long
+summary and tags, saved beside the sound as a text file named “<title>
+show notes.txt”, for you to read, edit and paste wherever you
+publish.</li>
+</ul>
+<p>This is for paying Auphonic accounts; with a free one, Auphonic may
+refuse the production, and the summary says so. It cannot be used
+together with chapter marks you edited in Tags, Cover and Chapter Marks,
+because Auphonic writes chapters only when none are given; Review tells
+you if both are chosen.</p>
 <p><strong>Example.</strong> For an audiobook chapter you want -20 LUFS,
 peaks at -3 dB, light noise reduction, a FLAC master and an MP3 copy,
 and a transcript. In Process with Auphonic choose Custom processing and
@@ -1381,8 +1427,8 @@ is missing. Custom processing’s values are not remembered for next time
 (the choice of Custom processing is). Per-track settings for a
 multitrack production, Auphonic’s automatic cutting of silence, filler
 words or coughs, video, and more than two formats are not offered. Only
-captions and a plain-text transcript are saved, never other files
-Auphonic makes.</p>
+the sound, captions, the transcript, the chapters file and the show
+notes are saved, never other files Auphonic makes.</p>
 <h3 id="while-it-works-and-when-it-is-done">While it works, and when it
 is done</h3>
 <p>Sending is a job like a conversion: the progress bar, the status bar

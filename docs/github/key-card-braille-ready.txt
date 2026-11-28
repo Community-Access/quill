@@ -5,6 +5,8 @@ FILE
 Ctrl+N: New Here
 Ctrl+Shift+N: New
 Ctrl+L: Open GitHub Address
+Ctrl+Alt+E: Find a Person or
+  Organization
 Ctrl+G: Go to Number
 Shift+Enter: Open on GitHub
 Ctrl+Enter: Open in Editor
@@ -21,15 +23,16 @@ Ctrl+C: Copy
 Ctrl+Shift+C: Copy Link
 Ctrl+E: Filter
 Ctrl+Alt+F: Filter Builder
+
 Ctrl+A: Select All
 
-
 VIEW
 F5: Refresh
 Ctrl+F5: Refresh Ignoring Cache
 Alt+PageDown: Load More
 Ctrl+Shift+PageDown: Load All
 Ctrl+Shift+U: Columns
+Ctrl+Alt+M: My GitHub View Options
 Alt+Left: Back
 Alt+Right: Forward
 F6: Next Pane
@@ -45,11 +48,12 @@ Alt+8: Say Loading
 Alt+9: Say Account
 
 GO
+Alt+Shift+Home: My GitHub
+
 Ctrl+1: Inbox
 Ctrl+2: Current Repository
 Ctrl+3: Search
 Ctrl+4: People
-
 Ctrl+5: Gists
 Ctrl+6: Projects
 Ctrl+7: Watches
@@ -71,11 +75,11 @@ Ctrl+.: Next Unread
 Ctrl+Shift+.: Previous Unread
 
 ITEM
+
 Alt+Enter: Properties
 Ctrl+Shift+M: Comment
 Ctrl+Shift+D: File Differences
 Ctrl+Shift+Enter: Merge
-
 Ctrl+Shift+A: Assign to Copilot
 Ctrl+Shift+T: Start in Local Worktree
 Ctrl+Shift+I: Read as Document
@@ -97,16 +101,17 @@ Ctrl+Alt+B: Export Software Bill of
 Ctrl+Alt+T: Transfer Repository
 Ctrl+Alt+W: Clone Wiki
 
+
 ACCOUNT
 Ctrl+Shift+K: Manage GitHub Accounts
 Ctrl+Shift+L: GitHub API Rate Limit
 Ctrl+Shift+P: GitHub Permissions
-
 Ctrl+Shift+H: Change History
 Ctrl+Alt+S: Set Your Status
 
 TOOLS
 Ctrl+Shift+O: Workbench Options
+Ctrl+Alt+Shift+V: List Speech Templates
 Ctrl+Alt+D: Dry Run
 Ctrl+Shift+S: Plain-Language Batch
 Ctrl+Shift+J: GitHub API Console
@@ -122,12 +127,12 @@ Ctrl+Alt+Shift+F1: What Can I Say Here?
 Alt+F1: What Is This?
 Ctrl+F1: GitHub Workbench Guide
 Ctrl+Shift+F1: Search Help
+
 Alt+Shift+T: Take the Tour
 Alt+Shift+A: Ask How
 Ctrl+F2: Tutorials
 Ctrl+Alt+P: Practice on GitHub
 Ctrl+Alt+F1: GitHub Service Status
-
 Alt+Shift+F1: Workbench Keys
 Ctrl+Alt+K: Key Describer
 F9: Say Last Result Again

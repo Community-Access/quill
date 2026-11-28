@@ -79,6 +79,8 @@ class AuphonicChoices:
     second_format: str = ""
     transcript: bool = False
     language: str = "en"
+    #: Generated chapters and show notes (paying Auphonic accounts only).
+    shownotes: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -206,6 +208,7 @@ def problem(choices: AuphonicChoices, eligible: list[Path]) -> str:
         cover=choices.cover,
         chapters_edited=choices.chapters is not None,
         productions=1 if choices.mode == MULTITRACK else len(eligible),
+        shownotes=choices.shownotes,
     )
 
 
@@ -294,11 +297,18 @@ def production_body(
             body["algorithms"] = {"leveler": True, "normloudness": True}
     if master:
         body["algorithms"] = master
-    files = options.outputs(choices.output_format, choices.second_format, choices.transcript)
+    files = options.outputs(
+        choices.output_format,
+        choices.second_format,
+        choices.transcript,
+        chapters=choices.shownotes and choices.transcript,
+    )
     if files:
         body["output_files"] = files
     if choices.transcript:
-        body["speech_recognition"] = options.speech_recognition(choices.language)
+        body["speech_recognition"] = options.speech_recognition(
+            choices.language, shownotes=choices.shownotes
+        )
     return body
 
 
@@ -342,6 +352,11 @@ def describe_processing(choices: AuphonicChoices) -> str:
         if choices.transcript:
             language = options.language_label(choices.language)
             output += f", with captions and a transcript in {language}"
+            if choices.shownotes:
+                output += (
+                    ", and generated chapters and show notes (a paying Auphonic "
+                    "account only; a free one may refuse the production)"
+                )
     else:
         output = "saved in the formats the preset chooses"
     return f"Processing: {processing}. Results: {output}."

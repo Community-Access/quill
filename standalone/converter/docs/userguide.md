@@ -1032,7 +1032,7 @@ separate files, each keeps its own chapters. The title is still each file's
 own (or the multitrack title). Your choices here are not remembered for next
 time.
 
-### More options: custom processing, a second format, captions and a transcript
+### More options: custom processing, a second format, captions, chapters and show notes
 
 The **More Auphonic Options** window (Alt+O in Process with Auphonic) has
 three parts.
@@ -1048,12 +1048,21 @@ processing**; otherwise these values are ignored.
   European and American broadcast (-23 and -24).
 - **Peak limit** (Alt+P): how loud the loudest moment may be: -1, -2 or -3 dB.
   -2 leaves room for MP3 and AAC; -3 suits audiobook stores.
-- **Noise reduction** (Alt+N): Off, Automatic (Auphonic decides), Light,
-  Medium, Strong, or As much as possible.
+- **Noise reduction** (Alt+N): Off, Auphonic's default, Light, Medium, Strong,
+  or As much as possible. Auphonic's default means automatic with its usual
+  method, but full strength with the three named methods below.
 - **Noise reduction method** (Alt+M), when noise reduction is on: Auphonic's
   usual method, steady noise only (hum and hiss), changing noise too
   (traffic, other voices), or **Keep only the speech**, which removes music
   and every other sound as well.
+- **Reverb reduction** (Alt+R): takes out the echo of a room, such as a
+  kitchen or a bare office. It is offered with the steady noise, changing
+  noise and keep only the speech methods. With those, Auphonic already
+  reduces reverb fully, so **Auphonic's default** keeps that, and you can
+  choose Off to keep the room's sound, or Light, Medium or Strong.
+- **Breath reduction** (Alt+B): makes breaths between phrases quieter. It is
+  offered with the changing noise and keep only the speech methods, and is
+  off unless you choose a strength.
 
 A multitrack production filters and denoises each track and levels and sets
 the loudness of the final mix.
@@ -1067,6 +1076,20 @@ and MP3 to share.
 captions (an SRT file) and a plain-text transcript (a TXT file), saved beside
 the sound. Choose the language spoken: English, German, Spanish, French,
 Italian, Dutch or Portuguese. This uses more of your Auphonic credits.
+
+**Generate chapters and show notes** (Alt+C), with captions and a transcript
+on. Auphonic listens to the recording and writes:
+
+- **chapter marks**, put into the saved sound file and saved as a chapters
+  file beside it;
+- **show notes**: a subtitle, a brief summary, a long summary and tags, saved
+  beside the sound as a text file named "<title> show notes.txt", for you to
+  read, edit and paste wherever you publish.
+
+This is for paying Auphonic accounts; with a free one, Auphonic may refuse the
+production, and the summary says so. It cannot be used together with chapter
+marks you edited in Tags, Cover and Chapter Marks, because Auphonic writes
+chapters only when none are given; Review tells you if both are chosen.
 
 **Example.** For an audiobook chapter you want -20 LUFS, peaks at -3 dB,
 light noise reduction, a FLAC master and an MP3 copy, and a transcript. In
@@ -1084,8 +1107,8 @@ outputs; Review tells you if one is missing. Custom processing's values are
 not remembered for next time (the choice of Custom processing is). Per-track
 settings for a multitrack production, Auphonic's automatic cutting of
 silence, filler words or coughs, video, and more than two formats are not
-offered. Only captions and a plain-text transcript are saved, never other
-files Auphonic makes.
+offered. Only the sound, captions, the transcript, the chapters file and the
+show notes are saved, never other files Auphonic makes.
 
 ### While it works, and when it is done
 

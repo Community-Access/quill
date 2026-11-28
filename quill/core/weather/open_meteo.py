@@ -13,7 +13,7 @@ import urllib.parse
 from dataclasses import dataclass
 
 from quill.core.error_codes import CodedError
-from quill.core.weather._http import HTTP_ERRORS, http_json
+from quill.core.weather._http import HTTP_ERRORS
 from quill.core.weather.models import (
     AirQuality,
     CurrentConditions,
@@ -21,6 +21,7 @@ from quill.core.weather.models import (
     WeatherLocation,
     WeatherReport,
 )
+from quill.core.weather.open_meteo_limits import get_json
 
 #: WMO weather interpretation codes -> plain text (Open-Meteo's daily code).
 _WMO_TEXT: dict[int, str] = {
@@ -210,7 +211,7 @@ def fetch(
         "forecast_days": days,
     })
     try:
-        data = http_json(f"https://api.open-meteo.com/v1/forecast?{query}")
+        data = get_json(f"https://api.open-meteo.com/v1/forecast?{query}")
     except HTTP_ERRORS as error:
         raise OpenMeteoError(f"Could not reach the extended-forecast service: {error}") from error
     current = data.get("current") if isinstance(data, dict) else None
@@ -237,6 +238,16 @@ def _to_celsius(value: object, unit: str) -> float | None:
     if not isinstance(value, (int, float)) or isinstance(value, bool):
         return None
     return round((float(value) - 32) * 5 / 9, 1) if unit == "F" else round(float(value), 1)
+
+
+_COMPASS_WORDS = (
+    "north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest",
+)  # fmt: skip
+
+
+def compass_name(bearing: float) -> str:
+    """Degrees from north -> 'north', 'northeast', ... (eight points, spoken)."""
+    return _COMPASS_WORDS[round((bearing % 360) / 45) % 8]
 
 
 def _compass(degrees: object) -> str:
@@ -272,7 +283,7 @@ def fetch_report(
         "forecast_days": days,
     })
     try:
-        data = http_json(f"https://api.open-meteo.com/v1/forecast?{query}")
+        data = get_json(f"https://api.open-meteo.com/v1/forecast?{query}")
     except HTTP_ERRORS as error:
         raise OpenMeteoError(f"Could not reach the worldwide forecast service: {error}") from error
     cur = data.get("current") if isinstance(data, dict) else None
@@ -358,7 +369,7 @@ def air_quality(latitude: float, longitude: float, *, safe_mode: bool = False) -
         "timezone": "auto",
     })
     try:
-        data = http_json(f"https://air-quality-api.open-meteo.com/v1/air-quality?{query}")
+        data = get_json(f"https://air-quality-api.open-meteo.com/v1/air-quality?{query}")
     except HTTP_ERRORS:
         return None
     current = data.get("current") if isinstance(data, dict) else None

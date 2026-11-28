@@ -78,6 +78,7 @@ from quill.core.workbench.filters import Query
 from quill.core.workbench.history import Change, ChangeHistory
 from quill.core.workbench.properties import SheetSpec
 from quill.core.workbench.tree import NodeSpec
+from quill.ui.list_speech_hooks import wordpress_cells, wordpress_columns
 from quill.ui.wordpress_workbench_across import WorkbenchAcrossCommands
 from quill.ui.wordpress_workbench_bold import WorkbenchBoldCommands
 from quill.ui.wordpress_workbench_commands import WorkbenchRowCommands
@@ -333,7 +334,7 @@ class WordPressWorkbenchProvider(
     # -- rows ---------------------------------------------------------------------
 
     def columns(self, node: NodeSpec) -> tuple[str, ...]:
-        return self.chosen_columns(node)
+        return wordpress_columns(self, node.row_type, self.chosen_columns(node))
 
     def remote_words(self, node: NodeSpec) -> bool:
         return node.loader.partition(":")[0] in _REMOTE
@@ -405,6 +406,9 @@ class WordPressWorkbenchProvider(
     def cells(self, row: object, columns: tuple[str, ...]) -> list[str]:
         if not isinstance(row, WbRow):
             return [str(row)]
+        spoken = wordpress_cells(self, row, columns)  # List Speech Templates
+        if spoken:
+            return spoken
         return [self.cell_for(row, column) for column in columns]
 
     def detail(self, row: object) -> str:

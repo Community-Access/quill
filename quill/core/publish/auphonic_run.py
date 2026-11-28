@@ -400,6 +400,9 @@ class Runner:
                 f"Downloading {name} failed: {said(error)} The result stays in your Auphonic "
                 f"account; {self.waiting_door}.",
             )
+        notes = _save_shownotes(folder, name, status)
+        if notes is not None:
+            files = [*files, notes]
         self._forget(record)
         noun = "file" if len(files) == 1 else "files"
         return Outcome(
@@ -435,6 +438,34 @@ class Runner:
             return  # a block-by-block upload would otherwise flood the UI thread
         self._last = key
         self.on_progress(text, overall)
+
+
+def _save_shownotes(folder: Path, name: str, status: Any) -> Path | None:
+    """Write Auphonic's generated show notes beside the audio; never overwrite.
+
+    They arrive in the production's details, not as a file, so they are saved
+    as ``<name> show notes.txt``. Nothing is written when there are none.
+    """
+    from quill.core.publish import auphonic_options as options
+    from quill.core.publish.auphonic import _unused_path
+
+    text = options.shownotes_text(
+        name, getattr(status, "shownotes", {}), getattr(status, "chapters", [])
+    )
+    if not text:
+        return None
+    try:
+        target = _unused_path(folder / f"{options_safe(name)} show notes.txt")
+        target.write_text(text, encoding="utf-8")
+    except (OSError, ValueError):
+        return None  # the sound files are what matter; the report still lists them
+    return target
+
+
+def options_safe(name: str) -> str:
+    from quill.core.publish.auphonic_plan import folder_name
+
+    return folder_name(name)
 
 
 def said(error: BaseException) -> str:

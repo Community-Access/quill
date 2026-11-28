@@ -473,7 +473,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ## The GitHub Workbench
 
-20 commands can be asked for in a sentence here.
+21 commands can be asked for in a sentence here.
 
 ### The GitHub Workbench: Account
 
@@ -522,6 +522,8 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "turn dry run on or off"; "practice without sending"; "toggle dry run".
 - **GitHub API Console (Ctrl+Shift+J).** Ask GitHub anything it has an API for.
   Say: "open the api console"; "make an api request"; "github api console".
+- **List Speech Templates (Ctrl+Alt+Shift+V).** Choose which fields a list row says, and in what order.
+  Say: "edit list speech templates"; "change how rows are read"; "set what a row says".
 - **Plain-Language Batch (Ctrl+Shift+S).** Change many issues or pull requests by saying it in words, checked before it is sent.
   Say: "plain language batch"; "change many issues in words"; "do a batch change by sentence".
 
@@ -541,7 +543,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ## The WordPress Workbench
 
-13 commands can be asked for in a sentence here.
+14 commands can be asked for in a sentence here.
 
 ### The WordPress Workbench: Edit
 
@@ -567,6 +569,8 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ### The WordPress Workbench: Tools
 
+- **List Speech Templates (Ctrl+Alt+Shift+V).** Choose which fields a list row says, and in what order.
+  Say: "edit list speech templates"; "change how rows are read"; "set what a row says".
 - **Plain-Language Batch (Ctrl+Alt+B).** Change many posts or comments by saying it in words, checked before it is sent.
   Say: "plain language batch"; "change many posts in words"; "do a batch change by sentence".
 - **REST Console (Ctrl+Shift+T).** Ask the site anything its REST API answers.
