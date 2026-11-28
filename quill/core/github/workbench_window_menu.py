@@ -22,9 +22,8 @@ How the keys were chosen (Part C, C1):
 
 The Item menu holds the actions that have a key; every other action of the selected row is on its
 context menu and in What Can I Do Here? (Shift+F1), which lists all of them from the same action
-table, so none is reachable only by right-clicking. Keys that belong to the focused control (Enter,
-Delete, Backspace, Escape) are not menu rows; the window handles them itself and lists them in
-:data:`CONTROL_KEYS`.
+table, so none is reachable only by right-clicking. Keys the focused control owns (Enter, Delete,
+Backspace, Escape) are not menu rows; the window handles them, listed in :data:`CONTROL_KEYS`.
 """
 
 from __future__ import annotations
@@ -82,6 +81,13 @@ _FILE = MenuSpec(
             "Ctrl+L",
             "Open a repository by owner/name or link; a compare link opens the comparison, "
             "and #42 opens that issue or pull request in this repository.",
+        ),
+        _row(
+            "find_account",
+            "Find a &Person or Organization...",
+            "Ctrl+Alt+E",
+            "Search GitHub for people and organizations as you type, then look at their "
+            "repositories, keep them in Tracked Accounts, or follow a person.",
         ),
         _row(
             "go_to_number",
@@ -221,8 +227,8 @@ _VIEW = MenuSpec(
 )
 
 #: Ctrl+1 to Ctrl+0 are this window's Go row (PRD). Ctrl+3, Ctrl+4 and Ctrl+8 are the family's AI
-#: chords elsewhere (codex.md 10A.9); with no AI menu here the row keeps all ten digits. Decided
-#: 2026-11-13; tests/unit/ui/test_main_frame_hosted_ai.py names the exemption.
+#: chords elsewhere (codex.md 10A.9); with no AI menu here the row keeps all ten digits (decided
+#: 2026-11-13; tests/unit/ui/test_main_frame_hosted_ai.py names the exemption).
 _GO = MenuSpec(
     "&Go",
     (

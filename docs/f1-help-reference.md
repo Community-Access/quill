@@ -1976,13 +1976,17 @@ Control coverage: 44 audited sites (44 helped).
 
 ## Quill Weather
 
-Control coverage: 40 audited sites (40 helped).
+Control coverage: 66 audited sites (66 helped).
 
 ### Every window, and what it is for
 
 **AI Usage.** How much each AI you have set up has been used, one sentence each, and whose count it is. Manage Usage opens the selected one's own page.
 
 **Add Weather Location.** Save a new place to watch. Type a ZIP code, city, county, or address and press Search; the matching places come back as a list so same-named towns are told apart, and Add Selected saves the one you choose. A bare latitude,longitude pair resolves to that exact point with no search.
+
+**Alert Choices.** Choose which saved places Weather Guardian watches, which alerts it tells you about, how it tells you, and when it stays quiet. Which alerts picks a ready-made set (Everything, Essentials, Safety) or your own; Places switches places on or off, snoozes them, watches one for a while, or sets a schedule; How you are told chooses speech and a sound for each severity; Quiet hours holds back everything below Extreme. Alerts these choices hide are never lost: they stay in the alert list and in Alert Feed Status. Preview says what would happen to a sample alert.
+
+**Alert Feed Status.** Whether Quill Weather can reach the National Weather Service, and the last alerts it was given. For each place you watch it says the state, the last successful check, the last attempt and, when a check failed, what went wrong in plain words. A check that failed is never the same as no alerts: alerts shown from before are marked last known. Copy puts the report on the clipboard.
 
 **Ask.** A conversation about the weather, on whichever AI is in use: your primary place's name, never its coordinates, the current conditions, the next hours, the forecast and any active alerts by their official names go with every message. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. Quick questions holds Do I need a coat at 5? and a few more.
 
@@ -2016,6 +2020,43 @@ Control coverage: 40 audited sites (40 helped).
 - `self._name`: What Quill Weather should call this place -- Home, Work, Mom's -- in lists, reports, and spoken alerts. Optional: left empty, the place's own name from the search result is used.
 - `self._add_btn`: Save the highlighted place to your locations and close this window. Enabled once the results list has something chosen; the first location you save becomes the primary one.
 - `cancel_btn`: Close without saving anything. Escape does the same.
+#### AlertChoicesDialog (`quill/ui/weather/alert_choices_dialog.py`)
+
+- `ok`: Save these choices and close. A sentence then says what you chose.
+- `cancel`: Close without changing anything. Escape does the same.
+#### AlertChoicesPages (`quill/ui/weather/alert_choices_pages.py`)
+
+- `self._preset`: Everything tells you about every alert. Essentials is tornado, severe thunderstorm and flash flood warnings, and anything Extreme. Safety is all warnings and the Extreme or Severe watches. Custom lets you choose below.
+- `self._extreme`: On by default. An Extreme alert is told to you whatever else you choose here. Turning it off lets your other choices hide Extreme alerts too.
+- `self._cat_list`: The categories you will be told about. Use the chooser below to add one and Remove to take the selected one out. Empty means every type.
+- `self._cat_add`: Pick a category, then press Add category.
+- `self._evt_cat`: Choose a category to list its alert types.
+- `self._evt`: Pick one alert type, then choose whether to always include or skip it.
+- `self._inc_list`: Alert types you asked to always hear about.
+- `self._skip_list`: Alert types you asked never to hear about.
+- `self._shortcut`: A shortcut that selects this severity and every more serious one.
+- `self._delivery`: As before interrupts for urgent alerts and speaks the rest. Alerts you did not choose are never lost: they stay in the alert list and in Alert Feed Status.
+- `self._quiet_on`: During quiet hours Weather Guardian does not speak or sound alerts below Extreme. They stay in the alert list.
+- `self._quiet_start`: When quiet hours begin, as hours and minutes.
+- `self._quiet_end`: When quiet hours end, as hours and minutes.
+- `self._quiet_extreme`: On by default. Turned off, nothing at all is spoken during quiet hours, Extreme tornado warnings included.
+- `self._sample`: A sample alert. Preview says what your choices would do with it.
+- `self._preview_text`: The result of Preview, in one sentence.
+- `field`: The sound file for this severity. The standard alert sound when empty.
+#### AlertChoicesPlaces (`quill/ui/weather/alert_choices_places.py`)
+
+- `self._place_list`: Your saved places. Each row says whether the place is watched, snoozed, outside its schedule or switched off. Space switches the selected place on or off.
+- `self._snooze`: A snoozed place is still checked, but stays quiet until the snooze ends. An Extreme alert still breaks through unless you turned that off in Quiet hours.
+- `self._until`: Watch a switched-off place for a while, such as a trip. It stops by itself at that time and tells you once.
+- `self._schedule`: Outside its schedule a place is quiet, like a snooze. Days like Mon-Fri or Sat,Sun, then hours like 08:00-18:00.
+- `self._groups`: Names that let you watch or stop watching several places together.
+- `self._group_pick`: Pick a group, then use the buttons below.
+- `self._place_choice`: Same as everywhere uses the choices on the first page. The others give this place its own ready-made choices.
+#### FeedStatusDialog (`quill/ui/weather/feed_status_dialog.py`)
+
+- `self._box`: A read-only report. For each watched place it gives the state of the alert feed, the last successful check, the last attempt, what went wrong in plain words, and the last alerts the service provided, marked last known when they are old. Use the arrow keys to read it.
+- `copy_btn`: Copy the whole report to the clipboard.
+- `close_btn`: Close this window. Escape does the same.
 #### WeatherSettingsDialog (`quill/ui/weather/settings_dialog.py`)
 
 - `self._temp`: The scale every temperature is shown and spoken in: Fahrenheit (the default) or Celsius. It applies everywhere -- current conditions, forecasts, and the Quick Weather line.
@@ -2502,7 +2543,7 @@ Control coverage: 128 audited sites (128 helped).
 
 ## GitHub Workbench
 
-Control coverage: 408 audited sites (408 helped).
+Control coverage: 413 audited sites (413 helped).
 
 ### Every window, and what it is for
 
@@ -2553,6 +2594,8 @@ Control coverage: 408 audited sites (408 helped).
 **Export JSON.** Where to save GitHub's answer as a JSON file.
 
 **Filter Builder.** Build a filter one condition at a time: an attribute, an operator and a value from the repository. The query appears as you go, in GitHub's own syntax; OK puts it in the filter box, Save as Search also keeps it.
+
+**Find a Person or Organization.** Type a username or name and the matching people and organizations appear. Open an account's repositories, keep it in Tracked Accounts, mark a favorite on this computer, follow a person on GitHub, or open the account on GitHub.
 
 **Form Field:.** One field of a form: its label, id, description and, for its kind, placeholder, options, default and whether it is required.
 
@@ -2735,6 +2778,8 @@ Control coverage: 408 audited sites (408 helped).
 **My Teams.** My Teams: every team you belong to, across your organizations. Alt+Enter opens a team's sheet.
 
 **My Billing and Usage.** Billing and Usage: this month's metered use of your account, by product, from GitHub's billing report. Read only; Enter opens your billing page.
+
+**Tracked Accounts.** Tracked Accounts: people and organizations you kept, favorites first, then your favorite repositories. A list on this computer only; GitHub is not told. Enter opens one; Ctrl+Alt+E finds more.
 
 **Find a Person....** Find a Person: type a login with Ctrl+L, and the person gets a node of their own here.
 
@@ -3143,6 +3188,8 @@ Control coverage: 408 audited sites (408 helped).
 **File > New....** Choose what to create, wherever you are.
 
 **File > Open GitHub Address....** Open a repository by owner/name or link; a compare link opens the comparison, and #42 opens that issue or pull request in this repository.
+
+**File > Find a Person or Organization....** Search GitHub for people and organizations as you type, then look at their repositories, keep them in Tracked Accounts, or follow a person.
 
 **File > Go to Number....** Go to an issue or pull request in this repository by its number.
 
@@ -3790,6 +3837,8 @@ Control coverage: 408 audited sites (408 helped).
 
 **Follow or Unfollow.** Follow them, or stop.
 
+**Account Actions.** Its repositories, and track, favorite or follow it. Track and favorite stay on this computer; follow and star are public.
+
 **Block or Unblock.** Block them from following you and from your repositories, or lift the block.
 
 **Find Issues with Label.** Issues and pull requests with it.
@@ -4432,6 +4481,12 @@ Control coverage: 408 audited sites (408 helped).
 - `save`: Use this filter and keep it under Saved Searches. Ctrl+S.
 - `ok`: Write this filter into the filter box and apply it. Ctrl+Enter.
 - `cancel`: Change nothing.
+#### FindAccountDialog (`quill/ui/github_find_account_dialog.py`)
+
+- `self.query`: Type at least two letters of a GitHub username or name. Matching people and organizations appear in the list below after a short pause; Down Arrow moves there.
+- `self.list`: Each row says whether it is a person or an organization, then the username, the name, the public repositories and a description. Enter opens the account's repositories.
+- `self.details`: The selected account in full, and what this computer keeps for it.
+- `close`: Close this window. Escape does the same.
 #### GitHubGistEditorDialog (`quill/ui/github_gist_editor_dialog.py`)
 
 - `self._description`: A short line that says what the gist is. GitHub shows it in the gist list.

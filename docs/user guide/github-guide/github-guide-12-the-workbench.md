@@ -306,6 +306,38 @@ them access to a server: "SSH key 4, ending abcdefgh."), **Social Accounts**,
 `Ctrl+6` goes to Projects; each repository's own Projects are under it,
 `Ctrl+Shift+7`. Chapter 4 covers Projects.
 
+### Finding people and organizations
+
+`Ctrl+Alt+E` (File > **Find a Person or Organization...**) opens a search
+window. Type at least two letters of a username or a name; after a short pause
+the matches appear, people and organizations together. Each row says which it
+is: "Person: octocat (The Octocat), 8 public repositories. Cat." When two
+accounts share a name, their rows also say how many followers they have, so
+you can tell them apart. Press the Down Arrow to move from the search box to
+the list.
+
+On a match, the buttons are **Repositories...** (Enter does this), **Track or
+Untrack**, **Favorite or Unfavorite**, **Follow or Unfollow** and **Open on
+GitHub**. The same actions are on a person's or organization's context menu as
+**Account Actions...**. Following works for people. For an organization,
+QUILL opens its page on GitHub and says so, because GitHub documents following
+an organization only as a public preview.
+
+Four words mean four different things, and QUILL keeps them apart:
+
+- A **favorite** is a shortcut on this computer. Nothing is sent to GitHub.
+- A **star** is a public action on GitHub, shown on your profile.
+- A **GitHub List** is GitHub's own collection of starred repositories.
+  **Add to GitHub List...** in the repositories window puts a repository on
+  one of your lists.
+- **Following** a person is public too. After every follow or star QUILL asks
+  GitHub for the new state and says what GitHub reports.
+
+**People > Tracked Accounts** lists the accounts you kept, favorites first,
+and then your favorite repositories. Enter opens an account's place in the
+tree. A Read Only account can search and look, but follow and star need
+Organize. In Safe Mode nothing is searched.
+
 ### Profiles
 
 **People > My Profile** is your own profile, and every person's place in the

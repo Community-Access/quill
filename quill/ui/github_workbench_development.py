@@ -25,6 +25,11 @@ from quill.ui.github_workbench_account_keys import (
     ACCOUNT_KEY_VERBS,
     GitHubWorkbenchAccountKeysMixin,
 )
+from quill.ui.github_workbench_accounts import (
+    ACCOUNT_REASONS,
+    ACCOUNT_VERBS,
+    GitHubWorkbenchAccountsMixin,
+)
 from quill.ui.github_workbench_advisories import (
     ADVISORY_REASONS,
     ADVISORY_VERBS,
@@ -240,6 +245,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **TIER2_VERBS,
     **PACKAGE_VERBS,
     **STAR_LIST_VERBS,
+    **ACCOUNT_VERBS,
     **ADVISORY_VERBS,
     **ACCOUNT_KEY_VERBS,
     **SETTINGS_LIST_VERBS,
@@ -284,6 +290,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **TIER2_REASONS,
     **PACKAGE_REASONS,
     **STAR_LIST_REASONS,
+    **ACCOUNT_REASONS,
     **ADVISORY_REASONS,
     **ACCOUNT_KEY_REASONS,
     **SETTINGS_LIST_REASONS,
@@ -326,6 +333,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchTier2Mixin,
     GitHubWorkbenchPackagesMixin,
     GitHubWorkbenchStarListsMixin,
+    GitHubWorkbenchAccountsMixin,
     GitHubWorkbenchAdvisoriesMixin,
     GitHubWorkbenchAccountKeysMixin,
     GitHubWorkbenchSettingsListsMixin,

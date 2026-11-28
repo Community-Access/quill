@@ -927,14 +927,17 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
 | Ctrl+Alt+F1 | Tutorials | `weather.tutorials` |
 | Ctrl+Alt+N | Noaa listen | `weather.noaa_listen` |
+| Ctrl+Alt+Shift+C | Alert choices | `weather.alert_choices` |
 | Ctrl+Alt+Shift+F | Settings | `weather.settings` |
 | Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+H | Feed status | `weather.feed_status` |
 | Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+Shift+L | Add location | `weather.add_location` |
 | Ctrl+Alt+Shift+M | Monitor toggle | `weather.monitor_toggle` |
 | Ctrl+Alt+Shift+N | Noaa update | `weather.noaa_update` |
 | Ctrl+Alt+Shift+P | Monitor pause | `weather.monitor_pause` |
 | Ctrl+Alt+Shift+T | Test alert | `weather.test_alert` |
+| Ctrl+Alt+Shift+U | Watch place | `weather.watch_place` |
 | Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+Shift+Alt+A | Alerts | `weather.alerts` |
@@ -1050,6 +1053,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+A | Select All | `github.workbench.select_all` |
 | Ctrl+Alt+B | Export Software Bill of Materials... | `github.workbench.export_sbom` |
 | Ctrl+Alt+D | Dry Run | `github.workbench.dry_run` |
+| Ctrl+Alt+E | Find a Person or Organization... | `github.workbench.find_account` |
 | Ctrl+Alt+F | Filter Builder... | `github.workbench.filter_builder` |
 | Ctrl+Alt+F1 | GitHub Service Status... | `github.workbench.service_status` |
 | Ctrl+Alt+I | Import Issues from a Spreadsheet... | `github.workbench.import_issues` |
