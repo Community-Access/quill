@@ -1038,9 +1038,11 @@ To see the whole list:
 3. Arrow to one and press Enter, or **Jump To Chapter** (Alt+J), to go
    there.
 
-Cast finds chapters in several places: a list the podcast published, marks
-inside a downloaded file, and timestamps the podcast typed into its show
-notes. Some podcasts mark only a few highlights instead of a full list. Then
+Cast finds chapters in several places: a list the podcast published (either
+a chapters file or chapters written into the feed itself), marks inside the
+episode's own file (MP3 or M4A, downloaded or still streaming), and timestamps
+the podcast typed into its show notes. A chapter the publisher left without a
+name is called "Untitled", so you never hear a made-up "Chapter 3". Some podcasts mark only a few highlights instead of a full list. Then
 the list calls them **Moments this podcast marked**, so you know you are
 looking at the best bits of the episode.
 

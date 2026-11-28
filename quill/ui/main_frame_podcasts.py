@@ -177,6 +177,9 @@ class PodcastsMixin(
             if self._podcast_chapters_key == key:
                 self._podcast_current_chapters = list(getattr(result, "chapters", []) or [])
                 self._podcast_chapters_source = str(getattr(result, "label", ""))
+                from quill.ui.podcasts.chapter_retry import retry_when_cached
+
+                retry_when_cached(self, key, state, episode, result)
 
         self._task_manager.submit(
             "podcast-chapters",

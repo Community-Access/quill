@@ -61,7 +61,11 @@ def identify_episode(data_dir: Path, feed_url: str, audio_url: str) -> tuple[str
 
 
 def chapters_for_media(
-    audio_path: Path | None, *, show_id: str = "", episode_guid: str = ""
+    audio_path: Path | None,
+    *,
+    show_id: str = "",
+    episode_guid: str = "",
+    media_url: str = "",
 ) -> tuple[list[PodcastChapter], str]:
     """``(chapters, where they came from)`` -- never computed, only found.
 
@@ -69,6 +73,12 @@ def chapters_for_media(
     recording, which has no publisher and so no cache entry. An empty list and
     an empty source mean there is no answer, and the caller says so.
     """
+    if audio_path is None and show_id and episode_guid:
+        # A streamed episode has no local path of its own, but QUILL Cast's
+        # playback cache may hold it (2026-11-27: Radio read none of these).
+        from quill.core.podcasts.playback_cache import cached_audio
+
+        audio_path = cached_audio(show_id, episode_guid, media_url)
     if audio_path is not None and audio_path.is_file():
         from quill.core.podcasts.chapter_sources import read_file_chapters
 
