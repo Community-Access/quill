@@ -186,6 +186,8 @@ class WeatherSettingsDialog:
             ("show_rain_soon", "Rain or snow starting soon"),
             ("show_glance_ahead", "The next four hours at a glance"),
             ("show_daylight_change", "Daylight today against yesterday"),
+            ("show_pollen", "Pollen (Europe only)"),
+            ("show_marine", "Sea conditions (coastal places only)"),
         ):
             self._detail_checks[attr] = self._check(root, text, getattr(settings, attr))
 

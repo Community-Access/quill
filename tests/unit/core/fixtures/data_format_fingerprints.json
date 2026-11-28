@@ -1866,6 +1866,8 @@
             "show_rain_soon": "bool",
             "show_glance_ahead": "bool",
             "show_daylight_change": "bool",
+            "show_pollen": "bool",
+            "show_marine": "bool",
             "history_years": "int",
             "alert_severity_floor": "str",
             "muted_events": "list[str]",
@@ -1884,10 +1886,10 @@
             "quick_include_data_age": "bool"
           }
         },
-        "function:quill.core.weather.settings:save_settings": "sha256:1ca6711c03d2fea1"
+        "function:quill.core.weather.settings:save_settings": "sha256:6fbcd85ab854d1e7"
       },
       "classification": "additive, compatible",
-      "note": "Rain soon adds show_rain_soon (boolean, default true); older builds ignore the key."
+      "note": "Pollen and marine add show_pollen and show_marine (booleans, default true); older builds ignore the keys."
     }
   }
 }

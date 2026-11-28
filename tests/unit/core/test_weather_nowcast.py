@@ -65,6 +65,7 @@ def test_extras_respect_settings_and_say_failures() -> None:
         return _reply()
 
     settings = WeatherSettings()
+    settings.show_pollen = settings.show_marine = False  # this test is about the nowcast
     settings.show_rain_soon = False
     settings.show_glance_ahead = False
     lines = report_extras.gather(location, settings, get=ok).lines()

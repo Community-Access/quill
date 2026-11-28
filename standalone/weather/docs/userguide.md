@@ -565,6 +565,19 @@ All three come from one Open-Meteo request. The same lines are added to the end
 of the current conditions in Weather Now, and you can turn each one off in
 Settings.
 
+### Pollen and the sea
+
+Weather Now also includes, when they apply:
+
+- **Pollen**, for places in Europe only, for example "Pollen: birch high, grass
+  low." This comes from Copernicus CAMS through Open-Meteo, which covers only
+  Europe, so elsewhere no pollen line is shown.
+- **Sea conditions**, for coastal places, for example "Sea: waves 10 feet from
+  the west every 14 seconds, swell 10 feet, sea temperature 67 degrees." Inland
+  places have no sea line.
+
+Turn either off in Settings.
+
 ### Weather on a Past Date
 
 **Weather menu > Weather on a Past Date...** (or **Ctrl+Alt+D**) shows one past
@@ -657,7 +670,7 @@ Status lists these data services too, under **Data feeds**.
 
 ### Where the data comes from, and fair use
 
-Forecast and history data is by **Open-Meteo.com**, under the CC BY
+Forecast, history, pollen and sea data is by **Open-Meteo.com**, under the CC BY
 4.0 licence. Historical weather is the **Copernicus Climate Change Service ERA5**
 reanalysis. US station records and normals are from the **NOAA Regional Climate
 Centers (RCC-ACIS)**. None of these needs an account or a key. Open-Meteo is free
@@ -685,9 +698,10 @@ alerts list, so you can review warnings with the fewest keystrokes.
   humidity, dew point, wind and gusts, cloud cover, pressure, visibility, chance
   of precipitation, sunrise and sunset, **moon phase, moonrise and moonset**, the
   ultraviolet index, air quality, and the **current local time at the location**.
-  Temperature and the sky condition always show. Three more checkboxes cover the
-  next-hours lines: rain or snow starting soon, the next four hours at a glance,
-  and daylight today against yesterday.
+  Temperature and the sky condition always show. Five more checkboxes cover the
+  next-hours lines and the rest: rain or snow starting soon, the next four hours
+  at a glance, daylight today against yesterday, pollen (Europe only), and sea
+  conditions (coastal places only).
 - **Alert severity to show** -- everything, or only Moderate and above, Severe
   and above, and so on -- plus a list of specific **event names to hide** (one
   per line).
