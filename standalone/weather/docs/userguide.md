@@ -542,6 +542,24 @@ of your primary location without opening a window -- for example:
 
 You choose what that line includes in Settings.
 
+### Next Few Hours and daylight
+
+**Weather menu > Next Few Hours** (or **Ctrl+Shift+U**) speaks two things for
+your primary location without opening a window:
+
+- **The next four hours at a glance**: the temperature now and where it is
+  heading, any change in the sky, the highest chance of precipitation, and the
+  strongest wind when it is notable. For example: "Through 7 PM: 49 now, falling
+  to 46. Sky: overcast now, then light rain from 5 PM. Chance of precipitation up
+  to 60 percent."
+- **Daylight**: how long the sun is up today, and how many minutes more or less
+  than yesterday, for example "8 hours 51 minutes of daylight today, 2 minutes
+  less than yesterday."
+
+Both come from one Open-Meteo request. The same two lines are added to the end
+of the current conditions in Weather Now, and you can turn either off in
+Settings.
+
 ### Weather on a Past Date
 
 **Weather menu > Weather on a Past Date...** (or **Ctrl+Alt+D**) shows one past
@@ -662,7 +680,9 @@ alerts list, so you can review warnings with the fewest keystrokes.
   humidity, dew point, wind and gusts, cloud cover, pressure, visibility, chance
   of precipitation, sunrise and sunset, **moon phase, moonrise and moonset**, the
   ultraviolet index, air quality, and the **current local time at the location**.
-  Temperature and the sky condition always show.
+  Temperature and the sky condition always show. Two more checkboxes cover the
+  next-hours lines: the next four hours at a glance, and daylight today against
+  yesterday.
 - **Alert severity to show** -- everything, or only Moderate and above, Severe
   and above, and so on -- plus a list of specific **event names to hide** (one
   per line).

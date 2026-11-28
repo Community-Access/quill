@@ -21,7 +21,7 @@ from typing import Any
 
 from quill.core.list_follow import gone_sentence
 from quill.core.weather import locations as loc_store
-from quill.core.weather import nws, render
+from quill.core.weather import nws, render, report_extras
 from quill.core.weather import settings as settings_mod
 from quill.core.weather.models import WeatherLocation, WeatherReport
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
@@ -407,12 +407,8 @@ class WeatherCenterDialog:
 
         def _work(**_kwargs: Any) -> object:
             try:
-                return nws.fetch_report_worldwide(
-                    location,
-                    safe_mode=self._safe_mode,
-                    daily_days=self._settings.daily_outlook_days,
-                    hourly_hours=self._settings.hourly_hours,
-                    temperature_unit=self._settings.temperature_unit,
+                return report_extras.fetch_report(
+                    location, self._settings, self._data_dir, safe_mode=self._safe_mode
                 )
             except nws.WeatherError as exc:
                 return exc
@@ -467,6 +463,7 @@ class WeatherCenterDialog:
             # "Right now it is <there>, and <here> where you are. Checked just now."
             local_time = render.time_summary(now, result.time_zone, place=place)
         lead = f"{local_time} " if local_time else ""
+        more = "".join(f" {line}" for line in result.extras)
         if result.current is not None:
             block = render.current_conditions_block(
                 result.current, today, self._settings, result.air_quality
@@ -475,11 +472,11 @@ class WeatherCenterDialog:
             if result.current.observed_at:
                 observed = render.friendly_datetime(result.current.observed_at, result.time_zone)
                 when = f" Observed {observed}."
-            follow.set_text(self._current, f"Weather for {place}. {lead}{block}{when}")
+            follow.set_text(self._current, f"Weather for {place}. {lead}{block}{when}" + more)
         else:
             follow.set_text(
                 self._current,
-                f"Weather for {place}. {lead}Current conditions are unavailable right now.",
+                f"Weather for {place}. {lead}Current conditions are unavailable right now.{more}",
             )
 
         periods = result.periods[: self._settings.forecast_period_count]
