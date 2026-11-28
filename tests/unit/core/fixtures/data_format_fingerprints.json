@@ -322,7 +322,8 @@
             "podroll": "list[str]",
             "funding": "list[Funding]",
             "location": "str",
-            "alternates": "list[AlternateEnclosure]"
+            "alternates": "list[AlternateEnclosure]",
+            "psc_chapters": "list[PscChapter]"
           },
           "quill.core.podcasts.namespace_tags:Person": {
             "name": "str",
@@ -330,6 +331,12 @@
             "group": "str",
             "image_url": "str",
             "link_url": "str"
+          },
+          "quill.core.podcasts.namespace_tags:PscChapter": {
+            "start_ms": "int",
+            "title": "str",
+            "link_url": "str",
+            "image_url": "str"
           },
           "quill.core.podcasts.namespace_tags:Soundbite": {
             "start_ms": "int",
@@ -384,7 +391,7 @@
         "function:quill.core.podcasts.subscriptions:save_library": "sha256:4a4485eeda51a642"
       },
       "classification": "additive, compatible",
-      "note": "Older Cast builds ignore the optional zero-default resume rewind setting."
+      "note": "NamespaceTags.psc_chapters (Podlove Simple Chapters) is optional and absent-when-empty; older builds ignore the key."
     },
     "converter.queue": {
       "current": 1,
@@ -1863,6 +1870,7 @@
             "show_uv_index": "bool",
             "show_air_quality": "bool",
             "show_local_time": "bool",
+            "show_rain_soon": "bool",
             "show_glance_ahead": "bool",
             "show_daylight_change": "bool",
             "history_years": "int",
@@ -1883,10 +1891,10 @@
             "quick_include_data_age": "bool"
           }
         },
-        "function:quill.core.weather.settings:save_settings": "sha256:bf8f314019ed384e"
+        "function:quill.core.weather.settings:save_settings": "sha256:1ca6711c03d2fea1"
       },
       "classification": "additive, compatible",
-      "note": "Next hours adds show_glance_ahead and show_daylight_change (booleans, default true); older builds ignore the keys, and missing keys read as true."
+      "note": "Rain soon adds show_rain_soon (boolean, default true); older builds ignore the key."
     }
   }
 }

@@ -4,6 +4,27 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+### A Now playing box in Now Playing (2026-11-28)
+
+- **Now playing** (Alt+G in the Now Playing window) is a read-only box with
+  the episode, the chapter, the position with how far through you are, speed,
+  volume, the sleep timer, the episode's date and number, and where its
+  chapters came from, one fact a line. It does not change while you are
+  reading it. Quill Radio's player box shows the same lines.
+
+### Real chapter names from more places (2026-11-27)
+
+- **Chapters written into the feed** (Podlove Simple Chapters) are read, even
+  in Safe Mode, since they cost no download.
+- **M4A and MP4 episodes** have their chapters read too, not only MP3s.
+- **A streamed MP3's own chapters** are found once its first seconds have
+  arrived; before, a streamed episode never had its file's chapters read.
+- **The real name wins** when an MP3 writes "Chapter 3" in one place and the
+  real title in another, and only the chapters its table of contents lists
+  are shown.
+- A chapter with no name is "Untitled" rather than a made-up "Chapter 3", and
+  a list of unnamed marks gives way to named ones in the show notes.
+
 ### Where you are, and chapters by name (2026-11-27)
 
 - **Chapters are named, title first.** Player Information says "Chapter:

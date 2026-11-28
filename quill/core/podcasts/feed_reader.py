@@ -56,7 +56,10 @@ _MAX_BYTES = 48_000_000
 #: Redirect statuses that mean "this is the new address; keep it".
 _PERMANENT_REDIRECTS: frozenset[int] = frozenset({301, 308})
 
-_CHAPTERS_TAG_RE = re.compile(r'<podcast:chapters\b[^>]*\burl\s*=\s*"([^"]+)"', re.IGNORECASE)
+# Either quote: XML allows url='...' as well as url="..." (2026-11-27).
+_CHAPTERS_TAG_RE = re.compile(
+    r"""<podcast:chapters\b[^>]*\burl\s*=\s*(?:"([^"]+)"|'([^']+)')""", re.IGNORECASE
+)
 _TRANSCRIPT_TAG_RE = re.compile(
     r'<podcast:transcript\b[^>]*\burl\s*=\s*"([^"]+)"'
     r'(?:[^>]*\btype\s*=\s*"([^"]*)")?',
@@ -386,7 +389,7 @@ def _episode_extra_tags(entry_xml: str) -> tuple[str, str, str]:
     from quill.core.podcasts import transcript_choice
 
     chapters_match = _CHAPTERS_TAG_RE.search(entry_xml)
-    chapters_url = chapters_match.group(1) if chapters_match else ""
+    chapters_url = (chapters_match.group(1) or chapters_match.group(2)) if chapters_match else ""
     # **Every** transcript tag, not the first (list.md 2.6). A feed may offer
     # the same words as JSON, WebVTT, SRT and HTML, and only the structured
     # ones carry cue times -- so taking whichever the publisher happened to

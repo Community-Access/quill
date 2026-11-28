@@ -183,6 +183,7 @@ class WeatherSettingsDialog:
             ("show_air_quality", "&Air quality"),
             ("show_local_time", "Current local &time at the location"),
             # No access keys: every letter is taken in this window (GATE-14).
+            ("show_rain_soon", "Rain or snow starting soon"),
             ("show_glance_ahead", "The next four hours at a glance"),
             ("show_daylight_change", "Daylight today against yesterday"),
         ):

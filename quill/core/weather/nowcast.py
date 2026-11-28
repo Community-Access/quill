@@ -1,8 +1,12 @@
-"""The next few hours, in words: a four-hour glance ahead and the change in
-daylight since yesterday.
+"""The next few hours, in words: rain starting soon, a four-hour glance ahead,
+and the change in daylight since yesterday.
 
-Both come from **one** Open-Meteo forecast request (:func:`fetch`):
+All of it comes from **one** Open-Meteo forecast request (:func:`fetch`):
 
+* ``minutely_15`` precipitation for the next two hours -- "Light rain starting
+  in about 30 minutes." Open-Meteo has true 15-minute data only over North
+  America and central Europe; elsewhere the steps are filled in from hourly
+  data, and the sentence says it is estimated (:func:`native_15_minute`).
 * ``hourly`` for the next four hours -- the glance ahead: the temperature now
   and where it is heading, any change in the sky, the highest chance of
   precipitation, and the strongest wind when it is notable.
@@ -26,6 +30,15 @@ from quill.core.weather.open_meteo import format_time, weather_code_text
 GetJson = Callable[..., Any]
 
 GLANCE_HOURS = 4
+STEPS = 8  # 8 x 15 minutes = the next two hours
+
+
+@dataclass(slots=True)
+class Step:
+    time: str
+    precip: float  # in the unit asked for (mm or inch)
+    snow: float  # cm or inch
+    code: int | None
 
 
 @dataclass(slots=True)
@@ -40,10 +53,20 @@ class Hour:
 @dataclass(slots=True)
 class Nowcast:
     current_time: str = ""
+    steps: list[Step] = field(default_factory=list)
     hours: list[Hour] = field(default_factory=list)
     daylight_yesterday: float | None = None
     daylight_today: float | None = None
     metric: bool = False
+    native_15_minute: bool = True
+
+
+def native_15_minute(latitude: float, longitude: float) -> bool:
+    """True where Open-Meteo has real 15-minute data: North America and central
+    Europe. Elsewhere its 15-minute steps are filled in from hourly data."""
+    north_america = 14.0 <= latitude <= 72.0 and -170.0 <= longitude <= -50.0
+    central_europe = 42.0 <= latitude <= 58.0 and -6.0 <= longitude <= 25.0
+    return north_america or central_europe
 
 
 def request_url(latitude: float, longitude: float, *, unit: str) -> str:
@@ -52,6 +75,8 @@ def request_url(latitude: float, longitude: float, *, unit: str) -> str:
         "latitude": f"{latitude:.4f}",
         "longitude": f"{longitude:.4f}",
         "current": "temperature_2m",
+        "minutely_15": "precipitation,snowfall,weather_code",
+        "forecast_minutely_15": STEPS,
         "hourly": "temperature_2m,precipitation_probability,weather_code,wind_speed_10m",
         "forecast_hours": GLANCE_HOURS + 1,
         "past_hours": 0,
@@ -61,6 +86,7 @@ def request_url(latitude: float, longitude: float, *, unit: str) -> str:
         "timezone": "auto",
         "temperature_unit": "celsius" if metric else "fahrenheit",
         "wind_speed_unit": "kmh" if metric else "mph",
+        "precipitation_unit": "mm" if metric else "inch",
     }
     return "https://api.open-meteo.com/v1/forecast?" + urllib.parse.urlencode(params)
 
@@ -73,14 +99,33 @@ def _at(values: Any, index: int) -> float | None:
     return None
 
 
-def parse(data: Any, *, unit: str) -> Nowcast:
+def parse(
+    data: Any, *, unit: str, latitude: float | None = None, longitude: float | None = None
+) -> Nowcast:
     """Parse the one forecast reply into a Nowcast (pure)."""
-    cast = Nowcast(metric=unit == "C")
+    native = (
+        True if latitude is None or longitude is None else native_15_minute(latitude, longitude)
+    )
+    cast = Nowcast(metric=unit == "C", native_15_minute=native)
     if not isinstance(data, dict):
         return cast
     current = data.get("current")
     if isinstance(current, dict):
         cast.current_time = str(current.get("time", ""))
+    minutely = data.get("minutely_15")
+    if isinstance(minutely, dict):
+        for i, when in enumerate(minutely.get("time") or []):
+            code = _at(minutely.get("weather_code"), i)
+            cast.steps.append(
+                Step(
+                    time=str(when),
+                    precip=_at(minutely.get("precipitation"), i) or 0.0,
+                    snow=_at(minutely.get("snowfall"), i) or 0.0,
+                    code=round(code) if code is not None else None,
+                )
+            )
+    if not cast.current_time and cast.steps:
+        cast.current_time = cast.steps[0].time
     hourly = data.get("hourly")
     if isinstance(hourly, dict):
         for i, when in enumerate(hourly.get("time") or []):
@@ -115,10 +160,84 @@ def fetch(
         from quill.core.weather.open_meteo_limits import get_json
 
         get = get_json
-    return parse(get(request_url(latitude, longitude, unit=unit)), unit=unit)
+    data = get(request_url(latitude, longitude, unit=unit))
+    return parse(data, unit=unit, latitude=latitude, longitude=longitude)
 
 
 # -- words -----------------------------------------------------------------------
+
+
+def _minutes_between(start: str, end: str) -> int:
+    from datetime import datetime
+
+    try:
+        delta = datetime.fromisoformat(end) - datetime.fromisoformat(start)
+    except ValueError:
+        return 0
+    return max(0, round(delta.total_seconds() / 60))
+
+
+def _about(minutes: int) -> str:
+    if minutes < 10:
+        return "in the next few minutes"
+    if minutes >= 60:
+        hours, rest = divmod(minutes, 60)
+        if rest < 15:
+            return "in about an hour" if hours == 1 else f"in about {hours} hours"
+        return f"in about {hours} and a half hours" if hours > 1 else "in about an hour and a half"
+    return f"in about {round(minutes / 15) * 15} minutes"
+
+
+def _kind(step: Step) -> str:
+    code = step.code or 0
+    if code >= 95:
+        return "thunderstorms"
+    if step.snow > 0 and (code in (71, 73, 75, 77, 85, 86) or step.precip <= 0):
+        return "snow"
+    if 51 <= code <= 57:
+        return "drizzle"
+    return "rain"
+
+
+def _intensity(step: Step, metric: bool) -> str:
+    rate = step.precip * 4  # per 15 minutes -> per hour
+    if metric:
+        light, heavy = 2.5, 7.6
+    else:
+        light, heavy = 0.1, 0.3
+    if rate < light:
+        return "light"
+    if rate < heavy:
+        return "moderate"
+    return "heavy"
+
+
+def _wet(step: Step) -> bool:
+    return step.precip > 0 or step.snow > 0
+
+
+def rain_soon_text(cast: Nowcast) -> str:
+    """'Light rain starting in about 30 minutes.' or 'No rain or snow expected in
+    the next 2 hours.' -- with 'estimated' where there is no 15-minute data."""
+    if not cast.steps:
+        return ""
+    tail = "" if cast.native_15_minute else " This is estimated from hourly data here."
+    first = cast.steps[0]
+    if _wet(first):
+        stop = next((s for s in cast.steps[1:] if not _wet(s)), None)
+        what = f"{_intensity(first, cast.metric).capitalize()} {_kind(first)} now"
+        if stop is None:
+            return f"{what}, for at least the next 2 hours.{tail}"
+        return f"{what}, stopping {_about(_minutes_between(first.time, stop.time))}.{tail}"
+    start = next((s for s in cast.steps if _wet(s)), None)
+    if start is None:
+        return f"No rain or snow expected in the next 2 hours.{tail}"
+    minutes = _minutes_between(first.time, start.time)
+    peak = max((s for s in cast.steps if _wet(s)), key=lambda s: s.precip + s.snow)
+    return (
+        f"{_intensity(peak, cast.metric).capitalize()} {_kind(start)} starting "
+        f"{_about(minutes)}.{tail}"
+    )
 
 
 def _duration(seconds: float) -> str:

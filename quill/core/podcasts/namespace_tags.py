@@ -49,12 +49,15 @@ from dataclasses import fields as dataclass_fields
 from quill.core.display_text import clean_display_text
 from quill.core.podcasts.time_values import seconds_to_ms_or_none
 
-_ATTR = r'{name}\s*=\s*"([^"]*)"'
+_ATTR = r"""\b{name}\s*=\s*(?:"([^"]*)"|'([^']*)')"""
 
 
 def _attr(fragment: str, name: str) -> str:
     match = re.search(_ATTR.format(name=re.escape(name)), fragment, re.IGNORECASE)
-    return html.unescape(match.group(1).strip()) if match else ""
+    if not match:
+        return ""
+    value = match.group(1) if match.group(1) is not None else match.group(2)
+    return html.unescape(value.strip())
 
 
 def _text(fragment: str) -> str:
@@ -142,6 +145,20 @@ class AlternateEnclosure:
         return ", ".join(parts)
 
 
+@dataclass(frozen=True, slots=True)
+class PscChapter:
+    """One Podlove Simple Chapters mark (``<psc:chapter start= title=>``).
+
+    The other widely used chapter format in feeds, beside Podcasting 2.0's
+    chapters document: written inline in the item, so it costs no fetch.
+    """
+
+    start_ms: int
+    title: str = ""
+    link_url: str = ""
+    image_url: str = ""
+
+
 @dataclass(slots=True)
 class NamespaceTags:
     """Everything read from the Podcasting 2.0 namespace for one item or feed."""
@@ -153,6 +170,7 @@ class NamespaceTags:
     funding: list[Funding] = field(default_factory=list)
     location: str = ""
     alternates: list[AlternateEnclosure] = field(default_factory=list)
+    psc_chapters: list[PscChapter] = field(default_factory=list)
 
     @property
     def is_empty(self) -> bool:
@@ -164,6 +182,7 @@ class NamespaceTags:
             self.funding,
             self.location,
             self.alternates,
+            self.psc_chapters,
         ))
 
     def to_dict(self) -> dict[str, object]:
@@ -187,6 +206,8 @@ class NamespaceTags:
             data["location"] = self.location
         if self.alternates:
             data["alternates"] = [asdict(alt) for alt in self.alternates]
+        if self.psc_chapters:
+            data["psc_chapters"] = [asdict(mark) for mark in self.psc_chapters]
         return data
 
     @classmethod
@@ -202,6 +223,7 @@ class NamespaceTags:
             funding=_rows(data.get("funding"), Funding),
             location=str(data.get("location", "")),
             alternates=_rows(data.get("alternates"), AlternateEnclosure),
+            psc_chapters=_rows(data.get("psc_chapters"), PscChapter),
         )
 
 
@@ -306,6 +328,45 @@ def parse_soundbites(fragment: str) -> list[Soundbite]:
     return sorted(bites, key=lambda bite: bite.start_ms)
 
 
+_PSC_CHAPTER = re.compile(r"<psc:chapter\b([^>]*?)/?>", re.IGNORECASE)
+
+
+def _npt_to_ms(value: str) -> int | None:
+    """Podlove's normal play time: "01:02:03.500", "02:03", or "123.5" seconds."""
+    text = value.strip()
+    if not text:
+        return None
+    try:
+        seconds = 0.0
+        for part in text.split(":"):
+            seconds = seconds * 60 + float(part)
+    except ValueError:
+        return None
+    if seconds < 0 or seconds != seconds or seconds == float("inf"):
+        return None
+    return int(round(seconds * 1000))
+
+
+def parse_psc_chapters(fragment: str) -> list[PscChapter]:
+    """Every ``psc:chapter`` in the item, earliest first; a bad start drops one mark."""
+    if "psc:" not in fragment.lower():
+        return []
+    marks: list[PscChapter] = []
+    for attributes in _PSC_CHAPTER.findall(fragment):
+        start = _npt_to_ms(_attr(attributes, "start"))
+        if start is None:
+            continue
+        marks.append(
+            PscChapter(
+                start_ms=start,
+                title=clean_display_text(_attr(attributes, "title")).strip(),
+                link_url=_attr(attributes, "href"),
+                image_url=_attr(attributes, "image"),
+            )
+        )
+    return sorted(marks, key=lambda mark: mark.start_ms)
+
+
 def parse_live_items(fragment: str) -> list[LiveItem]:
     """Every ``podcast:liveItem`` and the stream inside it."""
     items: list[LiveItem] = []
@@ -384,7 +445,7 @@ def parse(fragment: str) -> NamespaceTags:
     Tolerant throughout: a malformed tag contributes nothing rather than raising.
     One bad tag in one episode must never cost somebody their whole feed.
     """
-    if not fragment or "podcast:" not in fragment:
+    if not fragment or ("podcast:" not in fragment and "psc:" not in fragment.lower()):
         return NamespaceTags()
     try:
         return NamespaceTags(
@@ -395,6 +456,7 @@ def parse(fragment: str) -> NamespaceTags:
             funding=parse_funding(fragment),
             location=parse_location(fragment),
             alternates=parse_alternates(fragment),
+            psc_chapters=parse_psc_chapters(fragment),
         )
     except Exception:  # noqa: BLE001 - a feed must survive its own bad markup
         return NamespaceTags()

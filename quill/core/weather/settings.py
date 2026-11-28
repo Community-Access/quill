@@ -71,8 +71,10 @@ class WeatherSettings:
     show_air_quality: bool = True
     #: Show the current local time at the searched location.
     show_local_time: bool = True
-    #: The next hours (one Open-Meteo request, nowcast.py): a four-hour glance
-    #: ahead, and today's daylight against yesterday's.
+    #: The next hours (one Open-Meteo request, nowcast.py): rain or snow
+    #: starting soon, a four-hour glance ahead, and today's daylight against
+    #: yesterday's.
+    show_rain_soon: bool = True
     show_glance_ahead: bool = True
     show_daylight_change: bool = True
     #: How many years Weather History looks back for one date (1-85).
@@ -207,6 +209,7 @@ def load_settings(data_dir: Path) -> WeatherSettings:
         "show_uv_index",
         "show_air_quality",
         "show_local_time",
+        "show_rain_soon",
         "show_glance_ahead",
         "show_daylight_change",
         "announce_alert_count_on_open",
@@ -257,6 +260,7 @@ def save_settings(data_dir: Path, settings: WeatherSettings) -> None:
             "show_uv_index": settings.show_uv_index,
             "show_air_quality": settings.show_air_quality,
             "show_local_time": settings.show_local_time,
+            "show_rain_soon": settings.show_rain_soon,
             "show_glance_ahead": settings.show_glance_ahead,
             "show_daylight_change": settings.show_daylight_change,
             "history_years": settings.history_years,

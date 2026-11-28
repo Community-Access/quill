@@ -446,8 +446,11 @@ just the main one.
    Player is already open somewhere behind you, the same key brings it to the
    front instead of opening a second one.
 4. Press **Tab** to look around it. First comes a **Now playing** box you can
-   read but not change. It tells you what is on, where you are in it, how fast
-   it is playing and how loud. Then come the buttons: Play (or Stop), Pause
+   read but not change. It tells you what is on, one fact a line: the chapter
+   you are in, title first ("Chapter: Listener mail, 12:34, 3 of 12"), where
+   you are with how far through ("Position: 18:30 of 58:00, 39:30 left, 31
+   percent"), and how fast and how loud it is playing. QUILL Cast's Now
+   Playing window has the same box. Then come the buttons: Play (or Stop), Pause
    (or Resume), Skip Back, Skip Forward, Where Am I?, Previous Chapter, Next
    Chapter, Chapters..., Slower, Faster, Normal Speed, Skip Silence, Volume
    Down, Volume Up, Mute/Unmute, and last, Add to Favorites.
