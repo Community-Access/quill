@@ -890,6 +890,18 @@ minutes of daylight today, 2 minutes less than yesterday.”</li>
 <p>All three come from one Open-Meteo request. The same lines are added
 to the end of the current conditions in Weather Now, and you can turn
 each one off in Settings.</p>
+<h3 id="pollen-and-the-sea">Pollen and the sea</h3>
+<p>Weather Now also includes, when they apply:</p>
+<ul>
+<li><strong>Pollen</strong>, for places in Europe only, for example
+“Pollen: birch high, grass low.” This comes from Copernicus CAMS through
+Open-Meteo, which covers only Europe, so elsewhere no pollen line is
+shown.</li>
+<li><strong>Sea conditions</strong>, for coastal places, for example
+“Sea: waves 10 feet from the west every 14 seconds, swell 10 feet, sea
+temperature 67 degrees.” Inland places have no sea line.</li>
+</ul>
+<p>Turn either off in Settings.</p>
 <h3 id="weather-on-a-past-date">Weather on a Past Date</h3>
 <p><strong>Weather menu &gt; Weather on a Past Date…</strong> (or
 <strong>Ctrl+Alt+D</strong>) shows one past day’s weather for any saved
@@ -1023,16 +1035,17 @@ request as “no data”. Alert Feed Status lists these data services too,
 under <strong>Data feeds</strong>.</p>
 <h3 id="where-the-data-comes-from-and-fair-use">Where the data comes
 from, and fair use</h3>
-<p>Forecast and history data is by <strong>Open-Meteo.com</strong>,
-under the CC BY 4.0 licence. Historical weather is the
-<strong>Copernicus Climate Change Service ERA5</strong> reanalysis. US
-station records and normals are from the <strong>NOAA Regional Climate
-Centers (RCC-ACIS)</strong>. None of these needs an account or a key.
-Open-Meteo is free for non-commercial use up to about 10,000 requests a
-day, so Quill Weather keeps well under that: it saves what it fetches
-for good, asks for one day per year rather than whole decades, and if
-Open-Meteo asks it to slow down, it waits before asking again and says
-so. The same credits are in Help &gt; About Quill Weather.</p>
+<p>Forecast, history, pollen and sea data is by
+<strong>Open-Meteo.com</strong>, under the CC BY 4.0 licence. Historical
+weather is the <strong>Copernicus Climate Change Service ERA5</strong>
+reanalysis. US station records and normals are from the <strong>NOAA
+Regional Climate Centers (RCC-ACIS)</strong>. None of these needs an
+account or a key. Open-Meteo is free for non-commercial use up to about
+10,000 requests a day, so Quill Weather keeps well under that: it saves
+what it fetches for good, asks for one day per year rather than whole
+decades, and if Open-Meteo asks it to slow down, it waits before asking
+again and says so. The same credits are in Help &gt; About Quill
+Weather.</p>
 <h3 id="active-alerts">Active Alerts</h3>
 <p><strong>Weather menu &gt; Active Alerts…</strong> opens Weather Now
 with focus already on the alerts list, so you can review warnings with
@@ -1054,9 +1067,10 @@ cover, pressure, visibility, chance of precipitation, sunrise and
 sunset, <strong>moon phase, moonrise and moonset</strong>, the
 ultraviolet index, air quality, and the <strong>current local time at
 the location</strong>. Temperature and the sky condition always show.
-Three more checkboxes cover the next-hours lines: rain or snow starting
-soon, the next four hours at a glance, and daylight today against
-yesterday.</li>
+Five more checkboxes cover the next-hours lines and the rest: rain or
+snow starting soon, the next four hours at a glance, daylight today
+against yesterday, pollen (Europe only), and sea conditions (coastal
+places only).</li>
 <li><strong>Alert severity to show</strong> – everything, or only
 Moderate and above, Severe and above, and so on – plus a list of
 specific <strong>event names to hide</strong> (one per line).</li>
