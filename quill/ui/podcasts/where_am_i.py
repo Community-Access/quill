@@ -25,13 +25,35 @@ __all__ = ["now_playing_sentence", "say_where_am_i", "where_am_i_sentence"]
 
 
 def _playing(host: Any) -> tuple[Any, int, int] | None:
+    """``(controller, position, trusted length)``; the length is 0 when unknown.
+
+    The position already carries the Sound Enhancements offset
+    (``PodcastPlayerController.position_ms``). The length is mpv's, unless it is
+    missing or, while a stream still buffers, far from the feed's
+    (:func:`quill.core.media.progress_words.trusted_length_ms`).
+    """
+    from quill.core.media.progress_words import trusted_length_ms
+
     controller = getattr(host, "_podcast_controller", None)
     state = getattr(controller, "state", None)
     if controller is None or not getattr(state, "episode_guid", ""):
         return None
     try:
-        return controller, int(controller.position_ms()), int(controller.length_ms())
+        position, engine_length = int(controller.position_ms()), int(controller.length_ms())
     except Exception:  # noqa: BLE001 - nothing loaded yet
+        return None
+    episode = _episode(host, state)
+    feed_ms = int(getattr(episode, "duration_seconds", 0) or 0) * 1000
+    buffering = not str(getattr(episode, "downloaded_path", "") or "")
+    return controller, position, trusted_length_ms(engine_length, feed_ms, buffering=buffering)
+
+
+def _episode(host: Any, state: Any) -> Any:
+    library = getattr(host, "_podcast_library", None)
+    try:
+        show = library.find_show(state.show_id) if library is not None else None
+        return show.find_episode(state.episode_guid) if show is not None else None
+    except Exception:  # noqa: BLE001 - no library is simply no feed length
         return None
 
 

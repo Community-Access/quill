@@ -151,12 +151,20 @@ def position_value(position_ms: int, length_ms: int) -> str:
     return f"{here} of {span_words(length_ms)}"
 
 
-def where_am_i(position_ms: int, length_ms: int, chapters: Sequence[Any] = ()) -> str:
+def where_am_i(
+    position_ms: int, length_ms: int, chapters: Sequence[Any] = (), *, live: bool = False
+) -> str:
     """The where-am-I sentence, chapter first when there is one.
 
     "Listener mail, 4 minutes 10 into the chapter, 2 minutes 20 left. 18 minutes
-    30 of 58 minutes, 39 minutes 30 left."
+    30 of 58 minutes, 39 minutes 30 left, 31 percent." The percentage is last and
+    only there when *length_ms* is one worth trusting
+    (:mod:`quill.core.media.progress_words`). *live* says the elapsed time only.
     """
+    from quill.core.media.progress_words import percent_phrase
+
+    if live:
+        return f"Live, {span_words(position_ms)} since you tuned in."
     sentences: list[str] = []
     index = chapter_index_at(chapters, position_ms) if chapters else -1
     if index >= 0:
@@ -169,9 +177,9 @@ def where_am_i(position_ms: int, length_ms: int, chapters: Sequence[Any] = ()) -
         sentences.append(words + ".")
     if length_ms > 0:
         left = max(0, length_ms - position_ms)
-        sentences.append(
-            f"{span_words(position_ms)} of {span_words(length_ms)}, {span_words(left)} left."
-        )
+        words = f"{span_words(position_ms)} of {span_words(length_ms)}, {span_words(left)} left"
+        percent = percent_phrase(position_ms, length_ms)
+        sentences.append(f"{words}, {percent}." if percent else words + ".")
     else:
         sentences.append(f"{span_words(position_ms)} in.")
     return " ".join(sentences)

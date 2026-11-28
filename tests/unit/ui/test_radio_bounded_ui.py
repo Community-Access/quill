@@ -159,7 +159,7 @@ def test_skipping_forward_reports_the_new_position() -> None:
     host, controller = _host(position=100_000)
     ui.skip_forward(host)
     assert controller.position == 112_000
-    assert host.said == ["1 minute 52 seconds of 18 minutes 40 seconds"]
+    assert host.said == ["1 minute 52 seconds of 18 minutes 40 seconds, 10 percent"]
 
 
 def test_the_position_names_the_chapter_you_are_in() -> None:
@@ -169,7 +169,7 @@ def test_the_position_names_the_chapter_you_are_in() -> None:
         current=1,
     )
     ui.announce_position(host)
-    assert host.said[0].endswith("in The problem")
+    assert host.said[0].endswith("in The problem, 6 percent")
 
 
 def test_where_am_i_pressed_twice_copies_like_cast(monkeypatch) -> None:

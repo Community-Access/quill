@@ -46,7 +46,7 @@ def test_it_says_the_chapter_then_the_episode() -> None:
     where_am_i.say_where_am_i(host)
     assert host.said == [
         "Listener mail, 4 minutes 10 into the chapter, 2 minutes 20 left. "
-        "16 minutes 44 of 58 minutes, 41 minutes 16 left."
+        "16 minutes 44 of 58 minutes, 41 minutes 16 left, 28 percent."
     ]
 
 
@@ -62,6 +62,25 @@ def test_pressed_twice_quickly_it_copies(monkeypatch) -> None:
     assert host.said[-1] == "Copied where you are."
     where_am_i.say_where_am_i(host)  # a third press speaks again
     assert host.said[-1].startswith("Listener mail")
+
+
+def test_a_stream_with_no_engine_length_uses_the_feeds() -> None:
+    episode = SimpleNamespace(duration_seconds=3_480, downloaded_path="")
+    show = SimpleNamespace(find_episode=lambda guid: episode)
+    controller = _Controller(length=0)
+    controller.state.show_id = "show"
+    host = _host(
+        _podcast_controller=controller,
+        _podcast_library=SimpleNamespace(find_show=lambda show_id: show),
+    )
+    assert where_am_i.where_am_i_sentence(host).endswith("41 minutes 16 left, 28 percent.")
+
+
+def test_no_known_length_says_no_percentage() -> None:
+    host = _host(_podcast_controller=_Controller(length=0))
+    sentence = where_am_i.where_am_i_sentence(host)
+    assert "percent" not in sentence
+    assert sentence.endswith("16 minutes 44 in.")
 
 
 def test_nothing_playing_says_so() -> None:

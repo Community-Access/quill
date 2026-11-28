@@ -971,7 +971,9 @@ running it adds when it will stop. Nothing opens and nothing changes.
 **Where am I?** Press **Ctrl+Shift+W** (Episode > Where Am I?) to hear the
 chapter first and then the whole episode, for example "Listener mail, 4
 minutes 10 into the chapter, 2 minutes 20 left. 18 minutes 30 of 58 minutes,
-39 minutes 30 left." Press it twice quickly to copy that sentence instead. It
+39 minutes 30 left, 31 percent." The percentage is said only when Cast knows
+the episode's length; it is rounded down, so it never says 100 percent before
+the end. Press it twice quickly to copy that sentence instead. It
 is the same key Quill Radio uses for Where Am I?, and it works in the Now
 Playing window too, where the Now Playing menu also has Time Remaining.
 New Episodes, which used to be on Ctrl+Shift+W, is now **Ctrl+Shift+F**.

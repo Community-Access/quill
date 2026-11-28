@@ -89,16 +89,24 @@ def describe_chapter(
 
 
 def describe_position(controller: Any) -> str:
-    """ "3 minutes 10 seconds of 18 minutes 40 seconds", plus the chapter."""
-    position = spoken_duration(int(controller._engine.position_ms()))
-    total = spoken_duration(controller.duration_ms())
+    """ "3 minutes 10 seconds of 18 minutes 40 seconds, in Intro, 16 percent".
+
+    The percentage is last, and only there when the length is known
+    (:mod:`quill.core.media.progress_words`, shared with QUILL Cast).
+    """
+    from quill.core.media.progress_words import percent_phrase
+
+    position_ms = int(controller._engine.position_ms())
+    length_ms = max(0, int(controller.duration_ms() or 0))
+    words = f"{spoken_duration(position_ms)} of {spoken_duration(length_ms)}"
     index = controller.current_chapter_index()
     chapters = controller.chapters()
     if 0 <= index < len(chapters):
         title = str(getattr(chapters[index], "title", "") or "").strip()
         if title:
-            return f"{position} of {total}, in {title}"
-    return f"{position} of {total}"
+            words += f", in {title}"
+    percent = percent_phrase(position_ms, length_ms)
+    return f"{words}, {percent}" if percent else words
 
 
 def _controller(host: Any) -> Any:

@@ -53,12 +53,16 @@ def test_where_am_i_says_the_chapter_then_the_episode() -> None:
     sentence = cw.where_am_i(1_004_000, 3_480_000, CHAPTERS)
     assert sentence == (
         "Listener mail, 4 minutes 10 into the chapter, 2 minutes 20 left. "
-        "16 minutes 44 of 58 minutes, 41 minutes 16 left."
+        "16 minutes 44 of 58 minutes, 41 minutes 16 left, 28 percent."
     )
 
 
 def test_where_am_i_without_chapters_or_length() -> None:
     assert cw.where_am_i(90_000, 0) == "1 minute 30 in."
+
+
+def test_a_live_stream_says_the_elapsed_time_only() -> None:
+    assert cw.where_am_i(720_000, 0, live=True) == "Live, 12 minutes since you tuned in."
 
 
 def test_the_index_at_a_position() -> None:

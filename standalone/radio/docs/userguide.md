@@ -1624,8 +1624,9 @@ episode, a recording or a downloaded file.
   12 seconds for one tap, a minute for two quick taps, five minutes for three,
   5 seconds a repeat while you hold the key. They say where you landed, such
   as "3 minutes 10 seconds of 18 minutes 40 seconds".
-- **Where Am I?** (Ctrl+Shift+W) tells you your position, the length and the
-  chapter you are in. Press it twice quickly to copy that instead, as in QUILL
+- **Where Am I?** (Ctrl+Shift+W) tells you your position, the length, the
+  chapter you are in and, last, how far through you are, such as "16
+  percent". Press it twice quickly to copy that instead, as in QUILL
   Cast, which uses the same key.
 - **Next Chapter** (Ctrl+Shift+.) and **Previous Chapter** (Ctrl+Shift+,) move
   by chapter. Like a CD player, Previous Chapter first goes back to the start
