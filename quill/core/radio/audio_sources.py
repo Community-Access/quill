@@ -30,13 +30,13 @@ QUILL's own code. wx-free, network-free, strict-typed.
 
 from __future__ import annotations
 
-import html
 import re
 import urllib.parse
 from collections.abc import Iterable
 from datetime import datetime
 from email.utils import parsedate_to_datetime
 
+from quill.core.display_text import decode_entities
 from quill.core.radio.page_links import PageStreamCandidate
 
 __all__ = [
@@ -223,7 +223,7 @@ def directory_tracks(page: str, base_url: str) -> list[PageStreamCandidate]:
     seen: set[str] = set()
     matches = list(_ANCHOR.finditer(page))
     for number, match in enumerate(matches):
-        href = html.unescape(match.group(2)).strip()
+        href = decode_entities(match.group(2)).strip()
         if not href or href.startswith(("?", "#", "/?")) or href.endswith("/"):
             continue
         url = urllib.parse.urljoin(base_url, href)
@@ -233,8 +233,8 @@ def directory_tracks(page: str, base_url: str) -> list[PageStreamCandidate]:
         if parts.query or url in seen:
             continue
         end = matches[number + 1].start() if number + 1 < len(matches) else len(page)
-        tail = html.unescape(_TAG.sub(" ", page[match.end() : min(end, match.end() + 300)]))
-        name = html.unescape(_TAG.sub("", match.group(3))).strip()
+        tail = decode_entities(_TAG.sub(" ", page[match.end() : min(end, match.end() + 300)]))
+        name = decode_entities(_TAG.sub("", match.group(3))).strip()
         name = urllib.parse.unquote(parts.path.rsplit("/", 1)[-1]) if name.endswith("..>") else name
         row = track(
             url,

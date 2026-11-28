@@ -563,6 +563,8 @@
   "quill.ui.voice_reply_dialog": "reachable",
   "quill.ui.vosk_retirement_notice": "reachable",
   "quill.ui.weather.add_location_dialog": "reachable",
+  "quill.ui.weather.alert_choices_dialog": "reachable",
+  "quill.ui.weather.feed_status_dialog": "reachable",
   "quill.ui.weather.settings_dialog": "reachable",
   "quill.ui.weather.weather_center_dialog": "reachable",
   "quill.ui.web_form": "reachable",
