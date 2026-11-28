@@ -46,5 +46,7 @@ WEATHER_KEYMAPS: dict[str, str] = {
     "weather.history": "Ctrl+Shift+T",
     # Next Few Hours: U for upcoming.
     "weather.next_hours": "Ctrl+Shift+U",
+    # Report Fields: E for extra fields; once-a-year, so any free key (rule 9).
+    "weather.report_fields": "Ctrl+Shift+E",
     **SMALL_APP_AI_KEYMAPS["weather"],  # AI rows, rule-11 comments: app_keymaps_ai.py
 }

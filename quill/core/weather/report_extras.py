@@ -1,5 +1,6 @@
 """The extra lines of a Weather Now report: rain starting soon, the glance
-ahead, the change in daylight, pollen and the sea.
+ahead, the change in daylight, the fields chosen in Report Fields, pollen and
+the sea.
 
 ``gather`` makes at most three requests -- the one nowcast request (only when
 one of its lines is wanted), pollen (only in Europe) and marine (only where a
@@ -33,12 +34,20 @@ class Extras:
     rain_soon: str = ""
     glance: str = ""
     daylight: str = ""
+    fields: str = ""
     pollen: str = ""
     marine: str = ""
     problems: list[str] = field(default_factory=list)
 
     def lines(self) -> list[str]:
-        lines = (self.rain_soon, self.glance, self.daylight, self.pollen, self.marine)
+        lines = (
+            self.rain_soon,
+            self.glance,
+            self.daylight,
+            self.fields,
+            self.pollen,
+            self.marine,
+        )
         return [line for line in lines if line] + self.problems
 
 
@@ -98,11 +107,16 @@ def _gather_nowcast(
     want_rain = everything or settings.show_rain_soon
     want_glance = everything or settings.show_glance_ahead
     want_daylight = everything or settings.show_daylight_change
-    if not (want_rain or want_glance or want_daylight):
+    fields = [] if everything else list(settings.report_fields)
+    if not (want_rain or want_glance or want_daylight or fields):
         return
     try:
         cast = nowcast.fetch(
-            location.latitude, location.longitude, unit=settings.temperature_unit, get=get
+            location.latitude,
+            location.longitude,
+            unit=settings.temperature_unit,
+            extra_fields=fields,
+            get=get,
         )
     except HTTP_ERRORS as error:
         record.failed("open_meteo_nowcast", "The next few hours", error)
@@ -114,6 +128,8 @@ def _gather_nowcast(
         extras.glance = nowcast.glance_text(cast, wind_word=wind_word(settings))
     if want_daylight:
         extras.daylight = nowcast.daylight_text(cast)
+    if fields:
+        extras.fields = nowcast.extras_text(cast, fields)
 
 
 def _place_key(location: WeatherLocation) -> str:

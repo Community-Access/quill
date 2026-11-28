@@ -565,6 +565,17 @@ All three come from one Open-Meteo request. The same lines are added to the end
 of the current conditions in Weather Now, and you can turn each one off in
 Settings.
 
+### Report Fields
+
+**Weather menu > Report Fields...** (or **Ctrl+Shift+E**) adds extra details from
+Open-Meteo to the end of the current conditions in Weather Now, such as wind
+gusts, snow on the ground, the freezing level, thunderstorm energy (CAPE), soil
+moisture or sunlight strength. Choose a field in **Field to add** and press
+**Add**. The fields you have added are listed in the order they are read. Use
+**Move Up**, **Move Down** and **Remove** on the selected one. **Meaning**,
+after those buttons, says what the chosen field means. Each value is said in your units, for
+example "Wind gusts: 22 miles per hour."
+
 ### Pollen and the sea
 
 Weather Now also includes, when they apply:

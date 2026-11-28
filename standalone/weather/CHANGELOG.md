@@ -9,6 +9,14 @@ update independently. This version history begins with 2.2.0.
 
 ## Unreleased
 
+- **Choose extra fields for the report** (2026-11-28). **Weather menu > Report
+  Fields** (Ctrl+Shift+E) adds any of 21 extra Open-Meteo details to the end of the
+  current conditions in Weather Now, in the order you choose: wind gusts, snow on
+  the ground, the freezing level, visibility, dew point, wet-bulb temperature,
+  pressure, thunderstorm energy (CAPE), the UV index this hour, sunlight strength,
+  sunshine, low and high cloud, ground temperature, soil moisture,
+  evapotranspiration, vapour pressure deficit, and day or night. Each is said in
+  your units. They ride the same single request as the next-hours lines.
 - **Pollen and sea conditions** (2026-11-28). Weather Now adds pollen for places
   in Europe ("Pollen: birch high, grass low.", from Copernicus CAMS through
   Open-Meteo, which covers only Europe, so nothing is asked or shown elsewhere) and
