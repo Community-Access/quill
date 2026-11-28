@@ -843,6 +843,47 @@ own work. Until you sign in, each of these places says so and names the way
 in: **Manage GitHub Accounts...** (`Ctrl+Shift+K` in the Workbench). Chapter 1
 shows how.
 
+## My GitHub: the front door
+
+**My GitHub** is the first place in the Workbench, above Needs My Attention,
+and it is where the window opens once you are signed in. It puts the things
+that want you in one list, so you do not have to remember which kind of thing
+lives where: your unread notifications, issues and pull requests assigned to
+you, pull requests whose review was asked of you, and your own pull requests
+whose checks failed.
+
+`Alt+Shift+Home` goes there from anywhere in the window. From the editor, the
+GitHub menu's **My GitHub** row opens the Workbench there.
+
+Each row says what it is first, then where, what it is called and why it is
+here: "Review requested: octo/api - Retry logic. Your review was requested."
+When a thread is both a notification and assigned to you, it is one row that
+names both reasons. The details say the same in full, with the time it was
+last updated.
+
+Enter opens the full thread, as it does in the lists the row came from, and
+Mark Read and Done work on a notification row exactly as they do in
+Notifications. The Workbench's other views stay where they were, and are the
+detailed workspace.
+
+When the list loads, the status says how many need you and of what kind:
+"4 need your attention: 2 unread notifications, 1 assigned issue, 1 review
+request." An empty queue says "Nothing needs your attention." A refresh
+adds what changed, once: "2 new, 1 cleared since the last refresh."
+
+If one source cannot load, the status says which, for example
+"Notifications could not load: GitHub is not answering", and the other
+sources still show. A missing source never reads as an empty queue.
+
+Choose **My GitHub View Options...** in the View menu (`Ctrl+Alt+M`) to filter,
+order and group the list. It asks one question at a time: which kind to show
+(or all), one repository, whether to hide notifications you have already
+read, the order (newest first, oldest first, or by repository) and the
+grouping (none, by repository, or by kind). Your choices are remembered for
+your account. Only notifications have a read state in GitHub, so hiding read
+ones never hides an assignment or a review request. Grouped lists are kept
+together in order, and the status says how many are in each group.
+
 ## Needs My Attention
 
 Everything waiting on you is under **Needs My Attention**, near the top of the
@@ -5198,6 +5239,7 @@ no AI menu, so here they belong to the Go row.
 | `Ctrl+Alt+W` | Clone Wiki |
 | `Ctrl+Q`, `Ctrl+Shift+Q` | Mark a notification read; mark the whole list read |
 | `Ctrl+Alt+N` | Inbox Rules |
+| `Ctrl+Alt+E` | Find a Person or Organization |
 | `Ctrl+D` | Add to Favorites, or take it out |
 | `Ctrl+C`, `Ctrl+Shift+C` | Copy the row; copy its address |
 | Delete | The safe removal for the row, asking first when it cannot be undone (in the list) |
@@ -5829,6 +5871,38 @@ them access to a server: "SSH key 4, ending abcdefgh."), **Social Accounts**,
 
 `Ctrl+6` goes to Projects; each repository's own Projects are under it,
 `Ctrl+Shift+7`. Chapter 4 covers Projects.
+
+### Finding people and organizations
+
+`Ctrl+Alt+E` (File > **Find a Person or Organization...**) opens a search
+window. Type at least two letters of a username or a name; after a short pause
+the matches appear, people and organizations together. Each row says which it
+is: "Person: octocat (The Octocat), 8 public repositories. Cat." When two
+accounts share a name, their rows also say how many followers they have, so
+you can tell them apart. Press the Down Arrow to move from the search box to
+the list.
+
+On a match, the buttons are **Repositories...** (Enter does this), **Track or
+Untrack**, **Favorite or Unfavorite**, **Follow or Unfollow** and **Open on
+GitHub**. The same actions are on a person's or organization's context menu as
+**Account Actions...**. Following works for people. For an organization,
+QUILL opens its page on GitHub and says so, because GitHub documents following
+an organization only as a public preview.
+
+Four words mean four different things, and QUILL keeps them apart:
+
+- A **favorite** is a shortcut on this computer. Nothing is sent to GitHub.
+- A **star** is a public action on GitHub, shown on your profile.
+- A **GitHub List** is GitHub's own collection of starred repositories.
+  **Add to GitHub List...** in the repositories window puts a repository on
+  one of your lists.
+- **Following** a person is public too. After every follow or star QUILL asks
+  GitHub for the new state and says what GitHub reports.
+
+**People > Tracked Accounts** lists the accounts you kept, favorites first,
+and then your favorite repositories. Enter opens an account's place in the
+tree. A Read Only account can search and look, but follow and star need
+Organize. In Safe Mode nothing is searched.
 
 ### Profiles
 
@@ -6734,6 +6808,49 @@ everything is working, which parts are slow or down, and any incident GitHub
 is working on, with its latest update. It asks the first time, reads the page
 only when you choose the command, and is greyed in Safe Mode. Chapter 10 has
 more.
+
+## List Speech Templates
+
+Each row in a list is read as its cells, one after another. **List Speech
+Templates** (Tools menu, `Ctrl+Alt+Shift+V`) lets you decide what a row says,
+and in what order, for each kind of list: notifications, issues, pull requests and repositories. Nothing changes until you choose a
+template; until then every list is read the way it always was.
+
+In the window:
+
+1. **List** picks the kind of list.
+2. **Template** picks the usual wording, one of three built-in presets, or a
+   template you saved. **Brief** says only what identifies the row.
+   **Balanced** adds the state and how long ago it changed. **Detailed** says
+   everything and introduces each value with its name.
+3. **Fields in spoken order** is the row, first to last. **Move Up** and
+   **Move Down** (or `Alt+Up` and `Alt+Down` on the list) change the order, and
+   each move says where the field landed, such as "Title moved to position 2
+   of 4". **Remove** (or `Delete`) takes a field out. **Choose field** and
+   **Add** put one back at the end.
+4. **Separator** is what is said between fields. **Say field labels** adds the
+   name before a value, such as "by octocat". **Leave out empty fields** skips a
+   field with no value; turn it off and **Empty-field text** is said instead.
+5. **Sample row preview** is a real-looking row said exactly as your rows will
+   be. **Hear Preview** says it aloud.
+6. **Save As** names your choices. **Rename** and **Delete Template** work on a
+   saved template. **Use for This List** makes the list speak this way, and
+   **Use for Similar Lists** does the same for lists that read alike, such as
+   issues and pull requests; a list that lacks one of the fields keeps its own
+   choice and is named.
+7. **Import** adds templates from a file someone shared, and **Export** saves
+   all of yours to a file. Import asks, template by template, before replacing
+   one you already have: **Replace**, **Keep Mine** or **Cancel Import**. A file
+   that is not a template file, or comes from a newer QUILL, is refused and the
+   window says nothing changed; an older file is read, and any template that
+   cannot be used is counted in what the window says. Which template each list
+   uses is not shared: choose that yourself after importing.
+
+If GitHub or WordPress stops offering a field you chose, the rest of your
+choices are kept, the window says which field is gone, and the row simply does
+not say it: you never hear a blank. The Details pane always has the full
+row, whatever the template says. If the template file cannot be read, a copy is
+kept aside and the usual wording is used until you save again.
 
 ## Workbench Options
 

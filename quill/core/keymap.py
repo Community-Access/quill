@@ -1159,6 +1159,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # GitHub Workbench Mode and its menu's rows (workbench_menu.py): no chords, as no
     # GitHub command has one (rules 7 and 9); the menu's access letter is the way in.
     "view.github_workbench_mode": "",
+    "github.workbench_my_github": "",
     "github.workbench_inbox": "",
     "github.workbench_my_work": "",
     "github.workbench_issues": "",

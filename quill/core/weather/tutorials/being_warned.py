@@ -81,6 +81,19 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 check="monitoring-paused",
             ),
             Step(
+                title="Know the difference between quiet and cannot reach",
+                body=(
+                    "Alert Feed Status says whether Quill Weather can reach the "
+                    "National Weather Service, when the last check worked, and "
+                    "the last alerts it was given. A check that failed is never "
+                    "treated as no alerts: if checks keep failing you are told "
+                    "once that alerts may be missing, and told again when it "
+                    "recovers."
+                ),
+                command="weather.feed_status",
+                hear="A one-sentence state, then the report: the last successful check, per place.",
+            ),
+            Step(
                 title="Know that it comes back by itself",
                 body=(
                     "Monitoring keeps running while the window is in the tray, and "
@@ -162,6 +175,17 @@ TUTORIALS: tuple[Tutorial, ...] = (
             "settings that decide whether the watch is useful or noisy."
         ),
         steps=(
+            Step(
+                title="Choose which alerts and places",
+                body=(
+                    "Alert Choices decides which saved places are watched and which "
+                    "alerts reach you: Everything, Essentials, Safety or your own. "
+                    "Extreme alerts are always told unless you turn that off. "
+                    "Anything your choices keep quiet stays in the alert list."
+                ),
+                command="weather.alert_choices",
+                hear="Entered Alert Choices.",
+            ),
             Step(
                 title="Open Settings",
                 body=(

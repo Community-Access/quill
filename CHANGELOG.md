@@ -2,6 +2,109 @@
 
 ## 1.0.0
 
+### My GitHub: one list of what needs you (2026-11-27)
+
+The GitHub Workbench now opens on **My GitHub**, a front door that puts your
+unread notifications, issues and pull requests assigned to you, review
+requests, and your own pull requests with failing checks in one list. Each row
+says what it is, where, and why it is there; Enter opens the full thread, and
+Mark Read and Done work as they do in Notifications. The status says how many
+need you and of what kind, says "Nothing needs your attention" when the list
+is empty, and says what changed on a refresh. If one source cannot load, the
+status names it and the rest still show.
+
+**My GitHub View Options...** in the View menu (`Ctrl+Alt+M`) filters by kind,
+repository and unread, orders by newest, oldest or repository, and groups by
+repository or kind; the choices are remembered for your account. `Alt+Shift+Home`
+goes to My GitHub from anywhere in the Workbench, and the GitHub menu has a
+**My GitHub** row in both editors. Workbench Options can still open on Inbox,
+Start Here, or where you were last.
+
+### Find a person or organization in the GitHub Workbench (2026-11-27)
+
+**Find a Person or Organization...** (`Ctrl+Alt+E`) searches GitHub as you
+type. Each match says whether it is a person or an organization, with the
+username, name, public repositories and description, and adds the follower
+count when two accounts share a name. From a match you can list its
+repositories, keep it in **People > Tracked Accounts**, mark it a favorite,
+follow a person, or open it on GitHub. In a repository list you can star or
+unstar, mark a local favorite, or add it to one of your GitHub Lists.
+
+A favorite is a shortcut on this computer and sends nothing. A star and a
+follow are public, and QUILL asks GitHub for the new state afterward and
+says what GitHub reports. Organizations are opened on GitHub to follow,
+because GitHub documents that only as a public preview. Read Only accounts
+can search and look; Safe Mode searches nothing.
+
+### Choose how list rows are spoken (2026-11-27)
+
+The GitHub Workbench and the WordPress Workbench now have **List Speech
+Templates** in the Tools menu (`Ctrl+Alt+Shift+V`). For each kind of list you
+choose which fields a row says and in what order: notifications, issues, pull
+requests and repositories on GitHub, and posts, pages and comments on
+WordPress. Start from Brief, Balanced or Detailed, or build your own with Add,
+Remove, Move Up and Move Down (`Alt+Up` and `Alt+Down` work on the list too),
+pick a separator, turn field labels on or off, and say what an empty field
+should read as. A sample row is shown and can be spoken aloud before you
+commit. Save your own templates by name, rename or delete them, and use one for
+every list that reads alike.
+
+Nothing changes until you choose a template: every list keeps its usual
+wording by default. If a service stops offering a field you chose, your other
+choices are kept and the window names the missing field; rows never speak a
+blank. If the saved file cannot be read, a copy is kept aside and the usual
+wording is used. The Details pane still shows the whole row.
+
+List Speech Templates also reach WordPress media and users, and the window now
+has **Import** and **Export** buttons. Export saves your templates to a file;
+Import adds templates from one, asks before it replaces any template you
+already have, and says in plain words when a file is not a template file, is
+from a newer QUILL, or has templates that could not be used.
+
+### Quill Weather: choose your places and alerts (2026-11-27)
+
+**Choose which places and which alerts** (2026-11-27). The new **Weather menu >
+Alert Choices** (Ctrl+Alt+Shift+C) lets you switch saved places on or off
+without deleting them, and choose which alerts you hear about: Everything,
+Essentials (tornado, severe thunderstorm and flash flood warnings, and anything
+Extreme), Safety (all warnings and Extreme or Severe watches), or your own by
+category, kind and severity. Each choice can speak and interrupt, speak quietly,
+play a sound only, or show in the list only, with its own sound for each
+severity, and quiet hours let only Extreme alerts break through. If you never
+open it, nothing changes. Extreme alerts are always told unless you turn that
+off after a plain warning, and an alert your choices keep quiet is never lost: it
+stays in the alert list and in Alert Feed Status, which counts how many were
+hidden. Every save says one sentence about what you chose.
+
+**Snooze, schedule and group your places** (2026-11-27). A place can be snoozed
+for 1, 4 or 12 hours or until tomorrow morning, watched until a date and time
+(a trip), given a schedule such as weekdays 8 to 6, and put in groups such as
+Family or Travel to watch or stop watching together. A snoozed place is still
+checked, and Extreme alerts still break through. **Weather > Watch This Place**
+(Ctrl+Alt+Shift+U) and a **Watched Places** submenu in the tray switch places
+quickly. The start-watching summary and Alert Feed Status say which places are
+not watched and why.
+
+### Quill Weather tells "no alerts" from "could not reach the service" (2026-11-27)
+
+**You can tell "no alerts" from "could not reach the service"** (2026-11-27).
+Before, a failed check was silent, which sounded exactly like a quiet sky. Now
+a failed check is never treated as no alerts: it does not clear the alerts you
+already had and it never says all clear. If checks keep failing for about ten
+minutes (sooner while an alert is active), Quill Weather says once, "Quill
+Weather cannot reach the National Weather Service. Alerts may be missing. The
+last successful check was at 3:12 PM, and it found no alerts." It repeats only
+after about half an hour of still failing, and says once when it recovers. The
+background check shows the same as a notification, and the tray tooltip shows
+the state. When monitoring starts, a place that could not be checked is named
+as unchecked rather than counted as clear.
+
+**Weather menu > Alert Feed Status** (Ctrl+Alt+Shift+H) is a new report, with
+Copy, of how the alert feed is doing for each place you watch: the state, the
+last successful check, the last attempt, what went wrong in plain words, and
+the last alerts the service provided, marked last known when they are old. In
+Safe Mode it says network checks are off, not that the service is unreachable.
+
 ### Unsent GitHub drafts say what they are, and go once the issue exists (2026-11-24)
 
 A recovered issue draft said only "Recovered a local draft for owner/repo", on

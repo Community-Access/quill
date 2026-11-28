@@ -116,6 +116,14 @@ def notification_row(note: GitHubNotification) -> ExploreRow:
         note.id,
         note.updated_at,
         note.subject_title,
+        fields=(
+            ("status", state),
+            ("reason", reason),
+            ("repository", note.repository),
+            ("title", note.subject_title),
+            ("kind", subject_in_words(note.subject_type)),
+            ("updated", note.updated_at[:10]),
+        ),
     )
 
 

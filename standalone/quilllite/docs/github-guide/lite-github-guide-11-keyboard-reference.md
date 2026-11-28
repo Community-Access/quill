@@ -150,6 +150,7 @@ no AI menu, so here they belong to the Go row.
 | `Ctrl+Alt+W` | Clone Wiki |
 | `Ctrl+Q`, `Ctrl+Shift+Q` | Mark a notification read; mark the whole list read |
 | `Ctrl+Alt+N` | Inbox Rules |
+| `Ctrl+Alt+E` | Find a Person or Organization |
 | `Ctrl+D` | Add to Favorites, or take it out |
 | `Ctrl+C`, `Ctrl+Shift+C` | Copy the row; copy its address |
 | Delete | The safe removal for the row, asking first when it cannot be undone (in the list) |

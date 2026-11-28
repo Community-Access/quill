@@ -2,6 +2,17 @@
 
 ## 2.0.0
 
+### Find a person or organization in the GitHub Workbench (2026-11-27)
+
+**Find a Person or Organization...** (`Ctrl+Alt+E`) in the GitHub Workbench
+searches GitHub as you type and says, for each match, whether it is a person
+or an organization, with the username, name, public repositories and
+description. From a match you can list its repositories, keep it in **People >
+Tracked Accounts**, mark a local favorite, follow a person, star a repository
+or add it to a GitHub List. A favorite is a shortcut on this computer; a star
+and a follow are public, and QUILL says what GitHub reports afterward.
+Organizations open on GitHub to follow.
+
 ### The recovery window says how each copy differs from its file (2026-11-24)
 
 Each row of the recovery window now says how the copy stands against the

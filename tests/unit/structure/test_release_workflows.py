@@ -27,10 +27,10 @@ yaml = pytest.importorskip("yaml")
 REPO = Path(__file__).resolve().parents[3]
 WORKFLOWS = REPO / ".github" / "workflows"
 
-#: The secrets these workflows may name: the Dev publishing token and Cast's
-#: Podcast Index credentials, plus the feed seed in protected signing jobs.
+#: The secrets these workflows may name: Cast's Podcast Index credentials, plus
+#: the feed seed in protected signing jobs. No personal token: Dev builds are
+#: published to this repository with the workflow's own token.
 ALLOWED_SECRETS = {
-    "DEV_BUILDS_TOKEN",
     "QUILL_FEED_SIGNING_KEY",
     "QUILL_PODCAST_INDEX_KEY",
     "QUILL_PODCAST_INDEX_SECRET",
@@ -118,26 +118,54 @@ def test_no_other_workflow_can_receive_the_feed_seed() -> None:
     assert named == allowed
 
 
-def test_dev_builds_build_and_label_the_commit_decide_chose() -> None:
+def test_dev_builds_build_the_commit_decide_chose_and_record_it() -> None:
     workflow = _load("dev-builds.yml")
     jobs = workflow["jobs"]
     assert jobs["decide"]["outputs"]["sha"] == "${{ steps.head.outputs.sha }}"
     checkout = next(s for s in jobs["build"]["steps"] if "checkout" in s.get("uses", ""))
     assert checkout["with"]["ref"] == "${{ needs.decide.outputs.sha }}"
-    publish = next(s for s in jobs["publish"]["steps"] if s.get("name", "").startswith("Publish"))
-    assert publish["env"]["SHA"] == "${{ needs.decide.outputs.sha }}"
-    assert "Community-Access/quill@%s" in publish["run"] and '"$SHA"' in publish["run"]
-    # Never to the main repository, whose first 30 releases installed copies read.
-    assert workflow["env"]["DEV_REPO"] == "Community-Access/quillville-dev-builds"
-    assert "--prerelease" in publish["run"] and "--latest=false" in publish["run"]
+    # The commit each build came from is written into the release notes, once, by
+    # the job that runs after every upload.
+    finalize = jobs["finalize"]
+    record = next(s for s in finalize["steps"] if s.get("name", "").startswith("Record"))
+    assert record["env"]["SHA"] == "${{ needs.decide.outputs.sha }}"
+    assert "scripts/dev_release_finalize.py" in record["run"] and '"$SHA"' in record["run"]
+    assert set(finalize["needs"]) == {"decide", "publish"}
+    assert "always()" in finalize["if"] and "needs.decide.outputs.build" in finalize["if"]
 
 
-def test_dev_builds_stop_at_once_without_their_token() -> None:
-    steps = _load("dev-builds.yml")["jobs"]["decide"]["steps"]
-    names = [s.get("name", "") for s in steps]
-    check = names.index("Check the dev-builds token is set")
-    assert check < names.index("Decide whether today's Dev build runs")
-    assert 'if [ -z "$GH_TOKEN" ]' in steps[check]["run"]
+def test_dev_builds_are_files_in_one_rolling_release_of_this_repository() -> None:
+    """One release, so one place on the page installed Radio 3.0.4 and Lite 1.1.2 read."""
+    workflow = _load("dev-builds.yml")
+    text = str(workflow)
+    assert "quillville-dev-builds" not in text and "DEV_BUILDS_TOKEN" not in text
+    assert "DEV_REPO" not in text
+    upload = next(
+        s for s in workflow["jobs"]["publish"]["steps"] if s.get("name", "").startswith("Upload")
+    )
+    assert "gh release upload dev-builds" in upload["run"]
+    assert '"$GITHUB_REPOSITORY"' in upload["run"] and "--clobber" in upload["run"]
+    # No build is a release of its own: that is the thing that would push the
+    # Stable releases off the first page.
+    assert "gh release create" not in upload["run"]
+    assert upload["env"]["GH_TOKEN"] == "${{ github.token }}"
+
+
+def test_dev_builds_use_only_the_workflows_own_token_and_write_only_where_needed() -> None:
+    workflow = _load("dev-builds.yml")
+    assert workflow["permissions"] == {"contents": "read"}
+    jobs = workflow["jobs"]
+    assert "permissions" not in jobs["build"]  # compiling needs no write access
+    for name in ("decide", "publish", "finalize"):
+        assert jobs[name]["permissions"] == {"contents": "write"}, name
+    for name, job in jobs.items():
+        for step in job["steps"]:
+            token = str(step.get("env", {}).get("GH_TOKEN", ""))
+            assert token in ("", "${{ github.token }}"), (name, step.get("name"))
+    ensure = next(s for s in jobs["decide"]["steps"] if "exists" in s.get("name", ""))
+    assert "--ensure" in ensure["run"]  # made once, before eleven uploads race to make it
+    names = [s.get("name", "") for s in jobs["decide"]["steps"]]
+    assert names.index(ensure["name"]) < names.index("Decide whether today's Dev build runs")
 
 
 def test_only_radio_is_asked_to_skip_its_catalog() -> None:
@@ -204,7 +232,7 @@ def test_batch_promotion_has_one_unprotected_preflight_and_one_signed_pr() -> No
         for step in promote["steps"]
         if step.get("name") == "List and promote every Dev app, sequentially"
     )
-    assert batch_step["env"]["GH_TOKEN"] == "${{ secrets.DEV_BUILDS_TOKEN }}"
+    assert batch_step["env"]["GH_TOKEN"] == "${{ github.token }}"
     runs = [step.get("run", "") for step in promote["steps"]]
     assert all("QUILL_FEED_SIGNING_KEY" not in run for run in runs)
     assert "--key-file" not in "\n".join(runs)

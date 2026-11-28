@@ -85,7 +85,39 @@ def saved_items_for(items: Any) -> Any:
     return GitHubSavedItems.load(account_key=account_key_for_token(getattr(items, "token", None)))
 
 
+def _tracked_rows(items: Any) -> list[ExploreRow]:
+    """People > Tracked Accounts: kept accounts (favorites first), then favorite repositories."""
+    from quill.core.github.tracked_accounts import TrackedAccounts
+
+    store = TrackedAccounts.load(account_key_for_token(getattr(items, "token", None)))
+    rows = [
+        ExploreRow(
+            account.label,
+            f"{account.label}\nKept on this computer only; GitHub is not told. Enter opens it.",
+            account.page,
+            "",
+            "org" if account.kind == "organization" else "person",
+            account.login,
+        )
+        for account in store.listed()
+    ]
+    rows += [
+        ExploreRow(
+            f"Favorite repository: {repo}",
+            f"{repo}\nA favorite on this computer only. It is not a GitHub star.",
+            f"https://github.com/{repo}",
+            repo,
+            "repo",
+            repo,
+        )
+        for repo in store.favorite_repositories
+    ]
+    return rows
+
+
 def _local_rows(items: Any, view: str) -> list[ExploreRow]:
+    if view == "tracked_accounts":
+        return _tracked_rows(items)
     saved = saved_items_for(items)
     if view == "pinned":
         return [

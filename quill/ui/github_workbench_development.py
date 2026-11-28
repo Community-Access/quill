@@ -25,6 +25,11 @@ from quill.ui.github_workbench_account_keys import (
     ACCOUNT_KEY_VERBS,
     GitHubWorkbenchAccountKeysMixin,
 )
+from quill.ui.github_workbench_accounts import (
+    ACCOUNT_REASONS,
+    ACCOUNT_VERBS,
+    GitHubWorkbenchAccountsMixin,
+)
 from quill.ui.github_workbench_advisories import (
     ADVISORY_REASONS,
     ADVISORY_VERBS,
@@ -100,6 +105,11 @@ from quill.ui.github_workbench_merge import (
     MERGE_REASONS,
     MERGE_VERBS,
     GitHubWorkbenchMergeMixin,
+)
+from quill.ui.github_workbench_my_github import (
+    MY_GITHUB_REASONS,
+    MY_GITHUB_VERBS,
+    GitHubWorkbenchMyGitHubMixin,
 )
 from quill.ui.github_workbench_new_ruleset import (
     NEW_RULESET_REASONS,
@@ -225,6 +235,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **COLLAB_VERBS,
     **DRAFT_VERBS,
     **INBOX_RULE_VERBS,
+    **MY_GITHUB_VERBS,
     **DRY_RUN_VERBS,
     **PLAIN_BATCH_VERBS,
     **PRACTICE_VERBS,
@@ -234,6 +245,7 @@ DEVELOPMENT_VERBS: dict[str, frozenset[str]] = {
     **TIER2_VERBS,
     **PACKAGE_VERBS,
     **STAR_LIST_VERBS,
+    **ACCOUNT_VERBS,
     **ADVISORY_VERBS,
     **ACCOUNT_KEY_VERBS,
     **SETTINGS_LIST_VERBS,
@@ -268,6 +280,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **COLLAB_REASONS,
     **DRAFT_REASONS,
     **INBOX_RULE_REASONS,
+    **MY_GITHUB_REASONS,
     **DRY_RUN_REASONS,
     **PLAIN_BATCH_REASONS,
     **PRACTICE_REASONS,
@@ -277,6 +290,7 @@ DEVELOPMENT_REASONS: dict[str, str] = {
     **TIER2_REASONS,
     **PACKAGE_REASONS,
     **STAR_LIST_REASONS,
+    **ACCOUNT_REASONS,
     **ADVISORY_REASONS,
     **ACCOUNT_KEY_REASONS,
     **SETTINGS_LIST_REASONS,
@@ -309,6 +323,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchCollabMixin,
     GitHubWorkbenchDraftsMixin,
     GitHubWorkbenchInboxRulesMixin,
+    GitHubWorkbenchMyGitHubMixin,
     GitHubWorkbenchDryRunMixin,
     GitHubWorkbenchPlainBatchMixin,
     GitHubWorkbenchPracticeMixin,
@@ -318,6 +333,7 @@ class GitHubWorkbenchDevelopmentMixin(
     GitHubWorkbenchTier2Mixin,
     GitHubWorkbenchPackagesMixin,
     GitHubWorkbenchStarListsMixin,
+    GitHubWorkbenchAccountsMixin,
     GitHubWorkbenchAdvisoriesMixin,
     GitHubWorkbenchAccountKeysMixin,
     GitHubWorkbenchSettingsListsMixin,

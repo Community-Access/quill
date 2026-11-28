@@ -53,6 +53,7 @@ READ_ONLY_VERBS: frozenset[str] = frozenset({
     "forget_saved",
     "hide_like",
     "history",
+    "list_speech",
     "only_mine",
     "options",
     "practice",

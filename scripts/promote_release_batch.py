@@ -10,7 +10,6 @@ authority.
 from __future__ import annotations
 
 import argparse
-import json
 import re
 import subprocess
 import sys
@@ -26,6 +25,7 @@ if str(REPO_ROOT) not in sys.path:
 from quill.core.release_catalog import PRODUCTS  # noqa: E402
 from quill.core.updater.feed import ReleaseFeed  # noqa: E402
 from quill.core.versioning import ReleaseVersion  # noqa: E402
+from quill.tools import dev_release  # noqa: E402
 from quill.tools import release_feed as rf  # noqa: E402
 from scripts import promote_release, publish_release  # noqa: E402
 
@@ -122,38 +122,19 @@ def verify_main_sha(source_sha: str, root: Path) -> None:
         raise BatchError(f"could not verify {source_sha} against origin/main: {detail}")
 
 
-def _flatten_release_pages(payload: object) -> list[dict[str, object]]:
-    if not isinstance(payload, list):
-        raise BatchError("GitHub releases response was not a list")
-    pages = payload
-    if pages and all(isinstance(page, list) for page in pages):
-        flattened: list[dict[str, object]] = []
-        for page in pages:
-            assert isinstance(page, list)
-            if not all(isinstance(item, dict) for item in page):
-                raise BatchError("GitHub releases response contained an invalid page")
-            flattened.extend(page)
-        return flattened
-    if not all(isinstance(item, dict) for item in pages):
-        raise BatchError("GitHub releases response contained a non-release row")
-    return pages
-
-
 def fetch_dev_releases(gh: rf.Gh) -> list[dict[str, object]]:
-    """Read every published Dev release without relying on one page."""
-    try:
-        raw = gh([
-            "api",
-            f"repos/{rf.DEV_REPO}/releases?per_page=100",
-            "--paginate",
-            "--slurp",
-        ])
-    except (subprocess.CalledProcessError, OSError) as error:
-        raise BatchError("could not query Dev releases from GitHub") from error
-    try:
-        return _flatten_release_pages(json.loads(raw or "[]"))
-    except (json.JSONDecodeError, TypeError) as error:
-        raise BatchError(f"GitHub releases response was not valid JSON: {error}") from error
+    """Every recorded Dev build, as one row each, from the rolling Dev release.
+
+    The builds are files in a single release (``quill.tools.dev_release``);
+    each row has the shape a per-build release had, so the resolver below
+    checks the same things as before.
+    """
+    release = dev_release.get_release(gh, rf.MAIN_REPO)
+    if not release:
+        raise BatchError(
+            f"the {dev_release.DEV_TAG} release was not found or could not be read from GitHub"
+        )
+    return dev_release.build_rows(release)
 
 
 def _published_at(value: object) -> datetime:
@@ -330,7 +311,7 @@ def _publish_args(build: DevBuild, *, dry_run: bool) -> list[str]:
         "dev",
         "--existing",
         "--repo",
-        rf.DEV_REPO,
+        rf.MAIN_REPO,
     ]
     if dry_run:
         args.append("--dry-run")

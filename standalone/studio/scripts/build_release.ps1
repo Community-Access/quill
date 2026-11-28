@@ -88,8 +88,12 @@ Assert-QuillBuildEnv -Python $Python -QuillRepo $QuillRepo
 
 # -- ffmpeg to bundle ---------------------------------------------------------
 if (-not $FfmpegDir) {
-    $ffmpeg = Get-Command ffmpeg -ErrorAction SilentlyContinue
-    if ($ffmpeg) { $FfmpegDir = Split-Path -Parent $ffmpeg.Source }
+    # Not whatever ffmpeg is on PATH (a stale or planted local install would ship
+    # unverified): stage QUILL's pinned, SHA-256-verified asset, as Cast and Radio do.
+    Write-Host "Staging ffmpeg from QUILL's pinned release assets..."
+    & $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") --only ffmpeg
+    if ($LASTEXITCODE -ne 0) { throw "Could not stage ffmpeg (see scripts/fetch_build_deps.py)." }
+    $FfmpegDir = Join-Path $QuillRepo "build\deps\ffmpeg"
 }
 if (-not $FfmpegDir -or -not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
     throw "ffmpeg.exe not found. Pass -FfmpegDir; recording must ship bundled."
@@ -102,8 +106,12 @@ if (-not $FfmpegDir -or -not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
 # QUILL_APP_ROOT, the same pattern QUILL's Offline Edition uses); a release
 # without it silently guts the 1.1.0 headline features, so it is required.
 if (-not $LibmpvDir) {
-    $packDir = Join-Path $env:APPDATA "Quill\engine-packs\mpv"
-    if (Test-Path (Join-Path $packDir "libmpv-2.dll")) { $LibmpvDir = $packDir }
+    # Not a user-writable engine pack (it would ship unverified): stage QUILL's
+    # pinned, SHA-256-verified asset, as Radio does.
+    Write-Host "Staging libmpv from QUILL's pinned release assets..."
+    & $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") --only libmpv
+    if ($LASTEXITCODE -ne 0) { throw "Could not stage libmpv (see scripts/fetch_build_deps.py)." }
+    $LibmpvDir = Join-Path $QuillRepo "build\deps\mpv"
 }
 if (-not $LibmpvDir -or -not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) {
     throw "libmpv-2.dll not found. Pass -LibmpvDir; the mpv engine must ship bundled."

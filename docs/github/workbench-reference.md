@@ -533,6 +533,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Node | Under | What it is |
 | --- | --- | --- |
 | Start Here (`:start`) | the top | Start Here: what the Workbench is, whether you are signed in, and the five keys to learn first. |
+| My GitHub (`:my_github`) | the top | My GitHub: your whole queue in one list: unread notifications, issues and pull requests assigned to you, review requests, and your pull requests with failing checks. Enter opens the full thread; Ctrl+Q marks a notification read and Delete marks it done. Ctrl+Alt+M chooses what to show, the order and the grouping. |
 | Needs My Attention (`:attention`) | the top | Needs My Attention: everything waiting on you, across GitHub. Inbox first, then notifications, review requests and your own open work. |
 | Inbox (`:inbox`) | attention | Inbox: one list of what needs you, from notifications, review requests, assignments and mentions. Enter opens a row; Delete marks it done. |
 | Notifications (`:notifications`) | attention | Notifications: what GitHub has told you about, unread first. Ctrl+Q marks one read, Delete marks it done, and Ctrl+Shift+Q marks the whole view read. |
@@ -567,6 +568,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | My Followers (`:followers`) | people | My Followers: accounts that follow you. |
 | My Teams (`:my_teams`) | people | My Teams: every team you belong to, across your organizations. Alt+Enter opens a team's sheet. |
 | My Billing and Usage (`:billing_usage`) | people | Billing and Usage: this month's metered use of your account, by product, from GitHub's billing report. Read only; Enter opens your billing page. |
+| Tracked Accounts (`:tracked_accounts`) | people | Tracked Accounts: people and organizations you kept, favorites first, then your favorite repositories. A list on this computer only; GitHub is not told. Enter opens one; Ctrl+Alt+E finds more. |
 | Find a Person... (`:find_person`) | people | Find a Person: type a login with Ctrl+L, and the person gets a node of their own here. |
 | Gists (`:gists`) | the top | Gists: small shared files and snippets. |
 | My Gists (`:my_gists`) | gists | My Gists: gists you made. Enter edits one. |
@@ -777,6 +779,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | New Here... | Ctrl+N | Something new where you are: an issue in Issues, a saved search in Saved Searches. |
 | New... | Ctrl+Shift+N | Choose what to create, wherever you are. |
 | Open GitHub Address... | Ctrl+L | Open a repository by owner/name or link; a compare link opens the comparison, and #42 opens that issue or pull request in this repository. |
+| Find a Person or Organization... | Ctrl+Alt+E | Search GitHub for people and organizations as you type, then look at their repositories, keep them in Tracked Accounts, or follow a person. |
 | Go to Number... | Ctrl+G | Go to an issue or pull request in this repository by its number. |
 | Open on GitHub | Shift+Enter | Open the selected row, or the node, in your browser. |
 | Open in Editor | Ctrl+Enter | Open the selected file in the editor that opened this window. |
@@ -847,6 +850,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Group By > Review State | (submenu letter) | Put the list's groups in the tree, one node per review state. |
 | Group By > By Column... | (submenu letter) | Group this list by one of its columns, the groups as tree nodes; remembered for this list. For lists other than Issues, which group by the rows above. |
 | Columns... | Ctrl+Shift+U | Choose which columns this list shows, and their order. |
+| My GitHub View Options... | Ctrl+Alt+M | Choose which kinds My GitHub shows, one repository, how it is ordered and grouped. Remembered for your account. |
 | Back | Alt+Left | The view you were on before. Backspace too. |
 | Forward | Alt+Right | The view you went back from. |
 | Next Pane | F6 | Tree, filter, list, details, status bar. |
@@ -865,6 +869,7 @@ Everything below is generated from the tables the window is built from. The GitH
 
 | Row | Key | What it does |
 | --- | --- | --- |
+| My GitHub | Alt+Shift+Home | Your whole queue in one list: unread notifications, assigned work, review requests and your pull requests with failing checks. |
 | Inbox | Ctrl+1 | What needs you, across GitHub. Alt+Home too. |
 | Current Repository | Ctrl+2 | The repository this window opened on. |
 | Search | Ctrl+3 | Search GitHub. |
@@ -950,6 +955,7 @@ Everything below is generated from the tables the window is built from. The GitH
 | Row | Key | What it does |
 | --- | --- | --- |
 | Workbench Options... | Ctrl+Shift+O | Where the Workbench opens, how notifications check, lists and privacy. |
+| List Speech Templates... | Ctrl+Alt+Shift+V | How rows are spoken: choose and order the fields, a separator and labels. |
 | Dry Run | Ctrl+Alt+D | Turn Dry Run on or off. While it is on, every write asks and previews as usual, then stops before sending and says what it would have sent. |
 | Plain-Language Batch... | Ctrl+Shift+S | Say a change to many issues or pull requests in words, such as close every issue labelled duplicate older than 90 days; check the exact items it found, then send them. No AI: the same words always mean the same thing. |
 | GitHub API Console... | Ctrl+Shift+J | Send any GitHub REST request or GraphQL query: completion from GitHub's API description, what it does and needs said first, the answer as a tree. |
@@ -1004,7 +1010,7 @@ Keys the window answers that are not menu rows:
 - **invitation**: Accept Invitation..., Decline Invitation..., Open on GitHub, Copy Link; Properties...
 - **notification**: Open, Mark Read, Mark Done, Snooze for One Day, Unsubscribe from Thread, Open on GitHub; More: Unsnooze Locally, Why?; Properties...
 - **repository**: Open, Star or Unstar, Watch or Unwatch, Clone..., Send Repository Dispatch..., Pin; More: Star Lists..., Add to or Remove from Favorites, Sponsor the Owner..., Open on GitHub, Open in Codespaces..., Rename or Delete Star List..., Fork Workflow Settings, Fork Workflows from Private Repositories..., Languages, License, Star History, Mark Its Notifications Read, Set a Custom Property..., Compare Dependencies..., SBOM Report, Ruleset History..., Secret Scanning History, Sync Fork with Upstream..., Create Repository from This Template..., Delete Repository..., Require Sign-off on Web Commits..., Sponsor Links, Dependency Manifests, Start an Agent Task..., Agent Tasks, An Agent Task's Progress..., Automations, New Automation..., Run an Automation..., Rename an Automation..., Delete an Automation..., An Automation's History..., An Automation's Tasks..., Automation Tools and Triggers, Agent Secrets from the Organization, Agent Variables from the Organization, Allow a Blocked Secret..., Copilot Agent Configuration, Copilot Review Settings, Fork..., Prompt Files...; Properties...
-- **person**: Open, Follow or Unfollow, Open on GitHub, Block or Unblock...; Properties...
+- **person**: Open, Follow or Unfollow, Account Actions..., Open on GitHub, Block or Unblock...; Properties...
 - **label**: Find Issues with Label, Edit Label..., Delete Label...; Properties...
 - **gist**: Edit Gist..., Star or Unstar, Comments..., History..., Forks..., Fork Gist; More: Copy Link, Open on GitHub, Delete Gist...; Properties...
 - **discussion**: Open Discussion Thread, Read as Document..., Copy Link, Open on GitHub, Close Discussion..., Reopen Discussion; More: Delete Discussion..., Upvote, Remove Upvote, Vote..., Edit a Comment..., Delete a Comment..., Subscribe or Unsubscribe..., React to a Comment..., Related..., Create Issue from Discussion...; Properties...
@@ -1018,7 +1024,7 @@ Keys the window answers that are not menu rows:
 - **template**: Open Template..., Convert Form or Template..., Copy to Repositories..., Copy Link, Open on GitHub; Properties...
 - **project**: Open on GitHub, Add Draft Issue..., New Field..., Delete Field..., Post Status Update..., Link to Repository...; More: Unlink from Repository..., Template..., Copy Project..., Delete Project..., Copy Link, New View..., Items in a View..., Rename a View..., Delete a View..., Rename a Field..., Add an Issue Field..., Edit a Draft..., Make a Draft an Issue..., Move an Item..., Archive an Item..., Restore an Archived Item..., Remove an Item..., Edit a Status Update..., Delete a Status Update..., Delete a Workflow..., Share the Project..., Link a Team..., Unlink a Team...; Properties...
 - **team**: Members and Access..., Copy Link, Open on GitHub, Delete Team..., Pending Invitations; Properties...
-- **organization**: Open, Roles..., Rulesets..., Open on GitHub, Fork Workflow Settings, Fork Workflows from Private Repositories...; More: Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, Members Without Two-Factor, My Activity Here, Require Sign-off on Web Commits..., Follow Organization, Unfollow Organization, Security Overview, Copilot Plan, Copilot Seats, A Member's Copilot Seat..., Give Copilot Seats..., Take Copilot Seats Away..., Give Teams Copilot..., Take Copilot from Teams..., Copilot Usage Report, Copilot Agent Access, Copilot Content Exclusions, Block from Organization..., Leave Organization..., Your Invitation; Properties...
+- **organization**: Open, Roles..., Rulesets..., Account Actions..., Open on GitHub, Fork Workflow Settings; More: Fork Workflows from Private Repositories..., Dependabot Repository Access, Give Dependabot a Repository..., Take a Repository from Dependabot..., Dependabot's Default Access..., Make Someone an Outside Collaborator..., Define a Custom Property..., Set Repositories' Custom Property..., New Team..., Accept Membership, Members Without Two-Factor, My Activity Here, Require Sign-off on Web Commits..., Follow Organization, Unfollow Organization, Security Overview, Copilot Plan, Copilot Seats, A Member's Copilot Seat..., Give Copilot Seats..., Take Copilot Seats Away..., Give Teams Copilot..., Take Copilot from Teams..., Copilot Usage Report, Copilot Agent Access, Copilot Content Exclusions, Block from Organization..., Leave Organization..., Your Invitation; Properties...
 - **favorite**: Open, Copy Link, Open on GitHub, Add to or Remove from Favorites; Properties...
 - **admin_action**: Open; Properties...
 - **watch**: Edit Watch..., Pause or Resume Watch, Check Watches Now, Remove Watch, Why?, Open on GitHub; Properties...
@@ -1052,7 +1058,7 @@ Keys the window answers that are not menu rows:
 
 | Setting | Page | Label | What it does |
 | --- | --- | --- | --- |
-| `open_on` | General | Open the Workbench on | Where the window opens when no menu row asks for a place: Inbox (Start Here until you have signed in), Start Here, or wherever you were last time. |
+| `open_on` | General | Open the Workbench on | Where the window opens when no menu row asks for a place: My GitHub (Start Here until you have signed in), Inbox, Start Here, or wherever you were last time. |
 | `list_mode` | General | List shows | Quick lists show a few columns, fast to arrow through; Full lists show every column the Workbench has for that list. |
 | `default_sort` | General | Sort issues and pull requests by | The order a list of issues and pull requests opens in. Newest first is the usual choice. |
 | `default_state` | General | Show issues that are | Open, closed or all, when a list opens. The filter box can always say is:open or is:closed for one list. |

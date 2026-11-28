@@ -14,11 +14,12 @@ Ideas in `new.md` (Gitview, Drop Deck, EdSharp, AccessCode and BlindPilot compar
 
 ## Where things stand
 
-- `main` is at `038d6609b` (PR #2084, protected batch feed promotion), and the root checkout `D:\QUILL` is level with `origin/main`.
-- Git now has **one** registered worktree: the root checkout. Every other worktree has been removed (see [Cleanup log](#cleanup-log-2026-11-26)).
-- Every branch that held unique work is on GitHub. Nothing exists only on this PC.
+- **Branches: 89 → 11**, the same 11 locally and on GitHub. **Worktrees: 30 folders → 1**, the root checkout `D:\QUILL`. Every deleted branch's tip hash is logged in `D:\quill-local-backup-2026-11-26\deleted-branches.txt`.
+- **All six Beta fixes found by the branch review are merged:** #2086, #2087, #2088, #2089, #2090 and #2091.
+- **Verified complete as code on `main`:** GitHub Workbench, WordPress Workbench and Practice Site, and Scribe (including the Pneuma ETA contract). Their remaining items are human or live checks (Part 3).
+- **Still to verify:** startup across all 11 apps (item 1).
+- **Next code work:** publish Dev builds inside the monorepo (1.2, step 0), which is required before any Dev or Beta build can run.
 - Open PRs: only **#2003** (SwiftLetter follow-ups, deliberately deferred).
-- **Being verified now:** five read-only reviews are checking every remaining branch, plus whether GitHub, WordPress, Scribe, startup and the family-UX milestones are really complete on `main`. Sections marked *Pending review* get their verdicts when those reviews finish.
 
 ---
 
@@ -31,19 +32,29 @@ Items are ordered by how much they block a trustworthy 11-app Beta. "Done when" 
 | # | Work | Why it matters | Done when |
 |---|---|---|---|
 | 1 | **Verify startup is finished across all 11 apps.** Main's plan listed six startup items: profile read before optional imports; minimal and Notepad mode defers heavy features; essential behaviour stays in the core; profile switching keeps the open document; installed-build timing for all 11 apps; Lite gain of at least 25.5 percent. PR #2083 landed most of this. *Pending review.* | Startup speed and launch safety are the first impression of every app. | Each item is marked done with evidence, or the remaining gap is fixed in one green PR. |
-| 2 | **Verify Scribe is complete**, including the switch to the Pneuma ETA progress contract. Confirm no code path still uses the old progress method, and that tests cover the new contract. *Pending review.* | Scribe is a headline integration, and the provider's API changed. | The review confirms main is complete, or the gaps land in green PRs. |
+| 2 | ~~Verify Scribe is complete.~~ **Verified complete as code (2026-11-26).** The Pneuma ETA contract is implemented in `model.py` (#2078): whole milliseconds, MP3 speech only, `null` for unknown. The only consumer reads it through that parser, so no old progress path remains. 505 Scribe tests pass; 106 are live tests skipped without the corpus and account (Part 3). `feat/scribe-sets` is a new feature for after Beta. | | Done. |
 | 3 | ~~Verify the GitHub Workbench is complete.~~ **Verified complete as code (2026-11-26).** 99 of 100 live requirements are Met, and the API coverage gate shows nothing still planned (`planned_ceiling: 0`). Roadmap GX01 to GX16 have all shipped. The one Partly-met item, GH-R-119, needs human help sessions (see Part 3). | | Done. |
-| 4 | **Verify the WordPress Workbench and Practice Site are complete** against their own plan. SwiftLetter is excluded (see 1.3). *Pending review.* | Same as above. | Verdict recorded, with any code gap fixed. |
+| 4 | ~~Verify the WordPress Workbench and Practice Site are complete.~~ **Verified complete as code (2026-11-26).** Section 15.12 Across Sites (Make Them the Same for terms, plugins, settings, people, patterns, menus, styles and the network) is in `workbench_across_ops.py`. The newest recorded live run is 173 passed, 0 failed, 33 need you, 10 not run. All 13 WordPress branches were superseded and deleted. | | Done. |
 | 5 | **Fix the Dependabot alerts in `scripts/wp_playground/package-lock.json`**: `isomorphic-git` to 1.38.6 (1 high: arbitrary file write through a directory symlink; 3 moderate) and `qs` to 6.16.1 (2 moderate). | A high-severity alert on `main` is a release risk if this tooling ships with the packaged Practice Site, and noise if it doesn't. | Lockfile updated in a green PR, and `main` shows no open high alerts. |
 | 6 | ~~Cast: automatic feed check never runs in standalone Cast.~~ **Fixed: merged in #2086.** `check_settings` reads the store each app's Preferences writes. A cadence-only change takes effect at once, and each show's own schedule decides when it's due. | | Done. |
-| 7 | **Cast: download status is written to a fixed column.** **PR #2087.** Rows now update by column id through `set_row`, writing only cells that changed. The Inbox and other all-podcast views, which wrote *every* cell by position, now use the listener's columns too. | | Merge when CI is green. |
-| 8 | **QUILL and Lite crash recovery loses drafts.** **PR #2088** (from `feat/m6-quill-lite`). Every unsaved document is offered after any unclean exit, each named, with how it differs from the saved file. | | Merge when CI is green. Then a screen-reader check of the reworded window (Part 3). |
+| 7 | ~~Cast: download status is written to a fixed column.~~ **Fixed: merged in #2087.** Rows update by column id; the Inbox and other all-podcast views use the listener's columns too. | | Done. |
+| 8 | ~~QUILL and Lite crash recovery loses drafts.~~ **Fixed: merged in #2088.** Every unsaved document is offered after any unclean exit, named, with how it differs from the saved file. | | Done. Screen-reader check of the window in Part 3. |
 | 9 | ~~Damaged files are silently overwritten.~~ **Fixed: merged in #2089** (from `feat/m6-drafts-backups`). Damaged abbreviation and GitHub draft files are copied aside, and a Beacon rollback can be undone. | | Done. |
-| 10 | **Chapter Workbench Close discards unsaved edits without asking.** **PR #2090.** Close, Escape and X ask Save, Discard or keep working, before the place is kept or the player is stopped. | | Merge when CI is green. |
-| 11 | **Lite Scribe resume and the Transcribe exit question.** Mostly already on `main`: Lite resumes Scribe work at launch (#2071), and closing Transcribe requeues the current job (#2075), so the branch's exit question would now be untrue and wasn't ported. **PR #2091** fixes the one real flaw: startup made a second Scribe controller for the same queue. | | Merge when CI is green. |
+| 10 | ~~Chapter Workbench Close discards unsaved edits without asking.~~ **Fixed: merged in #2090.** | | Done. |
+| 11 | ~~Lite Scribe resume and the Transcribe exit question.~~ **Fixed: merged in #2091** (Lite now uses one Scribe controller). The rest was already on `main` (#2071, #2075). | | Done. |
 | 12 | *Optional one-liner:* `quill/ui/dictation_transcription.py:55` calls `frame._speech_provider(registry=registry)`, but `MainFrame._speech_provider` takes no arguments. It raises TypeError only when the provider ladder returns an id that isn't registered. | A latent crash. | Fix the call, or the signature. |
 
 ### 1.2 Release engineering (the Beta path)
+
+**Step 0: publish Dev builds inside the monorepo (in progress, 2026-11-26).** Every Dev build currently stops at its first step, because `DEV_BUILDS_TOKEN`, a personal token for the separate `quillville-dev-builds` repository, is gone. The owner decided not to restore it; Dev builds move into `Community-Access/quill` instead.
+
+- **Requirement:** anyone can download Beta and Dev builds without signing in, from a release page and through the in-app update channel.
+- **Constraint:** installed Radio 3.0.4 and Lite 1.1.2 read only the first 30 releases, and `publish_release.py` refuses once a Stable release would be more than 20 places down (`PAGE_BUDGET`). One release per Dev build would break their updates within two days.
+- **Design:** **one permanent "Dev builds" prerelease** in `Community-Access/quill`, whose files are replaced on each build. It takes a single page slot whose position never rises. File names carry the version, so the newest few builds per app stay downloadable, and Beta promotion still copies the exact bytes. The workflow writes with its own `GITHUB_TOKEN` (`contents: write` on the publish job only), so no personal token is needed.
+- **Code to change:** `dev-builds.yml`, `scripts/dev_build_plan.py`, `scripts/promote_release_batch.py`, `scripts/publish_release.py`, `quill/tools/release_feed.py`, their tests (`test_release_workflows.py`, `test_promote_release_batch.py`, `test_release_page_budget.py`, `test_release_publish_promote.py`), and `docs/release/RELEASE.md`.
+- **Secrets to document in `RELEASE.md`:** `QUILL_PODCAST_INDEX_KEY` and `QUILL_PODCAST_INDEX_SECRET` (set 2026-11-26; Cast's Podcast Index search in Dev and Beta builds), `QUILL_FEED_SIGNING_KEY` (protected `release-feed-signing` environment), and the retirement of `DEV_BUILDS_TOKEN`.
+- **After one full Dev → Beta cycle works this way,** the owner can archive or delete `quillville-dev-builds`.
+
 
 Run these in order from a single merged `main` commit. Don't build from a feature branch.
 
@@ -72,32 +83,52 @@ Run these in order from a single merged `main` commit. Don't build from a featur
 5. **Run installed-build startup timing for all 11 apps** on the final build.
 6. **Release, observe, repair narrowly.** Publish one announcement naming the 11 products, their hashes, known rough edges and feed locations. A release-blocking defect gets a rebuild of only the affected app. Never overwrite tags or artifacts.
 
-### 1.3 Documentation gate (before announcing Beta)
+### 1.3 Documentation gate: all apps, after the last code change
 
-Every reader-facing document must match what `main` actually ships:
+Run this **once**, after the code work for Beta is finished. The goal is that every reader-facing document, for every app, matches every change merged to `main`.
 
-- the QUILL and QUILL Lite user guides
-- each app's guide and help
-- release notes and What's New
-- `CHANGELOG.md`
-- `docs/release/RELEASE.md`
-- the generated EPUB, HTML and DOCX copies of all of the above
+**Releases go out one app at a time (owner decision, 2026-11-26).** Each app's release is its own story, so its documents must read as one coherent, professional account of that release, not a diary of commits.
 
-Regenerate the outputs from their Markdown sources **once**, after the last code merge, not piecemeal.
+- **Changelogs are reorganized, not just appended to.** Each app's `## Unreleased` section (and its root `CHANGELOG.md` share) is regrouped to cover **everything since that app's last public release**, by feature rather than by date:
+  - `###` headings name the feature area as a user knows it (for example "Listening and playback", "Your library", "Recovery and safety", "Accessibility", "Getting started"). `####` subheadings name individual features.
+  - Each feature is described once, in its final form. Entries that changed the same feature over several days are merged, and intermediate states that never shipped are dropped.
+  - Fixes are grouped under a closing "Fixes" heading by area, each saying what the user experienced and what happens now.
+  - Dates move out of headings. The release's own version and date head the section when it ships.
+  - The engineering detail a maintainer needs stays, but under the user-facing heading, not instead of it.
+- **Every release's documents tell the same story at their own depth:** the announcement (why it matters), the release notes and What's New (what's new and how to try it), the changelog (the complete organized record), the user guide and help (how to use it), and the PRD and technical guides (how it works and why). Each names the same features with the same words.
+- **Order:** one app at a time, in the release order the owner sets. Finish an app's full document set, run the docs gates, release it, then start the next.
+- **Mechanics:** use the single-app path, the protected `promote-release.yml` workflow (or `promote_release_batch.py --apps <app>` once the monorepo change adds that option), so one app can be listed and promoted without the other ten.
 
-Known problems going in (found 2026-11-26):
+**Scope, for each of the 11 apps (QUILL, Lite, Radio, Cast, Transcribe, Converter, Studio, Inkwell, Weather, Beacon, Social) plus the family docs:**
 
-- **Eight site pages are already stale on `main`:** running `scripts/sync_site_docs.py` changes `converter-prd`, `converter-userguide`, `player-prd`, `quilllite-changelog`, three Lite guide chapters and the Lite GitHub guide chapter 12 under `docs/site/docs`. Run the sync once and commit the result as part of this gate.
-- **Use the repository's renderer, never plain Pandoc.** The app `render_docs.ps1` scripts (and `scripts/DocRender.ps1`) apply the accessible template (`docs/pandoc/quill-accessible.html5`: page language, skip link, `<main>` landmark), the first-heading page title, `gfm+smart`, and stable EPUB identifiers. Plain `pandoc` drops all of these.
-- **Pandoc version:** this PC has Pandoc 3.12.1, while the committed outputs were made with the pinned 3.10. Regenerating unrelated EPUBs here changes their bytes, so restore any output whose Markdown didn't change.
+- user guides and their chapters, tutorials, and keyboard references
+- F1 and context help (`docs/f1-help-reference.md` is generated from the help catalogues)
+- release notes, What's New and each app's `CHANGELOG.md`, plus the root `CHANGELOG.md`
+- PRDs and design docs that describe shipped behaviour
+- `docs/release/RELEASE.md`, including the secrets section (see 1.2, step 0)
+- the generated HTML, EPUB and DOCX copies, and the GitHub Pages copies under `docs/site/docs`
 
-**Done when:** the docs parity and help-reference gates pass, each app's What's New names its Beta changes, and no guide documents a menu or feature that a new install doesn't have. The `View > Load More` mismatch in PR #2003 is the known example.
+**How:**
+
+1. List every PR merged since the last documentation pass, and check each one's user-visible change against its app's guide, help, What's New and changelog.
+2. Regenerate generated references with their tools: `python -m quill.tools.build_help_reference --write`, `python -m quill.tools.build_github_guide_book --write`, and the keyboard reference and settings inventory gates.
+3. Render every app's docs with its own `standalone/<app>/scripts/render_docs.ps1`, and render root docs the same way, with the accessible template. Never use plain Pandoc.
+4. Run `scripts/sync_site_docs.py` and commit the site copies.
+5. Run the docs gates until green: docs HTML/EPUB parity, help reference, keyboard reference, settings documentation, `test_no_tick_wording`, and the docs-contract shard.
+
+**Known problems going in (found 2026-11-26):**
+
+- **Eight site pages are already stale on `main`:** `converter-prd`, `converter-userguide`, `player-prd`, `quilllite-changelog`, three Lite guide chapters and the Lite GitHub guide chapter 12 under `docs/site/docs`.
+- **Use the repository's renderer.** The app `render_docs.ps1` scripts (and `scripts/DocRender.ps1`) apply the accessible template (`docs/pandoc/quill-accessible.html5`: page language, skip link, `<main>` landmark), the first-heading page title, `gfm+smart`, and stable EPUB identifiers. Plain `pandoc` drops all of these.
+- **Pandoc version:** this PC has Pandoc 3.12.1; the committed outputs were made with the pinned 3.10. Restore any output whose Markdown didn't change.
+- **Wording gate:** say "update" or "check", never "tick" (screen-reader users hear check boxes).
+
+**Done when:** every docs gate passes on `main`, each app's What's New names its Beta changes, and no guide documents a menu or feature that a new install doesn't have. The `View > Load More` mismatch in PR #2003 is the known example.
 
 ### 1.4 After Beta
 
 | Work | Notes |
 |---|---|
-| **Retire the separate Dev-builds repository** (`Community-Access/quillville-dev-builds`) | **Requirement: anyone in the public must be able to download Beta and Dev builds**, both from a release page and through the in-app update channel, without signing in. Publishing Dev builds as clearly labelled prereleases in the public `Community-Access/quill` repository meets this. Also add a public download page that lists the current Stable, Beta and Dev build for each app. `main` still depends on the separate repository today: `dev-builds.yml` publishes unsigned Dev builds there, and `release-feed-batch.yml` promotes Beta from those releases using `DEV_BUILDS_TOKEN`. To retire it, change `dev-builds.yml`, `scripts/publish_release.py` and `scripts/promote_release_batch.py` so Dev builds publish as prereleases inside `Community-Access/quill`, make the batch promotion read them there, and update `docs/release/RELEASE.md`. Delete the repository only after one full Dev → Beta cycle works without it. Deleting the repository is the owner's action. |
 | **SwiftLetter Phase 1** (PR #2003 stack) | Blocked on SwiftLetter PR #11 publishing updated contract fixtures. Then: fix the failing docs-contract shard (`View > Load More`), address review comments, sync fixtures, and finish the editor wiring (open an article, Save to SwiftLetter, Compare and Retry, lossless Markdown and HTML round trips). |
 | **Reuse system Whisper resources** | The full plan is under [Future plan](#future-plan-reuse-system-whisper-resources). It starts only after Beta. |
 | **Ideas in `new.md`** | Product ideas, not commitments. Review them after Beta. |
@@ -151,66 +182,29 @@ All 24 folders were scanned, and all 24 were deleted on 2026-11-26.
 
 ### Branch queue
 
-**Progress on 2026-11-26:** the branch count went from 89 local to 34 local. 62 branches were deleted after verification. Each verification used content, not ancestry, because `main` squash-merges: every file the branch added had to exist on `main`, commit subjects were matched to the squash-merge train bodies, and the cited PRs had to be on `main`. Deleted:
+**89 branches → 11 (2026-11-26).** Every deletion was verified by content, not ancestry, because `main` squash-merges: every file the branch added had to exist on `main`, its commit subjects had to appear in a merged PR, or its work had just landed in one of today's PRs. Every tip is logged in the backup folder's `deleted-branches.txt`; to restore one, run `git branch <name> <hash>`.
 
-- **GitHub family (18):** all `gh/*`, `feat/github-*`, `docs/github-*` and `deferred/github-*` branches, plus `claude/command-key-phase3-jev`. Superseded by #1991, #1809, #1830, #1833, #1835 and #1801.
-- **Family UX (31):**
-  - FUX-04/06/02/07/08: all of M1, M2 (except the workbench branch), M4, M7 and M8, plus `train/family-m1-m2-m7`.
-  - FUX-09/10/11/12/14/15: all of M9 to M12, M14 and M15. Superseded by #2052, #2065 and #2068.
-- **Other (9):**
-  - `feat/scribe-live-regression` and `feat/mobi-reading` (#2028)
-  - `codex/coverage-stage1-2026-11-11` (a throwaway coverage run)
-  - `wip/auphonic-backlog` (#1779)
-  - `wip/dictation-benchmarks`
-  - `fix/ai-and-settings-legible` (audit findings already fixed on `main`)
-  - `train/batch-release-feed`, `fix/lite-listening-mutagen`, `fix/lite-ffmpeg` and `feat/radio-add-folder-path`
-  - the stale `pr/1999` and `pr/2000` refs (squashed into `feat/swiftletter`)
+Deleted, by family:
 
-**Remaining branches and their verdicts:**
+- **GitHub (18):** all `gh/*`, `feat/github-*`, `docs/github-*` and `deferred/github-*` branches, and `claude/command-key-phase3-jev`. Superseded by #1991, #1809, #1830, #1833, #1835 and #1801.
+- **WordPress (14):** `wp/*`, `wp-finish/*`, `feat/wordpress-*`, `deferred/wordpress-workbench-15-12`, `docs/wp-live-run`, and `worktree-agent-a3cb…` with its `rescue/` copy. Section 15.12 is on `main`, and the newer live run (173 passed, 0 failed) supersedes the 20 November one.
+- **Family UX (38):** all of M1, M2, M4, M7 to M12, M14 and M15; `train/family-m1-m2-m7`; and, once their fixes landed today, `feat/m6-quill-lite`, `feat/m6-drafts-backups`, `feat/m13-*`, `feat/m2-workbench`, `train/editor-recovery`, `train/handoff-cast` and `claude/festive-meitner-3e3470`.
+- **Other (13):** `feat/scribe-live-regression`, `feat/mobi-reading`, `codex/coverage-stage1-2026-11-11`, `wip/auphonic-backlog`, `wip/dictation-benchmarks`, `fix/ai-and-settings-legible`, `fix/settings-apps` (its leftover test was already on `main`), `train/batch-release-feed`, `fix/lite-listening-mutagen`, `fix/lite-ffmpeg`, `feat/radio-add-folder-path`, and the stale `pr/1999` and `pr/2000` refs.
+- **Today's merged PR branches,** each deleted after merging.
 
-| Branch | What it is | Verdict |
+**The 11 that remain, and why:**
+
+| Branch | What it is | Plan |
 |---|---|---|
-| `train/handoff-cast`, `claude/festive-meitner-3e3470` | Cast automatic feed check fix | **Land** as Beta blocker 6, then delete both. |
-| `feat/m13-cast-radio-player` | FUX-13 availability wording, plus the Cast column fix | **Land** the column fix only (Beta blocker 7), then delete. `train/media-recovery` holds a newer copy of the rest. |
-| `feat/m6-quill-lite` | FUX-05 QUILL and Lite crash recovery | **Land** (blocker 8), then delete. |
-| `feat/m6-drafts-backups` | FUX-05 damaged-file protection | **Land** (blocker 9), then delete. |
-| `feat/m6-radio-studio` | FUX-05 Chapter Workbench Close prompt, plus Radio and Studio wording | **Land** the Close prompt (blocker 10). **Keep** the wording for after Beta. |
-| `feat/m6-transcribe-converter` | FUX-05 Lite Scribe resume and Transcribe exit question, plus wording | **Land** those two pieces (blocker 11). **Keep** the wording. |
-| `train/editor-recovery` | An aggregate: exactly `feat/m6-quill-lite` plus `feat/m16-editors` | **Delete** after blocker 8 lands. |
-| `feat/m13-workbench-weather-beacon` | FUX-13 freshness wording | **Delete**; `train/media-recovery` has the same or newer copy. |
-| `feat/m2-workbench` | FUX-06 Workbench refresh | **Delete**; the canonical copy is `train/workbench-sets` commit `a37fd7c76`. |
-| `train/workbench-sets` | `a37fd7c76` keeps Workbench list place on refresh; `62a01151c` is durable Scribe document sets (core only, no UI) | `a37fd7c76` is an optional small **Land** (4 files, no conflicts). **Keep** the sets commit for after Beta, with `feat/scribe-sets`. |
-| `feat/scribe-sets` | Named Scribe document sets, Set Details dialog | **Keep**, after Beta. Rebase onto the durable queue (#2075) and the ETA contract (#2078); conflict risk is high. |
-| `feat/m5-radio-studio` | FUX-03 "Where Is the Sound?" (Alt+Shift+A) | **Keep**, after Beta. It's a new feature with a new key. |
-| `feat/m16-editors` | FUX-16 plain-language failure boxes | **Keep**, after Beta. Wording and buttons only. |
-| `train/media-recovery` | The canonical source for FUX-13, M5 and M6 media wording | **Keep**, after Beta, and re-split it into small PRs. **Never merge it as is:** its `main_frame_radio.py` would undo #2083's startup deferral. Drop its root `.audit-*.patch` files. |
-| `fix/settings-apps` | Ordered settings writes (on `main` via #1979, #1986 and #1990) | Check one leftover test, `tests/unit/apps/test_converter_settings_save.py`. Land it if it still passes; otherwise delete the branch. |
-| `worktree-agent-a3cb8ce7ee947a5d9` / `rescue/agent-a3cb8ce7ee947a5d9` | WordPress Workbench 15.12 "Change Everywhere" | Reported as reimplemented on `main` under different file names (`workbench_across_ops.py`; #1834, #1837, #1842). Its 8 added files have different names on `main`, so **confirm in the WordPress review, then delete**. |
-| WordPress: `wp/*` (2), `wp-finish/*` (5), `feat/wordpress-*` (3), `deferred/wordpress-workbench-15-12`, `docs/wp-live-run` | WordPress Workbench work | **Review not finished** (stopped by the usage limit). |
-| SwiftLetter: `feat/swiftletter`, `feat/swiftletter-client-followups` (PR #2003), `fix/swl-browse-review` | SwiftLetter Phase 1 | **Keep**, deferred. Collapse into one stack when the fixtures arrive. |
-
-Verdict types used for the remaining branches:
-
-- **Land:** small, self-contained, not on `main`. It goes through its own PR with green CI.
-- **Consolidate:** it overlaps another branch, so it is folded into one canonical branch and the duplicate is deleted.
-- **Keep:** major feature work, left until after Beta with a written reason.
-- **Delete:** already on `main` or superseded.
-
-What is already known about the 88 remaining branches:
-
-- 83 already have identical copies on GitHub, so local deletion loses nothing.
-- None merges cleanly into `main` unchanged. Most are 17 to 200 commits behind and touch generated docs, so landing anything means a fresh, small PR against current `main`, not a merge of the old branch.
-- The aggregate `train/editor-recovery`, `train/media-recovery` and `train/family-m1-m2-m7` branches overlap the focused `feat/m*` branches. They are preservation snapshots, not merge candidates.
-- Paused work on GitHub only: `wip/auphonic-backlog` (unfinished, untested, about 4,400 lines), `wip/dictation-benchmarks`, and `fix/ai-and-settings-legible` (unverified audit findings).
-
-Families under review:
-
-| Family | Branches |
-|---|---|
-| GitHub Workbench | `gh/*` (7), `feat/github-*` (4), `docs/github-*` (4), `deferred/github-*` (2), `claude/command-key-phase3-jev` |
-| WordPress and SwiftLetter | `wp/*` (2), `wp-finish/*` (5), `feat/wordpress-*` (3), `deferred/wordpress-workbench-15-12`, `docs/wp-live-run`, `feat/swiftletter`, `feat/swiftletter-client-followups`, `fix/swl-browse-review` |
-| Family UX M1 to M8 | `feat/m1-*` through `feat/m8-*`, `train/family-m1-m2-m7`, `train/editor-recovery`, `train/handoff-cast`, `train/workbench-sets` |
-| Family UX M9 to M16 and others | `feat/m9-*` through `feat/m16-*`, `train/media-recovery`, `feat/scribe-sets`, `feat/scribe-live-regression`, `feat/mobi-reading`, `fix/settings-apps`, `claude/festive-meitner-3e3470`, `codex/coverage-stage1-2026-11-11`, `rescue/agent-a3cb8ce7ee947a5d9`, `wip/*`, `fix/ai-and-settings-legible`, `pr/1999`, `pr/2000` |
+| `main` | The single build source. | |
+| `feat/swiftletter`, `feat/swiftletter-client-followups` (PR #2003), `fix/swl-browse-review` | SwiftLetter Phase 1. | **Keep**, deferred until SwiftLetter PR #11 publishes its contract fixtures. Then collapse into one stack and finish (1.4). |
+| `train/media-recovery` | Preserved, unfinished work: FUX-13 availability and freshness wording (Cast, Radio, Player, Workbench, Weather, Beacon); M5 "Where Is the Sound?"; M6 Radio resume and Studio unfinished-recording wording; plus 7 stray `.audit-*.patch` files. | **Keep until after Beta. Never merge it as is:** it predates #2083, and its `main_frame_radio.py` would undo Radio's startup deferral. Rebuild on current `main` as 3 small PRs (FUX-13 wording, M5, M6 wording), drop the patch files, then delete it. |
+| `feat/m5-radio-studio` | FUX-03 "Where Is the Sound?" (Alt+Shift+A) in Radio and Studio; 834 new lines. | **Keep**, after Beta: a new feature with a new key. Land it with the M5 part of `train/media-recovery`, then delete both copies. |
+| `feat/m6-radio-studio` | The rest of FUX-05 for Radio and Studio (resume-offer wording, no duplicate " (2)" recording). The Close prompt landed in #2090. | **Keep**, after Beta, with the M6 part of `train/media-recovery`. |
+| `feat/m6-transcribe-converter` | Converter's close question with counts, and dictation-history wording. Its Transcribe exit question is obsolete (#2075 keeps the queue). | **Keep**, after Beta: port the Converter and dictation wording only. |
+| `feat/m16-editors` | FUX-16 plain-language failure boxes in QUILL Lite and the assistant (Save As default, Copy Details). | **Keep**, after Beta: wording and buttons, no data handling. |
+| `feat/scribe-sets` | Named Scribe document sets and the Set Details dialog. | **Keep**, after Beta. Rebase onto the durable queue (#2075) and ETA contract (#2078); conflict risk is high. |
+| `train/workbench-sets` | `a37fd7c76`: the Workbench keeps list place and selection on refresh (FUX-06, 4 files). `62a01151c`: core of Scribe document sets. | Land `a37fd7c76` as a small PR when convenient (it helps screen-reader users, no conflicts). The sets commit goes with `feat/scribe-sets`. |
 
 ### Old Git stashes (found 2026-11-26)
 

@@ -56,6 +56,7 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "github.create_codespace": "core.github_remote",
     # GitHub Workbench Mode (2026-11-08): the switch and the GitHub menu's rows.
     "view.github_workbench_mode": "core.github_remote",
+    "github.workbench_my_github": "core.github_remote",
     "github.workbench_inbox": "core.github_remote",
     "github.workbench_my_work": "core.github_remote",
     "github.workbench_issues": "core.github_remote",

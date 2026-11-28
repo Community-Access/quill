@@ -289,7 +289,7 @@ def test_the_options_dialog_saves_to_the_workbench_file(wx_session_app, quill_da
 
     dialog = WorkbenchOptionsDialog(None, WorkbenchPrefs())
     try:
-        dialog.controls["open_on"].SetSelection(2)
+        dialog.controls["open_on"].SetSelection(3)
         dialog.controls["poll_audible_tick"].SetValue(True)
         values = dialog.values()
         assert values.open_on == "last"

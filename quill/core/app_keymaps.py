@@ -18,6 +18,7 @@ nothing else. wx-free, so the rule is testable without a UI.
 from __future__ import annotations
 
 from quill.core.app_keymaps_ai import SMALL_APP_AI_KEYMAPS, with_agent_tasks
+from quill.core.app_keymaps_weather import WEATHER_KEYMAPS
 from quill.core.family_chords import SHOW_HIDE_DEFAULTS
 from quill.core.keymap import DEFAULT_KEYMAP
 from quill.core.radio.dial_tuning import DIAL_KEYS
@@ -487,28 +488,7 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         # accelerator of any kind, so the whole family could be given one chord.
         "podcasts.tutorials": "Ctrl+Alt+F1",
     },
-    "weather": {
-        # Quill Weather drove its whole Weather menu from bound menu items and
-        # had no command ids at all, so the Command Palette could not reach a
-        # single weather verb and a tutorial step could not name one. These are
-        # the ids, and their bindings are the keys those menu labels already
-        # advertise -- the menu is unchanged; it simply has names now.
-        "weather.now": "Ctrl+Shift+W",
-        "weather.quick": "Ctrl+Shift+Q",
-        "weather.alerts": "Ctrl+Shift+Alt+A",
-        "weather.add_location": "Ctrl+Alt+Shift+L",
-        "weather.settings": "Ctrl+Alt+Shift+F",
-        "weather.test_alert": "Ctrl+Alt+Shift+T",
-        "weather.monitor_toggle": "Ctrl+Alt+Shift+M",
-        "weather.monitor_pause": "Ctrl+Alt+Shift+P",
-        "weather.noaa_listen": "Ctrl+Alt+N",
-        "weather.noaa_update": "Ctrl+Alt+Shift+N",
-        # The guided lessons. Ctrl+Alt+F1 is the family key for them -- the same
-        # chord opens the lessons in Quill Radio, QUILL Cast and QUILL -- and it
-        # sits in the F1 family, which is where help lives everywhere.
-        "weather.tutorials": "Ctrl+Alt+F1",
-        **SMALL_APP_AI_KEYMAPS["weather"],  # AI rows, rule-11 comments: app_keymaps_ai.py
-    },
+    "weather": WEATHER_KEYMAPS,  # the rows and their reasons: app_keymaps_weather.py
     **{app: rows for app, rows in SMALL_APP_AI_KEYMAPS.items() if app != "weather"},
     **WORKBENCH_KEYMAPS,  # the GitHub and WordPress Workbench windows (PRD Part C)
 })

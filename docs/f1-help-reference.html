@@ -4796,7 +4796,7 @@ the test finishes.</li>
 field stops; nothing is kept.</li>
 </ul>
 <h2 id="quill-weather">Quill Weather</h2>
-<p>Control coverage: 40 audited sites (40 helped).</p>
+<p>Control coverage: 98 audited sites (98 helped).</p>
 <h3 id="every-window-and-what-it-is-for-6">Every window, and what it is
 for</h3>
 <p><strong>AI Usage.</strong> How much each AI you have set up has been
@@ -4807,6 +4807,21 @@ Type a ZIP code, city, county, or address and press Search; the matching
 places come back as a list so same-named towns are told apart, and Add
 Selected saves the one you choose. A bare latitude,longitude pair
 resolves to that exact point with no search.</p>
+<p><strong>Alert Choices.</strong> Choose which saved places Weather
+Guardian watches, which alerts it tells you about, how it tells you, and
+when it stays quiet. Which alerts picks a ready-made set (Everything,
+Essentials, Safety) or your own; Places switches places on or off,
+snoozes them, watches one for a while, or sets a schedule; How you are
+told chooses speech and a sound for each severity; Quiet hours holds
+back everything below Extreme. Alerts these choices hide are never lost:
+they stay in the alert list and in Alert Feed Status. Preview says what
+would happen to a sample alert.</p>
+<p><strong>Alert Feed Status.</strong> Whether Quill Weather can reach
+the National Weather Service, and the last alerts it was given. For each
+place you watch it says the state, the last successful check, the last
+attempt and, when a check failed, what went wrong in plain words. A
+check that failed is never the same as no alerts: alerts shown from
+before are marked last known. Copy puts the report on the clipboard.</p>
 <p><strong>Ask.</strong> A conversation about the weather, on whichever
 AI is in use: your primary place’s name, never its coordinates, the
 current conditions, the next hours, the forecast and any active alerts
@@ -4835,6 +4850,9 @@ The contents list is grouped by track and remembers where you stopped;
 typing ‘here’ in the filter box narrows it to the tutorials about the
 window you came from. Follow me watches what the app is doing – never
 which key you pressed – and moves you on by itself.</p>
+<p><strong>Save Weather for a Date Range.</strong> Save every day
+between two dates as a spreadsheet file (CSV) or as plain text, in your
+units, with the data credits.</p>
 <p><strong>Should I Go Out?.</strong> The AI’s answer to Should I Go
 Out?, in plain words, from the forecast for your primary place. Any
 active alert comes first, in the Weather Service’s own words, never
@@ -4854,11 +4872,21 @@ daily outlook. Each list pairs with a read-only detail box below it that
 follows your selection, so arrowing a list reads the full official text.
 The Location chooser switches places, Refresh re-pulls, and Add Location
 and Settings open their own windows.</p>
+<p><strong>Weather History.</strong> The weather of the past for one of
+your places: today’s date over many years, another date over many years,
+or a date range, with a summary in plain words of how it compares with
+normal and the records. Every day looked up is saved on your computer,
+so a second look needs no internet.</p>
 <p><strong>Weather Settings.</strong> Every weather preference in one
 place: temperature and wind units, how much forecast to show, which
 alert severities matter, how often to refresh, what the Quick Weather
 line includes, and the alert sound. Save applies everything at once;
 Cancel changes nothing.</p>
+<p><strong>Weather on a Past Date.</strong> One past day’s weather, read
+like the current report: the high and low, rain and snow, wind, sunrise
+and sunset, then each hour, and how the day compared with normal. Type a
+date in the Date field, then move a day, a week, a month or a year at a
+time with the keys the menu bar and buttons name.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
@@ -4890,6 +4918,187 @@ something chosen; the first location you save becomes the primary
 one.</li>
 <li><code>cancel_btn</code>: Close without saving anything. Escape does
 the same.</li>
+</ul>
+<h4
+id="alertchoicesdialog-quilluiweatheralert_choices_dialogpy">AlertChoicesDialog
+(<code>quill/ui/weather/alert_choices_dialog.py</code>)</h4>
+<ul>
+<li><code>ok</code>: Save these choices and close. A sentence then says
+what you chose.</li>
+<li><code>cancel</code>: Close without changing anything. Escape does
+the same.</li>
+</ul>
+<h4
+id="alertchoicespages-quilluiweatheralert_choices_pagespy">AlertChoicesPages
+(<code>quill/ui/weather/alert_choices_pages.py</code>)</h4>
+<ul>
+<li><code>self._preset</code>: Everything tells you about every alert.
+Essentials is tornado, severe thunderstorm and flash flood warnings, and
+anything Extreme. Safety is all warnings and the Extreme or Severe
+watches. Custom lets you choose below.</li>
+<li><code>self._extreme</code>: On by default. An Extreme alert is told
+to you whatever else you choose here. Turning it off lets your other
+choices hide Extreme alerts too.</li>
+<li><code>self._cat_list</code>: The categories you will be told about.
+Use the chooser below to add one and Remove to take the selected one
+out. Empty means every type.</li>
+<li><code>self._cat_add</code>: Pick a category, then press Add
+category.</li>
+<li><code>self._evt_cat</code>: Choose a category to list its alert
+types.</li>
+<li><code>self._evt</code>: Pick one alert type, then choose whether to
+always include or skip it.</li>
+<li><code>self._inc_list</code>: Alert types you asked to always hear
+about.</li>
+<li><code>self._skip_list</code>: Alert types you asked never to hear
+about.</li>
+<li><code>self._shortcut</code>: A shortcut that selects this severity
+and every more serious one.</li>
+<li><code>self._delivery</code>: As before interrupts for urgent alerts
+and speaks the rest. Alerts you did not choose are never lost: they stay
+in the alert list and in Alert Feed Status.</li>
+<li><code>self._quiet_on</code>: During quiet hours Weather Guardian
+does not speak or sound alerts below Extreme. They stay in the alert
+list.</li>
+<li><code>self._quiet_start</code>: When quiet hours begin, as hours and
+minutes.</li>
+<li><code>self._quiet_end</code>: When quiet hours end, as hours and
+minutes.</li>
+<li><code>self._quiet_extreme</code>: On by default. Turned off, nothing
+at all is spoken during quiet hours, Extreme tornado warnings
+included.</li>
+<li><code>self._sample</code>: A sample alert. Preview says what your
+choices would do with it.</li>
+<li><code>self._preview_text</code>: The result of Preview, in one
+sentence.</li>
+<li><code>field</code>: The sound file for this severity. The standard
+alert sound when empty.</li>
+</ul>
+<h4
+id="alertchoicesplaces-quilluiweatheralert_choices_placespy">AlertChoicesPlaces
+(<code>quill/ui/weather/alert_choices_places.py</code>)</h4>
+<ul>
+<li><code>self._place_list</code>: Your saved places. Each row says
+whether the place is watched, snoozed, outside its schedule or switched
+off. Space switches the selected place on or off.</li>
+<li><code>self._snooze</code>: A snoozed place is still checked, but
+stays quiet until the snooze ends. An Extreme alert still breaks through
+unless you turned that off in Quiet hours.</li>
+<li><code>self._until</code>: Watch a switched-off place for a while,
+such as a trip. It stops by itself at that time and tells you once.</li>
+<li><code>self._schedule</code>: Outside its schedule a place is quiet,
+like a snooze. Days like Mon-Fri or Sat,Sun, then hours like
+08:00-18:00.</li>
+<li><code>self._groups</code>: Names that let you watch or stop watching
+several places together.</li>
+<li><code>self._group_pick</code>: Pick a group, then use the buttons
+below.</li>
+<li><code>self._place_choice</code>: Same as everywhere uses the choices
+on the first page. The others give this place its own ready-made
+choices.</li>
+</ul>
+<h4
+id="feedstatusdialog-quilluiweatherfeed_status_dialogpy">FeedStatusDialog
+(<code>quill/ui/weather/feed_status_dialog.py</code>)</h4>
+<ul>
+<li><code>self._box</code>: A read-only report. For each watched place
+it gives the state of the alert feed, the last successful check, the
+last attempt, what went wrong in plain words, and the last alerts the
+service provided, marked last known when they are old. Use the arrow
+keys to read it.</li>
+<li><code>copy_btn</code>: Copy the whole report to the clipboard.</li>
+<li><code>close_btn</code>: Close this window. Escape does the
+same.</li>
+</ul>
+<h4
+id="weatherhistorydialog-quilluiweatherhistory_dialogpy">WeatherHistoryDialog
+(<code>quill/ui/weather/history_dialog.py</code>)</h4>
+<ul>
+<li><code>self._place</code>: The saved place to look up. Add places
+with Weather, Add Location.</li>
+<li><code>self._kind</code>: What to look up: today’s date over many
+years, another calendar date over many years, or every day between two
+dates.</li>
+<li><code>self._month</code>: The month of the calendar date to look
+up.</li>
+<li><code>self._day</code>: The day of the month, 1 to 31.</li>
+<li><code>self._years</code>: How many years to look back, 1 to 85. Data
+goes back to 1940. Every year looked up is saved, so a second look costs
+nothing.</li>
+<li><code>self._start</code>: The first day of the range, written
+year-month-day, like 2024-06-01.</li>
+<li><code>self._end</code>: The last day of the range, written
+year-month-day. A range can be up to a year.</li>
+<li><code>self._go</code>: Look up the weather for these dates. Enter
+does the same.</li>
+<li><code>self._goto</code>: Open Weather on a Past Date for the day
+chosen in the list, or for today, to read that one day hour by hour.
+Ctrl+G does the same, and so does Enter on a day in the list.</li>
+<li><code>self._summary</code>: The lookup in plain words: how the day
+compares with normal, the records, and how often it rained or snowed.
+Use the arrow keys to read it.</li>
+<li><code>self._list</code>: One row a day: the date, the conditions,
+the high, the low and the precipitation, newest first. Use the arrow
+keys to move between days, and Enter to read a day hour by hour.</li>
+<li><code>copy_btn</code>: Copy the summary, every day and the data
+credits.</li>
+<li><code>close_btn</code>: Close Weather History. Escape does the
+same.</li>
+</ul>
+<h4 id="pastdatedialog-quilluiweatherpast_date_dialogpy">PastDateDialog
+(<code>quill/ui/weather/past_date_dialog.py</code>)</h4>
+<ul>
+<li><code>self._place</code>: The saved place to show. Changing it shows
+the same date for the new place.</li>
+<li><code>self._date</code>: Type a date and press Enter: 2011-03-14,
+March 14, 2011, 14 March 2011, 3/14/2011, yesterday, 3 days ago, last
+week, or a year ago today. A year alone, or a month and year, lists
+every day in it. Ctrl+G comes back here.</li>
+<li><code>self._go</code>: Show the date typed in the Date field. Enter
+does the same.</li>
+<li><code>self._view</code>: The day read like the current report: the
+sky, high and low, feels like, rain and snow, wind, sunrise and sunset,
+and how it compared with normal. Alt+Left and Alt+Right move a day; add
+Shift for a week. Here Page Up and Page Down page through the text, as
+they always do.</li>
+<li><code>self._hours</code>: Each hour of the day: the time, the sky,
+the temperature, what it felt like, precipitation and wind.</li>
+<li><code>self._span</code>: Every day in the year or month you typed,
+oldest first. Press Enter on a day to open it.</li>
+<li><code>self._recent_list</code>: The last ten dates you looked at,
+newest first, with their places. Press Enter on one to open it
+again.</li>
+<li><code>self._back</code>: Show the day before. Alt+Left does the same
+anywhere, and Page Up outside the text box, the lists and the Place
+dropdown.</li>
+<li><code>self._fwd</code>: Show the day after. Alt+Right does the same
+anywhere, and Page Down outside the text box, the lists and the Place
+dropdown.</li>
+<li><code>self._last_year</code>: Show this date a year earlier.
+Ctrl+Shift+Page Up does the same.</li>
+<li><code>self._next_year</code>: Show this date a year later.
+Ctrl+Shift+Page Down does the same.</li>
+<li><code>self._copy</code>: Copy the day, every hour and the data
+credits as text.</li>
+<li><code>self._save</code>: Save every day between two dates as a
+spreadsheet file (CSV) or as text. Ctrl+S does the same.</li>
+<li><code>close_btn</code>: Close this window. Escape does the
+same.</li>
+</ul>
+<h4
+id="saverangedialog-quilluiweathersave_range_dialogpy">SaveRangeDialog
+(<code>quill/ui/weather/save_range_dialog.py</code>)</h4>
+<ul>
+<li><code>self._from</code>: The first day to save, such as 2011-03-01
+or March 1, 2011. A range can be up to a year.</li>
+<li><code>self._to</code>: The last day to save, such as 2011-03-31 or
+yesterday.</li>
+<li><code>self._format</code>: A spreadsheet file, one row a day with
+the units in the column names, or plain text, one sentence a day.</li>
+<li><code>self._save</code>: Choose where to save the file, then save
+it.</li>
+<li><code>close_btn</code>: Close without saving. Escape does the
+same.</li>
 </ul>
 <h4
 id="weathersettingsdialog-quilluiweathersettings_dialogpy">WeatherSettingsDialog
@@ -5462,6 +5671,12 @@ on.</li>
 what is said: captions (an SRT file) and a plain-text transcript, saved
 beside the sound. It uses more of your Auphonic credits, and it needs an
 output format chosen.</li>
+<li><code>self._shownotes</code>: Auphonic listens to the recording and
+writes chapter marks, which go into the saved file and a chapters file
+beside it, and show notes: a subtitle, a brief and a long summary, and
+tags, saved as a text file beside the sound. It needs Make captions and
+a transcript on, and a paying Auphonic account: a free account may
+refuse the production.</li>
 </ul>
 <h4
 id="auphonichistorydialog-quilluiconverter_auphonic_history_dialogpy">AuphonicHistoryDialog
@@ -6095,7 +6310,7 @@ added, and what Use Merged keeps. Read it before choosing Use Local, Use
 Remote or Use Merged.</li>
 </ul>
 <h2 id="github-workbench">GitHub Workbench</h2>
-<p>Control coverage: 408 audited sites (408 helped).</p>
+<p>Control coverage: 413 audited sites (413 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>Add Entry.</strong> A new Dependabot entry: ecosystem,
@@ -6166,6 +6381,10 @@ file.</p>
 time: an attribute, an operator and a value from the repository. The
 query appears as you go, in GitHub’s own syntax; OK puts it in the
 filter box, Save as Search also keeps it.</p>
+<p><strong>Find a Person or Organization.</strong> Type a username or
+name and the matching people and organizations appear. Open an account’s
+repositories, keep it in Tracked Accounts, mark a favorite on this
+computer, follow a person on GitHub, or open the account on GitHub.</p>
 <p><strong>Form Field:.</strong> One field of a form: its label, id,
 description and, for its kind, placeholder, options, default and whether
 it is required.</p>
@@ -6319,6 +6538,11 @@ every job, scope by scope.</p>
 <h3 id="every-place-in-the-tree">Every place in the tree</h3>
 <p><strong>Start Here.</strong> Start Here: what the Workbench is,
 whether you are signed in, and the five keys to learn first.</p>
+<p><strong>My GitHub.</strong> My GitHub: your whole queue in one list:
+unread notifications, issues and pull requests assigned to you, review
+requests, and your pull requests with failing checks. Enter opens the
+full thread; Ctrl+Q marks a notification read and Delete marks it done.
+Ctrl+Alt+M chooses what to show, the order and the grouping.</p>
 <p><strong>Needs My Attention.</strong> Needs My Attention: everything
 waiting on you, across GitHub. Inbox first, then notifications, review
 requests and your own open work.</p>
@@ -6399,6 +6623,10 @@ your organizations. Alt+Enter opens a team’s sheet.</p>
 <p><strong>My Billing and Usage.</strong> Billing and Usage: this
 month’s metered use of your account, by product, from GitHub’s billing
 report. Read only; Enter opens your billing page.</p>
+<p><strong>Tracked Accounts.</strong> Tracked Accounts: people and
+organizations you kept, favorites first, then your favorite
+repositories. A list on this computer only; GitHub is not told. Enter
+opens one; Ctrl+Alt+E finds more.</p>
 <p><strong>Find a Person….</strong> Find a Person: type a login with
 Ctrl+L, and the person gets a node of their own here.</p>
 <p><strong>Gists.</strong> Gists: small shared files and snippets.</p>
@@ -6950,6 +7178,9 @@ are.</p>
 <p><strong>File &gt; Open GitHub Address….</strong> Open a repository by
 owner/name or link; a compare link opens the comparison, and #42 opens
 that issue or pull request in this repository.</p>
+<p><strong>File &gt; Find a Person or Organization….</strong> Search
+GitHub for people and organizations as you type, then look at their
+repositories, keep them in Tracked Accounts, or follow a person.</p>
 <p><strong>File &gt; Go to Number….</strong> Go to an issue or pull
 request in this repository by its number.</p>
 <p><strong>File &gt; Open on GitHub.</strong> Open the selected row, or
@@ -7087,6 +7318,9 @@ columns, the groups as tree nodes; remembered for this list. For lists
 other than Issues, which group by the rows above.</p>
 <p><strong>View &gt; Columns….</strong> Choose which columns this list
 shows, and their order.</p>
+<p><strong>View &gt; My GitHub View Options….</strong> Choose which
+kinds My GitHub shows, one repository, how it is ordered and grouped.
+Remembered for your account.</p>
 <p><strong>View &gt; Back.</strong> The view you were on before.
 Backspace too.</p>
 <p><strong>View &gt; Forward.</strong> The view you went back from.</p>
@@ -7112,6 +7346,9 @@ words.</p>
 it loaded.</p>
 <p><strong>View &gt; Say Account.</strong> Say the account, and whether
 you are signed in.</p>
+<p><strong>Go &gt; My GitHub.</strong> Your whole queue in one list:
+unread notifications, assigned work, review requests and your pull
+requests with failing checks.</p>
 <p><strong>Go &gt; Inbox.</strong> What needs you, across GitHub.
 Alt+Home too.</p>
 <p><strong>Go &gt; Current Repository.</strong> The repository this
@@ -7242,6 +7479,8 @@ what QUILL saw this account do here, and what it cannot know. Changes
 nothing.</p>
 <p><strong>Tools &gt; Workbench Options….</strong> Where the Workbench
 opens, how notifications check, lists and privacy.</p>
+<p><strong>Tools &gt; List Speech Templates….</strong> How rows are
+spoken: choose and order the fields, a separator and labels.</p>
 <p><strong>Tools &gt; Dry Run.</strong> Turn Dry Run on or off. While it
 is on, every write asks and previews as usual, then stops before sending
 and says what it would have sent.</p>
@@ -7589,6 +7828,9 @@ account or an organization’s.</p>
 files, each read as model, messages and tests.</p>
 <p><strong>Open.</strong> Select the person’s node in the tree.</p>
 <p><strong>Follow or Unfollow.</strong> Follow them, or stop.</p>
+<p><strong>Account Actions.</strong> Its repositories, and track,
+favorite or follow it. Track and favorite stay on this computer; follow
+and star are public.</p>
 <p><strong>Block or Unblock.</strong> Block them from following you and
 from your repositories, or lift the block.</p>
 <p><strong>Find Issues with Label.</strong> Issues and pull requests
@@ -7995,8 +8237,8 @@ sponsorship, and whether you get the maintainer’s emails.</p>
 sponsors on it stay.</p>
 <h3 id="every-workbench-option">Every Workbench option</h3>
 <p><strong>General: Open the Workbench on.</strong> Where the window
-opens when no menu row asks for a place: Inbox (Start Here until you
-have signed in), Start Here, or wherever you were last time.</p>
+opens when no menu row asks for a place: My GitHub (Start Here until you
+have signed in), Inbox, Start Here, or wherever you were last time.</p>
 <p><strong>General: List shows.</strong> Quick lists show a few columns,
 fast to arrow through; Full lists show every column the Workbench has
 for that list.</p>
@@ -8391,6 +8633,20 @@ Ctrl+S.</li>
 <li><code>ok</code>: Write this filter into the filter box and apply it.
 Ctrl+Enter.</li>
 <li><code>cancel</code>: Change nothing.</li>
+</ul>
+<h4
+id="findaccountdialog-quilluigithub_find_account_dialogpy">FindAccountDialog
+(<code>quill/ui/github_find_account_dialog.py</code>)</h4>
+<ul>
+<li><code>self.query</code>: Type at least two letters of a GitHub
+username or name. Matching people and organizations appear in the list
+below after a short pause; Down Arrow moves there.</li>
+<li><code>self.list</code>: Each row says whether it is a person or an
+organization, then the username, the name, the public repositories and a
+description. Enter opens the account’s repositories.</li>
+<li><code>self.details</code>: The selected account in full, and what
+this computer keeps for it.</li>
+<li><code>close</code>: Close this window. Escape does the same.</li>
 </ul>
 <h4
 id="githubgisteditordialog-quilluigithub_gist_editor_dialogpy">GitHubGistEditorDialog

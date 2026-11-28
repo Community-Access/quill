@@ -48,7 +48,10 @@ from quill.core.versioning import ReleaseVersion
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MAIN_REPO = "Community-Access/quill"
-DEV_REPO = "Community-Access/quillville-dev-builds"
+#: Dev builds are files in ONE rolling prerelease of the main repository, so
+#: they take a single slot on the first page of releases that installed
+#: Radio 3.0.4 and Lite 1.1.2 read (``quill.tools.dev_release``).
+DEV_TAG = "dev-builds"
 KEY_FILE_ENV = "QUILL_FEED_KEY_FILE"
 SIGNING_KEY_ENV = "QUILL_FEED_SIGNING_KEY"
 DEFAULT_KEY_FILE = Path.home() / ".config" / "quill" / "quill-feed-priv.key"

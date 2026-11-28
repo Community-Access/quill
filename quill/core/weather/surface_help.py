@@ -89,6 +89,22 @@ PURPOSES: dict[str, str] = {
         "the app is doing -- never which key you pressed -- and moves you on by "
         "itself."
     ),
+    "Alert Choices": (
+        "Choose which saved places Weather Guardian watches, which alerts it tells you "
+        "about, how it tells you, and when it stays quiet. Which alerts picks a ready-made "
+        "set (Everything, Essentials, Safety) or your own; Places switches places on or off, "
+        "snoozes them, watches one for a while, or sets a schedule; How you are told chooses "
+        "speech and a sound for each severity; Quiet hours holds back everything below "
+        "Extreme. Alerts these choices hide are never lost: they stay in the alert list and "
+        "in Alert Feed Status. Preview says what would happen to a sample alert."
+    ),
+    "Alert Feed Status": (
+        "Whether Quill Weather can reach the National Weather Service, and the last alerts "
+        "it was given. For each place you watch it says the state, the last successful "
+        "check, the last attempt and, when a check failed, what went wrong in plain words. "
+        "A check that failed is never the same as no alerts: alerts shown from before are "
+        "marked last known. Copy puts the report on the clipboard."
+    ),
     "Weather Center": (
         "The full text weather report for one location at a time, in "
         "reading order: active alerts first, then current conditions, the "
@@ -111,6 +127,23 @@ PURPOSES: dict[str, str] = {
         "often to refresh, what the Quick Weather line includes, and the "
         "alert sound. Save applies everything at once; Cancel changes "
         "nothing."
+    ),
+    "Weather History": (
+        "The weather of the past for one of your places: today's date over many "
+        "years, another date over many years, or a date range, with a summary in "
+        "plain words of how it compares with normal and the records. Every day "
+        "looked up is saved on your computer, so a second look needs no internet."
+    ),
+    "Weather on a Past Date": (
+        "One past day's weather, read like the current report: the high and low, "
+        "rain and snow, wind, sunrise and sunset, then each hour, and how the day "
+        "compared with normal. Type a date in the Date field, then move a day, a "
+        "week, a month or a year at a time with the keys the menu bar and buttons "
+        "name."
+    ),
+    "Save Weather for a Date Range": (
+        "Save every day between two dates as a spreadsheet file (CSV) or as plain "
+        "text, in your units, with the data credits."
     ),
     # -- the shared shell dialogs, as this app titles them -----------------------
     "Customize Quill Weather Features": (

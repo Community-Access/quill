@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 615.
+Editor commands with default bindings: 616.
 
 ## The QUILL editor
 
@@ -498,6 +498,7 @@ Editor commands with default bindings: 615.
 | (unbound by default) | Workbench explore | `github.workbench_explore` |
 | (unbound by default) | Workbench inbox | `github.workbench_inbox` |
 | (unbound by default) | Workbench issues | `github.workbench_issues` |
+| (unbound by default) | Workbench my github | `github.workbench_my_github` |
 | (unbound by default) | Workbench my work | `github.workbench_my_work` |
 | (unbound by default) | Workbench pulls | `github.workbench_pulls` |
 | (unbound by default) | Workbench releases | `github.workbench_releases` |
@@ -924,22 +925,27 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | --- | --- | --- |
 | Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Ctrl+Alt+D | Weather on a Past Date... | `weather.past_date` |
 | Ctrl+Alt+F1 | Tutorials | `weather.tutorials` |
 | Ctrl+Alt+N | Noaa listen | `weather.noaa_listen` |
+| Ctrl+Alt+Shift+C | Alert choices | `weather.alert_choices` |
 | Ctrl+Alt+Shift+F | Settings | `weather.settings` |
 | Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+H | Feed status | `weather.feed_status` |
 | Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+Shift+L | Add location | `weather.add_location` |
 | Ctrl+Alt+Shift+M | Monitor toggle | `weather.monitor_toggle` |
 | Ctrl+Alt+Shift+N | Noaa update | `weather.noaa_update` |
 | Ctrl+Alt+Shift+P | Monitor pause | `weather.monitor_pause` |
 | Ctrl+Alt+Shift+T | Test alert | `weather.test_alert` |
+| Ctrl+Alt+Shift+U | Watch place | `weather.watch_place` |
 | Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+Shift+Alt+A | Alerts | `weather.alerts` |
 | Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
 | Ctrl+Shift+G | Ai go out | `weather.ai_go_out` |
 | Ctrl+Shift+Q | Quick | `weather.quick` |
+| Ctrl+Shift+T | Weather History... | `weather.history` |
 | Ctrl+Shift+W | Now | `weather.now` |
 
 ## Quill Converter (app keys)
@@ -1032,6 +1038,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+Shift+A | Ask How... | `github.workbench.ask_how` |
 | Alt+Shift+B | Compare With Previous | `github.workbench.compare_previous` |
 | Alt+Shift+F1 | Workbench Keys | `github.workbench.keys` |
+| Alt+Shift+Home | My GitHub | `github.workbench.go_my_github` |
 | Alt+Shift+T | Take the Tour | `github.workbench.tour` |
 | Alt+Up | Parent Node | `github.workbench.go_parent` |
 | Ctrl+. | Next Unread | `github.workbench.next_unread` |
@@ -1048,15 +1055,18 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+A | Select All | `github.workbench.select_all` |
 | Ctrl+Alt+B | Export Software Bill of Materials... | `github.workbench.export_sbom` |
 | Ctrl+Alt+D | Dry Run | `github.workbench.dry_run` |
+| Ctrl+Alt+E | Find a Person or Organization... | `github.workbench.find_account` |
 | Ctrl+Alt+F | Filter Builder... | `github.workbench.filter_builder` |
 | Ctrl+Alt+F1 | GitHub Service Status... | `github.workbench.service_status` |
 | Ctrl+Alt+I | Import Issues from a Spreadsheet... | `github.workbench.import_issues` |
 | Ctrl+Alt+K | Key Describer | `github.workbench.key_describer` |
 | Ctrl+Alt+L | New Issues from Lines... | `github.workbench.issues_from_lines` |
+| Ctrl+Alt+M | My GitHub View Options... | `github.workbench.my_github_options` |
 | Ctrl+Alt+N | Inbox Rules... | `github.workbench.inbox_rules` |
 | Ctrl+Alt+P | Practice on GitHub... | `github.workbench.practice` |
 | Ctrl+Alt+S | Set Your Status... | `github.workbench.user_status` |
 | Ctrl+Alt+Shift+F1 | What Can I Say Here? | `github.workbench.what_can_i_say_here` |
+| Ctrl+Alt+Shift+V | List Speech Templates... | `github.workbench.list_speech` |
 | Ctrl+Alt+T | Transfer Repository... | `github.workbench.transfer_repository` |
 | Ctrl+Alt+W | Clone Wiki... | `github.workbench.clone_wiki` |
 | Ctrl+B | Compare With Default | `github.workbench.compare_default` |
@@ -1174,6 +1184,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+M | Show Its Comments | `wordpress.workbench.show_comments` |
 | Ctrl+Alt+Shift+P | Your Profile... | `wordpress.workbench.your_profile` |
 | Ctrl+Alt+Shift+S | Put Back from a Snapshot... | `wordpress.workbench.restore_snapshot` |
+| Ctrl+Alt+Shift+V | List Speech Templates... | `wordpress.workbench.list_speech` |
 | Ctrl+Alt+T | Site Sets... | `wordpress.workbench.site_sets` |
 | Ctrl+Alt+U | Mark Entry Read or Unread | `wordpress.workbench.toggle_read` |
 | Ctrl+Alt+V | View As Role... | `wordpress.workbench.view_as` |
