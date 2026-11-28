@@ -949,6 +949,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+G | Ai go out | `weather.ai_go_out` |
 | Ctrl+Shift+Q | Quick | `weather.quick` |
 | Ctrl+Shift+T | Weather History... | `weather.history` |
+| Ctrl+Shift+U | Next Few Hours | `weather.next_hours` |
 | Ctrl+Shift+W | Now | `weather.now` |
 
 ## Quill Converter (app keys)

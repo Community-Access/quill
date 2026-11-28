@@ -9,6 +9,13 @@ update independently. This version history begins with 2.2.0.
 
 ## Unreleased
 
+- **The next four hours and the daylight change** (2026-11-28). **Weather menu >
+  Next Few Hours** (Ctrl+Shift+U) speaks the next four hours at a glance (the
+  temperature trend, any change in the sky, the highest chance of precipitation and
+  notable wind) and how much more or less daylight there is than yesterday. Weather
+  Now ends with the same two lines, and each can be turned off in Settings. Both
+  come from one Open-Meteo request, inside the same daily budget, and a request
+  that fails is said as such.
 - **Weather on a Past Date and Weather History** (2026-11-28). **Weather menu >
   Weather on a Past Date** (Ctrl+Alt+D) shows any day since 1940 for any saved
   place, read like the current report and then hour by hour, with how it compared

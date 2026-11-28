@@ -182,6 +182,9 @@ class WeatherSettingsDialog:
             ("show_uv_index", "Ultra&violet index"),
             ("show_air_quality", "&Air quality"),
             ("show_local_time", "Current local &time at the location"),
+            # No access keys: every letter is taken in this window (GATE-14).
+            ("show_glance_ahead", "The next four hours at a glance"),
+            ("show_daylight_change", "Daylight today against yesterday"),
         ):
             self._detail_checks[attr] = self._check(root, text, getattr(settings, attr))
 
