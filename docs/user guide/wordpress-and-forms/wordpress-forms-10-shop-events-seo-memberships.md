@@ -5,7 +5,8 @@
 Many sites do more than publish. They sell things, list events, chase search
 engines, run memberships, or send old addresses to new ones. Each of those
 needs a plugin, and QUILL works with the commonest: WooCommerce, The Events
-Calendar, Yoast SEO, Paid Memberships Pro and Redirection.
+Calendar, Yoast SEO, Paid Memberships Pro and Redirection. It can also browse
+newsletters made with SwiftLetter.
 
 This chapter has a section for each. Skip the ones your site does not have.
 You will look after products, orders and customers, events and venues, each
@@ -390,6 +391,113 @@ found. **Redirect This Address...** sends one somewhere, after a preview.
 QUILL also offers a redirect at the moments you need one: when you change a
 page's slug in Properties, and when Replace File gives a file a new address
 (Chapter 5). Say yes, and the old address keeps working.
+
+## Newsletters: SwiftLetter
+
+SwiftLetter builds a newsletter from articles, runs an editorial review, and
+makes a Word document and audio of the issue. Each site with SwiftLetter 1.1
+or later has **SwiftLetter**. QUILL offers it on self-hosted WordPress sites,
+including managed hosts where the plugin can be installed. A site connected
+through WordPress.com says, in one sentence, that QUILL offers SwiftLetter
+only on self-hosted sites.
+
+QUILL browses newsletters and opens articles in the editor, where you write
+and save them back as drafts. It never publishes: the issue is published from
+SwiftLetter.
+
+**SwiftLetter** lists the site's newsletters: each title, how many articles it
+holds, and when it last changed. Two newsletters with the same title carry
+their number, so you can tell them apart. The list reads three hundred
+newsletters at first, like every Workbench list. When the site says how many
+it has, the summary after the list says how many more there are, and **View >
+Load More** reads three hundred more; **Load All** reads every one.
+
+Each newsletter is also a node under SwiftLetter in the tree. On a newsletter
+row, Enter is **Show Articles**: it selects that newsletter in the tree and
+lists its articles. If the newsletter is not in the tree yet, QUILL says so,
+and Refresh (F5) lists the newsletters again.
+
+A newsletter's list has its articles in newsletter order, each with:
+
+- its title;
+- its review state, in words: **Reviewed**, **Not reviewed**, or **Changed
+  since review** for an article reviewed and then edited. Only Reviewed counts
+  towards publishing the issue;
+- its place, such as "3 of 8".
+
+The details pane says the article's newsletter and site, who last changed
+its title or text and when, and whether your account can edit it. **Read in
+Full** on the article's context menu moves you there. When SwiftLetter cannot
+be sure who made the last change, it says **Editor unknown** rather than
+guess. Whether you may edit or review is a hint from the site; SwiftLetter
+still checks every request.
+
+### Writing an article in the editor
+
+On an article row, Enter is **Open in Editor**. QUILL reads the article
+through SwiftLetter and asks how to open it:
+
+- **HTML**, exactly as SwiftLetter has it; or
+- **Markdown**, easier to read. Headings (with their anchors, written
+  `## Planting day {#planting-day}`), links, lists, quotes and pictures with
+  their descriptions are plain Markdown. Any block Markdown cannot show
+  exactly is kept on a short `:::` line and goes back unchanged.
+
+Either way SwiftLetter receives WordPress blocks. If Markdown would change an
+article, QUILL opens it as HTML and says why. Once it is open, QUILL says its
+title and review state. An account that cannot edit the article, or a site
+whose SwiftLetter does not take saves from QUILL, opens it read-only and says
+so. Opening the same article again opens your working copy on this computer;
+Compare with Site shows what changed on the site since.
+
+**File > WordPress > Save Draft to Site** sends the title and text, with the
+version you opened, so SwiftLetter can tell whether anyone changed the article
+since. QUILL saves a draft only: **Publish** on an article says that QUILL
+never publishes SwiftLetter articles, and sends nothing. After a save:
+
+- QUILL says "Draft saved to SwiftLetter" and the site's name. A reviewed
+  article now reads **Changed since review**, and needs reviewing again before
+  the issue can be published. The live newsletter is not changed until then.
+- If WordPress changed the text as it stored it, QUILL says so, keeps your
+  copy exactly as you wrote it, and Compare with Site shows the difference.
+  Tidying that changes nothing a reader sees, such as the spacing WordPress
+  adds in an image tag, is said the first time only.
+- A save that would send what the site already has sends nothing, and says so.
+- On a site with the SwiftLetter 1.1.0 test build, which does not send back
+  what it stored, saving works the same; QUILL just cannot tell you whether
+  WordPress tidied anything.
+
+Before a Markdown save, QUILL turns the Markdown back into blocks. If any line
+cannot be turned back without losing something (a `:::` line whose block is
+missing, say), nothing is sent: QUILL names the line, and your Markdown stays
+as it is.
+
+QUILL never sends a save again by itself. When SwiftLetter refuses, QUILL says
+SwiftLetter's own sentence, and your copy in QUILL is unchanged:
+
+- **The article changed on the site** since you opened it. A window offers
+  **Compare with Site** (the site's article against yours, read fresh; nothing
+  is sent), **Reopen** (load the site's article into the document; yours is
+  kept in Previous Versions, and Undo brings it back), and **Keep editing**.
+- **Someone else is editing it in WordPress.** SwiftLetter's sentence names
+  who. Save again once they have finished.
+- **SwiftLetter needs the article's version**, or cannot read it. The window
+  offers **Reopen**.
+- **Anything else**, such as your account not being allowed to edit the
+  article, or a site that cannot save safely: QUILL says SwiftLetter's
+  sentence.
+
+Compare with Site (on the WordPress menu) works on an article at any time.
+Move to Trash does not: articles are trashed in SwiftLetter.
+
+When the site refuses, the list says why: SwiftLetter is not active on the
+site, the site's SwiftLetter needs an update, your account is not allowed to
+browse newsletters, or the site's SwiftLetter is a newer version than this
+QUILL understands. F1 on SwiftLetter, a newsletter or an article says what it
+is.
+
+Reordering, review and exports come in later updates, and this section will
+grow with them.
 
 ## A podcast
 

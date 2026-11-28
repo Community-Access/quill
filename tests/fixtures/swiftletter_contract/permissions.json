@@ -1,0 +1,103 @@
+{
+	"contract_version": 1,
+	"name": "permissions",
+	"description": "An editor may open and save any article. A contributor may open and save only their own, and gets 403 on someone else's article or newsletter.",
+	"steps": [
+		{
+			"id": "editor-opens-contributors-article",
+			"request": {
+				"as": "editor",
+				"method": "GET",
+				"route": "/wp/v2/swl-articles/{{articles.garden.id}}",
+				"query": { "context": "edit" }
+			},
+			"response": {
+				"status": 200,
+				"body": { "swiftletter": { "edit_version": { "$pattern": "^\"[0-9a-f]{64}\"$" } } }
+			},
+			"capture": { "garden_version": "swiftletter.edit_version" }
+		},
+		{
+			"id": "contributor-opens-editors-article",
+			"request": {
+				"as": "contributor",
+				"method": "GET",
+				"route": "/wp/v2/swl-articles/{{articles.market.id}}",
+				"query": { "context": "edit" }
+			},
+			"response": {
+				"status": 403,
+				"body": { "code": "rest_forbidden", "message": { "$type": "string" }, "data": { "status": 403 }, "swiftletter": { "$absent": true } }
+			}
+		},
+		{
+			"id": "editor-opens-own-article",
+			"request": {
+				"as": "editor",
+				"method": "GET",
+				"route": "/wp/v2/swl-articles/{{articles.market.id}}",
+				"query": { "context": "edit" }
+			},
+			"response": {
+				"status": 200,
+				"body": { "swiftletter": { "edit_version": { "$pattern": "^\"[0-9a-f]{64}\"$" } } }
+			},
+			"capture": { "market_version": "swiftletter.edit_version" }
+		},
+		{
+			"id": "contributor-saves-editors-article",
+			"description": "Even with a current version, a contributor cannot save an article they cannot edit.",
+			"request": {
+				"as": "contributor",
+				"method": "POST",
+				"route": "/swiftletter/v1/articles/{{articles.market.id}}/save",
+				"headers": { "If-Match": "{{captures.market_version}}" },
+				"json": { "title": "Not my article", "content": "<!-- wp:paragraph --><p>Should not be saved.</p><!-- /wp:paragraph -->" }
+			},
+			"response": {
+				"status": 403,
+				"body": { "code": "rest_forbidden", "data": { "status": 403 } }
+			},
+			"site": { "article_title": { "market": "{{articles.market.title}}" } }
+		},
+		{
+			"id": "contributor-cannot-open-editors-newsletter",
+			"request": { "as": "contributor", "method": "GET", "route": "/swiftletter/v1/newsletters/{{newsletters.gazette.id}}" },
+			"response": {
+				"status": 403,
+				"body": { "code": "rest_forbidden", "data": { "status": 403 } }
+			}
+		},
+		{
+			"id": "contributor-list-omits-editors-newsletter",
+			"request": { "as": "contributor", "method": "GET", "route": "/swiftletter/v1/newsletters", "query": { "per_page": 100 } },
+			"response": {
+				"status": 200,
+				"body": { "$none": { "id": "{{newsletters.gazette.id}}" } }
+			}
+		},
+		{
+			"id": "editor-list-includes-newsletter",
+			"request": { "as": "editor", "method": "GET", "route": "/swiftletter/v1/newsletters", "query": { "per_page": 100 } },
+			"response": {
+				"status": 200,
+				"headers": { "X-WP-Total": { "$pattern": "^[0-9]+$" } },
+				"body": { "$some": { "id": "{{newsletters.gazette.id}}", "title": "{{newsletters.gazette.title}}", "article_count": 2 } }
+			}
+		},
+		{
+			"id": "editor-saves-contributors-article",
+			"request": {
+				"as": "editor",
+				"method": "POST",
+				"route": "/swiftletter/v1/articles/{{articles.garden.id}}/save",
+				"headers": { "If-Match": "{{captures.garden_version}}" },
+				"json": { "title": "Community Garden Opens Its Gates", "content": "<!-- wp:paragraph --><p>Edited by the newsletter editor.</p><!-- /wp:paragraph -->" }
+			},
+			"response": {
+				"status": 200,
+				"body": { "id": "{{articles.garden.id}}", "edit_version": { "$pattern": "^\"[0-9a-f]{64}\"$" } }
+			}
+		}
+	]
+}

@@ -26,6 +26,14 @@ class WordPressHost(Protocol):
     def announce(self, text: str) -> None:
         """Speak and braille an outcome the screen reader would not say itself."""
 
+    def announce_soon(self, text: str) -> None:
+        """:meth:`announce`, once the document just opened has taken focus, so the
+        screen reader's own speech for the new window does not cut it off."""
+
+    def guard_document(self, path: Path, guarded: bool) -> None:
+        """Turn the editor's Read-Only Guard on or off for *path*, before it opens
+        (a SwiftLetter article the account cannot edit opens guarded)."""
+
     def run_task(
         self,
         name: str,

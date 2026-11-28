@@ -45,6 +45,12 @@ class FamilyWordPressHost:
     def announce(self, text: str) -> None:
         self._app._announce(text)
 
+    def announce_soon(self, text: str) -> None:
+        self.announce(text)
+
+    def guard_document(self, path: Path, guarded: bool) -> None:
+        """No editor here: a document opens in QUILL, which keeps its own guards."""
+
     def run_task(
         self,
         name: str,

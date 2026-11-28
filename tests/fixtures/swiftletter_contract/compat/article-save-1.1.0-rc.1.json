@@ -1,0 +1,46 @@
+{
+	"contract_version": 1,
+	"name": "article-save-1.1.0-rc.1",
+	"description": "Compatibility only: how SwiftLetter 1.1.0-rc.1 answered a successful save, before #13 returned the stored title and content and #17 added the changed review state. Clients that still meet rc.1 sites replay this. The live runner reads only fixtures/*.json, so it does not run this file against the current plugin.",
+	"steps": [
+		{
+			"id": "save-current-version",
+			"request": {
+				"as": "contributor",
+				"method": "POST",
+				"route": "/swiftletter/v1/articles/{{articles.garden.id}}/save",
+				"headers": { "If-Match": "{{captures.opened_version}}" },
+				"json": { "title": "Community Garden Opens Its Gates on Saturday", "content": "<!-- wp:paragraph --><p>Volunteers planted forty-two raised beds on Saturday.</p><!-- /wp:paragraph -->" }
+			},
+			"response": {
+				"status": 200,
+				"body": {
+					"id": "{{articles.garden.id}}",
+					"edit_version": { "$pattern": "^\"[0-9a-f]{64}\"$" }
+				},
+				"example": {
+					"id": "{{articles.garden.id}}",
+					"edit_version": "\"9a8b7c6d5e4f30211203f4e5d6c7b8a99a8b7c6d5e4f30211203f4e5d6c7b8a9\""
+				}
+			}
+		},
+		{
+			"id": "reopen-shows-saved-draft-not-reviewed",
+			"description": "rc.1 seeded review without a review time, so a reviewed article read as not reviewed after a save.",
+			"request": {
+				"as": "contributor",
+				"method": "GET",
+				"route": "/wp/v2/swl-articles/{{articles.garden.id}}",
+				"query": { "context": "edit" }
+			},
+			"response": {
+				"status": 200,
+				"body": {
+					"id": "{{articles.garden.id}}",
+					"status": "draft",
+					"swiftletter": { "review_state": "not_reviewed", "edit_version": "{{captures.saved_version}}" }
+				}
+			}
+		}
+	]
+}

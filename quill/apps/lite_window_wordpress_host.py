@@ -30,6 +30,14 @@ class LiteWordPressHost:
     def announce(self, text: str) -> None:
         self._w._announce(text)
 
+    def announce_soon(self, text: str) -> None:
+        from quill.ui.main_frame_wordpress import later_announce
+
+        later_announce(self.announce, text)
+
+    def guard_document(self, path: Path, guarded: bool) -> None:
+        self._w._read_only_guards().set(path, guarded)
+
     def run_task(
         self,
         name: str,

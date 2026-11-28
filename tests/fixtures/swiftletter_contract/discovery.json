@@ -1,0 +1,83 @@
+{
+	"contract_version": 1,
+	"name": "discovery",
+	"description": "The namespace index tells a signed-in client which API version and Phase 1 features this site offers, and never advertises access to an anonymous caller.",
+	"steps": [
+		{
+			"id": "editor-discovers-features",
+			"request": { "as": "editor", "method": "GET", "route": "/swiftletter/v1" },
+			"response": {
+				"status": 200,
+				"headers": { "Cache-Control": { "$pattern": "no-store" } },
+				"body": {
+					"namespace": "swiftletter/v1",
+					"routes": {
+						"/swiftletter/v1/newsletters": { "$type": "object" },
+						"/swiftletter/v1/newsletters/(?P<id>[\\d]+)": { "$type": "object" },
+						"/swiftletter/v1/articles/(?P<id>[\\d]+)/save": { "$type": "object" }
+					},
+					"swiftletter": {
+						"plugin_version": { "$type": "string" },
+						"api_version": { "$pattern": "^1\\.[0-9]+$" },
+						"article_rest_base": "swl-articles",
+						"capabilities": { "read": true },
+						"features": { "browse": true, "article_context": true, "article_save": true }
+					}
+				},
+				"example": {
+					"namespace": "swiftletter/v1",
+					"routes": {
+						"/swiftletter/v1/newsletters": {},
+						"/swiftletter/v1/newsletters/(?P<id>[\\d]+)": {},
+						"/swiftletter/v1/articles/(?P<id>[\\d]+)/save": {}
+					},
+					"swiftletter": {
+						"plugin_version": "1.1.0-rc.1",
+						"api_version": "1.0",
+						"article_rest_base": "swl-articles",
+						"capabilities": { "read": true },
+						"features": { "browse": true, "article_context": true, "article_save": true }
+					}
+				}
+			}
+		},
+		{
+			"id": "contributor-discovers-read-access",
+			"request": { "as": "contributor", "method": "GET", "route": "/swiftletter/v1" },
+			"response": {
+				"status": 200,
+				"body": {
+					"swiftletter": {
+						"capabilities": { "read": true },
+						"features": { "browse": true, "article_context": true, "article_save": true }
+					}
+				}
+			}
+		},
+		{
+			"id": "anonymous-is-not-offered-access",
+			"request": { "as": "anonymous", "method": "GET", "route": "/swiftletter/v1" },
+			"response": {
+				"status": 200,
+				"headers": { "Cache-Control": { "$pattern": "no-store" } },
+				"body": { "swiftletter": { "capabilities": { "read": false } } }
+			}
+		},
+		{
+			"id": "anonymous-cannot-browse",
+			"request": { "as": "anonymous", "method": "GET", "route": "/swiftletter/v1/newsletters" },
+			"response": {
+				"status": 401,
+				"body": { "code": "rest_forbidden", "data": { "status": 401 } }
+			}
+		},
+		{
+			"id": "other-namespaces-are-untouched",
+			"request": { "as": "editor", "method": "GET", "route": "/wp/v2" },
+			"response": {
+				"status": 200,
+				"body": { "namespace": "wp/v2", "swiftletter": { "$absent": true } }
+			}
+		}
+	]
+}

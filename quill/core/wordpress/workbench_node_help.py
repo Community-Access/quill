@@ -59,7 +59,7 @@ NODE_HELP: Mapping[str, str] = {
     "calendar": "Every site's scheduled and published content, a day to a node.",
     "swiftletter": (
         "This site's SwiftLetter newsletters, also under this node in the tree. "
-        "Enter on one lists its articles."
+        "Enter on one lists its articles. Self-hosted sites only; nothing here changes the site."
     ),
     "swiftletter_newsletter": "Its articles in newsletter order, with review state and position.",
     "search": (
@@ -316,7 +316,8 @@ ROW_HELP: Mapping[str, str] = {
         "Enter again moves to them."
     ),
     "swiftletter_article": (
-        "An article in this newsletter. Enter reads it in full, with its newsletter and site."
+        "An article in this newsletter. Enter reads it in full: its newsletter and site, "
+        "who changed it last and when, and whether your account can edit it."
     ),
     "update": (
         "A version on the site and whether an update waits, once Check for Updates on "

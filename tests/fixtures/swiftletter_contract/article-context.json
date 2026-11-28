@@ -1,0 +1,115 @@
+{
+	"contract_version": 1,
+	"name": "article-context",
+	"description": "Opening an article for editing returns its raw title and content, its parent newsletter, its review state and the edit_version a later save must send in If-Match.",
+	"steps": [
+		{
+			"id": "editor-opens-article",
+			"request": {
+				"as": "editor",
+				"method": "GET",
+				"route": "/wp/v2/swl-articles/{{articles.garden.id}}",
+				"query": { "context": "edit" }
+			},
+			"response": {
+				"status": 200,
+				"headers": { "Cache-Control": { "$pattern": "no-store" } },
+				"body": {
+					"id": "{{articles.garden.id}}",
+					"status": "draft",
+					"title": { "raw": "{{articles.garden.title}}" },
+					"content": { "raw": "{{articles.garden.content}}" },
+					"swiftletter": {
+						"newsletters": [ { "id": "{{newsletters.gazette.id}}", "title": "{{newsletters.gazette.title}}" } ],
+						"review_state": "reviewed",
+						"edit_version": { "$pattern": "^\"[0-9a-f]{64}\"$" }
+					}
+				},
+				"example": {
+					"id": "{{articles.garden.id}}",
+					"status": "draft",
+					"type": "swl_article",
+					"title": { "raw": "{{articles.garden.title}}", "rendered": "{{articles.garden.title}}" },
+					"content": { "raw": "{{articles.garden.content}}", "protected": false },
+					"swiftletter": {
+						"newsletters": [ { "id": "{{newsletters.gazette.id}}", "title": "{{newsletters.gazette.title}}" } ],
+						"review_state": "reviewed",
+						"edit_version": "\"3f1d0c3a9b7e4f2a8c6d5e4b3a291807f6e5d4c3b2a19087f6e5d4c3b2a19087\""
+					}
+				}
+			},
+			"capture": { "opened_version": "swiftletter.edit_version" }
+		},
+		{
+			"id": "reopening-unchanged-article-keeps-version",
+			"request": {
+				"as": "editor",
+				"method": "GET",
+				"route": "/wp/v2/swl-articles/{{articles.garden.id}}",
+				"query": { "context": "edit" }
+			},
+			"response": {
+				"status": 200,
+				"body": { "swiftletter": { "edit_version": "{{captures.opened_version}}" } }
+			}
+		},
+		{
+			"id": "view-context-hides-swiftletter-field",
+			"request": { "as": "editor", "method": "GET", "route": "/wp/v2/swl-articles/{{articles.garden.id}}" },
+			"response": {
+				"status": 200,
+				"body": { "id": "{{articles.garden.id}}", "swiftletter": { "$absent": true } }
+			}
+		},
+		{
+			"id": "author-opens-own-article-without-parent-access",
+			"description": "A contributor may edit their own article but not the editor's newsletter, so the parent list is empty.",
+			"request": {
+				"as": "contributor",
+				"method": "GET",
+				"route": "/wp/v2/swl-articles/{{articles.garden.id}}",
+				"query": { "context": "edit" }
+			},
+			"response": {
+				"status": 200,
+				"body": {
+					"title": { "raw": "{{articles.garden.title}}" },
+					"swiftletter": {
+						"newsletters": [],
+						"review_state": "reviewed",
+						"edit_version": "{{captures.opened_version}}"
+					}
+				}
+			}
+		},
+		{
+			"id": "anonymous-cannot-open-article",
+			"request": {
+				"as": "anonymous",
+				"method": "GET",
+				"route": "/wp/v2/swl-articles/{{articles.garden.id}}",
+				"query": { "context": "edit" }
+			},
+			"response": {
+				"status": 401,
+				"body": { "code": "rest_forbidden", "swiftletter": { "$absent": true } }
+			}
+		},
+		{
+			"id": "editor-browses-newsletter-in-order",
+			"request": { "as": "editor", "method": "GET", "route": "/swiftletter/v1/newsletters/{{newsletters.gazette.id}}" },
+			"response": {
+				"status": 200,
+				"body": {
+					"id": "{{newsletters.gazette.id}}",
+					"title": "{{newsletters.gazette.title}}",
+					"article_count": 2,
+					"articles": [
+						{ "id": "{{articles.garden.id}}", "title": "{{articles.garden.title}}", "order": 0, "review_confirmed": true, "can_review": true },
+						{ "id": "{{articles.market.id}}", "title": "{{articles.market.title}}", "order": 1, "review_confirmed": true, "can_review": true }
+					]
+				}
+			}
+		}
+	]
+}

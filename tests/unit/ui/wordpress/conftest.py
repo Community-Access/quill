@@ -124,6 +124,12 @@ class FakeHost:
     def announce(self, text: str) -> None:
         self.announced.append(text)
 
+    def announce_soon(self, text: str) -> None:
+        self.announced.append(text)
+
+    def guard_document(self, path: Path, guarded: bool) -> None:
+        self.extras.setdefault("guarded", {})[path] = guarded
+
     def run_task(self, name: str, func: Any, on_success: Any, on_failure: Any) -> None:
         self.tasks.append(name)
         try:

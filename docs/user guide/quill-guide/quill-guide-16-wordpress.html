@@ -389,7 +389,68 @@ sites with WooCommerce, The Events Calendar, Yoast SEO, Paid Memberships
 Pro or Redirection. (<a
 href="../wordpress-and-forms/wordpress-forms-10-shop-events-seo-memberships.html">Chapter
 10</a>)</li>
+<li><strong>Browse newsletters</strong> on a site with the SwiftLetter
+plugin: each newsletter, its articles in order, whether each is
+reviewed, and who changed it last. See <a
+href="#newsletters-with-swiftletter">Newsletters with SwiftLetter</a>
+below.</li>
 </ul>
+<h2 id="newsletters-with-swiftletter">Newsletters with SwiftLetter</h2>
+<p>SwiftLetter is a WordPress plugin that builds a newsletter from
+articles. On a self-hosted site with SwiftLetter 1.1 or later, the
+site’s branch of the Workbench has <strong>SwiftLetter</strong>. A site
+without the plugin does not show it, and a site connected through
+WordPress.com says, in one sentence, that QUILL offers SwiftLetter only
+on self-hosted sites.</p>
+<ol type="1">
+<li>Open the Workbench (the WordPress key, then H), and in the tree move
+to your site, then <strong>SwiftLetter</strong>.</li>
+<li>The list has each newsletter, with how many articles it has and when
+it last changed. If the site has more than the Workbench reads at first,
+the list says how many more there are. To read them, choose Load More on
+the View menu of the Workbench window itself (Ctrl+Shift+L while the
+Workbench has focus); Load All there reads every one.</li>
+<li>Press Enter on a newsletter. That is <strong>Show Articles</strong>:
+the newsletter is selected in the tree and its articles are listed, in
+newsletter order.</li>
+<li>Each article says its title, its review state in words (Reviewed,
+Not reviewed, or Changed since review) and its place, such as “3 of
+8”.</li>
+<li>The details pane says its newsletter and site, who changed it last
+and when (“Editor unknown” when SwiftLetter cannot say), and whether
+your account can edit it. <strong>Read in Full</strong>, on the
+article’s context menu (Applications key), moves you there.</li>
+<li>Press Enter on an article to <strong>open it in the editor</strong>.
+QUILL asks whether to open it as HTML, exactly as SwiftLetter has it, or
+as Markdown, which shows headings, links, lists and picture descriptions
+plainly. Either way SwiftLetter receives WordPress blocks. QUILL then
+says the title and the review state. If your account cannot edit the
+article, it opens read-only and QUILL says so.</li>
+</ol>
+<p>To send your changes back, choose <strong>File &gt; WordPress &gt;
+Save Draft to Site</strong> (the WordPress key, then D). It saves a
+draft and never publishes: the newsletter is published from SwiftLetter.
+A reviewed article reads Changed since review after you save it. If
+WordPress tidies your text as it saves it (for example, the spacing in
+an image tag), QUILL tells you once and keeps your copy as you wrote
+it.</p>
+<p>QUILL never sends a save twice. If SwiftLetter refuses, QUILL says
+SwiftLetter’s own sentence and your copy stays as it is:</p>
+<ul>
+<li><strong>Someone changed the article on the site</strong> since you
+opened it: choose <strong>Compare with Site</strong> to hear the
+differences, or <strong>Reopen</strong> to load the site’s copy. Reopen
+keeps yours in Previous Versions, and Undo brings it back.</li>
+<li><strong>Someone else has the article open</strong> in WordPress:
+QUILL says who. Try again once they have finished.</li>
+<li><strong>Markdown QUILL cannot turn back into blocks</strong> without
+losing something: nothing is sent, and QUILL says which line. Fix the
+line, or open the article as HTML.</li>
+</ul>
+<p>F1 on any newsletter or article says what it is. Reordering, review
+and exports will come in later updates. <a
+href="../wordpress-and-forms/wordpress-forms-10-shop-events-seo-memberships.html#newsletters-swiftletter">Chapter
+10</a> of the manual has the details.</p>
 <h2 id="from-the-page-you-are-writing">From the page you are
 writing</h2>
 <ul>

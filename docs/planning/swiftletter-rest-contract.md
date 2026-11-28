@@ -1,321 +1,168 @@
 # SwiftLetter REST Contract for QUILL
 
-Version 1.0, **proposed**. 2026-11-21.
+API version 1.x, as built in SwiftLetter 1.1.0-rc.1 (branch `release/1.1.0-quill-test`, SwiftLetter PR #9). Corrected to the real API on 2026-11-22, replacing the proposal of 2026-11-21.
 
-This is the REST contract QUILL needs from SwiftLetter, written for the SwiftLetter maintainers to review. Nothing here exists in SwiftLetter 1.0.9 yet. The maintainers offered to build the contract we document (issue Community-Access/quill#1992), so this is that document. When they agree, or change it, this file is updated and its status moves from proposed to agreed.
+This is the REST API QUILL uses, as SwiftLetter's maintainer, Michael (payown), built it for issue Community-Access/quill#1992, with the changes he agreed on 2026-11-22. Sections 1 to 6 are what 1.1.0-rc.1 does today. Section 7 is what is agreed and not yet built, in the order it will be built. The product requirements, including Michael's answers by number, are in `docs/planning/swiftletter-prd.md` (section 15).
 
-Nothing is built in QUILL yet. QUILL's side will be built against a fake server that follows this contract exactly (`tests/unit/core/wordpress/fake_swiftletter.py`), and the contract will be checked against SwiftLetter's code once we can read it. If the real routes differ, only `quill/core/wordpress/swiftletter.py` and `swiftletter_contract.py` will need to change.
-
-The product requirements for both sides are in `docs/planning/swiftletter-prd.md`.
+QUILL's client is `quill/core/wordpress/swiftletter.py`, with its errors in `swiftletter_errors.py`. SwiftLetter's shared contract fixtures (payown/SwiftLetter PR #11, `tests/contract/fixtures/`, `"contract_version": 1`) are run by SwiftLetter's CI against a disposable WordPress on InnoDB, and replayed by QUILL's `tests/unit/core/wordpress/test_wp_swiftletter_contract.py` from its copy in `tests/fixtures/swiftletter_contract/`.
 
 ## 1. Principles
 
-- **SwiftLetter is the source of truth.** QUILL and the WordPress dashboard edit the same records. Neither keeps a private copy the other cannot see.
-- **No second login.** QUILL signs every request with the WordPress application password the person already connected. SwiftLetter checks capabilities on every request. A hidden button in QUILL is never the permission boundary.
-- **Articles are posts.** An article is a REST-enabled custom post type, so QUILL's existing post machinery works on it unchanged: working copies, the `modified_gmt` conflict check, revisions, Trash and Restore, the offline queue and `batch/v1`.
-- **Three separate operations.** Saving a draft, marking a revision reviewed and publishing are three different requests. No request does two of them.
-- **One article, many newsletters.** An article in several newsletters is one post. Unlinking it from a newsletter never deletes it.
-- **Private files stay private.** Exports and audio are downloaded through an authenticated REST route. QUILL never asks for, and SwiftLetter never returns, a public media address for a draft or a generated file.
-- **Nothing costly happens by itself.** A request that spends money or calls an outside provider carries an explicit `consent` flag, and SwiftLetter refuses it without one.
+- **SwiftLetter is the source of truth.** QUILL and the WordPress dashboard edit the same records, through the same routes.
+- **No second login.** QUILL signs every request with the application password the person already connected. SwiftLetter checks permissions on every request; a flag or hint in a response is never the permission boundary.
+- **Self-hosted only.** Phase 1 supports self-hosted WordPress, including managed hosts where SwiftLetter can be installed. QUILL never looks for SwiftLetter on a WordPress.com connection.
+- **Saving is not reviewing or publishing.** A save sends title and content only. It never publishes, never marks anything reviewed, and leaves a published newsletter's public post and Word download unchanged until review.
+- **Nothing is retried automatically.** A refused save stays refused until the person acts; their local copy stays in QUILL.
+- **Nothing costly, and no AI, by itself.** QUILL's own AI runs only when the editor asks. A paid export (audio) needs the person's explicit consent, through SwiftLetter's notice.
 
-## 2. Discovery and versions
+## 2. The data model
 
-### 2.1 Is SwiftLetter there
+- **Newsletters** are the post type `swl_newsletter` (REST base `swl-newsletters`, supports `title`).
+- **Articles** are the post type `swl_article` (REST base `swl-articles`, supports `title`, `editor` and `revisions`). Content is block markup.
+- **One parent newsletter.** Each article belongs to one newsletter (`_swl_newsletter_id`). There is no linking one article into several newsletters. A copy is a separate article.
+- **Order.** Each article has `_swl_article_order`. The values can have gaps; the newsletter detail returns its `articles` array sorted by them. QUILL shows that array's order and says each article's position as "3 of 8", never the stored value, and never re-sorts.
+- **Review.** One confirmation per article (`_swl_review_confirmed`, with who and when). Any change to the title or body clears it; a no-op or metadata-only save does not. Publishing refuses until every article is reviewed.
+- **No state machine.** A newsletter is a draft or published WordPress post. There are no `in_review`, `ready` or `sent` states.
+- **Exports are made inside the request today.** DOCX and audio (one OpenAI request for an article or a newsletter, with a 120-second timeout). Files are stored outside the web root.
 
-QUILL reads the site's REST index (`GET /wp-json/`) once when it connects. SwiftLetter is present when the index's `namespaces` list includes `swiftletter/v1`. A site without it behaves exactly as before: no SwiftLetter branch, no SwiftLetter command does anything but say so.
+## 3. Discovery: `GET /swiftletter/v1`
 
-### 2.2 `GET /swiftletter/v1`
-
-WordPress answers this route itself with the namespace index (`namespace`, `routes`). SwiftLetter adds one key, `swiftletter`, through the core `rest_namespace_index` filter, so no new route is needed:
+QUILL reads the site's REST index (`GET /wp-json/`) once. SwiftLetter is present when its `namespaces` list includes `swiftletter/v1` (slashes ignored). Then QUILL reads the namespace index, to which SwiftLetter adds one key:
 
 ```json
 {
   "namespace": "swiftletter/v1",
   "routes": { "...": "..." },
   "swiftletter": {
-    "plugin_version": "1.0.9",
+    "plugin_version": "1.1.0-rc.1",
     "api_version": "1.0",
-    "article_rest_base": "swiftletter_article",
-    "capabilities": {
-      "read": true,
-      "create_newsletters": true,
-      "edit_newsletters": true,
-      "change_state": false,
-      "create_articles": true,
-      "edit_articles": true,
-      "delete_articles": true,
-      "reorder": true,
-      "link_articles": true,
-      "review": false,
-      "export_docx": true,
-      "generate_audio": false
-    },
-    "states": [
-      {"slug": "draft", "label": "Draft"},
-      {"slug": "in_review", "label": "In review"},
-      {"slug": "ready", "label": "Ready"},
-      {"slug": "sent", "label": "Sent"}
-    ],
-    "review_states": [
-      {"slug": "not_reviewed", "label": "Not reviewed"},
-      {"slug": "reviewed", "label": "Reviewed"},
-      {"slug": "changed", "label": "Changed since review"}
-    ],
-    "generation": {
-      "docx": {"paid": false, "provider": ""},
-      "audio": {
-        "paid": true,
-        "provider": "The text-to-speech service set in SwiftLetter's settings",
-        "notice": "Audio is made by an outside speech service and may cost money."
-      }
-    }
+    "article_rest_base": "swl-articles",
+    "capabilities": { "read": true },
+    "features": { "browse": true, "article_context": true, "article_save": true }
   }
 }
 ```
 
-- `capabilities` are **for the signed-in user**, after SwiftLetter's editorial rules. QUILL uses them to say "you are not allowed" before trying, and to dim commands. The server still checks every request.
-- `states` and `review_states` carry their own labels, so QUILL speaks SwiftLetter's words and needs no release when a state is added. QUILL treats any slug it does not know as "unknown" and still shows its label.
-- `generation` says which exports are paid or use an outside provider. QUILL asks the person before any request where `paid` is true or `provider` is not empty, and shows `notice` in that question.
+- The answer is `Cache-Control: no-store`. An anonymous caller gets `"read": false`.
+- `capabilities.read` is for the signed-in user. QUILL browses only when it and `features.browse` are true.
+- **Versions.** QUILL accepts any `1.x` (`1`, `1.2`, `1.2.3`). A minor version may add fields, routes and feature flags, never remove one or change what it means. A `2.x` or later, or a missing `api_version`, is refused in one sentence, said once ("SwiftLetter on this site uses version 2.0 of its connection, which needs a newer QUILL.", `QUILL-SWIFTLETTER-API-VERSION`).
+- **Feature flags.** A missing flag is off. QUILL shows each command only when its flag is on: `browse` (the Workbench branch), `article_context` (open an article), `article_save` (Save to SwiftLetter). The next flags expected are for versioned reordering and review history, then export jobs.
+- A namespace index without the `swiftletter` key is a SwiftLetter too old for QUILL; the Workbench says to update it.
+- QUILL reads discovery once per site, keeps it five minutes, and reads it again when the site changes.
 
-### 2.3 Versions
+## 4. Browsing newsletters
 
-- `api_version` is `major.minor`. QUILL 1.0 works with any `1.x`. A minor version may add fields and routes, never remove or rename one.
-- A different major version, a missing `swiftletter` key, or an unreadable `api_version` makes QUILL say one sentence and do nothing else: "SwiftLetter on this site speaks version 2.0 of its connection, and this QUILL knows version 1. Update QUILL, or ask the site's administrator." (QUILL-SWIFTLETTER-API-VERSION).
+### 4.1 `GET /swiftletter/v1/newsletters`
 
-## 3. Articles: `wp/v2/swiftletter_article`
-
-The article post type is registered with `show_in_rest => true`, `rest_base => 'swiftletter_article'`, and `supports` including `title`, `editor`, `author`, `revisions` and `custom-fields`. Every standard `wp/v2` route works on it:
-
-| Request | What QUILL uses it for |
-|---|---|
-| `GET wp/v2/swiftletter_article/<id>?context=edit` | Open an article as a working copy |
-| `POST wp/v2/swiftletter_article/<id>` | Save Article to SwiftLetter (title and content only) |
-| `POST wp/v2/swiftletter_article` | New Article |
-| `DELETE wp/v2/swiftletter_article/<id>` | Delete (to the Trash) |
-| `POST wp/v2/swiftletter_article/<id>` with `status` from the Trash | Restore |
-| `GET wp/v2/swiftletter_article/<id>/revisions` | Earlier Versions |
-| `batch/v1` | Several saves in one request, when the site allows it |
-
-### 3.1 The `swiftletter` field
-
-SwiftLetter registers one REST field on the type, read-only through `wp/v2`:
+`page` and `per_page` (up to 100). The answer is a list of newsletter objects, with `X-WP-Total` and `X-WP-TotalPages`:
 
 ```json
-"swiftletter": {
-  "newsletters": [{"id": 12, "title": "Winter 2026", "position": 3}],
-  "review_state": "changed",
-  "reviewed_revision": 881,
-  "current_revision": 905,
-  "modified_by": {"id": 7, "name": "Pat Reyes"}
-}
+{ "id": 9, "title": "December", "article_count": 2, "modified_gmt": "2026-11-20T15:04:00" }
 ```
 
-- `current_revision` is the id of the newest revision of the article, the one a review would be for.
-- `modified_by` is the person who made `current_revision`. For a save QUILL made, that is the WordPress user, and the revision's own record keeps the application password's name (section 9).
+QUILL reads the Workbench's usual three pages, with Load More and Load All. When `X-WP-Total` is sent, the list says how many newsletters remain past those shown. A contributor's list leaves out newsletters they may not edit. There is no `search` or `status` filter in Phase 1.
 
-### 3.2 Saving
+### 4.2 `GET /swiftletter/v1/newsletters/<id>`
 
-- QUILL sends only `title` and `content`. It never sends `status`, so saving never publishes or unpublishes.
-- Saving creates a revision, as WordPress always does.
-- If the article was `reviewed`, saving changes its `review_state` to `changed`. A save never marks anything reviewed.
-- **Conflicts.** Before saving, QUILL reads `modified_gmt` and compares it with the value it opened the article at, as it does for every post. If they differ, nothing is sent and the person chooses Keep Theirs or Use Mine.
-- **Optional stronger check.** If SwiftLetter sends an `ETag` header on `GET`, QUILL sends it back as `If-Match` on the save, and the site answers `412 Precondition Failed` with the current article (section 7) when it no longer matches.
-
-## 4. Newsletters
-
-### 4.1 The newsletter object
+One newsletter with its `articles`, in newsletter order. Each article row today:
 
 ```json
-{
-  "id": 12,
-  "title": "Winter 2026",
-  "state": "draft",
-  "state_label": "Draft",
-  "article_count": 8,
-  "modified_gmt": "2026-11-20T15:04:00",
-  "modified_by": {"id": 7, "name": "Pat Reyes"},
-  "version": "n12-41"
-}
+{ "id": 4, "title": "From the chair", "order": 0, "review_confirmed": false,
+  "can_review": true, "has_audio": false, "edit_url": "https://example.org/wp-admin/post.php?post=4&action=edit" }
 ```
 
-`version` is an opaque token that changes whenever the newsletter's title, state or article order changes.
+Agreed additions to each row (answers 6 to 8), which QUILL already reads when present:
 
-### 4.2 Routes
-
-| Request | Body or query | Answer |
+| Field | Meaning | QUILL shows |
 |---|---|---|
-| `GET swiftletter/v1/newsletters` | `page`, `per_page` (up to 100), optional `state` | A list of newsletter objects, with `X-WP-Total` and `X-WP-TotalPages` |
-| `GET swiftletter/v1/newsletters/<id>` | | One newsletter object |
-| `POST swiftletter/v1/newsletters` | `{"title": "..."}` | `201` and the new newsletter, state `draft` |
-| `POST swiftletter/v1/newsletters/<id>` | `{"title": "...", "version": "..."}` | The renamed newsletter |
-| `POST swiftletter/v1/newsletters/<id>/state` | `{"state": "ready", "version": "..."}` | The newsletter in its new state |
+| `review_state` | `reviewed`, `not_reviewed` or `changed` | Reviewed, Not reviewed, Changed since review. Without it, QUILL falls back to `review_confirmed` |
+| `modified_gmt` | When the title or body last changed | "Last changed 20 November 2026, 3:04 PM" |
+| `modified_by` | That person's WordPress display name, or `null` when it cannot be verified | Their name, or "Editor unknown"; never guessed from the byline |
+| `can_edit` | Whether this person may open and edit it | "Your account cannot edit this article." when false |
+| `can_review` | Whether this person may confirm its review (separate from `can_edit`) | Kept for Mark Reviewed |
 
-Rename and state changes carry `version`. A stale version is refused with `409 swiftletter_version_conflict` and the current newsletter (section 7).
+`can_edit` and `can_review` are interface hints; SwiftLetter still checks every request. A contributor gets `403` on a newsletter they may not edit.
 
-## 5. Articles in a newsletter, in order
+## 5. Opening an article: `GET /wp/v2/swl-articles/<id>?context=edit`
 
-### 5.1 `GET swiftletter/v1/newsletters/<id>/articles`
-
-```json
-{
-  "newsletter_id": 12,
-  "version": "n12-41",
-  "articles": [
-    {
-      "id": 301,
-      "title": "From the chair",
-      "position": 1,
-      "status": "draft",
-      "review_state": "reviewed",
-      "review_label": "Reviewed",
-      "reviewed_revision": 880,
-      "current_revision": 880,
-      "modified_gmt": "2026-11-19T10:00:00",
-      "modified_by": {"id": 7, "name": "Pat Reyes"},
-      "newsletters": [12]
-    }
-  ]
-}
-```
-
-`position` starts at 1 and has no gaps. The list is always in newsletter order.
-
-### 5.2 Set the whole order in one request
-
-`PUT swiftletter/v1/newsletters/<id>/articles/order`
-
-```json
-{"order": [304, 301, 302, 303], "version": "n12-41"}
-```
-
-- `order` must name every article in the newsletter exactly once, or the site answers `400 swiftletter_order_incomplete`.
-- A stale `version` is refused with `409 swiftletter_version_conflict`, carrying the current order (section 7), so QUILL can say what changed and offer to apply the person's move again.
-- The answer is the same shape as `GET .../articles`, with the new `version`.
-
-### 5.3 Link and unlink
-
-| Request | Body | What happens |
-|---|---|---|
-| `POST swiftletter/v1/newsletters/<id>/articles` | `{"article_id": 309, "position": 4, "version": "..."}` | Links an existing article; `position` is optional (default: last) |
-| `DELETE swiftletter/v1/newsletters/<id>/articles/<article_id>?version=...` | | Unlinks it. **The article is not deleted** and stays in every other newsletter |
-
-Both answer with the newsletter's articles and new `version`. Linking an article already in the newsletter is `409 swiftletter_already_linked`.
-
-## 6. Review, exports and jobs
-
-### 6.1 Mark a revision reviewed
-
-`POST swiftletter/v1/articles/<id>/review`
-
-```json
-{"revision": 905, "note": ""}
-```
-
-- The site marks **that revision** reviewed. If the article's `current_revision` is no longer 905, it refuses with `409 swiftletter_revision_stale` and the current revision id, so a review can never land on text the reviewer did not read.
-- SwiftLetter's editorial rules apply (for example, an author not reviewing their own article): `403 swiftletter_review_not_allowed`, with a `message` QUILL speaks as it is.
-- The answer: `{"id": 301, "review_state": "reviewed", "reviewed_revision": 905, "reviewed_by": {"id": 3, "name": "Sam"}, "reviewed_gmt": "..."}`.
-
-### 6.2 Review history
-
-`GET swiftletter/v1/articles/<id>/reviews` answers a list, newest first:
-
-```json
-[{"revision": 905, "reviewer": {"id": 3, "name": "Sam"}, "reviewed_gmt": "2026-11-20T09:00:00", "note": ""}]
-```
-
-### 6.3 Exports and generation
-
-`POST swiftletter/v1/newsletters/<id>/exports`
-
-```json
-{"format": "docx", "consent": false}
-```
-
-- `format` is `docx` or `audio`.
-- When `generation.<format>.paid` is true or `provider` is set, `consent` must be `true`, or the site answers `428 swiftletter_consent_required`. QUILL sends `true` only after the person said yes in a dialog that showed SwiftLetter's `notice`.
-- The answer is `202` and a job: `{"job": "j-77", "state": "queued", "stage": "queued", "stage_label": "Waiting to start"}`.
-
-### 6.4 Jobs
-
-`GET swiftletter/v1/jobs/<job>`
+WordPress's own route, with one read-only field SwiftLetter adds in the edit context only:
 
 ```json
 {
-  "job": "j-77",
-  "newsletter_id": 12,
-  "format": "audio",
-  "state": "running",
-  "stage": "speaking",
-  "stage_label": "Making audio, article 3 of 8",
-  "error": "",
-  "file": null
+  "id": 4,
+  "title": { "raw": "From the chair" },
+  "content": { "raw": "<!-- wp:paragraph --><p>...</p><!-- /wp:paragraph -->" },
+  "swiftletter": {
+    "newsletters": [{ "id": 9, "title": "December" }],
+    "review_state": "not_reviewed",
+    "edit_version": "\"<64 hex digits>\""
+  }
 }
 ```
 
-- `state` is `queued`, `running`, `done` or `failed`. `stage` and `stage_label` say what is happening now, in SwiftLetter's words.
-- QUILL asks every 3 seconds while the Newsletter window is open, at most 20 minutes, and speaks a stage once when it changes.
-- When `state` is `done`, `file` is `{"name": "winter-2026.docx", "size": 48213, "content_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}`.
-- When `state` is `failed`, `error` is one sentence QUILL speaks as it is.
+- `newsletters` holds the one parent, when this person may edit it (an author may open their own article without access to its newsletter; the list is then empty).
+- `edit_version` is a quoted SHA-256 of the stored title and content, the same snapshot as `title.raw` and `content.raw`. Reopening an unchanged article gives the same version. The answer is `Cache-Control: private, no-store`.
+- The `view` context does not carry the `swiftletter` field. Anonymous callers get `401`.
+- **Compare with Site** reads this same route again: the latest title and content at the moment of comparing, with the local copy untouched (answer 3).
 
-### 6.5 Download
+## 6. Saving an article: `POST /swiftletter/v1/articles/<id>/save`
 
-`GET swiftletter/v1/jobs/<job>/file` streams the file with its `Content-Type` and `Content-Disposition`. It checks the same capability as reading the newsletter. It is never a public media address, never cached publicly (`Cache-Control: private, no-store`), and the job's file may be removed by SwiftLetter after a day.
+```http
+If-Match: "<edit_version>"
+Content-Type: application/json
 
-## 7. Errors and concurrency
-
-Every refusal is WordPress's usual error body, with a `swiftletter_` code and the HTTP status in `data.status`:
-
-```json
-{"code": "swiftletter_version_conflict", "message": "Someone changed this newsletter.", "data": {"status": 409, "current": {"...": "..."}}}
+{"title": "From the chair", "content": "<!-- wp:paragraph --><p>...</p><!-- /wp:paragraph -->"}
 ```
 
-| Code | Status | Meaning | `data.current` |
+- The body is exactly `title` and `content`; anything else (such as `status`) is refused.
+- The route takes a row lock, compares the version in constant time, and writes through `wp_update_post`, so sanitisation, revisions and the review reset still run. When nothing changed, nothing is written.
+- The answer today: `200`, `{"id": 4, "edit_version": "\"...\""}`, with `ETag` set to the new version and `Cache-Control: private, no-store`.
+- **Agreed (answer 4):** the answer also returns the `title` and `content` WordPress stored. QUILL reads them when present (as text or as `{"raw": ...}`), and treats any difference from what it sent as WordPress having changed it, for example kses storing an image's `"/>` as `" />` on a contributor's save. QUILL then tells the person and offers Compare, and uses the stored text as the baseline for the next `If-Match`, without silently replacing the local copy.
+- QUILL sends a save once and never retries it.
+
+### 6.1 Refusals
+
+Each is WordPress's usual error body, `{"code", "message", "data": {"status"}}`. SwiftLetter's `message` is written to be read aloud, and QUILL says it exactly as written, never the code. The code decides what QUILL offers next.
+
+| Code | Status | Message today | QUILL |
 |---|---|---|---|
-| `swiftletter_forbidden` | 403 | Capability or editorial rule says no | |
-| `swiftletter_review_not_allowed` | 403 | This person may not review this article | |
-| `swiftletter_not_found` | 404 | No such newsletter, article or job | |
-| `swiftletter_not_linked` | 404 | The article is not in this newsletter | |
-| `swiftletter_already_linked` | 409 | Already in this newsletter | |
-| `swiftletter_version_conflict` | 409 | The newsletter changed since `version` | The newsletter, or its articles for an order change |
-| `swiftletter_revision_stale` | 409 | The article changed since that revision | `{"current_revision": 912}` |
-| `swiftletter_precondition_failed` | 412 | `If-Match` no longer matches | The article |
-| `swiftletter_order_incomplete` | 400 | The order does not name every article once | |
-| `swiftletter_invalid_state` | 400 | That state change is not allowed from here | |
-| `swiftletter_consent_required` | 428 | A paid or provider export without consent | |
-| `swiftletter_generation_unavailable` | 503 | Exports are switched off or misconfigured | |
+| `swiftletter_version_required` | 428 | "Refresh the article before saving." | `QUILL-SWIFTLETTER-API-VERSION-REQUIRED`; offers to reopen |
+| `swiftletter_invalid_version` | 400 | "The article version is invalid. Refresh the article and try again." | `QUILL-SWIFTLETTER-API-INVALID-VERSION`; offers to reopen |
+| `swiftletter_invalid_save` | 400 | "Send the article title and content only." | `QUILL-SWIFTLETTER-API-INVALID-SAVE` |
+| `swiftletter_article_unavailable` | 404 | "This article is no longer available to edit." | `QUILL-SWIFTLETTER-API-ARTICLE-UNAVAILABLE` |
+| `swiftletter_forbidden` | 403 | "You cannot edit this article." | `QUILL-SWIFTLETTER-API-FORBIDDEN` |
+| `swiftletter_precondition_failed` | 412 | "This article changed on the site. Refresh it before saving." | `QUILL-SWIFTLETTER-API-CONFLICT`; offers Compare with Site |
+| `swiftletter_save_unavailable` | 503 | "The site could not verify the save. Refresh the article before trying again." | `QUILL-SWIFTLETTER-API-SAVE-UNAVAILABLE` |
+| `swiftletter_article_locked` (agreed, answer 2) | 409 | "Pat Reyes is editing this article in WordPress. Your changes are still in QUILL." | `QUILL-SWIFTLETTER-API-ARTICLE-LOCKED` |
 
-QUILL maps each to one plain sentence and an error code (`QUILL-SWIFTLETTER-*`, in `quill/core/wordpress/swiftletter_contract.py`). The `message` SwiftLetter sends is spoken when QUILL has no better sentence, so a new editorial rule explains itself.
+- The 412 stays small: no current article in the body (answer 3).
+- The 409 is sent when another user holds an active WordPress post lock; an expired lock does not block. The version check stays as well.
+- For a 503 caused by a posts table that is not InnoDB, SwiftLetter will say: "This site can't safely save articles from QUILL. Ask your WordPress administrator to check that the posts table uses InnoDB. Your changes are still in QUILL."
+- When a refusal has no `message`, QUILL says its own sentence (PRD section 8). A refusal that is WordPress's rather than SwiftLetter's (such as `rest_forbidden`) keeps WordPress's sentence.
 
-## 8. Permissions
+## 7. Agreed next, in order
 
-- WordPress capabilities first: the article type maps `edit_posts`-style capabilities (`edit_swiftletter_articles` and friends), so roles can be set with any role plugin.
-- SwiftLetter's editorial rules second, applied on the server to every route. The discovery `capabilities` object is a summary of both for the signed-in user.
-- A request QUILL makes is never more powerful than the same action in the dashboard.
+Each change lands in SwiftLetter first, on its own branch with PHPUnit tests and a WordPress integration check, behind a discovery feature flag. The dashboard and QUILL use the same routes.
 
-## 9. Seeing each other's changes
+1. **Phase 1 fixes before 1.1.0 final.** The 409 post-lock refusal and the stored title and content in the save answer first. Then review resets only when the title or body changes, and a save leaves a published newsletter's public post and Word download unchanged until review.
+2. **Versioned reorder.** `POST /swiftletter/v1/articles/reorder` gains a newsletter version token. The request names every current article exactly once; the server saves the whole order or none of it; a stale version gets `409` with the current order. Both editors keep focus on the same article and let the person try again; no automatic retry.
+3. **Revision-based review and history.** QUILL reads `GET /swiftletter/v1/newsletters/<id>/audit-log` for who confirmed a review, when, and when it was reset. Older entries are history, not proof that a revision was reviewed; new entries record the exact revision approved. No review notes or stages.
+4. **DOCX export jobs and authenticated downloads.** Starting an export answers `202` and a job id. Its status is Queued, Running, Ready or Failed, with a readable progress message. A retried start never makes a second job or a second charge, and a failed job keeps the last good export. The result is downloaded through an authenticated REST route that checks the editor's permission on that newsletter each time and streams with `Cache-Control: private, no-store`; QUILL never uses `?swl_download=`, which application passwords do not authenticate, and never gets a public fallback URL for an unpublished export. Readers' links for published newsletters stay as they are.
+5. **Split audio, on the same job API.** By article, and long articles at headings or paragraph boundaries, with progress "Article 3 of 8". The existing recording stays until the new one is complete. SwiftLetter provides the consent notice through the API, so QUILL and the dashboard show the same words: it names OpenAI, says the newsletter text is sent to it, and that the request may cost money. SwiftLetter requires explicit consent before starting.
 
-- Edits made through REST create ordinary WordPress revisions. WordPress records which application password made each REST request (`_application_passwords` last used, and the `application_password_used` action), and SwiftLetter's revision list in the dashboard names it: "Pat Reyes, from QUILL (application password 'Pat's laptop')".
-- QUILL shows `modified_by` on every article row, so a person in QUILL sees who last changed it in the dashboard.
-- Nothing is cached by SwiftLetter for QUILL. A refresh in QUILL (F5) reads the current state.
+Also agreed, outside that order:
 
-## 10. What QUILL sends, in one list
+- **Create and copy articles** through SwiftLetter's existing routes. A copy is a separate article.
+- **Newsletter deletion stays out of QUILL** until deleting moves a newsletter to the Trash and restoring brings back its articles in their order, in both QUILL and the dashboard.
+- **DOCX import** improvements (lists, tables, safe links, Word's alt text, private draft images) are separate changes and do not hold up Phase 1.
+- **Generated alt text** is only an editable suggestion a person confirms, never written from the attachment title alone.
+- **Scribe for Documents.** Later, QUILL's "Make Accessible Editions with Scribe" sends the approved newsletter DOCX to Scribe after the editor confirms. Editions are not sent back to SwiftLetter automatically; a separate Attach to Newsletter comes once the formats are tested. Not part of 1.1.0.
+
+## 8. What QUILL sends, in one list
 
 - The REST index, once per connection.
-- `GET swiftletter/v1` once per site per session, and on refresh.
-- Reads when the person opens a node, a newsletter or an article.
-- Writes only on a deliberate command: Save Article to SwiftLetter, Save Order, Link, Unlink, New, Rename, Delete, Restore, Mark Reviewed, Export DOCX, Generate Audio.
-- Job status every 3 seconds while a job the person started is running and its window is open.
-- Nothing in Safe Mode or in Workbench Read Only access, except reads.
-
-## 11. Contract tests
-
-The SwiftLetter maintainers offered automated contract tests. QUILL's fake server will be a reference: each route above will have a test in `tests/unit/core/wordpress/test_swiftletter_contract.py`, and a real site's answers can be replayed against those tests.
-
-## 12. Open questions for the SwiftLetter maintainers
-
-1. Is `rest_namespace_index` the way you would like to publish discovery, or would you prefer a separate `swiftletter/v1/about` route? QUILL can read either.
-2. Do your newsletter states match `draft`, `in_review`, `ready` and `sent`, and which changes are allowed from which state?
-3. Should a newsletter's own text (an introduction, a footer) be an article, or a field on the newsletter?
-4. Is audio made per article, per newsletter, or both? The contract assumes per newsletter, with progress per article.
-5. How long do you keep a generated file, and can the same job's file be downloaded twice?
-6. Can a 1.0.9 build with these routes be put on our test site, so QUILL's tests can be checked against the real thing?
+- `GET /swiftletter/v1` once per site, again after five minutes or when the site changes.
+- `GET /swiftletter/v1/newsletters` (up to three pages, more on Load More) and `GET /swiftletter/v1/newsletters/<id>` when the person opens the branch or a newsletter.
+- `GET /wp/v2/swl-articles/<id>?context=edit` when the person opens an article or chooses Compare with Site.
+- `POST /swiftletter/v1/articles/<id>/save` only on Save to SwiftLetter, once, with `If-Match`.
+- Nothing on a WordPress.com connection. Nothing that publishes, reviews, calls an AI or a paid provider. Nothing in Safe Mode or Workbench Read Only access except reads.
