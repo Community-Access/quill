@@ -351,6 +351,7 @@
   "quill.ui.podcasts.playlist_rules_dialog": "reachable",
   "quill.ui.podcasts.podcast_settings_dialog": "reachable",
   "quill.ui.podcasts.preferences_window": "reachable",
+  "quill.ui.podcasts.preview_command": "reachable",
   "quill.ui.podcasts.schedule_dialog": "reachable",
   "quill.ui.podcasts.search_everywhere_dialog": "reachable",
   "quill.ui.podcasts.show_list_editor": "reachable",
