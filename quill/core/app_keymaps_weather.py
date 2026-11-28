@@ -48,5 +48,7 @@ WEATHER_KEYMAPS: dict[str, str] = {
     "weather.next_hours": "Ctrl+Shift+U",
     # Report Fields: E for extra fields; once-a-year, so any free key (rule 9).
     "weather.report_fields": "Ctrl+Shift+E",
+    # Weather Around Me, the spoken stand-in for radar: R for radar.
+    "weather.around": "Ctrl+Shift+R",
     **SMALL_APP_AI_KEYMAPS["weather"],  # AI rows, rule-11 comments: app_keymaps_ai.py
 }

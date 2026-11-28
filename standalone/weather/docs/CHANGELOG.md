@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Weather Around Me, a spoken stand-in for radar** (2026-11-28). **Weather menu >
+  Weather Around Me** (Ctrl+Shift+R) checks the current weather at the eight
+  compass points about 25 and 50 miles from your primary place, all in one
+  request, and reads it as lines like "Rain 25 miles west, moving toward you." or
+  "Snow 50 miles east, moving away.", using the wind at each place to judge which
+  way it is heading. The report says once that this is a rough guide, and Copy
+  puts it on the clipboard with the data credit.
 - **Choose extra fields for the report** (2026-11-28). **Weather menu > Report
   Fields** (Ctrl+Shift+E) adds any of 21 extra Open-Meteo details to the end of the
   current conditions in Weather Now, in the order you choose: wind gusts, snow on

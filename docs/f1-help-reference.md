@@ -1976,7 +1976,7 @@ Control coverage: 44 audited sites (44 helped).
 
 ## Quill Weather
 
-Control coverage: 107 audited sites (107 helped).
+Control coverage: 110 audited sites (110 helped).
 
 ### Every window, and what it is for
 
@@ -2007,6 +2007,8 @@ Control coverage: 107 audited sites (107 helped).
 **Show and Hide Key.** Choose one key that shows and hides Quill Weather from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
 
 **Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
+
+**Weather Around Me.** Rain and snow within about 50 miles of your primary place, one line for each direction, and whether it is moving toward you. It comes from the current weather at the eight compass points around you, not from radar.
 
 **Weather Center.** The full text weather report for one location at a time, in reading order: active alerts first, then current conditions, the period forecast, the hourly forecast, and the extended daily outlook. Each list pairs with a read-only detail box below it that follows your selection, so arrowing a list reads the full official text. The Location chooser switches places, Refresh re-pulls, and Add Location and Settings open their own windows.
 
@@ -2131,6 +2133,10 @@ Control coverage: 107 audited sites (107 helped).
 - `self._muted`: Alert events you never want to see or hear, one exact event name per line -- for example Rip Current Statement. The name must match what the National Weather Service issues, as shown in the Weather Center's alerts list. Empty (the default) hides nothing.
 - `ok`: Save every setting in this window and close it. Changes apply immediately -- an open Weather Center re-renders with the new preferences.
 - `cancel_btn`: Close without changing any setting. Escape does the same.
+#### TextReportDialog (`quill/ui/weather/text_report_dialog.py`)
+
+- `copy_btn`: Copy the whole report to the clipboard.
+- `close_btn`: Close this window. Escape does the same.
 #### WeatherCenterDialog (`quill/ui/weather/weather_center_dialog.py`)
 
 - `self._location_choice`: Which saved place this whole window reports on. Choosing one makes it the primary location -- the one the alert watch and Quick Weather follow -- and fetches its weather right away. Delete removes the chosen place.

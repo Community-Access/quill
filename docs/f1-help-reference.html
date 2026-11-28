@@ -4800,7 +4800,7 @@ the test finishes.</li>
 field stops; nothing is kept.</li>
 </ul>
 <h2 id="quill-weather">Quill Weather</h2>
-<p>Control coverage: 107 audited sites (107 helped).</p>
+<p>Control coverage: 110 audited sites (110 helped).</p>
 <h3 id="every-window-and-what-it-is-for-6">Every window, and what it is
 for</h3>
 <p><strong>AI Usage.</strong> How much each AI you have set up has been
@@ -4872,6 +4872,10 @@ is.</p>
 <p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
 Open the Page takes you to its sign-in page; approve there, and this
 closes itself once you are signed in.</p>
+<p><strong>Weather Around Me.</strong> Rain and snow within about 50
+miles of your primary place, one line for each direction, and whether it
+is moving toward you. It comes from the current weather at the eight
+compass points around you, not from radar.</p>
 <p><strong>Weather Center.</strong> The full text weather report for one
 location at a time, in reading order: active alerts first, then current
 conditions, the period forecast, the hourly forecast, and the extended
@@ -5186,6 +5190,14 @@ Changes apply immediately – an open Weather Center re-renders with the
 new preferences.</li>
 <li><code>cancel_btn</code>: Close without changing any setting. Escape
 does the same.</li>
+</ul>
+<h4
+id="textreportdialog-quilluiweathertext_report_dialogpy">TextReportDialog
+(<code>quill/ui/weather/text_report_dialog.py</code>)</h4>
+<ul>
+<li><code>copy_btn</code>: Copy the whole report to the clipboard.</li>
+<li><code>close_btn</code>: Close this window. Escape does the
+same.</li>
 </ul>
 <h4
 id="weathercenterdialog-quilluiweatherweather_center_dialogpy">WeatherCenterDialog

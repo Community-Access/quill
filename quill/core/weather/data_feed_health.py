@@ -54,6 +54,7 @@ FEEDS: dict[str, FeedInfo] = {
         "NOAA RCC-ACIS station records and normals",
         "the NOAA Regional Climate Centers' ACIS service",
     ),
+    "open_meteo_around": FeedInfo("Open-Meteo weather around you", "Open-Meteo's forecast service"),
     "open_meteo_pollen": FeedInfo("Open-Meteo pollen", "Open-Meteo's air quality service"),
     "open_meteo_marine": FeedInfo("Open-Meteo marine", "Open-Meteo's marine service"),
     "open_meteo_nowcast": FeedInfo(

@@ -565,6 +565,22 @@ All three come from one Open-Meteo request. The same lines are added to the end
 of the current conditions in Weather Now, and you can turn each one off in
 Settings.
 
+### Weather Around Me
+
+**Weather menu > Weather Around Me...** (or **Ctrl+Shift+R**, R for radar) is a
+spoken stand-in for radar. Quill Weather checks the current weather at the eight
+compass points about 25 and 50 miles from your primary location, all in one
+request, and opens a short report you can read with the arrow keys:
+
+> Dry here now.
+> Rain 25 miles west, moving toward you.
+> Snow 50 miles east, moving away.
+> Dry in every other direction.
+
+The direction it is heading comes from the wind at each of those places, so the
+report ends by saying it is a rough guide. **Copy** puts the whole report and the
+data credit on the clipboard.
+
 ### Report Fields
 
 **Weather menu > Report Fields...** (or **Ctrl+Shift+E**) adds extra details from

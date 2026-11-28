@@ -1137,6 +1137,7 @@
   "quill/ui/weather/save_range_dialog.py::SaveRangeDialog.save::wx.FileDialog": "native",
   "quill/ui/weather/settings_dialog.py::WeatherSettingsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/weather/settings_dialog.py::WeatherSettingsDialog._choose_alert_sound::wx.FileDialog": "native",
+  "quill/ui/weather/text_report_dialog.py::TextReportDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/weather/weather_center_dialog.py::WeatherCenterDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/web_form.py::_WebFormDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog::subclass:wx.Dialog": "hardened_custom",

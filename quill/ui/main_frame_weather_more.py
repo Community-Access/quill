@@ -18,6 +18,7 @@ MENU_ROWS = (
     ("weather.history", "Weather Histor&y...\tCtrl+Shift+T"),
     ("weather.next_hours", "Ne&xt Few Hours\tCtrl+Shift+U"),
     ("weather.report_fields", "Report F&ields...\tCtrl+Shift+E"),
+    ("weather.around", "Weather A&round Me...\tCtrl+Shift+R"),
 )
 
 
@@ -44,6 +45,7 @@ class WeatherMoreMixin:
             "weather.history": self.open_weather_history,
             "weather.next_hours": self.weather_next_hours,
             "weather.report_fields": self.open_weather_report_fields,
+            "weather.around": self.weather_around_me,
         }
         menu.AppendSeparator()
         for command_id, label in MENU_ROWS:
@@ -82,6 +84,11 @@ class WeatherMoreMixin:
             return None
         return location, settings_mod.load_settings(data_dir)
 
+    def _weather_settings_metric(self) -> bool:
+        from quill.core.weather import settings as settings_mod
+
+        return settings_mod.load_settings(self._weather_data_dir()).temperature_unit == "C"
+
     def _weather_in_background(self, name: str, work: Any, done: Any) -> None:
         # Delivered on the UI thread already; a failure is handed to the same
         # callback, so an unexpected error is spoken rather than lost.
@@ -91,6 +98,60 @@ class WeatherMoreMixin:
             on_success=lambda _op, result: done(result),
             on_failure=lambda _op, exc: done(exc),
         )
+
+    # -- Weather Around Me ---------------------------------------------------------
+
+    def weather_around_me(self) -> None:
+        if self._weather_blocked_in_safe_mode():
+            return
+        place = self._weather_primary_place()
+        if place is None:
+            return
+        location, settings = place
+        self._announce(f"Checking the weather around {location.label}.")
+        health = self._weather_data_health()
+        from quill.core.weather._http import HTTP_ERRORS
+
+        def _work(**_kwargs: Any) -> object:
+            from quill.core.weather import around
+
+            try:
+                samples = around.fetch(location.latitude, location.longitude)
+            except HTTP_ERRORS as error:
+                health.record_failure("open_meteo_around", error, time.time())
+                return error
+            health.record_success("open_meteo_around", time.time())
+            return around.describe(samples, metric=settings.temperature_unit == "C")
+
+        self._weather_in_background(
+            "weather-around", _work, lambda result: self._weather_around_done(location, result)
+        )
+
+    def _weather_around_done(self, location: Any, result: object) -> None:
+        from quill.core.weather import data_feed_health
+        from quill.core.weather.history_text import CREDIT_OPEN_METEO
+
+        self._weather_data_health_save()
+        if not isinstance(result, list):
+            error = result if isinstance(result, BaseException) else ValueError("no reply")
+            self._announce(data_feed_health.failure_sentence("open_meteo_around", error))
+            return
+        from quill.core.weather import around
+        from quill.ui.weather.text_report_dialog import TextReportDialog
+
+        metric = self._weather_settings_metric()
+        reach = around.distance_words(max(around.RINGS_KM), metric)
+        TextReportDialog(
+            self.frame,
+            intro=f"Rain and snow within about {reach} of {location.label}, and which "
+            "way it is heading.",
+            text="\n".join(result),
+            box_name="Weather around you",
+            box_help="One line for each direction with rain or snow: what it is, how far, "
+            "and whether it is moving toward you. Use the arrow keys to read it.",
+            credits=CREDIT_OPEN_METEO,
+            announce_cb=self._announce,
+        ).show()
 
     # -- Next Few Hours ------------------------------------------------------------
 

@@ -33,6 +33,7 @@
   ["QUILL", "ui/main_frame_weather_choices.py Watch This Place", "Ctrl+Alt+Shift+U"],
   ["QUILL", "ui/main_frame_weather_more.py Next Few Hours", "Ctrl+Shift+U"],
   ["QUILL", "ui/main_frame_weather_more.py Report Fields...", "Ctrl+Shift+E"],
+  ["QUILL", "ui/main_frame_weather_more.py Weather Around Me...", "Ctrl+Shift+R"],
   ["QUILL", "ui/main_frame_weather_more.py Weather History...", "Ctrl+Shift+T"],
   ["QUILL", "ui/main_frame_weather_more.py Weather on a Past Date...", "Ctrl+Alt+D"],
   ["QUILL Cast", "apps/podcasts_library_actions.py Copy to Folder...", "Ctrl+Shift+Y"],
