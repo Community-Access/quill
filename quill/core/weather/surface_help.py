@@ -128,6 +128,23 @@ PURPOSES: dict[str, str] = {
         "alert sound. Save applies everything at once; Cancel changes "
         "nothing."
     ),
+    "Weather History": (
+        "The weather of the past for one of your places: today's date over many "
+        "years, another date over many years, or a date range, with a summary in "
+        "plain words of how it compares with normal and the records. Every day "
+        "looked up is saved on your computer, so a second look needs no internet."
+    ),
+    "Weather on a Past Date": (
+        "One past day's weather, read like the current report: the high and low, "
+        "rain and snow, wind, sunrise and sunset, then each hour, and how the day "
+        "compared with normal. Type a date in the Date field, then move a day, a "
+        "week, a month or a year at a time with the keys the menu bar and buttons "
+        "name."
+    ),
+    "Save Weather for a Date Range": (
+        "Save every day between two dates as a spreadsheet file (CSV) or as plain "
+        "text, in your units, with the data credits."
+    ),
     # -- the shared shell dialogs, as this app titles them -----------------------
     "Customize Quill Weather Features": (
         "Turn whole areas of Quill Weather on or off -- alert monitoring, "
