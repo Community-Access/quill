@@ -30,6 +30,7 @@ from quill.ui.dialog_contract import (
     show_modal_dialog,
 )
 from quill.ui.dpi import dip, dip_size
+from quill.ui.spin_value import spin_value
 from quill.ui.surface_lifetime import surface_tasks
 
 KINDS = (
@@ -276,10 +277,10 @@ class WeatherHistoryDialog:
                 self._end.SetFocus()
                 return "The To date needs to be year-month-day, like 2024-06-30."
             return Query("range", start=start, end=end)
-        years = self._years.GetValue()
+        years = int(spin_value(self._years))
         if kind == "on_this_day":
             return Query("on_this_day", years=years)
-        month, day = self._month.GetSelection() + 1, self._day.GetValue()
+        month, day = self._month.GetSelection() + 1, int(spin_value(self._day))
         try:
             date(2024, month, day)
         except ValueError:

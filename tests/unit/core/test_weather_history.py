@@ -185,7 +185,8 @@ def test_units_and_rows() -> None:
 def test_credits_follow_the_sources() -> None:
     assert history_text.credits_for({"recent"}, used_acis=False) == history_text.CREDIT_OPEN_METEO
     full = history_text.credits_for({"archive"}, used_acis=True)
-    assert "ERA5" in full and "RCC-ACIS" in full and "Open-Meteo.com" in full
+    assert full.split(" Historical")[0] == history_text.CREDIT_OPEN_METEO
+    assert history_text.CREDIT_ERA5 in full and history_text.CREDIT_ACIS in full
 
 
 # -- ACIS -------------------------------------------------------------------------

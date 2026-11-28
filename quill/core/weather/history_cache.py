@@ -180,7 +180,9 @@ class HistoryCache:
         try:
             raw = json.loads(self.path.read_text(encoding="utf-8"))
         except (OSError, ValueError) as exc:
-            logger.warning("weather history cache %s unreadable (%s); ignoring", self.path, exc)
+            logger.warning(  # no path: the file name is the place's coordinates
+                "a weather history cache is unreadable (%s); ignoring", type(exc).__name__
+            )
             return
         if not isinstance(raw, dict) or raw.get("version") != _SCHEMA:
             return
@@ -233,4 +235,4 @@ class HistoryCache:
             write_json_atomic(self.path, payload)
             self.dirty = False
         except OSError as exc:
-            logger.warning("could not save weather history cache: %s", exc)
+            logger.warning("could not save a weather history cache (%s)", type(exc).__name__)
