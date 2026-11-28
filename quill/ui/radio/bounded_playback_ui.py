@@ -64,29 +64,50 @@ def spoken_duration(ms: int) -> str:
     return " ".join(parts)
 
 
-def describe_chapter(index: int, chapter: Any, *, current: bool = False) -> str:
-    """One chapter as a whole sentence, the way the list speaks it.
+def describe_chapter(
+    index: int,
+    chapter: Any,
+    *,
+    current: bool = False,
+    chapters: Any = None,
+    length_ms: int = 0,
+) -> str:
+    """One chapter as a whole line, the way the list speaks it.
 
-    Position, title, and start time in one line, so there are no columns to
-    arrow across -- the same shape as the playlist picker's rows.
+    Title first, then its time, its length and where it sits -- "Listener
+    mail, 12:34, 6 minutes 30, 3 of 12, playing" -- in one line, so there are
+    no columns to arrow across (Jeff, 2026-11-27: the title comes first).
+    *chapters* is the whole list, for the length and the count; without it the
+    row is the title and the time.
     """
-    title = str(getattr(chapter, "title", "") or "").strip() or "Untitled chapter"
-    start = spoken_duration(int(getattr(chapter, "start_ms", 0)))
-    row = f"{index + 1}. {title}, starts at {start}"
-    return f"{row}, playing now" if current else row
+    from quill.core.podcasts.chapter_words import chapter_heading, chapter_row
+
+    if chapters:
+        return chapter_row(list(chapters), index, length_ms=length_ms, playing=current)
+    row = chapter_heading(chapter)
+    return f"{row}, playing" if current else row
 
 
-def describe_position(controller: Any) -> str:
-    """ "3 minutes 10 seconds of 18 minutes 40 seconds", plus the chapter."""
-    position = spoken_duration(int(controller._engine.position_ms()))
-    total = spoken_duration(controller.duration_ms())
+def describe_position(controller: Any, *, percent: bool = False) -> str:
+    """ "3 minutes 10 seconds of 18 minutes 40 seconds, in Intro, 16 percent".
+
+    With *percent* (Where Am I?), the percentage is last, and only there when
+    the length is known (:mod:`quill.core.media.progress_words`, shared with
+    QUILL Cast). A seek's landing leaves it out: it is said on every tap.
+    """
+    from quill.core.media.progress_words import percent_phrase
+
+    position_ms = int(controller._engine.position_ms())
+    length_ms = max(0, int(controller.duration_ms() or 0))
+    words = f"{spoken_duration(position_ms)} of {spoken_duration(length_ms)}"
     index = controller.current_chapter_index()
     chapters = controller.chapters()
     if 0 <= index < len(chapters):
         title = str(getattr(chapters[index], "title", "") or "").strip()
         if title:
-            return f"{position} of {total}, in {title}"
-    return f"{position} of {total}"
+            words += f", in {title}"
+    phrase = percent_phrase(position_ms, length_ms) if percent else ""
+    return f"{words}, {phrase}" if phrase else words
 
 
 def _controller(host: Any) -> Any:
@@ -168,14 +189,33 @@ def announce_position(host: Any) -> None:
     """Say where we are, without moving."""
     if _refuse(host):
         return
-    spoken = describe_position(_controller(host))
+    spoken = describe_position(_controller(host), percent=True)
     from quill.ui.radio import local_media_playback
 
     try:
         where = local_media_playback.where_suffix(host)
     except Exception:  # noqa: BLE001 - the position alone is still the answer
         where = ""
-    host._announce(f"{spoken.rstrip('.')}, {where}." if where else spoken)
+    sentence = f"{spoken.rstrip('.')}, {where}." if where else spoken
+    # Pressed twice quickly, copy it -- the same as QUILL Cast's Where Am I? on
+    # the same chord (family rule 2).
+    import time
+
+    from quill.ui.hosted_ai_choose_commands import DOUBLE_PRESS_WINDOW
+
+    now = time.monotonic()
+    last = getattr(host, "_radio_where_pressed_at", None)
+    host._radio_where_pressed_at = now
+    if last is not None and now - last <= DOUBLE_PRESS_WINDOW:
+        host._radio_where_pressed_at = None
+        from quill.ui.say_commands import set_clipboard_text
+
+        copied = set_clipboard_text(sentence)
+        host._announce(
+            "Copied where you are." if copied else "Could not copy; the clipboard is in use."
+        )
+        return
+    host._announce(sentence)
 
 
 def go_to_position(host: Any) -> None:
@@ -488,6 +528,24 @@ def local_media_path(controller: Any) -> Path | None:
         return None
 
 
+def _is_video(controller: Any) -> bool:
+    """Whether what plays is a video (YouTube) rather than an episode or a book."""
+    station = getattr(getattr(controller, "state", None), "station", None)
+    if station is None:
+        return False
+    where = " ".join(
+        str(getattr(station, name, "") or "") for name in ("homepage", "stream_url", "source")
+    ).lower()
+    return "youtu" in where
+
+
+def _length_ms(controller: Any) -> int:
+    try:
+        return max(0, int(controller.duration_ms()))
+    except Exception:  # noqa: BLE001 - nothing loaded, or no length yet
+        return 0
+
+
 def open_chapters(host: Any) -> None:
     """A list of this item's chapters; Enter jumps, Preview checks a mark.
 
@@ -501,7 +559,10 @@ def open_chapters(host: Any) -> None:
     controller = _controller(host)
     chapters = controller.chapters()
     audio_path = local_media_path(controller)
-    source_label = "published by the uploader"
+    video = _is_video(controller)
+    # "The uploader" and "this video" are YouTube's words; a podcast episode's
+    # chapters were published by the podcast (Jeff, 2026-11-27).
+    source_label = "published by the uploader" if video else "published by the podcast"
     if not chapters:
         found, where = _found_chapters(controller)
         if found:
@@ -521,5 +582,7 @@ def open_chapters(host: Any) -> None:
         transport_host=host,
         audio_path=audio_path,
         source_label=source_label,
+        item_kind="video" if video else "episode",
+        length_ms=_length_ms(controller),
     )
     dialog.show()

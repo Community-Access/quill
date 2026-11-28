@@ -332,6 +332,15 @@ empty window: focus lands on the app's most important list the moment it opens.
 
 - **QUILL Cast** — focus starts in your **Subscribed shows** list: press **Enter** on a show to open the full Podcast Manager, where all episode-level work happens. Tab reaches Open Manager, Add Podcast, Play/Pause, and Stop buttons, with the live now-playing line above. Menus: **Subscriptions** (Open Podcast Manager with Ctrl+M, Add Podcast, Import/Export OPML, Podcast Settings), **Episode** (a live now-playing line, Play/Pause, Stop, Next/Previous Chapter), **Downloads** (Pause All / Resume All), and **Help**. One difference from inside QUILL: "Send Show Notes to Editor", "Open Transcript in Editor" and the Transcript window's "Open in QUILL" first save the document in Documents\QUILL Cast, then open it in QUILL (or QUILL Lite), and say where it was saved. The transcript names the moment you were reading, lists that episode's bookmarks, and opens with the cursor on that line.
 
+**Where you are, in words.** Every chapter is shown and said title first, then
+its time: "Listener mail, 12:34". Player Information reads "Chapter: Listener
+mail, 3 of 12, from the publisher", and a chapter with no title is "Untitled",
+never "Chapter 3". **Episode > Where Am I?** (Ctrl+Shift+W, Quill Radio's key
+for the same verb) says the chapter and then the episode; pressed twice
+quickly it copies that sentence. New Episodes moved from Ctrl+Shift+W to
+Ctrl+Shift+F to make room. The Now Playing window's Position slider reads as a
+time ("12 minutes 34 of 58 minutes"), not a percentage.
+
 The app puts an icon in the system tray with the same podcast controls QUILL's
 own tray icon offers, plus **Show** (double-click also works) and **Exit**. And
 when you decide you want the full editor after all, **Help > Open in Quill**

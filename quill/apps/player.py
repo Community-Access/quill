@@ -32,6 +32,8 @@ from quill.apps.player_jumps import PlayerJumpsMixin
 from quill.apps.player_menus import MediaPlayerMenuMixin
 from quill.core.media import DspSettings, build_audio_filters, format_spoken
 from quill.core.media.bookmarks import BookmarkStore
+from quill.core.media.progress_words import percent_phrase
+from quill.core.podcasts.chapter_words import chapter_report_line
 from quill.core.speech.chapter_io import format_timestamp
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.app_shell import AppShellFrame
@@ -328,11 +330,11 @@ class QuillMediaPlayerFrame(
         position = self._player.playhead_ms()
         length = self._player.length_ms()
         pos_text = format_timestamp(position)
-        if length > 0:
-            pos_text += f" / {format_timestamp(length)}"
+        if length > 0:  # the percentage last, floored (core/media/progress_words.py)
+            pos_text += f" / {format_timestamp(length)}, {percent_phrase(position, length)}"
         chapter_index = self._player.current_chapter_index()
-        if self._chapters and chapter_index >= 0:
-            chapter = f"{chapter_index + 1} of {len(self._chapters)}"
+        if self._chapters and chapter_index >= 0:  # title first (chapter_words.py)
+            chapter = chapter_report_line(self._chapters, chapter_index)
         else:
             chapter = "-"
         values = [

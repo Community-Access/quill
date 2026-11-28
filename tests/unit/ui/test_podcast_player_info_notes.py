@@ -115,3 +115,32 @@ def test_nothing_playing_still_produces_a_report(isolated_notes: Path) -> None:
 
     assert info.note_count == 0
     assert info.collection == ""
+
+
+def test_the_chapter_line_names_the_chapter_first(isolated_notes: Path) -> None:
+    """Jeff, 2026-11-27: it said "Chapter: 1 of 2" and never the chapter's name."""
+    from quill.core.podcasts.chapters import PodcastChapter
+
+    library, show, episode = _library()
+    host = _Host(library, _State(show.id, episode.guid))
+    host._podcast_current_chapters = [
+        PodcastChapter(start_ms=0, title="Welcome"),
+        PodcastChapter(start_ms=60_000, title="Listener mail"),
+    ]
+    host._podcast_chapters_source = "Published chapters"
+
+    info = host._podcast_player_info()
+
+    assert "Chapter: Welcome, 1 of 2, from the publisher" in info.extras
+
+
+def test_an_untitled_chapter_is_untitled_not_a_number(isolated_notes: Path) -> None:
+    from quill.core.podcasts.chapters import PodcastChapter
+
+    library, show, episode = _library()
+    host = _Host(library, _State(show.id, episode.guid))
+    host._podcast_current_chapters = [PodcastChapter(start_ms=0, title="")]
+
+    info = host._podcast_player_info()
+
+    assert "Chapter: Untitled, 1 of 1" in info.extras

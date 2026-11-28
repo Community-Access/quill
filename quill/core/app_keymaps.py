@@ -139,6 +139,9 @@ APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
         "podcasts.player_information": "Ctrl+I",
         # qc.md section 18 item 3: how much is left, on one key.
         "podcasts.time_remaining": "Ctrl+Shift+T",
+        # Where Am I? (2026-11-27): Quill Radio's chord for the same verb (rule 2);
+        # New Episodes, which had it, moved to the free Ctrl+Shift+F.
+        "podcasts.where_am_i": "Ctrl+Shift+W",
         # Bookmarks for one episode (qc.md 18.1): J beside Help > Bookmarks' Ctrl+Alt+Shift+J.
         "podcasts.bookmark_note": "Ctrl+Shift+D",
         "podcasts.episode_bookmarks": "Ctrl+Shift+J",

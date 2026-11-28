@@ -115,7 +115,7 @@
   ["QUILL Cast", "apps/podcasts_view_menu.py Hide Caught-Up Podcasts", "Ctrl+Shift+H"],
   ["QUILL Cast", "apps/podcasts_view_menu.py Inbox", "Ctrl+Shift+I"],
   ["QUILL Cast", "apps/podcasts_view_menu.py Inbox Folder...", "Ctrl+Shift+O"],
-  ["QUILL Cast", "apps/podcasts_view_menu.py New Episodes", "Ctrl+Shift+W"],
+  ["QUILL Cast", "apps/podcasts_view_menu.py New Episodes", "Ctrl+Shift+F"],
   ["QUILL Cast", "apps/podcasts_view_menu.py Notifications", "Ctrl+Shift+N"],
   ["QUILL Cast", "apps/podcasts_view_menu.py Personal Audio", "Ctrl+Shift+U"],
   ["QUILL Cast", "apps/podcasts_view_menu.py Places...", "Ctrl+Shift+G"],

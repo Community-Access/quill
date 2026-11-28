@@ -4,6 +4,22 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+### Where you are, and chapters by name (2026-11-27)
+
+- **Chapters are named, title first.** Player Information says "Chapter:
+  Listener mail, 3 of 12, from the publisher" instead of "Chapter: 3 of 12".
+  A chapter with no title says "Untitled", never a made-up "Chapter 3".
+- **Where Am I?** (Episode menu and the Now Playing menu, Ctrl+Shift+W) says
+  the chapter, how far into it you are and how much of it is left, then the
+  same for the whole episode, ending with the percentage through it when the
+  length is known. Press it twice quickly to copy the sentence. It
+  is Quill Radio's key for the same command. **New Episodes moved to
+  Ctrl+Shift+F** to make room.
+- **Say Current Episode** (Ctrl+T) adds the chapter and the time.
+- **The Position slider reads as a time** ("12 minutes 34 of 58 minutes"),
+  not as a percentage.
+- The Now Playing window's menu has **Time Remaining** (Ctrl+Shift+T) too.
+
 ### Syncing with your phone: faster, safer, and yours to control (2026-11-26)
 
 #### Faster and more careful

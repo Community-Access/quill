@@ -910,6 +910,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+J | Episode bookmarks | `podcasts.episode_bookmarks` |
 | Ctrl+Shift+T | Podcasts: Time Remaining | `podcasts.time_remaining` |
 | Ctrl+Shift+V | Move to folder | `podcasts.move_to_folder` |
+| Ctrl+Shift+W | Where Am I? | `podcasts.where_am_i` |
 | Ctrl+Shift+Y | Copy to folder | `podcasts.copy_to_folder` |
 | Ctrl+Shift+Z | Undo History... | `app.undo_history` |
 | Ctrl+T | Say now playing | `podcasts.say_now_playing` |

@@ -72,7 +72,7 @@ DESTINATIONS: tuple[Destination, ...] = (
     Destination("media_tools", "Media Tools", "podcast_media_tools_status"),
     # The places that were not doors before the one window (qc.md 4.3).
     Destination("inbox", "Inbox", "open_cast_inbox", "Ctrl+Shift+I"),
-    Destination("new_episodes", "New Episodes", "open_cast_new_episodes", "Ctrl+Shift+W"),
+    Destination("new_episodes", "New Episodes", "open_cast_new_episodes", "Ctrl+Shift+F"),
     Destination("favorites", "Favorites", "open_cast_favorites", "Ctrl+Shift+V"),
     Destination("personal_audio", "Personal Audio", "open_cast_personal_audio", "Ctrl+Shift+U"),
     Destination("playlists", "Playlists", "open_cast_playlists", "Ctrl+Shift+Y"),

@@ -507,7 +507,7 @@ straight there from anywhere in the window.
 | Place | What it holds | Key |
 |---|---|---|
 | Inbox | New episodes waiting for you to decide about them | Ctrl+Shift+I |
-| New Episodes | Every unplayed episode | Ctrl+Shift+W |
+| New Episodes | Every unplayed episode | Ctrl+Shift+F |
 | Continue Listening | Episodes you stopped partway through | Ctrl+Shift+L |
 | Favorites | Your favorite podcasts | Alt+Shift+V |
 | Playlists | Your playlists | Alt+Shift+Y |
@@ -925,8 +925,9 @@ reports a playback problem if the audio backend refuses a request; it does
 not say that playback paused or resumed when it did not.
 
 Lost track of what is on? Press **Ctrl+T** (Episode > Say Current Episode)
-from anywhere, and Cast tells you the episode, the podcast and how far in you
-are.
+from anywhere, and Cast tells you the episode, the chapter you are in and how
+far in you are, for example "Podcasts: playing Thursday's episode, in Listener
+mail, 16:44 of 58:00."
 
 The buttons in the main window do the same jobs, if you prefer them: Play,
 Pause or Resume (Alt+Y or Alt+S) and Stop (Alt+T). If you also use Quill Radio,
@@ -966,6 +967,16 @@ Time Remaining). Cast says something like "12:04 of 31:50, 20 minutes left".
 If you are listening faster than normal, it also tells you how long that
 really takes, such as "13 minutes at 1.5 times", and if the sleep timer is
 running it adds when it will stop. Nothing opens and nothing changes.
+
+**Where am I?** Press **Ctrl+Shift+W** (Episode > Where Am I?) to hear the
+chapter first and then the whole episode, for example "Listener mail, 4
+minutes 10 into the chapter, 2 minutes 20 left. 18 minutes 30 of 58 minutes,
+39 minutes 30 left, 31 percent." The percentage is said only when Cast knows
+the episode's length; it is rounded down, so it never says 100 percent before
+the end. Press it twice quickly to copy that sentence instead. It
+is the same key Quill Radio uses for Where Am I?, and it works in the Now
+Playing window too, where the Now Playing menu also has Time Remaining.
+New Episodes, which used to be on Ctrl+Shift+W, is now **Ctrl+Shift+F**.
 
 If you would rather be walked through it, Help > Tutorials has a lesson called
 **Keys**. It covers these skips, going to a time, scanning forward and the
@@ -1375,7 +1386,8 @@ your library in the way.
      as the Inbox or the Play Queue.
    - A **Position** slider. Left Arrow and Right Arrow move 5 seconds, Page Up
      and Page Down move 30, Home and End go to the start and the end, and Cast
-     says where you are.
+     says where you are. Your screen reader reads the slider as a time, such
+     as "12 minutes 34 of 58 minutes", not as a percentage.
    - **Pause**, **Stop**, **Back 30 Seconds**, **Forward 30 Seconds**,
      **Previous Chapter** and **Next Chapter**.
    - **Speed**, a list of speeds plus **Custom...** for a speed you type.
@@ -2454,7 +2466,7 @@ follow.
    follow. Cast tells you how many it is checking, and the answers come in
    podcast by podcast over the next few seconds. If your podcasts have
    schedules, you can skip this step.
-2. Press **Ctrl+Shift+W** for New Episodes, or **Ctrl+Shift+I** for the
+2. Press **Ctrl+Shift+F** for New Episodes, or **Ctrl+Shift+I** for the
    Inbox.
 3. Arrow through what arrived. Press Enter to play an episode now, or Space
    to add it to the Play Queue. Cast says "Added to the Play Queue".
@@ -2467,11 +2479,11 @@ little better.
 > **A note from QUILLBee:** An empty Inbox on your first morning doesn't mean
 > nothing arrived. Nothing goes to the Inbox until you send a podcast there,
 > which "Choosing what goes to the Inbox" explains a little further on. Until
-> you do, New Episodes (Ctrl+Shift+W) has everything.
+> you do, New Episodes (Ctrl+Shift+F) has everything.
 
 ### New Episodes
 
-**New Episodes** (View > New Episodes, Ctrl+Shift+W) shows recent episodes
+**New Episodes** (View > New Episodes, Ctrl+Shift+F) shows recent episodes
 from all your podcasts, newest first. All the usual episode keys work here:
 Enter plays, Space queues, Shift+F10 opens everything else. Delete takes an
 episode off this list without touching it anywhere else.
@@ -5883,7 +5895,7 @@ nothing; type "back up" in the Command Palette instead and press Enter.
 | Action | Key |
 | --- | --- |
 | Inbox | Ctrl+Shift+I |
-| New Episodes | Ctrl+Shift+W |
+| New Episodes | Ctrl+Shift+F |
 | Continue Listening | Ctrl+Shift+L |
 | Favorites | Alt+Shift+V |
 | Playlists | Alt+Shift+Y |
@@ -5954,6 +5966,7 @@ Playlists, Enter opens a playlist.
 | Stop | Ctrl+. |
 | Say what is playing | Ctrl+T |
 | Time remaining | Ctrl+Shift+T |
+| Where am I? | Ctrl+Shift+W |
 | Player Information | Ctrl+I |
 | Now Playing window | Ctrl+Alt+2 |
 | Skip forward, skip back | Ctrl+Right, Ctrl+Left |

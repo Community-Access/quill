@@ -47,9 +47,17 @@ class CastPlaceRoutesMixin:
     _podcast_check_reads_history = True
 
     def say_now_playing(self) -> None:
-        """Ctrl+T: the Now Playing line, said again (qc.md 4.1)."""
+        """Ctrl+T: the Now Playing line, with the chapter and the time (qc.md 4.1)."""
+        from quill.ui.podcasts.where_am_i import now_playing_sentence
+
         text = str(self._podcast_status_text() or "")  # type: ignore[attr-defined]
-        self._announce(text or "Nothing is playing.", force=True)  # type: ignore[attr-defined]
+        self._announce(now_playing_sentence(self, text), force=True)  # type: ignore[attr-defined]
+
+    def say_where_am_i(self) -> None:
+        """Ctrl+Shift+W: the chapter, then the episode; twice quickly, copy it."""
+        from quill.ui.podcasts.where_am_i import say_where_am_i
+
+        say_where_am_i(self)
 
     def _append_episode_extras(self, episode_menu: Any) -> None:
         """Three Episode rows whose commands existed with nowhere to press them:
@@ -84,10 +92,12 @@ class CastPlaceRoutesMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.bookmark_with_note(), id=note_id)  # type: ignore[attr-defined]
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_episode_bookmarks(), id=marks_id)  # type: ignore[attr-defined]
         self._keep_menu_ids(note_id, marks_id)  # type: ignore[attr-defined]
-        remaining_id = wx.NewIdRef()
+        remaining_id, where_id = wx.NewIdRef(), wx.NewIdRef()
         episode_menu.Append(remaining_id, label("Time Remaining", "podcasts.time_remaining"))
+        episode_menu.Append(where_id, label("Where Am I?", "podcasts.where_am_i"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.say_time_remaining(), id=remaining_id)  # type: ignore[attr-defined]
-        self._keep_menu_ids(remaining_id)  # type: ignore[attr-defined]
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.say_where_am_i(), id=where_id)  # type: ignore[attr-defined]
+        self._keep_menu_ids(remaining_id, where_id)  # type: ignore[attr-defined]
         info_id = wx.NewIdRef()
         episode_menu.Append(info_id, label("Player Information...", "podcasts.player_information"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_player_information(), id=info_id)  # type: ignore[attr-defined]
@@ -141,6 +151,7 @@ class CastPlaceRoutesMixin:
             ("podcasts.new_folder", "New Folder", "_on_library_new_folder"),
             ("podcasts.mark_all_played", "Mark All as Played", "podcast_mark_all_played"),
             ("podcasts.time_remaining", "Time Remaining", "say_time_remaining"),
+            ("podcasts.where_am_i", "Where Am I", "say_where_am_i"),
             ("podcasts.say_now_playing", "Say Current Episode", "say_now_playing"),
             ("podcasts.player_information", "Player Information", "podcast_player_information"),
             ("podcasts.bookmark_note", "Bookmark with a Note", "bookmark_with_note"),
