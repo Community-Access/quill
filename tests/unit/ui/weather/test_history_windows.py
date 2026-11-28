@@ -1,4 +1,4 @@
-"""Build and drive Weather History
+"""Build and drive Weather History, Report Fields and the text report window
 without showing a modal: the right fields show for each kind of lookup, labels
 come before their controls, bad dates are refused, a lookup lands in the
 summary and the list, and Report Fields orders and removes fields."""
@@ -16,6 +16,8 @@ from quill.core.weather.history_cache import DayRecord
 from quill.core.weather.history_service import Lookup
 from quill.core.weather.models import WeatherLocation
 from quill.ui.weather.history_dialog import WeatherHistoryDialog, parse_iso_date, summary_lead
+from quill.ui.weather.report_fields_dialog import ReportFieldsDialog
+from quill.ui.weather.text_report_dialog import TextReportDialog
 from tests.wx_session import shared_wx_app
 
 
@@ -116,3 +118,37 @@ def test_a_lookup_lands_in_the_summary_and_the_list(app, tmp_path: Path) -> None
 def test_summary_lead_skips_the_place_line() -> None:
     assert summary_lead("A in B. First. Second. Third.") == "First. Second."
     assert summary_lead("Only one.") == "Only one."
+
+
+def test_report_fields_add_move_and_remove(app) -> None:
+    said: list[str] = []
+    dlg = ReportFieldsDialog(None, chosen=["cape", "nope"], announce_cb=said.append)
+    try:
+        assert dlg.chosen == ["cape"]
+        dlg._available.SetSelection(0)  # wind gusts, first in the catalogue
+        dlg.add()
+        assert dlg.chosen == ["cape", "wind_gusts_10m"]
+        dlg._list.SetSelection(1)
+        dlg.move(-1)
+        assert dlg.chosen == ["wind_gusts_10m", "cape"]
+        assert said[-1] == "Moved Wind gusts to 1 of 2."
+        dlg._list.SetSelection(0)
+        dlg.remove()
+        assert dlg.chosen == ["cape"] and said[-1] == "Removed Wind gusts."
+    finally:
+        dlg.dialog.Destroy()
+
+
+def test_text_report_carries_its_credits(app) -> None:
+    dlg = TextReportDialog(
+        None,
+        intro="Around you.",
+        text="Dry here now.",
+        box_name="Weather around you",
+        box_help="Read it.",
+        credits="Weather data by Open-Meteo.com.",
+    )
+    try:
+        assert dlg.text == "Dry here now.\n\nSources: Weather data by Open-Meteo.com."
+    finally:
+        dlg.dialog.Destroy()

@@ -243,6 +243,9 @@ class WeatherReport:
     retrieved_at: str = ""  # ISO 8601, stamped by the caller (wx-free: no clock here)
     #: Non-fatal notes (e.g. "observation unavailable"); shown in status.
     notes: list[str] = field(default_factory=list)
+    #: Rain soon, the glance ahead, daylight, chosen fields, pollen, sea
+    #: (report_extras); a failed feed is a sentence here, never a silent gap.
+    extras: list[str] = field(default_factory=list)
 
     @property
     def active_alert_count(self) -> int:

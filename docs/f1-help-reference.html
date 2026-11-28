@@ -4796,7 +4796,7 @@ the test finishes.</li>
 field stops; nothing is kept.</li>
 </ul>
 <h2 id="quill-weather">Quill Weather</h2>
-<p>Control coverage: 98 audited sites (98 helped).</p>
+<p>Control coverage: 109 audited sites (109 helped).</p>
 <h3 id="every-window-and-what-it-is-for-6">Every window, and what it is
 for</h3>
 <p><strong>AI Usage.</strong> How much each AI you have set up has been
@@ -4850,6 +4850,9 @@ The contents list is grouped by track and remembers where you stopped;
 typing ‘here’ in the filter box narrows it to the tutorials about the
 window you came from. Follow me watches what the app is doing – never
 which key you pressed – and moves you on by itself.</p>
+<p><strong>Report Fields.</strong> Choose extra details from Open-Meteo
+to add to the end of the current conditions in Weather Now, and the
+order they are read in.</p>
 <p><strong>Save Weather for a Date Range.</strong> Save every day
 between two dates as a spreadsheet file (CSV) or as plain text, in your
 units, with the data credits.</p>
@@ -4865,6 +4868,10 @@ is.</p>
 <p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
 Open the Page takes you to its sign-in page; approve there, and this
 closes itself once you are signed in.</p>
+<p><strong>Weather Around Me.</strong> Rain and snow within about 50
+miles of your primary place, one line for each direction, and whether it
+is moving toward you. It comes from the current weather at the eight
+compass points around you, not from radar.</p>
 <p><strong>Weather Center.</strong> The full text weather report for one
 location at a time, in reading order: active alerts first, then current
 conditions, the period forecast, the hourly forecast, and the extended
@@ -5086,6 +5093,28 @@ spreadsheet file (CSV) or as text. Ctrl+S does the same.</li>
 same.</li>
 </ul>
 <h4
+id="reportfieldsdialog-quilluiweatherreport_fields_dialogpy">ReportFieldsDialog
+(<code>quill/ui/weather/report_fields_dialog.py</code>)</h4>
+<ul>
+<li><code>self._available</code>: Fields you have not added yet. Choose
+one, then press Add. The meaning of the chosen field is shown under the
+list.</li>
+<li><code>self._add</code>: Add the chosen field to the end of the
+report’s list.</li>
+<li><code>self._list</code>: The extra fields the report reads, in
+order. Move Up, Move Down and Remove act on the selected one.</li>
+<li><code>self._up</code>: Read the selected field one place
+earlier.</li>
+<li><code>self._down</code>: Read the selected field one place
+later.</li>
+<li><code>self._remove</code>: Take the selected field out of the
+report.</li>
+<li><code>ok</code>: Save these fields. The report uses them from its
+next refresh.</li>
+<li><code>cancel</code>: Close without changing the report’s
+fields.</li>
+</ul>
+<h4
 id="saverangedialog-quilluiweathersave_range_dialogpy">SaveRangeDialog
 (<code>quill/ui/weather/save_range_dialog.py</code>)</h4>
 <ul>
@@ -5155,6 +5184,14 @@ Changes apply immediately – an open Weather Center re-renders with the
 new preferences.</li>
 <li><code>cancel_btn</code>: Close without changing any setting. Escape
 does the same.</li>
+</ul>
+<h4
+id="textreportdialog-quilluiweathertext_report_dialogpy">TextReportDialog
+(<code>quill/ui/weather/text_report_dialog.py</code>)</h4>
+<ul>
+<li><code>copy_btn</code>: Copy the whole report to the clipboard.</li>
+<li><code>close_btn</code>: Close this window. Escape does the
+same.</li>
 </ul>
 <h4
 id="weathercenterdialog-quilluiweatherweather_center_dialogpy">WeatherCenterDialog

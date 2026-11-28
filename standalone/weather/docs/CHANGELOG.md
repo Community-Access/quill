@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **The next few hours, the weather around you, pollen and the sea**
+  (2026-11-28). **Weather menu > Next Few Hours** (Ctrl+Shift+U) says whether
+  rain or snow is starting soon ("Light rain starting in about 30 minutes", from
+  Open-Meteo's 15-minute forecast, and "estimated" where that does not exist), the
+  next four hours at a glance, and how much more or less daylight there is than
+  yesterday; the same lines end Weather Now. **Weather Around Me** (Ctrl+Shift+O)
+  is a spoken stand-in for radar: the eight compass points about 25 and 50 miles
+  out, in one request, as lines like "Rain 25 miles west, moving toward you."
+  Weather Now also gains pollen (Europe only) and sea conditions (coastal places
+  only), and **Report Fields** (Ctrl+Shift+E) adds any of 21 extra Open-Meteo
+  details, such as wind gusts, snow depth or thunderstorm energy, in the order
+  you choose. Each line can be turned off in Settings.
 - **Weather on a Past Date and Weather History** (2026-11-28). **Weather menu >
   Weather on a Past Date** (Ctrl+Alt+D) shows any day since 1940 for any saved
   place, read like the current report and then hour by hour, with how it compared

@@ -1,7 +1,8 @@
 """Quill Weather's menu accelerators (``APP_KEYMAPS["weather"]``).
 
 Extracted from ``quill/core/app_keymaps.py`` under GATE-11 when Weather on a
-Past Date and Weather History arrived: extract, never rebaseline.
+Past Date and Weather History arrived: extract, never rebaseline. Weather Around
+Me, Next Few Hours and Report Fields followed.
 ``app_keymaps`` still owns the table; this module only holds Weather's rows and
 the reasons for them.
 
@@ -40,9 +41,14 @@ WEATHER_KEYMAPS: dict[str, str] = {
     # Weather on a Past Date: D for date. Ctrl+Shift+D is Radio's Output Device,
     # and Ctrl+Shift+P is the family's Command Palette, so it is Ctrl+Alt.
     "weather.past_date": "Ctrl+Alt+D",
-    # Weather History: Ctrl+Shift, like Weather Now and Quick Weather, T for
-    # past times. Radio's Ctrl+Shift+D and H are taken (Output Device, Song
-    # History), and T is free in both.
+    # Weather History, Weather Around Me, Next Few Hours and Report Fields.
+    # Ctrl+Shift, like Weather Now and Quick Weather: T for past times, O for
+    # around, U for upcoming, E for extra fields. Radio's Ctrl+Shift+A, D, I
+    # and X are taken (Audio, Output Device, Video Information, Export
+    # Favorites), so these four are the ones free in both.
     "weather.history": "Ctrl+Shift+T",
+    "weather.around": "Ctrl+Shift+O",
+    "weather.next_hours": "Ctrl+Shift+U",
+    "weather.report_fields": "Ctrl+Shift+E",
     **SMALL_APP_AI_KEYMAPS["weather"],  # AI rows, rule-11 comments: app_keymaps_ai.py
 }

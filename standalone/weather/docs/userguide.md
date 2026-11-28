@@ -542,6 +542,41 @@ of your primary location without opening a window -- for example:
 
 You choose what that line includes in Settings.
 
+### Next Few Hours, rain starting soon, and daylight
+
+**Weather menu > Next Few Hours** (or **Ctrl+Shift+U**) speaks three things for
+your primary location without opening a window:
+
+- **Rain or snow starting soon**, from Open-Meteo's 15-minute forecast: "Light
+  rain starting in about 30 minutes", "Moderate rain now, stopping in about 45
+  minutes", or "No rain or snow expected in the next 2 hours". Open-Meteo has
+  true 15-minute data only over North America and central Europe. Elsewhere the
+  sentence ends "This is estimated from hourly data here."
+- **The next four hours at a glance**: the temperature now and where it is
+  heading, any change in the sky, the highest chance of precipitation, and the
+  strongest wind when it is notable.
+- **Daylight**: how long the sun is up today, and how many minutes more or less
+  than yesterday.
+
+The same three lines are added to the end of the current conditions in Weather
+Now. You can turn each one off in Settings.
+
+### Weather Around Me
+
+**Weather menu > Weather Around Me...** (or **Ctrl+Shift+O**) is a spoken stand-in
+for radar. Quill Weather checks the current weather at the eight compass points
+about 25 and 50 miles from your primary location, all in one request, and opens a
+short report you can read with the arrow keys:
+
+> Dry here now.
+> Rain 25 miles west, moving toward you.
+> Snow 50 miles east, moving away.
+> Dry to the north, northeast, southeast, south, southwest and northwest.
+
+The direction it is heading comes from the wind at each of those places, so the
+report ends by saying it is a rough guide. **Copy** puts the whole report on the
+clipboard.
+
 ### Weather on a Past Date
 
 **Weather menu > Weather on a Past Date...** (or **Ctrl+Alt+D**) shows one past
@@ -632,15 +667,38 @@ costs no internet request. If a service cannot be reached, the summary says so
 and gives the reason. It never treats a failed request as "no data". Alert Feed
 Status lists these data services too, under **Data feeds**.
 
+### Report Fields
+
+**Weather menu > Report Fields...** (or **Ctrl+Shift+E**) adds extra details from
+Open-Meteo to the end of the current conditions in Weather Now, such as wind
+gusts, snow on the ground, the freezing level, thunderstorm energy (CAPE), soil
+moisture or sunlight strength. Choose a field in **Field to add** and press
+**Add**. The fields you have added are listed in the order they are read. Use
+**Move Up**, **Move Down** and **Remove** on the selected one. The meaning of
+each field is shown under the list.
+
+### Pollen and the sea
+
+Weather Now also includes, when they apply:
+
+- **Pollen**, for places in Europe only, for example "Pollen: birch high, grass
+  low." This comes from Copernicus CAMS through Open-Meteo, which covers only
+  Europe, so elsewhere no pollen line is shown.
+- **Sea conditions**, for coastal places, for example "Sea: waves 10 feet from
+  the west every 14 seconds, swell 10 feet, sea temperature 67 degrees." Inland
+  places have no sea line.
+
+Turn either off in Settings.
+
 ### Where the data comes from, and fair use
 
-Forecast and history data is by **Open-Meteo.com**, under the CC BY
+Forecast, history, pollen and sea data is by **Open-Meteo.com**, under the CC BY
 4.0 licence. Historical weather is the **Copernicus Climate Change Service ERA5**
 reanalysis. US station records and normals are from the **NOAA Regional Climate
 Centers (RCC-ACIS)**. None of these needs an account or a key. Open-Meteo is free
 for non-commercial use up to about 10,000 requests a day, so Quill Weather keeps
-well under that: it saves what it fetches for good, asks for one day per year rather than
-whole decades, and if Open-Meteo asks it to slow down, it waits before asking again and says so.
+well under that: it saves what it fetches, groups places into one request, and
+if Open-Meteo asks it to slow down, it waits before asking again and says so.
 The same credits are in Help > About Quill Weather.
 
 ### Active Alerts
@@ -662,7 +720,10 @@ alerts list, so you can review warnings with the fewest keystrokes.
   humidity, dew point, wind and gusts, cloud cover, pressure, visibility, chance
   of precipitation, sunrise and sunset, **moon phase, moonrise and moonset**, the
   ultraviolet index, air quality, and the **current local time at the location**.
-  Temperature and the sky condition always show.
+  Temperature and the sky condition always show. Five more checkboxes cover the
+  next-hours lines: rain or snow starting soon, the next four hours at a glance,
+  daylight today against yesterday, pollen (Europe only), and sea conditions
+  (coastal places only).
 - **Alert severity to show** -- everything, or only Moderate and above, Severe
   and above, and so on -- plus a list of specific **event names to hide** (one
   per line).

@@ -866,6 +866,40 @@ west-northwest at 5 miles per hour. There is one active alert. The most
 urgent is an Excessive Heat Warning.</p>
 </blockquote>
 <p>You choose what that line includes in Settings.</p>
+<h3 id="next-few-hours-rain-starting-soon-and-daylight">Next Few Hours,
+rain starting soon, and daylight</h3>
+<p><strong>Weather menu &gt; Next Few Hours</strong> (or
+<strong>Ctrl+Shift+U</strong>) speaks three things for your primary
+location without opening a window:</p>
+<ul>
+<li><strong>Rain or snow starting soon</strong>, from Open-Meteo’s
+15-minute forecast: “Light rain starting in about 30 minutes”, “Moderate
+rain now, stopping in about 45 minutes”, or “No rain or snow expected in
+the next 2 hours”. Open-Meteo has true 15-minute data only over North
+America and central Europe. Elsewhere the sentence ends “This is
+estimated from hourly data here.”</li>
+<li><strong>The next four hours at a glance</strong>: the temperature
+now and where it is heading, any change in the sky, the highest chance
+of precipitation, and the strongest wind when it is notable.</li>
+<li><strong>Daylight</strong>: how long the sun is up today, and how
+many minutes more or less than yesterday.</li>
+</ul>
+<p>The same three lines are added to the end of the current conditions
+in Weather Now. You can turn each one off in Settings.</p>
+<h3 id="weather-around-me">Weather Around Me</h3>
+<p><strong>Weather menu &gt; Weather Around Me…</strong> (or
+<strong>Ctrl+Shift+O</strong>) is a spoken stand-in for radar. Quill
+Weather checks the current weather at the eight compass points about 25
+and 50 miles from your primary location, all in one request, and opens a
+short report you can read with the arrow keys:</p>
+<blockquote>
+<p>Dry here now. Rain 25 miles west, moving toward you. Snow 50 miles
+east, moving away. Dry to the north, northeast, southeast, south,
+southwest and northwest.</p>
+</blockquote>
+<p>The direction it is heading comes from the wind at each of those
+places, so the report ends by saying it is a rough guide.
+<strong>Copy</strong> puts the whole report on the clipboard.</p>
 <h3 id="weather-on-a-past-date">Weather on a Past Date</h3>
 <p><strong>Weather menu &gt; Weather on a Past Date…</strong> (or
 <strong>Ctrl+Alt+D</strong>) shows one past day’s weather for any saved
@@ -997,18 +1031,40 @@ second look costs no internet request. If a service cannot be reached,
 the summary says so and gives the reason. It never treats a failed
 request as “no data”. Alert Feed Status lists these data services too,
 under <strong>Data feeds</strong>.</p>
+<h3 id="report-fields">Report Fields</h3>
+<p><strong>Weather menu &gt; Report Fields…</strong> (or
+<strong>Ctrl+Shift+E</strong>) adds extra details from Open-Meteo to the
+end of the current conditions in Weather Now, such as wind gusts, snow
+on the ground, the freezing level, thunderstorm energy (CAPE), soil
+moisture or sunlight strength. Choose a field in <strong>Field to
+add</strong> and press <strong>Add</strong>. The fields you have added
+are listed in the order they are read. Use <strong>Move Up</strong>,
+<strong>Move Down</strong> and <strong>Remove</strong> on the selected
+one. The meaning of each field is shown under the list.</p>
+<h3 id="pollen-and-the-sea">Pollen and the sea</h3>
+<p>Weather Now also includes, when they apply:</p>
+<ul>
+<li><strong>Pollen</strong>, for places in Europe only, for example
+“Pollen: birch high, grass low.” This comes from Copernicus CAMS through
+Open-Meteo, which covers only Europe, so elsewhere no pollen line is
+shown.</li>
+<li><strong>Sea conditions</strong>, for coastal places, for example
+“Sea: waves 10 feet from the west every 14 seconds, swell 10 feet, sea
+temperature 67 degrees.” Inland places have no sea line.</li>
+</ul>
+<p>Turn either off in Settings.</p>
 <h3 id="where-the-data-comes-from-and-fair-use">Where the data comes
 from, and fair use</h3>
-<p>Forecast and history data is by <strong>Open-Meteo.com</strong>,
-under the CC BY 4.0 licence. Historical weather is the
-<strong>Copernicus Climate Change Service ERA5</strong> reanalysis. US
-station records and normals are from the <strong>NOAA Regional Climate
-Centers (RCC-ACIS)</strong>. None of these needs an account or a key.
-Open-Meteo is free for non-commercial use up to about 10,000 requests a
-day, so Quill Weather keeps well under that: it saves what it fetches
-for good, asks for one day per year rather than whole decades, and if
-Open-Meteo asks it to slow down, it waits before asking again and says
-so. The same credits are in Help &gt; About Quill Weather.</p>
+<p>Forecast, history, pollen and sea data is by
+<strong>Open-Meteo.com</strong>, under the CC BY 4.0 licence. Historical
+weather is the <strong>Copernicus Climate Change Service ERA5</strong>
+reanalysis. US station records and normals are from the <strong>NOAA
+Regional Climate Centers (RCC-ACIS)</strong>. None of these needs an
+account or a key. Open-Meteo is free for non-commercial use up to about
+10,000 requests a day, so Quill Weather keeps well under that: it saves
+what it fetches, groups places into one request, and if Open-Meteo asks
+it to slow down, it waits before asking again and says so. The same
+credits are in Help &gt; About Quill Weather.</p>
 <h3 id="active-alerts">Active Alerts</h3>
 <p><strong>Weather menu &gt; Active Alerts…</strong> opens Weather Now
 with focus already on the alerts list, so you can review warnings with
@@ -1029,8 +1085,10 @@ for each of feels-like, humidity, dew point, wind and gusts, cloud
 cover, pressure, visibility, chance of precipitation, sunrise and
 sunset, <strong>moon phase, moonrise and moonset</strong>, the
 ultraviolet index, air quality, and the <strong>current local time at
-the location</strong>. Temperature and the sky condition always
-show.</li>
+the location</strong>. Temperature and the sky condition always show.
+Five more checkboxes cover the next-hours lines: rain or snow starting
+soon, the next four hours at a glance, daylight today against yesterday,
+pollen (Europe only), and sea conditions (coastal places only).</li>
 <li><strong>Alert severity to show</strong> – everything, or only
 Moderate and above, Severe and above, and so on – plus a list of
 specific <strong>event names to hide</strong> (one per line).</li>

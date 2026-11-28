@@ -71,6 +71,18 @@ class WeatherSettings:
     show_air_quality: bool = True
     #: Show the current local time at the searched location.
     show_local_time: bool = True
+    #: The next hours (one Open-Meteo request): rain starting soon, a four-hour
+    #: glance ahead, and today's daylight against yesterday's.
+    show_rain_soon: bool = True
+    show_glance_ahead: bool = True
+    show_daylight_change: bool = True
+    #: Pollen is shown only in Europe (Copernicus CAMS covers nowhere else);
+    #: the marine line only where Open-Meteo has sea data.
+    show_pollen: bool = True
+    show_marine: bool = True
+    #: Extra Open-Meteo fields added to the report, in the order shown
+    #: (Report Fields...; ids from nowcast.FIELD_CATALOG).
+    report_fields: list[str] = field(default_factory=list)
     #: How many years Weather History looks back for one date (1-85).
     history_years: int = 20
 
@@ -129,6 +141,13 @@ class WeatherSettings:
         self.section_order = seen or _default_sections()
         self.muted_events = [str(e).strip() for e in self.muted_events if str(e).strip()]
         self.history_years = max(1, min(85, int(self.history_years)))
+        from quill.core.weather.nowcast import FIELD_CATALOG
+
+        chosen: list[str] = []
+        for key in self.report_fields:
+            if key in FIELD_CATALOG and key not in chosen:
+                chosen.append(key)
+        self.report_fields = chosen
         return self
 
     def alert_passes(self, severity: str, event: str) -> bool:
@@ -203,6 +222,11 @@ def load_settings(data_dir: Path) -> WeatherSettings:
         "show_uv_index",
         "show_air_quality",
         "show_local_time",
+        "show_rain_soon",
+        "show_glance_ahead",
+        "show_daylight_change",
+        "show_pollen",
+        "show_marine",
         "announce_alert_count_on_open",
         "alert_sound_enabled",
         "refresh_on_open",
@@ -220,6 +244,8 @@ def load_settings(data_dir: Path) -> WeatherSettings:
         s.section_order = [str(x) for x in raw["section_order"]]
     if isinstance(raw.get("muted_events"), list):
         s.muted_events = [str(x) for x in raw["muted_events"]]
+    if isinstance(raw.get("report_fields"), list):
+        s.report_fields = [str(x) for x in raw["report_fields"]]
     return s.normalized()
 
 
@@ -251,6 +277,12 @@ def save_settings(data_dir: Path, settings: WeatherSettings) -> None:
             "show_uv_index": settings.show_uv_index,
             "show_air_quality": settings.show_air_quality,
             "show_local_time": settings.show_local_time,
+            "show_rain_soon": settings.show_rain_soon,
+            "show_glance_ahead": settings.show_glance_ahead,
+            "show_daylight_change": settings.show_daylight_change,
+            "show_pollen": settings.show_pollen,
+            "show_marine": settings.show_marine,
+            "report_fields": list(settings.report_fields),
             "history_years": settings.history_years,
             "alert_severity_floor": settings.alert_severity_floor,
             "muted_events": list(settings.muted_events),

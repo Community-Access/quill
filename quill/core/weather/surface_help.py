@@ -145,6 +145,15 @@ PURPOSES: dict[str, str] = {
         "Save every day between two dates as a spreadsheet file (CSV) or as plain "
         "text, in your units, with the data credits."
     ),
+    "Report Fields": (
+        "Choose extra details from Open-Meteo to add to the end of the current "
+        "conditions in Weather Now, and the order they are read in."
+    ),
+    "Weather Around Me": (
+        "Rain and snow within about 50 miles of your primary place, one line for "
+        "each direction, and whether it is moving toward you. It comes from the "
+        "current weather at the eight compass points around you, not from radar."
+    ),
     # -- the shared shell dialogs, as this app titles them -----------------------
     "Customize Quill Weather Features": (
         "Turn whole areas of Quill Weather on or off -- alert monitoring, "

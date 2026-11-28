@@ -941,10 +941,13 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+Shift+Alt+A | Alerts | `weather.alerts` |
+| Ctrl+Shift+E | Report Fields... | `weather.report_fields` |
 | Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
 | Ctrl+Shift+G | Ai go out | `weather.ai_go_out` |
+| Ctrl+Shift+O | Weather Around Me... | `weather.around` |
 | Ctrl+Shift+Q | Quick | `weather.quick` |
 | Ctrl+Shift+T | Weather History... | `weather.history` |
+| Ctrl+Shift+U | Next Few Hours | `weather.next_hours` |
 | Ctrl+Shift+W | Now | `weather.now` |
 
 ## Quill Converter (app keys)

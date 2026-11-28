@@ -1,5 +1,5 @@
-"""Feed health for Quill Weather's *data* feeds: Weather History, Weather on a
-Past Date, and the station records and normals behind them.
+"""Feed health for Quill Weather's *data* feeds: history, records, nowcast,
+approaching weather, pollen and marine.
 
 The alert feed's health (``feed_health``) answers "no alerts, or could not
 reach the service?". These feeds need the same honesty for a different
@@ -54,6 +54,12 @@ FEEDS: dict[str, FeedInfo] = {
         "NOAA RCC-ACIS station records and normals",
         "the NOAA Regional Climate Centers' ACIS service",
     ),
+    "open_meteo_nowcast": FeedInfo(
+        "Open-Meteo next hours, rain soon and daylight", "Open-Meteo's forecast service"
+    ),
+    "open_meteo_around": FeedInfo("Open-Meteo weather around you", "Open-Meteo's forecast service"),
+    "open_meteo_pollen": FeedInfo("Open-Meteo pollen", "Open-Meteo's air quality service"),
+    "open_meteo_marine": FeedInfo("Open-Meteo marine", "Open-Meteo's marine service"),
 }
 
 _STATE_WORDS = {
@@ -113,7 +119,7 @@ class DataFeedHealth:
         used = [f for f in FEEDS if f in self.tracker.places]
         if not used:
             return []
-        lines = ["Data feeds (history, past dates, station records)"]
+        lines = ["Data feeds (history, records, next hours, around you, pollen, marine)"]
         for feed in used:
             health = self.tracker.places[feed]
             state = self.state_of(feed, now)

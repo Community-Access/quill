@@ -1,9 +1,10 @@
-"""WeatherMoreMixin -- Weather on a Past Date and Weather History, on every
-host that has the Weather menu.
+"""WeatherMoreMixin -- Weather on a Past Date, Weather History, Weather Around
+Me, Next Few Hours and Report Fields, on every host that has the Weather menu.
 
-Thin wx glue over wx-free modules: ``past_day_service`` (one past day),
-``history_service`` (Weather History) and ``data_feed_health`` (one shared
-record of whether each data feed could be reached). Mixed into
+Thin wx glue over wx-free modules: ``past_day_service`` and ``history_service``
+(the past), ``around`` (the eight compass points), ``report_extras`` and
+``nowcast`` (rain soon, the glance ahead, daylight), and ``data_feed_health``
+(one shared record of whether each data feed could be reached). Mixed into
 ``WeatherMixin``.
 """
 
@@ -16,6 +17,9 @@ from typing import Any
 MENU_ROWS = (
     ("weather.past_date", "Weather &on a Past Date...\tCtrl+Alt+D"),
     ("weather.history", "Weather Histor&y...\tCtrl+Shift+T"),
+    ("weather.around", "Weather Around &Me...\tCtrl+Shift+O"),
+    ("weather.next_hours", "Ne&xt Few Hours\tCtrl+Shift+U"),
+    ("weather.report_fields", "Report F&ields...\tCtrl+Shift+E"),
 )
 
 
@@ -31,6 +35,7 @@ class WeatherMoreMixin:
     @staticmethod
     def _weather_data_dir() -> Any: ...
     def _weather_blocked_in_safe_mode(self) -> bool: ...
+    def open_weather_add_location(self) -> None: ...
 
     # -- menu ----------------------------------------------------------------------
 
@@ -39,6 +44,9 @@ class WeatherMoreMixin:
         handlers = {
             "weather.past_date": self.open_weather_past_date,
             "weather.history": self.open_weather_history,
+            "weather.around": self.weather_around_me,
+            "weather.next_hours": self.weather_next_hours,
+            "weather.report_fields": self.open_weather_report_fields,
         }
         menu.AppendSeparator()
         for command_id, label in MENU_ROWS:
@@ -63,6 +71,29 @@ class WeatherMoreMixin:
     def weather_data_feed_lines(self) -> list[str]:
         """The "Data feeds" section for Alert Feed Status."""
         return list(self._weather_data_health().status_lines(time.time()))
+
+    def _weather_primary_place(self) -> tuple[Any, Any] | None:
+        """(location, settings) for the primary place, or None after offering Add."""
+        from quill.core.weather import locations as loc_store
+        from quill.core.weather import settings as settings_mod
+
+        data_dir = self._weather_data_dir()
+        location = loc_store.load_locations(data_dir).primary()
+        if location is None:
+            self._announce("No weather location yet. Opening Add Location.")
+            self.open_weather_add_location()
+            return None
+        return location, settings_mod.load_settings(data_dir)
+
+    def _weather_in_background(self, name: str, work: Any, done: Any) -> None:
+        # Delivered on the UI thread already; a failure is handed to the same
+        # callback, so an unexpected error is spoken rather than lost.
+        self._task_manager.submit(
+            name,
+            work,
+            on_success=lambda _op, result: done(result),
+            on_failure=lambda _op, exc: done(exc),
+        )
 
     # -- Weather History -----------------------------------------------------------
 
@@ -101,3 +132,110 @@ class WeatherMoreMixin:
             place_id=place_id,
             start=start,
         ).show()
+
+    # -- Weather Around Me ---------------------------------------------------------
+
+    def weather_around_me(self) -> None:
+        if self._weather_blocked_in_safe_mode():
+            return
+        place = self._weather_primary_place()
+        if place is None:
+            return
+        location, settings = place
+        self._announce(f"Checking the weather around {location.label}.")
+        health = self._weather_data_health()
+        from quill.core.weather._http import HTTP_ERRORS
+
+        def _work(**_kwargs: Any) -> object:
+            from quill.core.weather import around
+
+            try:
+                samples = around.fetch(location.latitude, location.longitude)
+            except HTTP_ERRORS as error:
+                health.record_failure("open_meteo_around", error, time.time())
+                return error
+            health.record_success("open_meteo_around", time.time())
+            return around.describe(samples, metric=settings.temperature_unit == "C")
+
+        self._weather_in_background(
+            "weather-around", _work, lambda result: self._weather_around_done(location, result)
+        )
+
+    def _weather_around_done(self, location: Any, result: object) -> None:
+        from quill.core.weather import data_feed_health
+        from quill.core.weather.history_text import CREDIT_OPEN_METEO
+
+        self._weather_data_health_save()
+        if not isinstance(result, list):
+            error = result if isinstance(result, BaseException) else ValueError("no reply")
+            self._announce(data_feed_health.failure_sentence("open_meteo_around", error))
+            return
+        from quill.ui.weather.text_report_dialog import TextReportDialog
+
+        TextReportDialog(
+            self.frame,
+            intro=f"Rain and snow within about 50 miles of {location.label}, and which "
+            "way it is heading.",
+            text="\n".join(result),
+            box_name="Weather around you",
+            box_help="One line for each direction with rain or snow: what it is, how far, "
+            "and whether it is moving toward you. Use the arrow keys to read it.",
+            credits=CREDIT_OPEN_METEO,
+            announce_cb=self._announce,
+        ).show()
+
+    # -- Next Few Hours ------------------------------------------------------------
+
+    def weather_next_hours(self) -> None:
+        """Speak rain starting soon, the four-hour glance and the daylight change."""
+        if self._weather_blocked_in_safe_mode():
+            return
+        place = self._weather_primary_place()
+        if place is None:
+            return
+        location, settings = place
+        self._announce(f"Getting the next few hours for {location.label}.")
+        health = self._weather_data_health()
+
+        def _work(**_kwargs: Any) -> object:
+            from quill.core.weather import report_extras
+
+            return report_extras.gather(location, settings, health=health, nowcast_only=True)
+
+        self._weather_in_background("weather-next-hours", _work, self._weather_next_hours_done)
+
+    def _weather_next_hours_done(self, result: object) -> None:
+        from quill.core.weather import data_feed_health
+
+        self._weather_data_health_save()
+        if isinstance(result, BaseException):
+            self._announce(data_feed_health.failure_sentence("open_meteo_nowcast", result))
+            return
+        lines = result.lines() if hasattr(result, "lines") else []
+        self._announce(" ".join(lines) or "Nothing is known about the next few hours.")
+
+    # -- Report Fields -------------------------------------------------------------
+
+    def open_weather_report_fields(self) -> None:
+        from quill.core.weather import settings as settings_mod
+        from quill.ui.weather.report_fields_dialog import ReportFieldsDialog
+
+        data_dir = self._weather_data_dir()
+        settings = settings_mod.load_settings(data_dir)
+        chosen = ReportFieldsDialog(
+            self.frame, chosen=settings.report_fields, announce_cb=self._announce
+        ).show()
+        if chosen is None:
+            return
+        settings.report_fields = chosen
+        try:
+            settings_mod.save_settings(data_dir, settings)
+        except OSError as exc:
+            self._announce(f"Could not save the report fields. {exc}")
+            return
+        count = len(settings.report_fields)
+        self._announce(
+            "Report fields saved. No extra fields."
+            if not count
+            else f"Report fields saved. {count} extra field{'s' if count != 1 else ''}."
+        )
