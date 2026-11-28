@@ -153,10 +153,72 @@ def open_sync_places(host: Any) -> None:
         config=config,
         phrase=load_phrase(),
         on_save=_save,
-        sync_now=lambda cfg, phrase: sync_once(cfg, phrase),
+        sync_now=lambda cfg, phrase: sync_now_with_open_library(host, cfg, phrase),
         announce=getattr(host, "_announce", None),
         show_modal_dialog=getattr(host, "_show_modal_dialog", None),
     ).show()
+
+
+def sync_now_with_open_library(host: Any, config: places_config.PlacesConfig, phrase: str) -> str:
+    """Keep a playback-only manual import visible to the already-open Cast window.
+
+    Sync Now uses a separately loaded library. Never replace the host's whole
+    library (which may hold newer local choices), and never alter a loaded
+    player's model. This conservative path leaves other sync scopes alone.
+    """
+    if getattr(host, "_startup_app_id", None) != "cast":
+        return sync_once(config, phrase)
+    live = getattr(host, "_podcast_library", None)
+    if live is None or not config.interchange or config.encrypted or config.share_subscriptions:
+        return sync_once(config, phrase)
+
+    from quill.core.podcasts.library_payload import serialize
+    from quill.core.podcasts.subscriptions import load_library
+    from quill.ui.podcasts.player_controller import PodcastPlayerState
+
+    state = getattr(getattr(host, "_podcast_controller", None), "state", None)
+    if (
+        state is None
+        or getattr(state, "state", None) is not PodcastPlayerState.STOPPED
+        or getattr(state, "show_id", None)
+        or getattr(state, "episode_guid", None)
+    ):
+        return "Stop the loaded episode before reading places from another device."
+    data_dir = _data_dir(host)
+    try:
+        before = load_library(data_dir, strict=True)
+        if serialize(live) != serialize(before):
+            return "The open podcast library has unsaved changes. Save them before syncing."
+        said = sync_once(config, phrase)
+        after = load_library(data_dir, strict=True)
+    except Exception:
+        return "The podcast library could not be checked safely. No open episode was changed."
+
+    before_shows = {show.id: show for show in before.shows}
+    after_shows = {show.id: show for show in after.shows}
+    fields = ("position_ms", "played", "position_updated_at", "last_played_on")
+    for show in live.shows:
+        prior, newer = before_shows.get(show.id), after_shows.get(show.id)
+        if prior is None or newer is None:
+            continue
+        prior_rows = {episode.guid: episode for episode in prior.episodes}
+        newer_rows = {episode.guid: episode for episode in newer.episodes}
+        if len(prior_rows) != len(prior.episodes) or len(newer_rows) != len(newer.episodes):
+            continue  # Ambiguous GUIDs are not a reason to guess at a place.
+        for episode in show.episodes:
+            old, new = prior_rows.get(episode.guid), newer_rows.get(episode.guid)
+            if (
+                old is None
+                or new is None
+                or episode.audio_url != old.audio_url
+                or new.audio_url != old.audio_url
+            ):
+                continue
+            if any(getattr(episode, field) != getattr(old, field) for field in fields):
+                continue  # A local choice made while Sync Now ran wins in this window.
+            for field in fields:
+                setattr(episode, field, getattr(new, field))
+    return said
 
 
 def sync_in_background(host: Any) -> bool:
