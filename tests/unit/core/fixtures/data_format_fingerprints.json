@@ -322,7 +322,8 @@
             "podroll": "list[str]",
             "funding": "list[Funding]",
             "location": "str",
-            "alternates": "list[AlternateEnclosure]"
+            "alternates": "list[AlternateEnclosure]",
+            "psc_chapters": "list[PscChapter]"
           },
           "quill.core.podcasts.namespace_tags:Person": {
             "name": "str",
@@ -330,6 +331,12 @@
             "group": "str",
             "image_url": "str",
             "link_url": "str"
+          },
+          "quill.core.podcasts.namespace_tags:PscChapter": {
+            "start_ms": "int",
+            "title": "str",
+            "link_url": "str",
+            "image_url": "str"
           },
           "quill.core.podcasts.namespace_tags:Soundbite": {
             "start_ms": "int",
@@ -384,7 +391,7 @@
         "function:quill.core.podcasts.subscriptions:save_library": "sha256:4a4485eeda51a642"
       },
       "classification": "additive, compatible",
-      "note": "Older Cast builds ignore the optional zero-default resume rewind setting."
+      "note": "NamespaceTags.psc_chapters (Podlove Simple Chapters) is optional and absent-when-empty; older builds ignore the key."
     },
     "converter.queue": {
       "current": 1,
