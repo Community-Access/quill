@@ -9,6 +9,14 @@ update independently. This version history begins with 2.2.0.
 
 ## Unreleased
 
+- **Rain or snow starting soon, in words** (2026-11-28). Next Few Hours
+  (Ctrl+Shift+U) and Weather Now now begin with whether rain or snow is starting in
+  the next 2 hours, from Open-Meteo's 15-minute forecast: "Light rain starting in
+  about 30 minutes", "Moderate rain now, stopping in about 45 minutes", or "No rain
+  or snow expected in the next 2 hours". Outside North America and central Europe,
+  where Open-Meteo estimates the 15-minute steps from hourly data, it says so. It
+  rides the same single request as the glance ahead, and can be turned off in
+  Settings.
 - **The next four hours and the daylight change** (2026-11-28). **Weather menu >
   Next Few Hours** (Ctrl+Shift+U) speaks the next four hours at a glance (the
   temperature trend, any change in the sky, the highest chance of precipitation and

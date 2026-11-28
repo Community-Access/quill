@@ -55,7 +55,7 @@ FEEDS: dict[str, FeedInfo] = {
         "the NOAA Regional Climate Centers' ACIS service",
     ),
     "open_meteo_nowcast": FeedInfo(
-        "Open-Meteo next hours and daylight", "Open-Meteo's forecast service"
+        "Open-Meteo rain soon, next hours and daylight", "Open-Meteo's forecast service"
     ),
 }
 

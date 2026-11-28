@@ -1,5 +1,5 @@
-"""The extra lines of a Weather Now report: the glance ahead and the change in
-daylight.
+"""The extra lines of a Weather Now report: rain starting soon, the glance
+ahead and the change in daylight.
 
 ``gather`` makes at most one request (the nowcast, only when one of its lines is
 wanted) and records it with ``data_feed_health``. A failed request becomes a
@@ -23,12 +23,14 @@ from quill.core.weather.settings import WeatherSettings
 
 @dataclass(slots=True)
 class Extras:
+    rain_soon: str = ""
     glance: str = ""
     daylight: str = ""
     problems: list[str] = field(default_factory=list)
 
     def lines(self) -> list[str]:
-        return [line for line in (self.glance, self.daylight) if line] + self.problems
+        lines = (self.rain_soon, self.glance, self.daylight)
+        return [line for line in lines if line] + self.problems
 
 
 def wind_word(settings: WeatherSettings) -> str:
@@ -48,9 +50,10 @@ def gather(
     ``nowcast_only``, for Next Few Hours). Never raises a network error."""
     now = time.time() if now is None else now
     extras = Extras()
+    want_rain = nowcast_only or settings.show_rain_soon
     want_glance = nowcast_only or settings.show_glance_ahead
     want_daylight = nowcast_only or settings.show_daylight_change
-    if not (want_glance or want_daylight):
+    if not (want_rain or want_glance or want_daylight):
         return extras
     try:
         cast = nowcast.fetch(
@@ -64,6 +67,8 @@ def gather(
         return extras
     if health is not None:
         health.record_success("open_meteo_nowcast", now)
+    if want_rain:
+        extras.rain_soon = nowcast.rain_soon_text(cast)
     if want_glance:
         extras.glance = nowcast.glance_text(cast, wind_word=wind_word(settings))
     if want_daylight:

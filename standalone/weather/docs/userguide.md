@@ -542,11 +542,16 @@ of your primary location without opening a window -- for example:
 
 You choose what that line includes in Settings.
 
-### Next Few Hours and daylight
+### Next Few Hours, rain starting soon, and daylight
 
-**Weather menu > Next Few Hours** (or **Ctrl+Shift+U**) speaks two things for
+**Weather menu > Next Few Hours** (or **Ctrl+Shift+U**) speaks three things for
 your primary location without opening a window:
 
+- **Rain or snow starting soon**, from Open-Meteo's 15-minute forecast: "Light
+  rain starting in about 30 minutes", "Moderate rain now, stopping in about 45
+  minutes", or "No rain or snow expected in the next 2 hours". Open-Meteo has
+  true 15-minute data only over North America and central Europe. Elsewhere the
+  sentence ends "This is estimated from hourly data here."
 - **The next four hours at a glance**: the temperature now and where it is
   heading, any change in the sky, the highest chance of precipitation, and the
   strongest wind when it is notable. For example: "Through 7 PM: 49 now, falling
@@ -556,8 +561,8 @@ your primary location without opening a window:
   than yesterday, for example "8 hours 51 minutes of daylight today, 2 minutes
   less than yesterday."
 
-Both come from one Open-Meteo request. The same two lines are added to the end
-of the current conditions in Weather Now, and you can turn either off in
+All three come from one Open-Meteo request. The same lines are added to the end
+of the current conditions in Weather Now, and you can turn each one off in
 Settings.
 
 ### Weather on a Past Date
@@ -680,9 +685,9 @@ alerts list, so you can review warnings with the fewest keystrokes.
   humidity, dew point, wind and gusts, cloud cover, pressure, visibility, chance
   of precipitation, sunrise and sunset, **moon phase, moonrise and moonset**, the
   ultraviolet index, air quality, and the **current local time at the location**.
-  Temperature and the sky condition always show. Two more checkboxes cover the
-  next-hours lines: the next four hours at a glance, and daylight today against
-  yesterday.
+  Temperature and the sky condition always show. Three more checkboxes cover the
+  next-hours lines: rain or snow starting soon, the next four hours at a glance,
+  and daylight today against yesterday.
 - **Alert severity to show** -- everything, or only Moderate and above, Severe
   and above, and so on -- plus a list of specific **event names to hide** (one
   per line).

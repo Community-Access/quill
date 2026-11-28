@@ -93,7 +93,7 @@ class WeatherMoreMixin:
     # -- Next Few Hours ------------------------------------------------------------
 
     def weather_next_hours(self) -> None:
-        """Speak the four-hour glance ahead and the daylight change."""
+        """Speak rain starting soon, the four-hour glance and the daylight change."""
         if self._weather_blocked_in_safe_mode():
             return
         place = self._weather_primary_place()
