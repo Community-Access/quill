@@ -1,9 +1,10 @@
 """The one User-Agent every QUILL family app sends.
 
 Every podcast host, radio directory, weather service and stream server QUILL
-talks to sees the same honest shape: ``<product>/<version> (+<project site>)``,
-and podcast requests say what they are as well:
-``QUILL Cast/2.0.0 (podcast app; +https://www.quillforall.org)``.
+talks to sees the same honest shape:
+``<product>/<version> (+<project site>; <contact email>)``, and podcast
+requests say what they are as well:
+``QUILL Cast/2.0.0 (podcast app; +https://www.quillforall.org; support@community-access.org)``.
 The product is whichever app is running -- QUILL, QUILL Cast, Quill Radio,
 Quill Weather -- because each standalone app calls :func:`set_product_identity`
 once at startup, so a host owner reading their logs sees the app and release
@@ -40,6 +41,12 @@ from quill import __version__
 #: User-Agent that mentions a code-hosting site as a scraper and stall it.
 PROJECT_URL = "https://www.quillforall.org"
 
+#: Who a service operator writes to about QUILL's traffic. NWS and MET Norway
+#: ask clients to name a contact; this is the project's support mailbox, never a
+#: personal address, and it goes on every request (Jeff, 2026-11-28). A CBC feed
+#: still answered at once with it after the podcast role.
+CONTACT_EMAIL = "support@community-access.org"
+
 # Module-global identity. Defaults identify QUILL itself; each standalone app
 # overrides these once, at startup, via set_product_identity.
 _DEFAULT_NAME = "QUILL"
@@ -63,12 +70,13 @@ def set_product_identity(name: str, version: str) -> None:
 
 
 def user_agent(role: str = "") -> str:
-    """The User-Agent for every outbound request: ``<product>/<version> (+site)``.
+    """The User-Agent for every outbound request: ``<product>/<version> (+site; contact)``.
 
-    *role*, when given, goes in front of the site: ``(podcast app; +site)``.
+    *role*, when given, goes in front of the site: ``(podcast app; +site; contact)``.
     """
-    detail = f"{role}; +{PROJECT_URL}" if role else f"+{PROJECT_URL}"
-    return f"{_product_name}/{_product_version} ({detail})"
+    parts = [role] if role else []
+    parts += [f"+{PROJECT_URL}", CONTACT_EMAIL]
+    return f"{_product_name}/{_product_version} ({'; '.join(parts)})"
 
 
 #: What a podcast request says it is. See the module docstring for why.
