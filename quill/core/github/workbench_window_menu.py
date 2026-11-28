@@ -83,6 +83,13 @@ _FILE = MenuSpec(
             "and #42 opens that issue or pull request in this repository.",
         ),
         _row(
+            "find_account",
+            "Find a &Person or Organization...",
+            "Ctrl+Alt+E",
+            "Search GitHub for people and organizations as you type, then look at their "
+            "repositories, keep them in Tracked Accounts, or follow a person.",
+        ),
+        _row(
             "go_to_number",
             "&Go to Number...",
             "Ctrl+G",

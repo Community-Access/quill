@@ -2543,7 +2543,7 @@ Control coverage: 128 audited sites (128 helped).
 
 ## GitHub Workbench
 
-Control coverage: 408 audited sites (408 helped).
+Control coverage: 413 audited sites (413 helped).
 
 ### Every window, and what it is for
 
@@ -2594,6 +2594,8 @@ Control coverage: 408 audited sites (408 helped).
 **Export JSON.** Where to save GitHub's answer as a JSON file.
 
 **Filter Builder.** Build a filter one condition at a time: an attribute, an operator and a value from the repository. The query appears as you go, in GitHub's own syntax; OK puts it in the filter box, Save as Search also keeps it.
+
+**Find a Person or Organization.** Type a username or name and the matching people and organizations appear. Open an account's repositories, keep it in Tracked Accounts, mark a favorite on this computer, follow a person on GitHub, or open the account on GitHub.
 
 **Form Field:.** One field of a form: its label, id, description and, for its kind, placeholder, options, default and whether it is required.
 
@@ -2774,6 +2776,8 @@ Control coverage: 408 audited sites (408 helped).
 **My Teams.** My Teams: every team you belong to, across your organizations. Alt+Enter opens a team's sheet.
 
 **My Billing and Usage.** Billing and Usage: this month's metered use of your account, by product, from GitHub's billing report. Read only; Enter opens your billing page.
+
+**Tracked Accounts.** Tracked Accounts: people and organizations you kept, favorites first, then your favorite repositories. A list on this computer only; GitHub is not told. Enter opens one; Ctrl+Alt+E finds more.
 
 **Find a Person....** Find a Person: type a login with Ctrl+L, and the person gets a node of their own here.
 
@@ -3182,6 +3186,8 @@ Control coverage: 408 audited sites (408 helped).
 **File > New....** Choose what to create, wherever you are.
 
 **File > Open GitHub Address....** Open a repository by owner/name or link; a compare link opens the comparison, and #42 opens that issue or pull request in this repository.
+
+**File > Find a Person or Organization....** Search GitHub for people and organizations as you type, then look at their repositories, keep them in Tracked Accounts, or follow a person.
 
 **File > Go to Number....** Go to an issue or pull request in this repository by its number.
 
@@ -3825,6 +3831,8 @@ Control coverage: 408 audited sites (408 helped).
 
 **Follow or Unfollow.** Follow them, or stop.
 
+**Account Actions.** Its repositories, and track, favorite or follow it. Track and favorite stay on this computer; follow and star are public.
+
 **Block or Unblock.** Block them from following you and from your repositories, or lift the block.
 
 **Find Issues with Label.** Issues and pull requests with it.
@@ -4467,6 +4475,12 @@ Control coverage: 408 audited sites (408 helped).
 - `save`: Use this filter and keep it under Saved Searches. Ctrl+S.
 - `ok`: Write this filter into the filter box and apply it. Ctrl+Enter.
 - `cancel`: Change nothing.
+#### FindAccountDialog (`quill/ui/github_find_account_dialog.py`)
+
+- `self.query`: Type at least two letters of a GitHub username or name. Matching people and organizations appear in the list below after a short pause; Down Arrow moves there.
+- `self.list`: Each row says whether it is a person or an organization, then the username, the name, the public repositories and a description. Enter opens the account's repositories.
+- `self.details`: The selected account in full, and what this computer keeps for it.
+- `close`: Close this window. Escape does the same.
 #### GitHubGistEditorDialog (`quill/ui/github_gist_editor_dialog.py`)
 
 - `self._description`: A short line that says what the gist is. GitHub shows it in the gist list.

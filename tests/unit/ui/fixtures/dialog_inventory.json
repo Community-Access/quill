@@ -320,6 +320,7 @@
   "quill/ui/github_explore_repo_actions.py::GitHubExploreRepoActionsMixin._choose_watch_level.ask::wx.SingleChoiceDialog": "native",
   "quill/ui/github_file_runs_dialog.py::GitHubFileRunsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_filter_builder_dialog.py::FilterBuilderDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/github_find_account_dialog.py::FindAccountDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_gist_editor_dialog.py::GitHubGistEditorDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/github_gist_editor_dialog.py::GitHubGistEditorDialog._delete_file::wx.MessageDialog": "native",
   "quill/ui/github_gist_editor_dialog.py::GitHubGistEditorDialog._prompt::wx.TextEntryDialog": "native",

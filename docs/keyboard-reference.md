@@ -1053,6 +1053,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+A | Select All | `github.workbench.select_all` |
 | Ctrl+Alt+B | Export Software Bill of Materials... | `github.workbench.export_sbom` |
 | Ctrl+Alt+D | Dry Run | `github.workbench.dry_run` |
+| Ctrl+Alt+E | Find a Person or Organization... | `github.workbench.find_account` |
 | Ctrl+Alt+F | Filter Builder... | `github.workbench.filter_builder` |
 | Ctrl+Alt+F1 | GitHub Service Status... | `github.workbench.service_status` |
 | Ctrl+Alt+I | Import Issues from a Spreadsheet... | `github.workbench.import_issues` |

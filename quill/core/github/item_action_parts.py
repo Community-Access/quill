@@ -46,6 +46,29 @@ _PROPERTIES = ActionRow(
     help="Everything about this item on one sheet. Alt+Enter opens it from anywhere.",
 )
 _COPY_LINK = _a("copy_link", "Copy Link", help="Copy the item's GitHub address.")
+_COMMENT = _a("comment", "Comment...", _W, "sign_in", "Write a comment and post it.")
+_LABELS = _a("labels", "Labels...", _W, "triage", "Add or remove labels.")
+_ASSIGNEES = _a("assignees", "Assignees...", _W, "triage", "Choose who it is assigned to.")
+_REACT = _a("react", "React...", _O, "sign_in", "Add or remove a reaction.")
+_READ_DOC = _a(
+    "read_as_document",
+    "Read as Document...",
+    help="The whole thread as one document, a heading per post with its author and date: "
+    "open it in the editor, or save it as Markdown or HTML. Ctrl+Shift+I.",
+)
+_WORKTREE = _a(
+    "start_worktree",
+    "Start in Local Worktree...",
+    _O,
+    "",
+    "Make a branch and a local folder to work on it, and open them in the editor.",
+)
+_ACCOUNT_ACTIONS = _a(
+    "account_actions",
+    "Account Actions...",
+    help="Its repositories, and track, favorite or follow it. Track and favorite stay on this "
+    "computer; follow and star are public.",
+)
 _OPEN_WEB = _a("open_on_github", "Open on GitHub", help="Open the item in your browser.")
 
 #: Row types added for PRD 14.2 and 14.3, merged into the Workbench's table.

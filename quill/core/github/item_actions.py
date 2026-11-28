@@ -15,13 +15,20 @@ from __future__ import annotations
 
 from quill.core.github.across_actions import ACROSS_ROWS
 from quill.core.github.item_action_parts import (
+    _ACCOUNT_ACTIONS,
+    _ASSIGNEES,
+    _COMMENT,
     _COPY_LINK,
     _D,
+    _LABELS,
     _O,
     _OPEN_WEB,
     _PROPERTIES,
     _R,
+    _REACT,
+    _READ_DOC,
     _W,
+    _WORKTREE,
     ACCOUNT_ROWS,
     AUTHORING_ROWS,
     COLLAB_ROWS,
@@ -56,10 +63,6 @@ _CODESPACES = ActionRow(
     "Open GitHub's Codespaces page for this. Starting a Codespace can cost money, "
     "so QUILL asks first.",
 )
-_COMMENT = _a("comment", "Comment...", _W, "sign_in", "Write a comment and post it.")
-_LABELS = _a("labels", "Labels...", _W, "triage", "Add or remove labels.")
-_ASSIGNEES = _a("assignees", "Assignees...", _W, "triage", "Choose who it is assigned to.")
-_REACT = _a("react", "React...", _O, "sign_in", "Add or remove a reaction.")
 # One row per field (decision 11: no key of its own; each opens the sheet with
 # focus on its field, and Alt+Enter remembers the page for next time).
 _EDIT_TITLE = _a("edit_title", "Edit Title...", _W, "sign_in", "Open its sheet at the title.")
@@ -69,19 +72,6 @@ _PROJECTS = _a(
 )
 _TIMELINE = _a("timeline", "View Timeline...", help="Everything that happened to it, in order.")
 _SUMMARIZE = _a("summarize", "Summarize Discussion", _R, "ai", "An AI summary of the thread.")
-_READ_DOC = _a(
-    "read_as_document",
-    "Read as Document...",
-    help="The whole thread as one document, a heading per post with its author and date: "
-    "open it in the editor, or save it as Markdown or HTML. Ctrl+Shift+I.",
-)
-_WORKTREE = _a(
-    "start_worktree",
-    "Start in Local Worktree...",
-    _O,
-    "",
-    "Make a branch and a local folder to work on it, and open them in the editor.",
-)
 _FAVORITE = _a("favorite", "Add to or Remove from Favorites", _O, "", "Keep it in Favorites.")
 _COMMIT_COMMENTS = _a(
     "commit_comments", "Commit Comments...", help="Comments on the commit and its lines."
@@ -413,6 +403,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
     "person": (
         _default("open_person", "Open", "Select the person's node in the tree."),
         _a("follow", "Follow or Unfollow", _O, "sign_in", "Follow them, or stop."),
+        _ACCOUNT_ACTIONS,
         _OPEN_WEB,
         _PROPERTIES,
     ),
@@ -533,6 +524,7 @@ _ROWS: dict[str, tuple[ActionRow, ...]] = {
         _default("open_organization", "Open", "Select the organization's node in the tree."),
         _a("org_roles", "Roles...", _W, "sign_in", "Who holds each role; give or take one."),
         _a("org_rulesets", "Rulesets...", _W, "sign_in", "Read, enforce, review or delete."),
+        _ACCOUNT_ACTIONS,
         _OPEN_WEB,
         _PROPERTIES,
     ),
