@@ -55,6 +55,12 @@ choices are kept and the window names the missing field; rows never speak a
 blank. If the saved file cannot be read, a copy is kept aside and the usual
 wording is used. The Details pane still shows the whole row.
 
+List Speech Templates also reach WordPress media and users, and the window now
+has **Import** and **Export** buttons. Export saves your templates to a file;
+Import adds templates from one, asks before it replaces any template you
+already have, and says in plain words when a file is not a template file, is
+from a newer QUILL, or has templates that could not be used.
+
 ### Quill Weather: choose your places and alerts (2026-11-27)
 
 **Choose which places and which alerts** (2026-11-27). The new **Weather menu >

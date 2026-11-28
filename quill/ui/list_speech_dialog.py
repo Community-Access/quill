@@ -14,6 +14,7 @@ in :mod:`quill.core.list_speech.editor_state`; this file only draws them.
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import replace
 from typing import Any
 
 from quill.core.list_speech import editor_state as es
@@ -22,6 +23,7 @@ from quill.core.list_speech.store import load_library, save_library
 from quill.core.list_speech.template import SEPARATOR_CHOICES
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_modal_dialog
 from quill.ui.dpi import dip_size
+from quill.ui.list_speech_transfer import export_to_file, import_from_file
 
 __all__ = ["ListSpeechDialog", "show_list_speech_editor"]
 
@@ -140,7 +142,13 @@ class ListSpeechDialog:
         self._save = self._button(panel, "Sa&ve As...", "Saves these choices under a name.")
         self._rename = self._button(panel, "Re&name...", "Renames the saved template.")
         self._delete = self._button(panel, "Delete Te&mplate", "Deletes the saved template.")
-        for button in (self._save, self._rename, self._delete):
+        self._import = self._button(
+            panel, "&Import...", "Adds templates from a file. Asks before replacing any."
+        )
+        self._export = self._button(
+            panel, "E&xport...", "Saves all your templates to a file to share or keep."
+        )
+        for button in (self._save, self._rename, self._delete, self._import, self._export):
             actions.Add(button, 0, wx.RIGHT, 6)
         root.Add(actions, 0, wx.LEFT | wx.BOTTOM, 8)
         use = wx.BoxSizer(wx.HORIZONTAL)
@@ -186,6 +194,8 @@ class ListSpeechDialog:
         self._save.Bind(wx.EVT_BUTTON, lambda _e: self._save_as())
         self._rename.Bind(wx.EVT_BUTTON, lambda _e: self._rename_saved())
         self._delete.Bind(wx.EVT_BUTTON, lambda _e: self._delete_saved())
+        self._import.Bind(wx.EVT_BUTTON, lambda _e: self._import_file())
+        self._export.Bind(wx.EVT_BUTTON, lambda _e: self._export_file())
         self._use.Bind(wx.EVT_BUTTON, lambda _e: self._use_it(False))
         self._similar.Bind(wx.EVT_BUTTON, lambda _e: self._use_it(True))
         self._fields.Bind(wx.EVT_KEY_DOWN, self._on_fields_key)
@@ -370,6 +380,22 @@ class ListSpeechDialog:
         self._commit()
         self._refresh()
         self._say(message)
+
+    def _import_file(self) -> None:
+        library, message = import_from_file(
+            self._wx, self.dialog, self._state.library, self._announce
+        )
+        if library is not self._state.library:
+            self._state = replace(self._state, library=library)
+            self._commit()
+            self._refresh(self._selected_field())
+        if message:
+            self._say(message)
+
+    def _export_file(self) -> None:
+        message = export_to_file(self._wx, self.dialog, self._state.library, self._announce)
+        if message:
+            self._say(message)
 
     def _use_it(self, similar: bool) -> None:
         self._state, message = es.assign_current(self._state, similar)

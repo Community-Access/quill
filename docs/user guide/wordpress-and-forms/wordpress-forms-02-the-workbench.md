@@ -368,7 +368,7 @@ Words (every WordPress word, each explained), Keys, and four more:
 
 Each row in a list is read as its cells, one after another. **List Speech
 Templates** (Tools menu, `Ctrl+Alt+Shift+V`) lets you decide what a row says,
-and in what order, for each kind of list: WordPress posts and pages and comments. Nothing changes until you choose a
+and in what order, for each kind of list: WordPress posts, pages, comments, media and users. Nothing changes until you choose a
 template; until then every list is read the way it always was.
 
 In the window:
@@ -393,6 +393,13 @@ In the window:
    **Use for Similar Lists** does the same for lists that read alike, such as
    issues and pull requests; a list that lacks one of the fields keeps its own
    choice and is named.
+7. **Import** adds templates from a file someone shared, and **Export** saves
+   all of yours to a file. Import asks, template by template, before replacing
+   one you already have: **Replace**, **Keep Mine** or **Cancel Import**. A file
+   that is not a template file, or comes from a newer QUILL, is refused and the
+   window says nothing changed; an older file is read, and any template that
+   cannot be used is counted in what the window says. Which template each list
+   uses is not shared: choose that yourself after importing.
 
 If GitHub or WordPress stops offering a field you chose, the rest of your
 choices are kept, the window says which field is gone, and the row simply does

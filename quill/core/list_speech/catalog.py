@@ -274,6 +274,50 @@ LIST_TYPES: tuple[ListType, ...] = (
             "site": "Example Blog",
         },
     ),
+    ListType(
+        id="wordpress_media",
+        title="WordPress media",
+        family="wordpress_media",
+        fields=(
+            FieldDef("title", "Title"),
+            FieldDef("type", "Kind of file"),
+            FieldDef("alt_text", "Alt text", "alt text"),
+            FieldDef("uploaded", "When it was uploaded", "uploaded"),
+        ),
+        presets=_presets(
+            ("title", "type"),
+            ("title", "type", "alt_text"),
+            ("title", "type", "alt_text", "uploaded"),
+        ),
+        sample={
+            "title": "Team photo",
+            "type": "picture",
+            "alt_text": "none",
+            "uploaded": "yesterday",
+        },
+    ),
+    ListType(
+        id="wordpress_users",
+        title="WordPress users",
+        family="wordpress_users",
+        fields=(
+            FieldDef("name", "Name"),
+            FieldDef("username", "Username", "username"),
+            FieldDef("role", "Role"),
+            FieldDef("email", "Email address", "email"),
+        ),
+        presets=_presets(
+            ("name", "role"),
+            ("name", "username", "role"),
+            ("name", "username", "role", "email"),
+        ),
+        sample={
+            "name": "Pat Lee",
+            "username": "patlee",
+            "role": "Editor",
+            "email": "pat@example.com",
+        },
+    ),
 )
 
 _BY_ID = {t.id: t for t in LIST_TYPES}
