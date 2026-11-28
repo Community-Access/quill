@@ -314,7 +314,7 @@ _CAST_VERB_ALIASES: dict[str, str] = {
     "toggle_mute": "podcast_mute_toggle",
     "slow_down": "podcast_speed_down",
     "reset_speed": "podcast_speed_reset",
-    "announce_position": "podcast_player_information",
+    "announce_position": "say_where_am_i",  # Cast's Where Am I? (Ctrl+Shift+W)
 }
 
 
@@ -365,14 +365,27 @@ def _rate_of(controller: Any) -> float:
     return float(cast_rate) if isinstance(cast_rate, int | float) else 1.0
 
 
-def _position_line(controller: Any) -> str:
-    """ "3 minutes of 18 minutes", from either player."""
-    from quill.ui.radio import bounded_playback_ui
+def _facts(host: Any, controller: Any, state: Any, bounded: bool) -> Any:
+    """What either player knows, as :class:`NowPlayingFacts`."""
+    from quill.core.media.now_playing_lines import NowPlayingFacts
+    from quill.core.podcasts.chapter_words import chapter_index_at
 
-    if hasattr(controller, "duration_ms"):  # Radio, which also knows chapters
-        return bounded_playback_ui.describe_position(controller)
-    position = bounded_playback_ui.spoken_duration(int(controller.position_ms()))
-    return f"{position} of {bounded_playback_ui.spoken_duration(int(controller.length_ms()))}"
+    level, muted = _volume_of(controller)
+    facts = NowPlayingFacts(title=_title_of(state), volume_percent=level, muted=muted)
+    if not bounded:
+        return facts
+    facts.speed = _rate_of(controller)
+    length = getattr(controller, "duration_ms", None) or getattr(controller, "length_ms", None)
+    facts.position_ms = int(controller.position_ms())
+    facts.length_ms = max(0, int(length() if callable(length) else 0))
+    own = getattr(controller, "chapters", None)  # Radio's; Cast keeps them on the frame
+    chapters = list(own() if callable(own) else getattr(host, "_podcast_current_chapters", []))
+    index = chapter_index_at(chapters, facts.position_ms) if chapters else -1
+    if index >= 0:
+        facts.chapter_title = str(getattr(chapters[index], "title", "") or "")
+        facts.chapter_start_ms = int(getattr(chapters[index], "start_ms", 0) or 0)
+        facts.chapter_index, facts.chapter_count = index, len(chapters)
+    return facts
 
 
 def describe_now_playing(host: Any) -> str:
@@ -390,18 +403,11 @@ def describe_now_playing(host: Any) -> str:
         playing, bounded = _describe_state(state)
         if not playing:
             return "Nothing is playing."
-        lines = [_title_of(state)]
-        if bounded:
-            lines.append(_position_line(controller))
-            rate = _rate_of(controller)
-            if rate != 1.0:
-                lines.append(f"Speed {rate:g} times normal.")
-        level, muted = _volume_of(controller)
-        if muted:
-            lines.append("Muted.")
-        elif level is not None:
-            lines.append(f"Volume {level} percent.")
-        return "\n".join(line for line in lines if line)
+        # The same lines as QUILL Cast's Now Playing field, from one builder
+        # (quill/core/media/now_playing_lines.py, plan Phase 2).
+        from quill.core.media.now_playing_lines import now_playing_lines
+
+        return "\n".join(now_playing_lines(_facts(host, controller, state, bounded)))
     except Exception:  # noqa: BLE001 - a readout must never crash the panel
         return "Playing."
 

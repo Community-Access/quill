@@ -1517,7 +1517,7 @@ Read-only.</li>
 <li><code>close</code>: Close Update History.</li>
 </ul>
 <h2 id="quill-cast">QUILL Cast</h2>
-<p>Control coverage: 343 audited sites (247 helped, 96 named-help).</p>
+<p>Control coverage: 344 audited sites (248 helped, 96 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-1">Every window, and what it is
 for</h3>
 <p><strong>AI Usage.</strong> How much each AI you have set up has been
@@ -2303,6 +2303,10 @@ were.</li>
 <h4 id="module-level-quilluipodcastsnow_playing_layoutpy">(module level)
 (<code>quill/ui/podcasts/now_playing_layout.py</code>)</h4>
 <ul>
+<li><code>self._info</code>: Everything about what is playing, one fact
+a line: the episode, the chapter, the position and how far through,
+speed and volume, and where the chapters came from. Read it with the
+arrow keys; it does not change while you are in it.</li>
 <li><code>self._slider</code>: Where you are in the episode. Left and
 Right move five seconds, Page Up and Page Down thirty, Home and End to
 the ends. The time beside it says minutes and seconds of the whole.</li>

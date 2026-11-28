@@ -364,9 +364,8 @@ def test_the_readout_speaks_both_players() -> None:
     text = transport_keys.describe_now_playing(_CastFrame(_CastController()))
 
     assert "Episode 7" in text
-    assert "of 10 minutes" in text
-    assert "Speed 1.5 times normal." in text
-    assert "Volume 40 percent." in text
+    assert "Position: " in text and " of 10:00" in text
+    assert "Speed 1.5 times normal, volume 40 percent" in text
 
 
 def test_the_readout_says_nothing_is_playing_rather_than_guessing() -> None:

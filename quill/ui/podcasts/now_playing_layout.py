@@ -5,7 +5,7 @@ module is what the window *does*; this is what it is made of. Every label is
 created immediately before the control it names (wxMSW's accessible name), every
 control carries its help inline (GATE-CAST-HELP), and no two controls share an
 access key with each other or with the window's own menu bar (Now &Playing,
-&Window): the letters used are U S B F V X M E I 5 C O N L R Y A K H T.
+&Window): the letters used are U S B F V X M E I 5 C O N L R Y A K H T G.
 """
 
 from __future__ import annotations
@@ -16,6 +16,7 @@ import wx
 
 from quill.ui.dpi import dip_size
 from quill.ui.notes_reader import NotesReader
+from quill.ui.podcasts.now_playing_info import bind_info_field
 from quill.ui.podcasts.now_playing_time import slider_value_words
 from quill.ui.slider_keys import bind_up_means_more
 from quill.ui.time_slider_accessible import speak_time_value
@@ -45,6 +46,20 @@ def build_controls(self: Any, host: Any) -> None:
     self._source = wx.StaticText(panel, label="")
     for line in (self._podcast, self._episode, self._source):
         root.Add(line, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
+
+    # -- the "Now playing" field (plan Phase 2) ---------------------------
+    info_caption = wx.StaticText(panel, label="Now playin&g:")  # names the field
+    self._info = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP)
+    self._info.SetMinSize(dip_size(self._info, -1, 110))
+    self._info.SetHelpText(
+        "Everything about what is playing, one fact a line: the episode, the "
+        "chapter, the position and how far through, speed and volume, and where "
+        "the chapters came from. Read it with the arrow keys; it does not change "
+        "while you are in it."
+    )
+    root.Add(info_caption, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
+    root.Add(self._info, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+    bind_info_field(self)
 
     # -- position -------------------------------------------------------
     row = wx.BoxSizer(wx.HORIZONTAL)

@@ -583,3 +583,28 @@ def test_a_window_already_showing_is_not_reloaded_by_ctrl_number(host) -> None:
     host._windows.activate(host._windows.key_for(window.frame))
 
     assert loads == []  # only a hidden window is brought up to date
+
+
+def test_the_now_playing_field_says_what_is_playing_line_by_line(host) -> None:
+    """Plan Phase 2: one read-only field, the same lines as Quill Radio's."""
+    window = _open(host)
+    lines = window._info.GetValue().splitlines()
+    assert lines[0] == "Thursday's episode, from The Daily"
+    assert lines[1] == "Chapter: The main story, 0:20, 2 of 3"
+    assert lines[2] == "Position: 0:30 of 30:00, 29:30 left, 1 percent"
+    assert lines[3] == "Volume 70 percent"
+    assert lines[4] == "Streaming"
+
+
+def test_the_now_playing_field_is_not_rewritten_under_the_caret(host, monkeypatch) -> None:
+    """A value rewritten while focused is read again from the top, every second."""
+    from quill.ui.podcasts import now_playing_info
+
+    window = _open(host)
+    before = window._info.GetValue()
+    host._podcast_controller._position = 600_000
+    monkeypatch.setattr(window._info, "HasFocus", lambda: True)
+    now_playing_info.refresh_info_field(window)
+    assert window._info.GetValue() == before
+    now_playing_info.refresh_info_field(window, force=True)  # leaving the field
+    assert "10:00 of 30:00" in window._info.GetValue()

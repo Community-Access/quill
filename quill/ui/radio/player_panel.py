@@ -280,6 +280,7 @@ class PlayerPanel:
             size=readable_min_size(self._win),
         )
         self._status.SetName("Now playing")
+        self._status.Bind(wx.EVT_KILL_FOCUS, lambda e: (wx.CallAfter(self._refresh), e.Skip()))
         set_spoken_name(self._status, "Now playing")
         root.Add(self._status, 0, wx.EXPAND | wx.ALL, 10)
 
@@ -519,9 +520,14 @@ class PlayerPanel:
         try:
             self._refresh_favorite_button()
             self._refresh_transport_buttons()
+            # The position now changes every second (plan Phase 2), so the
+            # readout is not rewritten under the caret at all while it has
+            # focus; leaving it brings it up to date (the guide promises that).
+            if self._status.HasFocus():
+                return
             fresh = self.status_text()
             if fresh != self._status.GetValue():
-                self._status.SetValue(fresh)
+                self._status.ChangeValue(fresh)
         except Exception:  # noqa: BLE001 - the window may be closing
             return
 

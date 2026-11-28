@@ -4,6 +4,14 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+### A Now playing box in Now Playing (2026-11-28)
+
+- **Now playing** (Alt+G in the Now Playing window) is a read-only box with
+  the episode, the chapter, the position with how far through you are, speed,
+  volume, the sleep timer, the episode's date and number, and where its
+  chapters came from, one fact a line. It does not change while you are
+  reading it. Quill Radio's player box shows the same lines.
+
 ### Real chapter names from more places (2026-11-27)
 
 - **Chapters written into the feed** (Podlove Simple Chapters) are read, even
