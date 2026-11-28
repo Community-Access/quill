@@ -197,6 +197,10 @@ def load_explore(
     the status bar never passes off a first page as the whole list.
     """
     view = node.loader.removeprefix(EXPLORE_PREFIX)
+    if view == "my_github":  # the front door: its own assembly (my_github.py)
+        from quill.ui.github_workbench_my_github import load_my_github
+
+        return load_my_github(client, account=account, limit=limit, notes=notes)
     repositories: tuple[str, ...] = ()
     categories: tuple[str, ...] = ()
     if view == "attention":

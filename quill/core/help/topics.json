@@ -2029,6 +2029,11 @@
     "user_guide_section": "pull-request-summaries-in-the-attention-queue"
   },
   {
+    "id": "github.workbench_my_github",
+    "title": "GitHub: My GitHub",
+    "body": "Opens the GitHub Workbench at My GitHub, its front door: one list of what needs you, from your unread notifications, issues and pull requests assigned to you, review requests, and your own pull requests whose checks failed. Each row says what it is, where, and why it is there; Enter opens the full thread, and Mark Read and Done work as they do in Notifications. If one source cannot load, the status says which, and the rest still show. In the Workbench, Alt+Shift+Home goes there, and View, My GitHub View Options sets the kinds, repository, order and grouping. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."
+  },
+  {
     "id": "github.workbench_inbox",
     "title": "GitHub: Inbox",
     "body": "Opens the GitHub Workbench at Needs My Attention, Inbox: one list of what needs you, from notifications, review requests, assignments and mentions. In the Workbench, Ctrl+1 goes there. It is on the GitHub menu, which is there while View, GitHub Workbench Mode is on. Like every door into the Workbench, it asks once for your consent, brings the window forward if it is already open, and is refused in Safe Mode."

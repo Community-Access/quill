@@ -21,6 +21,8 @@ def test_every_items_or_explore_loader_names_a_real_view() -> None:
     known = {f"items:{key}" for key, _ in github_items_view.VIEWS} | {
         f"explore:{key}" for key, _ in explore_views.VIEWS
     }
+    # My GitHub assembles other views' reads itself (my_github.py), so it is no Explore view.
+    known.add("explore:my_github")
     used = {name for name in GITHUB_TREE.loaders() if name.startswith(("items:", "explore:"))}
     assert used <= known, used - known
 
@@ -28,6 +30,7 @@ def test_every_items_or_explore_loader_names_a_real_view() -> None:
 def test_the_top_level_is_the_prd_order() -> None:
     assert [node.label for node in GITHUB_TREE.roots()] == [
         "Start Here",
+        "My GitHub",
         "Needs My Attention",
         "Repositories",
         "Search",

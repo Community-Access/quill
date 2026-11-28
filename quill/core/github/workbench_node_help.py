@@ -16,6 +16,12 @@ NODE_HELP: dict[str, str] = {
         "Start Here: what the Workbench is, whether you are signed in, and the five "
         "keys to learn first."
     ),
+    ":my_github": (
+        "My GitHub: your whole queue in one list: unread notifications, issues and pull "
+        "requests assigned to you, review requests, and your pull requests with failing "
+        "checks. Enter opens the full thread; Ctrl+Q marks a notification read and Delete "
+        "marks it done. Ctrl+Alt+M chooses what to show, the order and the grouping."
+    ),
     ":attention": (
         "Needs My Attention: everything waiting on you, across GitHub. Inbox first, "
         "then notifications, review requests and your own open work."

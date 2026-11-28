@@ -84,6 +84,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[str, WriteTier]] = {
     f"{_P}revert_pull": ("repo:write", _V),
     f"{_P}auto_merge": ("repo:write", _V),
     f"{_P}inbox_rules": ("sign_in", _O),
+    f"{_P}my_github_options": ("local", _O),
     f"{_P}practice": ("sign_in", _D),
     f"{_P}accept_invitation": ("sign_in", _A),
     f"{_P}decline_invitation": ("sign_in", _V),

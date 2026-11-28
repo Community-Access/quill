@@ -3703,6 +3703,7 @@ a door gains something no row maps.
 |---|---|---|
 | Leave Workbench Mode | Stays. | `editor:view.github_workbench_mode` |
 | GitHub Items..., Repository Items... | Open GitHub Workbench (the same command). | `editor:file.open_github_items`, `door:file.open_github_items` |
+| My GitHub... | New front door: opens My GitHub, the Workbench's first node. | `editor:github.workbench_my_github`, `door:github.workbench_my_github`, `node:my_github` |
 | Inbox... | Stays: opens Needs My Attention > Inbox. | `editor:github.workbench_inbox`, `door:github.workbench_inbox`, `node:inbox` |
 | My Work..., Notifications... | Command ids kept, each opening its node; the rows left the menu. | `editor:github.workbench_my_work`, `door:github.workbench_my_work`, `editor:github.view_notifications`, `door:github.view_notifications`, `node:notifications` |
 | Issues and Pull Requests... | This Repository's Issues and This Repository's Pull Requests. | `editor:github.workbench_issues`, `door:github.workbench_issues`, `editor:github.workbench_pulls`, `door:github.workbench_pulls` |

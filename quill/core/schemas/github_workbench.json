@@ -5,7 +5,7 @@
   "additionalProperties": false,
   "properties": {
     "schema_version": {"type": "integer", "const": 1},
-    "open_on": {"enum": ["inbox", "start", "last"]},
+    "open_on": {"enum": ["my_github", "inbox", "start", "last"]},
     "list_mode": {"enum": ["quick", "full"]},
     "default_sort": {
       "enum": [
