@@ -104,6 +104,7 @@ COMMAND_AREA: dict[str, str] = {
     # wherever the Workbench is, which is every profile.
     "cmd_github_clone": "",
     "cmd_toggle_github_workbench": "",
+    "cmd_github_my_github": "",
     "cmd_github_inbox": "",
     "cmd_github_my_work": "",
     "cmd_github_notifications": "",

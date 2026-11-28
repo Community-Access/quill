@@ -73,6 +73,7 @@ _EXISTING_IDS: dict[str, str] = {
 #: The new commands' titles in the command registry and the palette.
 _NEW_TITLES: dict[str, str] = {
     table.TOGGLE_COMMAND_ID: "GitHub Workbench Mode",
+    "github.workbench_my_github": "My GitHub...",
     "github.workbench_inbox": "GitHub Inbox...",
     "github.workbench_my_work": "GitHub My Work...",
     "github.workbench_issues": "GitHub Issues...",

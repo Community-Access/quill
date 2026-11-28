@@ -22,14 +22,14 @@ How the keys were chosen (Part C, C1):
 
 The Item menu holds the actions that have a key; every other action of the selected row is on its
 context menu and in What Can I Do Here? (Shift+F1), which lists all of them from the same action
-table, so none is reachable only by right-clicking. Keys that belong to the focused control (Enter,
-Delete, Backspace, Escape) are not menu rows; the window handles them itself and lists them in
-:data:`CONTROL_KEYS`.
+table, so none is reachable only by right-clicking. Keys the focused control owns (Enter, Delete,
+Backspace, Escape) are not menu rows; the window handles them, listed in :data:`CONTROL_KEYS`.
 """
 
 from __future__ import annotations
 
 from quill.core.github.item_actions import PROPERTIES_COMMAND
+from quill.core.github.workbench_my_github_menu import GO_MY_GITHUB_ROW, MY_GITHUB_OPTIONS_ROW
 from quill.core.github.workbench_view_menu import (
     ACCOUNT_ROWS,
     COLUMNS_ROW,
@@ -201,6 +201,7 @@ _VIEW = MenuSpec(
         FILTER_SUB,
         GROUP_SUB,
         COLUMNS_ROW,
+        MY_GITHUB_OPTIONS_ROW,
         None,
         _row("back", "&Back", "Alt+Left", "The view you were on before. Backspace too."),
         _row("forward", "&Forward", "Alt+Right", "The view you went back from."),
@@ -226,11 +227,12 @@ _VIEW = MenuSpec(
 )
 
 #: Ctrl+1 to Ctrl+0 are this window's Go row (PRD). Ctrl+3, Ctrl+4 and Ctrl+8 are the family's AI
-#: chords elsewhere (codex.md 10A.9); with no AI menu here the row keeps all ten digits. Decided
-#: 2026-11-13; tests/unit/ui/test_main_frame_hosted_ai.py names the exemption.
+#: chords elsewhere (codex.md 10A.9); with no AI menu here the row keeps all ten digits (decided
+#: 2026-11-13; tests/unit/ui/test_main_frame_hosted_ai.py names the exemption).
 _GO = MenuSpec(
     "&Go",
     (
+        GO_MY_GITHUB_ROW,
         _row("go_inbox", "I&nbox", "Ctrl+1", "What needs you, across GitHub. Alt+Home too."),
         _row(
             "go_repository",

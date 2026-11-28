@@ -4800,7 +4800,7 @@ the test finishes.</li>
 field stops; nothing is kept.</li>
 </ul>
 <h2 id="quill-weather">Quill Weather</h2>
-<p>Control coverage: 66 audited sites (66 helped).</p>
+<p>Control coverage: 98 audited sites (98 helped).</p>
 <h3 id="every-window-and-what-it-is-for-6">Every window, and what it is
 for</h3>
 <p><strong>AI Usage.</strong> How much each AI you have set up has been
@@ -4854,6 +4854,9 @@ The contents list is grouped by track and remembers where you stopped;
 typing ‘here’ in the filter box narrows it to the tutorials about the
 window you came from. Follow me watches what the app is doing – never
 which key you pressed – and moves you on by itself.</p>
+<p><strong>Save Weather for a Date Range.</strong> Save every day
+between two dates as a spreadsheet file (CSV) or as plain text, in your
+units, with the data credits.</p>
 <p><strong>Should I Go Out?.</strong> The AI’s answer to Should I Go
 Out?, in plain words, from the forecast for your primary place. Any
 active alert comes first, in the Weather Service’s own words, never
@@ -4873,11 +4876,21 @@ daily outlook. Each list pairs with a read-only detail box below it that
 follows your selection, so arrowing a list reads the full official text.
 The Location chooser switches places, Refresh re-pulls, and Add Location
 and Settings open their own windows.</p>
+<p><strong>Weather History.</strong> The weather of the past for one of
+your places: today’s date over many years, another date over many years,
+or a date range, with a summary in plain words of how it compares with
+normal and the records. Every day looked up is saved on your computer,
+so a second look needs no internet.</p>
 <p><strong>Weather Settings.</strong> Every weather preference in one
 place: temperature and wind units, how much forecast to show, which
 alert severities matter, how often to refresh, what the Quick Weather
 line includes, and the alert sound. Save applies everything at once;
 Cancel changes nothing.</p>
+<p><strong>Weather on a Past Date.</strong> One past day’s weather, read
+like the current report: the high and low, rain and snow, wind, sunrise
+and sunset, then each hour, and how the day compared with normal. Type a
+date in the Date field, then move a day, a week, a month or a year at a
+time with the keys the menu bar and buttons name.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
@@ -4999,6 +5012,96 @@ service provided, marked last known when they are old. Use the arrow
 keys to read it.</li>
 <li><code>copy_btn</code>: Copy the whole report to the clipboard.</li>
 <li><code>close_btn</code>: Close this window. Escape does the
+same.</li>
+</ul>
+<h4
+id="weatherhistorydialog-quilluiweatherhistory_dialogpy">WeatherHistoryDialog
+(<code>quill/ui/weather/history_dialog.py</code>)</h4>
+<ul>
+<li><code>self._place</code>: The saved place to look up. Add places
+with Weather, Add Location.</li>
+<li><code>self._kind</code>: What to look up: today’s date over many
+years, another calendar date over many years, or every day between two
+dates.</li>
+<li><code>self._month</code>: The month of the calendar date to look
+up.</li>
+<li><code>self._day</code>: The day of the month, 1 to 31.</li>
+<li><code>self._years</code>: How many years to look back, 1 to 85. Data
+goes back to 1940. Every year looked up is saved, so a second look costs
+nothing.</li>
+<li><code>self._start</code>: The first day of the range, written
+year-month-day, like 2024-06-01.</li>
+<li><code>self._end</code>: The last day of the range, written
+year-month-day. A range can be up to a year.</li>
+<li><code>self._go</code>: Look up the weather for these dates. Enter
+does the same.</li>
+<li><code>self._goto</code>: Open Weather on a Past Date for the day
+chosen in the list, or for today, to read that one day hour by hour.
+Ctrl+G does the same, and so does Enter on a day in the list.</li>
+<li><code>self._summary</code>: The lookup in plain words: how the day
+compares with normal, the records, and how often it rained or snowed.
+Use the arrow keys to read it.</li>
+<li><code>self._list</code>: One row a day: the date, the conditions,
+the high, the low and the precipitation, newest first. Use the arrow
+keys to move between days, and Enter to read a day hour by hour.</li>
+<li><code>copy_btn</code>: Copy the summary, every day and the data
+credits.</li>
+<li><code>close_btn</code>: Close Weather History. Escape does the
+same.</li>
+</ul>
+<h4 id="pastdatedialog-quilluiweatherpast_date_dialogpy">PastDateDialog
+(<code>quill/ui/weather/past_date_dialog.py</code>)</h4>
+<ul>
+<li><code>self._place</code>: The saved place to show. Changing it shows
+the same date for the new place.</li>
+<li><code>self._date</code>: Type a date and press Enter: 2011-03-14,
+March 14, 2011, 14 March 2011, 3/14/2011, yesterday, 3 days ago, last
+week, or a year ago today. A year alone, or a month and year, lists
+every day in it. Ctrl+G comes back here.</li>
+<li><code>self._go</code>: Show the date typed in the Date field. Enter
+does the same.</li>
+<li><code>self._view</code>: The day read like the current report: the
+sky, high and low, feels like, rain and snow, wind, sunrise and sunset,
+and how it compared with normal. Alt+Left and Alt+Right move a day; add
+Shift for a week. Here Page Up and Page Down page through the text, as
+they always do.</li>
+<li><code>self._hours</code>: Each hour of the day: the time, the sky,
+the temperature, what it felt like, precipitation and wind.</li>
+<li><code>self._span</code>: Every day in the year or month you typed,
+oldest first. Press Enter on a day to open it.</li>
+<li><code>self._recent_list</code>: The last ten dates you looked at,
+newest first, with their places. Press Enter on one to open it
+again.</li>
+<li><code>self._back</code>: Show the day before. Alt+Left does the same
+anywhere, and Page Up outside the text box, the lists and the Place
+dropdown.</li>
+<li><code>self._fwd</code>: Show the day after. Alt+Right does the same
+anywhere, and Page Down outside the text box, the lists and the Place
+dropdown.</li>
+<li><code>self._last_year</code>: Show this date a year earlier.
+Ctrl+Shift+Page Up does the same.</li>
+<li><code>self._next_year</code>: Show this date a year later.
+Ctrl+Shift+Page Down does the same.</li>
+<li><code>self._copy</code>: Copy the day, every hour and the data
+credits as text.</li>
+<li><code>self._save</code>: Save every day between two dates as a
+spreadsheet file (CSV) or as text. Ctrl+S does the same.</li>
+<li><code>close_btn</code>: Close this window. Escape does the
+same.</li>
+</ul>
+<h4
+id="saverangedialog-quilluiweathersave_range_dialogpy">SaveRangeDialog
+(<code>quill/ui/weather/save_range_dialog.py</code>)</h4>
+<ul>
+<li><code>self._from</code>: The first day to save, such as 2011-03-01
+or March 1, 2011. A range can be up to a year.</li>
+<li><code>self._to</code>: The last day to save, such as 2011-03-31 or
+yesterday.</li>
+<li><code>self._format</code>: A spreadsheet file, one row a day with
+the units in the column names, or plain text, one sentence a day.</li>
+<li><code>self._save</code>: Choose where to save the file, then save
+it.</li>
+<li><code>close_btn</code>: Close without saving. Escape does the
 same.</li>
 </ul>
 <h4
@@ -6439,6 +6542,11 @@ every job, scope by scope.</p>
 <h3 id="every-place-in-the-tree">Every place in the tree</h3>
 <p><strong>Start Here.</strong> Start Here: what the Workbench is,
 whether you are signed in, and the five keys to learn first.</p>
+<p><strong>My GitHub.</strong> My GitHub: your whole queue in one list:
+unread notifications, issues and pull requests assigned to you, review
+requests, and your pull requests with failing checks. Enter opens the
+full thread; Ctrl+Q marks a notification read and Delete marks it done.
+Ctrl+Alt+M chooses what to show, the order and the grouping.</p>
 <p><strong>Needs My Attention.</strong> Needs My Attention: everything
 waiting on you, across GitHub. Inbox first, then notifications, review
 requests and your own open work.</p>
@@ -7214,6 +7322,9 @@ columns, the groups as tree nodes; remembered for this list. For lists
 other than Issues, which group by the rows above.</p>
 <p><strong>View &gt; Columns….</strong> Choose which columns this list
 shows, and their order.</p>
+<p><strong>View &gt; My GitHub View Options….</strong> Choose which
+kinds My GitHub shows, one repository, how it is ordered and grouped.
+Remembered for your account.</p>
 <p><strong>View &gt; Back.</strong> The view you were on before.
 Backspace too.</p>
 <p><strong>View &gt; Forward.</strong> The view you went back from.</p>
@@ -7239,6 +7350,9 @@ words.</p>
 it loaded.</p>
 <p><strong>View &gt; Say Account.</strong> Say the account, and whether
 you are signed in.</p>
+<p><strong>Go &gt; My GitHub.</strong> Your whole queue in one list:
+unread notifications, assigned work, review requests and your pull
+requests with failing checks.</p>
 <p><strong>Go &gt; Inbox.</strong> What needs you, across GitHub.
 Alt+Home too.</p>
 <p><strong>Go &gt; Current Repository.</strong> The repository this
@@ -8127,8 +8241,8 @@ sponsorship, and whether you get the maintainer’s emails.</p>
 sponsors on it stay.</p>
 <h3 id="every-workbench-option">Every Workbench option</h3>
 <p><strong>General: Open the Workbench on.</strong> Where the window
-opens when no menu row asks for a place: Inbox (Start Here until you
-have signed in), Start Here, or wherever you were last time.</p>
+opens when no menu row asks for a place: My GitHub (Start Here until you
+have signed in), Inbox, Start Here, or wherever you were last time.</p>
 <p><strong>General: List shows.</strong> Quick lists show a few columns,
 fast to arrow through; Full lists show every column the Workbench has
 for that list.</p>

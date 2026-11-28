@@ -38,6 +38,24 @@ Ideas from StreamSift, a screen-reader-first stream finder by Andre Louis
   press Enter to play them in order. Public addresses only, after robots.txt;
   no torrents, web seeds or video.
 
+### My GitHub: one list of what needs you (2026-11-27)
+
+The GitHub Workbench now opens on **My GitHub**, a front door that puts your
+unread notifications, issues and pull requests assigned to you, review
+requests, and your own pull requests with failing checks in one list. Each row
+says what it is, where, and why it is there; Enter opens the full thread, and
+Mark Read and Done work as they do in Notifications. The status says how many
+need you and of what kind, says "Nothing needs your attention" when the list
+is empty, and says what changed on a refresh. If one source cannot load, the
+status names it and the rest still show.
+
+**My GitHub View Options...** in the View menu (`Ctrl+Alt+M`) filters by kind,
+repository and unread, orders by newest, oldest or repository, and groups by
+repository or kind; the choices are remembered for your account. `Alt+Shift+Home`
+goes to My GitHub from anywhere in the Workbench, and the GitHub menu has a
+**My GitHub** row in both editors. Workbench Options can still open on Inbox,
+Start Here, or where you were last.
+
 ### Find a person or organization in the GitHub Workbench (2026-11-27)
 
 **Find a Person or Organization...** (`Ctrl+Alt+E`) searches GitHub as you
@@ -72,6 +90,12 @@ wording by default. If a service stops offering a field you chose, your other
 choices are kept and the window names the missing field; rows never speak a
 blank. If the saved file cannot be read, a copy is kept aside and the usual
 wording is used. The Details pane still shows the whole row.
+
+List Speech Templates also reach WordPress media and users, and the window now
+has **Import** and **Export** buttons. Export saves your templates to a file;
+Import adds templates from one, asks before it replaces any template you
+already have, and says in plain words when a file is not a template file, is
+from a newer QUILL, or has templates that could not be used.
 
 ### Quill Weather: choose your places and alerts (2026-11-27)
 

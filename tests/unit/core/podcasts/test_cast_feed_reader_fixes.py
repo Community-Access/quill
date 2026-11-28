@@ -99,7 +99,9 @@ def test_the_user_agent_names_the_project_site_not_github(server: _Server) -> No
     server.routes["https://www.cbc.ca/podcasting/includes/asithappens.xml"] = (_FEED, {}, [])
     feed_reader.fetch_and_parse_feed("https://www.cbc.ca/podcasting/includes/asithappens.xml")
     agent = server.requests[0].get_header("User-agent")
-    assert agent.endswith("(podcast app; +https://www.quillforall.org)")
+    assert agent.endswith(
+        "(podcast app; +https://www.quillforall.org; support@community-access.org)"
+    )
     assert "github" not in agent.lower()
 
 

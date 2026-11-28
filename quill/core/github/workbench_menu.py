@@ -254,10 +254,9 @@ WORKBENCH_ROWS: tuple[Entry, ...] = (
     # V: L is Local Git's, below.
     Row(TOGGLE_COMMAND_ID, "Lea&ve Workbench Mode", TOGGLE_LITE_HANDLER),
     None,
-    # The doors: the Workbench, and the places people open it for.
     Row("file.open_github_items", "Open GitHub &Workbench", "cmd_github_workbench"),
+    Row("github.workbench_my_github", "My GitHu&b", "cmd_github_my_github"),
     Row("github.workbench_inbox", "&Inbox", "cmd_github_inbox"),
-    # S: I is Inbox's.
     Row("github.workbench_issues", "This Repository's I&ssues", "cmd_github_issues"),
     Row("github.workbench_pulls", "This Repository's &Pull Requests", "cmd_github_pulls"),
     Row("github.workbench_actions_runs", "&Actions Runs", "cmd_github_actions_runs"),
@@ -300,6 +299,7 @@ MOVED_OUT_ROWS: tuple[Row, ...] = (
 #: The command ids this program added (everything else in the table existed).
 NEW_COMMAND_IDS: tuple[str, ...] = (
     TOGGLE_COMMAND_ID,
+    "github.workbench_my_github",
     "github.workbench_inbox",
     "github.workbench_my_work",
     "github.workbench_issues",

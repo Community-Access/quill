@@ -1216,6 +1216,42 @@ you.</p>
 and your own work. Until you sign in, each of these places says so and
 names the way in: <strong>Manage GitHub Accounts…</strong>
 (<code>Ctrl+Shift+K</code> in the Workbench). Chapter 1 shows how.</p>
+<h2 id="my-github-the-front-door">My GitHub: the front door</h2>
+<p><strong>My GitHub</strong> is the first place in the Workbench, above
+Needs My Attention, and it is where the window opens once you are signed
+in. It puts the things that want you in one list, so you do not have to
+remember which kind of thing lives where: your unread notifications,
+issues and pull requests assigned to you, pull requests whose review was
+asked of you, and your own pull requests whose checks failed.</p>
+<p><code>Alt+Shift+Home</code> goes there from anywhere in the window.
+From the editor, the GitHub menu’s <strong>My GitHub</strong> row opens
+the Workbench there.</p>
+<p>Each row says what it is first, then where, what it is called and why
+it is here: “Review requested: octo/api - Retry logic. Your review was
+requested.” When a thread is both a notification and assigned to you, it
+is one row that names both reasons. The details say the same in full,
+with the time it was last updated.</p>
+<p>Enter opens the full thread, as it does in the lists the row came
+from, and Mark Read and Done work on a notification row exactly as they
+do in Notifications. The Workbench’s other views stay where they were,
+and are the detailed workspace.</p>
+<p>When the list loads, the status says how many need you and of what
+kind: “4 need your attention: 2 unread notifications, 1 assigned issue,
+1 review request.” An empty queue says “Nothing needs your attention.” A
+refresh adds what changed, once: “2 new, 1 cleared since the last
+refresh.”</p>
+<p>If one source cannot load, the status says which, for example
+“Notifications could not load: GitHub is not answering”, and the other
+sources still show. A missing source never reads as an empty queue.</p>
+<p>Choose <strong>My GitHub View Options…</strong> in the View menu
+(<code>Ctrl+Alt+M</code>) to filter, order and group the list. It asks
+one question at a time: which kind to show (or all), one repository,
+whether to hide notifications you have already read, the order (newest
+first, oldest first, or by repository) and the grouping (none, by
+repository, or by kind). Your choices are remembered for your account.
+Only notifications have a read state in GitHub, so hiding read ones
+never hides an assignment or a review request. Grouped lists are kept
+together in order, and the status says how many are in each group.</p>
 <h2 id="needs-my-attention">Needs My Attention</h2>
 <p>Everything waiting on you is under <strong>Needs My
 Attention</strong>, near the top of the Workbench’s tree.
@@ -8648,6 +8684,15 @@ and <strong>Delete Template</strong> work on a saved template.
 <strong>Use for Similar Lists</strong> does the same for lists that read
 alike, such as issues and pull requests; a list that lacks one of the
 fields keeps its own choice and is named.</li>
+<li><strong>Import</strong> adds templates from a file someone shared,
+and <strong>Export</strong> saves all of yours to a file. Import asks,
+template by template, before replacing one you already have:
+<strong>Replace</strong>, <strong>Keep Mine</strong> or <strong>Cancel
+Import</strong>. A file that is not a template file, or comes from a
+newer QUILL, is refused and the window says nothing changed; an older
+file is read, and any template that cannot be used is counted in what
+the window says. Which template each list uses is not shared: choose
+that yourself after importing.</li>
 </ol>
 <p>If GitHub or WordPress stops offering a field you chose, the rest of
 your choices are kept, the window says which field is gone, and the row

@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 615.
+Editor commands with default bindings: 616.
 
 ## The QUILL editor
 
@@ -498,6 +498,7 @@ Editor commands with default bindings: 615.
 | (unbound by default) | Workbench explore | `github.workbench_explore` |
 | (unbound by default) | Workbench inbox | `github.workbench_inbox` |
 | (unbound by default) | Workbench issues | `github.workbench_issues` |
+| (unbound by default) | Workbench my github | `github.workbench_my_github` |
 | (unbound by default) | Workbench my work | `github.workbench_my_work` |
 | (unbound by default) | Workbench pulls | `github.workbench_pulls` |
 | (unbound by default) | Workbench releases | `github.workbench_releases` |
@@ -926,6 +927,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | --- | --- | --- |
 | Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Ctrl+Alt+D | Weather on a Past Date... | `weather.past_date` |
 | Ctrl+Alt+F1 | Tutorials | `weather.tutorials` |
 | Ctrl+Alt+N | Noaa listen | `weather.noaa_listen` |
 | Ctrl+Alt+Shift+C | Alert choices | `weather.alert_choices` |
@@ -945,6 +947,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
 | Ctrl+Shift+G | Ai go out | `weather.ai_go_out` |
 | Ctrl+Shift+Q | Quick | `weather.quick` |
+| Ctrl+Shift+T | Weather History... | `weather.history` |
 | Ctrl+Shift+W | Now | `weather.now` |
 
 ## Quill Converter (app keys)
@@ -1037,6 +1040,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+Shift+A | Ask How... | `github.workbench.ask_how` |
 | Alt+Shift+B | Compare With Previous | `github.workbench.compare_previous` |
 | Alt+Shift+F1 | Workbench Keys | `github.workbench.keys` |
+| Alt+Shift+Home | My GitHub | `github.workbench.go_my_github` |
 | Alt+Shift+T | Take the Tour | `github.workbench.tour` |
 | Alt+Up | Parent Node | `github.workbench.go_parent` |
 | Ctrl+. | Next Unread | `github.workbench.next_unread` |
@@ -1059,6 +1063,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+I | Import Issues from a Spreadsheet... | `github.workbench.import_issues` |
 | Ctrl+Alt+K | Key Describer | `github.workbench.key_describer` |
 | Ctrl+Alt+L | New Issues from Lines... | `github.workbench.issues_from_lines` |
+| Ctrl+Alt+M | My GitHub View Options... | `github.workbench.my_github_options` |
 | Ctrl+Alt+N | Inbox Rules... | `github.workbench.inbox_rules` |
 | Ctrl+Alt+P | Practice on GitHub... | `github.workbench.practice` |
 | Ctrl+Alt+S | Set Your Status... | `github.workbench.user_status` |

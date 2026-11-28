@@ -117,7 +117,10 @@ class FeedPreviewDialog:
         # A wx.Dialog answers ID_CANCEL for free, but this surface can be shown
         # modelessly by a caller that has one, and a Close that does nothing is
         # the failure test_close_button_contract exists to catch.
-        bind_close_button(self.dialog, close_btn, wx.ID_CANCEL)
+        # modeless is keyword-only: passing wx.ID_CANCEL positionally raised
+        # TypeError here, so this window was never once built and Preview
+        # "did nothing" from 2026-08-21 until 2026-11-27.
+        bind_close_button(self.dialog, close_btn, modeless=False)
         self._headline = headline
 
     def _show_episode_description(self) -> None:

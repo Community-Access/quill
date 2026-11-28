@@ -348,19 +348,18 @@ class AddPodcastWindow:
         right-click, so the Applications key and Shift+F10 reach it -- which
         is how it will usually be opened here."""
         from quill.ui.podcasts.add_podcast_actions import open_context_menu
+        from quill.ui.podcasts.preview_command import current_result_index
 
-        open_context_menu(self, self._results.GetFirstSelected())
+        open_context_menu(self, current_result_index(self))
         if hasattr(event, "Skip"):
             event.Skip(False)
 
     def _on_preview_selected(self, _event: object = None) -> None:
-        """Look at the selected show before committing to it (C2)."""
-        index = self._results.GetFirstSelected()
-        if not (0 <= index < len(self._search_results)):
-            return
-        from quill.ui.podcasts.preview_command import preview_search_result
+        """Look at the current show before committing to it (C2). The selected
+        row, else the focused one; with neither, it says so."""
+        from quill.ui.podcasts.preview_command import preview_current_row
 
-        preview_search_result(self, self._search_results[index], index)
+        preview_current_row(self)
 
     def _on_subscribe_selected(self, _event: object = None) -> None:
         """Kept as the button's bound name; the verb is decided below."""

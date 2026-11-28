@@ -95,7 +95,7 @@ def test_the_tree_shows_the_prd_top_level_and_the_repository_first(bench) -> Non
     while child.IsOk():
         labels.append(tree.GetItemText(child))
         child, cookie = tree.GetNextChild(root, cookie)
-    assert labels[:3] == ["Start Here", "Needs My Attention", "Repositories"]
+    assert labels[:4] == ["Start Here", "My GitHub", "Needs My Attention", "Repositories"]
     repositories = bench._items[NodeRef("", "repositories")]
     first, _cookie = tree.GetFirstChild(repositories)
     assert tree.GetItemText(first) == REPO

@@ -21,6 +21,7 @@ from quill.core.radio.wxindex_models import local_noaa_radio_station
 from quill.ui.main_frame_weather_choices import WeatherChoicesMixin
 from quill.ui.main_frame_weather_cues import WeatherCuesMixin
 from quill.ui.main_frame_weather_health import WeatherHealthMixin
+from quill.ui.main_frame_weather_more import WeatherMoreMixin
 
 _SAFE_MODE_WEATHER = (
     "Weather is a network service and is turned off in Safe Mode. "
@@ -28,7 +29,7 @@ _SAFE_MODE_WEATHER = (
 )
 
 
-class WeatherMixin(WeatherHealthMixin, WeatherCuesMixin, WeatherChoicesMixin):
+class WeatherMixin(WeatherHealthMixin, WeatherCuesMixin, WeatherChoicesMixin, WeatherMoreMixin):
     # Attributes provided by the host frame.
     frame: Any
     _wx: Any
@@ -80,6 +81,7 @@ class WeatherMixin(WeatherHealthMixin, WeatherCuesMixin, WeatherChoicesMixin):
         menu.Append(test_id, "&Test Alert (preview sound, tray, and dialog)\tCtrl+Alt+Shift+T")
         menu.Append(feed_id, "Alert &Feed Status...\tCtrl+Alt+Shift+H")
         self._append_weather_choice_items(menu)
+        self._append_weather_more_items(menu)
         if self._weather_area_enabled("noaa_radio"):
             menu.AppendSeparator()
             menu.Append(noaa_listen_id, "&Listen to your Local NOAA Weather Radio\tCtrl+Alt+N")
