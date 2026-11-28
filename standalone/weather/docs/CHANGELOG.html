@@ -250,6 +250,13 @@ this project adheres to <a
 href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <h2 id="unreleased">[Unreleased]</h2>
 <ul>
+<li><p><strong>A damaged Weather file no longer stops Quill
+Weather</strong> (2026-11-28). If the alert-watch settings hold a number
+Quill Weather cannot use (such as 1e309), it now keeps its defaults,
+keeps your file beside itself, and says where once it is up, as Weather
+Settings already did; it used to fail to start. Alert feed health reads
+such a number as unknown, a saved place with an impossible position is
+left out, and an impossible snooze time is ignored.</p></li>
 <li><p><strong>The next four hours and the daylight change</strong>
 (2026-11-28). <strong>Weather menu &gt; Next Few Hours</strong>
 (Ctrl+Shift+U) speaks the next four hours at a glance (the temperature

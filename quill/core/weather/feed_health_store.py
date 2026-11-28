@@ -32,7 +32,7 @@ def load_tracker(
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
         return FeedHealthTracker.from_json(raw, safe_mode=safe_mode, tz=tz)
-    except (OSError, ValueError, TypeError) as exc:
+    except (OSError, ValueError, TypeError, OverflowError) as exc:
         logger.warning("weather feed health is unreadable (%s); starting fresh", exc)
         try:
             from quill.core.migration_backup import backup_corrupt_file

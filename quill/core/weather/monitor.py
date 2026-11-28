@@ -352,6 +352,7 @@ def save_notified_ids(data_dir: Path, ids: set[str]) -> None:
 def load_config(data_dir: Path) -> MonitorConfig:
     """Read the monitor config (absent or broken reads as disabled defaults)."""
     import json
+    import math
 
     try:
         raw = json.loads(_store_path(data_dir).read_text(encoding="utf-8"))
@@ -371,12 +372,24 @@ def load_config(data_dir: Path) -> MonitorConfig:
         # Migrate a pre-multi-location config: the single watched place becomes
         # the first entry of the new list.
         config.location_ids = [config.location_id]
-    if isinstance(raw.get("interval_minutes"), (int, float)):
-        config.interval_minutes = int(raw["interval_minutes"])
+    # A number that is not finite (1e309, NaN) cannot become an int: it keeps
+    # its default, the file is kept aside, and Quill Weather says so once it
+    # is up -- the same recovery Weather Settings has (settings.load_settings).
+    damaged = False
+    for key in ("interval_minutes", "fast_interval_seconds"):
+        value = raw.get(key)
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            continue
+        if not math.isfinite(value):
+            damaged = True
+            continue
+        setattr(config, key, int(value))
     if isinstance(raw.get("fast_when_active"), bool):
         config.fast_when_active = raw["fast_when_active"]
-    if isinstance(raw.get("fast_interval_seconds"), (int, float)):
-        config.fast_interval_seconds = int(raw["fast_interval_seconds"])
+    if damaged:
+        from quill.core.settings_recovery import keep_damaged
+
+        keep_damaged(_store_path(data_dir), app="Quill Weather", what="alert watch settings")
     raw_muted = raw.get("muted_ids")
     if isinstance(raw_muted, list):
         config.muted_ids = [str(x) for x in raw_muted if isinstance(x, str) and x.strip()]

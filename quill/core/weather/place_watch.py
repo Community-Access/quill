@@ -23,6 +23,7 @@ Pure and wx-free; the clock is always passed in.
 from __future__ import annotations
 
 import logging
+import math
 from dataclasses import dataclass, field
 from datetime import datetime, time, timedelta
 from enum import StrEnum
@@ -377,7 +378,12 @@ def from_json(raw: Any) -> PlaceWatches:
             rule.groups = [str(g)[:40] for g in groups if isinstance(g, str) and g.strip()][:10]
         for key in ("until", "snooze_until"):
             value = item.get(key)
-            if isinstance(value, int | float) and not isinstance(value, bool):
+            # A non-finite time (1e309) would snooze a place forever: ignore it.
+            if (
+                isinstance(value, int | float)
+                and not isinstance(value, bool)
+                and math.isfinite(value)
+            ):
                 setattr(rule, key, float(value))
         rule.snooze_said = item.get("snooze_said") is not False
         rule.until_said = item.get("until_said") is True

@@ -103,9 +103,9 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, WeatherOptionsMixin, WeatherA
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_weather_app_close)
         # Resume/start the alert watch once the frame and task manager are up
-        # (deferred: it touches the network).
+        # (deferred: it touches the network); then say any damaged file it kept.
         wx.CallAfter(self._weather_app_startup_monitoring)
-        announce_later("Quill Weather", self._announce, wx.CallAfter)  # a damaged file, kept
+        wx.CallAfter(announce_later, "Quill Weather", self._announce, wx.CallAfter)
         # Repair "start with Windows" and the background check if an older
         # build wrote them as the bare runtime exe (launch_heal, 2026-09-27).
         if not safe_mode:

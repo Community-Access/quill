@@ -524,7 +524,7 @@ class FeedHealthTracker:
         if not isinstance(raw, dict):
             raise ValueError("feed health file is not an object")
         warned = raw.get("warned_at")
-        tracker.warned_at = float(warned) if isinstance(warned, int | float) else None
+        tracker.warned_at = _opt_float(warned)
         entries = raw.get("places")
         if not isinstance(entries, list):
             raise ValueError("feed health file has no places list")
@@ -535,10 +535,8 @@ class FeedHealthTracker:
             health.last_success = _opt_float(item.get("last_success"))
             health.last_attempt = _opt_float(item.get("last_attempt"))
             health.first_failure = _opt_float(item.get("first_failure"))
-            failures = item.get("consecutive_failures")
-            health.consecutive_failures = (
-                max(0, int(failures)) if isinstance(failures, int | float) else 0
-            )
+            failures = _opt_float(item.get("consecutive_failures"))
+            health.consecutive_failures = max(0, int(failures)) if failures is not None else 0
             try:
                 health.last_failure_kind = (
                     FailureKind(item["last_failure_kind"])
@@ -567,4 +565,9 @@ class FeedHealthTracker:
 
 
 def _opt_float(value: Any) -> float | None:
-    return float(value) if isinstance(value, int | float) and not isinstance(value, bool) else None
+    """A finite number, or None (so 1e309 or NaN in the file reads as unknown)."""
+    import math
+
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        return None
+    return float(value) if math.isfinite(value) else None

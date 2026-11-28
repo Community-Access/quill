@@ -130,6 +130,10 @@ def _location_from_dict(entry: object) -> WeatherLocation | None:
         lon = float(entry["longitude"])
     except (KeyError, TypeError, ValueError):
         return None
+    # A place off the globe (1e309, NaN, latitude 200) is not a place: leave it
+    # out rather than let every request for it fail later.
+    if not (-90.0 <= lat <= 90.0 and -180.0 <= lon <= 180.0):
+        return None
     return WeatherLocation(
         display_name=str(entry.get("display_name", "")),
         latitude=lat,
