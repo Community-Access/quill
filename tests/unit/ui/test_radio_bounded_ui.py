@@ -159,7 +159,7 @@ def test_skipping_forward_reports_the_new_position() -> None:
     host, controller = _host(position=100_000)
     ui.skip_forward(host)
     assert controller.position == 112_000
-    assert host.said == ["1 minute 52 seconds of 18 minutes 40 seconds, 10 percent"]
+    assert host.said == ["1 minute 52 seconds of 18 minutes 40 seconds"]
 
 
 def test_the_position_names_the_chapter_you_are_in() -> None:

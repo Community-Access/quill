@@ -88,11 +88,12 @@ def describe_chapter(
     return f"{row}, playing" if current else row
 
 
-def describe_position(controller: Any) -> str:
+def describe_position(controller: Any, *, percent: bool = False) -> str:
     """ "3 minutes 10 seconds of 18 minutes 40 seconds, in Intro, 16 percent".
 
-    The percentage is last, and only there when the length is known
-    (:mod:`quill.core.media.progress_words`, shared with QUILL Cast).
+    With *percent* (Where Am I?), the percentage is last, and only there when
+    the length is known (:mod:`quill.core.media.progress_words`, shared with
+    QUILL Cast). A seek's landing leaves it out: it is said on every tap.
     """
     from quill.core.media.progress_words import percent_phrase
 
@@ -105,8 +106,8 @@ def describe_position(controller: Any) -> str:
         title = str(getattr(chapters[index], "title", "") or "").strip()
         if title:
             words += f", in {title}"
-    percent = percent_phrase(position_ms, length_ms)
-    return f"{words}, {percent}" if percent else words
+    phrase = percent_phrase(position_ms, length_ms) if percent else ""
+    return f"{words}, {phrase}" if phrase else words
 
 
 def _controller(host: Any) -> Any:
@@ -188,7 +189,7 @@ def announce_position(host: Any) -> None:
     """Say where we are, without moving."""
     if _refuse(host):
         return
-    spoken = describe_position(_controller(host))
+    spoken = describe_position(_controller(host), percent=True)
     from quill.ui.radio import local_media_playback
 
     try:
