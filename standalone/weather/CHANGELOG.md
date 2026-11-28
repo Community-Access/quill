@@ -9,6 +9,13 @@ update independently. This version history begins with 2.2.0.
 
 ## Unreleased
 
+- **Pollen and sea conditions** (2026-11-28). Weather Now adds pollen for places
+  in Europe ("Pollen: birch high, grass low.", from Copernicus CAMS through
+  Open-Meteo, which covers only Europe, so nothing is asked or shown elsewhere) and
+  sea conditions for coastal places ("Sea: waves 10 feet from the west every 14
+  seconds, swell 10 feet, sea temperature 67 degrees."). An inland place is asked
+  once and then left alone. Each can be turned off in Settings, and a service that
+  cannot be reached is said as such.
 - **Rain or snow starting soon, in words** (2026-11-28). Next Few Hours
   (Ctrl+Shift+U) and Weather Now now begin with whether rain or snow is starting in
   the next 2 hours, from Open-Meteo's 15-minute forecast: "Light rain starting in

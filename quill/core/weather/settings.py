@@ -77,6 +77,10 @@ class WeatherSettings:
     show_rain_soon: bool = True
     show_glance_ahead: bool = True
     show_daylight_change: bool = True
+    #: Pollen is shown only in Europe (Copernicus CAMS covers nowhere else);
+    #: the sea line only where Open-Meteo has marine data.
+    show_pollen: bool = True
+    show_marine: bool = True
     #: How many years Weather History looks back for one date (1-85).
     history_years: int = 20
 
@@ -212,6 +216,8 @@ def load_settings(data_dir: Path) -> WeatherSettings:
         "show_rain_soon",
         "show_glance_ahead",
         "show_daylight_change",
+        "show_pollen",
+        "show_marine",
         "announce_alert_count_on_open",
         "alert_sound_enabled",
         "refresh_on_open",
@@ -263,6 +269,8 @@ def save_settings(data_dir: Path, settings: WeatherSettings) -> None:
             "show_rain_soon": settings.show_rain_soon,
             "show_glance_ahead": settings.show_glance_ahead,
             "show_daylight_change": settings.show_daylight_change,
+            "show_pollen": settings.show_pollen,
+            "show_marine": settings.show_marine,
             "history_years": settings.history_years,
             "alert_severity_floor": settings.alert_severity_floor,
             "muted_events": list(settings.muted_events),
