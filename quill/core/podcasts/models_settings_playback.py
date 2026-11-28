@@ -2,12 +2,19 @@
 
 from __future__ import annotations
 
-from typing import Protocol
+from typing import Protocol, TypedDict
 
 from quill.core.podcasts.models_queue import coerce_int
 
 
 class PlaybackSettings(Protocol):
+    auto_skip_intro_seconds: int
+    auto_skip_outro_seconds: int
+    finished_within_seconds: int
+    resume_rewind_seconds: int
+
+
+class PlaybackValues(TypedDict):
     auto_skip_intro_seconds: int
     auto_skip_outro_seconds: int
     finished_within_seconds: int
@@ -23,7 +30,7 @@ def playback_to_dict(settings: PlaybackSettings) -> dict[str, object]:
     }
 
 
-def playback_from_dict(data: dict[str, object]) -> dict[str, object]:
+def playback_from_dict(data: dict[str, object]) -> PlaybackValues:
     return {
         "auto_skip_intro_seconds": max(0, coerce_int(data.get("auto_skip_intro_seconds"), 0)),
         "auto_skip_outro_seconds": max(0, coerce_int(data.get("auto_skip_outro_seconds"), 0)),
