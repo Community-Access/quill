@@ -141,6 +141,11 @@ NODE_HELP: dict[str, str] = {
     ":find_person": (
         "Find a Person: type a login with Ctrl+L, and the person gets a node of their own here."
     ),
+    ":tracked_accounts": (
+        "Tracked Accounts: people and organizations you kept, favorites first, then your "
+        "favorite repositories. A list on this computer only; GitHub is not told. Enter "
+        "opens one; Ctrl+Alt+E finds more."
+    ),
     ":gists": "Gists: small shared files and snippets.",
     ":my_gists": "My Gists: gists you made. Enter edits one.",
     ":billing_usage": (

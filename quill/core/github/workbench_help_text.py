@@ -222,6 +222,11 @@ RESULT_EXPLANATIONS: tuple[tuple[str, str], ...] = (
 
 #: Window title (or its start) -> what the window is for, said first by F1.
 SURFACE_PURPOSES: dict[str, str] = {
+    "Find a Person or Organization": (
+        "Type a username or name and the matching people and organizations appear. "
+        "Open an account's repositories, keep it in Tracked Accounts, mark a favorite "
+        "on this computer, follow a person on GitHub, or open the account on GitHub."
+    ),
     "Filter Builder": (
         "Build a filter one condition at a time: an attribute, an operator and a value "
         "from the repository. The query appears as you go, in GitHub's own syntax; OK "
