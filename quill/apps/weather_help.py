@@ -22,7 +22,12 @@ ABOUT_BODY = (
     "The accessible weather watcher from Quill.\n\n"
     "Keeps an eye on official National Weather Service alerts for your "
     "location and speaks new warnings as they are issued -- even while "
-    "minimized to the system tray.\n\nSupport: support@community-access.org"
+    "minimized to the system tray.\n\n"
+    "Weather data by Open-Meteo.com, under the CC BY 4.0 licence. Historical "
+    "weather: Copernicus Climate Change Service ERA5 reanalysis, via Open-Meteo. "
+    "US station records and 1991 to 2020 normals: NOAA Regional Climate Centers, "
+    "RCC-ACIS. Forecasts and alerts for the United States: the National Weather "
+    "Service.\n\nSupport: support@community-access.org"
 )
 
 

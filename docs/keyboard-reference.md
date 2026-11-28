@@ -924,6 +924,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | --- | --- | --- |
 | Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Ctrl+Alt+D | Weather on a Past Date... | `weather.past_date` |
 | Ctrl+Alt+F1 | Tutorials | `weather.tutorials` |
 | Ctrl+Alt+N | Noaa listen | `weather.noaa_listen` |
 | Ctrl+Alt+Shift+C | Alert choices | `weather.alert_choices` |
@@ -943,6 +944,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
 | Ctrl+Shift+G | Ai go out | `weather.ai_go_out` |
 | Ctrl+Shift+Q | Quick | `weather.quick` |
+| Ctrl+Shift+T | Weather History... | `weather.history` |
 | Ctrl+Shift+W | Now | `weather.now` |
 
 ## Quill Converter (app keys)

@@ -42,7 +42,7 @@ def test_open_meteo_report_carries_timezone(monkeypatch) -> None:
         "current": {"temperature_2m": 90, "time": "2026-07-19T12:00"},
         "daily": {"time": ["2026-07-19"], "temperature_2m_max": [100]},
     }
-    monkeypatch.setattr(open_meteo, "http_json", lambda url: payload)
+    monkeypatch.setattr(open_meteo, "get_json", lambda url, **_k: payload)
     monkeypatch.setattr(open_meteo, "air_quality", lambda *a, **k: None)
     loc = WeatherLocation(display_name="Phoenix", latitude=33.45, longitude=-112.07)
     report = open_meteo.fetch_report(loc)

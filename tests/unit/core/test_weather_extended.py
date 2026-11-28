@@ -80,7 +80,7 @@ def test_open_meteo_fetch_report_builds_current_and_daily(monkeypatch) -> None:
             "uv_index_max": [6.0],
         },
     }
-    monkeypatch.setattr(open_meteo, "http_json", lambda _url: payload)
+    monkeypatch.setattr(open_meteo, "get_json", lambda _url, **_k: payload)
     monkeypatch.setattr(open_meteo, "air_quality", lambda *_a, **_k: None)
     loc = WeatherLocation(display_name="Brno", latitude=49.1951, longitude=16.6068)
 
@@ -174,8 +174,8 @@ def test_fetch_reads_cloud_cover_and_refuses_safe_mode(monkeypatch) -> None:
     seen: dict[str, str] = {}
     monkeypatch.setattr(
         open_meteo,
-        "http_json",
-        lambda url: (
+        "get_json",
+        lambda url, **_k: (
             seen.update(url=url)
             or {"current": {"cloud_cover": 42}, "daily": {"time": [], "weathercode": []}}
         ),
@@ -191,7 +191,7 @@ def test_fetch_reads_cloud_cover_and_refuses_safe_mode(monkeypatch) -> None:
 
 def test_daily_forecast_clamps_days(monkeypatch) -> None:
     seen: dict[str, str] = {}
-    monkeypatch.setattr(open_meteo, "http_json", lambda url: seen.update(url=url) or {})
+    monkeypatch.setattr(open_meteo, "get_json", lambda url, **_k: seen.update(url=url) or {})
     open_meteo.daily_forecast(1, 2, days=99)
     assert "forecast_days=16" in seen["url"]  # capped at Open-Meteo's max
 
@@ -200,8 +200,8 @@ def test_air_quality_parses_and_categorizes(monkeypatch) -> None:
     seen: dict[str, str] = {}
     monkeypatch.setattr(
         open_meteo,
-        "http_json",
-        lambda url: seen.update(url=url) or {"current": {"us_aqi": 142, "pm2_5": 33.4}},
+        "get_json",
+        lambda url, **_k: seen.update(url=url) or {"current": {"us_aqi": 142, "pm2_5": 33.4}},
     )
     aq = open_meteo.air_quality(32.2, -110.9)
     assert "air-quality-api.open-meteo.com" in seen["url"]
@@ -211,8 +211,8 @@ def test_air_quality_parses_and_categorizes(monkeypatch) -> None:
 
 
 def test_air_quality_none_on_failure(monkeypatch) -> None:
-    def boom(url):
+    def boom(url, **_k):
         raise OSError("down")
 
-    monkeypatch.setattr(open_meteo, "http_json", boom)
+    monkeypatch.setattr(open_meteo, "get_json", boom)
     assert open_meteo.air_quality(1, 2) is None

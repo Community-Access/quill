@@ -104,7 +104,9 @@ class WeatherHealthMixin:
         ids, labels = self._weather_watched_places()
         text = self._weather_feed_tracker().status_text(ids, labels, time.time())
         note = self._weather_not_watched_note()  # type: ignore[attr-defined]
-        return f"{text}\n\n{note.strip()}" if note else text
+        text = f"{text}\n\n{note.strip()}" if note else text
+        feeds = self.weather_data_feed_lines()  # type: ignore[attr-defined]
+        return text + "\n\n" + "\n".join(feeds) if feeds else text
 
     def weather_feed_summary(self) -> str:
         ids, _labels = self._weather_watched_places()
