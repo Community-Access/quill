@@ -17,6 +17,7 @@ MENU_ROWS = (
     ("weather.past_date", "Weather &on a Past Date...\tCtrl+Alt+D"),
     ("weather.history", "Weather Histor&y...\tCtrl+Shift+T"),
     ("weather.next_hours", "Ne&xt Few Hours\tCtrl+Shift+U"),
+    ("weather.report_fields", "Report F&ields...\tCtrl+Shift+E"),
 )
 
 
@@ -42,6 +43,7 @@ class WeatherMoreMixin:
             "weather.past_date": self.open_weather_past_date,
             "weather.history": self.open_weather_history,
             "weather.next_hours": self.weather_next_hours,
+            "weather.report_fields": self.open_weather_report_fields,
         }
         menu.AppendSeparator()
         for command_id, label in MENU_ROWS:
@@ -157,3 +159,29 @@ class WeatherMoreMixin:
             place_id=place_id,
             start=start,
         ).show()
+
+    # -- Report Fields -------------------------------------------------------------
+
+    def open_weather_report_fields(self) -> None:
+        from quill.core.weather import settings as settings_mod
+        from quill.ui.weather.report_fields_dialog import ReportFieldsDialog
+
+        data_dir = self._weather_data_dir()
+        settings = settings_mod.load_settings(data_dir)
+        chosen = ReportFieldsDialog(
+            self.frame, chosen=settings.report_fields, announce_cb=self._announce
+        ).show()
+        if chosen is None:
+            return
+        settings.report_fields = chosen
+        try:
+            settings_mod.save_settings(data_dir, settings)
+        except OSError as exc:
+            self._announce(f"Could not save the report fields. {exc}")
+            return
+        count = len(settings.report_fields)
+        self._announce(
+            "Report fields saved. No extra fields."
+            if not count
+            else f"Report fields saved. {count} extra field{'s' if count != 1 else ''}."
+        )

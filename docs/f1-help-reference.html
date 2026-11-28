@@ -4800,7 +4800,7 @@ the test finishes.</li>
 field stops; nothing is kept.</li>
 </ul>
 <h2 id="quill-weather">Quill Weather</h2>
-<p>Control coverage: 98 audited sites (98 helped).</p>
+<p>Control coverage: 107 audited sites (107 helped).</p>
 <h3 id="every-window-and-what-it-is-for-6">Every window, and what it is
 for</h3>
 <p><strong>AI Usage.</strong> How much each AI you have set up has been
@@ -4854,6 +4854,9 @@ The contents list is grouped by track and remembers where you stopped;
 typing ‘here’ in the filter box narrows it to the tutorials about the
 window you came from. Follow me watches what the app is doing – never
 which key you pressed – and moves you on by itself.</p>
+<p><strong>Report Fields.</strong> Choose extra details from Open-Meteo
+to add to the end of the current conditions in Weather Now, and the
+order they are read in.</p>
 <p><strong>Save Weather for a Date Range.</strong> Save every day
 between two dates as a spreadsheet file (CSV) or as plain text, in your
 units, with the data credits.</p>
@@ -5088,6 +5091,30 @@ credits as text.</li>
 spreadsheet file (CSV) or as text. Ctrl+S does the same.</li>
 <li><code>close_btn</code>: Close this window. Escape does the
 same.</li>
+</ul>
+<h4
+id="reportfieldsdialog-quilluiweatherreport_fields_dialogpy">ReportFieldsDialog
+(<code>quill/ui/weather/report_fields_dialog.py</code>)</h4>
+<ul>
+<li><code>self._available</code>: Fields you have not added yet. Choose
+one, then press Add. The Meaning field, after the Move buttons, says
+what the chosen field means.</li>
+<li><code>self._add</code>: Add the chosen field to the end of the
+report’s list.</li>
+<li><code>self._list</code>: The extra fields the report reads, in
+order. Move Up, Move Down and Remove act on the selected one.</li>
+<li><code>self._up</code>: Read the selected field one place
+earlier.</li>
+<li><code>self._down</code>: Read the selected field one place
+later.</li>
+<li><code>self._remove</code>: Take the selected field out of the
+report.</li>
+<li><code>self._meaning</code>: What the field chosen in Field to add,
+or selected in the list, means.</li>
+<li><code>ok</code>: Save these fields. The report uses them from its
+next refresh.</li>
+<li><code>cancel</code>: Close without changing the report’s
+fields.</li>
 </ul>
 <h4
 id="saverangedialog-quilluiweathersave_range_dialogpy">SaveRangeDialog

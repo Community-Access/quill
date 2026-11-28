@@ -52,6 +52,7 @@ def register_weather_commands(host: Any) -> None:
         ("weather.past_date", "Weather: Weather on a Past Date...", host.open_weather_past_date),
         ("weather.history", "Weather: Weather History...", host.open_weather_history),
         ("weather.next_hours", "Weather: Next Few Hours", host.weather_next_hours),
+        ("weather.report_fields", "Weather: Report Fields...", host.open_weather_report_fields),
     ):
         host.commands.try_register(
             command_id, title, handler, host._binding_for(command_id), feature_id="core.weather"

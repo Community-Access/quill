@@ -1868,6 +1868,7 @@
             "show_daylight_change": "bool",
             "show_pollen": "bool",
             "show_marine": "bool",
+            "report_fields": "list[str]",
             "history_years": "int",
             "alert_severity_floor": "str",
             "muted_events": "list[str]",
@@ -1886,10 +1887,10 @@
             "quick_include_data_age": "bool"
           }
         },
-        "function:quill.core.weather.settings:save_settings": "sha256:6fbcd85ab854d1e7"
+        "function:quill.core.weather.settings:save_settings": "sha256:1f3036dfeb7c701a"
       },
       "classification": "additive, compatible",
-      "note": "Pollen and marine add show_pollen and show_marine (booleans, default true); older builds ignore the keys."
+      "note": "Report Fields adds report_fields (a list of field ids, default empty); older builds ignore the key, and unknown ids are dropped on load."
     }
   }
 }
