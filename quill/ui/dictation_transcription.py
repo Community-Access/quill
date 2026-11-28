@@ -50,7 +50,10 @@ def resolve_dictation_provider(frame: Any) -> Any:
         return cached
     registry = frame._speech_registry()
     resolved = preferred_dictation_provider_id(registry, chosen)
-    provider = registry.get(resolved) or frame._speech_provider(registry=registry)
+    # MainFrame._speech_provider takes no arguments (it builds its own registry);
+    # passing registry= raised TypeError exactly when the ladder named an
+    # unregistered engine, which is when the fallback is needed.
+    provider = registry.get(resolved) or frame._speech_provider()
     frame._dictation_provider_cache = provider
     frame._dictation_provider_key = chosen
     return provider

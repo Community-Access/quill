@@ -111,3 +111,38 @@ def test_a_version_that_makes_no_sense_is_refused() -> None:
     for version in ('"2"', "0", "true", "1.5"):
         text = f'{{"version": {version}, "templates": []}}'
         assert "does not understand" in ex.read_import(text).error
+
+
+def _work_row(source: str = "Review requested"):
+    from quill.core.github.explore_models import _issue_row
+
+    raw = SimpleNamespace(
+        repository=SimpleNamespace(full_name="Community-Access/quill"),
+        number=7,
+        title="Fix the thing",
+        html_url="https://github.com/Community-Access/quill/pull/7",
+        pull_request=object(),
+        state="open",
+        updated_at="2026-11-27",
+    )
+    return _issue_row(raw, source)
+
+
+def test_assigned_and_review_requested_rows_speak_under_a_template() -> None:
+    row = _work_row()
+    assert speak_row(row, lib.Library()) is None  # usual wording by default
+    brief = lib.assign(lib.Library(), "github_work", "builtin:brief")
+    assert speak_row(row, brief) == "pull request, Fix the thing, review requested"
+    detailed = lib.assign(lib.Library(), "github_work", "builtin:detailed")
+    text = speak_row(row, detailed) or ""
+    assert "in Community-Access/quill" in text and "number 7" in text
+
+
+def test_a_row_found_two_ways_says_both_reasons() -> None:
+    from dataclasses import replace
+
+    from quill.core.github.explore import _why_added
+
+    row = _work_row("Assigned")
+    merged = replace(row, fields=_why_added(row.fields, "Review requested"))
+    assert dict(merged.fields)["why"] == "review requested; assigned"

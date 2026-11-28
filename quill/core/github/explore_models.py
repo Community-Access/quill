@@ -97,6 +97,15 @@ def _issue_row(row: Any, source: str) -> ExploreRow:
     if updated_at:
         detail += f"\nUpdated: {updated_at}"
     detail += f"\n{url}"
+    fields = (
+        ("repository", repo),
+        ("number", f"number {number}"),
+        ("title", title),
+        ("kind", "pull request" if is_pr else "issue"),
+        ("state", _text(getattr(row, "state", ""))),
+        ("updated", updated_at),
+        ("why", source.lower()),
+    )
     return ExploreRow(
         label,
         detail,
@@ -106,6 +115,7 @@ def _issue_row(row: Any, source: str) -> ExploreRow:
         str(number),
         updated_at,
         title,
+        fields,
     )
 
 

@@ -225,15 +225,10 @@ class GitHubExploreClient(ExploreNotificationsMixin, GitHubGistsMixin):
                             continue
                     if mapped.url in found:
                         previous = found[mapped.url]
-                        found[mapped.url] = ExploreRow(
-                            previous.label,
-                            f"{source}; {previous.detail}",
-                            previous.url,
-                            previous.repo,
-                            previous.kind,
-                            previous.key,
-                            previous.updated_at,
-                            previous.title,
+                        found[mapped.url] = replace(
+                            previous,
+                            detail=f"{source}; {previous.detail}",
+                            fields=_why_added(previous.fields, source),
                         )
                     else:
                         found[mapped.url] = mapped
@@ -541,3 +536,9 @@ class GitHubExploreClient(ExploreNotificationsMixin, GitHubGistsMixin):
             self._repo(repo).get_label(old_name).edit(name.strip(), color, description)
         except Exception as exc:  # noqa: BLE001
             raise GitHubExploreError(f"Could not edit label {old_name}: {exc}") from exc
+
+
+def _why_added(fields: tuple[tuple[str, str], ...], source: str) -> tuple[tuple[str, str], ...]:
+    """*fields* with *source* put first in the "why it is yours" value."""
+    added = source.lower()
+    return tuple((k, f"{added}; {v}" if k == "why" else v) for k, v in fields)

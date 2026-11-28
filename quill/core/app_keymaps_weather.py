@@ -44,5 +44,7 @@ WEATHER_KEYMAPS: dict[str, str] = {
     # past times. Radio's Ctrl+Shift+D and H are taken (Output Device, Song
     # History), and T is free in both.
     "weather.history": "Ctrl+Shift+T",
+    # Next Few Hours: U for upcoming.
+    "weather.next_hours": "Ctrl+Shift+U",
     **SMALL_APP_AI_KEYMAPS["weather"],  # AI rows, rule-11 comments: app_keymaps_ai.py
 }

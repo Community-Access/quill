@@ -1863,6 +1863,8 @@
             "show_uv_index": "bool",
             "show_air_quality": "bool",
             "show_local_time": "bool",
+            "show_glance_ahead": "bool",
+            "show_daylight_change": "bool",
             "history_years": "int",
             "alert_severity_floor": "str",
             "muted_events": "list[str]",
@@ -1881,10 +1883,10 @@
             "quick_include_data_age": "bool"
           }
         },
-        "function:quill.core.weather.settings:save_settings": "sha256:98c4c299a24476a7"
+        "function:quill.core.weather.settings:save_settings": "sha256:bf8f314019ed384e"
       },
       "classification": "additive, compatible",
-      "note": "Weather History adds history_years (int, default 20); older builds ignore the key, and a missing key reads as 20."
+      "note": "Next hours adds show_glance_ahead and show_daylight_change (booleans, default true); older builds ignore the keys, and missing keys read as true."
     }
   }
 }
