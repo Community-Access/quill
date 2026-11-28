@@ -92,7 +92,8 @@ def test_peer_lookup_uses_newest_valid_event_and_respects_consent(
 
     def lookup() -> int | None:
         queue_synced_place.prefetch(host)
-        assert host._cast_queue_places.ready.wait(1)
+        if host._cast_queue_places is not None:
+            assert host._cast_queue_places.ready.wait(1)
         return queue_synced_place.newest_queue_place(host, show, episode)
 
     folder = places.devices_dir(tmp_path)
@@ -138,12 +139,20 @@ def test_peer_lookup_uses_newest_valid_event_and_respects_consent(
 def test_unavailable_reader_falls_back_without_late_seek(monkeypatch: Any) -> None:
     entered, release = Event(), Event()
 
-    def slow() -> dict[str, Any]:
+    def slow(_source: Any) -> dict[str, Any]:
         entered.set()
         release.wait(1)
         return {"episode:late": object()}
 
     monkeypatch.setattr(queue_synced_place, "_read", slow)
+    monkeypatch.setattr(
+        queue_synced_place,
+        "_source",
+        lambda: (
+            queue_synced_place.Source("data", "shared", "desktop", "eligible"),
+            PlacesConfig(),
+        ),
+    )
     host = SimpleNamespace(_startup_app_id="cast")
     before = monotonic()
     queue_synced_place.prefetch(host)
@@ -155,6 +164,82 @@ def test_unavailable_reader_falls_back_without_late_seek(monkeypatch: Any) -> No
     result = queue_synced_place.newest_queue_place(host, object(), object())
     assert result is None
     release.set()  # a completed late read has no callback into the player
+
+
+def test_switching_folders_rejects_completed_a_and_applies_current_b(monkeypatch: Any) -> None:
+    from quill.core import paths
+    from quill.core.sync import places_config
+
+    _library, show, episode = _episode()
+    config = PlacesConfig(
+        enabled=True, interchange=True, encrypted=False, remote_dir="folder-A", device_id="desktop"
+    )
+    monkeypatch.setattr(paths, "app_data_dir", lambda: Path("synthetic-data"))
+    monkeypatch.setattr(places_config, "load", lambda _path: config)
+    key = places.episode_id(episode.guid)
+
+    def read(source: queue_synced_place.Source) -> dict[str, places.PlaceRecord]:
+        position = 44_000 if source.remote_dir == "folder-A" else 88_000
+        return {
+            key: places.PlaceRecord(id=key, position_ms=position, updated_at="2026-11-28T01:00:00Z")
+        }
+
+    monkeypatch.setattr(queue_synced_place, "_read", read)
+    host = SimpleNamespace(_startup_app_id="cast")
+    queue_synced_place.prefetch(host)
+    assert host._cast_queue_places.ready.wait(1)
+    assert queue_synced_place.newest_queue_place(host, show, episode) == 44_000
+    config.remote_dir = "folder-B"
+    assert queue_synced_place.newest_queue_place(host, show, episode) is None
+    assert host._cast_queue_places is None
+    queue_synced_place.prefetch(host)
+    assert host._cast_queue_places.ready.wait(1)
+    assert queue_synced_place.newest_queue_place(host, show, episode) == 88_000
+    config.device_id = "different-device"
+    assert queue_synced_place.newest_queue_place(host, show, episode) is None
+    assert host._cast_queue_places is None
+    config.device_id = "desktop"
+    assert queue_synced_place.newest_queue_place(host, show, episode) is None
+
+
+def test_inflight_a_cannot_replace_b_after_switch(monkeypatch: Any) -> None:
+    from quill.core import paths
+    from quill.core.sync import places_config
+
+    _library, show, episode = _episode()
+    config = PlacesConfig(
+        enabled=True, interchange=True, encrypted=False, remote_dir="folder-A", device_id="desktop"
+    )
+    monkeypatch.setattr(paths, "app_data_dir", lambda: Path("synthetic-data"))
+    monkeypatch.setattr(places_config, "load", lambda _path: config)
+    key = places.episode_id(episode.guid)
+    entered_a, release_a = Event(), Event()
+
+    def read(source: queue_synced_place.Source) -> dict[str, places.PlaceRecord]:
+        if source.remote_dir == "folder-A":
+            entered_a.set()
+            release_a.wait(1)
+        position = 44_000 if source.remote_dir == "folder-A" else 88_000
+        return {
+            key: places.PlaceRecord(id=key, position_ms=position, updated_at="2026-11-28T01:00:00Z")
+        }
+
+    monkeypatch.setattr(queue_synced_place, "_read", read)
+    host = SimpleNamespace(_startup_app_id="cast")
+    queue_synced_place.prefetch(host)
+    assert entered_a.wait(1)
+    old = host._cast_queue_places
+    config.remote_dir = "folder-B"
+    assert queue_synced_place.newest_queue_place(host, show, episode) is None
+    queue_synced_place.prefetch(host)
+    current = host._cast_queue_places
+    assert current is not old and current.ready.wait(1)
+    assert queue_synced_place.newest_queue_place(host, show, episode) == 88_000
+    release_a.set()
+    assert old.ready.wait(1)
+    assert queue_synced_place.newest_queue_place(host, show, episode) == 88_000
+    config.share_subscriptions = True
+    assert queue_synced_place.newest_queue_place(host, show, episode) is None
 
 
 def test_natural_queue_uses_peer_then_local_fallback(monkeypatch: Any) -> None:
