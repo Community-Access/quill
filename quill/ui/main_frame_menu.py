@@ -2320,6 +2320,7 @@ class MenuBuilderMixin:
                 self._menu_label(_("Play &Last Station"), "radio.play_last"),
             )
             self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_play_last(), id=id_radio_play_last)
+            self._radio_add_random_items(media_menu)  # apps/radio_random_menu.py
             id_radio_whats_playing = wx.NewIdRef()
             media_menu.Append(
                 id_radio_whats_playing,

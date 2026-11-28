@@ -55,6 +55,7 @@ import logging
 import ssl
 import urllib.error
 import urllib.parse
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 
 from quill.core import http_client, net_public
@@ -264,7 +265,11 @@ def _fetch_html(url: str) -> str:
 
 
 def scan_page_for_streams(
-    url: str, *, safe_mode: bool = False, check_live: bool = False
+    url: str,
+    *,
+    safe_mode: bool = False,
+    check_live: bool = False,
+    on_checked: Callable[[str, live_check.Verdict], None] | None = None,
 ) -> PageScanResult:
     """Fetch *url* and return every candidate stream link found on it.
 
@@ -274,6 +279,9 @@ def scan_page_for_streams(
     lists the mounts of a linked Icecast status page, and follows up to
     :data:`_MAX_LISTEN_LINKS_TO_FOLLOW` "Listen Live" links when the page itself
     yielded nothing (issue #1065). A failed sub-fetch is skipped.
+
+    *on_checked* hears ``(url, verdict)`` as each link's check finishes (from a
+    worker thread), so a window can show a stream's reported name while it works.
 
     JavaScript players (Triton Digital / StreamTheWorld, the whole
     ``player.listenlive.co`` network) compute their stream URL at runtime; the
@@ -359,7 +367,7 @@ def scan_page_for_streams(
     left_out = not_public = 0
     limit = _LISTING_CHECKS if listed else live_check.MAX_CHECKS
     if check_live and kept:
-        kept, left_out, not_public = _apply_live_check(kept, limit)
+        kept, left_out, not_public = _apply_live_check(kept, limit, on_checked)
     collapsed = stream_mirrors.collapse_mirrors(_prefer_https(kept))
     kept = collapsed.rows
     # #5 observability: which links were kept, and why -- the argv-style
@@ -388,14 +396,17 @@ def scan_page_for_streams(
 
 
 def _apply_live_check(
-    candidates: list[PageStreamCandidate], limit: int = live_check.MAX_CHECKS
+    candidates: list[PageStreamCandidate],
+    limit: int = live_check.MAX_CHECKS,
+    on_checked: Callable[[str, live_check.Verdict], None] | None = None,
 ) -> tuple[list[PageStreamCandidate], int, int]:
     """Check each candidate; leave out what is not audio; live ones first.
 
     Returns the kept rows, how many were not audio, and how many were on this
     computer or the listener's own network (never read, so never "not audio").
     """
-    verdicts = live_check.check_urls([c.url for c in candidates], _probe, limit=limit)
+    urls = [c.url for c in candidates]
+    verdicts = live_check.check_urls(urls, _probe, limit=limit, on_verdict=on_checked)
     kept: list[PageStreamCandidate] = []
     left_out = not_public = 0
     for candidate in candidates:

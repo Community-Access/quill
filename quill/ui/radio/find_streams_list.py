@@ -34,6 +34,7 @@ from collections.abc import Callable, Sequence
 from typing import Any
 
 from quill.core.radio import find_streams_view as view
+from quill.core.radio.find_streams_text import size_text
 from quill.core.radio.page_links import PageStreamCandidate
 from quill.ui.dpi import dip
 from quill.ui.spoken_name import set_spoken_name
@@ -64,6 +65,10 @@ def details_text(candidate: PageStreamCandidate) -> str:
     ]
     if candidate.listeners is not None:
         lines.append(f"Listeners: {candidate.listeners:,}")
+    if candidate.size_bytes:
+        lines.append(f"Size: {size_text(candidate.size_bytes)}")
+    if candidate.modified:
+        lines.append(f"Date: {candidate.modified}")
     lines.append(f"Link: {candidate.url}")
     if parts.netloc:
         lines.append(f"Server: {parts.scheme}://{parts.netloc}")
@@ -95,11 +100,13 @@ class FindStreamsList:
         set_spoken_name(self.ctrl, "Streams found")
         self.ctrl.SetHelpText(
             "The stream links found on the page, live streams first. Enter tests the "
-            "focused link. Select several with Shift and the arrow keys, or press Ctrl+A "
+            "focused link, or plays several selected audio files in the order shown. "
+            "Select several with Shift and the arrow keys, or press Ctrl+A "
             "for every row shown; to pick rows far apart, filter the list first, then "
             "press Ctrl+A. Add to Favorites, Save as Playlist (Ctrl+S) and Copy (Ctrl+C) "
             "then act on all of them. Ctrl+F finds a row, F3 and Shift+F3 find the next "
-            "and previous, and the Applications key opens the list's menu."
+            "and previous, Ctrl+Shift+O plays a random stream from the rows shown, and the "
+            "Applications key opens the list's menu."
         )
         # The verdict first: it is what a screen reader reads first, and in
         # JAWS's first-column mode the only thing it reads.

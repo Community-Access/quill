@@ -27,21 +27,29 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.radio import find_fallback as fb
 from quill.core.radio import find_streams_view as view
+from quill.core.radio.find_fallback_io import FoundResult
 from quill.core.radio.find_streams_text import (
     failure_sentence,
     scan_counts,
     status_label,
     summary_sentence,
 )
-from quill.core.radio.link_finder import PageStreamCandidate, scan_page_for_streams
+from quill.core.radio.link_finder import PageStreamCandidate
 from quill.core.radio.page_url import normalize_page_url
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.radio import find_streams_actions as actions
 from quill.ui.radio import find_streams_menus as menus
+from quill.ui.radio import play_random_ui
 from quill.ui.radio.find_streams_address import AddressBox
+from quill.ui.radio.find_streams_cues import CuesMixin
+from quill.ui.radio.find_streams_find import FindMixin
+from quill.ui.radio.find_streams_last import LastResultsMixin
 from quill.ui.radio.find_streams_list import FindStreamsList
+from quill.ui.radio.find_streams_tracks import TracksMixin
+from quill.ui.radio.find_streams_ways import LOOKING_UP, WaysMixin
 from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import stop_timer_on_destroy, surface_tasks
 
@@ -60,7 +68,7 @@ def _button(wx: Any, parent: Any, label: str, help_text: str, **kwargs: Any) -> 
     return button
 
 
-class LinkFinderDialog:
+class LinkFinderDialog(FindMixin, LastResultsMixin, CuesMixin, WaysMixin, TracksMixin):
     """Scan a website for candidate stream links, and work with what it found.
 
     *host* is the app frame (QUILL's main frame or Quill Radio's): its
@@ -159,17 +167,26 @@ class LinkFinderDialog:
             menus.save_label(1),
             "Saves the selected streams, or the focused one, as an M3U, PLS, XSPF or ASX playlist.",
         )
+        self._reopen_btn = _button(
+            wx,
+            self.dialog,
+            "Reo&pen Last Results",
+            "Shows the streams from your last scan again, sorted and filtered as you left "
+            "them. Nothing is scanned or played. It is dimmed when there are none saved.",
+        )
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
         close_btn.SetName("Close")
         for button in (self._sort_btn, self._test_btn, self._use_btn):
             btn_row.Add(button, 0, wx.RIGHT, 6)
         btn_row.Add(self._add_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._save_btn, 0, wx.RIGHT, 6)
+        btn_row.Add(self._reopen_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
         btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
         self.dialog.SetSizer(root)
         self._enable_row_buttons()
+        self._load_last()
 
         self._url_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_scan)
         self._scan_btn.Bind(wx.EVT_BUTTON, self._on_scan)
@@ -182,12 +199,14 @@ class LinkFinderDialog:
         self._use_btn.Bind(wx.EVT_BUTTON, self._on_use)
         self._add_btn.Bind(wx.EVT_BUTTON, lambda _e: self._add())
         self._save_btn.Bind(wx.EVT_BUTTON, lambda _e: self._save())
+        self._reopen_btn.Bind(wx.EVT_BUTTON, self._on_reopen_last)
         self.dialog.Bind(wx.EVT_MENU, self._on_menu)
         self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         # Owned by the dialog, one-shot, and stopped whenever a scan ends.
         self._still_timer = wx.Timer(self.dialog)
         self.dialog.Bind(wx.EVT_TIMER, self._on_still_scanning, self._still_timer)
         stop_timer_on_destroy(self.dialog, self._still_timer)
+        self._init_cues()
 
     def show(self) -> None:
         self.dialog.CentreOnParent()
@@ -197,14 +216,24 @@ class LinkFinderDialog:
         from quill.ui.radio import transport_keys
 
         transport_keys.install(self.dialog, self, wx=self._wx)
+        play_random_ui.register_source(self)
+        self._offer_last()
         from quill.ui.dialog_contract import show_modal_dialog
 
         try:
             show_modal_dialog(self.dialog, "Find Streams from a Website", announce=self._announce)
         finally:
+            self._remember_last()
+            self._stop_cues()
             self._scanning = False
             self._still_timer.Stop()
             self.dialog.Destroy()
+
+    def random_pool(self) -> tuple[str, list[Any]]:
+        """The streams shown, for Play Random (ui/radio/play_random_ui)."""
+        return play_random_ui.streams_pool(
+            self._candidates, self._list.shown, self._page_title, self._favicon_url
+        )
 
     # -- saying things ----------------------------------------------------------
 
@@ -240,16 +269,23 @@ class LinkFinderDialog:
             return
         url = self._url_ctrl.GetValue().strip()
         if not url:
-            self._say("Type a website address first.")
+            self._say("Type a website address or a station name first.")
             return
+        url = self._what_to_look_up(url)
+        is_name = fb.typed_kind(url) == "name"
         # Shown, not said: the listener has just pressed Scan.
-        self._status.SetLabel(f"Scanning {url} and checking the links it finds...")
+        self._status.SetLabel(
+            LOOKING_UP.format(name=url)
+            if is_name
+            else f"Scanning {url} and checking the links it finds..."
+        )
         self._scanning = True
-        self._page_url = normalize_page_url(url)
+        self._page_url = "" if is_name else normalize_page_url(url)
         self._still_timer.StartOnce(STILL_SCANNING_SECONDS * 1000)
+        self._start_cues()
 
         def _do_scan(**_kwargs: Any) -> Any:
-            return scan_page_for_streams(url, safe_mode=self._safe_mode, check_live=True)
+            return self._run_ways(url, self._on_checked)
 
         self._task_manager.submit(
             "radio-link-finder",
@@ -273,6 +309,7 @@ class LinkFinderDialog:
     def _on_scan_done(self, result: Any, error: BaseException | None) -> None:
         self._scanning = False
         self._still_timer.Stop()
+        self._stop_cues()
         if error is not None or result is None:
             self._keep_focus_through_refill()
             self._candidates, self._rows = [], []
@@ -281,9 +318,12 @@ class LinkFinderDialog:
             failed = failure_sentence(error)
             self._status.SetLabel(failed)
             # Said once focus has settled where emptying the list left it.
-            self._say_after(failed, show=False)
+            self._say_after(failed, self._outcome_sound(failed=True, found=0), show=False)
             return
-        self._page_title = result.page_title
+        how = ""
+        if isinstance(result, FoundResult):  # the way that found it, when it is worth saying
+            how, result = result.how, result.scan
+        self._page_title = result.page_title or self._url_ctrl.GetValue().strip()
         self._favicon_url = result.favicon_url
         candidates: list[PageStreamCandidate] = list(result.candidates)
         counts = scan_counts(result)
@@ -303,6 +343,8 @@ class LinkFinderDialog:
             extra.append(view.order_sentence(self._state.order))
         if was_filtered:
             extra.append(FILTER_CLEARED)
+        if how:
+            extra.append(how)
         sentence = " ".join([summary_sentence(candidates, **counts), *extra])
         self._status.SetLabel(" ".join([status_label(candidates, **counts), *extra]))
         if not candidates:
@@ -310,13 +352,16 @@ class LinkFinderDialog:
             self._candidates, self._rows = [], []
             self._list.clear()
             self._enable_row_buttons()
-            self._say_after(sentence, show=False)
+            self._forget_last()
+            self._say_after(sentence, self._outcome_sound(failed=False, found=0), show=False)
             return
         self._candidates = candidates
         self._rows = view.distinct_rows(candidates)
         self._refill(sentence, keep="", keep_selected=False, show=False)
         # Remembered after the refill, so the list is read first (FUX-04).
         self._address.remember(self._page_url, candidates)
+        self._remember_last()
+        self._reopen_btn.Enable(True)
 
     def _refill(
         self, sentence: str, *, keep: str, keep_selected: bool = True, show: bool = True
@@ -453,6 +498,7 @@ class LinkFinderDialog:
             "find_next": lambda: self._find_again(backwards=False),
             "find_previous": lambda: self._find_again(backwards=True),
             "select_all": self._select_all,
+            "random": lambda: play_random_ui.play_random_stream(self),
         }
         commands[name]()
 
@@ -468,54 +514,6 @@ class LinkFinderDialog:
             event.Skip()
             return
         self._run(key)
-
-    # -- Find --------------------------------------------------------------------
-
-    def _find(self) -> None:
-        def land(term: str) -> str:
-            if not term:
-                return ""
-            self._find_term = term
-            # Select and focus the match before the prompt goes, so the row is
-            # read once, when focus comes back to the list.
-            return self._land(backwards=False)
-
-        message = "Find a stream by its name, link, format or how it was found:"
-        sentence = actions.prompt_text(
-            self._wx,
-            self.dialog,
-            "Find in Streams Found",
-            message,
-            self._find_term,
-            self._announce,
-            land,
-        )
-        if sentence is None:
-            return  # Cancel does nothing
-        self._results.SetFocus()
-        self._say_after(sentence)
-
-    def _land(self, *, backwards: bool) -> str:
-        result = view.find(
-            self._candidates,
-            self._rows,
-            self._list.shown,
-            self._find_term,
-            self._list.focused_position(),
-            backwards=backwards,
-        )
-        if result.position is not None:
-            self._list.go_to(result.position)
-            self._enable_row_buttons()
-        return result.sentence
-
-    def _find_again(self, *, backwards: bool) -> None:
-        if not self._find_term:
-            self._find()
-            return
-        sentence = self._land(backwards=backwards)
-        if sentence:
-            self._announce(sentence)
 
     # -- the actions -----------------------------------------------------------------
 
@@ -565,6 +563,8 @@ class LinkFinderDialog:
     def _on_test(self, _event: object, *, from_button: bool = False) -> None:
         """Test the focused row. While a test plays, the button (or Enter on
         the same row) stops it; Enter on another row tests that row instead."""
+        if self._play_selected_tracks():
+            return
         candidate = self._list.focused()
         if self._testing and (
             from_button or candidate is None or candidate.url == self._testing_url

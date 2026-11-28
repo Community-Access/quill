@@ -242,7 +242,9 @@ PURPOSES: dict[str, str] = {
         "finds a stream, and the Applications key opens a menu to sort, filter, "
         "copy links, or add them all to Favorites. The address box remembers "
         "the last ten sites that found a live stream; Clear Recent Searches... "
-        "in the Station menu forgets them."
+        "in the Station menu forgets them. Reopen Last Results shows the streams "
+        "from your last scan again, as you left them, without scanning or playing "
+        "anything; Ctrl+Shift+O plays a random stream from the rows shown."
     ),
     "Go To": (
         "Every place in Quill Radio, one keystroke away: a numbered list of "

@@ -1161,7 +1161,7 @@ places on the list, numbered. Arrow to one.</li>
 <strong>Move Down</strong> and press <strong>Space</strong> to move it.
 Quill Radio tells you its new number.</li>
 <li>To take a place off, select it and choose <strong>Remove</strong>
-(Alt+R). It moves to the second list.</li>
+(Alt+P). It moves to the second list.</li>
 <li>The second list, <strong>Not in the menu</strong> (Alt+N), holds
 places you can add: Scheduled Recordings, Station Catalog Status, Audio
 Health, Keyboard Shortcuts, and What’s Playing. Select one and choose
@@ -1321,7 +1321,7 @@ Station by name, or use their keys.</p>
 <strong>Station</strong> (Alt+S), <strong>Edit</strong> (Alt+E),
 <strong>View</strong> (Alt+V), <strong>Playback</strong> (Alt+P),
 <strong>Audio</strong> (Alt+A), <strong>Video</strong> (Alt+D),
-<strong>Record</strong> (Alt+R), <strong>Community</strong> (Alt+C),
+<strong>Record</strong> (Alt+P), <strong>Community</strong> (Alt+C),
 <strong>QuillVille</strong> (Alt+Q), <strong>Help</strong> (Alt+H) and
 <strong>Window</strong> (Alt+W).</p>
 <p>Every menu item shows its own key, and if you change a key, the menu
@@ -1356,6 +1356,13 @@ follow every channel in a file you download from Google.</li>
 emergencies, fetches the newest YouTube helper.</li>
 <li><strong>Find Streams from a Website…</strong> (Ctrl+Alt+S): look
 through a station’s web page for its stream.</li>
+<li><strong>Play Random Station</strong> (Ctrl+Shift+O) and <strong>Play
+Random Favorite</strong> (Alt+Shift+R): put something on without
+choosing. Play Random Station picks from the list you last searched or
+scanned, and from your favorites when none is open; Play Random Favorite
+always picks from your favorites. It never plays the same station twice
+in a row when there is a choice, and says what it picked and where from,
+for example “Playing KEXP, picked at random from 12 favorites.”</li>
 <li><strong>Clear Recent Searches…</strong> (Ctrl+Alt+Shift+Backspace):
 forget the station searches and the websites Quill Radio remembers. It
 asks first, and No is the default; no station or favorite is
@@ -1585,7 +1592,7 @@ YouTube video that is playing. See “Read a video’s comments” in Chapter
 Fit gives the same size as 100%.</li>
 </ul>
 <p>See “Video, captions and described audio” in Chapter 5.</p>
-<h4 id="record-menu-altr">Record menu (Alt+R)</h4>
+<h4 id="record-menu-altp">Record menu (Alt+P)</h4>
 <ul>
 <li><strong>Record Now / Stop Recording</strong> (Ctrl+R).</li>
 <li><strong>Record Station…</strong> (Ctrl+Alt+R).</li>
@@ -1741,7 +1748,7 @@ has its own key:</p>
 </tr>
 <tr>
 <td>Radio Recordings</td>
-<td>Recordings (Alt+R)</td>
+<td>Recordings (Alt+P)</td>
 </tr>
 <tr>
 <td>Schedule Recording</td>
@@ -1809,7 +1816,7 @@ hides only the main window. <strong>Send to Tray</strong> (Ctrl+W) hides
 every Quill Radio window.</p>
 <p>If another program already uses Ctrl+Alt+Shift+R, Quill Radio leaves
 it alone and says nothing, so use the tray icon instead. Each family app
-has its own key: QUILL is Ctrl+Alt+Shift+Q and Quill Weather is
+has its own key: QUILL is Alt+Shift+R and Quill Weather is
 Ctrl+Alt+Shift+W.</p>
 <p>If you open Quill Radio again while it is already running, even
 hidden in the tray, the copy that is running comes forward. You never
@@ -2932,7 +2939,7 @@ every station</h4>
 saved for that station only. Open it with nothing playing, or while a
 station that is not a favorite plays, and you set the shared settings
 that every other station follows. When a favorite’s own settings are
-open, <strong>Reset to Default</strong> (Alt+R) puts that station back
+open, <strong>Reset to Default</strong> (Alt+P) puts that station back
 on the shared settings. <strong>Reset All Stations’ Sound
 Enhancements…</strong> in Preferences does that for every station at
 once.</p>
@@ -4050,7 +4057,7 @@ why it is live only, such as “iHeart: live only; its terms do not allow
 storing its listings”.</li>
 <li>Choose <strong>Update Now</strong> (Alt+U) to bring it up to date
 now. The window closes and the update runs.</li>
-<li>Or choose <strong>Rebuild From Shipped Snapshot</strong> (Alt+R) to
+<li>Or choose <strong>Rebuild From Shipped Snapshot</strong> (Alt+P) to
 put back the catalog that came with Quill Radio. <strong>It does not ask
 first.</strong> Your favorites and your own stations are never
 touched.</li>
@@ -4086,7 +4093,7 @@ pack covers and when it was built, or that no pack is installed yet.
 Your cursor is in the <strong>Find stations</strong> box (Alt+F).</li>
 <li>Type what you know, such as <strong>94.9</strong>, <strong>98.5
 FM</strong>, <strong>KIRO</strong>, <strong>Seahawks</strong> or
-<strong>jazz Seattle</strong>. The <strong>Results</strong> list (Alt+R)
+<strong>jazz Seattle</strong>. The <strong>Results</strong> list (Alt+P)
 fills as you type.</li>
 <li>Press <strong>Enter</strong> to move to the results. Each row says
 why it matched, for example “KIRO-FM, matched slogan: Official home of
@@ -4207,6 +4214,89 @@ filled in. Give it a name and choose OK.</li>
 <li>Press <strong>Escape</strong> to close the window.</li>
 </ol>
 <p>Enter on the list does nothing; use the buttons.</p>
+<p><strong>Reopen Last Results.</strong> Quill Radio keeps the streams
+from your last scan, with the sort order, the filter and the row you
+were on. When you open Find Streams and results are waiting, it says so,
+for example “Your last results are saved: 12 streams from example.com.
+Choose Reopen Last Results to see them.” Press <strong>Reopen Last
+Results</strong> (Alt+P) to see them again. Nothing is scanned and
+nothing plays; the status line says how long ago they were found, and
+<strong>Test</strong> checks a stream again by playing it. A new scan
+that finds streams replaces the saved results, and one that finds
+nothing clears them. Clear Recent Searches… forgets them too.
+Ctrl+Shift+O in the list plays a random stream from the rows shown.</p>
+<p><strong>Sounds and names while it works.</strong> A long scan makes a
+soft sound every two seconds, so a quiet screen reader does not sound
+like a frozen program. A search that finds nothing plays its own sound,
+and a search that could not finish plays a different one, so you can
+tell which it was without waiting for the words. While the links are
+checked, each stream that reports a name shows it in the status line as
+“Checking KEXP.”, and the name is spoken at most once every two seconds,
+so fifty links are not fifty sentences. To turn the three sounds off,
+clear <strong>Play sounds while Find Streams searches</strong> under
+Find Streams in Preferences (Ctrl+,). The sentences are still said.</p>
+<p><strong>Typing a name, and other ways to find it.</strong> The
+address box also takes a station’s name. Type <code>kexp</code>,
+<code>bbcradio4</code> without spaces, or <code>kexp.mp3</code> with an
+ending, and Quill Radio looks the name up in the public directories,
+Radio Browser, IPRD and Radio Garden, ignoring spaces and punctuation,
+and checks each stream it finds as it does for a website. If the name is
+one of your recent websites, it first asks “Check it again?” Yes scans
+that site; No looks the name up. The result says which way found it:
+“Found by the public directories (Radio Browser , IPRD and Radio
+Garden).” To have a website that has no stream fall back to the
+directories too, turn on <strong>Try other ways when a website has no
+stream</strong> under Find Streams in Preferences. It is off by default,
+and then it says “The website had none, so these were found by the
+public directories.” Quill Radio has no browser-assisted way of finding
+a stream, so that step is not part of it. Safe Mode contacts
+nothing.</p>
+<p><strong>Radio Garden.</strong> Paste the address of a Radio Garden
+station page, for example
+<code>https://radio.garden/listen/kexp/Zk1UxX-Y</code>, into the address
+box and press Scan. Quill Radio asks Radio Garden for that one station,
+follows its link to the station’s own stream, checks that it is live
+audio, and lists it with the sentence “Found by Radio Garden.” A station
+name typed in the box is searched there too, with the other directories,
+and at most five of its stations are looked up. Radio Garden has no
+official public interface, so Quill Radio uses only the three addresses
+that its own web page uses, and only for what you type or paste. When a
+station has no stream to play, it says “Radio Garden does not offer a
+stream for that station right now.” When Radio Garden does not answer a
+program, it says “Radio Garden did not answer the way it usually does,
+so nothing was found there.” Quill Radio never plays the Radio Garden
+address itself, only the station’s real stream. Safe Mode contacts
+nothing.</p>
+<p><strong>More places to find audio.</strong> Besides a station’s web
+page, the Find Streams address box takes four kinds of address, and
+lists their <strong>audio files</strong> as tracks:</p>
+<ul>
+<li>A <strong>podcast feed</strong>: the audio of each episode, in the
+feed’s own order.</li>
+<li>A public <strong>Internet Archive item</strong>, such as
+<code>https://archive.org/details/an-item</code>: the audio files it
+holds.</li>
+<li>An <strong>article or demo page</strong> that embeds audio: the
+page’s audio sources and links to audio files, as for any page.</li>
+<li>A public <strong>open directory</strong>, the plain “Index of /”
+page a server shows for a folder: its audio files, with each file’s size
+and date.</li>
+</ul>
+<p>For these lists, <strong>Sort and Filter</strong> also offers Name
+(case ignored and numbers by value, so “Track 2” comes before “Track
+10”), Format, Size, largest first, and Date, newest first, each only
+when the files have it. As you move down the list, each row says the
+file’s name, format, size and date. Select several files (Shift and the
+arrow keys, or Ctrl+A) and press <strong>Enter</strong>: Quill Radio
+plays them in the order shown, one after another, and Ctrl+Shift+Period
+moves to the next at once. One file, or any live stream, is tested as
+before.</p>
+<p>Only public web addresses are read, one page of at most a megabyte,
+after the site’s robots.txt: a site that asks programs to stay out of an
+address is respected, and Quill Radio says so. Nothing in what is read
+is run, an open directory is read only for files on its own site (a
+sub-folder is opened by typing its address), and at most 500 files are
+listed. Torrents, web seeds and video are not offered.</p>
 <p>This works for many stations whose Listen Live button is a web
 player. For Triton Digital and StreamTheWorld players, including the
 whole <code>player.listenlive.co</code> network, Quill Radio reads the
@@ -6835,7 +6925,7 @@ now</strong>, <strong>Playlists</strong> or
 this week, this month or this year.</li>
 <li><strong>Length</strong> (Alt+L): under 4 minutes, 4 to 20 minutes,
 or over 20 minutes.</li>
-<li><strong>Sort by</strong> (Alt+R): relevance, upload date, view count
+<li><strong>Sort by</strong> (Alt+P): relevance, upload date, view count
 or rating.</li>
 </ul></li>
 <li>Press <strong>Enter</strong>. Browse Stations opens, and you hear
@@ -8243,7 +8333,7 @@ where it is.</li>
 it, or Tab to <strong>Move Up</strong> (Alt+U), <strong>Move
 Down</strong> (Alt+D) or <strong>Move to Top</strong> (Alt+T). Quill
 Radio tells you its new number.</li>
-<li><strong>Reset This List</strong> (Alt+R) puts the chosen list back
+<li><strong>Reset This List</strong> (Alt+P) puts the chosen list back
 the way it came. The other list is left alone.</li>
 <li>Choose <strong>OK</strong> (Enter). You should hear “Quick Actions
 saved.” Escape cancels.</li>
@@ -8273,7 +8363,7 @@ put it back in its proper place.</li>
 <li><strong>A row will read</strong> (Alt+A) spells out the sentence one
 row will say with your choices, so you can hear the difference before
 you save.</li>
-<li><strong>Reset This List</strong> (Alt+R) puts the chosen list back
+<li><strong>Reset This List</strong> (Alt+P) puts the chosen list back
 the way it came.</li>
 <li>Choose <strong>OK</strong>. You should hear “Columns saved.”</li>
 </ol>
@@ -8328,7 +8418,7 @@ search.</p>
 cursor in <strong>Search</strong> (Alt+S).</li>
 <li>Type part of a command’s name, such as <code>record</code>. Or type
 a key, such as <code>Ctrl+B</code>, to see what it does. <strong>Record
-Keys…</strong> (Alt+R) lets you press the key instead of typing its
+Keys…</strong> (Alt+P) lets you press the key instead of typing its
 name.</li>
 <li>Tab to the <strong>Keyboard shortcuts</strong> list and arrow to the
 command.</li>
@@ -8424,7 +8514,7 @@ opens.</li>
 <li>Check <strong>Quiet hours on</strong> (Alt+Q) with Space.</li>
 <li>Choose <strong>From</strong> (Alt+F) and <strong>To</strong>
 (Alt+T), in half hours. The time can go past midnight.</li>
-<li>Check <strong>Let reminders through anyway</strong> (Alt+R) if you
+<li>Check <strong>Let reminders through anyway</strong> (Alt+P) if you
 want every reminder to speak during quiet hours.</li>
 <li>A line below tells you what your setting will do. Choose
 <strong>OK</strong>.</li>
@@ -8547,7 +8637,7 @@ this is where it waits for you.</p>
 <strong>What has failed recently</strong> (Alt+W), newest first. If
 there is nothing, you hear “No recent problems”.</li>
 <li>Arrow through the list.</li>
-<li><strong>Retry</strong> (Alt+R) tries the highlighted problem again,
+<li><strong>Retry</strong> (Alt+P) tries the highlighted problem again,
 such as playing a station or downloading something again.</li>
 <li><strong>Copy All</strong> (Alt+C) copies the list as text, for a
 message to support. It includes addresses and error messages, never
@@ -8583,7 +8673,7 @@ happened</strong> (Alt+W), newest first. If there is nothing yet, the
 summary says so.</li>
 <li>Arrow through the list. <strong>Details</strong> (Alt+D) below has
 the full sentence, the reason, the time and what you can do.</li>
-<li><strong>Retry</strong> (Alt+R) does the selected thing again, the
+<li><strong>Retry</strong> (Alt+P) does the selected thing again, the
 same way. For the settings file, that means trying the save again.</li>
 <li><strong>Open Folder</strong> (Alt+F) opens the folder in File
 Explorer with the file selected, so you can see for yourself if a disk
@@ -8750,7 +8840,7 @@ kept.</li>
 <strong>Ctrl+Tab</strong> to go to the part of the app the step is
 about, do the step there, and hear the lesson move on behind you. The
 playing keys work inside it too.</p>
-<p>On the contents page, <strong>Read it all</strong> (Alt+R) shows a
+<p>On the contents page, <strong>Read it all</strong> (Alt+P) shows a
 whole lesson as one page of text. <strong>The whole book as a
 document</strong> (Alt+D) opens every lesson as one document.
 <strong>Forget my progress</strong> (Alt+P) clears which lessons you
@@ -8962,7 +9052,7 @@ doing, whether the full OptiLab is included, and whether a recording
 could be saved to your recordings folder right now.</li>
 <li><strong>Check Again</strong> (Alt+C) looks at everything again, for
 example after you plug in a headset, and tells you the headline.</li>
-<li><strong>Repair FFmpeg…</strong> (Alt+R) and <strong>Repair
+<li><strong>Repair FFmpeg…</strong> (Alt+P) and <strong>Repair
 mpv…</strong> (Alt+M) are only available when that tool is missing.</li>
 <li>Press <strong>Escape</strong> to close.</li>
 </ol>
@@ -9048,7 +9138,7 @@ must fill this in. Enter starts a new line, so press
 <strong>Tab</strong> to move on.</li>
 <li><strong>What you expected</strong> (Alt+X): what you thought would
 happen instead. Optional.</li>
-<li><strong>Steps to reproduce</strong> (Alt+R): how someone else could
+<li><strong>Steps to reproduce</strong> (Alt+P): how someone else could
 make it happen, such as “Play BBC Radio 4, press Ctrl+R, wait an hour”.
 Optional, but worth more than anything else when you can give it.</li>
 <li><strong>Your email address</strong> (Alt+E): where support should
@@ -10587,6 +10677,14 @@ minutes)</td>
 <tr>
 <td>Find Streams from a Website</td>
 <td>Ctrl+Alt+S</td>
+</tr>
+<tr>
+<td>Play Random Station</td>
+<td>Ctrl+Shift+O</td>
+</tr>
+<tr>
+<td>Play Random Favorite</td>
+<td>Alt+Shift+R</td>
 </tr>
 <tr>
 <td>Search Sources</td>

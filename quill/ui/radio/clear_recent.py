@@ -99,6 +99,14 @@ def _refresh_find_stations() -> None:
             continue
 
 
+def _forget_last_results() -> None:
+    """The saved Find Streams results go with them (not counted in the sentence)."""
+    from quill.core.paths import app_data_dir
+    from quill.core.radio import last_results
+
+    last_results.clear(app_data_dir())
+
+
 def clear_recent_searches(host: Any) -> None:
     """Ask, then clear both lists and say once what was cleared."""
     import wx
@@ -114,6 +122,7 @@ def clear_recent_searches(host: Any) -> None:
     history.recent_searches = ()
     history.recent_websites = ()
     host._save_radio_history()
+    _forget_last_results()
     _refresh_find_stations()
     host._announce(done_text(searches, websites))
 

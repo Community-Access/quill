@@ -1035,6 +1035,7 @@ def generate_all() -> None:
 
     generate_cast_outcomes()
     generate_radio_resumed()
+    generate_find_streams_cues()
     generate_scribe_outcomes()
 
 
@@ -1055,6 +1056,29 @@ def generate_radio_resumed() -> None:
     whir = _noise(150, lambda i, n: spool_env(i, n) * 0.10)
     climb = _sweep(220, 587, 150, sine_at, spool_env)
     write_wav("radio_resumed.wav", _mix(whir, climb), vol=0.45)
+
+
+def generate_find_streams_cues() -> None:
+    """Find Streams' three cues (an idea from StreamSift, 2026-11-27).
+
+    * ``radio_search_working``: one small, high, very quiet bell, played every
+      two seconds during a long scan. It must be easy to stop noticing, so it is
+      short and soft, and a single note with nothing to resolve.
+    * ``radio_search_empty``: two bells falling a minor third, "nothing there".
+    * ``radio_search_failed``: a low glide that drops and stops short, with a
+      little noise under it, so it reads as "it broke" and never as "nothing".
+      It shares no pitch with the empty cue, so the two are tellable by ear.
+    """
+    write_wav("radio_search_working.wav", _bell(1319, 90), vol=0.18)
+    empty = _concat(_bell(659, 90), _silence(40), _bell(523, 160))
+    write_wav("radio_search_empty.wav", empty, vol=0.38)
+
+    def drop_env(i: int, n: int) -> float:
+        return adsr(i, n, ms(6), ms(30), 0.6, ms(60))
+
+    fall = _sweep(262, 147, 220, sine_at, drop_env)
+    grit = _noise(220, lambda i, n: drop_env(i, n) * 0.07)
+    write_wav("radio_search_failed.wav", _mix(fall, grit), vol=0.42)
 
 
 def generate_cast_outcomes() -> None:
@@ -1158,5 +1182,7 @@ if __name__ == "__main__":
         generate_cast_outcomes()
     elif "--radio-resumed" in sys.argv:
         generate_radio_resumed()
+    elif "--find-streams-cues" in sys.argv:
+        generate_find_streams_cues()
     else:
         generate_all()

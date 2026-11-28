@@ -83,7 +83,18 @@ class ResultsViewMixin:
         # Keep the full list so the Source facet can filter without re-searching.
         self._all_results = stations
         self._fill_status = status
+        self._offer_to_play_random()
         self._render_results()
+
+    def _offer_to_play_random(self) -> None:
+        """Play Random Station picks from the list filled last (play_random_ui)."""
+        from quill.ui.radio import play_random_ui
+
+        play_random_ui.register_source(self)
+
+    def random_pool(self) -> tuple[str, list[RadioStation]]:
+        """The stations shown now, for Play Random Station."""
+        return "stations", list(getattr(self, "_current_results", ()) or ())
 
     def _row_values(self, station: RadioStation) -> dict[str, str]:
         """Every cell this row could show, keyed by column id.

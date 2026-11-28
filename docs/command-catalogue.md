@@ -372,7 +372,7 @@ These are never done from a sentence, because they send, delete, sign in, change
 
 ## Quill Radio
 
-30 commands can be asked for in a sentence here.
+32 commands can be asked for in a sentence here.
 
 ### Quill Radio: Edit
 
@@ -385,6 +385,8 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "add this station to my favourites"; "make this a favourite"; "take this off my favourites".
 - **Play a Favourite (Alt+Shift+F).** Play one of your favourite stations, by number or by name.
   Say: "play favourite 3"; "play my first favourite"; "put on a favourite station".
+- **Play a Random Favourite (Alt+Shift+R).** Play a random one of your favourite stations.
+  Say: "play a random favourite"; "pick one of my favourites for me"; "shuffle my favourites".
 
 ### Quill Radio: Playback
 
@@ -396,6 +398,8 @@ These are never done from a sentence, because they send, delete, sign in, change
   Say: "go back to live"; "jump to the live broadcast"; "catch up to live".
 - **Normal Speed (Ctrl+Shift+0).** Play at normal speed again.
   Say: "back to normal speed"; "reset the speed"; "play at normal speed".
+- **Play a Random Station (Ctrl+Shift+O).** Play a random station from the list in front of you, or from your favourites.
+  Say: "play a random station"; "surprise me with a station"; "put on something random".
 - **Play or Pause (Ctrl+P).** Start the radio, or pause it.
   Say: "play the radio"; "pause it"; "carry on playing".
 - **Play the Last Station (Ctrl+L).** Play the station you listened to last.

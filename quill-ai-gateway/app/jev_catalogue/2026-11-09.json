@@ -533,6 +533,14 @@
         "criterion": "Start the radio, or pause it. For example: \"play the radio\".",
         "stepped": false
       },
+      "radio.play_random": {
+        "criterion": "Play a random station from the list in front of you, or from your favourites. For example: \"play a random station\".",
+        "stepped": false
+      },
+      "radio.play_random_favorite": {
+        "criterion": "Play a random one of your favourite stations. For example: \"play a random favourite\".",
+        "stepped": false
+      },
       "radio.record_station": {
         "criterion": "Set up a recording of a station you pick from a list. For example: \"record a station\".",
         "stepped": false

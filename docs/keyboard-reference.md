@@ -768,6 +768,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+Shift+Left | Previous song | `radio.previous_song` |
 | Alt+Shift+N | Whats new | `radio.whats_new` |
 | Alt+Shift+P | Internet Radio: Go to Playing Station | `radio.go_to_playing_station` |
+| Alt+Shift+R | Internet Radio: Play Random Favorite | `radio.play_random_favorite` |
 | Alt+Shift+Right | Next song | `radio.next_song` |
 | Alt+Shift+T | Station timeshift | `radio.station_timeshift` |
 | Alt+Shift+U | Internet Radio: Tune as I Move Through Stations | `radio.dial_tuning` |
@@ -846,6 +847,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+Left | Rewind | `radio.rewind` |
 | Ctrl+Shift+M | Manage Favorites... | `radio.manage_favorites` |
 | Ctrl+Shift+N | ACB Media Schedule... | `radio.acb_calendar` |
+| Ctrl+Shift+O | Internet Radio: Play Random Station | `radio.play_random` |
 | Ctrl+Shift+Q | Internet Radio: Listening Statistics... | `radio.statistics` |
 | Ctrl+Shift+R | Recordings... | `radio.recordings` |
 | Ctrl+Shift+Right | Forward | `radio.forward` |

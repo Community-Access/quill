@@ -502,6 +502,7 @@ def _check_tab_order_and_labels(dlg: Any) -> None:
         dlg._use_btn,
         dlg._add_btn,
         dlg._save_btn,
+        dlg._reopen_btn,
         focusable[-1],
     ]
     labels = [w.GetLabel() for w in focusable[4:]]
@@ -511,6 +512,7 @@ def _check_tab_order_and_labels(dlg: Any) -> None:
         "&Use This Link...",
         "Add to &Favorites",
         "Save as Play&list...",
+        "Reo&pen Last Results",
         "Close",
     ]
     statics = [w.GetLabel() for w in dlg.dialog.GetChildren() if isinstance(w, wx.StaticText)]
@@ -532,6 +534,7 @@ def test_the_sort_and_filter_menu_letters(d: Any) -> None:
             "&Name, A to Z",
             "&Bitrate, highest first",
             "L&isteners, most first",
+            "Forma&t, A to Z",
             "",
             "&Live streams only",
             "",
@@ -541,7 +544,7 @@ def test_the_sort_and_filter_menu_letters(d: Any) -> None:
             "O&pus only",
         ]
         assert menu.GetMenuItems()[0].IsChecked()
-        assert menu.GetMenuItems()[7].IsChecked()
+        assert menu.GetMenuItems()[8].IsChecked()
     finally:
         menu.Destroy()
 
@@ -557,6 +560,7 @@ def test_the_context_menu_letters_and_keys(d: Any) -> None:
     assert labels == [
         "&Test\tEnter",
         "&Use This Link...",
+        "Play &Random Stream\tCtrl+Shift+O",
         "Add to &Favorites",
         "Save as Play&list...\tCtrl+S",
         "&Copy Stream Link\tCtrl+C",
@@ -594,3 +598,308 @@ def test_test_and_use_act_on_the_focused_row(d: Any) -> None:
     assert d.host._radio_controller.played[-1].stream_url == "https://a.example/mike"
     d.dlg._on_use(None)
     assert d.used[-1].stream_url == "https://a.example/mike"
+
+
+# -- Reopen Last Results ---------------------------------------------------------
+
+
+def test_reopen_is_dimmed_with_nothing_saved(d: Any) -> None:
+    assert not d.dlg._reopen_btn.IsEnabled()
+    d.dlg._on_reopen_last()
+    assert d.said[-1] == "There are no saved results to reopen."
+
+
+def test_a_scan_saves_and_reopen_restores_rows_order_filter_and_row(d: Any) -> None:
+    from quill.core.radio import find_streams_view as view
+
+    _scan(d, _rows())
+    assert d.dlg._reopen_btn.IsEnabled()
+    d.dlg._choose_order("name")
+    d.dlg._choose_filter(fmt="MP3")
+    d.dlg._results.Focus(1)
+    d.dlg._remember_last()  # what closing the window does
+    focused = _focused_url(d)
+
+    # A new window, as after closing and opening Find Streams again.
+    d.dlg._candidates, d.dlg._rows = [], []
+    d.dlg._state = view.ViewState()
+    d.dlg._list.clear()
+    d.dlg._load_last()
+    assert d.dlg._reopen_btn.IsEnabled()
+    d.said.clear()
+    d.host._radio_controller.played.clear()
+    d.dlg._on_reopen_last()
+    assert d.dlg._state == view.ViewState(order="name", format="MP3")
+    assert len(_texts(d)) == 2 and _focused_url(d) == focused
+    assert d.said[-1].startswith("Reopened 4 streams from a.example, found")
+    assert d.said[-1].endswith("Nothing was scanned or played.")
+    assert d.host._radio_controller.played == []
+    assert d.dlg._task_manager.pending == []  # nothing rescans
+
+
+def test_the_offer_is_said_when_results_wait(d: Any) -> None:
+    _scan(d, _rows())
+    d.dlg._remember_last()
+    d.dlg._load_last()
+    d.said.clear()
+    d.dlg._offer_last()
+    assert d.said == [
+        "Your last results are saved: 4 streams from a.example. "
+        "Choose Reopen Last Results to see them."
+    ]
+
+
+def test_a_search_that_finds_nothing_clears_the_saved_results(d: Any) -> None:
+    _scan(d, _rows())
+    assert d.dlg._reopen_btn.IsEnabled()
+    _scan(d, [])
+    assert not d.dlg._reopen_btn.IsEnabled()
+    d.dlg._load_last()
+    assert d.dlg._last is None
+
+
+def test_damaged_saved_results_are_ignored_quietly(d: Any) -> None:
+    from quill.ui.radio import find_streams_last
+
+    folder = find_streams_last._directory()
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / "find_streams_last.json").write_text("{not json", encoding="utf-8")
+    d.said.clear()
+    d.dlg._load_last()
+    d.dlg._offer_last()
+    assert d.dlg._last is None and not d.dlg._reopen_btn.IsEnabled() and d.said == []
+
+
+# -- Play Random Stream in the list ------------------------------------------------
+
+
+def test_ctrl_shift_o_plays_a_random_shown_stream_and_says_which(d: Any) -> None:
+    _scan(d, _rows())
+    d.dlg._choose_filter(fmt="MP3")  # two rows shown: Zulu and Mike
+    d.said.clear()
+    d.dlg._run("random")
+    played = d.host._radio_controller.played
+    assert len(played) == 1 and played[0].stream_url in {
+        "https://a.example/zulu",
+        "https://a.example/mike",
+    }
+    assert d.said[-1].endswith("picked at random from 2 streams found.")
+    d.dlg._run("random")
+    assert played[1].stream_url != played[0].stream_url
+
+
+def test_the_random_key_is_ctrl_shift_o_in_the_list() -> None:
+    assert menus.key_command(wx, ord("O"), wx.MOD_CONTROL | wx.MOD_SHIFT) == "random"
+    assert menus.key_command(wx, ord("O"), wx.MOD_CONTROL) is None
+
+
+# -- Search sounds and live titles -------------------------------------------------
+
+
+def _fail(d: Any) -> None:
+    d.dlg._url_ctrl.ChangeValue("https://a.example/")
+    d.dlg._on_scan(None)
+    d.dlg._task_manager.pending.pop()["on_failure"](None, RuntimeError("down"))
+
+
+def test_an_empty_search_and_a_failed_one_each_play_their_own_cue(d: Any) -> None:
+    _scan(d, [])
+    assert d.sounds[-1] == str(SoundEvent.RADIO_SEARCH_EMPTY)
+    _fail(d)
+    assert d.sounds[-1] == str(SoundEvent.RADIO_SEARCH_FAILED)
+
+
+def test_a_search_that_finds_streams_adds_no_cue(d: Any) -> None:
+    _scan(d, _rows())
+    assert d.sounds == [""]
+
+
+def test_the_off_switch_silences_the_cues_but_not_the_words(d: Any) -> None:
+    d.host._radio_history = SimpleNamespace(find_streams_sounds=False)
+    _scan(d, [])
+    assert d.sounds[-1] == "" and d.said[-1]
+    d.dlg._start_cues()
+    assert not d.dlg._cue_timer.IsRunning()
+
+
+def test_the_working_cue_runs_only_while_scanning(d: Any, monkeypatch: Any) -> None:
+    posted: list[Any] = []
+    monkeypatch.setattr(d.dlg, "_post_cue", lambda event: posted.append(event))
+    d.dlg._url_ctrl.ChangeValue("https://a.example/")
+    d.dlg._on_scan(None)
+    assert d.dlg._cue_timer.IsRunning() and d.dlg._cue_timer.GetInterval() == 2000
+    d.dlg._on_cue_timer(None)
+    assert posted == [SoundEvent.RADIO_SEARCH_WORKING]
+    d.dlg._task_manager.pending.pop()["on_success"](None, PageScanResult("W", "", [], checked=True))
+    assert not d.dlg._cue_timer.IsRunning()
+    d.dlg._on_cue_timer(None)  # a queued tick after the scan ended says nothing
+    assert len(posted) == 1
+
+
+def test_a_reported_name_is_shown_and_spoken_while_checking(d: Any) -> None:
+    d.dlg._url_ctrl.ChangeValue("https://a.example/")
+    d.dlg._on_scan(None)
+    d.said.clear()
+    d.dlg._show_title("KEXP 90.3")
+    assert d.dlg._status.GetLabel() == "Checking KEXP 90.3."
+    assert d.said == ["Checking KEXP 90.3."]
+    d.dlg._show_title("WFMU")  # inside the gap: shown, not spoken
+    assert d.dlg._status.GetLabel() == "Checking WFMU." and d.said == ["Checking KEXP 90.3."]
+    d.dlg._task_manager.pending.pop()["on_success"](None, PageScanResult("W", "", [], checked=True))
+    d.dlg._show_title("Late")  # after the scan: ignored
+    assert d.dlg._status.GetLabel() != "Checking Late."
+
+
+# -- Other ways to find a stream -----------------------------------------------------
+
+
+def _directory_hit(name: str = "KEXP 90.3") -> Any:
+    from quill.core.radio.find_fallback_io import FoundResult
+
+    scan = PageScanResult("", "", [_c("http://rb.example/kexp", stream_name=name)], checked=True)
+    return FoundResult(
+        scan, "Found by the public directories (Radio Browser, IPRD and Radio Garden)."
+    )
+
+
+def test_a_typed_name_is_looked_up_not_scanned_and_says_which_way(d: Any, monkeypatch: Any) -> None:
+    seen: list[tuple[str, bool]] = []
+
+    def find(text: str, *, safe_mode: bool, fallback: bool, on_checked: Any) -> Any:
+        seen.append((text, fallback))
+        return _directory_hit()
+
+    monkeypatch.setattr("quill.ui.radio.find_streams_ways.io.find", find)
+    d.dlg._url_ctrl.ChangeValue("kexp")
+    d.dlg._on_scan(None)
+    assert d.dlg._status.GetLabel().startswith("Looking up kexp in the public directories")
+    task = d.dlg._task_manager.pending.pop()
+    task["on_success"](None, task["func"]())
+    assert seen == [("kexp", False)]
+    assert d.said[-1].endswith(
+        "Found by the public directories (Radio Browser, IPRD and Radio Garden)."
+    )
+    assert d.dlg._page_url == "" and d.dlg._page_title == "kexp"
+
+
+def test_the_setting_reaches_the_scan(d: Any, monkeypatch: Any) -> None:
+    seen: list[bool] = []
+
+    def find(text: str, *, safe_mode: bool, fallback: bool, on_checked: Any) -> Any:
+        seen.append(fallback)
+        return _directory_hit()
+
+    monkeypatch.setattr("quill.ui.radio.find_streams_ways.io.find", find)
+    d.host._radio_history = SimpleNamespace(find_streams_fallback=True, recent_websites=())
+    d.dlg._url_ctrl.ChangeValue("https://www.kexp.org/")
+    d.dlg._on_scan(None)
+    d.dlg._task_manager.pending.pop()["func"]()
+    assert seen == [True]
+
+
+@pytest.mark.parametrize("answer", [True, False])
+def test_a_matching_recent_website_is_offered_and_yes_scans_it(
+    d: Any, monkeypatch: Any, answer: bool
+) -> None:
+    asked: list[str] = []
+    monkeypatch.setattr(d.dlg, "_ask_recheck", lambda site: asked.append(site) or answer)
+    d.host._radio_history = SimpleNamespace(
+        find_streams_fallback=False, recent_websites=("https://www.kexp.org/listen",)
+    )
+    ran: list[str] = []
+    monkeypatch.setattr(
+        "quill.ui.radio.find_streams_ways.io.find",
+        lambda text, **_k: ran.append(text) or _directory_hit(),
+    )
+    d.dlg._url_ctrl.ChangeValue("kexp")
+    d.dlg._on_scan(None)
+    d.dlg._task_manager.pending.pop()["func"]()
+    assert asked == ["https://www.kexp.org/listen"]
+    assert ran == (["https://www.kexp.org/listen"] if answer else ["kexp"])
+    assert d.dlg._url_ctrl.GetValue() == ("https://www.kexp.org/listen" if answer else "kexp")
+
+
+def test_no_recent_site_means_no_question(d: Any, monkeypatch: Any) -> None:
+    monkeypatch.setattr(d.dlg, "_ask_recheck", lambda site: pytest.fail("asked"))
+    monkeypatch.setattr(
+        "quill.ui.radio.find_streams_ways.io.find", lambda *a, **k: _directory_hit()
+    )
+    d.dlg._url_ctrl.ChangeValue("kexp")
+    d.dlg._on_scan(None)
+
+
+# -- Tracks: a feed, an Archive item or an open directory --------------------------
+
+
+def _tracks() -> list[PageStreamCandidate]:
+    def track(name: str, size: int, date: str) -> PageStreamCandidate:
+        return _c(
+            f"https://f.example/{name}.mp3",
+            "file",
+            label=name,
+            label_is_name=True,
+            codec="MP3",
+            size_bytes=size,
+            modified=date,
+        )
+
+    return [
+        track("Track 10", 3_000_000, "2020-05-01"),
+        track("track 2", 800_000, "2021-04-02"),
+        track("Track 1", 5_000_000, "2019-01-15"),
+    ]
+
+
+def test_enter_with_several_files_selected_plays_them_in_the_order_shown(d: Any) -> None:
+    from quill.ui.radio import lineups_playback as lp
+
+    _scan(d, _tracks())
+    d.dlg._choose_order("name")  # natural: Track 1, track 2, Track 10
+    d.dlg._select_all()
+    d.said.clear()
+    d.dlg._on_test(None)
+    played = d.host._radio_controller.played
+    assert [s.name for s in played] == ["Track 1"] and played[0].is_recording
+    session = lp.session_of(d.host._radio_controller)
+    assert [e.name for e in session.entries] == ["Track 1", "track 2", "Track 10"]
+    assert d.said[-1].startswith("Playing 3 tracks in the order shown. Playing Track 1.")
+
+
+def test_the_next_selected_track_follows_when_one_ends(d: Any, monkeypatch: Any) -> None:
+    from quill.ui.radio import lineups_playback as lp
+
+    _scan(d, _tracks())
+    d.dlg._select_all()
+    d.dlg._on_test(None)
+    session = lp.session_of(d.host._radio_controller)
+    d.host._radio_controller.state = SimpleNamespace(station=session.entries[0].station)
+    d.host._radio_controller.play_station = lambda s: d.host._radio_controller.played.append(s)
+    monkeypatch.setattr(lp, "_app_of_controller", lambda controller: d.host)
+    assert lp.handle_finished(d.host._radio_controller) is True
+    assert [s.name for s in d.host._radio_controller.played][-1] == "track 2"
+
+
+def test_one_file_or_live_streams_still_just_test_the_focused_row(d: Any) -> None:
+    _scan(d, _rows())  # live streams and one unchecked link
+    d.dlg._select_all()
+    d.dlg._on_test(None)
+    assert [s.name for s in d.host._radio_controller.played] == ["Zulu FM"]
+    d.host._radio_controller.played.clear()
+    d.dlg._set_testing(False)
+    _scan(d, _tracks()[:1])
+    d.dlg._on_test(None)
+    assert [s.name for s in d.host._radio_controller.played] == ["Track 10"]
+
+
+def test_the_sort_menu_offers_size_date_and_format_only_for_files(d: Any) -> None:
+    _scan(d, _tracks())
+    menu = d.dlg._sort_menu()
+    try:
+        labels = [item.GetItemLabel() for item in menu.GetMenuItems()]
+    finally:
+        menu.Destroy()
+    assert "Si&ze, largest first" in labels and "&Date, newest first" in labels
+    assert "Forma&t, A to Z" not in labels  # every file is MP3: nothing to order by
+    d.dlg._choose_order("date")
+    assert d.said[-1] == "Sorted by date, newest first."
+    assert _texts(d)[0].endswith("2021-04-02")
