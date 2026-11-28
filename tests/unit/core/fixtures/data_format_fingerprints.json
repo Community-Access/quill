@@ -1860,6 +1860,12 @@
             "show_uv_index": "bool",
             "show_air_quality": "bool",
             "show_local_time": "bool",
+            "show_rain_soon": "bool",
+            "show_glance_ahead": "bool",
+            "show_daylight_change": "bool",
+            "show_pollen": "bool",
+            "show_marine": "bool",
+            "report_fields": "list[str]",
             "history_years": "int",
             "alert_severity_floor": "str",
             "muted_events": "list[str]",
@@ -1878,10 +1884,10 @@
             "quick_include_data_age": "bool"
           }
         },
-        "function:quill.core.weather.settings:save_settings": "sha256:98c4c299a24476a7"
+        "function:quill.core.weather.settings:save_settings": "sha256:2da925c3738d94bf"
       },
       "classification": "additive, compatible",
-      "note": "Weather History adds history_years (int, default 20); older builds ignore the key, and a missing key reads as 20."
+      "note": "Next hours, pollen, marine and Report Fields add five show_* booleans (default true) and report_fields (a list, default empty); older builds ignore the keys, and missing keys read as their defaults."
     }
   }
 }
