@@ -137,6 +137,9 @@ APPENDIX_A: tuple[Home, ...] = (
     Home(_MENU, "Leave Workbench Mode", "Stays", ("editor:view.github_workbench_mode",)),
     Home(_MENU, "GitHub Items..., Repository Items...", "Open GitHub Workbench (the same command)",
          ("editor:file.open_github_items", "door:file.open_github_items")),
+    Home(_MENU, "My GitHub...", "New front door: opens My GitHub, the Workbench's first node",
+         ("editor:github.workbench_my_github", "door:github.workbench_my_github",
+          "node:my_github")),
     Home(_MENU, "Inbox...", "Stays: opens Needs My Attention > Inbox",
          ("editor:github.workbench_inbox", "door:github.workbench_inbox", "node:inbox")),
     Home(_MENU, "My Work..., Notifications...", "Command ids kept, each opening its node; the "

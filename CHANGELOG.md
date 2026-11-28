@@ -2,6 +2,24 @@
 
 ## 1.0.0
 
+### My GitHub: one list of what needs you (2026-11-27)
+
+The GitHub Workbench now opens on **My GitHub**, a front door that puts your
+unread notifications, issues and pull requests assigned to you, review
+requests, and your own pull requests with failing checks in one list. Each row
+says what it is, where, and why it is there; Enter opens the full thread, and
+Mark Read and Done work as they do in Notifications. The status says how many
+need you and of what kind, says "Nothing needs your attention" when the list
+is empty, and says what changed on a refresh. If one source cannot load, the
+status names it and the rest still show.
+
+**My GitHub View Options...** in the View menu (`Ctrl+Alt+M`) filters by kind,
+repository and unread, orders by newest, oldest or repository, and groups by
+repository or kind; the choices are remembered for your account. `Alt+Shift+Home`
+goes to My GitHub from anywhere in the Workbench, and the GitHub menu has a
+**My GitHub** row in both editors. Workbench Options can still open on Inbox,
+Start Here, or where you were last.
+
 ### Find a person or organization in the GitHub Workbench (2026-11-27)
 
 **Find a Person or Organization...** (`Ctrl+Alt+E`) searches GitHub as you

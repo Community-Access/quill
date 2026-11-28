@@ -61,6 +61,7 @@ NO_DOCUMENT_COMMANDS: tuple[str, ...] = (
     # nothing to write in (quill/core/github/workbench_menu.py).
     "cmd_toggle_github_workbench",
     # GitHub, while the mode is on.
+    "cmd_github_my_github",
     "cmd_github_inbox",
     "cmd_github_my_work",
     "cmd_github_notifications",

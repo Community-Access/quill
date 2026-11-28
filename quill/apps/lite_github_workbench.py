@@ -196,6 +196,10 @@ class GitHubWorkbenchLiteMixin:
         """File > GitHub Workbench... (Repository Items in the GitHub menu)."""
         self.open_github_items()
 
+    def cmd_github_my_github(self) -> None:
+        """GitHub > My GitHub...: the whole queue, unread notifications and assigned work."""
+        self._github_views().my_github()
+
     def cmd_github_inbox(self) -> None:
         """GitHub > Inbox...: Explore's attention queue."""
         self._github_views().inbox()

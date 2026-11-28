@@ -2709,6 +2709,8 @@ Control coverage: 413 audited sites (413 helped).
 
 **Start Here.** Start Here: what the Workbench is, whether you are signed in, and the five keys to learn first.
 
+**My GitHub.** My GitHub: your whole queue in one list: unread notifications, issues and pull requests assigned to you, review requests, and your pull requests with failing checks. Enter opens the full thread; Ctrl+Q marks a notification read and Delete marks it done. Ctrl+Alt+M chooses what to show, the order and the grouping.
+
 **Needs My Attention.** Needs My Attention: everything waiting on you, across GitHub. Inbox first, then notifications, review requests and your own open work.
 
 **Inbox.** Inbox: one list of what needs you, from notifications, review requests, assignments and mentions. Enter opens a row; Delete marks it done.
@@ -3309,6 +3311,8 @@ Control coverage: 413 audited sites (413 helped).
 
 **View > Columns....** Choose which columns this list shows, and their order.
 
+**View > My GitHub View Options....** Choose which kinds My GitHub shows, one repository, how it is ordered and grouped. Remembered for your account.
+
 **View > Back.** The view you were on before. Backspace too.
 
 **View > Forward.** The view you went back from.
@@ -3334,6 +3338,8 @@ Control coverage: 413 audited sites (413 helped).
 **View > Say Loading.** Say what is loading, or when it loaded.
 
 **View > Say Account.** Say the account, and whether you are signed in.
+
+**Go > My GitHub.** Your whole queue in one list: unread notifications, assigned work, review requests and your pull requests with failing checks.
 
 **Go > Inbox.** What needs you, across GitHub. Alt+Home too.
 
@@ -4285,7 +4291,7 @@ Control coverage: 413 audited sites (413 helped).
 
 ### Every Workbench option
 
-**General: Open the Workbench on.** Where the window opens when no menu row asks for a place: Inbox (Start Here until you have signed in), Start Here, or wherever you were last time.
+**General: Open the Workbench on.** Where the window opens when no menu row asks for a place: My GitHub (Start Here until you have signed in), Inbox, Start Here, or wherever you were last time.
 
 **General: List shows.** Quick lists show a few columns, fast to arrow through; Full lists show every column the Workbench has for that list.
 

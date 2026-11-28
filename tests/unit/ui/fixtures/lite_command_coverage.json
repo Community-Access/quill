@@ -127,6 +127,7 @@
   "cmd_github_issues": "covered",
   "cmd_github_issues_mentioning_file": "covered",
   "cmd_github_manage_accounts": "covered",
+  "cmd_github_my_github": "covered",
   "cmd_github_my_work": "covered",
   "cmd_github_notifications": "covered",
   "cmd_github_open_line": "covered",
