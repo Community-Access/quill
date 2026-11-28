@@ -25,6 +25,8 @@ __all__ = [
 _EXPLORE_KINDS = {
     "notification": "github_notifications",
     "repo": "github_repositories",
+    "pr": "github_work",
+    "issue": "github_work",
 }
 
 

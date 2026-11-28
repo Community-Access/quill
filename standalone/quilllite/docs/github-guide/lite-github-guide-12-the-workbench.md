@@ -1247,7 +1247,7 @@ more.
 
 Each row in a list is read as its cells, one after another. **List Speech
 Templates** (Tools menu, `Ctrl+Alt+Shift+V`) lets you decide what a row says,
-and in what order, for each kind of list: notifications, issues, pull requests and repositories. Nothing changes until you choose a
+and in what order, for each kind of list: notifications, issues, pull requests, repositories, and the items assigned to you or waiting for your review (Review Requests, Assigned to Me, Mentions and My Open lists). Nothing changes until you choose a
 template; until then every list is read the way it always was.
 
 In the window:
