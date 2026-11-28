@@ -10,6 +10,7 @@ Radio reading Cast's playback cache.
 
 from __future__ import annotations
 
+import importlib.util
 import shutil
 from pathlib import Path
 from types import SimpleNamespace
@@ -21,6 +22,13 @@ from quill.core.podcasts.feed_reader import _episode_extra_tags
 from quill.core.podcasts.namespace_tags import NamespaceTags, parse, parse_psc_chapters
 
 CORPUS = Path(__file__).parents[3] / "corpus" / "audio" / "chaptered-sample.mp3"
+
+#: mutagen is the optional ``mp3`` extra (pyproject.toml); CI's test install
+#: does not have it, and without it no MP3 chapter is read at all.
+needs_mutagen = pytest.mark.skipif(
+    importlib.util.find_spec("mutagen") is None,
+    reason="mutagen (the mp3 extra) is not installed",
+)
 
 
 def _tagged_copy(tmp_path: Path, frames) -> Path:
@@ -46,6 +54,7 @@ def _tagged_copy(tmp_path: Path, frames) -> Path:
     return path
 
 
+@needs_mutagen
 def test_the_corpus_file_reads_its_real_names() -> None:
     titles = [c.title for c in cs.read_file_chapters(CORPUS)]
     assert titles == ["Opening", "Address", "Closing"]
@@ -136,6 +145,7 @@ def test_a_single_quoted_chapters_address_is_read() -> None:
     assert url == "https://x.example/c.json"
 
 
+@needs_mutagen
 def test_a_streaming_mp3s_head_is_enough_for_its_chapters(tmp_path, monkeypatch) -> None:
     part = tmp_path / "abc.mp3.part"
     shutil.copyfile(CORPUS, part)
@@ -152,6 +162,7 @@ def test_a_streaming_file_whose_tag_has_not_arrived_is_not_read(tmp_path, monkey
     assert cs._streaming_head(SimpleNamespace(id="s"), SimpleNamespace(guid="g")) is None
 
 
+@needs_mutagen
 def test_radio_reads_casts_playback_cache_for_a_streamed_episode(monkeypatch) -> None:
     from quill.core.radio import chapter_lookup
 
