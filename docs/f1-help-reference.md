@@ -1977,7 +1977,7 @@ Control coverage: 44 audited sites (44 helped).
 
 ## Quill Weather
 
-Control coverage: 98 audited sites (98 helped).
+Control coverage: 107 audited sites (107 helped).
 
 ### Every window, and what it is for
 
@@ -1998,6 +1998,8 @@ Control coverage: 98 audited sites (98 helped).
 **Quill Weather.** The main window of the weather watcher. Its real work happens in the background: it monitors official National Weather Service alerts for your saved locations and speaks new warnings as they are issued, even from the system tray. The three buttons open the full Weather Center, start or stop the watch, and add a place to watch; closing the window keeps monitoring in the tray by default.
 
 **Quill Weather Tutorials.** Guided lessons, one step at a time, that can run the step for you and notice when you have done it. The contents list is grouped by track and remembers where you stopped; typing 'here' in the filter box narrows it to the tutorials about the window you came from. Follow me watches what the app is doing -- never which key you pressed -- and moves you on by itself.
+
+**Report Fields.** Choose extra details from Open-Meteo to add to the end of the current conditions in Weather Now, and the order they are read in.
 
 **Save Weather for a Date Range.** Save every day between two dates as a spreadsheet file (CSV) or as plain text, in your units, with the data credits.
 
@@ -2095,6 +2097,17 @@ Control coverage: 98 audited sites (98 helped).
 - `self._copy`: Copy the day, every hour and the data credits as text.
 - `self._save`: Save every day between two dates as a spreadsheet file (CSV) or as text. Ctrl+S does the same.
 - `close_btn`: Close this window. Escape does the same.
+#### ReportFieldsDialog (`quill/ui/weather/report_fields_dialog.py`)
+
+- `self._available`: Fields you have not added yet. Choose one, then press Add. The Meaning field, after the Move buttons, says what the chosen field means.
+- `self._add`: Add the chosen field to the end of the report's list.
+- `self._list`: The extra fields the report reads, in order. Move Up, Move Down and Remove act on the selected one.
+- `self._up`: Read the selected field one place earlier.
+- `self._down`: Read the selected field one place later.
+- `self._remove`: Take the selected field out of the report.
+- `self._meaning`: What the field chosen in Field to add, or selected in the list, means.
+- `ok`: Save these fields. The report uses them from its next refresh.
+- `cancel`: Close without changing the report's fields.
 #### SaveRangeDialog (`quill/ui/weather/save_range_dialog.py`)
 
 - `self._from`: The first day to save, such as 2011-03-01 or March 1, 2011. A range can be up to a year.
