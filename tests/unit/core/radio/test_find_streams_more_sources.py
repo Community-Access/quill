@@ -185,7 +185,9 @@ def test_a_server_listing_raises_the_check_limit(monkeypatch: pytest.MonkeyPatch
     _serve(monkeypatch, {page: _text("global_catalogue.html")})
     seen: list[int] = []
 
-    def check(urls: list[str], get: object, *, limit: int) -> dict[str, object]:
+    def check(
+        urls: list[str], get: object, *, limit: int, on_verdict: object = None
+    ) -> dict[str, object]:
         seen.append(limit)
         return {}
 
@@ -287,7 +289,9 @@ def test_the_soundmap_is_checked_like_a_listing(monkeypatch: pytest.MonkeyPatch)
     monkeypatch.setattr(locus_sonus, "fetch_stations", lambda safe_mode: stations)
     seen: list[int] = []
 
-    def check(urls: list[str], get: object, *, limit: int) -> dict[str, object]:
+    def check(
+        urls: list[str], get: object, *, limit: int, on_verdict: object = None
+    ) -> dict[str, object]:
         seen.append(limit)
         return {}
 

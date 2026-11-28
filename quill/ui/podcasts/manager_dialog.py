@@ -877,7 +877,12 @@ class PodcastManagerDialog(
         from quill.ui.podcasts.show_actions import start_episode_playback
 
         if not start_episode_playback(
-            self._controller, self._library, show, episode, resume_ms=resume_ms
+            self._controller,
+            self._library,
+            show,
+            episode,
+            resume_ms=resume_ms,
+            automatic_resume=True,
         ):
             return
         self._update_now_playing()

@@ -252,6 +252,7 @@
             "auto_skip_intro_seconds": "int",
             "auto_skip_outro_seconds": "int",
             "finished_within_seconds": "int",
+            "resume_rewind_seconds": "int",
             "auto_download_count": "int",
             "auto_download_queued": "bool",
             "auto_download_inbox": "bool",
@@ -382,8 +383,8 @@
         },
         "function:quill.core.podcasts.subscriptions:save_library": "sha256:4a4485eeda51a642"
       },
-      "classification": "version bumped",
-      "note": "Added optional podcast folder-copy metadata and Lite startup-folder preference; older readers ignore these fields."
+      "classification": "additive, compatible",
+      "note": "Older Cast builds ignore the optional zero-default resume rewind setting."
     },
     "converter.queue": {
       "current": 1,
@@ -1598,6 +1599,8 @@
             "podcast_refresh_on_launch": "bool",
             "reminder_default_lead_seconds": "int",
             "reminder_sound": "bool",
+            "find_streams_sounds": "bool",
+            "find_streams_fallback": "bool",
             "skip_silence": "bool",
             "recording_speed": "float",
             "youtube_speed": "float",
@@ -1681,7 +1684,7 @@
         "function:quill.core.radio.history_store:save_history": "sha256:ab4ddc8289ea7635"
       },
       "classification": "additive, compatible",
-      "note": "One new optional key, recent_websites (Find Streams' last ten sites that worked); older builds ignore unknown keys, and the default is empty."
+      "note": ""
     },
     "shared.listens": {
       "current": 1,
@@ -1860,6 +1863,7 @@
             "show_uv_index": "bool",
             "show_air_quality": "bool",
             "show_local_time": "bool",
+            "history_years": "int",
             "alert_severity_floor": "str",
             "muted_events": "list[str]",
             "announce_alert_count_on_open": "bool",
@@ -1877,10 +1881,10 @@
             "quick_include_data_age": "bool"
           }
         },
-        "function:quill.core.weather.settings:save_settings": "sha256:64ea6eb4e3b01372"
+        "function:quill.core.weather.settings:save_settings": "sha256:98c4c299a24476a7"
       },
       "classification": "additive, compatible",
-      "note": "Registered real serializer fingerprints when these products joined release channels."
+      "note": "Weather History adds history_years (int, default 20); older builds ignore the key, and a missing key reads as 20."
     }
   }
 }

@@ -116,6 +116,10 @@ class PageStreamCandidate:
     #: listing gives it (IPRD, the soundmap, Global Player, an Icecast or
     #: SHOUTcast listing), so a row may say it when the stream sends no name.
     label_is_name: bool = False
+    #: A file's size in bytes and its date ("2026-05-01" or "2026-05-01 14:30"), when
+    #: a listing, feed or archive says them (audio_sources.py); 0 and "" otherwise.
+    size_bytes: int = 0
+    modified: str = ""
 
     @property
     def live(self) -> bool:

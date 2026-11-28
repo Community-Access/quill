@@ -94,6 +94,12 @@ class PodcastsMixin(
     def _on_podcast_state_changed(self, state: PodcastPlaybackState) -> None:
         if getattr(self, "_cast_closing", False) or getattr(self, "_cast_closed", False):
             return
+        from quill.ui.podcasts.player_controller import PodcastPlayerState
+
+        if state.state is PodcastPlayerState.PLAYING:
+            from quill.ui.podcasts.queue_synced_place import prefetch
+
+            prefetch(self)
         self._maybe_surface_podcast_status_cell(bool(state.title))
         self._podcast_track_history(state)
         self._podcast_manage_playback_cache(state)

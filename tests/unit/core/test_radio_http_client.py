@@ -25,7 +25,7 @@ def _restore_identity() -> object:
 def test_user_agent_shape() -> None:
     ua = http_client.user_agent()
     assert ua.startswith("QUILL/")
-    assert "(+https://www.quillforall.org)" in ua
+    assert "(+https://www.quillforall.org; support@community-access.org)" in ua
     # CBC stalls any User-Agent that mentions GitHub (check.md bug 1).
     assert "github" not in ua.lower()
     # A version follows the product name, and the project URL is parenthesized.
@@ -46,7 +46,9 @@ def test_blank_overrides_are_ignored() -> None:
 
 def test_cast_names_itself() -> None:
     http_client.set_product_identity("QUILL Cast", "2.0.0")
-    assert http_client.user_agent() == "QUILL Cast/2.0.0 (+https://www.quillforall.org)"
+    assert http_client.user_agent() == (
+        "QUILL Cast/2.0.0 (+https://www.quillforall.org; support@community-access.org)"
+    )
 
 
 def test_podcast_requests_say_they_come_from_a_podcast_app() -> None:
@@ -54,7 +56,7 @@ def test_podcast_requests_say_they_come_from_a_podcast_app() -> None:
     # the timeout (probed against three CBC feeds, 2026-10-04).
     http_client.set_product_identity("QUILL Cast", "2.0.0")
     assert http_client.podcast_user_agent() == (
-        "QUILL Cast/2.0.0 (podcast app; +https://www.quillforall.org)"
+        "QUILL Cast/2.0.0 (podcast app; +https://www.quillforall.org; support@community-access.org)"
     )
 
 
@@ -71,3 +73,11 @@ def test_no_module_carries_its_own_github_user_agent() -> None:
         in path.read_text(encoding="utf-8", errors="replace")
     ]
     assert offenders == []
+
+
+def test_every_request_names_the_project_support_mailbox() -> None:
+    # NWS and MET Norway ask for a contact; Jeff chose the project's mailbox for
+    # every request (2026-11-28). Never a personal address.
+    for agent in (http_client.user_agent(), http_client.podcast_user_agent()):
+        assert agent.endswith("; support@community-access.org)")
+    assert http_client.CONTACT_EMAIL == "support@community-access.org"

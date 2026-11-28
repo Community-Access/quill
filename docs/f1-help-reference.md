@@ -80,7 +80,7 @@ Control coverage: 346 audited sites (234 helped, 112 named-help).
 
 **Export Rules.** Save this lineup's rules to a file, to share or to use on another computer.
 
-**Find Streams from a Website.** Point Quill Radio at a web page you know carries a stream, and it scans the page for playable stream links. Useful for the station whose website plays fine in a browser but appears in no directory. In the list, Shift and the arrow keys or Ctrl+A select several, Ctrl+F finds a stream, and the Applications key opens a menu to sort, filter, copy links, or add them all to Favorites. The address box remembers the last ten sites that found a live stream; Clear Recent Searches... in the Station menu forgets them.
+**Find Streams from a Website.** Point Quill Radio at a web page you know carries a stream, and it scans the page for playable stream links. Useful for the station whose website plays fine in a browser but appears in no directory. In the list, Shift and the arrow keys or Ctrl+A select several, Ctrl+F finds a stream, and the Applications key opens a menu to sort, filter, copy links, or add them all to Favorites. The address box remembers the last ten sites that found a live stream; Clear Recent Searches... in the Station menu forgets them. Reopen Last Results shows the streams from your last scan again, as you left them, without scanning or playing anything; Ctrl+Shift+O plays a random stream from the rows shown.
 
 **Find something to listen to.** The second first-run screen: the two doors to stations -- Browse Stations for wandering by category, Find Stations for searching by name -- and the button that opens Browse right now.
 
@@ -295,7 +295,7 @@ Control coverage: 346 audited sites (234 helped, 112 named-help).
 - `self.ctrl`: Type a station's website address, or press Alt+Down to choose one of the last ten addresses that found a live stream. Press Enter or Scan to scan it. The list is empty until a scan finds a live stream.
 #### FindStreamsList (`quill/ui/radio/find_streams_list.py`)
 
-- `self.ctrl`: The stream links found on the page, live streams first. Enter tests the focused link. Select several with Shift and the arrow keys, or press Ctrl+A for every row shown; to pick rows far apart, filter the list first, then press Ctrl+A. Add to Favorites, Save as Playlist (Ctrl+S) and Copy (Ctrl+C) then act on all of them. Ctrl+F finds a row, F3 and Shift+F3 find the next and previous, and the Applications key opens the list's menu.
+- `self.ctrl`: The stream links found on the page, live streams first. Enter tests the focused link, or plays several selected audio files in the order shown. Select several with Shift and the arrow keys, or press Ctrl+A for every row shown; to pick rows far apart, filter the list first, then press Ctrl+A. Add to Favorites, Save as Playlist (Ctrl+S) and Copy (Ctrl+C) then act on all of them. Ctrl+F finds a row, F3 and Shift+F3 find the next and previous, Ctrl+Shift+O plays a random stream from the rows shown, and the Applications key opens the list's menu.
 - `self.details`: What QUILL knows about the focused stream, one fact per line: its name, whether it is live, its format, listeners, link, server, and how it was found. Read only.
 #### RadioFirstRunDialog (`quill/ui/radio/first_run_dialog.py`)
 
@@ -1976,7 +1976,7 @@ Control coverage: 44 audited sites (44 helped).
 
 ## Quill Weather
 
-Control coverage: 66 audited sites (66 helped).
+Control coverage: 98 audited sites (98 helped).
 
 ### Every window, and what it is for
 
@@ -1998,6 +1998,8 @@ Control coverage: 66 audited sites (66 helped).
 
 **Quill Weather Tutorials.** Guided lessons, one step at a time, that can run the step for you and notice when you have done it. The contents list is grouped by track and remembers where you stopped; typing 'here' in the filter box narrows it to the tutorials about the window you came from. Follow me watches what the app is doing -- never which key you pressed -- and moves you on by itself.
 
+**Save Weather for a Date Range.** Save every day between two dates as a spreadsheet file (CSV) or as plain text, in your units, with the data credits.
+
 **Should I Go Out?.** The AI's answer to Should I Go Out?, in plain words, from the forecast for your primary place. Any active alert comes first, in the Weather Service's own words, never reworded by the AI. Copy puts the answer on the clipboard.
 
 **Show and Hide Key.** Choose one key that shows and hides Quill Weather from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
@@ -2006,7 +2008,11 @@ Control coverage: 66 audited sites (66 helped).
 
 **Weather Center.** The full text weather report for one location at a time, in reading order: active alerts first, then current conditions, the period forecast, the hourly forecast, and the extended daily outlook. Each list pairs with a read-only detail box below it that follows your selection, so arrowing a list reads the full official text. The Location chooser switches places, Refresh re-pulls, and Add Location and Settings open their own windows.
 
+**Weather History.** The weather of the past for one of your places: today's date over many years, another date over many years, or a date range, with a summary in plain words of how it compares with normal and the records. Every day looked up is saved on your computer, so a second look needs no internet.
+
 **Weather Settings.** Every weather preference in one place: temperature and wind units, how much forecast to show, which alert severities matter, how often to refresh, what the Quick Weather line includes, and the alert sound. Save applies everything at once; Cancel changes nothing.
+
+**Weather on a Past Date.** One past day's weather, read like the current report: the high and low, rain and snow, wind, sunrise and sunset, then each hour, and how the day compared with normal. Type a date in the Date field, then move a day, a week, a month or a year at a time with the keys the menu bar and buttons name.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
 
@@ -2057,6 +2063,44 @@ Control coverage: 66 audited sites (66 helped).
 - `self._box`: A read-only report. For each watched place it gives the state of the alert feed, the last successful check, the last attempt, what went wrong in plain words, and the last alerts the service provided, marked last known when they are old. Use the arrow keys to read it.
 - `copy_btn`: Copy the whole report to the clipboard.
 - `close_btn`: Close this window. Escape does the same.
+#### WeatherHistoryDialog (`quill/ui/weather/history_dialog.py`)
+
+- `self._place`: The saved place to look up. Add places with Weather, Add Location.
+- `self._kind`: What to look up: today's date over many years, another calendar date over many years, or every day between two dates.
+- `self._month`: The month of the calendar date to look up.
+- `self._day`: The day of the month, 1 to 31.
+- `self._years`: How many years to look back, 1 to 85. Data goes back to 1940. Every year looked up is saved, so a second look costs nothing.
+- `self._start`: The first day of the range, written year-month-day, like 2024-06-01.
+- `self._end`: The last day of the range, written year-month-day. A range can be up to a year.
+- `self._go`: Look up the weather for these dates. Enter does the same.
+- `self._goto`: Open Weather on a Past Date for the day chosen in the list, or for today, to read that one day hour by hour. Ctrl+G does the same, and so does Enter on a day in the list.
+- `self._summary`: The lookup in plain words: how the day compares with normal, the records, and how often it rained or snowed. Use the arrow keys to read it.
+- `self._list`: One row a day: the date, the conditions, the high, the low and the precipitation, newest first. Use the arrow keys to move between days, and Enter to read a day hour by hour.
+- `copy_btn`: Copy the summary, every day and the data credits.
+- `close_btn`: Close Weather History. Escape does the same.
+#### PastDateDialog (`quill/ui/weather/past_date_dialog.py`)
+
+- `self._place`: The saved place to show. Changing it shows the same date for the new place.
+- `self._date`: Type a date and press Enter: 2011-03-14, March 14, 2011, 14 March 2011, 3/14/2011, yesterday, 3 days ago, last week, or a year ago today. A year alone, or a month and year, lists every day in it. Ctrl+G comes back here.
+- `self._go`: Show the date typed in the Date field. Enter does the same.
+- `self._view`: The day read like the current report: the sky, high and low, feels like, rain and snow, wind, sunrise and sunset, and how it compared with normal. Alt+Left and Alt+Right move a day; add Shift for a week. Here Page Up and Page Down page through the text, as they always do.
+- `self._hours`: Each hour of the day: the time, the sky, the temperature, what it felt like, precipitation and wind.
+- `self._span`: Every day in the year or month you typed, oldest first. Press Enter on a day to open it.
+- `self._recent_list`: The last ten dates you looked at, newest first, with their places. Press Enter on one to open it again.
+- `self._back`: Show the day before. Alt+Left does the same anywhere, and Page Up outside the text box, the lists and the Place dropdown.
+- `self._fwd`: Show the day after. Alt+Right does the same anywhere, and Page Down outside the text box, the lists and the Place dropdown.
+- `self._last_year`: Show this date a year earlier. Ctrl+Shift+Page Up does the same.
+- `self._next_year`: Show this date a year later. Ctrl+Shift+Page Down does the same.
+- `self._copy`: Copy the day, every hour and the data credits as text.
+- `self._save`: Save every day between two dates as a spreadsheet file (CSV) or as text. Ctrl+S does the same.
+- `close_btn`: Close this window. Escape does the same.
+#### SaveRangeDialog (`quill/ui/weather/save_range_dialog.py`)
+
+- `self._from`: The first day to save, such as 2011-03-01 or March 1, 2011. A range can be up to a year.
+- `self._to`: The last day to save, such as 2011-03-31 or yesterday.
+- `self._format`: A spreadsheet file, one row a day with the units in the column names, or plain text, one sentence a day.
+- `self._save`: Choose where to save the file, then save it.
+- `close_btn`: Close without saving. Escape does the same.
 #### WeatherSettingsDialog (`quill/ui/weather/settings_dialog.py`)
 
 - `self._temp`: The scale every temperature is shown and spoken in: Fahrenheit (the default) or Celsius. It applies everywhere -- current conditions, forecasts, and the Quick Weather line.

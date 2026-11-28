@@ -255,13 +255,29 @@ def check_urls(
     total_seconds: float = TOTAL_SECONDS,
     workers: int = MAX_WORKERS,
     limit: int = MAX_CHECKS,
+    on_verdict: Callable[[str, Verdict], None] | None = None,
 ) -> dict[str, Verdict]:
     """Check *urls* a few at a time under one deadline: ``{url: verdict}``.
 
     Every address gets a verdict. Those past *limit*, and those still waiting
     when the deadline passes, are :data:`UNCHECKED` -- listed, and said to be
     unchecked, rather than dropped.
+
+    *on_verdict*, when given, is called with ``(url, verdict)`` from the worker
+    thread as each check finishes, so a window can show the name a stream
+    reports while the rest are still being checked. A callback that raises is
+    ignored: showing progress must never fail a scan.
     """
+
+    def _checked(url: str) -> Verdict:
+        verdict = check_url(url, get, deadline)
+        if on_verdict is not None:
+            try:
+                on_verdict(url, verdict)
+            except Exception:  # noqa: BLE001 - progress is never worth a failed scan
+                pass
+        return verdict
+
     deadline = time.monotonic() + total_seconds
     verdicts: dict[str, Verdict] = {url: Verdict(UNCHECKED, note=TOO_MANY) for url in urls[limit:]}
     to_check = list(dict.fromkeys(urls[:limit]))
@@ -271,7 +287,7 @@ def check_urls(
         max_workers=max(1, workers), thread_name_prefix="radio-live-check"
     )
     try:
-        futures = {pool.submit(check_url, url, get, deadline): url for url in to_check}
+        futures = {pool.submit(_checked, url): url for url in to_check}
         done, _pending = concurrent.futures.wait(
             futures, timeout=max(0.0, deadline - time.monotonic())
         )

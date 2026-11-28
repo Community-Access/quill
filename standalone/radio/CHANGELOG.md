@@ -4,6 +4,59 @@ All notable changes to Quill Radio are documented here. See `docs/release-notes-
 
 ## [Unreleased] - 2026-11-07
 
+### Ideas from StreamSift
+
+Several things arrive together, each an idea from StreamSift, a screen-reader-first
+stream finder by Andre Louis (github.com/OnjLouis/StreamSift, MIT). Thank you.
+
+- **Play Random Station and Play Random Favorite** (Ctrl+Shift+O and
+  Alt+Shift+R, 2026-11-27). Put something on without choosing. Play Random
+  Station picks from the list you last searched or scanned, or from your
+  favorites when none is open; Play Random Favorite always uses favorites. It
+  never plays the same station twice in a row when there is a choice, and says
+  what it picked in one sentence.
+- **Reopen Last Results in Find Streams** (2026-11-27). Close Find Streams to
+  listen to a stream and the list is gone; now the last results are kept, with
+  the sort order, the filter and the row you were on. When Find Streams opens
+  with results waiting it says so, and Reopen Last Results (Alt+P) puts them back
+  without scanning or playing anything. A new scan replaces them, a search that
+  finds nothing clears them, and a damaged or missing saved file is ignored
+  without a word. Ctrl+Shift+O in the list plays a random stream from the rows
+  shown.
+- **Sounds and names while Find Streams works** (2026-11-27). A soft sound every
+  two seconds during a long scan, a different sound when a search finds nothing,
+  and another when it could not finish. While links are checked, each stream that
+  reports a name shows it ("Checking KEXP."), and the name is spoken at most once
+  every two seconds. One new switch in Preferences, Play sounds while Find
+  Streams searches, turns the three sounds off; the sentences are still said.
+- **Find Streams takes a station name, and can try other ways** (2026-11-27).
+  Type `kexp`, `bbcradio4` without spaces, or `kexp.mp3` with an ending, and the
+  public directories (Radio Browser, IPRD and Radio Garden) are searched by name, ignoring
+  spaces and punctuation, instead of the name being sent to the website scanner.
+  A name that matches one of your recent websites first asks whether to check
+  that site again. A new setting, Try other ways when a website has no stream
+  (off by default), lets a website with no stream fall back to the directories.
+  The result always says which way found it. Quill Radio has no browser-assisted
+  way, so that step is not part of it.
+- **Radio Garden stations in Find Streams** (2026-11-27). Paste a Radio Garden
+  station page, such as https://radio.garden/listen/kexp/Zk1UxX-Y, and Scan finds
+  the station's real stream, checks it is live audio and lists it, saying "Found
+  by Radio Garden." A typed station name is searched there too, with the other
+  directories. Radio Garden has no official public interface, so only the three
+  addresses its own page uses are read, only for what you type or paste; a
+  station with no stream, or a refusal, is one plain sentence. Safe Mode
+  contacts nothing.
+- **More places to find audio in Find Streams** (2026-11-27). The address box
+  also takes a podcast feed (the audio of each episode), a public Internet
+  Archive item (its audio files), a page that embeds audio, and a public open
+  directory (an "Index of /" page), and lists the audio files as tracks. Sort and
+  Filter adds Format, Size and Date, and names sort with case ignored and numbers
+  by value, so "Track 2" comes before "Track 10". Each row says its name, format,
+  size and date as you reach it. Select several files and press Enter to play
+  them in the order shown, one after another. Only public web addresses are
+  read, after the site's robots.txt, with at most 500 files and one megabyte of
+  page; torrents, web seeds and video are not offered.
+
 ### Recordings are kept safe through crashes, reconnects and Stop (2026-11-20)
 
 - **Crash recovery never replaces a recording.** When Quill Radio starts after a
@@ -683,7 +736,7 @@ than by build. A date in brackets says when a change arrived.
 - **Share these choices with my other Quill apps.** A Preferences checkbox, off until you turn it on. With it on here and in another Quill app, Announce dialog transitions stays the same in both, and Quill Radio says when it picks up a choice from another app. Nothing about keys, focus or the screen reader is shared (`quill/core/family_preferences.py`, `quill/ui/family_sharing.py`).
 - **Undo History (Edit menu, Ctrl+Alt+Shift+A).** The last ten things you can take back, newest first, each with Undo This One, so a mistake from three steps ago can be undone without losing what came after. Ctrl+Z still takes back the newest, and the one before when pressed again. QUILL Cast has the same list (`quill/core/undo_last.py`, `quill/ui/undo_history_dialog.py`).
 - **Record Key in Show and Hide Key.** The key box has a **Record Key...**
-  button (Alt+R): press the combination you want and it is written into the box
+  button (Alt+P): press the combination you want and it is written into the box
   for you. Typing it still works, and is the way for a key another program has
   already taken, which never reaches the window.
 - **Ctrl+Alt+Shift+R is Quill Radio's alone, and four Radio keys work beside the other apps.** QUILL's Keymap Editor, QUILL Lite's Keyboard Manager, QUILL Cast's Restore from a Backup and QUILL Studio's Resume Last Book on Launch sat on Radio's system-wide show and hide key and have moved. Quill Weather, Inkwell, the Media Player and Converter no longer take a show and hide key by default, so Restore from Backup (Ctrl+Alt+Shift+W), Recording Settings (Ctrl+Alt+Shift+I), Recent Problems (Ctrl+Alt+Shift+P) and Choose Columns (Ctrl+Alt+Shift+C) fire while those apps run (`quill/core/family_chords.py`).
@@ -812,7 +865,7 @@ A fix release, and the one to install. Quill Radio 3.0.0 is withdrawn and its do
 
 - **Everything is bundled; nothing downloads on first use.** Both downloads now carry Deno 2.9.7, the JavaScript engine yt-dlp uses to answer YouTube's signature and "n" challenges, with its SHA-256 checksum pinned at build time, and yt-dlp-ejs 0.8.0, the scripts it runs. Without them some YouTube formats went missing or played throttled. The scripts come only from the bundled package: yt-dlp never fetches code from npm or GitHub, and Deno on your PATH is never used, only the copy Quill Radio shipped and verified.
 - **The media tools install in every order.** If another QuillVille app put the shared runtime on your computer first, the Quill Radio installer still adds Deno and the OptiLab Core adapter, so Exact OptiLab processing and YouTube playback do not depend on which app you installed first.
-- **Get became Repair.** Help > Get FFmpeg... is now **Help > Repair FFmpeg...** (Ctrl+Alt+F), Help > Get mpv Playback Engine... is now **Help > Repair mpv Playback Engine...** (Ctrl+Alt+M), and Station > Update YouTube Support... is now **Station > Repair YouTube Support...** (Ctrl+Alt+Y). In Audio Health (Ctrl+Alt+Shift+M) the buttons are **Repair FFmpeg...** (Alt+R) and **Repair mpv...** (Alt+M). The keys are unchanged. Every message that used to send you to a Get item now names the Repair item.
+- **Get became Repair.** Help > Get FFmpeg... is now **Help > Repair FFmpeg...** (Ctrl+Alt+F), Help > Get mpv Playback Engine... is now **Help > Repair mpv Playback Engine...** (Ctrl+Alt+M), and Station > Update YouTube Support... is now **Station > Repair YouTube Support...** (Ctrl+Alt+Y). In Audio Health (Ctrl+Alt+Shift+M) the buttons are **Repair FFmpeg...** (Alt+P) and **Repair mpv...** (Alt+M). The keys are unchanged. Every message that used to send you to a Get item now names the Repair item.
 - **Version 3.0.1** everywhere: the app, the installer, the About box, the support and suggestion emails, the user guide, the tutorials, the website and these notes.
 
 ## [3.0.0] - 2026-09-26
@@ -1592,7 +1645,7 @@ Everything since 2.1.2, in one release. All in the shared `quill` package, so QU
 - **How Quill Radio is delivered changed: the QuillVille Runtime, installed once per user.** Quill Radio, QUILL, Quill Weather, and QUILL Audio Studio now share one Python engine -- the **QuillVille Runtime** -- installed once and reused by every app. Install any one app and every app you add afterwards starts instantly. The runtime is reference-counted and removed only when the last app that needs it is uninstalled. (Two light downloads that came with it during development -- a Companion zip and a thin "Lite" installer -- were retired before the final release; see Final release changes above.) The full portable zip (`Quill-Radio-Portable-<version>.zip`) is unchanged: still completely self-contained, with its own Python and bundled ffmpeg and mpv.
 - **A native launcher, and a friendlier relationship with antivirus.** Earlier versions used a renamed and modified copy of Python's `pythonw.exe` as the launcher -- a pattern some antivirus tools flagged as a false positive. That pattern is completely gone: `QuillRadio.exe` is now a tiny, genuinely-compiled native program that starts the app on a real, unmodified Python, and the bundled Python is the official unmodified build. (Releases are code-signed from 3.0.0 on.)
 - **The QuillVille menu (Alt+Q) -- one standard cross-app switcher.** Quill Radio, QUILL, and Quill Weather each carry the same top-level **QuillVille** menu, listing every family member so you can jump to any of them from the same place in every app -- each opening in its own window. Functional menus keep their descriptive names (the **Weather** menu stays "Weather", which a screen reader can find by its first letter); QuillVille is the family-navigation menu, which is what a brand name should label. Because each app is single-instance, opening one that is already running just brings it forward. Quill Radio's Weather menu also offers **Open the Quill Weather App**.
-- **Show or hide Quill Radio from any program with Ctrl+Alt+Shift+R.** A system-wide keystroke tucks the window to the tray, or brings it back and focuses it, even while another program has focus -- so a radio that lives in the tray is always one key away without hunting for the tray icon. Hiding leaves the app fully running (playback and recording continue), and the toggle speaks "hidden to the tray" or "shown" so a press from another window still tells you what happened. Each app in the family gets its own chord so they never collide: **QUILL is Ctrl+Alt+Shift+Q, Quill Radio is Ctrl+Alt+Shift+R, Quill Weather is Ctrl+Alt+Shift+W.** Windows only, and best-effort: if another program already owns the chord, that chord stays theirs and Quill Radio simply does not grab it -- nothing breaks.
+- **Show or hide Quill Radio from any program with Ctrl+Alt+Shift+R.** A system-wide keystroke tucks the window to the tray, or brings it back and focuses it, even while another program has focus -- so a radio that lives in the tray is always one key away without hunting for the tray icon. Hiding leaves the app fully running (playback and recording continue), and the toggle speaks "hidden to the tray" or "shown" so a press from another window still tells you what happened. Each app in the family gets its own chord so they never collide: **QUILL is Alt+Shift+R, Quill Radio is Ctrl+Alt+Shift+R, Quill Weather is Ctrl+Alt+Shift+W.** Windows only, and best-effort: if another program already owns the chord, that chord stays theirs and Quill Radio simply does not grab it -- nothing breaks.
 - **Customize Features -- turn whole areas of Quill Radio on or off.** A new **View > Customize Features...** lists the app's switchable areas -- the **Recording** and **Weather** menus -- each with a description; unchecking one omits its whole menu (and every command under it) the next time the app opens, so you can trim Quill Radio to just what you use. Every area defaults to on, so a newly added area is enabled until you turn it off. The tray menu got richer too, gaining Play/Pause, Stop, and the sibling-app launchers.
 - **Start Quill Radio with Windows.** A new **Station > Start Quill Radio with Windows** checkbox adds (or removes) a per-user autostart entry so Quill Radio launches at sign-in -- the same reliable, no-elevation mechanism QUILL itself uses.
 - **Weather Guardian -- background alert monitoring, with spoken warnings and a sounder.** **Weather > Start/Stop Weather Monitoring** (Ctrl+Shift+M) watches one US location's active watches, warnings, and advisories on a timer and **speaks each newly-issued alert as it appears** -- with forced, interrupting speech for tornado and flash-flood-level (Urgent and above) events -- and announces when they all clear. It keeps running while the window is minimized to the tray, auto-resumes on launch, and shows a system-tray toast for each new alert. A **severe-weather mode** automatically tightens the poll (down to the National Weather Service's 30-second courtesy floor) while any alert is active, then relaxes back -- near-real-time alerts on the free NWS feed with no push service. **Pause/Resume Alert Checks** snoozes the watch without turning it off. New alerts play a distinctive bundled chime you control in **Weather > Settings**: turn the sound off entirely (alerts are still shown and spoken), choose your own `.wav` with a **Play** button to hear it before saving, and set how many times it plays per alert (1-10). **Weather > Test Alert** demonstrates the full experience in one command -- the spoken text, the sound honoring your settings, the tray toast, and the alert dialog -- all clearly marked as a **TEST**, touching neither the network nor the monitor's real state, so you can confirm what a warning will sound like before one ever arrives.

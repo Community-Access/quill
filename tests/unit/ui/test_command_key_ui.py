@@ -198,7 +198,7 @@ def test_help_says_the_count_once_and_runs_the_pick(monkeypatch: pytest.MonkeyPa
     monkeypatch.setattr(ui, "show_command_help", show)
     picked = host.show_help("")
     assert picked is not None
-    assert len(spoken) == 1 and spoken[0].startswith("30 things you can do here, in ")
+    assert len(spoken) == 1 and spoken[0].startswith("32 things you can do here, in ")
 
 
 def test_help_with_a_filter_that_finds_nothing(monkeypatch: pytest.MonkeyPatch) -> None:

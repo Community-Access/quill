@@ -249,6 +249,22 @@ SETTINGS: tuple[SettingDef, ...] = (
         describe=_seconds("Stopping before the end"),
     ),
     define(
+        "resume_rewind_seconds",
+        "Re&wind when resuming, in seconds:",
+        "Start this many seconds before the newest saved place, so you can hear "
+        "the context again. Zero starts at the exact saved place. This only "
+        "changes playback; the saved place shared with other devices stays exact.",
+        kind=KIND_INT,
+        category=CATEGORY_PLAYBACK,
+        levels=(LEVEL_GLOBAL, LEVEL_SHOW),
+        default=0,
+        minimum=0,
+        maximum=300,
+        settings_field="resume_rewind_seconds",
+        aliases=("resume", "rewind", "backtrack", "listening place"),
+        describe=_seconds("Rewinding on resume"),
+    ),
+    define(
         "finished_within_seconds",
         "Count as finished when stopped within the last:",
         "Stop, switch episodes or close Cast this close to the end and the "

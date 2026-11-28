@@ -75,10 +75,25 @@ def _listeners(count: int) -> str:
     return "no listeners" if count == 0 else _plural(count, "listener", "listeners")
 
 
+def size_text(size_bytes: int) -> str:
+    """ "3.4 MB", "812 KB" or "" for an unknown size."""
+    if size_bytes <= 0:
+        return ""
+    if size_bytes < 1024 * 1024:
+        return f"{max(1, round(size_bytes / 1024))} KB"
+    if size_bytes < 1024**3:
+        return f"{size_bytes / 1024**2:.1f} MB"
+    return f"{size_bytes / 1024**3:.1f} GB"
+
+
 def _detail(candidate: PageStreamCandidate) -> str:
     parts = [_name(candidate), candidate.codec]
     if candidate.bitrate_kbps:
         parts.append(f"{candidate.bitrate_kbps} kbps")
+    # A file's own size and date, said as the row is reached (a listing, a feed
+    # or an archive item gives them; a live stream never does).
+    parts.append(size_text(candidate.size_bytes))
+    parts.append(candidate.modified)
     if candidate.listeners is not None:
         # Last, after what tells two rows apart: only a server listing says it.
         parts.append(_listeners(candidate.listeners))
