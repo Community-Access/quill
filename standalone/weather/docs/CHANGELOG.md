@@ -21,6 +21,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   where Open-Meteo estimates the 15-minute steps from hourly data, it says so. It
   rides the same single request as the glance ahead, and can be turned off in
   Settings.
+- **A damaged Weather file no longer stops Quill Weather** (2026-11-28). If the
+  alert-watch settings hold a number Quill Weather cannot use (such as 1e309), it
+  now keeps its defaults, keeps your file beside itself, and says where once it is
+  up, as Weather Settings already did; it used to fail to start. Alert feed health
+  reads such a number as unknown, a saved place with an impossible position is left
+  out, and an impossible snooze time is ignored.
 - **The next four hours and the daylight change** (2026-11-28). **Weather menu >
   Next Few Hours** (Ctrl+Shift+U) speaks the next four hours at a glance (the
   temperature trend, any change in the sky, the highest chance of precipitation and
