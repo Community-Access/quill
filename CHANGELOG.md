@@ -97,6 +97,12 @@ Import adds templates from one, asks before it replaces any template you
 already have, and says in plain words when a file is not a template file, is
 from a newer QUILL, or has templates that could not be used.
 
+GitHub items that are yours (Review Requests, Assigned to Me, Mentions and your
+own open issues and pull requests) can now be spoken by a template too. Fields
+include the repository, whether it is a pull request or an issue, the title,
+the state and why it is yours, such as "review requested; assigned". Tools >
+List Speech Templates opens on the kind of list you are on.
+
 ### Quill Weather: choose your places and alerts (2026-11-27)
 
 **Choose which places and which alerts** (2026-11-27). The new **Weather menu >

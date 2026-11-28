@@ -508,7 +508,20 @@ class GitHubWorkbenchActionsMixin(
     def _do_list_speech(self, _ref: Any, _row: object) -> None:
         from quill.ui.list_speech_dialog import show_list_speech_editor
 
-        show_list_speech_editor(self.frame.frame, list_type="github_issues", announce=self._say)
+        current = self.frame.current
+        key = getattr(self.frame.node(current), "key", "") if current is not None else ""
+        kind = {
+            "notifications": "github_notifications",
+            "review_requests": "github_work",
+            "assigned": "github_work",
+            "mentions": "github_work",
+            "my_pulls": "github_work",
+            "my_issues": "github_work",
+            "repositories": "github_repositories",
+            "my_repositories": "github_repositories",
+            "starred": "github_repositories",
+        }.get(key, "github_issues")
+        show_list_speech_editor(self.frame.frame, list_type=kind, announce=self._say)
 
     def _do_repository_actions(self, ref: Any, row: object) -> None:
         offered = [
