@@ -41,6 +41,7 @@ from quill.ui.podcasts.folder_prompts import (
 from quill.ui.podcasts.folder_prompts import (
     reset_view_name_action as reset_view_name_action,
 )
+from quill.ui.podcasts.player_volume_boost import apply as _apply_volume_boost
 
 
 def toggle_favorite(
@@ -93,7 +94,7 @@ def start_episode_playback(
     A streamed episode whose audio is already sitting in the playback cache is
     played from that file rather than fetched again -- the same bytes, minus
     the network. See ``core/podcasts/playback_cache.py``."""
-    from quill.core.podcasts import feed_auth, intro_skip, playback_cache
+    from quill.core.podcasts import feed_auth, intro_skip, playback_cache, resume_rewind
 
     settings = library.effective_settings(show)
     source = ""
@@ -114,8 +115,7 @@ def start_episode_playback(
         if crossed and announce is not None:
             announce(crossed)
     saved_start_ms = max(0, int(start_ms))
-    if (resume_ms is None or automatic_resume) and saved_start_ms > 0:
-        start_ms = max(0, saved_start_ms - settings.resume_rewind_seconds * 1000)
+    start_ms = resume_rewind.apply(saved_start_ms, settings, resume_ms, automatic_resume)
     # The intro skip fires on a genuine first play only (R20): not on a resume,
     # and not again on a replay. Going back to hear the beginning and being
     # helpfully skipped past it is the one case a listener notices.
@@ -149,25 +149,6 @@ def start_episode_playback(
     # and the level belongs to the show rather than to the episode.
     _apply_volume_boost(controller, settings)
     return True
-
-
-def _apply_volume_boost(controller: object, settings: object) -> None:
-    """Set this podcast's boost on the player. Never raises.
-
-    Off is a real answer that has to be sent -- otherwise a loud show played
-    after a quiet one would inherit the quiet one's boost, which is the exact
-    complaint a per-show setting exists to prevent.
-    """
-    from quill.core.podcasts import volume_boost
-
-    setter = getattr(controller, "set_volume_boost", None)
-    if not callable(setter):
-        return
-    level = volume_boost.normalize(getattr(settings, "volume_boost", volume_boost.OFF))
-    try:
-        setter(volume_boost.multiplier(level))
-    except Exception:  # noqa: BLE001 - a boost that will not set is not a failure to play
-        return
 
 
 def enqueue_episode_download(
