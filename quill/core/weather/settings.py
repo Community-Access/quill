@@ -71,6 +71,8 @@ class WeatherSettings:
     show_air_quality: bool = True
     #: Show the current local time at the searched location.
     show_local_time: bool = True
+    #: How many years Weather History looks back for one date (1-85).
+    history_years: int = 20
 
     # -- alerts (PRD 13.3) --
     #: Only show alerts at or above this severity ("all" shows every one).
@@ -126,6 +128,7 @@ class WeatherSettings:
                 seen.append(name)
         self.section_order = seen or _default_sections()
         self.muted_events = [str(e).strip() for e in self.muted_events if str(e).strip()]
+        self.history_years = max(1, min(85, int(self.history_years)))
         return self
 
     def alert_passes(self, severity: str, event: str) -> bool:
@@ -174,6 +177,7 @@ def load_settings(data_dir: Path) -> WeatherSettings:
         "daily_outlook_days",
         "hourly_hours",
         "alert_sound_repeat",
+        "history_years",
     ):
         value = raw.get(f)
         if isinstance(value, bool) or not isinstance(value, (int, float)):
@@ -247,6 +251,7 @@ def save_settings(data_dir: Path, settings: WeatherSettings) -> None:
             "show_uv_index": settings.show_uv_index,
             "show_air_quality": settings.show_air_quality,
             "show_local_time": settings.show_local_time,
+            "history_years": settings.history_years,
             "alert_severity_floor": settings.alert_severity_floor,
             "muted_events": list(settings.muted_events),
             "announce_alert_count_on_open": settings.announce_alert_count_on_open,

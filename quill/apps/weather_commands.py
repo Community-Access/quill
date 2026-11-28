@@ -49,6 +49,8 @@ def register_weather_commands(host: Any) -> None:
             host.toggle_weather_monitoring_pause,
         ),
         ("weather.tutorials", "Weather: Tutorials...", host.open_weather_tutorials),
+        ("weather.past_date", "Weather: Weather on a Past Date...", host.open_weather_past_date),
+        ("weather.history", "Weather: Weather History...", host.open_weather_history),
     ):
         host.commands.try_register(
             command_id, title, handler, host._binding_for(command_id), feature_id="core.weather"
