@@ -52,6 +52,14 @@ class MonitorConfig:
     #: Severe-weather mode: tighten the poll while an alert is active.
     fast_when_active: bool = True
     fast_interval_seconds: int = MONITOR_FAST_DEFAULT_SECONDS
+    #: Saved places switched off (kept, just not watched). Everything else is
+    #: watched, including places added later: "watch all" is the default.
+    muted_ids: list[str] = field(default_factory=list)
+
+    def places_to_watch(self, all_ids: list[str]) -> list[str]:
+        """Every saved place that is switched on, in the saved order."""
+        muted = set(self.muted_ids)
+        return [i for i in all_ids if i not in muted]
 
     def watched_ids(self, *, fallback: str = "") -> list[str]:
         """The locations to actually watch, in order and de-duplicated. Uses
@@ -118,6 +126,10 @@ class MonitorState:
     #: Whether at least one poll has completed (so the first poll is a baseline,
     #: not a burst of "new" announcements for already-active alerts).
     primed: bool = False
+    #: Active alerts the user's alert choices said to tell them about (the rest
+    #: are held back from speech but stay in the alert list). Lets an all-clear
+    #: be spoken only for alerts the user was actually told about.
+    told_ids: set[str] = field(default_factory=set)
 
 
 @dataclass(slots=True)
@@ -169,13 +181,35 @@ def start_summary(location_label: str, current: list[WeatherAlert], config: Moni
     )
 
 
-def start_summary_multi(active_counts: dict[str, int], config: MonitorConfig) -> str:
+def start_summary_multi(
+    active_counts: dict[str, int],
+    config: MonitorConfig,
+    unchecked: dict[str, str] | None = None,
+    hidden: int = 0,
+) -> str:
     """The one-time spoken line when monitoring several places at once.
 
     ``active_counts`` maps each watched location's label to how many alerts it
     currently has. Names the places, says which are clear and which are not, and
     ends with the cadence -- one warm sentence, however many places you watch.
+
+    ``unchecked`` maps the label of each place whose check *failed* to a short
+    note about its last good check ("" when there was none). A failed place is
+    never counted as clear: the summary says it could not be checked, and a line
+    that would have said "all clear" says so only for the places that answered.
     """
+    text = _start_summary_core(active_counts, config, unchecked)
+    if hidden:
+        plural = "" if hidden == 1 else "s"
+        text += f" {hidden} alert{plural} hidden by your settings, still in the alert list."
+    return text
+
+
+def _start_summary_core(
+    active_counts: dict[str, int], config: MonitorConfig, unchecked: dict[str, str] | None
+) -> str:
+    if unchecked:
+        return _start_summary_with_failures(active_counts, config, unchecked)
     labels = list(active_counts)
     if not labels:
         return "Weather monitoring is on, but no locations are set to watch yet."
@@ -203,6 +237,35 @@ def start_summary_multi(active_counts: dict[str, int], config: MonitorConfig) ->
     return (
         f"Weather monitoring on for {len(labels)} places: {places}. "
         f"{total} active alert{plural} right now, at {where}. {cadence}."
+    )
+
+
+def _start_summary_with_failures(
+    active_counts: dict[str, int], config: MonitorConfig, unchecked: dict[str, str]
+) -> str:
+    """The start line when at least one place could not be checked."""
+    cadence = config.cadence_phrase()
+    failed = list(unchecked)
+    notes = " ".join(f"{note}" for note in unchecked.values() if note)
+    if not active_counts:
+        where = _join_places(failed)
+        return (
+            f"Weather monitoring is on for {where}, but Quill Weather could not reach the "
+            "National Weather Service, so it does not know whether there are alerts. "
+            f"{notes + ' ' if notes else ''}It will keep trying and tell you if alerts may be "
+            f"missing. {cadence}."
+        )
+    ok_labels = list(active_counts)
+    total = sum(active_counts.values())
+    if total:
+        plural = "" if total == 1 else "s"
+        alerting = _join_places([lbl for lbl, n in active_counts.items() if n > 0])
+        state = f"{total} active alert{plural} right now, at {alerting}"
+    else:
+        state = "No active alerts at " + _join_places(ok_labels)
+    return (
+        f"Weather monitoring is on. {state}. Could not check {_join_places(failed)} just now, "
+        f"so its alerts are unknown. {notes + ' ' if notes else ''}{cadence}."
     )
 
 
@@ -314,6 +377,9 @@ def load_config(data_dir: Path) -> MonitorConfig:
         config.fast_when_active = raw["fast_when_active"]
     if isinstance(raw.get("fast_interval_seconds"), (int, float)):
         config.fast_interval_seconds = int(raw["fast_interval_seconds"])
+    raw_muted = raw.get("muted_ids")
+    if isinstance(raw_muted, list):
+        config.muted_ids = [str(x) for x in raw_muted if isinstance(x, str) and x.strip()]
     return config.normalized()
 
 
@@ -331,5 +397,6 @@ def save_config(data_dir: Path, config: MonitorConfig) -> None:
             "interval_minutes": config.interval_minutes,
             "fast_when_active": config.fast_when_active,
             "fast_interval_seconds": config.fast_interval_seconds,
+            "muted_ids": config.muted_ids,
         },
     )

@@ -32,6 +32,11 @@ class _Host(WeatherMixin):
         self._weather_monitor_round_pending = 1
         self._weather_monitor_round_active = False
         self._weather_monitor_baseline_counts: dict[str, int] = {}
+        self._weather_monitor_unchecked: dict[str, str] = {}
+        self._weather_monitor_hidden = 0
+        self._weather_monitor_locations: list[Any] = []
+        self._safe_mode = False
+        self._tray_icon = None
         self.spoken: list[tuple[str, str]] = []
         self.alert_sounds = 0
         self.toasts: list[tuple[str, str]] = []
@@ -39,7 +44,7 @@ class _Host(WeatherMixin):
     def _announce(self, message: str, *, force: bool = False, sound: str = "") -> None:
         self.spoken.append((message, sound))
 
-    def _play_weather_alert_sound(self) -> None:
+    def _play_weather_alert_sound(self, severity: str = "") -> None:
         self.alert_sounds += 1
 
     def _show_weather_toast(self, title: str, body: str) -> None:
